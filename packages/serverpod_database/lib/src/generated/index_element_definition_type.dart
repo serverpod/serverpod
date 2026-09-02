@@ -10,19 +10,18 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Used to specify how the definition of an [IndexElementDefinition]
 /// should be interpreted.
-enum IndexElementDefinitionType implements _i1.SerializableModel {
+enum IndexElementDefinitionType implements _iss.SerializableModel {
   /// Indicates, that the definition of an [IndexElementDefinition]
   /// referees to a column.
   column,
 
   /// Indicates, that the definition of an [IndexElementDefinition]
   /// is a (complex) expression.
-  expression,
-  ;
+  expression;
 
   static IndexElementDefinitionType fromJson(int index) {
     switch (index) {

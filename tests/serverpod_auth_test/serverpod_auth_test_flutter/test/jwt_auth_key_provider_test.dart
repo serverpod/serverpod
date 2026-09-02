@@ -346,6 +346,36 @@ void main() {
       });
     },
   );
+
+  group(
+    'Given a JwtAuthKeyProvider in cookie mode on a platform without cross-tab locks',
+    () {
+      setUp(() {
+        provider = JwtAuthKeyProvider(
+          getAuthInfo: () async => storedAuthInfo,
+          onRefreshAuthInfo: (authSuccess) async {
+            storedAuthInfo = authSuccess;
+          },
+          refreshEndpoint: refreshEndpoint,
+          usesCookieAuth: () => true,
+        );
+        storedAuthInfo = jwtAuthSuccess;
+      });
+
+      test(
+        'when forcing a refresh '
+        'then it refreshes uncoordinated instead of throwing.',
+        () async {
+          // No cookie jar on this platform, so the uncoordinated refresh
+          // reaches the server and fails to present a refresh cookie.
+          final result = await provider.refreshAuthKey(force: true);
+
+          expect(refreshEndpoint.callCount, 1);
+          expect(result, RefreshAuthKeyResult.failedUnauthorized);
+        },
+      );
+    },
+  );
 }
 
 class TestEndpointRefreshJwtToken extends EndpointJwtRefresh {
@@ -357,7 +387,7 @@ class TestEndpointRefreshJwtToken extends EndpointJwtRefresh {
   Exception? simulateException;
 
   @override
-  Future<AuthSuccess> refreshAccessToken({required String refreshToken}) async {
+  Future<AuthSuccess> refreshAccessToken({String? refreshToken}) async {
     callCount++;
     if (simulateException != null) throw simulateException!;
     return super.refreshAccessToken(refreshToken: refreshToken);

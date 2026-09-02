@@ -3,42 +3,24 @@
 
 name: serverpod_auth_bridge_server
 description: Serverpod authentication backwards compatibility server module.
-version: 4.0.0-beta.1
+version: 4.0.0-rc.1
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
+
+resolution: workspace
 
 dependencies:
   crypto: ^3.0.2
   meta: ^1.15.0
   pointycastle: '>=3.7.4 <5.0.0'
-  serverpod: 4.0.0-beta.1
-  serverpod_auth_core_server: 4.0.0-beta.1
-  serverpod_auth_idp_server: 4.0.0-beta.1
-  serverpod_shared: 4.0.0-beta.1
+  serverpod: 4.0.0-rc.1
+  serverpod_auth_core_server: 4.0.0-rc.1
+  serverpod_auth_idp_server: 4.0.0-rc.1
+  serverpod_shared: 4.0.0-rc.1
 
 dev_dependencies:
-  serverpod_lints: 4.0.0-beta.1
-  serverpod_test: 4.0.0-beta.1
+  serverpod_lints: 4.0.0-rc.1
+  serverpod_test: 4.0.0-rc.1
   test: ^1.25.5
-
-dependency_overrides:
-  serverpod:
-    path: ../../../../packages/serverpod
-  serverpod_auth_core_server:
-    path: ../../serverpod_auth_core/serverpod_auth_core_server
-  serverpod_auth_idp_server:
-    path: ../../serverpod_auth_idp/serverpod_auth_idp_server
-  serverpod_database:
-    path: ../../../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../../../packages/serverpod_embedded_postgres
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
-  serverpod_shared:
-    path: ../../../../packages/serverpod_shared
-  serverpod_test:
-    path: ../../../../packages/serverpod_test

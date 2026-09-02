@@ -90,7 +90,7 @@ void main() async {
     );
 
     test(
-      'when inserting a conflicting row without ignoreConflicts then a DatabaseQueryException is thrown.',
+      'when inserting a conflicting row without ignoreConflicts then a DatabaseUniqueViolationException is thrown.',
       () async {
         expect(
           UniqueData.db.insert(
@@ -98,7 +98,7 @@ void main() async {
             [UniqueData(number: 2, email: 'existing@serverpod.dev')],
           ),
           throwsA(
-            isA<DatabaseQueryException>().having(
+            isA<DatabaseUniqueViolationException>().having(
               (e) => e.code,
               'code',
               PgErrorCode.uniqueViolation,
@@ -314,8 +314,8 @@ void main() async {
       });
 
       test(
-        'when inserting a batch without a transaction where one row violates '
-        'the check constraint then no rows are inserted (atomic rollback).',
+        'when inserting a batch without a transaction where one row violates the check constraint '
+        'then no rows are inserted (atomic rollback).',
         () async {
           var data = <UniqueDataWithNonPersist>[
             UniqueDataWithNonPersist(

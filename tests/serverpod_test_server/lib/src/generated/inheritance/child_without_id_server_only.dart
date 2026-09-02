@@ -10,11 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../protocol.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../protocol.dart' as _iv35mfmj;
 
-abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class ServerOnlyChildClassWithoutId
+    extends _iv35mfmj.ParentClassWithoutId
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ServerOnlyChildClassWithoutId._({
     super.id,
     required super.grandParentField,
@@ -23,7 +24,7 @@ abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
   });
 
   factory ServerOnlyChildClassWithoutId({
-    _i2.UuidValue? id,
+    _is.UuidValue? id,
     required String grandParentField,
     required String parentField,
     required String childField,
@@ -35,7 +36,7 @@ abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
     return ServerOnlyChildClassWithoutId(
       id: jsonSerialization['id'] == null
           ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       grandParentField: jsonSerialization['grandParentField'] as String,
       parentField: jsonSerialization['parentField'] as String,
       childField: jsonSerialization['childField'] as String,
@@ -47,7 +48,7 @@ abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
   /// Returns a shallow copy of this [ServerOnlyChildClassWithoutId]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_is.useResult
   ServerOnlyChildClassWithoutId copyWith({
     Object? id,
     String? grandParentField,
@@ -72,7 +73,7 @@ abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -80,7 +81,7 @@ class _Undefined {}
 
 class _ServerOnlyChildClassWithoutIdImpl extends ServerOnlyChildClassWithoutId {
   _ServerOnlyChildClassWithoutIdImpl({
-    _i2.UuidValue? id,
+    _is.UuidValue? id,
     required String grandParentField,
     required String parentField,
     required String childField,
@@ -93,7 +94,7 @@ class _ServerOnlyChildClassWithoutIdImpl extends ServerOnlyChildClassWithoutId {
 
   /// Returns a shallow copy of this [ServerOnlyChildClassWithoutId]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_is.useResult
   @override
   ServerOnlyChildClassWithoutId copyWith({
     Object? id = _Undefined,
@@ -102,7 +103,7 @@ class _ServerOnlyChildClassWithoutIdImpl extends ServerOnlyChildClassWithoutId {
     String? childField,
   }) {
     return ServerOnlyChildClassWithoutId(
-      id: id is _i2.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       grandParentField: grandParentField ?? this.grandParentField,
       parentField: parentField ?? this.parentField,
       childField: childField ?? this.childField,

@@ -60,8 +60,8 @@ void main() async {
         );
       });
       test(
-        'when fetching model including list relation then returned model '
-        'has the attached data in the list relation.',
+        'when fetching model including list relation '
+        'then returned model has the attached data in the list relation.',
         () async {
           final department = await Department.db.insertRow(
             session,
@@ -101,8 +101,8 @@ void main() async {
       );
 
       test(
-        'when fetching model including object relation then returned model '
-        'has the attached data in the object relation.',
+        'when fetching model including object relation '
+        'then returned model has the attached data in the object relation.',
         () async {
           final service = await Service.db.insertRow(
             session,

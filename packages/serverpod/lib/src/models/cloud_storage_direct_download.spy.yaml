@@ -1,0 +1,27 @@
+### Grants temporary download access to a database-backed stored file.
+class: CloudStorageDirectDownloadEntry
+table: serverpod_cloud_storage_direct_download
+fields:
+  ### The storage containing the file.
+  storageId: String
+
+  ### The path of the file.
+  path: String
+
+  ### The expiration time of the temporary URL.
+  expiration: DateTime
+
+  ### Opaque access key carried by the temporary URL.
+  authKey: String
+
+  ### Optional filename presented to the downloader.
+  downloadFileName: String?
+
+  ### Optional response MIME type override.
+  contentType: String?
+indexes:
+  serverpod_cloud_storage_direct_download_auth_key:
+    fields: authKey
+    unique: true
+  serverpod_cloud_storage_direct_download_expiration:
+    fields: expiration

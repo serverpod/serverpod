@@ -254,6 +254,9 @@ void main() {
       group('when start is called', () {
         setUp(() async {
           await futureCallManager.start();
+
+          // Wait for the call to be claimed and its execution to start.
+          await testCall.invocationStarted.future;
         });
 
         tearDown(() async {
@@ -264,12 +267,9 @@ void main() {
         });
 
         test('then the stale claim is replaced', () async {
-          // Wait for the call to be scheduled
-          await Future.delayed(const Duration(milliseconds: 100));
-
           final claims = await FutureCallClaimEntry.db.find(session);
           expect(claims, hasLength(1));
-          expect(staleClaim, isNot(claims.first));
+          expect(claims.first.id, isNot(staleClaim.id));
 
           testCall.completer.complete();
           await testCall.completer.future;

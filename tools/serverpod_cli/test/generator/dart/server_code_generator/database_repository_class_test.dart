@@ -347,7 +347,7 @@ void main() {
           expect(
             lockRowsMethod?.parameters?.toSource(),
             contains(
-              'required _i1.WhereExpressionBuilder<${testClassName}Table> where',
+              'required _is.WhereExpressionBuilder<${testClassName}Table> where',
             ),
           );
         });
@@ -355,14 +355,14 @@ void main() {
         test('that takes the lockMode as a named required param', () {
           expect(
             lockRowsMethod?.parameters?.toSource(),
-            contains('required _i1.LockMode lockMode'),
+            contains('required _is.LockMode lockMode'),
           );
         });
 
         test('that takes the transaction as a named required param', () {
           expect(
             lockRowsMethod?.parameters?.toSource(),
-            contains('required _i1.Transaction transaction'),
+            contains('required _is.Transaction transaction'),
           );
         });
 
@@ -372,7 +372,7 @@ void main() {
             expect(
               lockRowsMethod?.parameters?.toSource(),
               contains(
-                '_i1.LockBehavior lockBehavior = _i1.LockBehavior.wait',
+                '_is.LockBehavior lockBehavior = _is.LockBehavior.wait',
               ),
             );
           },
@@ -884,7 +884,7 @@ void main() {
           expect(
             params,
             contains(
-              'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
+              'required _is.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
             ),
           );
         });
@@ -936,7 +936,7 @@ void main() {
           expect(
             params,
             contains(
-              'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
+              'required _is.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
             ),
           );
         });
@@ -946,7 +946,7 @@ void main() {
           expect(
             params,
             contains(
-              'required _i1.WhereExpressionBuilder<${testClassName}Table> where',
+              'required _is.WhereExpressionBuilder<${testClassName}Table> where',
             ),
           );
         });
@@ -968,7 +968,9 @@ void main() {
         test('that takes the orderBy column as an optional param', () {
           expect(
             updateWhereMethod?.parameters?.toSource(),
-            contains('_i1.OrderByBuilder<${testClassName}Table>? orderBy'),
+            contains(
+              '_is.OrderByBuilder<${testClassName}Table>? orderBy',
+            ),
           );
         });
 
@@ -976,7 +978,7 @@ void main() {
           expect(
             updateWhereMethod?.parameters?.toSource(),
             contains(
-              '_i1.OrderByListBuilder<${testClassName}Table>? orderByList',
+              '_is.OrderByListBuilder<${testClassName}Table>? orderByList',
             ),
           );
         });

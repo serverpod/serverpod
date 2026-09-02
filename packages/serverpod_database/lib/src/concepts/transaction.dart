@@ -81,8 +81,18 @@ class TransactionSettings {
   /// The isolation level of the transaction.
   final IsolationLevel? isolationLevel;
 
+  /// Whether foreign key constraints should be deferred until commit.
+  ///
+  /// On PostgreSQL this runs `SET CONSTRAINTS ALL DEFERRED` at transaction
+  /// start. On SQLite this runs `PRAGMA defer_foreign_keys = ON`.
+  ///
+  /// Requires foreign keys to be declared as deferrable in the schema when
+  /// using PostgreSQL.
+  final bool deferConstraints;
+
   /// Creates a new transaction settings object.
   const TransactionSettings({
     this.isolationLevel,
+    this.deferConstraints = false,
   });
 }

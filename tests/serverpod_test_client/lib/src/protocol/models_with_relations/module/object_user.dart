@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i312scxx;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 
 abstract class ObjectUser
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectUser._({
     this.id,
     this.name,
@@ -27,7 +27,7 @@ abstract class ObjectUser
     int? id,
     String? name,
     required int userInfoId,
-    _i2.UserInfo? userInfo,
+    _i312scxx.UserInfo? userInfo,
   }) = _ObjectUserImpl;
 
   factory ObjectUser.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +37,7 @@ abstract class ObjectUser
       userInfoId: jsonSerialization['userInfoId'] as int,
       userInfo: jsonSerialization['userInfo'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.UserInfo>(
+          : _iza9lbb5.Protocol().deserialize<_i312scxx.UserInfo>(
               jsonSerialization['userInfo'],
             ),
     );
@@ -52,16 +52,16 @@ abstract class ObjectUser
 
   int userInfoId;
 
-  _i2.UserInfo? userInfo;
+  _i312scxx.UserInfo? userInfo;
 
   /// Returns a shallow copy of this [ObjectUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectUser copyWith({
     int? id,
     String? name,
     int? userInfoId,
-    _i2.UserInfo? userInfo,
+    _i312scxx.UserInfo? userInfo,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +87,7 @@ abstract class ObjectUser
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,7 +98,7 @@ class _ObjectUserImpl extends ObjectUser {
     int? id,
     String? name,
     required int userInfoId,
-    _i2.UserInfo? userInfo,
+    _i312scxx.UserInfo? userInfo,
   }) : super._(
          id: id,
          name: name,
@@ -108,7 +108,7 @@ class _ObjectUserImpl extends ObjectUser {
 
   /// Returns a shallow copy of this [ObjectUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectUser copyWith({
     Object? id = _Undefined,
@@ -120,7 +120,7 @@ class _ObjectUserImpl extends ObjectUser {
       id: id is int? ? id : this.id,
       name: name is String? ? name : this.name,
       userInfoId: userInfoId ?? this.userInfoId,
-      userInfo: userInfo is _i2.UserInfo?
+      userInfo: userInfo is _i312scxx.UserInfo?
           ? userInfo
           : this.userInfo?.copyWith(),
     );

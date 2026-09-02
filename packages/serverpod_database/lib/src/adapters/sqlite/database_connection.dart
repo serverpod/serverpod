@@ -30,8 +30,6 @@ import 'sqlite_database_result.dart';
 import 'sqlite_pool_manager.dart';
 import 'sqlite_query_parameters.dart';
 
-part 'sqlite_exceptions.dart';
-
 /// A connection to the SQLite database.
 @internal
 class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
@@ -293,7 +291,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     var result = await insert<T>(session, [row], transaction: transaction);
 
     if (result.length != 1) {
-      throw _SqliteDatabaseInsertRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to insert row, updated number of rows is ${result.length} != 1',
       );
     }
@@ -337,7 +335,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         // Rows filtered out by [updateWhere] return nothing and must not be
         // counted, so duplicates are detected among the returned ids only.
         if (results.map((r) => r.id).toSet().length != results.length) {
-          throw _SqliteDatabaseQueryException(
+          throw DatabaseQueryException(
             'ON CONFLICT DO UPDATE command cannot affect row a second time',
             code: SqliteErrorCode.integrityConstraintViolation,
             hint:
@@ -395,7 +393,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     // Defensive: upsertRow passes a single row, so the underlying upsert can
     // never return more than one row. Guards against future adapter bugs.
     if (result.length > 1) {
-      throw _SqliteDatabaseUpsertRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to upsert row, affected number of rows is ${result.length} != 1',
       );
     }
@@ -495,7 +493,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     );
 
     if (updated.isEmpty) {
-      throw _SqliteDatabaseUpdateRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to update row, no rows updated',
       );
     }
@@ -531,7 +529,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     );
 
     if (result.isEmpty) {
-      throw _SqliteDatabaseUpdateRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to update row, no rows updated',
       );
     }
@@ -658,7 +656,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     var result = await delete<T>(session, [row], transaction: transaction);
 
     if (result.isEmpty) {
-      throw _SqliteDatabaseDeleteRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to delete row, no rows deleted.',
       );
     }
@@ -898,6 +896,9 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       final connection = await _sqliteConnection;
       return await connection.writeTransaction<R>((tx) async {
         var transaction = _SqliteTransaction(tx, session);
+        if (settings.deferConstraints) {
+          await transaction._execute('PRAGMA defer_foreign_keys = ON');
+        }
         final result = await transactionFunction(transaction);
         if (transaction._isCancelled) {
           throw _TransactionCancelledException(result);
@@ -906,6 +907,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       });
     } on _TransactionCancelledException catch (e) {
       return e.result;
+    } on DatabaseException {
+      rethrow;
+    } on SqliteException catch (exception, trace) {
+      Error.throwWithStackTrace(
+        _queryExceptionFromSqliteException(exception),
+        trace,
+      );
     } finally {
       _currentTransactionParentZone = null;
     }
@@ -1021,9 +1029,9 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       _logQuery(session, statement, stopwatch, numRowsAffected: result.length);
       return result;
     } catch (exception, trace) {
-      final serverpodException = exception is _SqliteDatabaseQueryException
+      final serverpodException = exception is DatabaseQueryException
           ? exception
-          : _SqliteDatabaseQueryException.fromSqliteException(exception);
+          : _queryExceptionFromSqliteException(exception);
       _logQuery(
         session,
         statement,
@@ -1608,9 +1616,9 @@ class _SqliteTransaction implements Transaction {
     try {
       await _ctx.execute(sql, parameters);
     } catch (exception, trace) {
-      final serverpodException = exception is _SqliteDatabaseQueryException
+      final serverpodException = exception is DatabaseQueryException
           ? exception
-          : _SqliteDatabaseQueryException.fromSqliteException(exception);
+          : _queryExceptionFromSqliteException(exception);
       Error.throwWithStackTrace(serverpodException, trace);
     }
   }
@@ -1648,4 +1656,38 @@ class _TransactionCancelledException<R> implements Exception {
 
   /// The result of the transaction.
   final R result;
+}
+
+DatabaseQueryException _queryExceptionFromSqliteException(Object e) {
+  if (e is! SqliteException) {
+    var isLocked = [
+      'recursive lock',
+      'LockError',
+    ].any((s) => e.toString().contains(s));
+
+    if (isLocked) {
+      return SqliteDatabaseLockedException(
+        e.toString(),
+        code: SqliteErrorCode.objectInUse,
+      );
+    }
+
+    return DatabaseQueryException(e.toString());
+  }
+
+  var code = e.extendedResultCode;
+  if (e.resultCode == 19 && e.message.contains('FOREIGN KEY')) {
+    code = 787;
+  }
+
+  final codeString = code.toString();
+  final builder = switch (codeString) {
+    SqliteErrorCode.uniqueViolation => DatabaseUniqueViolationException.new,
+    SqliteErrorCode.foreignKeyViolation =>
+      DatabaseForeignKeyViolationException.new,
+    SqliteErrorCode.objectInUse => SqliteDatabaseLockedException.new,
+    _ => DatabaseQueryException.new,
+  };
+
+  return builder(e.message, code: codeString, detail: e.explanation);
 }

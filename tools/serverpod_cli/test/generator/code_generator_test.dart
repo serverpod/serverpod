@@ -59,7 +59,7 @@ formatter:
 
       test(
         'when code is generated, '
-        'then the enum terminator preserves the trailing comma.',
+        'then the enum terminator is formatted without a trailing comma.',
         () {
           final path = p.joinAll([
             ...config.generatedServeModelPathParts,
@@ -70,7 +70,7 @@ formatter:
             config: config,
           )[path]!;
 
-          expect(code, contains('  assistant,\n  system,\n  ;'));
+          expect(code, contains('  assistant,\n  system;'));
         },
       );
 

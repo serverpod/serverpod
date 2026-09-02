@@ -10,37 +10,37 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
+import 'dart:async' as _ida;
+import 'dart:typed_data' as _idt;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i3;
-import 'dart:typed_data' as _i4;
-import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_registration_request.dart'
-    as _i5;
+    as _iacc;
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
-    as _i6;
+    as _ij3t58fp;
+import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_registration_request.dart'
+    as _i4bbcf8f;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Base endpoint for identity providers.
 /// {@category Endpoint}
-abstract class EndpointIdpBase extends _i1.EndpointRef {
-  EndpointIdpBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointIdpBase extends _isc.EndpointRef {
+  EndpointIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Returns the `method` value for each connected [Idp] subclass if the
   /// current session is authenticated and if the user has an account connected
   /// to the [Idp].
-  _i2.Future<bool> hasAccount();
+  _ida.Future<bool> hasAccount();
 }
 
 /// Base endpoint for anonymous accounts.
 /// {@category Endpoint}
-abstract class EndpointAnonymousIdpBase extends _i1.EndpointRef {
-  EndpointAnonymousIdpBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointAnonymousIdpBase extends _isc.EndpointRef {
+  EndpointAnonymousIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Creates a new anonymous account and returns its session.
   ///
   /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
   /// which may prevent account creation if the endpoint is protected.
-  _i2.Future<_i3.AuthSuccess> login({String? token});
+  _ida.Future<_iacc.AuthSuccess> login({String? token});
 }
 
 /// Endpoint for handling Sign in with Apple.
@@ -50,7 +50,7 @@ abstract class EndpointAnonymousIdpBase extends _i1.EndpointRef {
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// {@category Endpoint}
 abstract class EndpointAppleIdpBase extends EndpointIdpBase {
-  EndpointAppleIdpBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointAppleIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Signs in a user with their Apple account.
   ///
@@ -60,7 +60,7 @@ abstract class EndpointAppleIdpBase extends EndpointIdpBase {
   /// their `AuthUser`.
   ///
   /// Returns a session for the user upon successful login.
-  _i2.Future<_i3.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String identityToken,
     required String authorizationCode,
     required bool isNativeApplePlatformSignIn,
@@ -69,7 +69,7 @@ abstract class EndpointAppleIdpBase extends EndpointIdpBase {
   });
 
   @override
-  _i2.Future<bool> hasAccount();
+  _ida.Future<bool> hasAccount();
 }
 
 /// Base endpoint for email-based accounts.
@@ -85,7 +85,7 @@ abstract class EndpointAppleIdpBase extends EndpointIdpBase {
 /// logic by using [EmailIdp].
 /// {@category Endpoint}
 abstract class EndpointEmailIdpBase extends EndpointIdpBase {
-  EndpointEmailIdpBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointEmailIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Logs in the user and returns a new session.
   ///
@@ -96,7 +96,7 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
   ///   too many failed login attempts.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
-  _i2.Future<_i3.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String email,
     required String password,
   });
@@ -111,7 +111,7 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
   /// Always returns a account request ID, which can be used to complete the
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
-  _i2.Future<_i1.UuidValue> startRegistration({required String email});
+  _ida.Future<_isc.UuidValue> startRegistration({required String email});
 
   /// Verifies an account request code and returns a token
   /// that can be used to complete the account creation.
@@ -123,8 +123,8 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
   ///   does not comply with the password policy.
   /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
   ///   for the given [accountRequestId] or [verificationCode] is invalid.
-  _i2.Future<String> verifyRegistrationCode({
-    required _i1.UuidValue accountRequestId,
+  _ida.Future<String> verifyRegistrationCode({
+    required _isc.UuidValue accountRequestId,
     required String verificationCode,
   });
 
@@ -142,7 +142,7 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// Returns a session for the newly created user.
-  _i2.Future<_i3.AuthSuccess> finishRegistration({
+  _ida.Future<_iacc.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
   });
@@ -160,7 +160,7 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
   /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
   ///   made too many attempts trying to request a password reset.
   ///
-  _i2.Future<_i1.UuidValue> startPasswordReset({required String email});
+  _ida.Future<_isc.UuidValue> startPasswordReset({required String email});
 
   /// Verifies a password reset code and returns a finishPasswordResetToken
   /// that can be used to finish the password reset.
@@ -176,8 +176,8 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
   /// If multiple steps are required to complete the password reset, this endpoint
   /// should be overridden to return credentials for the next step instead
   /// of the credentials for setting the password.
-  _i2.Future<String> verifyPasswordResetCode({
-    required _i1.UuidValue passwordResetRequestId,
+  _ida.Future<String> verifyPasswordResetCode({
+    required _isc.UuidValue passwordResetRequestId,
     required String verificationCode,
   });
 
@@ -195,13 +195,13 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
-  _i2.Future<void> finishPasswordReset({
+  _ida.Future<void> finishPasswordReset({
     required String finishPasswordResetToken,
     required String newPassword,
   });
 
   @override
-  _i2.Future<bool> hasAccount();
+  _ida.Future<bool> hasAccount();
 }
 
 /// Base endpoint for Facebook Account-based authentication.
@@ -211,17 +211,17 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
 abstract class EndpointFacebookIdpBase extends EndpointIdpBase {
-  EndpointFacebookIdpBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointFacebookIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Validates a Facebook access token and either logs in the associated user or
   /// creates a new user account if the Facebook account ID is not yet known.
   ///
   /// If the access token is invalid or expired, the
   /// [FacebookAccessTokenVerificationException] will be thrown.
-  _i2.Future<_i3.AuthSuccess> login({required String accessToken});
+  _ida.Future<_iacc.AuthSuccess> login({required String accessToken});
 
   @override
-  _i2.Future<bool> hasAccount();
+  _ida.Future<bool> hasAccount();
 }
 
 /// Base endpoint for Firebase Account-based authentication.
@@ -231,16 +231,16 @@ abstract class EndpointFacebookIdpBase extends EndpointIdpBase {
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
 abstract class EndpointFirebaseIdpBase extends EndpointIdpBase {
-  EndpointFirebaseIdpBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointFirebaseIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Validates a Firebase ID token and either logs in the associated user or
   /// creates a new user account if the Firebase account ID is not yet known.
   ///
   /// If a new user is created an associated [UserProfile] is also created.
-  _i2.Future<_i3.AuthSuccess> login({required String idToken});
+  _ida.Future<_iacc.AuthSuccess> login({required String idToken});
 
   @override
-  _i2.Future<bool> hasAccount();
+  _ida.Future<bool> hasAccount();
 }
 
 /// Base endpoint for GitHub Account-based authentication.
@@ -250,7 +250,7 @@ abstract class EndpointFirebaseIdpBase extends EndpointIdpBase {
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
 abstract class EndpointGitHubIdpBase extends EndpointIdpBase {
-  EndpointGitHubIdpBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointGitHubIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Validates a GitHub authorization code and either logs in the associated
   /// user or creates a new user account if the GitHub account ID is not yet
@@ -260,14 +260,14 @@ abstract class EndpointGitHubIdpBase extends EndpointIdpBase {
   /// `PKCE`, then authenticates the user.
   ///
   /// If a new user is created an associated [UserProfile] is also created.
-  _i2.Future<_i3.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String code,
     required String codeVerifier,
     required String redirectUri,
   });
 
   @override
-  _i2.Future<bool> hasAccount();
+  _ida.Future<bool> hasAccount();
 }
 
 /// Base endpoint for Google Account-based authentication.
@@ -277,13 +277,13 @@ abstract class EndpointGitHubIdpBase extends EndpointIdpBase {
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
 abstract class EndpointGoogleIdpBase extends EndpointIdpBase {
-  EndpointGoogleIdpBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointGoogleIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Validates a Google ID token and either logs in the associated user or
   /// creates a new user account if the Google account ID is not yet known.
   ///
   /// If a new user is created an associated [UserProfile] is also created.
-  _i2.Future<_i3.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String idToken,
     required String? accessToken,
   });
@@ -295,14 +295,14 @@ abstract class EndpointGoogleIdpBase extends EndpointIdpBase {
   /// (used on native platforms via the `google_sign_in` package).
   ///
   /// If a new user is created an associated [UserProfile] is also created.
-  _i2.Future<_i3.AuthSuccess> loginWithCode({
+  _ida.Future<_iacc.AuthSuccess> loginWithCode({
     required String code,
     required String codeVerifier,
     required String redirectUri,
   });
 
   @override
-  _i2.Future<bool> hasAccount();
+  _ida.Future<bool> hasAccount();
 }
 
 /// Base endpoint for Microsoft Account-based authentication.
@@ -312,7 +312,7 @@ abstract class EndpointGoogleIdpBase extends EndpointIdpBase {
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
 abstract class EndpointMicrosoftIdpBase extends EndpointIdpBase {
-  EndpointMicrosoftIdpBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointMicrosoftIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Validates a Microsoft authorization code and either logs in the associated
   /// user or creates a new user account if the Microsoft account ID is not yet
@@ -327,7 +327,7 @@ abstract class EndpointMicrosoftIdpBase extends EndpointIdpBase {
   /// Pass `true` for web clients and `false` for native platforms.
   ///
   /// If a new user is created an associated [UserProfile] is also created.
-  _i2.Future<_i3.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String code,
     required String codeVerifier,
     required String redirectUri,
@@ -335,36 +335,36 @@ abstract class EndpointMicrosoftIdpBase extends EndpointIdpBase {
   });
 
   @override
-  _i2.Future<bool> hasAccount();
+  _ida.Future<bool> hasAccount();
 }
 
 /// Base endpoint for Passkey-based authentication.
 /// {@category Endpoint}
 abstract class EndpointPasskeyIdpBase extends EndpointIdpBase {
-  EndpointPasskeyIdpBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointPasskeyIdpBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Returns a new challenge to be used for a login or registration request.
-  _i2.Future<({_i4.ByteData challenge, _i1.UuidValue id})> createChallenge();
+  _ida.Future<({_idt.ByteData challenge, _isc.UuidValue id})> createChallenge();
 
   /// Registers a Passkey for the [session]'s current user.
   ///
   /// Throws if the user is not authenticated.
-  _i2.Future<void> register({
-    required _i5.PasskeyRegistrationRequest registrationRequest,
+  _ida.Future<void> register({
+    required _i4bbcf8f.PasskeyRegistrationRequest registrationRequest,
   });
 
   /// Authenticates the user related to the given Passkey.
-  _i2.Future<_i3.AuthSuccess> login({
-    required _i6.PasskeyLoginRequest loginRequest,
+  _ida.Future<_iacc.AuthSuccess> login({
+    required _ij3t58fp.PasskeyLoginRequest loginRequest,
   });
 
   @override
-  _i2.Future<bool> hasAccount();
+  _ida.Future<bool> hasAccount();
 }
 
-class Caller extends _i1.ModuleEndpointCaller {
-  Caller(_i1.ServerpodClientShared client) : super(client) {}
+class Caller extends _isc.ModuleEndpointCaller {
+  Caller(_isc.ServerpodClientShared client) : super(client) {}
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {};
+  Map<String, _isc.EndpointRef> get endpointRefLookup => {};
 }

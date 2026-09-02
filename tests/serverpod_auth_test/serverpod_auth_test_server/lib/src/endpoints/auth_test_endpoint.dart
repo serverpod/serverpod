@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
+import 'jwt_refresh_endpoint.dart';
+
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {
-  late final ServerSideSessions _serverSideSessions =
-      AuthServices.getTokenManager<ServerSideSessionsTokenManager>()
-          .serverSideSessions;
+  late final ServerSideSessionsTokenManager _serverSideSessions =
+      AuthServices.getTokenManager<ServerSideSessionsTokenManager>();
 
-  late final Jwt jwt = AuthServices.getTokenManager<JwtTokenManager>().jwt;
+  late final JwtTokenManager _jwt =
+      AuthServices.getTokenManager<JwtTokenManager>();
 
   /// Creates a new test user.
   Future<UuidValue> createTestUser(final Session session) async {
@@ -21,7 +25,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return _serverSideSessions.createSession(
+    return _serverSideSessions.issueToken(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -33,7 +37,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await _serverSideSessions.revokeAllSessions(
+    await _serverSideSessions.serverSideSessions.revokeAllSessions(
       session,
       authUserId: authUserId,
     );
@@ -44,7 +48,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return jwt.createTokens(
+    return _jwt.issueToken(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -57,7 +61,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await jwt.revokeAllRefreshTokens(
+    await _jwt.jwt.revokeAllRefreshTokens(
       session,
       authUserId: authUserId,
     );
@@ -78,7 +82,7 @@ class AuthTestEndpoint extends Endpoint {
       );
     }
 
-    return jwt.revokeRefreshToken(
+    return _jwt.jwt.revokeRefreshToken(
       session,
       refreshTokenId: authInfo.serverSideSessionId,
     );
@@ -92,4 +96,63 @@ class AuthTestEndpoint extends Endpoint {
     final userId = session.authenticated;
     return userId?.authUserId == authUserId;
   }
+
+  @unauthenticatedClientCall
+  Future<bool> checkSessionUnauthenticated(final Session session) async {
+    return session.isUserSignedIn;
+  }
+
+  @unauthenticatedClientCall
+  Stream<bool> checkSessionUnauthenticatedStream(
+    final Session session,
+  ) async* {
+    yield session.isUserSignedIn;
+  }
+
+  Stream<String?> openPublicUserStream(final Session session) async* {
+    yield session.authenticated?.userIdentifier;
+    await Completer<void>().future;
+  }
+
+  Future<void> resetJwtRefreshConcurrency(final Session session) async {
+    JwtRefreshEndpoint.resetConcurrencyTracking();
+  }
+
+  Future<int> getMaxConcurrentJwtRefreshes(final Session session) async {
+    return JwtRefreshEndpoint.maxConcurrentRefreshes;
+  }
+
+  Future<int> getJwtRefreshCallCount(final Session session) async {
+    return JwtRefreshEndpoint.refreshCallCount;
+  }
+
+  /// Returns the auth-mode marker and whether an authorization header was
+  /// received, as seen by the server on this authenticated call.
+  Future<List<String?>> getReceivedAuthHeaders(final Session session) async {
+    return _receivedAuthHeaders(session);
+  }
+
+  /// Like [getReceivedAuthHeaders], for an unauthenticated call.
+  @unauthenticatedClientCall
+  Future<List<String?>> getReceivedAuthHeadersUnauthenticated(
+    final Session session,
+  ) async {
+    return _receivedAuthHeaders(session);
+  }
+
+  static List<String?> _receivedAuthHeaders(final Session session) {
+    final headers = session.request?.headers;
+    return [
+      headers?[webAuthModeHeaderName]?.firstOrNull,
+      headers?['authorization'] == null ? null : 'present',
+    ];
+  }
+}
+
+class UnauthenticatedRequireLoginAuthTestEndpoint extends Endpoint {
+  @override
+  bool get requireLogin => true;
+
+  @unauthenticatedClientCall
+  Future<void> call(final Session session) async {}
 }

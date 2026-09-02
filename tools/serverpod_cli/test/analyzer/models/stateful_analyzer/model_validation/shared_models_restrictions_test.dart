@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
@@ -80,7 +81,48 @@ fields:
       expect(
         collector.errors.first.message,
         'The "table" property in shared packages requires the "database" '
-        'property to be set to "all".',
+        'property to be set to "all" or "sync".',
+      );
+    },
+  );
+
+  test(
+    'Given a shared package model with a table property and "database: sync" '
+    'when analyzing model '
+    'then no error is collected.',
+    () {
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+        ExperimentalFeature.databaseSync,
+      ]).build();
+
+      var models = <ModelSource>[
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withYaml('''
+class: SharedExample
+table: shared_example
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  name: String
+''')
+            .build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors to be collected',
       );
     },
   );

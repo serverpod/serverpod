@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class StringDefaultMix
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   StringDefaultMix._({
     this.id,
     String? stringDefaultAndDefaultModel,
@@ -59,11 +59,11 @@ abstract class StringDefaultMix
   String stringDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [StringDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   StringDefaultMix copyWith({
     int? id,
     String? stringDefaultAndDefaultModel,
@@ -99,11 +99,11 @@ abstract class StringDefaultMix
   }
 
   static StringDefaultMixIncludeList includeList({
-    _i1.WhereExpressionBuilder<StringDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<StringDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultMixTable>? orderByList,
+    _is.OrderByBuilder<StringDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
     StringDefaultMixInclude? include,
   }) {
     return StringDefaultMixIncludeList._(
@@ -118,7 +118,7 @@ abstract class StringDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -140,7 +140,7 @@ class _StringDefaultMixImpl extends StringDefaultMix {
 
   /// Returns a shallow copy of this [StringDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   StringDefaultMix copyWith({
     Object? id = _Undefined,
@@ -162,45 +162,45 @@ class _StringDefaultMixImpl extends StringDefaultMix {
 }
 
 class StringDefaultMixUpdateTable
-    extends _i1.UpdateTable<StringDefaultMixTable> {
+    extends _is.UpdateTable<StringDefaultMixTable> {
   StringDefaultMixUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> stringDefaultAndDefaultModel(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> stringDefaultAndDefaultModel(String value) =>
+      _is.ColumnValue(
         table.stringDefaultAndDefaultModel,
         value,
       );
 
-  _i1.ColumnValue<String, String> stringDefaultAndDefaultPersist(
+  _is.ColumnValue<String, String> stringDefaultAndDefaultPersist(
     String value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.stringDefaultAndDefaultPersist,
     value,
   );
 
-  _i1.ColumnValue<String, String> stringDefaultModelAndDefaultPersist(
+  _is.ColumnValue<String, String> stringDefaultModelAndDefaultPersist(
     String value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.stringDefaultModelAndDefaultPersist,
     value,
   );
 }
 
-class StringDefaultMixTable extends _i1.Table<int?> {
+class StringDefaultMixTable extends _is.Table<int?> {
   StringDefaultMixTable({super.tableRelation})
     : super(tableName: 'string_default_mix') {
     updateTable = StringDefaultMixUpdateTable(this);
-    stringDefaultAndDefaultModel = _i1.ColumnString(
+    stringDefaultAndDefaultModel = _is.ColumnString(
       'stringDefaultAndDefaultModel',
       this,
       hasDefault: true,
     );
-    stringDefaultAndDefaultPersist = _i1.ColumnString(
+    stringDefaultAndDefaultPersist = _is.ColumnString(
       'stringDefaultAndDefaultPersist',
       this,
       hasDefault: true,
     );
-    stringDefaultModelAndDefaultPersist = _i1.ColumnString(
+    stringDefaultModelAndDefaultPersist = _is.ColumnString(
       'stringDefaultModelAndDefaultPersist',
       this,
       hasDefault: true,
@@ -209,14 +209,14 @@ class StringDefaultMixTable extends _i1.Table<int?> {
 
   late final StringDefaultMixUpdateTable updateTable;
 
-  late final _i1.ColumnString stringDefaultAndDefaultModel;
+  late final _is.ColumnString stringDefaultAndDefaultModel;
 
-  late final _i1.ColumnString stringDefaultAndDefaultPersist;
+  late final _is.ColumnString stringDefaultAndDefaultPersist;
 
-  late final _i1.ColumnString stringDefaultModelAndDefaultPersist;
+  late final _is.ColumnString stringDefaultModelAndDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     stringDefaultAndDefaultModel,
     stringDefaultAndDefaultPersist,
@@ -224,19 +224,19 @@ class StringDefaultMixTable extends _i1.Table<int?> {
   ];
 }
 
-class StringDefaultMixInclude extends _i1.IncludeObject {
+class StringDefaultMixInclude extends _is.IncludeObject {
   StringDefaultMixInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => StringDefaultMix.t;
+  _is.Table<int?> get table => StringDefaultMix.t;
 }
 
-class StringDefaultMixIncludeList extends _i1.IncludeList {
+class StringDefaultMixIncludeList extends _is.IncludeList {
   StringDefaultMixIncludeList._({
-    _i1.WhereExpressionBuilder<StringDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -247,10 +247,10 @@ class StringDefaultMixIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => StringDefaultMix.t;
+  _is.Table<int?> get table => StringDefaultMix.t;
 }
 
 class StringDefaultMixRepository {
@@ -279,15 +279,15 @@ class StringDefaultMixRepository {
   /// );
   /// ```
   Future<List<StringDefaultMix>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<StringDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<StringDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<StringDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<StringDefaultMix>(
       where: where?.call(StringDefaultMix.t),
@@ -319,14 +319,14 @@ class StringDefaultMixRepository {
   /// );
   /// ```
   Future<StringDefaultMix?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<StringDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
     int? offset,
-    _i1.OrderByBuilder<StringDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<StringDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<StringDefaultMix>(
       where: where?.call(StringDefaultMix.t),
@@ -341,11 +341,11 @@ class StringDefaultMixRepository {
 
   /// Finds a single [StringDefaultMix] by its [id] or null if no such row exists.
   Future<StringDefaultMix?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<StringDefaultMix>(
       id,
@@ -370,9 +370,9 @@ class StringDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultMix>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<StringDefaultMix> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -388,9 +388,9 @@ class StringDefaultMixRepository {
   ///
   /// The returned [StringDefaultMix] will have its `id` field set.
   Future<StringDefaultMix> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     StringDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<StringDefaultMix>(
       row,
@@ -419,12 +419,12 @@ class StringDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultMix>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<StringDefaultMix> rows, {
-    required _i1.ColumnSelections<StringDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<StringDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StringDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<StringDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<StringDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<StringDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<StringDefaultMix>(
@@ -451,12 +451,12 @@ class StringDefaultMixRepository {
   ///
   /// The returned [StringDefaultMix] will have its `id` field set.
   Future<StringDefaultMix?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     StringDefaultMix row, {
-    required _i1.ColumnSelections<StringDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<StringDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StringDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<StringDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<StringDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<StringDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<StringDefaultMix>(
       row,
@@ -477,10 +477,10 @@ class StringDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultMix>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<StringDefaultMix> rows, {
-    _i1.ColumnSelections<StringDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<StringDefaultMixTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<StringDefaultMix>(
@@ -495,10 +495,10 @@ class StringDefaultMixRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<StringDefaultMix> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     StringDefaultMix row, {
-    _i1.ColumnSelections<StringDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<StringDefaultMixTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<StringDefaultMix>(
       row,
@@ -510,11 +510,11 @@ class StringDefaultMixRepository {
   /// Updates a single [StringDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<StringDefaultMix?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<StringDefaultMixUpdateTable>
+    required _is.ColumnValueListBuilder<StringDefaultMixUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<StringDefaultMix>(
       id,
@@ -530,15 +530,15 @@ class StringDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultMix>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<StringDefaultMixUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<StringDefaultMixUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<StringDefaultMixTable> where,
+    required _is.WhereExpressionBuilder<StringDefaultMixTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<StringDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<StringDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<StringDefaultMix>(
@@ -565,11 +565,11 @@ class StringDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultMix>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<StringDefaultMix> rows, {
-    _i1.OrderByBuilder<StringDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<StringDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<StringDefaultMix>(
@@ -583,9 +583,9 @@ class StringDefaultMixRepository {
 
   /// Deletes a single [StringDefaultMix].
   Future<StringDefaultMix> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     StringDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<StringDefaultMix>(
       row,
@@ -602,11 +602,11 @@ class StringDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultMix>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<StringDefaultMixTable> where,
-    _i1.OrderByBuilder<StringDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<StringDefaultMixTable> where,
+    _is.OrderByBuilder<StringDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<StringDefaultMix>(
@@ -621,10 +621,10 @@ class StringDefaultMixRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<StringDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<StringDefaultMix>(
       where: where?.call(StringDefaultMix.t),
@@ -635,11 +635,11 @@ class StringDefaultMixRepository {
 
   /// Acquires row-level locks on [StringDefaultMix] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<StringDefaultMixTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<StringDefaultMixTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<StringDefaultMix>(
       where: where(StringDefaultMix.t),

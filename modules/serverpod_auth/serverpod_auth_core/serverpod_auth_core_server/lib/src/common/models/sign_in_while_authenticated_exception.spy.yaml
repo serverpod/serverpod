@@ -1,0 +1,5 @@
+### Thrown when an authenticated caller requests a token for a different user
+### without signing out first. Signing in on top of another account is
+### reserved for the account-linking flow; switching users requires an
+### explicit sign-out.
+exception: SignInWhileAuthenticatedException

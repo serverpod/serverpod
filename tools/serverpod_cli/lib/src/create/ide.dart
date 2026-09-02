@@ -4,6 +4,7 @@ enum TemplateIde {
   antigravity(
     filePath: '$_antigravityPluginDir/mcp_config.json',
     config: _genericConfig,
+    moduleConfig: _genericModuleConfig,
     replacements: [
       // The Antigravity ecosystem names the Dart MCP server "dart-mcp-server",
       // so reuse key to avoid duplicates.
@@ -14,22 +15,40 @@ enum TemplateIde {
       '$_antigravityPluginDir/plugin.json': _antigravityPluginManifest,
     },
   ),
-  codex(filePath: '.codex/config.toml', config: _codexConfig),
-  cursor(filePath: '.cursor/mcp.json', config: _genericConfig),
-  claude(filePath: '.mcp.json', config: _genericConfig),
-  openCode(filePath: 'opencode.json', config: _openCodeConfig),
+  codex(
+    filePath: '.codex/config.toml',
+    config: _codexConfig,
+    moduleConfig: _codexModuleConfig,
+  ),
+  cursor(
+    filePath: '.cursor/mcp.json',
+    config: _genericConfig,
+    moduleConfig: _genericModuleConfig,
+  ),
+  claude(
+    filePath: '.mcp.json',
+    config: _genericConfig,
+    moduleConfig: _genericModuleConfig,
+  ),
+  openCode(
+    filePath: 'opencode.json',
+    config: _openCodeConfig,
+    moduleConfig: _openCodeModuleConfig,
+  ),
   vscode(
     filePath: '.vscode/mcp.json',
     config: _genericConfig,
+    moduleConfig: _genericModuleConfig,
     replacements: [
       Replacement(slotName: '"mcpServers":', replacement: '"servers":'),
     ],
-  )
+  ),
   ;
 
   const TemplateIde({
     required this.filePath,
     required this.config,
+    required this.moduleConfig,
     this.replacements = const [],
     this.additionalFiles = const {},
   });
@@ -40,6 +59,10 @@ enum TemplateIde {
 
   /// The config content to be written to the IDE config file.
   final String config;
+
+  /// The config content for module projects, which have no runnable server and
+  /// therefore no Serverpod MCP server to talk to.
+  final String moduleConfig;
 
   /// Optional replacements to be applied to the config content before writing.
   final List<Replacement> replacements;
@@ -53,8 +76,13 @@ extension TemplateIdeExtension on TemplateIde {
   // Pinning the bridge to this project's server dir avoids walking up from cwd
   // at startup and disambiguates workspaces that contain multiple server
   // projects sharing one agent config.
-  String effectiveConfig({required String serverDirRelative}) =>
-      render(config, serverDirRelative: serverDirRelative);
+  String effectiveConfig({
+    required String serverDirRelative,
+    bool isModule = false,
+  }) => render(
+    isModule ? moduleConfig : config,
+    serverDirRelative: serverDirRelative,
+  );
 
   /// Renders [content] with the server dir slot and this IDE's [replacements].
   String render(String content, {required String serverDirRelative}) {
@@ -99,6 +127,19 @@ const _genericConfig = '''{
 }
 ''';
 
+/// Generic MCP server config for IDEs in a module project. A module is not a
+/// runnable server, so the Serverpod MCP server would have nothing to connect
+/// to and every one of its tools would error.
+const _genericModuleConfig = '''{
+  "mcpServers": {
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
 /// MCP server config for OpenCode.
 const _openCodeConfig = '''{
   "\$schema": "https://opencode.ai/config.json",
@@ -121,12 +162,35 @@ const _openCodeConfig = '''{
 }
 ''';
 
+/// MCP server config for OpenCode in a module project.
+const _openCodeModuleConfig = '''{
+  "\$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "dart-mcp-server": {
+      "type": "local",
+      "command": [
+        "dart",
+        "mcp-server"
+      ],
+      "enabled": true,
+      "environment": {}
+    }
+  }
+}
+''';
+
 /// MCP server config for Codex.
 const _codexConfig = '''[mcp_servers.serverpod]
 command = "serverpod"
 args = ["mcp-server", "--server-dir", "{serverDirRelative}"]
 
 [mcp_servers.dart_mcp]
+command = "dart"
+args = ["mcp-server", "--force-roots-fallback"]
+''';
+
+/// MCP server config for Codex in a module project.
+const _codexModuleConfig = '''[mcp_servers.dart_mcp]
 command = "dart"
 args = ["mcp-server", "--force-roots-fallback"]
 ''';

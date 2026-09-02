@@ -20,7 +20,13 @@ void main() async {
             session,
             SimpleData(id: 1, num: 1),
           ),
-          throwsA(isA<DatabaseDeleteRowException>()),
+          throwsA(
+            isA<DatabaseUnexpectedResultException>().having(
+              (e) => e.message,
+              'message',
+              contains('no rows deleted'),
+            ),
+          ),
         );
       },
     );
@@ -372,7 +378,7 @@ void main() async {
         expect(
           () async => await UniqueData.db.delete(session, inserted),
           throwsA(
-            isA<DatabaseQueryException>().having(
+            isA<DatabaseForeignKeyViolationException>().having(
               (e) => e.code,
               'code',
               PgErrorCode.foreignKeyViolation,

@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/one_to_one/citizen.dart' as _igho3lba;
 
 abstract class Address
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Address._({
     this.id,
     required this.street,
@@ -27,7 +27,7 @@ abstract class Address
     int? id,
     required String street,
     int? inhabitantId,
-    _i2.Citizen? inhabitant,
+    _igho3lba.Citizen? inhabitant,
   }) = _AddressImpl;
 
   factory Address.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +37,7 @@ abstract class Address
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization['inhabitant'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Citizen>(
+          : _iza9lbb5.Protocol().deserialize<_igho3lba.Citizen>(
               jsonSerialization['inhabitant'],
             ),
     );
@@ -52,16 +52,16 @@ abstract class Address
 
   int? inhabitantId;
 
-  _i2.Citizen? inhabitant;
+  _igho3lba.Citizen? inhabitant;
 
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Address copyWith({
     int? id,
     String? street,
     int? inhabitantId,
-    _i2.Citizen? inhabitant,
+    _igho3lba.Citizen? inhabitant,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +87,7 @@ abstract class Address
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,7 +98,7 @@ class _AddressImpl extends Address {
     int? id,
     required String street,
     int? inhabitantId,
-    _i2.Citizen? inhabitant,
+    _igho3lba.Citizen? inhabitant,
   }) : super._(
          id: id,
          street: street,
@@ -108,7 +108,7 @@ class _AddressImpl extends Address {
 
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Address copyWith({
     Object? id = _Undefined,
@@ -120,7 +120,7 @@ class _AddressImpl extends Address {
       id: id is int? ? id : this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _i2.Citizen?
+      inhabitant: inhabitant is _igho3lba.Citizen?
           ? inhabitant
           : this.inhabitant?.copyWith(),
     );

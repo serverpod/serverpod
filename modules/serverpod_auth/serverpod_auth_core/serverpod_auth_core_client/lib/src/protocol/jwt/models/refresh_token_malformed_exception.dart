@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Exception thrown when a refresh token string is malformed or cannot be parsed.
 abstract class RefreshTokenMalformedException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _isc.SerializableException,
+        _isc.SerializableModel,
+        _isc.ProtocolSerialization {
   RefreshTokenMalformedException._();
 
   factory RefreshTokenMalformedException() =
@@ -31,7 +31,7 @@ abstract class RefreshTokenMalformedException
 
   /// Returns a shallow copy of this [RefreshTokenMalformedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   RefreshTokenMalformedException copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -59,7 +59,7 @@ class _RefreshTokenMalformedExceptionImpl
 
   /// Returns a shallow copy of this [RefreshTokenMalformedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   RefreshTokenMalformedException copyWith() {
     return RefreshTokenMalformedException();

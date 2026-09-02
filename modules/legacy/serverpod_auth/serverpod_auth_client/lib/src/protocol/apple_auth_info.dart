@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Authentication info for Sign in with Apple.
 abstract class AppleAuthInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AppleAuthInfo._({
     required this.userIdentifier,
     this.email,
@@ -64,7 +64,7 @@ abstract class AppleAuthInfo
 
   /// Returns a shallow copy of this [AppleAuthInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AppleAuthInfo copyWith({
     String? userIdentifier,
     String? email,
@@ -101,7 +101,7 @@ abstract class AppleAuthInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -126,7 +126,7 @@ class _AppleAuthInfoImpl extends AppleAuthInfo {
 
   /// Returns a shallow copy of this [AppleAuthInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AppleAuthInfo copyWith({
     String? userIdentifier,

@@ -11,64 +11,68 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_test/serverpod_test.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
-import 'dart:io' as _i3;
-import 'dart:async' as _i4;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i5;
-import 'dart:typed_data' as _i6;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i7;
-import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i8;
-import 'package:serverpod_test_server/src/generated/simple_data_list.dart'
-    as _i9;
-import 'package:serverpod_test_server/src/generated/types.dart' as _i10;
-import 'package:serverpod_test_server/src/generated/object_with_enum.dart'
-    as _i11;
-import 'package:serverpod_test_server/src/generated/object_with_enum_enhanced.dart'
-    as _i12;
-import 'package:serverpod_test_server/src/generated/object_with_object.dart'
-    as _i13;
-import 'package:serverpod_test_server/src/generated/required/model_with_required_field.dart'
-    as _i14;
-import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
-    as _i15;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i16;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i17;
+import 'dart:async' as _ida;
+import 'dart:convert' as _idc;
+import 'dart:io' as _idi;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
+import 'package:serverpod_test/serverpod_test.dart' as _ist;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
-    as _i18;
-import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
-    as _i19;
-import 'package:serverpod_test_server/src/generated/module_datatype.dart'
-    as _i20;
-import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/parent.dart'
-    as _i21;
-import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container.dart'
-    as _i22;
-import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container_module.dart'
-    as _i23;
-import 'dart:convert' as _i24;
-import 'package:serverpod_test_server/src/generated/types_record.dart' as _i25;
-import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field.dart'
-    as _i26;
-import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
-    as _i27;
-import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
-    as _i28;
-import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
-    as _i29;
-import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
-    as _i30;
-import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i31;
-import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
-    as _i32;
+    as _iom2gwyu;
+import 'package:serverpod_test_server/src/generated/future_calls.dart'
+    as _i3an2vcw;
 import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_bye_model.dart'
-    as _i33;
-import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_invoke_model.dart'
-    as _i34;
-import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
-    as _i35;
+    as _i4lt3urh;
 import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
-    as _i36;
+    as _i1l5bdpk;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _irznr7ew;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_invoke_model.dart'
+    as _i8808sn4;
+import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container.dart'
+    as _ioyh3y7j;
+import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container_module.dart'
+    as _ij2aep0j;
+import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/parent.dart'
+    as _ieub4zqi;
+import 'package:serverpod_test_server/src/generated/module_datatype.dart'
+    as _idarivwd;
+import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
+    as _iivg8skz;
+import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
+    as _icum80ls;
+import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
+    as _io906m8r;
+import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
+    as _i9ckso16;
+import 'package:serverpod_test_server/src/generated/object_with_enum.dart'
+    as _in2ouh3f;
+import 'package:serverpod_test_server/src/generated/object_with_enum_enhanced.dart'
+    as _itaf3m7v;
+import 'package:serverpod_test_server/src/generated/object_with_object.dart'
+    as _i120a7u7;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'package:serverpod_test_server/src/generated/required/model_with_required_field.dart'
+    as _iyoxtomg;
+import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field.dart'
+    as _iyi8ilhb;
+import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
+    as _i02xdnoq;
+import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
+    as _i5vgvlyt;
+import 'package:serverpod_test_server/src/generated/simple_data.dart'
+    as _i685tvwm;
+import 'package:serverpod_test_server/src/generated/simple_data_list.dart'
+    as _ihs20x3n;
+import 'package:serverpod_test_server/src/generated/test_enum.dart'
+    as _izdri23a;
+import 'package:serverpod_test_server/src/generated/types.dart' as _iuch3ck4;
+import 'package:serverpod_test_server/src/generated/types_record.dart'
+    as _ix95ig49;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
+import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
+    as _iyx9etqn;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -113,7 +117,7 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 ///
 /// [serverpodLoggingMode] The logging mode used when creating Serverpod. Defaults to `ServerpodLoggingMode.normal`
 ///
-/// [serverpodStartTimeout] The timeout to use when starting Serverpod, which connects to the database among other things. Defaults to `Duration(seconds: 30)`.
+/// [serverpodStartTimeout] The timeout to use when starting Serverpod, which connects to the database among other things. Defaults to `Duration(seconds: 120)`.
 ///
 /// [testServerOutputMode] Options for controlling test server output during test execution. Defaults to `TestServerOutputMode.normal`.
 /// ```dart
@@ -153,27 +157,27 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// isolate's cwd is not the server package root (e.g. running tests from a
 /// workspace parent directory) so config and migrations are still loaded
 /// from the right place.
-@_i1.isTestGroup
+@_ist.isTestGroup
 void withServerpod(
   String testGroupName,
-  _i1.TestClosure<TestEndpoints> testClosure, {
+  _ist.TestClosure<TestEndpoints> testClosure, {
   bool? applyMigrations,
-  _i2.ServerpodConfig Function(_i2.ServerpodConfig)? configOverride,
-  _i2.DatabaseInterceptor? databaseInterceptor,
+  _is.ServerpodConfig Function(_is.ServerpodConfig)? configOverride,
+  _is.DatabaseInterceptor? databaseInterceptor,
   bool? enableSessionLogging,
-  _i2.ExperimentalFeatures? experimentalFeatures,
-  _i1.RollbackDatabase? rollbackDatabase,
+  _is.ExperimentalFeatures? experimentalFeatures,
+  _ist.RollbackDatabase? rollbackDatabase,
   String? runMode,
-  _i2.RuntimeParametersListBuilder? runtimeParametersBuilder,
-  _i3.Directory? serverDirectory,
-  _i2.ServerpodLoggingMode? serverpodLoggingMode,
+  _is.RuntimeParametersListBuilder? runtimeParametersBuilder,
+  _idi.Directory? serverDirectory,
+  _is.ServerpodLoggingMode? serverpodLoggingMode,
   Duration? serverpodStartTimeout,
   List<String>? testGroupTagsOverride,
-  _i1.TestServerOutputMode? testServerOutputMode,
+  _ist.TestServerOutputMode? testServerOutputMode,
 }) {
-  _i1.buildWithServerpod<_InternalTestEndpoints>(
+  _ist.buildWithServerpod<_InternalTestEndpoints>(
     testGroupName,
-    _i1.TestServerpod(
+    _ist.TestServerpod(
       testEndpoints: _InternalTestEndpoints(),
       endpoints: Endpoints(),
       serializationManager: Protocol(),
@@ -329,11 +333,11 @@ class TestEndpoints {
 }
 
 class _InternalTestEndpoints extends TestEndpoints
-    implements _i1.InternalTestEndpoints {
+    implements _ist.InternalTestEndpoints {
   @override
   void initialize(
-    _i2.SerializationManager serializationManager,
-    _i2.EndpointDispatch endpoints,
+    _is.SerializationManager serializationManager,
+    _is.EndpointDispatch endpoints,
   ) {
     asyncTasks = _AsyncTasksEndpoint(
       endpoints,
@@ -604,18 +608,18 @@ class _AsyncTasksEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> insertRowToSimpleDataAfterDelay(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> insertRowToSimpleDataAfterDelay(
+    _ist.TestSessionBuilder sessionBuilder,
     int num,
     int seconds,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'asyncTasks',
             method: 'insertRowToSimpleDataAfterDelay',
           );
@@ -624,7 +628,7 @@ class _AsyncTasksEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'asyncTasks',
           methodName: 'insertRowToSimpleDataAfterDelay',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'num': num,
             'seconds': seconds,
           }),
@@ -635,7 +639,7 @@ class _AsyncTasksEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -643,13 +647,13 @@ class _AsyncTasksEndpoint {
     });
   }
 
-  _i4.Future<void> throwExceptionAfterDelay(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> throwExceptionAfterDelay(
+    _ist.TestSessionBuilder sessionBuilder,
     int seconds,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'asyncTasks',
             method: 'throwExceptionAfterDelay',
           );
@@ -658,7 +662,7 @@ class _AsyncTasksEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'asyncTasks',
           methodName: 'throwExceptionAfterDelay',
-          parameters: _i1.testObjectToJson({'seconds': seconds}),
+          parameters: _ist.testObjectToJson({'seconds': seconds}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -666,7 +670,7 @@ class _AsyncTasksEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -681,14 +685,16 @@ class _AuthenticationEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> removeAllUsers(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> removeAllUsers(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'authentication',
             method: 'removeAllUsers',
           );
@@ -697,7 +703,7 @@ class _AuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'authentication',
           methodName: 'removeAllUsers',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -705,7 +711,7 @@ class _AuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -713,10 +719,10 @@ class _AuthenticationEndpoint {
     });
   }
 
-  _i4.Future<int> countUsers(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<int> countUsers(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'authentication',
             method: 'countUsers',
           );
@@ -725,7 +731,7 @@ class _AuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'authentication',
           methodName: 'countUsers',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -733,7 +739,7 @@ class _AuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -741,14 +747,14 @@ class _AuthenticationEndpoint {
     });
   }
 
-  _i4.Future<void> createUser(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createUser(
+    _ist.TestSessionBuilder sessionBuilder,
     String email,
     String password,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'authentication',
             method: 'createUser',
           );
@@ -757,7 +763,7 @@ class _AuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'authentication',
           methodName: 'createUser',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'email': email,
             'password': password,
           }),
@@ -768,7 +774,7 @@ class _AuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -776,15 +782,15 @@ class _AuthenticationEndpoint {
     });
   }
 
-  _i4.Future<_i5.AuthenticationResponse> authenticate(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i1n3uhu0.AuthenticationResponse> authenticate(
+    _ist.TestSessionBuilder sessionBuilder,
     String email,
     String password, [
     List<String>? scopes,
   ]) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'authentication',
             method: 'authenticate',
           );
@@ -793,7 +799,7 @@ class _AuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'authentication',
           methodName: 'authenticate',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'email': email,
             'password': password,
             'scopes': scopes,
@@ -805,7 +811,7 @@ class _AuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i5.AuthenticationResponse>);
+                as _ida.Future<_i1n3uhu0.AuthenticationResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -813,10 +819,10 @@ class _AuthenticationEndpoint {
     });
   }
 
-  _i4.Future<void> signOut(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> signOut(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'authentication',
             method: 'signOut',
           );
@@ -825,7 +831,7 @@ class _AuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'authentication',
           methodName: 'signOut',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -833,7 +839,7 @@ class _AuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -841,14 +847,14 @@ class _AuthenticationEndpoint {
     });
   }
 
-  _i4.Future<void> updateScopes(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> updateScopes(
+    _ist.TestSessionBuilder sessionBuilder,
     int userId,
     List<String> scopes,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'authentication',
             method: 'updateScopes',
           );
@@ -857,7 +863,7 @@ class _AuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'authentication',
           methodName: 'updateScopes',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'userId': userId,
             'scopes': scopes,
           }),
@@ -868,7 +874,7 @@ class _AuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -883,17 +889,17 @@ class _BasicTypesEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<int?> testInt(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<int?> testInt(
+    _ist.TestSessionBuilder sessionBuilder,
     int? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testInt',
           );
@@ -902,7 +908,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testInt',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -910,7 +916,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int?>);
+                as _ida.Future<int?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -918,13 +924,13 @@ class _BasicTypesEndpoint {
     });
   }
 
-  _i4.Future<double?> testDouble(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<double?> testDouble(
+    _ist.TestSessionBuilder sessionBuilder,
     double? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testDouble',
           );
@@ -933,7 +939,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testDouble',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -941,7 +947,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<double?>);
+                as _ida.Future<double?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -949,13 +955,13 @@ class _BasicTypesEndpoint {
     });
   }
 
-  _i4.Future<bool?> testBool(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool?> testBool(
+    _ist.TestSessionBuilder sessionBuilder,
     bool? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testBool',
           );
@@ -964,7 +970,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testBool',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -972,7 +978,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool?>);
+                as _ida.Future<bool?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -980,13 +986,13 @@ class _BasicTypesEndpoint {
     });
   }
 
-  _i4.Future<DateTime?> testDateTime(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<DateTime?> testDateTime(
+    _ist.TestSessionBuilder sessionBuilder,
     DateTime? dateTime,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testDateTime',
           );
@@ -995,7 +1001,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testDateTime',
-          parameters: _i1.testObjectToJson({'dateTime': dateTime}),
+          parameters: _ist.testObjectToJson({'dateTime': dateTime}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1003,7 +1009,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<DateTime?>);
+                as _ida.Future<DateTime?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1011,13 +1017,13 @@ class _BasicTypesEndpoint {
     });
   }
 
-  _i4.Future<String?> testString(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String?> testString(
+    _ist.TestSessionBuilder sessionBuilder,
     String? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testString',
           );
@@ -1026,7 +1032,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testString',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1034,7 +1040,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1042,13 +1048,13 @@ class _BasicTypesEndpoint {
     });
   }
 
-  _i4.Future<_i6.ByteData?> testByteData(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i6.ByteData? value,
+  _ida.Future<_idt.ByteData?> testByteData(
+    _ist.TestSessionBuilder sessionBuilder,
+    _idt.ByteData? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testByteData',
           );
@@ -1057,7 +1063,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testByteData',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1065,7 +1071,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i6.ByteData?>);
+                as _ida.Future<_idt.ByteData?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1073,13 +1079,13 @@ class _BasicTypesEndpoint {
     });
   }
 
-  _i4.Future<Duration?> testDuration(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Duration?> testDuration(
+    _ist.TestSessionBuilder sessionBuilder,
     Duration? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testDuration',
           );
@@ -1088,7 +1094,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testDuration',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1096,7 +1102,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Duration?>);
+                as _ida.Future<Duration?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1104,13 +1110,13 @@ class _BasicTypesEndpoint {
     });
   }
 
-  _i4.Future<_i2.UuidValue?> testUuid(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i2.UuidValue? value,
+  _ida.Future<_is.UuidValue?> testUuid(
+    _ist.TestSessionBuilder sessionBuilder,
+    _is.UuidValue? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testUuid',
           );
@@ -1119,7 +1125,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testUuid',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1127,7 +1133,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i2.UuidValue?>);
+                as _ida.Future<_is.UuidValue?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1135,13 +1141,13 @@ class _BasicTypesEndpoint {
     });
   }
 
-  _i4.Future<Uri?> testUri(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Uri?> testUri(
+    _ist.TestSessionBuilder sessionBuilder,
     Uri? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testUri',
           );
@@ -1150,7 +1156,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testUri',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1158,7 +1164,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Uri?>);
+                as _ida.Future<Uri?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1166,13 +1172,13 @@ class _BasicTypesEndpoint {
     });
   }
 
-  _i4.Future<BigInt?> testBigInt(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<BigInt?> testBigInt(
+    _ist.TestSessionBuilder sessionBuilder,
     BigInt? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicTypes',
             method: 'testBigInt',
           );
@@ -1181,7 +1187,7 @@ class _BasicTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicTypes',
           methodName: 'testBigInt',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1189,7 +1195,7 @@ class _BasicTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<BigInt?>);
+                as _ida.Future<BigInt?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1204,19 +1210,19 @@ class _BasicTypesStreamingEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Stream<int?> testInt(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int?> value,
+  _ida.Stream<int?> testInt(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testInt',
             );
@@ -1240,15 +1246,15 @@ class _BasicTypesStreamingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<double?> testDouble(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<double?> value,
+  _ida.Stream<double?> testDouble(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<double?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<double?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<double?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testDouble',
             );
@@ -1272,15 +1278,15 @@ class _BasicTypesStreamingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<bool?> testBool(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<bool?> value,
+  _ida.Stream<bool?> testBool(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<bool?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<bool?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<bool?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testBool',
             );
@@ -1304,15 +1310,15 @@ class _BasicTypesStreamingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<DateTime?> testDateTime(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<DateTime?> value,
+  _ida.Stream<DateTime?> testDateTime(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<DateTime?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<DateTime?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<DateTime?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testDateTime',
             );
@@ -1336,15 +1342,15 @@ class _BasicTypesStreamingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<String?> testString(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<String?> value,
+  _ida.Stream<String?> testString(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<String?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<String?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testString',
             );
@@ -1368,15 +1374,15 @@ class _BasicTypesStreamingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i6.ByteData?> testByteData(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<_i6.ByteData?> value,
+  _ida.Stream<_idt.ByteData?> testByteData(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<_idt.ByteData?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i6.ByteData?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<_idt.ByteData?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testByteData',
             );
@@ -1400,15 +1406,15 @@ class _BasicTypesStreamingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<Duration?> testDuration(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<Duration?> value,
+  _ida.Stream<Duration?> testDuration(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<Duration?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<Duration?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<Duration?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testDuration',
             );
@@ -1432,15 +1438,15 @@ class _BasicTypesStreamingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i2.UuidValue?> testUuid(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<_i2.UuidValue?> value,
+  _ida.Stream<_is.UuidValue?> testUuid(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<_is.UuidValue?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i2.UuidValue?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<_is.UuidValue?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testUuid',
             );
@@ -1464,15 +1470,15 @@ class _BasicTypesStreamingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<Uri?> testUri(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<Uri?> value,
+  _ida.Stream<Uri?> testUri(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<Uri?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<Uri?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<Uri?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testUri',
             );
@@ -1496,15 +1502,15 @@ class _BasicTypesStreamingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<BigInt?> testBigInt(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<BigInt?> value,
+  _ida.Stream<BigInt?> testBigInt(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<BigInt?> value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<BigInt?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<BigInt?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'basicTypesStreaming',
               method: 'testBigInt',
             );
@@ -1535,14 +1541,14 @@ class _CloudStorageEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> reset(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> reset(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
             method: 'reset',
           );
@@ -1551,7 +1557,7 @@ class _CloudStorageEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
           methodName: 'reset',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1559,7 +1565,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1567,14 +1573,14 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<void> storePublicFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> storePublicFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
-    _i6.ByteData byteData,
+    _idt.ByteData byteData,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
             method: 'storePublicFile',
           );
@@ -1583,7 +1589,7 @@ class _CloudStorageEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
           methodName: 'storePublicFile',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'path': path,
             'byteData': byteData,
           }),
@@ -1594,7 +1600,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1602,13 +1608,13 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<_i6.ByteData?> retrievePublicFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_idt.ByteData> retrievePublicFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
             method: 'retrievePublicFile',
           );
@@ -1617,7 +1623,7 @@ class _CloudStorageEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
           methodName: 'retrievePublicFile',
-          parameters: _i1.testObjectToJson({'path': path}),
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1625,7 +1631,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i6.ByteData?>);
+                as _ida.Future<_idt.ByteData>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1633,13 +1639,13 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<bool?> existsPublicFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> existsPublicFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
             method: 'existsPublicFile',
           );
@@ -1648,7 +1654,7 @@ class _CloudStorageEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
           methodName: 'existsPublicFile',
-          parameters: _i1.testObjectToJson({'path': path}),
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1656,7 +1662,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool?>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1664,13 +1670,13 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<void> deletePublicFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> deletePublicFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
             method: 'deletePublicFile',
           );
@@ -1679,7 +1685,7 @@ class _CloudStorageEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
           methodName: 'deletePublicFile',
-          parameters: _i1.testObjectToJson({'path': path}),
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1687,7 +1693,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1695,22 +1701,22 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<String?> getPublicUrlForFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> publicDownloadUrlForFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
-            method: 'getPublicUrlForFile',
+            method: 'publicDownloadUrlForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
-          methodName: 'getPublicUrlForFile',
-          parameters: _i1.testObjectToJson({'path': path}),
+          methodName: 'publicDownloadUrlForFile',
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1718,7 +1724,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1726,22 +1732,22 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<String?> getDirectFilePostUrl(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> temporaryDownloadUrlForFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
-            method: 'getDirectFilePostUrl',
+            method: 'temporaryDownloadUrlForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
-          methodName: 'getDirectFilePostUrl',
-          parameters: _i1.testObjectToJson({'path': path}),
+          methodName: 'temporaryDownloadUrlForFile',
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1749,7 +1755,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1757,22 +1763,22 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<bool> verifyDirectFileUpload(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> createUploadDescriptionForFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
-            method: 'verifyDirectFileUpload',
+            method: 'createUploadDescriptionForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
-          methodName: 'verifyDirectFileUpload',
-          parameters: _i1.testObjectToJson({'path': path}),
+          methodName: 'createUploadDescriptionForFile',
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1780,7 +1786,38 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<bool> verifyUpload(
+    _ist.TestSessionBuilder sessionBuilder,
+    String path,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'cloudStorage',
+            method: 'verifyUpload',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'cloudStorage',
+          methodName: 'verifyUpload',
+          parameters: _ist.testObjectToJson({'path': path}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1795,18 +1832,18 @@ class _S3CloudStorageEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> storePublicFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> storePublicFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
-    _i6.ByteData byteData,
+    _idt.ByteData byteData,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
             method: 'storePublicFile',
           );
@@ -1815,7 +1852,7 @@ class _S3CloudStorageEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
           methodName: 'storePublicFile',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'path': path,
             'byteData': byteData,
           }),
@@ -1826,7 +1863,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1834,13 +1871,13 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<_i6.ByteData?> retrievePublicFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_idt.ByteData> retrievePublicFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
             method: 'retrievePublicFile',
           );
@@ -1849,7 +1886,7 @@ class _S3CloudStorageEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
           methodName: 'retrievePublicFile',
-          parameters: _i1.testObjectToJson({'path': path}),
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1857,7 +1894,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i6.ByteData?>);
+                as _ida.Future<_idt.ByteData>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1865,13 +1902,13 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<bool?> existsPublicFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> existsPublicFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
             method: 'existsPublicFile',
           );
@@ -1880,7 +1917,7 @@ class _S3CloudStorageEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
           methodName: 'existsPublicFile',
-          parameters: _i1.testObjectToJson({'path': path}),
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1888,7 +1925,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool?>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1896,13 +1933,13 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<void> deletePublicFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> deletePublicFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
             method: 'deletePublicFile',
           );
@@ -1911,7 +1948,7 @@ class _S3CloudStorageEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
           methodName: 'deletePublicFile',
-          parameters: _i1.testObjectToJson({'path': path}),
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1919,7 +1956,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1927,22 +1964,22 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<String?> getPublicUrlForFile(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> publicDownloadUrlForFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
-            method: 'getPublicUrlForFile',
+            method: 'publicDownloadUrlForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
-          methodName: 'getPublicUrlForFile',
-          parameters: _i1.testObjectToJson({'path': path}),
+          methodName: 'publicDownloadUrlForFile',
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1950,7 +1987,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1958,22 +1995,22 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<String?> getDirectFilePostUrl(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> createUploadDescriptionForFile(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
-            method: 'getDirectFilePostUrl',
+            method: 'createUploadDescriptionForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
-          methodName: 'getDirectFilePostUrl',
-          parameters: _i1.testObjectToJson({'path': path}),
+          methodName: 'createUploadDescriptionForFile',
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1981,7 +2018,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1989,22 +2026,22 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _i4.Future<bool> verifyDirectFileUpload(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> verifyUpload(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
-            method: 'verifyDirectFileUpload',
+            method: 'verifyUpload',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
-          methodName: 'verifyDirectFileUpload',
-          parameters: _i1.testObjectToJson({'path': path}),
+          methodName: 'verifyUpload',
+          parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2012,7 +2049,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2027,16 +2064,16 @@ class _CustomClassProtocolEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<_i7.ProtocolCustomClass> getProtocolField(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_ilwf0zl1.ProtocolCustomClass> getProtocolField(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customClassProtocol',
             method: 'getProtocolField',
           );
@@ -2045,7 +2082,7 @@ class _CustomClassProtocolEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customClassProtocol',
           methodName: 'getProtocolField',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2053,7 +2090,7 @@ class _CustomClassProtocolEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.ProtocolCustomClass>);
+                as _ida.Future<_ilwf0zl1.ProtocolCustomClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2068,17 +2105,17 @@ class _CustomTypesEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<_i7.CustomClass> returnCustomClass(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.CustomClass data,
+  _ida.Future<_ilwf0zl1.CustomClass> returnCustomClass(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.CustomClass data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnCustomClass',
           );
@@ -2087,7 +2124,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnCustomClass',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2095,7 +2132,7 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.CustomClass>);
+                as _ida.Future<_ilwf0zl1.CustomClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2103,13 +2140,13 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.CustomClass?> returnCustomClassNullable(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.CustomClass? data,
+  _ida.Future<_ilwf0zl1.CustomClass?> returnCustomClassNullable(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.CustomClass? data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnCustomClassNullable',
           );
@@ -2118,7 +2155,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnCustomClassNullable',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2126,7 +2163,7 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.CustomClass?>);
+                as _ida.Future<_ilwf0zl1.CustomClass?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2134,13 +2171,13 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.CustomClass2> returnCustomClass2(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.CustomClass2 data,
+  _ida.Future<_ilwf0zl1.CustomClass2> returnCustomClass2(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.CustomClass2 data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnCustomClass2',
           );
@@ -2149,7 +2186,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnCustomClass2',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2157,7 +2194,7 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.CustomClass2>);
+                as _ida.Future<_ilwf0zl1.CustomClass2>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2165,13 +2202,13 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.CustomClass2?> returnCustomClass2Nullable(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.CustomClass2? data,
+  _ida.Future<_ilwf0zl1.CustomClass2?> returnCustomClass2Nullable(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.CustomClass2? data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnCustomClass2Nullable',
           );
@@ -2180,7 +2217,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnCustomClass2Nullable',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2188,7 +2225,7 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.CustomClass2?>);
+                as _ida.Future<_ilwf0zl1.CustomClass2?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2196,13 +2233,13 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.ExternalCustomClass> returnExternalCustomClass(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.ExternalCustomClass data,
+  _ida.Future<_ilwf0zl1.ExternalCustomClass> returnExternalCustomClass(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.ExternalCustomClass data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnExternalCustomClass',
           );
@@ -2211,7 +2248,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnExternalCustomClass',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2219,7 +2256,7 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.ExternalCustomClass>);
+                as _ida.Future<_ilwf0zl1.ExternalCustomClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2227,13 +2264,13 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.ExternalCustomClass?> returnExternalCustomClassNullable(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.ExternalCustomClass? data,
+  _ida.Future<_ilwf0zl1.ExternalCustomClass?> returnExternalCustomClassNullable(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.ExternalCustomClass? data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnExternalCustomClassNullable',
           );
@@ -2242,7 +2279,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnExternalCustomClassNullable',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2250,7 +2287,7 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.ExternalCustomClass?>);
+                as _ida.Future<_ilwf0zl1.ExternalCustomClass?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2258,13 +2295,13 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.FreezedCustomClass> returnFreezedCustomClass(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.FreezedCustomClass data,
+  _ida.Future<_ilwf0zl1.FreezedCustomClass> returnFreezedCustomClass(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.FreezedCustomClass data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnFreezedCustomClass',
           );
@@ -2273,7 +2310,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnFreezedCustomClass',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2281,7 +2318,7 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.FreezedCustomClass>);
+                as _ida.Future<_ilwf0zl1.FreezedCustomClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2289,13 +2326,13 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.FreezedCustomClass?> returnFreezedCustomClassNullable(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.FreezedCustomClass? data,
+  _ida.Future<_ilwf0zl1.FreezedCustomClass?> returnFreezedCustomClassNullable(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.FreezedCustomClass? data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnFreezedCustomClassNullable',
           );
@@ -2304,7 +2341,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnFreezedCustomClassNullable',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2312,7 +2349,7 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.FreezedCustomClass?>);
+                as _ida.Future<_ilwf0zl1.FreezedCustomClass?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2320,14 +2357,14 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.CustomClassWithoutProtocolSerialization>
+  _ida.Future<_ilwf0zl1.CustomClassWithoutProtocolSerialization>
   returnCustomClassWithoutProtocolSerialization(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.CustomClassWithoutProtocolSerialization data,
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.CustomClassWithoutProtocolSerialization data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnCustomClassWithoutProtocolSerialization',
           );
@@ -2336,7 +2373,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnCustomClassWithoutProtocolSerialization',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2344,7 +2381,9 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.CustomClassWithoutProtocolSerialization>);
+                as _ida.Future<
+                  _ilwf0zl1.CustomClassWithoutProtocolSerialization
+                >);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2352,14 +2391,14 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.CustomClassWithProtocolSerialization>
+  _ida.Future<_ilwf0zl1.CustomClassWithProtocolSerialization>
   returnCustomClassWithProtocolSerialization(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.CustomClassWithProtocolSerialization data,
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.CustomClassWithProtocolSerialization data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnCustomClassWithProtocolSerialization',
           );
@@ -2368,7 +2407,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnCustomClassWithProtocolSerialization',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2376,7 +2415,7 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.CustomClassWithProtocolSerialization>);
+                as _ida.Future<_ilwf0zl1.CustomClassWithProtocolSerialization>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2384,14 +2423,14 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i4.Future<_i7.CustomClassWithProtocolSerializationMethod>
+  _ida.Future<_ilwf0zl1.CustomClassWithProtocolSerializationMethod>
   returnCustomClassWithProtocolSerializationMethod(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.CustomClassWithProtocolSerializationMethod data,
+    _ist.TestSessionBuilder sessionBuilder,
+    _ilwf0zl1.CustomClassWithProtocolSerializationMethod data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'customTypes',
             method: 'returnCustomClassWithProtocolSerializationMethod',
           );
@@ -2400,7 +2439,7 @@ class _CustomTypesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'customTypes',
           methodName: 'returnCustomClassWithProtocolSerializationMethod',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2408,7 +2447,9 @@ class _CustomTypesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.CustomClassWithProtocolSerializationMethod>);
+                as _ida.Future<
+                  _ilwf0zl1.CustomClassWithProtocolSerializationMethod
+                >);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2423,16 +2464,16 @@ class _BasicDatabase {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> deleteAllSimpleTestData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> deleteAllSimpleTestData(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'deleteAllSimpleTestData',
           );
@@ -2441,7 +2482,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'deleteAllSimpleTestData',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2449,7 +2490,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2457,13 +2498,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<void> deleteSimpleTestDataLessThan(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> deleteSimpleTestDataLessThan(
+    _ist.TestSessionBuilder sessionBuilder,
     int num,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'deleteSimpleTestDataLessThan',
           );
@@ -2472,7 +2513,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'deleteSimpleTestDataLessThan',
-          parameters: _i1.testObjectToJson({'num': num}),
+          parameters: _ist.testObjectToJson({'num': num}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2480,7 +2521,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2488,13 +2529,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<void> findAndDeleteSimpleTestData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> findAndDeleteSimpleTestData(
+    _ist.TestSessionBuilder sessionBuilder,
     int num,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'findAndDeleteSimpleTestData',
           );
@@ -2503,7 +2544,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'findAndDeleteSimpleTestData',
-          parameters: _i1.testObjectToJson({'num': num}),
+          parameters: _ist.testObjectToJson({'num': num}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2511,7 +2552,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2519,13 +2560,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<void> createSimpleTestData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createSimpleTestData(
+    _ist.TestSessionBuilder sessionBuilder,
     int numRows,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'createSimpleTestData',
           );
@@ -2534,7 +2575,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'createSimpleTestData',
-          parameters: _i1.testObjectToJson({'numRows': numRows}),
+          parameters: _ist.testObjectToJson({'numRows': numRows}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2542,7 +2583,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2550,14 +2591,14 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<List<_i8.SimpleData>> findSimpleData(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<List<_i685tvwm.SimpleData>> findSimpleData(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'findSimpleData',
           );
@@ -2566,7 +2607,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'findSimpleData',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'limit': limit,
             'offset': offset,
           }),
@@ -2577,7 +2618,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i8.SimpleData>>);
+                as _ida.Future<List<_i685tvwm.SimpleData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2585,13 +2626,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i8.SimpleData?> findFirstRowSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i685tvwm.SimpleData?> findFirstRowSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
     int num,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'findFirstRowSimpleData',
           );
@@ -2600,7 +2641,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'findFirstRowSimpleData',
-          parameters: _i1.testObjectToJson({'num': num}),
+          parameters: _ist.testObjectToJson({'num': num}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2608,7 +2649,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData?>);
+                as _ida.Future<_i685tvwm.SimpleData?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2616,13 +2657,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i8.SimpleData?> findByIdSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i685tvwm.SimpleData?> findByIdSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'findByIdSimpleData',
           );
@@ -2631,7 +2672,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'findByIdSimpleData',
-          parameters: _i1.testObjectToJson({'id': id}),
+          parameters: _ist.testObjectToJson({'id': id}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2639,7 +2680,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData?>);
+                as _ida.Future<_i685tvwm.SimpleData?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2647,16 +2688,16 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i9.SimpleDataList?> findSimpleDataRowsLessThan(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_ihs20x3n.SimpleDataList?> findSimpleDataRowsLessThan(
+    _ist.TestSessionBuilder sessionBuilder,
     int num,
     int offset,
     int limit,
     bool descending,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'findSimpleDataRowsLessThan',
           );
@@ -2665,7 +2706,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'findSimpleDataRowsLessThan',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'num': num,
             'offset': offset,
             'limit': limit,
@@ -2678,7 +2719,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i9.SimpleDataList?>);
+                as _ida.Future<_ihs20x3n.SimpleDataList?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2686,13 +2727,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i8.SimpleData> insertRowSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.SimpleData simpleData,
+  _ida.Future<_i685tvwm.SimpleData> insertRowSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    _i685tvwm.SimpleData simpleData,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'insertRowSimpleData',
           );
@@ -2701,7 +2742,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'insertRowSimpleData',
-          parameters: _i1.testObjectToJson({'simpleData': simpleData}),
+          parameters: _ist.testObjectToJson({'simpleData': simpleData}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2709,7 +2750,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData>);
+                as _ida.Future<_i685tvwm.SimpleData>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2717,13 +2758,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i8.SimpleData> updateRowSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.SimpleData simpleData,
+  _ida.Future<_i685tvwm.SimpleData> updateRowSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    _i685tvwm.SimpleData simpleData,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'updateRowSimpleData',
           );
@@ -2732,7 +2773,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'updateRowSimpleData',
-          parameters: _i1.testObjectToJson({'simpleData': simpleData}),
+          parameters: _ist.testObjectToJson({'simpleData': simpleData}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2740,7 +2781,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData>);
+                as _ida.Future<_i685tvwm.SimpleData>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2748,13 +2789,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<int> deleteRowSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.SimpleData simpleData,
+  _ida.Future<int> deleteRowSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    _i685tvwm.SimpleData simpleData,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'deleteRowSimpleData',
           );
@@ -2763,7 +2804,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'deleteRowSimpleData',
-          parameters: _i1.testObjectToJson({'simpleData': simpleData}),
+          parameters: _ist.testObjectToJson({'simpleData': simpleData}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2771,7 +2812,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2779,12 +2820,12 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<List<int>> deleteWhereSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<int>> deleteWhereSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'deleteWhereSimpleData',
           );
@@ -2793,7 +2834,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'deleteWhereSimpleData',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2801,7 +2842,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<int>>);
+                as _ida.Future<List<int>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2809,10 +2850,12 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<int> countSimpleData(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<int> countSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'countSimpleData',
           );
@@ -2821,7 +2864,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'countSimpleData',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2829,7 +2872,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2837,13 +2880,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i10.Types> insertTypes(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i10.Types value,
+  _ida.Future<_iuch3ck4.Types> insertTypes(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iuch3ck4.Types value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'insertTypes',
           );
@@ -2852,7 +2895,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'insertTypes',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2860,7 +2903,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i10.Types>);
+                as _ida.Future<_iuch3ck4.Types>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2868,13 +2911,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i10.Types> updateTypes(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i10.Types value,
+  _ida.Future<_iuch3ck4.Types> updateTypes(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iuch3ck4.Types value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'updateTypes',
           );
@@ -2883,7 +2926,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'updateTypes',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2891,7 +2934,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i10.Types>);
+                as _ida.Future<_iuch3ck4.Types>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2899,10 +2942,12 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<int?> countTypesRows(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<int?> countTypesRows(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'countTypesRows',
           );
@@ -2911,7 +2956,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'countTypesRows',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2919,7 +2964,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int?>);
+                as _ida.Future<int?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2927,12 +2972,12 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<List<int>> deleteAllInTypes(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<int>> deleteAllInTypes(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'deleteAllInTypes',
           );
@@ -2941,7 +2986,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'deleteAllInTypes',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2949,7 +2994,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<int>>);
+                as _ida.Future<List<int>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2957,13 +3002,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i10.Types?> getTypes(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_iuch3ck4.Types?> getTypes(
+    _ist.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'getTypes',
           );
@@ -2972,7 +3017,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'getTypes',
-          parameters: _i1.testObjectToJson({'id': id}),
+          parameters: _ist.testObjectToJson({'id': id}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2980,7 +3025,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i10.Types?>);
+                as _ida.Future<_iuch3ck4.Types?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2988,13 +3033,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<int?> getTypesRawQuery(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<int?> getTypesRawQuery(
+    _ist.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'getTypesRawQuery',
           );
@@ -3003,7 +3048,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'getTypesRawQuery',
-          parameters: _i1.testObjectToJson({'id': id}),
+          parameters: _ist.testObjectToJson({'id': id}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3011,7 +3056,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int?>);
+                as _ida.Future<int?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3019,13 +3064,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i11.ObjectWithEnum> storeObjectWithEnum(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i11.ObjectWithEnum object,
+  _ida.Future<_in2ouh3f.ObjectWithEnum> storeObjectWithEnum(
+    _ist.TestSessionBuilder sessionBuilder,
+    _in2ouh3f.ObjectWithEnum object,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'storeObjectWithEnum',
           );
@@ -3034,7 +3079,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'storeObjectWithEnum',
-          parameters: _i1.testObjectToJson({'object': object}),
+          parameters: _ist.testObjectToJson({'object': object}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3042,7 +3087,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i11.ObjectWithEnum>);
+                as _ida.Future<_in2ouh3f.ObjectWithEnum>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3050,13 +3095,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i11.ObjectWithEnum?> getObjectWithEnum(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_in2ouh3f.ObjectWithEnum?> getObjectWithEnum(
+    _ist.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'getObjectWithEnum',
           );
@@ -3065,7 +3110,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'getObjectWithEnum',
-          parameters: _i1.testObjectToJson({'id': id}),
+          parameters: _ist.testObjectToJson({'id': id}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3073,7 +3118,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i11.ObjectWithEnum?>);
+                as _ida.Future<_in2ouh3f.ObjectWithEnum?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3081,13 +3126,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i12.ObjectWithEnumEnhanced> storeObjectWithEnumEnhanced(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i12.ObjectWithEnumEnhanced object,
+  _ida.Future<_itaf3m7v.ObjectWithEnumEnhanced> storeObjectWithEnumEnhanced(
+    _ist.TestSessionBuilder sessionBuilder,
+    _itaf3m7v.ObjectWithEnumEnhanced object,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'storeObjectWithEnumEnhanced',
           );
@@ -3096,7 +3141,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'storeObjectWithEnumEnhanced',
-          parameters: _i1.testObjectToJson({'object': object}),
+          parameters: _ist.testObjectToJson({'object': object}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3104,7 +3149,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i12.ObjectWithEnumEnhanced>);
+                as _ida.Future<_itaf3m7v.ObjectWithEnumEnhanced>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3112,13 +3157,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i12.ObjectWithEnumEnhanced?> getObjectWithEnumEnhanced(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_itaf3m7v.ObjectWithEnumEnhanced?> getObjectWithEnumEnhanced(
+    _ist.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'getObjectWithEnumEnhanced',
           );
@@ -3127,7 +3172,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'getObjectWithEnumEnhanced',
-          parameters: _i1.testObjectToJson({'id': id}),
+          parameters: _ist.testObjectToJson({'id': id}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3135,7 +3180,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i12.ObjectWithEnumEnhanced?>);
+                as _ida.Future<_itaf3m7v.ObjectWithEnumEnhanced?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3143,13 +3188,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i13.ObjectWithObject> storeObjectWithObject(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i13.ObjectWithObject object,
+  _ida.Future<_i120a7u7.ObjectWithObject> storeObjectWithObject(
+    _ist.TestSessionBuilder sessionBuilder,
+    _i120a7u7.ObjectWithObject object,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'storeObjectWithObject',
           );
@@ -3158,7 +3203,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'storeObjectWithObject',
-          parameters: _i1.testObjectToJson({'object': object}),
+          parameters: _ist.testObjectToJson({'object': object}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3166,7 +3211,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i13.ObjectWithObject>);
+                as _ida.Future<_i120a7u7.ObjectWithObject>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3174,13 +3219,13 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<_i13.ObjectWithObject?> getObjectWithObject(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i120a7u7.ObjectWithObject?> getObjectWithObject(
+    _ist.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'getObjectWithObject',
           );
@@ -3189,7 +3234,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'getObjectWithObject',
-          parameters: _i1.testObjectToJson({'id': id}),
+          parameters: _ist.testObjectToJson({'id': id}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3197,7 +3242,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i13.ObjectWithObject?>);
+                as _ida.Future<_i120a7u7.ObjectWithObject?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3205,10 +3250,10 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<int> deleteAll(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<int> deleteAll(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'deleteAll',
           );
@@ -3217,7 +3262,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'deleteAll',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3225,7 +3270,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3233,12 +3278,12 @@ class _BasicDatabase {
     });
   }
 
-  _i4.Future<bool> testByteDataStore(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> testByteDataStore(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'basicDatabase',
             method: 'testByteDataStore',
           );
@@ -3247,7 +3292,7 @@ class _BasicDatabase {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'basicDatabase',
           methodName: 'testByteDataStore',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3255,7 +3300,7 @@ class _BasicDatabase {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3270,17 +3315,17 @@ class _TransactionsDatabaseEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> removeRow(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> removeRow(
+    _ist.TestSessionBuilder sessionBuilder,
     int num,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'transactionsDatabase',
             method: 'removeRow',
           );
@@ -3289,7 +3334,7 @@ class _TransactionsDatabaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'transactionsDatabase',
           methodName: 'removeRow',
-          parameters: _i1.testObjectToJson({'num': num}),
+          parameters: _ist.testObjectToJson({'num': num}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3297,7 +3342,7 @@ class _TransactionsDatabaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3305,15 +3350,15 @@ class _TransactionsDatabaseEndpoint {
     });
   }
 
-  _i4.Future<bool> updateInsertDelete(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> updateInsertDelete(
+    _ist.TestSessionBuilder sessionBuilder,
     int numUpdate,
     int numInsert,
     int numDelete,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'transactionsDatabase',
             method: 'updateInsertDelete',
           );
@@ -3322,7 +3367,7 @@ class _TransactionsDatabaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'transactionsDatabase',
           methodName: 'updateInsertDelete',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'numUpdate': numUpdate,
             'numInsert': numInsert,
             'numDelete': numDelete,
@@ -3334,7 +3379,7 @@ class _TransactionsDatabaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3349,18 +3394,18 @@ class _DeprecationEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
   @deprecated
-  _i4.Future<void> setGlobalDouble(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> setGlobalDouble(
+    _ist.TestSessionBuilder sessionBuilder,
     double? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'deprecation',
             method: 'setGlobalDouble',
           );
@@ -3369,7 +3414,7 @@ class _DeprecationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'deprecation',
           methodName: 'setGlobalDouble',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3377,7 +3422,7 @@ class _DeprecationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3386,12 +3431,12 @@ class _DeprecationEndpoint {
   }
 
   @Deprecated('Marking endpoint method as deprecated')
-  _i4.Future<double> getGlobalDouble(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<double> getGlobalDouble(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'deprecation',
             method: 'getGlobalDouble',
           );
@@ -3400,7 +3445,7 @@ class _DeprecationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'deprecation',
           methodName: 'getGlobalDouble',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3408,7 +3453,7 @@ class _DeprecationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<double>);
+                as _ida.Future<double>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3416,13 +3461,13 @@ class _DeprecationEndpoint {
     });
   }
 
-  _i4.Future<String> methodWithDeprecatedParam(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> methodWithDeprecatedParam(
+    _ist.TestSessionBuilder sessionBuilder,
     @deprecated String deprecatedParam,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'deprecation',
             method: 'methodWithDeprecatedParam',
           );
@@ -3431,7 +3476,7 @@ class _DeprecationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'deprecation',
           methodName: 'methodWithDeprecatedParam',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'deprecatedParam': deprecatedParam,
           }),
           serializationManager: _serializationManager,
@@ -3441,7 +3486,7 @@ class _DeprecationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3449,13 +3494,13 @@ class _DeprecationEndpoint {
     });
   }
 
-  _i4.Future<String> methodWithDeprecatedParamMessage(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> methodWithDeprecatedParamMessage(
+    _ist.TestSessionBuilder sessionBuilder,
     @Deprecated('This parameter is deprecated') String deprecatedParam,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'deprecation',
             method: 'methodWithDeprecatedParamMessage',
           );
@@ -3464,7 +3509,7 @@ class _DeprecationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'deprecation',
           methodName: 'methodWithDeprecatedParamMessage',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'deprecatedParam': deprecatedParam,
           }),
           serializationManager: _serializationManager,
@@ -3474,7 +3519,7 @@ class _DeprecationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3482,14 +3527,14 @@ class _DeprecationEndpoint {
     });
   }
 
-  _i4.Future<String> methodWithMixedParams(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> methodWithMixedParams(
+    _ist.TestSessionBuilder sessionBuilder,
     String normalParam,
     @deprecated String deprecatedParam,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'deprecation',
             method: 'methodWithMixedParams',
           );
@@ -3498,7 +3543,7 @@ class _DeprecationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'deprecation',
           methodName: 'methodWithMixedParams',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'normalParam': normalParam,
             'deprecatedParam': deprecatedParam,
           }),
@@ -3509,7 +3554,7 @@ class _DeprecationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3517,13 +3562,13 @@ class _DeprecationEndpoint {
     });
   }
 
-  _i4.Future<String> methodWithOptionalDeprecatedParam(
-    _i1.TestSessionBuilder sessionBuilder, [
+  _ida.Future<String> methodWithOptionalDeprecatedParam(
+    _ist.TestSessionBuilder sessionBuilder, [
     @deprecated String? deprecatedParam,
   ]) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'deprecation',
             method: 'methodWithOptionalDeprecatedParam',
           );
@@ -3532,7 +3577,7 @@ class _DeprecationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'deprecation',
           methodName: 'methodWithOptionalDeprecatedParam',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'deprecatedParam': deprecatedParam,
           }),
           serializationManager: _serializationManager,
@@ -3542,7 +3587,7 @@ class _DeprecationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3550,14 +3595,14 @@ class _DeprecationEndpoint {
     });
   }
 
-  _i4.Future<String> methodWithNamedDeprecatedParam(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<String> methodWithNamedDeprecatedParam(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String normalParam,
     @deprecated String? deprecatedParam,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'deprecation',
             method: 'methodWithNamedDeprecatedParam',
           );
@@ -3566,7 +3611,7 @@ class _DeprecationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'deprecation',
           methodName: 'methodWithNamedDeprecatedParam',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'normalParam': normalParam,
             'deprecatedParam': deprecatedParam,
           }),
@@ -3577,7 +3622,7 @@ class _DeprecationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3592,16 +3637,16 @@ class _DiagnosticEventTestEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> submitExceptionEvent(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> submitExceptionEvent(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'diagnosticEventTest',
             method: 'submitExceptionEvent',
           );
@@ -3610,7 +3655,7 @@ class _DiagnosticEventTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'diagnosticEventTest',
           methodName: 'submitExceptionEvent',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3618,7 +3663,7 @@ class _DiagnosticEventTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3633,16 +3678,16 @@ class _EchoRequestEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String?> echoAuthenticationKey(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String?> echoAuthenticationKey(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'echoRequest',
             method: 'echoAuthenticationKey',
           );
@@ -3651,7 +3696,7 @@ class _EchoRequestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'echoRequest',
           methodName: 'echoAuthenticationKey',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3659,7 +3704,7 @@ class _EchoRequestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3667,13 +3712,13 @@ class _EchoRequestEndpoint {
     });
   }
 
-  _i4.Future<List<String>?> echoHttpHeader(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<String>?> echoHttpHeader(
+    _ist.TestSessionBuilder sessionBuilder,
     String headerName,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'echoRequest',
             method: 'echoHttpHeader',
           );
@@ -3682,7 +3727,7 @@ class _EchoRequestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'echoRequest',
           methodName: 'echoHttpHeader',
-          parameters: _i1.testObjectToJson({'headerName': headerName}),
+          parameters: _ist.testObjectToJson({'headerName': headerName}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3690,7 +3735,7 @@ class _EchoRequestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<String>?>);
+                as _ida.Future<List<String>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3705,17 +3750,17 @@ class _EchoRequiredFieldEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<_i14.ModelWithRequiredField> echoModel(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i14.ModelWithRequiredField model,
+  _ida.Future<_iyoxtomg.ModelWithRequiredField> echoModel(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iyoxtomg.ModelWithRequiredField model,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'echoRequiredField',
             method: 'echoModel',
           );
@@ -3724,7 +3769,7 @@ class _EchoRequiredFieldEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'echoRequiredField',
           methodName: 'echoModel',
-          parameters: _i1.testObjectToJson({'model': model}),
+          parameters: _ist.testObjectToJson({'model': model}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3732,7 +3777,7 @@ class _EchoRequiredFieldEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i14.ModelWithRequiredField>);
+                as _ida.Future<_iyoxtomg.ModelWithRequiredField>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3740,10 +3785,12 @@ class _EchoRequiredFieldEndpoint {
     });
   }
 
-  _i4.Future<void> throwException(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> throwException(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'echoRequiredField',
             method: 'throwException',
           );
@@ -3752,7 +3799,7 @@ class _EchoRequiredFieldEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'echoRequiredField',
           methodName: 'throwException',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3760,7 +3807,7 @@ class _EchoRequiredFieldEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3775,18 +3822,18 @@ class _EmailAuthTestMethods {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String?> findVerificationCode(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String?> findVerificationCode(
+    _ist.TestSessionBuilder sessionBuilder,
     String userName,
     String email,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'emailAuthTestMethods',
             method: 'findVerificationCode',
           );
@@ -3795,7 +3842,7 @@ class _EmailAuthTestMethods {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'emailAuthTestMethods',
           methodName: 'findVerificationCode',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'userName': userName,
             'email': email,
           }),
@@ -3806,7 +3853,7 @@ class _EmailAuthTestMethods {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3814,13 +3861,13 @@ class _EmailAuthTestMethods {
     });
   }
 
-  _i4.Future<String?> findResetCode(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String?> findResetCode(
+    _ist.TestSessionBuilder sessionBuilder,
     String email,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'emailAuthTestMethods',
             method: 'findResetCode',
           );
@@ -3829,7 +3876,7 @@ class _EmailAuthTestMethods {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'emailAuthTestMethods',
           methodName: 'findResetCode',
-          parameters: _i1.testObjectToJson({'email': email}),
+          parameters: _ist.testObjectToJson({'email': email}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3837,7 +3884,7 @@ class _EmailAuthTestMethods {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3845,10 +3892,10 @@ class _EmailAuthTestMethods {
     });
   }
 
-  _i4.Future<void> tearDown(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> tearDown(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'emailAuthTestMethods',
             method: 'tearDown',
           );
@@ -3857,7 +3904,7 @@ class _EmailAuthTestMethods {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'emailAuthTestMethods',
           methodName: 'tearDown',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3865,7 +3912,7 @@ class _EmailAuthTestMethods {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3873,15 +3920,15 @@ class _EmailAuthTestMethods {
     });
   }
 
-  _i4.Future<bool> createUser(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> createUser(
+    _ist.TestSessionBuilder sessionBuilder,
     String userName,
     String email,
     String password,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'emailAuthTestMethods',
             method: 'createUser',
           );
@@ -3890,7 +3937,7 @@ class _EmailAuthTestMethods {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'emailAuthTestMethods',
           methodName: 'createUser',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'userName': userName,
             'email': email,
             'password': password,
@@ -3902,7 +3949,7 @@ class _EmailAuthTestMethods {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3917,16 +3964,16 @@ class _ConcreteBaseEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> virtualMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> virtualMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteBase',
             method: 'virtualMethod',
           );
@@ -3935,7 +3982,7 @@ class _ConcreteBaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteBase',
           methodName: 'virtualMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3943,7 +3990,7 @@ class _ConcreteBaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3951,12 +3998,12 @@ class _ConcreteBaseEndpoint {
     });
   }
 
-  _i4.Future<String> concreteMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> concreteMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteBase',
             method: 'concreteMethod',
           );
@@ -3965,7 +4012,7 @@ class _ConcreteBaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteBase',
           methodName: 'concreteMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3973,7 +4020,7 @@ class _ConcreteBaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3981,12 +4028,12 @@ class _ConcreteBaseEndpoint {
     });
   }
 
-  _i4.Future<String> abstractBaseMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> abstractBaseMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteBase',
             method: 'abstractBaseMethod',
           );
@@ -3995,7 +4042,7 @@ class _ConcreteBaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteBase',
           methodName: 'abstractBaseMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4003,7 +4050,7 @@ class _ConcreteBaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4011,14 +4058,14 @@ class _ConcreteBaseEndpoint {
     });
   }
 
-  _i4.Stream<String> abstractBaseStreamMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<String> abstractBaseStreamMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<String>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'concreteBase',
               method: 'abstractBaseStreamMethod',
             );
@@ -4049,16 +4096,16 @@ class _ConcreteSubClassEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> subClassVirtualMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> subClassVirtualMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteSubClass',
             method: 'subClassVirtualMethod',
           );
@@ -4067,7 +4114,7 @@ class _ConcreteSubClassEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteSubClass',
           methodName: 'subClassVirtualMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4075,7 +4122,7 @@ class _ConcreteSubClassEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4083,12 +4130,12 @@ class _ConcreteSubClassEndpoint {
     });
   }
 
-  _i4.Future<String> virtualMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> virtualMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteSubClass',
             method: 'virtualMethod',
           );
@@ -4097,7 +4144,7 @@ class _ConcreteSubClassEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteSubClass',
           methodName: 'virtualMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4105,7 +4152,7 @@ class _ConcreteSubClassEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4113,12 +4160,12 @@ class _ConcreteSubClassEndpoint {
     });
   }
 
-  _i4.Future<String> concreteMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> concreteMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteSubClass',
             method: 'concreteMethod',
           );
@@ -4127,7 +4174,7 @@ class _ConcreteSubClassEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteSubClass',
           methodName: 'concreteMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4135,7 +4182,7 @@ class _ConcreteSubClassEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4143,12 +4190,12 @@ class _ConcreteSubClassEndpoint {
     });
   }
 
-  _i4.Future<String> abstractBaseMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> abstractBaseMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteSubClass',
             method: 'abstractBaseMethod',
           );
@@ -4157,7 +4204,7 @@ class _ConcreteSubClassEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteSubClass',
           methodName: 'abstractBaseMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4165,7 +4212,7 @@ class _ConcreteSubClassEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4173,14 +4220,14 @@ class _ConcreteSubClassEndpoint {
     });
   }
 
-  _i4.Stream<String> abstractBaseStreamMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<String> abstractBaseStreamMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<String>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'concreteSubClass',
               method: 'abstractBaseStreamMethod',
             );
@@ -4211,16 +4258,16 @@ class _IndependentEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> subClassVirtualMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> subClassVirtualMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'independent',
             method: 'subClassVirtualMethod',
           );
@@ -4229,7 +4276,7 @@ class _IndependentEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'independent',
           methodName: 'subClassVirtualMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4237,7 +4284,7 @@ class _IndependentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4245,12 +4292,12 @@ class _IndependentEndpoint {
     });
   }
 
-  _i4.Future<String> virtualMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> virtualMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'independent',
             method: 'virtualMethod',
           );
@@ -4259,7 +4306,7 @@ class _IndependentEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'independent',
           methodName: 'virtualMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4267,7 +4314,7 @@ class _IndependentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4275,12 +4322,12 @@ class _IndependentEndpoint {
     });
   }
 
-  _i4.Future<String> concreteMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> concreteMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'independent',
             method: 'concreteMethod',
           );
@@ -4289,7 +4336,7 @@ class _IndependentEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'independent',
           methodName: 'concreteMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4297,7 +4344,7 @@ class _IndependentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4305,12 +4352,12 @@ class _IndependentEndpoint {
     });
   }
 
-  _i4.Future<String> abstractBaseMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> abstractBaseMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'independent',
             method: 'abstractBaseMethod',
           );
@@ -4319,7 +4366,7 @@ class _IndependentEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'independent',
           methodName: 'abstractBaseMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4327,7 +4374,7 @@ class _IndependentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4335,14 +4382,14 @@ class _IndependentEndpoint {
     });
   }
 
-  _i4.Stream<String> abstractBaseStreamMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<String> abstractBaseStreamMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<String>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'independent',
               method: 'abstractBaseStreamMethod',
             );
@@ -4373,16 +4420,16 @@ class _ConcreteFromModuleAbstractBaseEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> virtualMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> virtualMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteFromModuleAbstractBase',
             method: 'virtualMethod',
           );
@@ -4391,7 +4438,7 @@ class _ConcreteFromModuleAbstractBaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteFromModuleAbstractBase',
           methodName: 'virtualMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4399,7 +4446,7 @@ class _ConcreteFromModuleAbstractBaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4407,12 +4454,12 @@ class _ConcreteFromModuleAbstractBaseEndpoint {
     });
   }
 
-  _i4.Future<String> abstractBaseMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> abstractBaseMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteFromModuleAbstractBase',
             method: 'abstractBaseMethod',
           );
@@ -4421,7 +4468,7 @@ class _ConcreteFromModuleAbstractBaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteFromModuleAbstractBase',
           methodName: 'abstractBaseMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4429,7 +4476,7 @@ class _ConcreteFromModuleAbstractBaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4444,16 +4491,16 @@ class _ConcreteModuleBaseEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> virtualMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> virtualMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteModuleBase',
             method: 'virtualMethod',
           );
@@ -4462,7 +4509,7 @@ class _ConcreteModuleBaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteModuleBase',
           methodName: 'virtualMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4470,7 +4517,7 @@ class _ConcreteModuleBaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4478,12 +4525,12 @@ class _ConcreteModuleBaseEndpoint {
     });
   }
 
-  _i4.Future<String> concreteMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> concreteMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteModuleBase',
             method: 'concreteMethod',
           );
@@ -4492,7 +4539,7 @@ class _ConcreteModuleBaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteModuleBase',
           methodName: 'concreteMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4500,7 +4547,7 @@ class _ConcreteModuleBaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4508,12 +4555,12 @@ class _ConcreteModuleBaseEndpoint {
     });
   }
 
-  _i4.Future<String> abstractBaseMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> abstractBaseMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'concreteModuleBase',
             method: 'abstractBaseMethod',
           );
@@ -4522,7 +4569,7 @@ class _ConcreteModuleBaseEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'concreteModuleBase',
           methodName: 'abstractBaseMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4530,7 +4577,7 @@ class _ConcreteModuleBaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4552,17 +4599,17 @@ class _MyLoggedInEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> echo(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> echo(
+    _ist.TestSessionBuilder sessionBuilder,
     String value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'myLoggedIn',
             method: 'echo',
           );
@@ -4571,7 +4618,7 @@ class _MyLoggedInEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'myLoggedIn',
           methodName: 'echo',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4579,7 +4626,7 @@ class _MyLoggedInEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4601,17 +4648,17 @@ class _MyAdminEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> echo(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> echo(
+    _ist.TestSessionBuilder sessionBuilder,
     String value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'myAdmin',
             method: 'echo',
           );
@@ -4620,7 +4667,7 @@ class _MyAdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'myAdmin',
           methodName: 'echo',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4628,7 +4675,7 @@ class _MyAdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4643,17 +4690,17 @@ class _MyConcreteAdminEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> echo(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> echo(
+    _ist.TestSessionBuilder sessionBuilder,
     String value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'myConcreteAdmin',
             method: 'echo',
           );
@@ -4662,7 +4709,7 @@ class _MyConcreteAdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'myConcreteAdmin',
           methodName: 'echo',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4670,7 +4717,7 @@ class _MyConcreteAdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4685,16 +4732,16 @@ class _ExceptionTestEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> throwNormalException(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> throwNormalException(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'exceptionTest',
             method: 'throwNormalException',
           );
@@ -4703,7 +4750,7 @@ class _ExceptionTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'exceptionTest',
           methodName: 'throwNormalException',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4711,7 +4758,7 @@ class _ExceptionTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4719,12 +4766,12 @@ class _ExceptionTestEndpoint {
     });
   }
 
-  _i4.Future<String> throwExceptionWithData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> throwExceptionWithData(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'exceptionTest',
             method: 'throwExceptionWithData',
           );
@@ -4733,7 +4780,7 @@ class _ExceptionTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'exceptionTest',
           methodName: 'throwExceptionWithData',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4741,7 +4788,7 @@ class _ExceptionTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4749,12 +4796,12 @@ class _ExceptionTestEndpoint {
     });
   }
 
-  _i4.Future<String> workingWithoutException(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> workingWithoutException(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'exceptionTest',
             method: 'workingWithoutException',
           );
@@ -4763,7 +4810,7 @@ class _ExceptionTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'exceptionTest',
           methodName: 'workingWithoutException',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4771,7 +4818,7 @@ class _ExceptionTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4786,14 +4833,14 @@ class _FailedCallsEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> failedCall(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> failedCall(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'failedCalls',
             method: 'failedCall',
           );
@@ -4802,7 +4849,7 @@ class _FailedCallsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'failedCalls',
           methodName: 'failedCall',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4810,7 +4857,7 @@ class _FailedCallsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4818,12 +4865,12 @@ class _FailedCallsEndpoint {
     });
   }
 
-  _i4.Future<void> failedDatabaseQuery(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> failedDatabaseQuery(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'failedCalls',
             method: 'failedDatabaseQuery',
           );
@@ -4832,7 +4879,7 @@ class _FailedCallsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'failedCalls',
           methodName: 'failedDatabaseQuery',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4840,7 +4887,7 @@ class _FailedCallsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4848,12 +4895,12 @@ class _FailedCallsEndpoint {
     });
   }
 
-  _i4.Future<bool> failedDatabaseQueryCaughtException(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> failedDatabaseQueryCaughtException(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'failedCalls',
             method: 'failedDatabaseQueryCaughtException',
           );
@@ -4862,7 +4909,7 @@ class _FailedCallsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'failedCalls',
           methodName: 'failedDatabaseQueryCaughtException',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4870,7 +4917,7 @@ class _FailedCallsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4878,10 +4925,10 @@ class _FailedCallsEndpoint {
     });
   }
 
-  _i4.Future<void> slowCall(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> slowCall(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'failedCalls',
             method: 'slowCall',
           );
@@ -4890,7 +4937,7 @@ class _FailedCallsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'failedCalls',
           methodName: 'slowCall',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4898,7 +4945,7 @@ class _FailedCallsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4906,12 +4953,12 @@ class _FailedCallsEndpoint {
     });
   }
 
-  _i4.Future<void> caughtException(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> caughtException(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'failedCalls',
             method: 'caughtException',
           );
@@ -4920,7 +4967,7 @@ class _FailedCallsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'failedCalls',
           methodName: 'caughtException',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4928,7 +4975,7 @@ class _FailedCallsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4943,17 +4990,17 @@ class _FieldScopesEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> storeObject(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i15.ObjectFieldScopes object,
+  _ida.Future<void> storeObject(
+    _ist.TestSessionBuilder sessionBuilder,
+    _io906m8r.ObjectFieldScopes object,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'fieldScopes',
             method: 'storeObject',
           );
@@ -4962,7 +5009,7 @@ class _FieldScopesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'fieldScopes',
           methodName: 'storeObject',
-          parameters: _i1.testObjectToJson({'object': object}),
+          parameters: _ist.testObjectToJson({'object': object}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -4970,7 +5017,7 @@ class _FieldScopesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4978,12 +5025,12 @@ class _FieldScopesEndpoint {
     });
   }
 
-  _i4.Future<_i15.ObjectFieldScopes?> retrieveObject(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_io906m8r.ObjectFieldScopes?> retrieveObject(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'fieldScopes',
             method: 'retrieveObject',
           );
@@ -4992,7 +5039,7 @@ class _FieldScopesEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'fieldScopes',
           methodName: 'retrieveObject',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5000,7 +5047,7 @@ class _FieldScopesEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i15.ObjectFieldScopes?>);
+                as _ida.Future<_io906m8r.ObjectFieldScopes?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5015,17 +5062,17 @@ class _TestFutureCallsEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> makeFutureCall(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.SimpleData? data,
+  _ida.Future<void> makeFutureCall(
+    _ist.TestSessionBuilder sessionBuilder,
+    _i685tvwm.SimpleData? data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testFutureCalls',
             method: 'makeFutureCall',
           );
@@ -5034,7 +5081,7 @@ class _TestFutureCallsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testFutureCalls',
           methodName: 'makeFutureCall',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5042,7 +5089,7 @@ class _TestFutureCallsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5050,13 +5097,13 @@ class _TestFutureCallsEndpoint {
     });
   }
 
-  _i4.Future<void> makeFutureCallThatThrows(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.SimpleData? data,
+  _ida.Future<void> makeFutureCallThatThrows(
+    _ist.TestSessionBuilder sessionBuilder,
+    _i685tvwm.SimpleData? data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testFutureCalls',
             method: 'makeFutureCallThatThrows',
           );
@@ -5065,7 +5112,7 @@ class _TestFutureCallsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testFutureCalls',
           methodName: 'makeFutureCallThatThrows',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5073,7 +5120,7 @@ class _TestFutureCallsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5088,17 +5135,17 @@ class _ListParametersEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<List<int>> returnIntList(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<int>> returnIntList(
+    _ist.TestSessionBuilder sessionBuilder,
     List<int> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnIntList',
           );
@@ -5107,7 +5154,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnIntList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5115,7 +5162,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<int>>);
+                as _ida.Future<List<int>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5123,13 +5170,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<List<int>>> returnIntListList(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<List<int>>> returnIntListList(
+    _ist.TestSessionBuilder sessionBuilder,
     List<List<int>> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnIntListList',
           );
@@ -5138,7 +5185,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnIntListList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5146,7 +5193,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<List<int>>>);
+                as _ida.Future<List<List<int>>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5154,13 +5201,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<int>?> returnIntListNullable(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<int>?> returnIntListNullable(
+    _ist.TestSessionBuilder sessionBuilder,
     List<int>? list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnIntListNullable',
           );
@@ -5169,7 +5216,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnIntListNullable',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5177,7 +5224,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<int>?>);
+                as _ida.Future<List<int>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5185,13 +5232,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<List<int>?>> returnIntListNullableList(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<List<int>?>> returnIntListNullableList(
+    _ist.TestSessionBuilder sessionBuilder,
     List<List<int>?> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnIntListNullableList',
           );
@@ -5200,7 +5247,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnIntListNullableList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5208,7 +5255,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<List<int>?>>);
+                as _ida.Future<List<List<int>?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5216,13 +5263,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<List<int>>?> returnIntListListNullable(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<List<int>>?> returnIntListListNullable(
+    _ist.TestSessionBuilder sessionBuilder,
     List<List<int>>? list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnIntListListNullable',
           );
@@ -5231,7 +5278,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnIntListListNullable',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5239,7 +5286,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<List<int>>?>);
+                as _ida.Future<List<List<int>>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5247,13 +5294,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<int?>> returnIntListNullableInts(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<int?>> returnIntListNullableInts(
+    _ist.TestSessionBuilder sessionBuilder,
     List<int?> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnIntListNullableInts',
           );
@@ -5262,7 +5309,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnIntListNullableInts',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5270,7 +5317,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<int?>>);
+                as _ida.Future<List<int?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5278,13 +5325,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<int?>?> returnNullableIntListNullableInts(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<int?>?> returnNullableIntListNullableInts(
+    _ist.TestSessionBuilder sessionBuilder,
     List<int?>? list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnNullableIntListNullableInts',
           );
@@ -5293,7 +5340,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnNullableIntListNullableInts',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5301,7 +5348,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<int?>?>);
+                as _ida.Future<List<int?>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5309,13 +5356,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<double>> returnDoubleList(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<double>> returnDoubleList(
+    _ist.TestSessionBuilder sessionBuilder,
     List<double> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnDoubleList',
           );
@@ -5324,7 +5371,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnDoubleList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5332,7 +5379,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<double>>);
+                as _ida.Future<List<double>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5340,13 +5387,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<double?>> returnDoubleListNullableDoubles(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<double?>> returnDoubleListNullableDoubles(
+    _ist.TestSessionBuilder sessionBuilder,
     List<double?> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnDoubleListNullableDoubles',
           );
@@ -5355,7 +5402,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnDoubleListNullableDoubles',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5363,7 +5410,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<double?>>);
+                as _ida.Future<List<double?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5371,13 +5418,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<bool>> returnBoolList(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<bool>> returnBoolList(
+    _ist.TestSessionBuilder sessionBuilder,
     List<bool> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnBoolList',
           );
@@ -5386,7 +5433,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnBoolList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5394,7 +5441,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<bool>>);
+                as _ida.Future<List<bool>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5402,13 +5449,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<bool?>> returnBoolListNullableBools(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<bool?>> returnBoolListNullableBools(
+    _ist.TestSessionBuilder sessionBuilder,
     List<bool?> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnBoolListNullableBools',
           );
@@ -5417,7 +5464,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnBoolListNullableBools',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5425,7 +5472,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<bool?>>);
+                as _ida.Future<List<bool?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5433,13 +5480,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<String>> returnStringList(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<String>> returnStringList(
+    _ist.TestSessionBuilder sessionBuilder,
     List<String> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnStringList',
           );
@@ -5448,7 +5495,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnStringList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5456,7 +5503,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<String>>);
+                as _ida.Future<List<String>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5464,13 +5511,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<String?>> returnStringListNullableStrings(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<String?>> returnStringListNullableStrings(
+    _ist.TestSessionBuilder sessionBuilder,
     List<String?> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnStringListNullableStrings',
           );
@@ -5479,7 +5526,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnStringListNullableStrings',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5487,7 +5534,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<String?>>);
+                as _ida.Future<List<String?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5495,13 +5542,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<DateTime>> returnDateTimeList(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<DateTime>> returnDateTimeList(
+    _ist.TestSessionBuilder sessionBuilder,
     List<DateTime> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnDateTimeList',
           );
@@ -5510,7 +5557,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnDateTimeList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5518,7 +5565,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<DateTime>>);
+                as _ida.Future<List<DateTime>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5526,13 +5573,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<DateTime?>> returnDateTimeListNullableDateTimes(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<DateTime?>> returnDateTimeListNullableDateTimes(
+    _ist.TestSessionBuilder sessionBuilder,
     List<DateTime?> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnDateTimeListNullableDateTimes',
           );
@@ -5541,7 +5588,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnDateTimeListNullableDateTimes',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5549,7 +5596,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<DateTime?>>);
+                as _ida.Future<List<DateTime?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5557,13 +5604,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<_i6.ByteData>> returnByteDataList(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<_i6.ByteData> list,
+  _ida.Future<List<_idt.ByteData>> returnByteDataList(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<_idt.ByteData> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnByteDataList',
           );
@@ -5572,7 +5619,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnByteDataList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5580,7 +5627,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i6.ByteData>>);
+                as _ida.Future<List<_idt.ByteData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5588,13 +5635,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<_i6.ByteData?>> returnByteDataListNullableByteDatas(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<_i6.ByteData?> list,
+  _ida.Future<List<_idt.ByteData?>> returnByteDataListNullableByteDatas(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<_idt.ByteData?> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnByteDataListNullableByteDatas',
           );
@@ -5603,7 +5650,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnByteDataListNullableByteDatas',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5611,7 +5658,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i6.ByteData?>>);
+                as _ida.Future<List<_idt.ByteData?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5619,13 +5666,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<_i8.SimpleData>> returnSimpleDataList(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<_i8.SimpleData> list,
+  _ida.Future<List<_i685tvwm.SimpleData>> returnSimpleDataList(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<_i685tvwm.SimpleData> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnSimpleDataList',
           );
@@ -5634,7 +5681,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnSimpleDataList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5642,7 +5689,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i8.SimpleData>>);
+                as _ida.Future<List<_i685tvwm.SimpleData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5650,13 +5697,14 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<_i8.SimpleData?>> returnSimpleDataListNullableSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<_i8.SimpleData?> list,
+  _ida.Future<List<_i685tvwm.SimpleData?>>
+  returnSimpleDataListNullableSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<_i685tvwm.SimpleData?> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnSimpleDataListNullableSimpleData',
           );
@@ -5665,7 +5713,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnSimpleDataListNullableSimpleData',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5673,7 +5721,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i8.SimpleData?>>);
+                as _ida.Future<List<_i685tvwm.SimpleData?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5681,13 +5729,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<_i8.SimpleData>?> returnSimpleDataListNullable(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<_i8.SimpleData>? list,
+  _ida.Future<List<_i685tvwm.SimpleData>?> returnSimpleDataListNullable(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<_i685tvwm.SimpleData>? list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnSimpleDataListNullable',
           );
@@ -5696,7 +5744,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnSimpleDataListNullable',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5704,7 +5752,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i8.SimpleData>?>);
+                as _ida.Future<List<_i685tvwm.SimpleData>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5712,14 +5760,14 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<_i8.SimpleData?>?>
+  _ida.Future<List<_i685tvwm.SimpleData?>?>
   returnNullableSimpleDataListNullableSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<_i8.SimpleData?>? list,
+    _ist.TestSessionBuilder sessionBuilder,
+    List<_i685tvwm.SimpleData?>? list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnNullableSimpleDataListNullableSimpleData',
           );
@@ -5728,7 +5776,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnNullableSimpleDataListNullableSimpleData',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5736,7 +5784,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i8.SimpleData?>?>);
+                as _ida.Future<List<_i685tvwm.SimpleData?>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5744,13 +5792,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<Duration>> returnDurationList(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<Duration>> returnDurationList(
+    _ist.TestSessionBuilder sessionBuilder,
     List<Duration> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnDurationList',
           );
@@ -5759,7 +5807,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnDurationList',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5767,7 +5815,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<Duration>>);
+                as _ida.Future<List<Duration>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5775,13 +5823,13 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i4.Future<List<Duration?>> returnDurationListNullableDurations(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<Duration?>> returnDurationListNullableDurations(
+    _ist.TestSessionBuilder sessionBuilder,
     List<Duration?> list,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'listParameters',
             method: 'returnDurationListNullableDurations',
           );
@@ -5790,7 +5838,7 @@ class _ListParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'listParameters',
           methodName: 'returnDurationListNullableDurations',
-          parameters: _i1.testObjectToJson({'list': list}),
+          parameters: _ist.testObjectToJson({'list': list}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5798,7 +5846,7 @@ class _ListParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<Duration?>>);
+                as _ida.Future<List<Duration?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5813,17 +5861,17 @@ class _LoggingEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> slowQueryMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> slowQueryMethod(
+    _ist.TestSessionBuilder sessionBuilder,
     int seconds,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'slowQueryMethod',
           );
@@ -5832,7 +5880,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'slowQueryMethod',
-          parameters: _i1.testObjectToJson({'seconds': seconds}),
+          parameters: _ist.testObjectToJson({'seconds': seconds}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5840,7 +5888,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5848,13 +5896,13 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Future<void> queryMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> queryMethod(
+    _ist.TestSessionBuilder sessionBuilder,
     int queries,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'queryMethod',
           );
@@ -5863,7 +5911,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'queryMethod',
-          parameters: _i1.testObjectToJson({'queries': queries}),
+          parameters: _ist.testObjectToJson({'queries': queries}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5871,7 +5919,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5879,12 +5927,12 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Future<void> failedQueryMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> failedQueryMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'failedQueryMethod',
           );
@@ -5893,7 +5941,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'failedQueryMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5901,7 +5949,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5909,13 +5957,13 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Future<void> slowMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> slowMethod(
+    _ist.TestSessionBuilder sessionBuilder,
     int delayMillis,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'slowMethod',
           );
@@ -5924,7 +5972,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'slowMethod',
-          parameters: _i1.testObjectToJson({'delayMillis': delayMillis}),
+          parameters: _ist.testObjectToJson({'delayMillis': delayMillis}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5932,7 +5980,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5940,10 +5988,12 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Future<void> failingMethod(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> failingMethod(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'failingMethod',
           );
@@ -5952,7 +6002,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'failingMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5960,7 +6010,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5968,10 +6018,10 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Future<void> emptyMethod(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> emptyMethod(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'emptyMethod',
           );
@@ -5980,7 +6030,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'emptyMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -5988,7 +6038,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5996,14 +6046,14 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Future<void> log(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> log(
+    _ist.TestSessionBuilder sessionBuilder,
     String message,
     List<int> logLevels,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'log',
           );
@@ -6012,7 +6062,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'log',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'message': message,
             'logLevels': logLevels,
           }),
@@ -6023,7 +6073,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6031,13 +6081,13 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Future<void> logInfo(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> logInfo(
+    _ist.TestSessionBuilder sessionBuilder,
     String message,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'logInfo',
           );
@@ -6046,7 +6096,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'logInfo',
-          parameters: _i1.testObjectToJson({'message': message}),
+          parameters: _ist.testObjectToJson({'message': message}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -6054,7 +6104,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6062,15 +6112,15 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Future<void> logDebugAndInfoAndError(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> logDebugAndInfoAndError(
+    _ist.TestSessionBuilder sessionBuilder,
     String debug,
     String info,
     String error,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'logDebugAndInfoAndError',
           );
@@ -6079,7 +6129,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'logDebugAndInfoAndError',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'debug': debug,
             'info': info,
             'error': error,
@@ -6091,7 +6141,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6099,10 +6149,10 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Future<void> twoQueries(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> twoQueries(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'logging',
             method: 'twoQueries',
           );
@@ -6111,7 +6161,7 @@ class _LoggingEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'logging',
           methodName: 'twoQueries',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -6119,7 +6169,7 @@ class _LoggingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6127,15 +6177,15 @@ class _LoggingEndpoint {
     });
   }
 
-  _i4.Stream<int> streamEmpty(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> input,
+  _ida.Stream<int> streamEmpty(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> input,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'logging',
               method: 'streamEmpty',
             );
@@ -6159,15 +6209,15 @@ class _LoggingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> streamLogging(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> input,
+  _ida.Stream<int> streamLogging(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> input,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'logging',
               method: 'streamLogging',
             );
@@ -6191,15 +6241,15 @@ class _LoggingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> streamQueryLogging(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> input,
+  _ida.Stream<int> streamQueryLogging(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> input,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'logging',
               method: 'streamQueryLogging',
             );
@@ -6223,12 +6273,12 @@ class _LoggingEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> streamException(_i1.TestSessionBuilder sessionBuilder) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+  _ida.Stream<int> streamException(_ist.TestSessionBuilder sessionBuilder) {
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'logging',
               method: 'streamException',
             );
@@ -6259,17 +6309,17 @@ class _LoggingDisabledEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> logInfo(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> logInfo(
+    _ist.TestSessionBuilder sessionBuilder,
     String message,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'loggingDisabled',
             method: 'logInfo',
           );
@@ -6278,7 +6328,7 @@ class _LoggingDisabledEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'loggingDisabled',
           methodName: 'logInfo',
-          parameters: _i1.testObjectToJson({'message': message}),
+          parameters: _ist.testObjectToJson({'message': message}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -6286,7 +6336,7 @@ class _LoggingDisabledEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6301,17 +6351,17 @@ class _MapParametersEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<Map<String, int>> returnIntMap(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<String, int>> returnIntMap(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<String, int> map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnIntMap',
           );
@@ -6320,7 +6370,7 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnIntMap',
-          parameters: _i1.testObjectToJson({'map': map}),
+          parameters: _ist.testObjectToJson({'map': map}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -6328,7 +6378,7 @@ class _MapParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Map<String, int>>);
+                as _ida.Future<Map<String, int>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6336,13 +6386,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<String, int>?> returnIntMapNullable(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<String, int>?> returnIntMapNullable(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<String, int>? map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnIntMapNullable',
           );
@@ -6351,7 +6401,7 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnIntMapNullable',
-          parameters: _i1.testObjectToJson({'map': map}),
+          parameters: _ist.testObjectToJson({'map': map}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -6359,7 +6409,7 @@ class _MapParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Map<String, int>?>);
+                as _ida.Future<Map<String, int>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6367,13 +6417,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<String, Map<String, int>>> returnNestedIntMap(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<String, Map<String, int>>> returnNestedIntMap(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<String, Map<String, int>> map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnNestedIntMap',
           );
@@ -6382,7 +6432,7 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnNestedIntMap',
-          parameters: _i1.testObjectToJson({'map': map}),
+          parameters: _ist.testObjectToJson({'map': map}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -6390,7 +6440,7 @@ class _MapParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Map<String, Map<String, int>>>);
+                as _ida.Future<Map<String, Map<String, int>>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6398,13 +6448,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<String, int?>> returnIntMapNullableInts(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<String, int?>> returnIntMapNullableInts(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<String, int?> map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnIntMapNullableInts',
           );
@@ -6413,7 +6463,7 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnIntMapNullableInts',
-          parameters: _i1.testObjectToJson({'map': map}),
+          parameters: _ist.testObjectToJson({'map': map}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -6421,7 +6471,7 @@ class _MapParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Map<String, int?>>);
+                as _ida.Future<Map<String, int?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6429,13 +6479,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<String, int?>?> returnNullableIntMapNullableInts(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<String, int?>?> returnNullableIntMapNullableInts(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<String, int?>? map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnNullableIntMapNullableInts',
           );
@@ -6444,7 +6494,7 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnNullableIntMapNullableInts',
-          parameters: _i1.testObjectToJson({'map': map}),
+          parameters: _ist.testObjectToJson({'map': map}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -6452,7 +6502,7 @@ class _MapParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Map<String, int?>?>);
+                as _ida.Future<Map<String, int?>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6460,13 +6510,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<int, int>> returnIntIntMap(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<int, int>> returnIntIntMap(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<int, int> map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnIntIntMap',
           );
@@ -6475,8 +6525,8 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnIntIntMap',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -6485,7 +6535,9 @@ class _MapParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((map) => _i16.Protocol().deserialize<Map<int, int>>(map));
+            .then(
+              (map) => _igqrxdcj.Protocol().deserialize<Map<int, int>>(map),
+            );
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6493,13 +6545,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<String, Map<int, int>>> returnNestedIntIntMap(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<String, Map<int, int>>> returnNestedIntIntMap(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<String, Map<int, int>> map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnNestedIntIntMap',
           );
@@ -6508,8 +6560,8 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnNestedIntIntMap',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -6518,7 +6570,7 @@ class _MapParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Map<String, Map<int, int>>>);
+                as _ida.Future<Map<String, Map<int, int>>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -6526,13 +6578,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<_i17.TestEnum, int>> returnEnumIntMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<_i17.TestEnum, int> map,
+  _ida.Future<Map<_izdri23a.TestEnum, int>> returnEnumIntMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<_izdri23a.TestEnum, int> map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnEnumIntMap',
           );
@@ -6541,8 +6593,648 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnEnumIntMap',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (map) => _igqrxdcj.Protocol()
+                  .deserialize<Map<_izdri23a.TestEnum, int>>(map),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, _izdri23a.TestEnum>> returnEnumMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, _izdri23a.TestEnum> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnEnumMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnEnumMap',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, _izdri23a.TestEnum>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, double>> returnDoubleMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, double> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDoubleMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnDoubleMap',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, double>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, double?>> returnDoubleMapNullableDoubles(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, double?> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDoubleMapNullableDoubles',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnDoubleMapNullableDoubles',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, double?>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, bool>> returnBoolMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, bool> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnBoolMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnBoolMap',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, bool>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, bool?>> returnBoolMapNullableBools(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, bool?> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnBoolMapNullableBools',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnBoolMapNullableBools',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, bool?>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, String>> returnStringMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, String> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnStringMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnStringMap',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, String>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, String?>> returnStringMapNullableStrings(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, String?> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnStringMapNullableStrings',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnStringMapNullableStrings',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, String?>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, DateTime>> returnDateTimeMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, DateTime> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDateTimeMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnDateTimeMap',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, DateTime>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, DateTime?>> returnDateTimeMapNullableDateTimes(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, DateTime?> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDateTimeMapNullableDateTimes',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnDateTimeMapNullableDateTimes',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, DateTime?>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, _idt.ByteData>> returnByteDataMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, _idt.ByteData> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnByteDataMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnByteDataMap',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, _idt.ByteData>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, _idt.ByteData?>> returnByteDataMapNullableByteDatas(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, _idt.ByteData?> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnByteDataMapNullableByteDatas',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnByteDataMapNullableByteDatas',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, _idt.ByteData?>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, _i685tvwm.SimpleData>> returnSimpleDataMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, _i685tvwm.SimpleData> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnSimpleDataMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnSimpleDataMap',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, _i685tvwm.SimpleData>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, _i685tvwm.SimpleData?>>
+  returnSimpleDataMapNullableSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, _i685tvwm.SimpleData?> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnSimpleDataMapNullableSimpleData',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnSimpleDataMapNullableSimpleData',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, _i685tvwm.SimpleData?>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, _i685tvwm.SimpleData>?> returnSimpleDataMapNullable(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, _i685tvwm.SimpleData>? map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnSimpleDataMapNullable',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnSimpleDataMapNullable',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, _i685tvwm.SimpleData>?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, _i685tvwm.SimpleData?>?>
+  returnNullableSimpleDataMapNullableSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, _i685tvwm.SimpleData?>? map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnNullableSimpleDataMapNullableSimpleData',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnNullableSimpleDataMapNullableSimpleData',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, _i685tvwm.SimpleData?>?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, Duration>> returnDurationMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, Duration> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDurationMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnDurationMap',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, Duration>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, Duration?>> returnDurationMapNullableDurations(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, Duration?> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDurationMapNullableDurations',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnDurationMapNullableDurations',
+          parameters: _ist.testObjectToJson({'map': map}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<Map<String, Duration?>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<(Map<int, String>, String), String>>
+  returnNestedNonStringKeyedMapInsideRecordInsideMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<(Map<int, String>, String), String> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnNestedNonStringKeyedMapInsideRecordInsideMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnNestedNonStringKeyedMapInsideRecordInsideMap',
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<Map<(Map<int, String>, String), String>>(record),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, (Map<int, int>,)>>
+  returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, (Map<int, int>,)> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName:
+              'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<Map<String, (Map<int, int>,)>>(record),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<DateTime, bool>> returnDateTimeBoolMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<DateTime, bool> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDateTimeBoolMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnDateTimeBoolMap',
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -6553,7 +7245,7 @@ class _MapParametersEndpoint {
             )
             .then(
               (map) =>
-                  _i16.Protocol().deserialize<Map<_i17.TestEnum, int>>(map),
+                  _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>>(map),
             );
         return _localReturnValue;
       } finally {
@@ -6562,652 +7254,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<String, _i17.TestEnum>> returnEnumMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, _i17.TestEnum> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnEnumMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnEnumMap',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, _i17.TestEnum>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, double>> returnDoubleMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, double> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnDoubleMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnDoubleMap',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, double>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, double?>> returnDoubleMapNullableDoubles(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, double?> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnDoubleMapNullableDoubles',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnDoubleMapNullableDoubles',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, double?>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, bool>> returnBoolMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, bool> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnBoolMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnBoolMap',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, bool>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, bool?>> returnBoolMapNullableBools(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, bool?> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnBoolMapNullableBools',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnBoolMapNullableBools',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, bool?>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, String>> returnStringMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, String> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnStringMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnStringMap',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, String>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, String?>> returnStringMapNullableStrings(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, String?> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnStringMapNullableStrings',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnStringMapNullableStrings',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, String?>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, DateTime>> returnDateTimeMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, DateTime> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnDateTimeMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnDateTimeMap',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, DateTime>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, DateTime?>> returnDateTimeMapNullableDateTimes(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, DateTime?> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnDateTimeMapNullableDateTimes',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnDateTimeMapNullableDateTimes',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, DateTime?>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, _i6.ByteData>> returnByteDataMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, _i6.ByteData> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnByteDataMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnByteDataMap',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, _i6.ByteData>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, _i6.ByteData?>> returnByteDataMapNullableByteDatas(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, _i6.ByteData?> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnByteDataMapNullableByteDatas',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnByteDataMapNullableByteDatas',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, _i6.ByteData?>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, _i8.SimpleData>> returnSimpleDataMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, _i8.SimpleData> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnSimpleDataMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnSimpleDataMap',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, _i8.SimpleData>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, _i8.SimpleData?>>
-  returnSimpleDataMapNullableSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, _i8.SimpleData?> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnSimpleDataMapNullableSimpleData',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnSimpleDataMapNullableSimpleData',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, _i8.SimpleData?>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, _i8.SimpleData>?> returnSimpleDataMapNullable(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, _i8.SimpleData>? map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnSimpleDataMapNullable',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnSimpleDataMapNullable',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, _i8.SimpleData>?>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, _i8.SimpleData?>?>
-  returnNullableSimpleDataMapNullableSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, _i8.SimpleData?>? map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnNullableSimpleDataMapNullableSimpleData',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnNullableSimpleDataMapNullableSimpleData',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, _i8.SimpleData?>?>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, Duration>> returnDurationMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, Duration> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnDurationMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnDurationMap',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, Duration>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, Duration?>> returnDurationMapNullableDurations(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, Duration?> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnDurationMapNullableDurations',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnDurationMapNullableDurations',
-          parameters: _i1.testObjectToJson({'map': map}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i4.Future<Map<String, Duration?>>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<(Map<int, String>, String), String>>
-  returnNestedNonStringKeyedMapInsideRecordInsideMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<(Map<int, String>, String), String> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnNestedNonStringKeyedMapInsideRecordInsideMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnNestedNonStringKeyedMapInsideRecordInsideMap',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await _localCallContext.method
-            .call(
-              _localUniqueSession,
-              _localCallContext.arguments,
-            )
-            .then(
-              (record) => _i16.Protocol()
-                  .deserialize<Map<(Map<int, String>, String), String>>(record),
-            );
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, (Map<int, int>,)>>
-  returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, (Map<int, int>,)> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName:
-              'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await _localCallContext.method
-            .call(
-              _localUniqueSession,
-              _localCallContext.arguments,
-            )
-            .then(
-              (record) => _i16.Protocol()
-                  .deserialize<Map<String, (Map<int, int>,)>>(record),
-            );
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<DateTime, bool>> returnDateTimeBoolMap(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<DateTime, bool> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'mapParameters',
-            method: 'returnDateTimeBoolMap',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'mapParameters',
-          methodName: 'returnDateTimeBoolMap',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await _localCallContext.method
-            .call(
-              _localUniqueSession,
-              _localCallContext.arguments,
-            )
-            .then(
-              (map) => _i16.Protocol().deserialize<Map<DateTime, bool>>(map),
-            );
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<DateTime, bool>?> returnDateTimeBoolMapNullable(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<DateTime, bool>?> returnDateTimeBoolMapNullable(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<DateTime, bool>? map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnDateTimeBoolMapNullable',
           );
@@ -7216,8 +7269,10 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnDateTimeBoolMapNullable',
-          parameters: _i1.testObjectToJson({
-            'map': map == null ? null : _i16.Protocol().mapContainerToJson(map),
+          parameters: _ist.testObjectToJson({
+            'map': map == null
+                ? null
+                : _igqrxdcj.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7227,7 +7282,8 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) => _i16.Protocol().deserialize<Map<DateTime, bool>?>(map),
+              (map) =>
+                  _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>?>(map),
             );
         return _localReturnValue;
       } finally {
@@ -7236,13 +7292,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<int, String>> returnIntStringMap(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<int, String>> returnIntStringMap(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<int, String> map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnIntStringMap',
           );
@@ -7251,8 +7307,8 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnIntStringMap',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7261,7 +7317,9 @@ class _MapParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((map) => _i16.Protocol().deserialize<Map<int, String>>(map));
+            .then(
+              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>>(map),
+            );
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7269,13 +7327,13 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<int, String>?> returnIntStringMapNullable(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Map<int, String>?> returnIntStringMapNullable(
+    _ist.TestSessionBuilder sessionBuilder,
     Map<int, String>? map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'mapParameters',
             method: 'returnIntStringMapNullable',
           );
@@ -7284,8 +7342,10 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnIntStringMapNullable',
-          parameters: _i1.testObjectToJson({
-            'map': map == null ? null : _i16.Protocol().mapContainerToJson(map),
+          parameters: _ist.testObjectToJson({
+            'map': map == null
+                ? null
+                : _igqrxdcj.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7294,7 +7354,9 @@ class _MapParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((map) => _i16.Protocol().deserialize<Map<int, String>?>(map));
+            .then(
+              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>?>(map),
+            );
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7309,17 +7371,17 @@ class _MethodSignaturePermutationsEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> echoPositionalArg(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> echoPositionalArg(
+    _ist.TestSessionBuilder sessionBuilder,
     String string,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodSignaturePermutations',
             method: 'echoPositionalArg',
           );
@@ -7328,7 +7390,7 @@ class _MethodSignaturePermutationsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodSignaturePermutations',
           methodName: 'echoPositionalArg',
-          parameters: _i1.testObjectToJson({'string': string}),
+          parameters: _ist.testObjectToJson({'string': string}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -7336,7 +7398,7 @@ class _MethodSignaturePermutationsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7344,13 +7406,13 @@ class _MethodSignaturePermutationsEndpoint {
     });
   }
 
-  _i4.Future<String> echoNamedArg(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<String> echoNamedArg(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String string,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodSignaturePermutations',
             method: 'echoNamedArg',
           );
@@ -7359,7 +7421,7 @@ class _MethodSignaturePermutationsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodSignaturePermutations',
           methodName: 'echoNamedArg',
-          parameters: _i1.testObjectToJson({'string': string}),
+          parameters: _ist.testObjectToJson({'string': string}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -7367,7 +7429,7 @@ class _MethodSignaturePermutationsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7375,13 +7437,13 @@ class _MethodSignaturePermutationsEndpoint {
     });
   }
 
-  _i4.Future<String?> echoNullableNamedArg(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<String?> echoNullableNamedArg(
+    _ist.TestSessionBuilder sessionBuilder, {
     String? string,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodSignaturePermutations',
             method: 'echoNullableNamedArg',
           );
@@ -7390,7 +7452,7 @@ class _MethodSignaturePermutationsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodSignaturePermutations',
           methodName: 'echoNullableNamedArg',
-          parameters: _i1.testObjectToJson({'string': string}),
+          parameters: _ist.testObjectToJson({'string': string}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -7398,7 +7460,7 @@ class _MethodSignaturePermutationsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7406,13 +7468,13 @@ class _MethodSignaturePermutationsEndpoint {
     });
   }
 
-  _i4.Future<String?> echoOptionalArg(
-    _i1.TestSessionBuilder sessionBuilder, [
+  _ida.Future<String?> echoOptionalArg(
+    _ist.TestSessionBuilder sessionBuilder, [
     String? string,
   ]) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodSignaturePermutations',
             method: 'echoOptionalArg',
           );
@@ -7421,7 +7483,7 @@ class _MethodSignaturePermutationsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodSignaturePermutations',
           methodName: 'echoOptionalArg',
-          parameters: _i1.testObjectToJson({'string': string}),
+          parameters: _ist.testObjectToJson({'string': string}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -7429,7 +7491,7 @@ class _MethodSignaturePermutationsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7437,14 +7499,14 @@ class _MethodSignaturePermutationsEndpoint {
     });
   }
 
-  _i4.Future<List<String?>> echoPositionalAndNamedArgs(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<String?>> echoPositionalAndNamedArgs(
+    _ist.TestSessionBuilder sessionBuilder,
     String string1, {
     required String string2,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodSignaturePermutations',
             method: 'echoPositionalAndNamedArgs',
           );
@@ -7453,7 +7515,7 @@ class _MethodSignaturePermutationsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodSignaturePermutations',
           methodName: 'echoPositionalAndNamedArgs',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'string1': string1,
             'string2': string2,
           }),
@@ -7464,7 +7526,7 @@ class _MethodSignaturePermutationsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<String?>>);
+                as _ida.Future<List<String?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7472,14 +7534,14 @@ class _MethodSignaturePermutationsEndpoint {
     });
   }
 
-  _i4.Future<List<String?>> echoPositionalAndNullableNamedArgs(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<String?>> echoPositionalAndNullableNamedArgs(
+    _ist.TestSessionBuilder sessionBuilder,
     String string1, {
     String? string2,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodSignaturePermutations',
             method: 'echoPositionalAndNullableNamedArgs',
           );
@@ -7488,7 +7550,7 @@ class _MethodSignaturePermutationsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodSignaturePermutations',
           methodName: 'echoPositionalAndNullableNamedArgs',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'string1': string1,
             'string2': string2,
           }),
@@ -7499,7 +7561,7 @@ class _MethodSignaturePermutationsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<String?>>);
+                as _ida.Future<List<String?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7507,14 +7569,14 @@ class _MethodSignaturePermutationsEndpoint {
     });
   }
 
-  _i4.Future<List<String?>> echoPositionalAndOptionalArgs(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<String?>> echoPositionalAndOptionalArgs(
+    _ist.TestSessionBuilder sessionBuilder,
     String string1, [
     String? string2,
   ]) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodSignaturePermutations',
             method: 'echoPositionalAndOptionalArgs',
           );
@@ -7523,7 +7585,7 @@ class _MethodSignaturePermutationsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodSignaturePermutations',
           methodName: 'echoPositionalAndOptionalArgs',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'string1': string1,
             'string2': string2,
           }),
@@ -7534,7 +7596,7 @@ class _MethodSignaturePermutationsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<String?>>);
+                as _ida.Future<List<String?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7542,15 +7604,15 @@ class _MethodSignaturePermutationsEndpoint {
     });
   }
 
-  _i4.Stream<String> echoNamedArgStream(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i4.Stream<String> strings,
+  _ida.Stream<String> echoNamedArgStream(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _ida.Stream<String> strings,
   }) {
-    var _localTestStreamManager = _i1.TestStreamManager<String>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodSignaturePermutations',
               method: 'echoNamedArgStream',
             );
@@ -7574,15 +7636,15 @@ class _MethodSignaturePermutationsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<String> echoNamedArgStreamAsFuture(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i4.Stream<String> strings,
+  _ida.Future<String> echoNamedArgStreamAsFuture(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _ida.Stream<String> strings,
   }) async {
-    var _localTestStreamManager = _i1.TestStreamManager<String>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodSignaturePermutations',
               method: 'echoNamedArgStreamAsFuture',
             );
@@ -7605,15 +7667,15 @@ class _MethodSignaturePermutationsEndpoint {
     );
   }
 
-  _i4.Stream<String> echoPositionalArgStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<String> strings,
+  _ida.Stream<String> echoPositionalArgStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<String> strings,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<String>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodSignaturePermutations',
               method: 'echoPositionalArgStream',
             );
@@ -7637,15 +7699,15 @@ class _MethodSignaturePermutationsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<String> echoPositionalArgStreamAsFuture(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<String> strings,
+  _ida.Future<String> echoPositionalArgStreamAsFuture(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<String> strings,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<String>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodSignaturePermutations',
               method: 'echoPositionalArgStreamAsFuture',
             );
@@ -7675,16 +7737,16 @@ class _MethodStreaming {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Stream<int> simpleStream(_i1.TestSessionBuilder sessionBuilder) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+  _ida.Stream<int> simpleStream(_ist.TestSessionBuilder sessionBuilder) {
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleStream',
             );
@@ -7708,15 +7770,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> neverEndingStreamWithDelay(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> neverEndingStreamWithDelay(
+    _ist.TestSessionBuilder sessionBuilder,
     int millisecondsDelay,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'neverEndingStreamWithDelay',
             );
@@ -7740,12 +7802,12 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> methodCallEndpoint(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> methodCallEndpoint(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodStreaming',
             method: 'methodCallEndpoint',
           );
@@ -7754,7 +7816,7 @@ class _MethodStreaming {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodStreaming',
           methodName: 'methodCallEndpoint',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -7762,7 +7824,7 @@ class _MethodStreaming {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7770,15 +7832,15 @@ class _MethodStreaming {
     });
   }
 
-  _i4.Future<int> intReturnFromStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<int> intReturnFromStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'intReturnFromStream',
             );
@@ -7801,15 +7863,15 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<int?> nullableIntReturnFromStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int?> stream,
+  _ida.Future<int?> nullableIntReturnFromStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int?> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<int?>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int?>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'nullableIntReturnFromStream',
             );
@@ -7832,12 +7894,12 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Stream<int?> getBroadcastStream(_i1.TestSessionBuilder sessionBuilder) {
-    var _localTestStreamManager = _i1.TestStreamManager<int?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+  _ida.Stream<int?> getBroadcastStream(_ist.TestSessionBuilder sessionBuilder) {
+    var _localTestStreamManager = _ist.TestStreamManager<int?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'getBroadcastStream',
             );
@@ -7861,12 +7923,12 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<bool> wasBroadcastStreamCanceled(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> wasBroadcastStreamCanceled(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodStreaming',
             method: 'wasBroadcastStreamCanceled',
           );
@@ -7875,7 +7937,7 @@ class _MethodStreaming {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodStreaming',
           methodName: 'wasBroadcastStreamCanceled',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -7883,7 +7945,7 @@ class _MethodStreaming {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7891,12 +7953,12 @@ class _MethodStreaming {
     });
   }
 
-  _i4.Future<bool> wasSessionWillCloseListenerCalled(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> wasSessionWillCloseListenerCalled(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodStreaming',
             method: 'wasSessionWillCloseListenerCalled',
           );
@@ -7905,7 +7967,7 @@ class _MethodStreaming {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodStreaming',
           methodName: 'wasSessionWillCloseListenerCalled',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -7913,7 +7975,7 @@ class _MethodStreaming {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7921,15 +7983,15 @@ class _MethodStreaming {
     });
   }
 
-  _i4.Stream<int> intStreamFromValue(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> intStreamFromValue(
+    _ist.TestSessionBuilder sessionBuilder,
     int value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'intStreamFromValue',
             );
@@ -7953,15 +8015,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> intEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Stream<int> intEchoStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'intEchoStream',
             );
@@ -7985,15 +8047,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<dynamic> dynamicEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<dynamic> stream,
+  _ida.Stream<dynamic> dynamicEchoStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<dynamic> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<dynamic>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<dynamic>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'dynamicEchoStream',
             );
@@ -8017,15 +8079,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int?> nullableIntEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int?> stream,
+  _ida.Stream<int?> nullableIntEchoStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int?> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'nullableIntEchoStream',
             );
@@ -8049,15 +8111,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> voidReturnAfterStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<void> voidReturnAfterStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<void>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<void>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'voidReturnAfterStream',
             );
@@ -8080,16 +8142,16 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Stream<int> multipleIntEchoStreams(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream1,
-    _i4.Stream<int> stream2,
+  _ida.Stream<int> multipleIntEchoStreams(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream1,
+    _ida.Stream<int> stream2,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'multipleIntEchoStreams',
             );
@@ -8119,15 +8181,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> directVoidReturnWithStreamInput(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<void> directVoidReturnWithStreamInput(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<void>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<void>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'directVoidReturnWithStreamInput',
             );
@@ -8150,15 +8212,15 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<int> directOneIntReturnWithStreamInput(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<int> directOneIntReturnWithStreamInput(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'directOneIntReturnWithStreamInput',
             );
@@ -8181,15 +8243,15 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<int> simpleInputReturnStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<int> simpleInputReturnStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleInputReturnStream',
             );
@@ -8212,15 +8274,15 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Stream<int> simpleStreamWithParameter(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> simpleStreamWithParameter(
+    _ist.TestSessionBuilder sessionBuilder,
     int value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleStreamWithParameter',
             );
@@ -8244,15 +8306,16 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i8.SimpleData> simpleDataStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<_i685tvwm.SimpleData> simpleDataStream(
+    _ist.TestSessionBuilder sessionBuilder,
     int value,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i8.SimpleData>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_i685tvwm.SimpleData>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleDataStream',
             );
@@ -8276,15 +8339,16 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i8.SimpleData> simpleInOutDataStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<_i8.SimpleData> simpleDataStream,
+  _ida.Stream<_i685tvwm.SimpleData> simpleInOutDataStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<_i685tvwm.SimpleData> simpleDataStream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i8.SimpleData>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_i685tvwm.SimpleData>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleInOutDataStream',
             );
@@ -8308,15 +8372,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<List<int>> simpleListInOutIntStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<List<int>> simpleDataListStream,
+  _ida.Stream<List<int>> simpleListInOutIntStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<List<int>> simpleDataListStream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<List<int>>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleListInOutIntStream',
             );
@@ -8340,15 +8404,16 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<List<_i8.SimpleData>> simpleListInOutDataStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<List<_i8.SimpleData>> simpleDataListStream,
+  _ida.Stream<List<_i685tvwm.SimpleData>> simpleListInOutDataStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<List<_i685tvwm.SimpleData>> simpleDataListStream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<List<_i8.SimpleData>>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<List<_i685tvwm.SimpleData>>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleListInOutDataStream',
             );
@@ -8372,15 +8437,16 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<List<_i5.UserInfo>> simpleListInOutOtherModuleTypeStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<List<_i5.UserInfo>> userInfoListStream,
+  _ida.Stream<List<_i1n3uhu0.UserInfo>> simpleListInOutOtherModuleTypeStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<List<_i1n3uhu0.UserInfo>> userInfoListStream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<List<_i5.UserInfo>>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<List<_i1n3uhu0.UserInfo>>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleListInOutOtherModuleTypeStream',
             );
@@ -8404,16 +8470,17 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<List<_i8.SimpleData>?> simpleNullableListInOutNullableDataStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<List<_i8.SimpleData>?> simpleDataListStream,
+  _ida.Stream<List<_i685tvwm.SimpleData>?>
+  simpleNullableListInOutNullableDataStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<List<_i685tvwm.SimpleData>?> simpleDataListStream,
   ) {
     var _localTestStreamManager =
-        _i1.TestStreamManager<List<_i8.SimpleData>?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+        _ist.TestStreamManager<List<_i685tvwm.SimpleData>?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleNullableListInOutNullableDataStream',
             );
@@ -8437,16 +8504,16 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<List<_i8.SimpleData?>> simpleListInOutNullableDataStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<List<_i8.SimpleData?>> simpleDataListStream,
+  _ida.Stream<List<_i685tvwm.SimpleData?>> simpleListInOutNullableDataStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<List<_i685tvwm.SimpleData?>> simpleDataListStream,
   ) {
     var _localTestStreamManager =
-        _i1.TestStreamManager<List<_i8.SimpleData?>>();
-    _i1.callStreamFunctionAndHandleExceptions(
+        _ist.TestStreamManager<List<_i685tvwm.SimpleData?>>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleListInOutNullableDataStream',
             );
@@ -8470,15 +8537,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<Set<int>> simpleSetInOutIntStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<Set<int>> simpleDataSetStream,
+  _ida.Stream<Set<int>> simpleSetInOutIntStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<Set<int>> simpleDataSetStream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<Set<int>>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<Set<int>>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleSetInOutIntStream',
             );
@@ -8502,15 +8569,16 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<Set<_i8.SimpleData>> simpleSetInOutDataStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<Set<_i8.SimpleData>> simpleDataSetStream,
+  _ida.Stream<Set<_i685tvwm.SimpleData>> simpleSetInOutDataStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<Set<_i685tvwm.SimpleData>> simpleDataSetStream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<Set<_i8.SimpleData>>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<Set<_i685tvwm.SimpleData>>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'simpleSetInOutDataStream',
             );
@@ -8534,15 +8602,16 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<Set<_i8.SimpleData>> nestedSetInListInOutDataStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<List<Set<_i8.SimpleData>>> simpleDataSetStream,
+  _ida.Stream<Set<_i685tvwm.SimpleData>> nestedSetInListInOutDataStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<List<Set<_i685tvwm.SimpleData>>> simpleDataSetStream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<Set<_i8.SimpleData>>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<Set<_i685tvwm.SimpleData>>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'nestedSetInListInOutDataStream',
             );
@@ -8566,10 +8635,12 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> simpleEndpoint(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> simpleEndpoint(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodStreaming',
             method: 'simpleEndpoint',
           );
@@ -8578,7 +8649,7 @@ class _MethodStreaming {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodStreaming',
           methodName: 'simpleEndpoint',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -8586,7 +8657,7 @@ class _MethodStreaming {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8594,13 +8665,13 @@ class _MethodStreaming {
     });
   }
 
-  _i4.Future<void> intParameter(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> intParameter(
+    _ist.TestSessionBuilder sessionBuilder,
     int value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodStreaming',
             method: 'intParameter',
           );
@@ -8609,7 +8680,7 @@ class _MethodStreaming {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodStreaming',
           methodName: 'intParameter',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -8617,7 +8688,7 @@ class _MethodStreaming {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8625,13 +8696,13 @@ class _MethodStreaming {
     });
   }
 
-  _i4.Future<int> doubleInputValue(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<int> doubleInputValue(
+    _ist.TestSessionBuilder sessionBuilder,
     int value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodStreaming',
             method: 'doubleInputValue',
           );
@@ -8640,7 +8711,7 @@ class _MethodStreaming {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodStreaming',
           methodName: 'doubleInputValue',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -8648,7 +8719,7 @@ class _MethodStreaming {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8656,13 +8727,13 @@ class _MethodStreaming {
     });
   }
 
-  _i4.Future<void> delayedResponse(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> delayedResponse(
+    _ist.TestSessionBuilder sessionBuilder,
     int delay,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodStreaming',
             method: 'delayedResponse',
           );
@@ -8671,7 +8742,7 @@ class _MethodStreaming {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodStreaming',
           methodName: 'delayedResponse',
-          parameters: _i1.testObjectToJson({'delay': delay}),
+          parameters: _ist.testObjectToJson({'delay': delay}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -8679,7 +8750,7 @@ class _MethodStreaming {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8687,15 +8758,15 @@ class _MethodStreaming {
     });
   }
 
-  _i4.Stream<int> delayedStreamResponse(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> delayedStreamResponse(
+    _ist.TestSessionBuilder sessionBuilder,
     int delay,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'delayedStreamResponse',
             );
@@ -8719,16 +8790,16 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> delayedNeverListenedInputStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> delayedNeverListenedInputStream(
+    _ist.TestSessionBuilder sessionBuilder,
     int delay,
-    _i4.Stream<int> stream,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<void>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<void>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'delayedNeverListenedInputStream',
             );
@@ -8751,16 +8822,16 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<void> delayedPausedInputStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> delayedPausedInputStream(
+    _ist.TestSessionBuilder sessionBuilder,
     int delay,
-    _i4.Stream<int> stream,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<void>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<void>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'delayedPausedInputStream',
             );
@@ -8783,12 +8854,12 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<void> completeAllDelayedResponses(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> completeAllDelayedResponses(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'methodStreaming',
             method: 'completeAllDelayedResponses',
           );
@@ -8797,7 +8868,7 @@ class _MethodStreaming {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'methodStreaming',
           methodName: 'completeAllDelayedResponses',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -8805,7 +8876,7 @@ class _MethodStreaming {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8813,15 +8884,15 @@ class _MethodStreaming {
     });
   }
 
-  _i4.Future<void> inStreamThrowsException(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<void> inStreamThrowsException(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<void>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<void>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'inStreamThrowsException',
             );
@@ -8844,15 +8915,15 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<void> inStreamThrowsSerializableException(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<void> inStreamThrowsSerializableException(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<void>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<void>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'inStreamThrowsSerializableException',
             );
@@ -8875,14 +8946,14 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Stream<int> outStreamThrowsException(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> outStreamThrowsException(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'outStreamThrowsException',
             );
@@ -8906,14 +8977,14 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> outStreamThrowsSerializableException(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> outStreamThrowsSerializableException(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'outStreamThrowsSerializableException',
             );
@@ -8937,15 +9008,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> throwsExceptionVoid(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<void> throwsExceptionVoid(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<void>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<void>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'throwsExceptionVoid',
             );
@@ -8968,15 +9039,15 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<void> throwsSerializableExceptionVoid(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<void> throwsSerializableExceptionVoid(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<void>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<void>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'throwsSerializableExceptionVoid',
             );
@@ -8999,15 +9070,15 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<int> throwsException(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<int> throwsException(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'throwsException',
             );
@@ -9030,15 +9101,15 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<int> throwsSerializableException(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<int> throwsSerializableException(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'throwsSerializableException',
             );
@@ -9061,12 +9132,14 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Stream<int> throwsExceptionStream(_i1.TestSessionBuilder sessionBuilder) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+  _ida.Stream<int> throwsExceptionStream(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) {
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'throwsExceptionStream',
             );
@@ -9090,14 +9163,14 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> exceptionThrownBeforeStreamReturn(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> exceptionThrownBeforeStreamReturn(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'exceptionThrownBeforeStreamReturn',
             );
@@ -9121,14 +9194,14 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> exceptionThrownInStreamReturn(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> exceptionThrownInStreamReturn(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'exceptionThrownInStreamReturn',
             );
@@ -9152,14 +9225,14 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> throwsSerializableExceptionStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> throwsSerializableExceptionStream(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'throwsSerializableExceptionStream',
             );
@@ -9183,15 +9256,15 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<bool> didInputStreamHaveError(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<bool> didInputStreamHaveError(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<bool>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<bool>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'didInputStreamHaveError',
             );
@@ -9214,15 +9287,15 @@ class _MethodStreaming {
     );
   }
 
-  _i4.Future<bool> didInputStreamHaveSerializableExceptionError(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Future<bool> didInputStreamHaveSerializableExceptionError(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<bool>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<bool>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'methodStreaming',
               method: 'didInputStreamHaveSerializableExceptionError',
             );
@@ -9252,16 +9325,16 @@ class _AuthenticatedMethodStreaming {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Stream<int> simpleStream(_i1.TestSessionBuilder sessionBuilder) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+  _ida.Stream<int> simpleStream(_ist.TestSessionBuilder sessionBuilder) {
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'authenticatedMethodStreaming',
               method: 'simpleStream',
             );
@@ -9285,15 +9358,15 @@ class _AuthenticatedMethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> intEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Stream<int> intEchoStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'authenticatedMethodStreaming',
               method: 'intEchoStream',
             );
@@ -9324,17 +9397,17 @@ class _ModuleEndpointSubclass {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> echoString(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> echoString(
+    _ist.TestSessionBuilder sessionBuilder,
     String value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointSubclass',
             method: 'echoString',
           );
@@ -9343,7 +9416,7 @@ class _ModuleEndpointSubclass {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointSubclass',
           methodName: 'echoString',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9351,7 +9424,7 @@ class _ModuleEndpointSubclass {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9359,13 +9432,13 @@ class _ModuleEndpointSubclass {
     });
   }
 
-  _i4.Future<(int, BigInt)> echoRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int, BigInt)> echoRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (int, BigInt) value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointSubclass',
             method: 'echoRecord',
           );
@@ -9374,8 +9447,8 @@ class _ModuleEndpointSubclass {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointSubclass',
           methodName: 'echoRecord',
-          parameters: _i1.testObjectToJson({
-            'value': _i16.Protocol().mapRecordToJson(value),
+          parameters: _ist.testObjectToJson({
+            'value': _igqrxdcj.Protocol().mapRecordToJson(value),
           }),
           serializationManager: _serializationManager,
         );
@@ -9385,7 +9458,8 @@ class _ModuleEndpointSubclass {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol().deserialize<(int, BigInt)>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(int, BigInt)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -9394,13 +9468,13 @@ class _ModuleEndpointSubclass {
     });
   }
 
-  _i4.Future<Set<int>> echoContainer(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<int>> echoContainer(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<int> value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointSubclass',
             method: 'echoContainer',
           );
@@ -9409,7 +9483,7 @@ class _ModuleEndpointSubclass {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointSubclass',
           methodName: 'echoContainer',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9417,7 +9491,7 @@ class _ModuleEndpointSubclass {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<int>>);
+                as _ida.Future<Set<int>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9425,13 +9499,13 @@ class _ModuleEndpointSubclass {
     });
   }
 
-  _i4.Future<_i18.ModuleClass> echoModel(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i18.ModuleClass value,
+  _ida.Future<_iom2gwyu.ModuleClass> echoModel(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iom2gwyu.ModuleClass value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointSubclass',
             method: 'echoModel',
           );
@@ -9440,7 +9514,7 @@ class _ModuleEndpointSubclass {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointSubclass',
           methodName: 'echoModel',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9448,7 +9522,7 @@ class _ModuleEndpointSubclass {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i18.ModuleClass>);
+                as _ida.Future<_iom2gwyu.ModuleClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9463,17 +9537,17 @@ class _ModuleEndpointAdaptation {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> echoString(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> echoString(
+    _ist.TestSessionBuilder sessionBuilder,
     String value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointAdaptation',
             method: 'echoString',
           );
@@ -9482,7 +9556,7 @@ class _ModuleEndpointAdaptation {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointAdaptation',
           methodName: 'echoString',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9490,7 +9564,7 @@ class _ModuleEndpointAdaptation {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9498,14 +9572,14 @@ class _ModuleEndpointAdaptation {
     });
   }
 
-  _i4.Future<(int, BigInt)> echoRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int, BigInt)> echoRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (int, BigInt) value, [
     int? multiplier,
   ]) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointAdaptation',
             method: 'echoRecord',
           );
@@ -9514,8 +9588,8 @@ class _ModuleEndpointAdaptation {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointAdaptation',
           methodName: 'echoRecord',
-          parameters: _i1.testObjectToJson({
-            'value': _i16.Protocol().mapRecordToJson(value),
+          parameters: _ist.testObjectToJson({
+            'value': _igqrxdcj.Protocol().mapRecordToJson(value),
             'multiplier': multiplier,
           }),
           serializationManager: _serializationManager,
@@ -9526,7 +9600,8 @@ class _ModuleEndpointAdaptation {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol().deserialize<(int, BigInt)>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(int, BigInt)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -9535,13 +9610,13 @@ class _ModuleEndpointAdaptation {
     });
   }
 
-  _i4.Future<Set<int>> echoContainer(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<int>> echoContainer(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<int> value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointAdaptation',
             method: 'echoContainer',
           );
@@ -9550,7 +9625,7 @@ class _ModuleEndpointAdaptation {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointAdaptation',
           methodName: 'echoContainer',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9558,7 +9633,7 @@ class _ModuleEndpointAdaptation {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<int>>);
+                as _ida.Future<Set<int>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9566,13 +9641,13 @@ class _ModuleEndpointAdaptation {
     });
   }
 
-  _i4.Future<_i18.ModuleClass> echoModel(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i18.ModuleClass value,
+  _ida.Future<_iom2gwyu.ModuleClass> echoModel(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iom2gwyu.ModuleClass value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointAdaptation',
             method: 'echoModel',
           );
@@ -9581,7 +9656,7 @@ class _ModuleEndpointAdaptation {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointAdaptation',
           methodName: 'echoModel',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9589,7 +9664,7 @@ class _ModuleEndpointAdaptation {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i18.ModuleClass>);
+                as _ida.Future<_iom2gwyu.ModuleClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9604,17 +9679,17 @@ class _ModuleEndpointReduction {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<(int, BigInt)> echoRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int, BigInt)> echoRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (int, BigInt) value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointReduction',
             method: 'echoRecord',
           );
@@ -9623,8 +9698,8 @@ class _ModuleEndpointReduction {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointReduction',
           methodName: 'echoRecord',
-          parameters: _i1.testObjectToJson({
-            'value': _i16.Protocol().mapRecordToJson(value),
+          parameters: _ist.testObjectToJson({
+            'value': _igqrxdcj.Protocol().mapRecordToJson(value),
           }),
           serializationManager: _serializationManager,
         );
@@ -9634,7 +9709,8 @@ class _ModuleEndpointReduction {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol().deserialize<(int, BigInt)>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(int, BigInt)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -9643,13 +9719,13 @@ class _ModuleEndpointReduction {
     });
   }
 
-  _i4.Future<Set<int>> echoContainer(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<int>> echoContainer(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<int> value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointReduction',
             method: 'echoContainer',
           );
@@ -9658,7 +9734,7 @@ class _ModuleEndpointReduction {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointReduction',
           methodName: 'echoContainer',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9666,7 +9742,7 @@ class _ModuleEndpointReduction {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<int>>);
+                as _ida.Future<Set<int>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9674,13 +9750,13 @@ class _ModuleEndpointReduction {
     });
   }
 
-  _i4.Future<_i18.ModuleClass> echoModel(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i18.ModuleClass value,
+  _ida.Future<_iom2gwyu.ModuleClass> echoModel(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iom2gwyu.ModuleClass value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointReduction',
             method: 'echoModel',
           );
@@ -9689,7 +9765,7 @@ class _ModuleEndpointReduction {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointReduction',
           methodName: 'echoModel',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9697,7 +9773,7 @@ class _ModuleEndpointReduction {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i18.ModuleClass>);
+                as _ida.Future<_iom2gwyu.ModuleClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9712,17 +9788,17 @@ class _ModuleEndpointExtension {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> greet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> greet(
+    _ist.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointExtension',
             method: 'greet',
           );
@@ -9731,7 +9807,7 @@ class _ModuleEndpointExtension {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointExtension',
           methodName: 'greet',
-          parameters: _i1.testObjectToJson({'name': name}),
+          parameters: _ist.testObjectToJson({'name': name}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9739,7 +9815,7 @@ class _ModuleEndpointExtension {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9747,10 +9823,12 @@ class _ModuleEndpointExtension {
     });
   }
 
-  _i4.Future<void> ignoredMethod(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> ignoredMethod(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointExtension',
             method: 'ignoredMethod',
           );
@@ -9759,7 +9837,7 @@ class _ModuleEndpointExtension {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointExtension',
           methodName: 'ignoredMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9767,7 +9845,7 @@ class _ModuleEndpointExtension {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9775,13 +9853,13 @@ class _ModuleEndpointExtension {
     });
   }
 
-  _i4.Future<String> echoString(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> echoString(
+    _ist.TestSessionBuilder sessionBuilder,
     String value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointExtension',
             method: 'echoString',
           );
@@ -9790,7 +9868,7 @@ class _ModuleEndpointExtension {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointExtension',
           methodName: 'echoString',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9798,7 +9876,7 @@ class _ModuleEndpointExtension {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9806,13 +9884,13 @@ class _ModuleEndpointExtension {
     });
   }
 
-  _i4.Future<(int, BigInt)> echoRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int, BigInt)> echoRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (int, BigInt) value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointExtension',
             method: 'echoRecord',
           );
@@ -9821,8 +9899,8 @@ class _ModuleEndpointExtension {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointExtension',
           methodName: 'echoRecord',
-          parameters: _i1.testObjectToJson({
-            'value': _i16.Protocol().mapRecordToJson(value),
+          parameters: _ist.testObjectToJson({
+            'value': _igqrxdcj.Protocol().mapRecordToJson(value),
           }),
           serializationManager: _serializationManager,
         );
@@ -9832,7 +9910,8 @@ class _ModuleEndpointExtension {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol().deserialize<(int, BigInt)>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(int, BigInt)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -9841,13 +9920,13 @@ class _ModuleEndpointExtension {
     });
   }
 
-  _i4.Future<Set<int>> echoContainer(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<int>> echoContainer(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<int> value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointExtension',
             method: 'echoContainer',
           );
@@ -9856,7 +9935,7 @@ class _ModuleEndpointExtension {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointExtension',
           methodName: 'echoContainer',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9864,7 +9943,7 @@ class _ModuleEndpointExtension {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<int>>);
+                as _ida.Future<Set<int>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9872,13 +9951,13 @@ class _ModuleEndpointExtension {
     });
   }
 
-  _i4.Future<_i18.ModuleClass> echoModel(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i18.ModuleClass value,
+  _ida.Future<_iom2gwyu.ModuleClass> echoModel(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iom2gwyu.ModuleClass value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleEndpointExtension',
             method: 'echoModel',
           );
@@ -9887,7 +9966,7 @@ class _ModuleEndpointExtension {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleEndpointExtension',
           methodName: 'echoModel',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9895,7 +9974,7 @@ class _ModuleEndpointExtension {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i18.ModuleClass>);
+                as _ida.Future<_iom2gwyu.ModuleClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9910,16 +9989,16 @@ class _ModuleSerializationEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> serializeModuleObject(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> serializeModuleObject(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleSerialization',
             method: 'serializeModuleObject',
           );
@@ -9928,7 +10007,7 @@ class _ModuleSerializationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleSerialization',
           methodName: 'serializeModuleObject',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9936,7 +10015,7 @@ class _ModuleSerializationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9944,13 +10023,13 @@ class _ModuleSerializationEndpoint {
     });
   }
 
-  _i4.Future<_i18.ModuleClass> modifyModuleObject(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i18.ModuleClass object,
+  _ida.Future<_iom2gwyu.ModuleClass> modifyModuleObject(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iom2gwyu.ModuleClass object,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleSerialization',
             method: 'modifyModuleObject',
           );
@@ -9959,7 +10038,7 @@ class _ModuleSerializationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleSerialization',
           methodName: 'modifyModuleObject',
-          parameters: _i1.testObjectToJson({'object': object}),
+          parameters: _ist.testObjectToJson({'object': object}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9967,7 +10046,7 @@ class _ModuleSerializationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i18.ModuleClass>);
+                as _ida.Future<_iom2gwyu.ModuleClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -9975,13 +10054,13 @@ class _ModuleSerializationEndpoint {
     });
   }
 
-  _i4.Future<_i19.SharedModuleTable> modifySharedModuleTable(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i19.SharedModuleTable object,
+  _ida.Future<_iyx9etqn.SharedModuleTable> modifySharedModuleTable(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iyx9etqn.SharedModuleTable object,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleSerialization',
             method: 'modifySharedModuleTable',
           );
@@ -9990,7 +10069,7 @@ class _ModuleSerializationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleSerialization',
           methodName: 'modifySharedModuleTable',
-          parameters: _i1.testObjectToJson({'object': object}),
+          parameters: _ist.testObjectToJson({'object': object}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -9998,7 +10077,7 @@ class _ModuleSerializationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i19.SharedModuleTable>);
+                as _ida.Future<_iyx9etqn.SharedModuleTable>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10006,12 +10085,12 @@ class _ModuleSerializationEndpoint {
     });
   }
 
-  _i4.Future<_i20.ModuleDatatype> serializeNestedModuleObject(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_idarivwd.ModuleDatatype> serializeNestedModuleObject(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'moduleSerialization',
             method: 'serializeNestedModuleObject',
           );
@@ -10020,7 +10099,7 @@ class _ModuleSerializationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'moduleSerialization',
           methodName: 'serializeNestedModuleObject',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -10028,7 +10107,7 @@ class _ModuleSerializationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i20.ModuleDatatype>);
+                as _ida.Future<_idarivwd.ModuleDatatype>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10043,20 +10122,20 @@ class _NamedParametersEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> namedParametersMethod(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> namedParametersMethod(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int namedInt,
     required int intWithDefaultValue,
     int? nullableInt,
     int? nullableIntWithDefaultValue,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'namedParameters',
             method: 'namedParametersMethod',
           );
@@ -10065,7 +10144,7 @@ class _NamedParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'namedParameters',
           methodName: 'namedParametersMethod',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'namedInt': namedInt,
             'intWithDefaultValue': intWithDefaultValue,
             'nullableInt': nullableInt,
@@ -10078,7 +10157,7 @@ class _NamedParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10086,14 +10165,14 @@ class _NamedParametersEndpoint {
     });
   }
 
-  _i4.Future<bool> namedParametersMethodEqualInts(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> namedParametersMethodEqualInts(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int namedInt,
     int? nullableInt,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'namedParameters',
             method: 'namedParametersMethodEqualInts',
           );
@@ -10102,7 +10181,7 @@ class _NamedParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'namedParameters',
           methodName: 'namedParametersMethodEqualInts',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'namedInt': namedInt,
             'nullableInt': nullableInt,
           }),
@@ -10113,7 +10192,7 @@ class _NamedParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10128,17 +10207,17 @@ class _OptionalParametersEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<int?> returnOptionalInt(
-    _i1.TestSessionBuilder sessionBuilder, [
+  _ida.Future<int?> returnOptionalInt(
+    _ist.TestSessionBuilder sessionBuilder, [
     int? optionalInt,
   ]) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'optionalParameters',
             method: 'returnOptionalInt',
           );
@@ -10147,7 +10226,7 @@ class _OptionalParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'optionalParameters',
           methodName: 'returnOptionalInt',
-          parameters: _i1.testObjectToJson({'optionalInt': optionalInt}),
+          parameters: _ist.testObjectToJson({'optionalInt': optionalInt}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -10155,7 +10234,7 @@ class _OptionalParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int?>);
+                as _ida.Future<int?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10170,17 +10249,17 @@ class _InheritancePolymorphismTestEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<(String, _i21.PolymorphicParent)> polymorphicRoundtrip(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i21.PolymorphicParent parent,
+  _ida.Future<(String, _ieub4zqi.PolymorphicParent)> polymorphicRoundtrip(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ieub4zqi.PolymorphicParent parent,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'inheritancePolymorphismTest',
             method: 'polymorphicRoundtrip',
           );
@@ -10189,7 +10268,7 @@ class _InheritancePolymorphismTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'inheritancePolymorphismTest',
           methodName: 'polymorphicRoundtrip',
-          parameters: _i1.testObjectToJson({'parent': parent}),
+          parameters: _ist.testObjectToJson({'parent': parent}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -10198,8 +10277,8 @@ class _InheritancePolymorphismTestEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<(String, _i21.PolymorphicParent)>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<(String, _ieub4zqi.PolymorphicParent)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10208,16 +10287,17 @@ class _InheritancePolymorphismTestEndpoint {
     });
   }
 
-  _i4.Stream<(String, _i21.PolymorphicParent)> polymorphicStreamingRoundtrip(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<_i21.PolymorphicParent> stream,
+  _ida.Stream<(String, _ieub4zqi.PolymorphicParent)>
+  polymorphicStreamingRoundtrip(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<_ieub4zqi.PolymorphicParent> stream,
   ) {
     var _localTestStreamManager =
-        _i1.TestStreamManager<(String, _i21.PolymorphicParent)>();
-    _i1.callStreamFunctionAndHandleExceptions(
+        _ist.TestStreamManager<(String, _ieub4zqi.PolymorphicParent)>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'inheritancePolymorphismTest',
               method: 'polymorphicStreamingRoundtrip',
             );
@@ -10241,13 +10321,14 @@ class _InheritancePolymorphismTestEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<_i22.PolymorphicChildContainer> polymorphicContainerRoundtrip(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i22.PolymorphicChildContainer container,
+  _ida.Future<_ioyh3y7j.PolymorphicChildContainer>
+  polymorphicContainerRoundtrip(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ioyh3y7j.PolymorphicChildContainer container,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'inheritancePolymorphismTest',
             method: 'polymorphicContainerRoundtrip',
           );
@@ -10256,7 +10337,7 @@ class _InheritancePolymorphismTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'inheritancePolymorphismTest',
           methodName: 'polymorphicContainerRoundtrip',
-          parameters: _i1.testObjectToJson({'container': container}),
+          parameters: _ist.testObjectToJson({'container': container}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -10264,7 +10345,7 @@ class _InheritancePolymorphismTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i22.PolymorphicChildContainer>);
+                as _ida.Future<_ioyh3y7j.PolymorphicChildContainer>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10272,14 +10353,14 @@ class _InheritancePolymorphismTestEndpoint {
     });
   }
 
-  _i4.Future<_i23.ModulePolymorphicChildContainer>
+  _ida.Future<_ij2aep0j.ModulePolymorphicChildContainer>
   polymorphicModuleContainerRoundtrip(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i23.ModulePolymorphicChildContainer container,
+    _ist.TestSessionBuilder sessionBuilder,
+    _ij2aep0j.ModulePolymorphicChildContainer container,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'inheritancePolymorphismTest',
             method: 'polymorphicModuleContainerRoundtrip',
           );
@@ -10288,7 +10369,7 @@ class _InheritancePolymorphismTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'inheritancePolymorphismTest',
           methodName: 'polymorphicModuleContainerRoundtrip',
-          parameters: _i1.testObjectToJson({'container': container}),
+          parameters: _ist.testObjectToJson({'container': container}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -10296,7 +10377,7 @@ class _InheritancePolymorphismTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i23.ModulePolymorphicChildContainer>);
+                as _ida.Future<_ij2aep0j.ModulePolymorphicChildContainer>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10311,17 +10392,17 @@ class _RecordParametersEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<(int,)> returnRecordOfInt(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int,)> returnRecordOfInt(
+    _ist.TestSessionBuilder sessionBuilder,
     (int,) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnRecordOfInt',
           );
@@ -10330,8 +10411,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfInt',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10340,7 +10421,7 @@ class _RecordParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((record) => _i16.Protocol().deserialize<(int,)>(record));
+            .then((record) => _igqrxdcj.Protocol().deserialize<(int,)>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10348,13 +10429,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(int,)?> returnNullableRecordOfInt(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int,)?> returnNullableRecordOfInt(
+    _ist.TestSessionBuilder sessionBuilder,
     (int,)? record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNullableRecordOfInt',
           );
@@ -10363,8 +10444,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordOfInt',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10373,7 +10454,9 @@ class _RecordParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((record) => _i16.Protocol().deserialize<(int,)?>(record));
+            .then(
+              (record) => _igqrxdcj.Protocol().deserialize<(int,)?>(record),
+            );
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10381,13 +10464,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(int?,)> returnRecordOfNullableInt(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int?,)> returnRecordOfNullableInt(
+    _ist.TestSessionBuilder sessionBuilder,
     (int?,) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnRecordOfNullableInt',
           );
@@ -10396,8 +10479,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfNullableInt',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10406,7 +10489,9 @@ class _RecordParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((record) => _i16.Protocol().deserialize<(int?,)>(record));
+            .then(
+              (record) => _igqrxdcj.Protocol().deserialize<(int?,)>(record),
+            );
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10414,13 +10499,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(int?,)?> returnNullableRecordOfNullableInt(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int?,)?> returnNullableRecordOfNullableInt(
+    _ist.TestSessionBuilder sessionBuilder,
     (int?,)? record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNullableRecordOfNullableInt',
           );
@@ -10429,8 +10514,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordOfNullableInt',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10439,7 +10524,9 @@ class _RecordParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((record) => _i16.Protocol().deserialize<(int?,)?>(record));
+            .then(
+              (record) => _igqrxdcj.Protocol().deserialize<(int?,)?>(record),
+            );
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10447,15 +10534,15 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Stream<(int?,)?> streamNullableRecordOfNullableInt(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<(int?,)?> values,
+  _ida.Stream<(int?,)?> streamNullableRecordOfNullableInt(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<(int?,)?> values,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<(int?,)?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<(int?,)?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'recordParameters',
               method: 'streamNullableRecordOfNullableInt',
             );
@@ -10479,13 +10566,13 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<(int, String)> returnIntStringRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int, String)> returnIntStringRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (int, String) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnIntStringRecord',
           );
@@ -10494,8 +10581,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnIntStringRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10505,7 +10592,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol().deserialize<(int, String)>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(int, String)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10514,13 +10602,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(int, String)?> returnNullableIntStringRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int, String)?> returnNullableIntStringRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (int, String)? record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNullableIntStringRecord',
           );
@@ -10529,8 +10617,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableIntStringRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10540,7 +10628,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol().deserialize<(int, String)?>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(int, String)?>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10549,13 +10638,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(int, _i8.SimpleData)> returnIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    (int, _i8.SimpleData) record,
+  _ida.Future<(int, _i685tvwm.SimpleData)> returnIntSimpleDataRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    (int, _i685tvwm.SimpleData) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnIntSimpleDataRecord',
           );
@@ -10564,8 +10653,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10575,8 +10664,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _i16.Protocol().deserialize<(int, _i8.SimpleData)>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<(int, _i685tvwm.SimpleData)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10585,13 +10674,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(int, _i8.SimpleData)?> returnNullableIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    (int, _i8.SimpleData)? record,
+  _ida.Future<(int, _i685tvwm.SimpleData)?> returnNullableIntSimpleDataRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    (int, _i685tvwm.SimpleData)? record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNullableIntSimpleDataRecord',
           );
@@ -10600,8 +10689,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10611,8 +10700,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _i16.Protocol().deserialize<(int, _i8.SimpleData)?>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<(int, _i685tvwm.SimpleData)?>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10621,13 +10710,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(Map<String, int>,)> returnStringKeyedMapRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(Map<String, int>,)> returnStringKeyedMapRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (Map<String, int>,) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnStringKeyedMapRecord',
           );
@@ -10636,8 +10725,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnStringKeyedMapRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10648,7 +10737,7 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) =>
-                  _i16.Protocol().deserialize<(Map<String, int>,)>(record),
+                  _igqrxdcj.Protocol().deserialize<(Map<String, int>,)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10657,13 +10746,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(Map<int, int>,)> returnNonStringKeyedMapRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(Map<int, int>,)> returnNonStringKeyedMapRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (Map<int, int>,) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNonStringKeyedMapRecord',
           );
@@ -10672,8 +10761,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNonStringKeyedMapRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10683,7 +10772,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol().deserialize<(Map<int, int>,)>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(Map<int, int>,)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10692,13 +10782,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(Set<(int,)>,)> returnSetWithNestedRecordRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(Set<(int,)>,)> returnSetWithNestedRecordRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (Set<(int,)>,) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnSetWithNestedRecordRecord',
           );
@@ -10707,8 +10797,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnSetWithNestedRecordRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10718,7 +10808,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol().deserialize<(Set<(int,)>,)>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(Set<(int,)>,)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10727,13 +10818,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<({int number, String text})> returnNamedIntStringRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<({int number, String text})> returnNamedIntStringRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     ({int number, String text}) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNamedIntStringRecord',
           );
@@ -10742,8 +10833,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNamedIntStringRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10753,7 +10844,7 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
+              (record) => _igqrxdcj.Protocol()
                   .deserialize<({int number, String text})>(record),
             );
         return _localReturnValue;
@@ -10763,13 +10854,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<({int number, String text})?> returnNamedNullableIntStringRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<({int number, String text})?> returnNamedNullableIntStringRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     ({int number, String text})? record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNamedNullableIntStringRecord',
           );
@@ -10778,8 +10869,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNamedNullableIntStringRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10789,7 +10880,7 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
+              (record) => _igqrxdcj.Protocol()
                   .deserialize<({int number, String text})?>(record),
             );
         return _localReturnValue;
@@ -10799,14 +10890,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<({_i8.SimpleData data, int number})>
+  _ida.Future<({_i685tvwm.SimpleData data, int number})>
   returnRecordOfNamedIntAndObject(
-    _i1.TestSessionBuilder sessionBuilder,
-    ({_i8.SimpleData data, int number}) record,
+    _ist.TestSessionBuilder sessionBuilder,
+    ({_i685tvwm.SimpleData data, int number}) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnRecordOfNamedIntAndObject',
           );
@@ -10815,8 +10906,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfNamedIntAndObject',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10826,8 +10917,10 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<({_i8.SimpleData data, int number})>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<({_i685tvwm.SimpleData data, int number})>(
+                    record,
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -10836,14 +10929,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<({_i8.SimpleData data, int number})?>
+  _ida.Future<({_i685tvwm.SimpleData data, int number})?>
   returnNullableRecordOfNamedIntAndObject(
-    _i1.TestSessionBuilder sessionBuilder,
-    ({_i8.SimpleData data, int number})? record,
+    _ist.TestSessionBuilder sessionBuilder,
+    ({_i685tvwm.SimpleData data, int number})? record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNullableRecordOfNamedIntAndObject',
           );
@@ -10852,8 +10945,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordOfNamedIntAndObject',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10863,8 +10956,10 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<({_i8.SimpleData data, int number})?>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<({_i685tvwm.SimpleData data, int number})?>(
+                    record,
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -10873,14 +10968,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<({_i8.SimpleData? data, int? number})>
+  _ida.Future<({_i685tvwm.SimpleData? data, int? number})>
   returnRecordOfNamedNullableIntAndNullableObject(
-    _i1.TestSessionBuilder sessionBuilder,
-    ({_i8.SimpleData? data, int? number}) record,
+    _ist.TestSessionBuilder sessionBuilder,
+    ({_i685tvwm.SimpleData? data, int? number}) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnRecordOfNamedNullableIntAndNullableObject',
           );
@@ -10889,8 +10984,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfNamedNullableIntAndNullableObject',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10900,8 +10995,10 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<({_i8.SimpleData? data, int? number})>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<({_i685tvwm.SimpleData? data, int? number})>(
+                    record,
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -10910,13 +11007,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<({Map<int, int> intIntMap})> returnNamedNonStringKeyedMapRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<({Map<int, int> intIntMap})> returnNamedNonStringKeyedMapRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     ({Map<int, int> intIntMap}) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNamedNonStringKeyedMapRecord',
           );
@@ -10925,8 +11022,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNamedNonStringKeyedMapRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10936,7 +11033,7 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
+              (record) => _igqrxdcj.Protocol()
                   .deserialize<({Map<int, int> intIntMap})>(record),
             );
         return _localReturnValue;
@@ -10946,13 +11043,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<({Set<(bool,)> boolSet})> returnNamedSetWithNestedRecordRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<({Set<(bool,)> boolSet})> returnNamedSetWithNestedRecordRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     ({Set<(bool,)> boolSet}) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNamedSetWithNestedRecordRecord',
           );
@@ -10961,8 +11058,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNamedSetWithNestedRecordRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10972,8 +11069,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _i16.Protocol().deserialize<({Set<(bool,)> boolSet})>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<({Set<(bool,)> boolSet})>(record),
             );
         return _localReturnValue;
       } finally {
@@ -10982,14 +11079,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(Map<(Map<int, String>, String), String>,)>
+  _ida.Future<(Map<(Map<int, String>, String), String>,)>
   returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+    _ist.TestSessionBuilder sessionBuilder,
     (Map<(Map<int, String>, String), String>,) map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method:
                 'returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord',
@@ -11000,8 +11097,8 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName:
               'returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapRecordToJson(map),
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapRecordToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -11011,7 +11108,7 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
+              (record) => _igqrxdcj.Protocol()
                   .deserialize<(Map<(Map<int, String>, String), String>,)>(
                     record,
                   ),
@@ -11023,13 +11120,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(int, {_i8.SimpleData data})> returnRecordTypedef(
-    _i1.TestSessionBuilder sessionBuilder,
-    (int, {_i8.SimpleData data}) record,
+  _ida.Future<(int, {_i685tvwm.SimpleData data})> returnRecordTypedef(
+    _ist.TestSessionBuilder sessionBuilder,
+    (int, {_i685tvwm.SimpleData data}) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnRecordTypedef',
           );
@@ -11038,8 +11135,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordTypedef',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -11049,8 +11146,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<(int, {_i8.SimpleData data})>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<(int, {_i685tvwm.SimpleData data})>(record),
             );
         return _localReturnValue;
       } finally {
@@ -11059,13 +11156,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<(int, {_i8.SimpleData data})?> returnNullableRecordTypedef(
-    _i1.TestSessionBuilder sessionBuilder,
-    (int, {_i8.SimpleData data})? record,
+  _ida.Future<(int, {_i685tvwm.SimpleData data})?> returnNullableRecordTypedef(
+    _ist.TestSessionBuilder sessionBuilder,
+    (int, {_i685tvwm.SimpleData data})? record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNullableRecordTypedef',
           );
@@ -11074,8 +11171,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordTypedef',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -11085,8 +11182,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<(int, {_i8.SimpleData data})?>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<(int, {_i685tvwm.SimpleData data})?>(record),
             );
         return _localReturnValue;
       } finally {
@@ -11095,13 +11192,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<List<(int, _i8.SimpleData)>> returnListOfIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<(int, _i8.SimpleData)> recordList,
+  _ida.Future<List<(int, _i685tvwm.SimpleData)>>
+  returnListOfIntSimpleDataRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<(int, _i685tvwm.SimpleData)> recordList,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnListOfIntSimpleDataRecord',
           );
@@ -11110,8 +11208,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnListOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'recordList': _i16.Protocol().mapContainerToJson(recordList),
+          parameters: _ist.testObjectToJson({
+            'recordList': _igqrxdcj.Protocol().mapContainerToJson(recordList),
           }),
           serializationManager: _serializationManager,
         );
@@ -11121,8 +11219,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<List<(int, _i8.SimpleData)>>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<List<(int, _i685tvwm.SimpleData)>>(record),
             );
         return _localReturnValue;
       } finally {
@@ -11131,14 +11229,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<List<(int, _i8.SimpleData)?>>
+  _ida.Future<List<(int, _i685tvwm.SimpleData)?>>
   returnListOfNullableIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<(int, _i8.SimpleData)?> record,
+    _ist.TestSessionBuilder sessionBuilder,
+    List<(int, _i685tvwm.SimpleData)?> record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnListOfNullableIntSimpleDataRecord',
           );
@@ -11147,8 +11245,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnListOfNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapContainerToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapContainerToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -11158,8 +11256,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<List<(int, _i8.SimpleData)?>>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<List<(int, _i685tvwm.SimpleData)?>>(record),
             );
         return _localReturnValue;
       } finally {
@@ -11168,13 +11266,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<(int, _i8.SimpleData)>> returnSetOfIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    Set<(int, _i8.SimpleData)> recordSet,
+  _ida.Future<Set<(int, _i685tvwm.SimpleData)>> returnSetOfIntSimpleDataRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    Set<(int, _i685tvwm.SimpleData)> recordSet,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnSetOfIntSimpleDataRecord',
           );
@@ -11183,8 +11281,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnSetOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'recordSet': _i16.Protocol().mapContainerToJson(recordSet),
+          parameters: _ist.testObjectToJson({
+            'recordSet': _igqrxdcj.Protocol().mapContainerToJson(recordSet),
           }),
           serializationManager: _serializationManager,
         );
@@ -11194,8 +11292,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<Set<(int, _i8.SimpleData)>>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<Set<(int, _i685tvwm.SimpleData)>>(record),
             );
         return _localReturnValue;
       } finally {
@@ -11204,14 +11302,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<(int, _i8.SimpleData)?>>
+  _ida.Future<Set<(int, _i685tvwm.SimpleData)?>>
   returnSetOfNullableIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    Set<(int, _i8.SimpleData)?> set,
+    _ist.TestSessionBuilder sessionBuilder,
+    Set<(int, _i685tvwm.SimpleData)?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnSetOfNullableIntSimpleDataRecord',
           );
@@ -11220,8 +11318,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnSetOfNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'set': _i16.Protocol().mapContainerToJson(set),
+          parameters: _ist.testObjectToJson({
+            'set': _igqrxdcj.Protocol().mapContainerToJson(set),
           }),
           serializationManager: _serializationManager,
         );
@@ -11231,8 +11329,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<Set<(int, _i8.SimpleData)?>>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<Set<(int, _i685tvwm.SimpleData)?>>(record),
             );
         return _localReturnValue;
       } finally {
@@ -11241,14 +11339,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<(int, _i8.SimpleData)>?>
+  _ida.Future<Set<(int, _i685tvwm.SimpleData)>?>
   returnNullableSetOfIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    Set<(int, _i8.SimpleData)>? recordSet,
+    _ist.TestSessionBuilder sessionBuilder,
+    Set<(int, _i685tvwm.SimpleData)>? recordSet,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNullableSetOfIntSimpleDataRecord',
           );
@@ -11257,10 +11355,10 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableSetOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'recordSet': recordSet == null
                 ? null
-                : _i16.Protocol().mapContainerToJson(recordSet),
+                : _igqrxdcj.Protocol().mapContainerToJson(recordSet),
           }),
           serializationManager: _serializationManager,
         );
@@ -11270,8 +11368,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<Set<(int, _i8.SimpleData)>?>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<Set<(int, _i685tvwm.SimpleData)>?>(record),
             );
         return _localReturnValue;
       } finally {
@@ -11280,14 +11378,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<String, (int, _i8.SimpleData)>>
+  _ida.Future<Map<String, (int, _i685tvwm.SimpleData)>>
   returnStringMapOfIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, (int, _i8.SimpleData)> map,
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, (int, _i685tvwm.SimpleData)> map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnStringMapOfIntSimpleDataRecord',
           );
@@ -11296,8 +11394,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -11307,82 +11405,8 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
-                  .deserialize<Map<String, (int, _i8.SimpleData)>>(record),
-            );
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<String, (int, _i8.SimpleData)?>>
-  returnStringMapOfNullableIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<String, (int, _i8.SimpleData)?> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'recordParameters',
-            method: 'returnStringMapOfNullableIntSimpleDataRecord',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'recordParameters',
-          methodName: 'returnStringMapOfNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await _localCallContext.method
-            .call(
-              _localUniqueSession,
-              _localCallContext.arguments,
-            )
-            .then(
-              (record) => _i16.Protocol()
-                  .deserialize<Map<String, (int, _i8.SimpleData)?>>(record),
-            );
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<Map<(String, int), (int, _i8.SimpleData)>>
-  returnRecordMapOfIntSimpleDataRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    Map<(String, int), (int, _i8.SimpleData)> map,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'recordParameters',
-            method: 'returnRecordMapOfIntSimpleDataRecord',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'recordParameters',
-          methodName: 'returnRecordMapOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'map': _i16.Protocol().mapContainerToJson(map),
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await _localCallContext.method
-            .call(
-              _localUniqueSession,
-              _localCallContext.arguments,
-            )
-            .then(
-              (record) => _i16.Protocol()
-                  .deserialize<Map<(String, int), (int, _i8.SimpleData)>>(
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<Map<String, (int, _i685tvwm.SimpleData)>>(
                     record,
                   ),
             );
@@ -11393,23 +11417,24 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<Map<String, List<Set<(int,)>>>> returnStringMapOfListOfRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    Set<List<Map<String, (int,)>>> input,
+  _ida.Future<Map<String, (int, _i685tvwm.SimpleData)?>>
+  returnStringMapOfNullableIntSimpleDataRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<String, (int, _i685tvwm.SimpleData)?> map,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
-            method: 'returnStringMapOfListOfRecord',
+            method: 'returnStringMapOfNullableIntSimpleDataRecord',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
-          methodName: 'returnStringMapOfListOfRecord',
-          parameters: _i1.testObjectToJson({
-            'input': _i16.Protocol().mapContainerToJson(input),
+          methodName: 'returnStringMapOfNullableIntSimpleDataRecord',
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -11419,7 +11444,84 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<Map<String, (int, _i685tvwm.SimpleData)?>>(
+                    record,
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<(String, int), (int, _i685tvwm.SimpleData)>>
+  returnRecordMapOfIntSimpleDataRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<(String, int), (int, _i685tvwm.SimpleData)> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'recordParameters',
+            method: 'returnRecordMapOfIntSimpleDataRecord',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnRecordMapOfIntSimpleDataRecord',
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<Map<(String, int), (int, _i685tvwm.SimpleData)>>(
+                    record,
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<String, List<Set<(int,)>>>> returnStringMapOfListOfRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    Set<List<Map<String, (int,)>>> input,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'recordParameters',
+            method: 'returnStringMapOfListOfRecord',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnStringMapOfListOfRecord',
+          parameters: _ist.testObjectToJson({
+            'input': _igqrxdcj.Protocol().mapContainerToJson(input),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) => _igqrxdcj.Protocol()
                   .deserialize<Map<String, List<Set<(int,)>>>>(record),
             );
         return _localReturnValue;
@@ -11429,14 +11531,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<({(_i8.SimpleData, double) namedSubRecord})>
+  _ida.Future<({(_i685tvwm.SimpleData, double) namedSubRecord})>
   returnNestedNamedRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    ({(_i8.SimpleData, double) namedSubRecord}) record,
+    _ist.TestSessionBuilder sessionBuilder,
+    ({(_i685tvwm.SimpleData, double) namedSubRecord}) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'returnNestedNamedRecord',
           );
@@ -11445,86 +11547,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNestedNamedRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await _localCallContext.method
-            .call(
-              _localUniqueSession,
-              _localCallContext.arguments,
-            )
-            .then(
-              (record) => _i16.Protocol()
-                  .deserialize<({(_i8.SimpleData, double) namedSubRecord})>(
-                    record,
-                  ),
-            );
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<({(_i8.SimpleData, double)? namedSubRecord})>
-  returnNestedNullableNamedRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    ({(_i8.SimpleData, double)? namedSubRecord}) record,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'recordParameters',
-            method: 'returnNestedNullableNamedRecord',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'recordParameters',
-          methodName: 'returnNestedNullableNamedRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await _localCallContext.method
-            .call(
-              _localUniqueSession,
-              _localCallContext.arguments,
-            )
-            .then(
-              (record) => _i16.Protocol()
-                  .deserialize<({(_i8.SimpleData, double)? namedSubRecord})>(
-                    record,
-                  ),
-            );
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i4.Future<((int, String), {(_i8.SimpleData, double) namedSubRecord})>
-  returnNestedPositionalAndNamedRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    ((int, String), {(_i8.SimpleData, double) namedSubRecord}) record,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'recordParameters',
-            method: 'returnNestedPositionalAndNamedRecord',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'recordParameters',
-          methodName: 'returnNestedPositionalAndNamedRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -11535,8 +11559,8 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) =>
-                  _i16.Protocol().deserialize<
-                    ((int, String), {(_i8.SimpleData, double) namedSubRecord})
+                  _igqrxdcj.Protocol().deserialize<
+                    ({(_i685tvwm.SimpleData, double) namedSubRecord})
                   >(record),
             );
         return _localReturnValue;
@@ -11546,24 +11570,24 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<List<((int, String), {(_i8.SimpleData, double) namedSubRecord})>>
-  returnListOfNestedPositionalAndNamedRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<((int, String), {(_i8.SimpleData, double) namedSubRecord})> recordList,
+  _ida.Future<({(_i685tvwm.SimpleData, double)? namedSubRecord})>
+  returnNestedNullableNamedRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    ({(_i685tvwm.SimpleData, double)? namedSubRecord}) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
-            method: 'returnListOfNestedPositionalAndNamedRecord',
+            method: 'returnNestedNullableNamedRecord',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
-          methodName: 'returnListOfNestedPositionalAndNamedRecord',
-          parameters: _i1.testObjectToJson({
-            'recordList': _i16.Protocol().mapContainerToJson(recordList),
+          methodName: 'returnNestedNullableNamedRecord',
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -11574,9 +11598,96 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) =>
-                  _i16.Protocol().deserialize<
+                  _igqrxdcj.Protocol().deserialize<
+                    ({(_i685tvwm.SimpleData, double)? namedSubRecord})
+                  >(record),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<((int, String), {(_i685tvwm.SimpleData, double) namedSubRecord})>
+  returnNestedPositionalAndNamedRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    ((int, String), {(_i685tvwm.SimpleData, double) namedSubRecord}) record,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'recordParameters',
+            method: 'returnNestedPositionalAndNamedRecord',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnNestedPositionalAndNamedRecord',
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<
+                    (
+                      (int, String), {
+                      (_i685tvwm.SimpleData, double) namedSubRecord,
+                    })
+                  >(record),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<
+    List<((int, String), {(_i685tvwm.SimpleData, double) namedSubRecord})>
+  >
+  returnListOfNestedPositionalAndNamedRecord(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<((int, String), {(_i685tvwm.SimpleData, double) namedSubRecord})>
+    recordList,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'recordParameters',
+            method: 'returnListOfNestedPositionalAndNamedRecord',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnListOfNestedPositionalAndNamedRecord',
+          parameters: _ist.testObjectToJson({
+            'recordList': _igqrxdcj.Protocol().mapContainerToJson(recordList),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<
                     List<
-                      ((int, String), {(_i8.SimpleData, double) namedSubRecord})
+                      (
+                        (int, String), {
+                        (_i685tvwm.SimpleData, double) namedSubRecord,
+                      })
                     >
                   >(record),
             );
@@ -11587,24 +11698,28 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Stream<List<((int, String), {(_i8.SimpleData, double) namedSubRecord})?>?>
+  _ida.Stream<
+    List<((int, String), {(_i685tvwm.SimpleData, double) namedSubRecord})?>?
+  >
   streamNullableListOfNullableNestedPositionalAndNamedRecord(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<((int, String), {(_i8.SimpleData, double) namedSubRecord})?>?
+    _ist.TestSessionBuilder sessionBuilder,
+    List<((int, String), {(_i685tvwm.SimpleData, double) namedSubRecord})?>?
     initialValue,
-    _i4.Stream<
-      List<((int, String), {(_i8.SimpleData, double) namedSubRecord})?>?
+    _ida.Stream<
+      List<((int, String), {(_i685tvwm.SimpleData, double) namedSubRecord})?>?
     >
     values,
   ) {
     var _localTestStreamManager =
-        _i1.TestStreamManager<
-          List<((int, String), {(_i8.SimpleData, double) namedSubRecord})?>?
+        _ist.TestStreamManager<
+          List<
+            ((int, String), {(_i685tvwm.SimpleData, double) namedSubRecord})?
+          >?
         >();
-    _i1.callStreamFunctionAndHandleExceptions(
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'recordParameters',
               method:
                   'streamNullableListOfNullableNestedPositionalAndNamedRecord',
@@ -11618,9 +11733,9 @@ class _RecordParametersEndpoint {
               arguments: {
                 'initialValue': initialValue == null
                     ? null
-                    : _i24.jsonDecode(
-                        _i2.SerializationManager.encode(
-                          _i16.Protocol().mapContainerToJson(initialValue),
+                    : _idc.jsonDecode(
+                        _is.SerializationManager.encode(
+                          _igqrxdcj.Protocol().mapContainerToJson(initialValue),
                         ),
                       ),
               },
@@ -11638,13 +11753,13 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<_i25.TypesRecord> echoModelClassWithRecordField(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i25.TypesRecord value,
+  _ida.Future<_ix95ig49.TypesRecord> echoModelClassWithRecordField(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ix95ig49.TypesRecord value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'echoModelClassWithRecordField',
           );
@@ -11653,7 +11768,7 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'echoModelClassWithRecordField',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -11661,7 +11776,7 @@ class _RecordParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i25.TypesRecord>);
+                as _ida.Future<_ix95ig49.TypesRecord>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -11669,13 +11784,13 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<_i25.TypesRecord?> echoNullableModelClassWithRecordField(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i25.TypesRecord? value,
+  _ida.Future<_ix95ig49.TypesRecord?> echoNullableModelClassWithRecordField(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ix95ig49.TypesRecord? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'echoNullableModelClassWithRecordField',
           );
@@ -11684,7 +11799,7 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'echoNullableModelClassWithRecordField',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -11692,7 +11807,7 @@ class _RecordParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i25.TypesRecord?>);
+                as _ida.Future<_ix95ig49.TypesRecord?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -11700,14 +11815,14 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Future<_i18.ModuleClass?>
+  _ida.Future<_iom2gwyu.ModuleClass?>
   echoNullableModelClassWithRecordFieldFromExternalModule(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i18.ModuleClass? value,
+    _ist.TestSessionBuilder sessionBuilder,
+    _iom2gwyu.ModuleClass? value,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'echoNullableModelClassWithRecordFieldFromExternalModule',
           );
@@ -11716,7 +11831,7 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'echoNullableModelClassWithRecordFieldFromExternalModule',
-          parameters: _i1.testObjectToJson({'value': value}),
+          parameters: _ist.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -11724,7 +11839,7 @@ class _RecordParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i18.ModuleClass?>);
+                as _ida.Future<_iom2gwyu.ModuleClass?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -11732,16 +11847,17 @@ class _RecordParametersEndpoint {
     });
   }
 
-  _i4.Stream<_i25.TypesRecord> streamOfModelClassWithRecordField(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i25.TypesRecord initialValue,
-    _i4.Stream<_i25.TypesRecord> values,
+  _ida.Stream<_ix95ig49.TypesRecord> streamOfModelClassWithRecordField(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ix95ig49.TypesRecord initialValue,
+    _ida.Stream<_ix95ig49.TypesRecord> values,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i25.TypesRecord>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_ix95ig49.TypesRecord>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'recordParameters',
               method: 'streamOfModelClassWithRecordField',
             );
@@ -11751,8 +11867,8 @@ class _RecordParametersEndpoint {
               endpointPath: 'recordParameters',
               methodName: 'streamOfModelClassWithRecordField',
               arguments: {
-                'initialValue': _i24.jsonDecode(
-                  _i2.SerializationManager.encode(initialValue),
+                'initialValue': _idc.jsonDecode(
+                  _is.SerializationManager.encode(initialValue),
                 ),
               },
               requestedInputStreams: ['values'],
@@ -11769,16 +11885,17 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i25.TypesRecord?> streamOfNullableModelClassWithRecordField(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i25.TypesRecord? initialValue,
-    _i4.Stream<_i25.TypesRecord?> values,
+  _ida.Stream<_ix95ig49.TypesRecord?> streamOfNullableModelClassWithRecordField(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ix95ig49.TypesRecord? initialValue,
+    _ida.Stream<_ix95ig49.TypesRecord?> values,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i25.TypesRecord?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_ix95ig49.TypesRecord?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'recordParameters',
               method: 'streamOfNullableModelClassWithRecordField',
             );
@@ -11788,8 +11905,8 @@ class _RecordParametersEndpoint {
               endpointPath: 'recordParameters',
               methodName: 'streamOfNullableModelClassWithRecordField',
               arguments: {
-                'initialValue': _i24.jsonDecode(
-                  _i2.SerializationManager.encode(initialValue),
+                'initialValue': _idc.jsonDecode(
+                  _is.SerializationManager.encode(initialValue),
                 ),
               },
               requestedInputStreams: ['values'],
@@ -11806,17 +11923,18 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i18.ModuleClass?>
+  _ida.Stream<_iom2gwyu.ModuleClass?>
   streamOfNullableModelClassWithRecordFieldFromExternalModule(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i18.ModuleClass? initialValue,
-    _i4.Stream<_i18.ModuleClass?> values,
+    _ist.TestSessionBuilder sessionBuilder,
+    _iom2gwyu.ModuleClass? initialValue,
+    _ida.Stream<_iom2gwyu.ModuleClass?> values,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i18.ModuleClass?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_iom2gwyu.ModuleClass?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'recordParameters',
               method:
                   'streamOfNullableModelClassWithRecordFieldFromExternalModule',
@@ -11828,8 +11946,8 @@ class _RecordParametersEndpoint {
               methodName:
                   'streamOfNullableModelClassWithRecordFieldFromExternalModule',
               arguments: {
-                'initialValue': _i24.jsonDecode(
-                  _i2.SerializationManager.encode(initialValue),
+                'initialValue': _idc.jsonDecode(
+                  _is.SerializationManager.encode(initialValue),
                 ),
               },
               requestedInputStreams: ['values'],
@@ -11846,17 +11964,17 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<(int?, _i18.ProjectStreamingClass?)>
+  _ida.Stream<(int?, _iom2gwyu.ProjectStreamingClass?)>
   streamOfNullableIntAndModuleClass(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<(int?, _i18.ProjectStreamingClass?)> values,
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<(int?, _iom2gwyu.ProjectStreamingClass?)> values,
   ) {
     var _localTestStreamManager =
-        _i1.TestStreamManager<(int?, _i18.ProjectStreamingClass?)>();
-    _i1.callStreamFunctionAndHandleExceptions(
+        _ist.TestStreamManager<(int?, _iom2gwyu.ProjectStreamingClass?)>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'recordParameters',
               method: 'streamOfNullableIntAndModuleClass',
             );
@@ -11880,14 +11998,14 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<int> recordParametersWithCustomNames(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<int> recordParametersWithCustomNames(
+    _ist.TestSessionBuilder sessionBuilder,
     (int,) positionalRecord, {
     required (int,) namedRecord,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'recordParameters',
             method: 'recordParametersWithCustomNames',
           );
@@ -11896,11 +12014,11 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'recordParametersWithCustomNames',
-          parameters: _i1.testObjectToJson({
-            'positionalRecord': _i16.Protocol().mapRecordToJson(
+          parameters: _ist.testObjectToJson({
+            'positionalRecord': _igqrxdcj.Protocol().mapRecordToJson(
               positionalRecord,
             ),
-            'namedRecord': _i16.Protocol().mapRecordToJson(namedRecord),
+            'namedRecord': _igqrxdcj.Protocol().mapRecordToJson(namedRecord),
           }),
           serializationManager: _serializationManager,
         );
@@ -11909,7 +12027,7 @@ class _RecordParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -11924,18 +12042,18 @@ class _RedisEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> setSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> setSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
-    _i8.SimpleData data,
+    _i685tvwm.SimpleData data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'redis',
             method: 'setSimpleData',
           );
@@ -11944,7 +12062,7 @@ class _RedisEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'redis',
           methodName: 'setSimpleData',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'key': key,
             'data': data,
           }),
@@ -11955,7 +12073,7 @@ class _RedisEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -11963,14 +12081,14 @@ class _RedisEndpoint {
     });
   }
 
-  _i4.Future<void> setSimpleDataWithLifetime(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> setSimpleDataWithLifetime(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
-    _i8.SimpleData data,
+    _i685tvwm.SimpleData data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'redis',
             method: 'setSimpleDataWithLifetime',
           );
@@ -11979,7 +12097,7 @@ class _RedisEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'redis',
           methodName: 'setSimpleDataWithLifetime',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'key': key,
             'data': data,
           }),
@@ -11990,7 +12108,7 @@ class _RedisEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -11998,13 +12116,13 @@ class _RedisEndpoint {
     });
   }
 
-  _i4.Future<_i8.SimpleData?> getSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i685tvwm.SimpleData?> getSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'redis',
             method: 'getSimpleData',
           );
@@ -12013,7 +12131,7 @@ class _RedisEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'redis',
           methodName: 'getSimpleData',
-          parameters: _i1.testObjectToJson({'key': key}),
+          parameters: _ist.testObjectToJson({'key': key}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12021,7 +12139,7 @@ class _RedisEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData?>);
+                as _ida.Future<_i685tvwm.SimpleData?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12029,13 +12147,13 @@ class _RedisEndpoint {
     });
   }
 
-  _i4.Future<void> deleteSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> deleteSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'redis',
             method: 'deleteSimpleData',
           );
@@ -12044,7 +12162,7 @@ class _RedisEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'redis',
           methodName: 'deleteSimpleData',
-          parameters: _i1.testObjectToJson({'key': key}),
+          parameters: _ist.testObjectToJson({'key': key}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12052,7 +12170,7 @@ class _RedisEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12060,12 +12178,12 @@ class _RedisEndpoint {
     });
   }
 
-  _i4.Future<void> resetMessageCentralTest(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> resetMessageCentralTest(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'redis',
             method: 'resetMessageCentralTest',
           );
@@ -12074,7 +12192,7 @@ class _RedisEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'redis',
           methodName: 'resetMessageCentralTest',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12082,7 +12200,7 @@ class _RedisEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12090,13 +12208,13 @@ class _RedisEndpoint {
     });
   }
 
-  _i4.Future<_i8.SimpleData?> listenToChannel(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i685tvwm.SimpleData?> listenToChannel(
+    _ist.TestSessionBuilder sessionBuilder,
     String channel,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'redis',
             method: 'listenToChannel',
           );
@@ -12105,7 +12223,7 @@ class _RedisEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'redis',
           methodName: 'listenToChannel',
-          parameters: _i1.testObjectToJson({'channel': channel}),
+          parameters: _ist.testObjectToJson({'channel': channel}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12113,7 +12231,7 @@ class _RedisEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData?>);
+                as _ida.Future<_i685tvwm.SimpleData?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12121,14 +12239,14 @@ class _RedisEndpoint {
     });
   }
 
-  _i4.Future<void> postToChannel(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> postToChannel(
+    _ist.TestSessionBuilder sessionBuilder,
     String channel,
-    _i8.SimpleData data,
+    _i685tvwm.SimpleData data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'redis',
             method: 'postToChannel',
           );
@@ -12137,7 +12255,7 @@ class _RedisEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'redis',
           methodName: 'postToChannel',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'channel': channel,
             'data': data,
           }),
@@ -12148,7 +12266,7 @@ class _RedisEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12156,12 +12274,12 @@ class _RedisEndpoint {
     });
   }
 
-  _i4.Future<int> countSubscribedChannels(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<int> countSubscribedChannels(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'redis',
             method: 'countSubscribedChannels',
           );
@@ -12170,7 +12288,7 @@ class _RedisEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'redis',
           methodName: 'countSubscribedChannels',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12178,7 +12296,7 @@ class _RedisEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12193,16 +12311,16 @@ class _ServerOnlyScopedFieldModelEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<_i26.ScopeServerOnlyField> getScopeServerOnlyField(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_iyi8ilhb.ScopeServerOnlyField> getScopeServerOnlyField(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'serverOnlyScopedFieldModel',
             method: 'getScopeServerOnlyField',
           );
@@ -12211,7 +12329,7 @@ class _ServerOnlyScopedFieldModelEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'serverOnlyScopedFieldModel',
           methodName: 'getScopeServerOnlyField',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12219,7 +12337,7 @@ class _ServerOnlyScopedFieldModelEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i26.ScopeServerOnlyField>);
+                as _ida.Future<_iyi8ilhb.ScopeServerOnlyField>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12234,16 +12352,16 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<_i27.ScopeServerOnlyFieldChild> getProtocolField(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i02xdnoq.ScopeServerOnlyFieldChild> getProtocolField(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'serverOnlyScopedFieldChildModel',
             method: 'getProtocolField',
           );
@@ -12252,7 +12370,7 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'serverOnlyScopedFieldChildModel',
           methodName: 'getProtocolField',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12260,7 +12378,7 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i27.ScopeServerOnlyFieldChild>);
+                as _ida.Future<_i02xdnoq.ScopeServerOnlyFieldChild>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12275,16 +12393,16 @@ class _SessionAuthenticationEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String?> getAuthenticatedUserId(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String?> getAuthenticatedUserId(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'sessionAuthentication',
             method: 'getAuthenticatedUserId',
           );
@@ -12293,7 +12411,7 @@ class _SessionAuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'sessionAuthentication',
           methodName: 'getAuthenticatedUserId',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12301,7 +12419,7 @@ class _SessionAuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12309,12 +12427,12 @@ class _SessionAuthenticationEndpoint {
     });
   }
 
-  _i4.Future<List<String>> getAuthenticatedScopes(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<String>> getAuthenticatedScopes(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'sessionAuthentication',
             method: 'getAuthenticatedScopes',
           );
@@ -12323,7 +12441,7 @@ class _SessionAuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'sessionAuthentication',
           methodName: 'getAuthenticatedScopes',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12331,7 +12449,7 @@ class _SessionAuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<String>>);
+                as _ida.Future<List<String>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12339,12 +12457,12 @@ class _SessionAuthenticationEndpoint {
     });
   }
 
-  _i4.Future<String?> getAuthenticatedAuthId(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String?> getAuthenticatedAuthId(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'sessionAuthentication',
             method: 'getAuthenticatedAuthId',
           );
@@ -12353,7 +12471,7 @@ class _SessionAuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'sessionAuthentication',
           methodName: 'getAuthenticatedAuthId',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12361,7 +12479,7 @@ class _SessionAuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String?>);
+                as _ida.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12369,12 +12487,12 @@ class _SessionAuthenticationEndpoint {
     });
   }
 
-  _i4.Future<_i28.SessionAuthInfo> getAuthenticationInfo(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i5vgvlyt.SessionAuthInfo> getAuthenticationInfo(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'sessionAuthentication',
             method: 'getAuthenticationInfo',
           );
@@ -12383,7 +12501,7 @@ class _SessionAuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'sessionAuthentication',
           methodName: 'getAuthenticationInfo',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12391,7 +12509,7 @@ class _SessionAuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i28.SessionAuthInfo>);
+                as _ida.Future<_i5vgvlyt.SessionAuthInfo>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12399,12 +12517,12 @@ class _SessionAuthenticationEndpoint {
     });
   }
 
-  _i4.Future<bool> isAuthenticated(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> isAuthenticated(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'sessionAuthentication',
             method: 'isAuthenticated',
           );
@@ -12413,7 +12531,7 @@ class _SessionAuthenticationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'sessionAuthentication',
           methodName: 'isAuthenticated',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12421,7 +12539,7 @@ class _SessionAuthenticationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12429,14 +12547,14 @@ class _SessionAuthenticationEndpoint {
     });
   }
 
-  _i4.Stream<String?> streamAuthenticatedUserId(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<String?> streamAuthenticatedUserId(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<String?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'sessionAuthentication',
               method: 'streamAuthenticatedUserId',
             );
@@ -12460,14 +12578,14 @@ class _SessionAuthenticationEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<bool> streamIsAuthenticated(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<bool> streamIsAuthenticated(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<bool>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<bool>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'sessionAuthentication',
               method: 'streamIsAuthenticated',
             );
@@ -12498,17 +12616,17 @@ class _SetParametersEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<Set<int>> returnIntSet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<int>> returnIntSet(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<int> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnIntSet',
           );
@@ -12517,7 +12635,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnIntSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12525,7 +12643,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<int>>);
+                as _ida.Future<Set<int>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12533,13 +12651,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<Set<int>>> returnIntSetSet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<Set<int>>> returnIntSetSet(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<Set<int>> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnIntSetSet',
           );
@@ -12548,7 +12666,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnIntSetSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12556,7 +12674,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<Set<int>>>);
+                as _ida.Future<Set<Set<int>>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12564,13 +12682,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<List<int>>> returnIntListSet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<List<int>>> returnIntListSet(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<List<int>> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnIntListSet',
           );
@@ -12579,7 +12697,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnIntListSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12587,7 +12705,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<List<int>>>);
+                as _ida.Future<Set<List<int>>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12595,13 +12713,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<int>?> returnIntSetNullable(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<int>?> returnIntSetNullable(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<int>? set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnIntSetNullable',
           );
@@ -12610,7 +12728,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnIntSetNullable',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12618,7 +12736,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<int>?>);
+                as _ida.Future<Set<int>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12626,13 +12744,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<Set<int>?>> returnIntSetNullableSet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<Set<int>?>> returnIntSetNullableSet(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<Set<int>?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnIntSetNullableSet',
           );
@@ -12641,7 +12759,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnIntSetNullableSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12649,7 +12767,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<Set<int>?>>);
+                as _ida.Future<Set<Set<int>?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12657,13 +12775,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<Set<int>>?> returnIntSetSetNullable(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<Set<int>>?> returnIntSetSetNullable(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<Set<int>>? set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnIntSetSetNullable',
           );
@@ -12672,7 +12790,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnIntSetSetNullable',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12680,7 +12798,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<Set<int>>?>);
+                as _ida.Future<Set<Set<int>>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12688,13 +12806,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<int?>> returnIntSetNullableInts(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<int?>> returnIntSetNullableInts(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<int?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnIntSetNullableInts',
           );
@@ -12703,7 +12821,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnIntSetNullableInts',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12711,7 +12829,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<int?>>);
+                as _ida.Future<Set<int?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12719,13 +12837,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<int?>?> returnNullableIntSetNullableInts(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<int?>?> returnNullableIntSetNullableInts(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<int?>? set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnNullableIntSetNullableInts',
           );
@@ -12734,7 +12852,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnNullableIntSetNullableInts',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12742,7 +12860,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<int?>?>);
+                as _ida.Future<Set<int?>?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12750,13 +12868,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<double>> returnDoubleSet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<double>> returnDoubleSet(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<double> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnDoubleSet',
           );
@@ -12765,7 +12883,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnDoubleSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12773,7 +12891,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<double>>);
+                as _ida.Future<Set<double>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12781,13 +12899,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<double?>> returnDoubleSetNullableDoubles(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<double?>> returnDoubleSetNullableDoubles(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<double?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnDoubleSetNullableDoubles',
           );
@@ -12796,7 +12914,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnDoubleSetNullableDoubles',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12804,7 +12922,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<double?>>);
+                as _ida.Future<Set<double?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12812,13 +12930,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<bool>> returnBoolSet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<bool>> returnBoolSet(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<bool> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnBoolSet',
           );
@@ -12827,7 +12945,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnBoolSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12835,7 +12953,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<bool>>);
+                as _ida.Future<Set<bool>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12843,13 +12961,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<bool?>> returnBoolSetNullableBools(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<bool?>> returnBoolSetNullableBools(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<bool?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnBoolSetNullableBools',
           );
@@ -12858,7 +12976,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnBoolSetNullableBools',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12866,7 +12984,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<bool?>>);
+                as _ida.Future<Set<bool?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12874,13 +12992,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<String>> returnStringSet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<String>> returnStringSet(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<String> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnStringSet',
           );
@@ -12889,7 +13007,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnStringSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12897,7 +13015,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<String>>);
+                as _ida.Future<Set<String>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12905,13 +13023,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<String?>> returnStringSetNullableStrings(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<String?>> returnStringSetNullableStrings(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<String?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnStringSetNullableStrings',
           );
@@ -12920,7 +13038,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnStringSetNullableStrings',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12928,7 +13046,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<String?>>);
+                as _ida.Future<Set<String?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12936,13 +13054,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<DateTime>> returnDateTimeSet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<DateTime>> returnDateTimeSet(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<DateTime> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnDateTimeSet',
           );
@@ -12951,7 +13069,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnDateTimeSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12959,7 +13077,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<DateTime>>);
+                as _ida.Future<Set<DateTime>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12967,13 +13085,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<DateTime?>> returnDateTimeSetNullableDateTimes(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<DateTime?>> returnDateTimeSetNullableDateTimes(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<DateTime?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnDateTimeSetNullableDateTimes',
           );
@@ -12982,7 +13100,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnDateTimeSetNullableDateTimes',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -12990,7 +13108,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<DateTime?>>);
+                as _ida.Future<Set<DateTime?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -12998,13 +13116,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<_i6.ByteData>> returnByteDataSet(
-    _i1.TestSessionBuilder sessionBuilder,
-    Set<_i6.ByteData> set,
+  _ida.Future<Set<_idt.ByteData>> returnByteDataSet(
+    _ist.TestSessionBuilder sessionBuilder,
+    Set<_idt.ByteData> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnByteDataSet',
           );
@@ -13013,7 +13131,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnByteDataSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13021,7 +13139,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<_i6.ByteData>>);
+                as _ida.Future<Set<_idt.ByteData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13029,13 +13147,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<_i6.ByteData?>> returnByteDataSetNullableByteDatas(
-    _i1.TestSessionBuilder sessionBuilder,
-    Set<_i6.ByteData?> set,
+  _ida.Future<Set<_idt.ByteData?>> returnByteDataSetNullableByteDatas(
+    _ist.TestSessionBuilder sessionBuilder,
+    Set<_idt.ByteData?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnByteDataSetNullableByteDatas',
           );
@@ -13044,7 +13162,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnByteDataSetNullableByteDatas',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13052,7 +13170,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<_i6.ByteData?>>);
+                as _ida.Future<Set<_idt.ByteData?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13060,13 +13178,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<_i8.SimpleData>> returnSimpleDataSet(
-    _i1.TestSessionBuilder sessionBuilder,
-    Set<_i8.SimpleData> set,
+  _ida.Future<Set<_i685tvwm.SimpleData>> returnSimpleDataSet(
+    _ist.TestSessionBuilder sessionBuilder,
+    Set<_i685tvwm.SimpleData> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnSimpleDataSet',
           );
@@ -13075,7 +13193,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnSimpleDataSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13083,7 +13201,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<_i8.SimpleData>>);
+                as _ida.Future<Set<_i685tvwm.SimpleData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13091,13 +13209,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<_i8.SimpleData?>> returnSimpleDataSetNullableSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    Set<_i8.SimpleData?> set,
+  _ida.Future<Set<_i685tvwm.SimpleData?>> returnSimpleDataSetNullableSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    Set<_i685tvwm.SimpleData?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnSimpleDataSetNullableSimpleData',
           );
@@ -13106,7 +13224,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnSimpleDataSetNullableSimpleData',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13114,7 +13232,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<_i8.SimpleData?>>);
+                as _ida.Future<Set<_i685tvwm.SimpleData?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13122,13 +13240,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<Duration>> returnDurationSet(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<Duration>> returnDurationSet(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<Duration> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnDurationSet',
           );
@@ -13137,7 +13255,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnDurationSet',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13145,7 +13263,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<Duration>>);
+                as _ida.Future<Set<Duration>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13153,13 +13271,13 @@ class _SetParametersEndpoint {
     });
   }
 
-  _i4.Future<Set<Duration?>> returnDurationSetNullableDurations(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<Set<Duration?>> returnDurationSetNullableDurations(
+    _ist.TestSessionBuilder sessionBuilder,
     Set<Duration?> set,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'setParameters',
             method: 'returnDurationSetNullableDurations',
           );
@@ -13168,7 +13286,7 @@ class _SetParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'setParameters',
           methodName: 'returnDurationSetNullableDurations',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _ist.testObjectToJson({'set': set}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13176,7 +13294,7 @@ class _SetParametersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<Set<Duration?>>);
+                as _ida.Future<Set<Duration?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13191,14 +13309,14 @@ class _SignInRequiredEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> testMethod(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<bool> testMethod(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'signInRequired',
             method: 'testMethod',
           );
@@ -13207,7 +13325,7 @@ class _SignInRequiredEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'signInRequired',
           methodName: 'testMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13215,7 +13333,7 @@ class _SignInRequiredEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13230,14 +13348,14 @@ class _AdminScopeRequiredEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> testMethod(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<bool> testMethod(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'adminScopeRequired',
             method: 'testMethod',
           );
@@ -13246,7 +13364,7 @@ class _AdminScopeRequiredEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'adminScopeRequired',
           methodName: 'testMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13254,7 +13372,7 @@ class _AdminScopeRequiredEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13269,18 +13387,18 @@ class _SimpleEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> setGlobalInt(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> setGlobalInt(
+    _ist.TestSessionBuilder sessionBuilder,
     int? value, [
     int? secondValue,
   ]) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'simple',
             method: 'setGlobalInt',
           );
@@ -13289,7 +13407,7 @@ class _SimpleEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'simple',
           methodName: 'setGlobalInt',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'value': value,
             'secondValue': secondValue,
           }),
@@ -13300,7 +13418,7 @@ class _SimpleEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13308,10 +13426,12 @@ class _SimpleEndpoint {
     });
   }
 
-  _i4.Future<void> addToGlobalInt(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> addToGlobalInt(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'simple',
             method: 'addToGlobalInt',
           );
@@ -13320,7 +13440,7 @@ class _SimpleEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'simple',
           methodName: 'addToGlobalInt',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13328,7 +13448,7 @@ class _SimpleEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13336,10 +13456,10 @@ class _SimpleEndpoint {
     });
   }
 
-  _i4.Future<int> getGlobalInt(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<int> getGlobalInt(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'simple',
             method: 'getGlobalInt',
           );
@@ -13348,7 +13468,7 @@ class _SimpleEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'simple',
           methodName: 'getGlobalInt',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13356,7 +13476,7 @@ class _SimpleEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13364,13 +13484,13 @@ class _SimpleEndpoint {
     });
   }
 
-  _i4.Future<String> hello(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> hello(
+    _ist.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'simple',
             method: 'hello',
           );
@@ -13379,7 +13499,7 @@ class _SimpleEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'simple',
           methodName: 'hello',
-          parameters: _i1.testObjectToJson({'name': name}),
+          parameters: _ist.testObjectToJson({'name': name}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13387,7 +13507,7 @@ class _SimpleEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13402,14 +13522,14 @@ class _SubSubDirTestEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> testMethod(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<String> testMethod(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'subSubDirTest',
             method: 'testMethod',
           );
@@ -13418,7 +13538,7 @@ class _SubSubDirTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'subSubDirTest',
           methodName: 'testMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13426,7 +13546,7 @@ class _SubSubDirTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13441,14 +13561,14 @@ class _SubDirTestEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> testMethod(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<String> testMethod(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'subDirTest',
             method: 'testMethod',
           );
@@ -13457,7 +13577,7 @@ class _SubDirTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'subDirTest',
           methodName: 'testMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13465,7 +13585,7 @@ class _SubDirTestEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13480,16 +13600,16 @@ class _TestToolsEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<_i2.UuidValue> returnsSessionId(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_is.UuidValue> returnsSessionId(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'returnsSessionId',
           );
@@ -13498,7 +13618,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'returnsSessionId',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13506,7 +13626,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i2.UuidValue>);
+                as _ida.Future<_is.UuidValue>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13514,12 +13634,12 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<List<String?>> returnsSessionEndpointAndMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<String?>> returnsSessionEndpointAndMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'returnsSessionEndpointAndMethod',
           );
@@ -13528,7 +13648,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'returnsSessionEndpointAndMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13536,7 +13656,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<String?>>);
+                as _ida.Future<List<String?>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13544,14 +13664,14 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Stream<_i2.UuidValue> returnsSessionIdFromStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<_is.UuidValue> returnsSessionIdFromStream(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i2.UuidValue>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<_is.UuidValue>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'returnsSessionIdFromStream',
             );
@@ -13575,14 +13695,14 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<String?> returnsSessionEndpointAndMethodFromStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<String?> returnsSessionEndpointAndMethodFromStream(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<String?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<String?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'returnsSessionEndpointAndMethodFromStream',
             );
@@ -13606,13 +13726,13 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<String> returnsString(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> returnsString(
+    _ist.TestSessionBuilder sessionBuilder,
     String string,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'returnsString',
           );
@@ -13621,7 +13741,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'returnsString',
-          parameters: _i1.testObjectToJson({'string': string}),
+          parameters: _ist.testObjectToJson({'string': string}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13629,7 +13749,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13637,15 +13757,15 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Stream<int> returnsStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> returnsStream(
+    _ist.TestSessionBuilder sessionBuilder,
     int n,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'returnsStream',
             );
@@ -13669,15 +13789,15 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<List<int>> returnsListFromInputStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> numbers,
+  _ida.Future<List<int>> returnsListFromInputStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> numbers,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<List<int>>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'returnsListFromInputStream',
             );
@@ -13700,15 +13820,16 @@ class _TestToolsEndpoint {
     );
   }
 
-  _i4.Future<List<_i8.SimpleData>> returnsSimpleDataListFromInputStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<_i8.SimpleData> simpleDatas,
+  _ida.Future<List<_i685tvwm.SimpleData>> returnsSimpleDataListFromInputStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<_i685tvwm.SimpleData> simpleDatas,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<List<_i8.SimpleData>>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<List<_i685tvwm.SimpleData>>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'returnsSimpleDataListFromInputStream',
             );
@@ -13731,15 +13852,15 @@ class _TestToolsEndpoint {
     );
   }
 
-  _i4.Stream<int> returnsStreamFromInputStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> numbers,
+  _ida.Stream<int> returnsStreamFromInputStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> numbers,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'returnsStreamFromInputStream',
             );
@@ -13763,15 +13884,16 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i8.SimpleData> returnsSimpleDataStreamFromInputStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<_i8.SimpleData> simpleDatas,
+  _ida.Stream<_i685tvwm.SimpleData> returnsSimpleDataStreamFromInputStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<_i685tvwm.SimpleData> simpleDatas,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i8.SimpleData>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_i685tvwm.SimpleData>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'returnsSimpleDataStreamFromInputStream',
             );
@@ -13795,13 +13917,13 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> postNumberToSharedStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> postNumberToSharedStream(
+    _ist.TestSessionBuilder sessionBuilder,
     int number,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'postNumberToSharedStream',
           );
@@ -13810,7 +13932,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'postNumberToSharedStream',
-          parameters: _i1.testObjectToJson({'number': number}),
+          parameters: _ist.testObjectToJson({'number': number}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13818,7 +13940,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13826,15 +13948,15 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Stream<int> postNumberToSharedStreamAndReturnStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> postNumberToSharedStreamAndReturnStream(
+    _ist.TestSessionBuilder sessionBuilder,
     int number,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'postNumberToSharedStreamAndReturnStream',
             );
@@ -13858,14 +13980,14 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<int> listenForNumbersOnSharedStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> listenForNumbersOnSharedStream(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'listenForNumbersOnSharedStream',
             );
@@ -13889,13 +14011,13 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> createSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
     int data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'createSimpleData',
           );
@@ -13904,7 +14026,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'createSimpleData',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13912,7 +14034,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13920,12 +14042,12 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<List<_i8.SimpleData>> getAllSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<_i685tvwm.SimpleData>> getAllSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'getAllSimpleData',
           );
@@ -13934,7 +14056,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'getAllSimpleData',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13942,7 +14064,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i8.SimpleData>>);
+                as _ida.Future<List<_i685tvwm.SimpleData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13950,13 +14072,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> createSimpleDatasInsideTransactions(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createSimpleDatasInsideTransactions(
+    _ist.TestSessionBuilder sessionBuilder,
     int data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'createSimpleDatasInsideTransactions',
           );
@@ -13965,7 +14087,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'createSimpleDatasInsideTransactions',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -13973,7 +14095,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -13981,13 +14103,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> createSimpleDataAndThrowInsideTransaction(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createSimpleDataAndThrowInsideTransaction(
+    _ist.TestSessionBuilder sessionBuilder,
     int data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'createSimpleDataAndThrowInsideTransaction',
           );
@@ -13996,7 +14118,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'createSimpleDataAndThrowInsideTransaction',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14004,7 +14126,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14012,12 +14134,12 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> createSimpleDatasInParallelTransactionCalls(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createSimpleDatasInParallelTransactionCalls(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'createSimpleDatasInParallelTransactionCalls',
           );
@@ -14026,7 +14148,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'createSimpleDatasInParallelTransactionCalls',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14034,7 +14156,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14042,13 +14164,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<dynamic> echoDynamic(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<dynamic> echoDynamic(
+    _ist.TestSessionBuilder sessionBuilder,
     dynamic anything,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoDynamic',
           );
@@ -14057,7 +14179,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoDynamic',
-          parameters: _i1.testObjectToJson({'anything': anything}),
+          parameters: _ist.testObjectToJson({'anything': anything}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method.call(
@@ -14071,13 +14193,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<_i8.SimpleData> echoSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.SimpleData simpleData,
+  _ida.Future<_i685tvwm.SimpleData> echoSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    _i685tvwm.SimpleData simpleData,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoSimpleData',
           );
@@ -14086,7 +14208,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoSimpleData',
-          parameters: _i1.testObjectToJson({'simpleData': simpleData}),
+          parameters: _ist.testObjectToJson({'simpleData': simpleData}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14094,7 +14216,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData>);
+                as _ida.Future<_i685tvwm.SimpleData>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14102,13 +14224,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<List<_i8.SimpleData>> echoSimpleDatas(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<_i8.SimpleData> simpleDatas,
+  _ida.Future<List<_i685tvwm.SimpleData>> echoSimpleDatas(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<_i685tvwm.SimpleData> simpleDatas,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoSimpleDatas',
           );
@@ -14117,7 +14239,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoSimpleDatas',
-          parameters: _i1.testObjectToJson({'simpleDatas': simpleDatas}),
+          parameters: _ist.testObjectToJson({'simpleDatas': simpleDatas}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14125,7 +14247,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i8.SimpleData>>);
+                as _ida.Future<List<_i685tvwm.SimpleData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14133,13 +14255,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<_i29.ObjectWithDynamic> echoObjectWithDynamic(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i29.ObjectWithDynamic objectWithDynamic,
+  _ida.Future<_i9ckso16.ObjectWithDynamic> echoObjectWithDynamic(
+    _ist.TestSessionBuilder sessionBuilder,
+    _i9ckso16.ObjectWithDynamic objectWithDynamic,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoObjectWithDynamic',
           );
@@ -14148,7 +14270,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoObjectWithDynamic',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'objectWithDynamic': objectWithDynamic,
           }),
           serializationManager: _serializationManager,
@@ -14158,7 +14280,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i29.ObjectWithDynamic>);
+                as _ida.Future<_i9ckso16.ObjectWithDynamic>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14166,13 +14288,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<_i10.Types> echoTypes(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i10.Types typesModel,
+  _ida.Future<_iuch3ck4.Types> echoTypes(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iuch3ck4.Types typesModel,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoTypes',
           );
@@ -14181,7 +14303,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoTypes',
-          parameters: _i1.testObjectToJson({'typesModel': typesModel}),
+          parameters: _ist.testObjectToJson({'typesModel': typesModel}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14189,7 +14311,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i10.Types>);
+                as _ida.Future<_iuch3ck4.Types>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14197,13 +14319,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<List<_i10.Types>> echoTypesList(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<_i10.Types> typesList,
+  _ida.Future<List<_iuch3ck4.Types>> echoTypesList(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<_iuch3ck4.Types> typesList,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoTypesList',
           );
@@ -14212,7 +14334,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoTypesList',
-          parameters: _i1.testObjectToJson({'typesList': typesList}),
+          parameters: _ist.testObjectToJson({'typesList': typesList}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14220,7 +14342,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i10.Types>>);
+                as _ida.Future<List<_iuch3ck4.Types>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14228,13 +14350,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<_i20.ModuleDatatype> echoModuleDatatype(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i20.ModuleDatatype moduleDatatype,
+  _ida.Future<_idarivwd.ModuleDatatype> echoModuleDatatype(
+    _ist.TestSessionBuilder sessionBuilder,
+    _idarivwd.ModuleDatatype moduleDatatype,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoModuleDatatype',
           );
@@ -14243,7 +14365,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoModuleDatatype',
-          parameters: _i1.testObjectToJson({'moduleDatatype': moduleDatatype}),
+          parameters: _ist.testObjectToJson({'moduleDatatype': moduleDatatype}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14251,7 +14373,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i20.ModuleDatatype>);
+                as _ida.Future<_idarivwd.ModuleDatatype>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14259,16 +14381,17 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Stream<_i20.ModuleDatatype?> streamModuleDatatype(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i20.ModuleDatatype? initialValue,
-    _i4.Stream<_i20.ModuleDatatype?> values,
+  _ida.Stream<_idarivwd.ModuleDatatype?> streamModuleDatatype(
+    _ist.TestSessionBuilder sessionBuilder,
+    _idarivwd.ModuleDatatype? initialValue,
+    _ida.Stream<_idarivwd.ModuleDatatype?> values,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i20.ModuleDatatype?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_idarivwd.ModuleDatatype?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'streamModuleDatatype',
             );
@@ -14278,8 +14401,8 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'streamModuleDatatype',
               arguments: {
-                'initialValue': _i24.jsonDecode(
-                  _i2.SerializationManager.encode(initialValue),
+                'initialValue': _idc.jsonDecode(
+                  _is.SerializationManager.encode(initialValue),
                 ),
               },
               requestedInputStreams: ['values'],
@@ -14296,13 +14419,13 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<_i18.ModuleClass> echoModuleClass(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i18.ModuleClass moduleClass,
+  _ida.Future<_iom2gwyu.ModuleClass> echoModuleClass(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iom2gwyu.ModuleClass moduleClass,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoModuleClass',
           );
@@ -14311,7 +14434,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoModuleClass',
-          parameters: _i1.testObjectToJson({'moduleClass': moduleClass}),
+          parameters: _ist.testObjectToJson({'moduleClass': moduleClass}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14319,7 +14442,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i18.ModuleClass>);
+                as _ida.Future<_iom2gwyu.ModuleClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14327,16 +14450,17 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Stream<_i18.ModuleClass?> streamModuleClass(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i18.ModuleClass? initialValue,
-    _i4.Stream<_i18.ModuleClass?> values,
+  _ida.Stream<_iom2gwyu.ModuleClass?> streamModuleClass(
+    _ist.TestSessionBuilder sessionBuilder,
+    _iom2gwyu.ModuleClass? initialValue,
+    _ida.Stream<_iom2gwyu.ModuleClass?> values,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i18.ModuleClass?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_iom2gwyu.ModuleClass?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'streamModuleClass',
             );
@@ -14346,8 +14470,8 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'streamModuleClass',
               arguments: {
-                'initialValue': _i24.jsonDecode(
-                  _i2.SerializationManager.encode(initialValue),
+                'initialValue': _idc.jsonDecode(
+                  _is.SerializationManager.encode(initialValue),
                 ),
               },
               requestedInputStreams: ['values'],
@@ -14364,13 +14488,13 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<(String, (int, bool))> echoRecord(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(String, (int, bool))> echoRecord(
+    _ist.TestSessionBuilder sessionBuilder,
     (String, (int, bool)) record,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoRecord',
           );
@@ -14379,8 +14503,8 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoRecord',
-          parameters: _i1.testObjectToJson({
-            'record': _i16.Protocol().mapRecordToJson(record),
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -14390,8 +14514,8 @@ class _TestToolsEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _i16.Protocol().deserialize<(String, (int, bool))>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<(String, (int, bool))>(record),
             );
         return _localReturnValue;
       } finally {
@@ -14400,13 +14524,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<List<(String, (int, bool))>> echoRecords(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<(String, (int, bool))>> echoRecords(
+    _ist.TestSessionBuilder sessionBuilder,
     List<(String, (int, bool))> records,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'echoRecords',
           );
@@ -14415,8 +14539,8 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoRecords',
-          parameters: _i1.testObjectToJson({
-            'records': _i16.Protocol().mapContainerToJson(records),
+          parameters: _ist.testObjectToJson({
+            'records': _igqrxdcj.Protocol().mapContainerToJson(records),
           }),
           serializationManager: _serializationManager,
         );
@@ -14426,7 +14550,7 @@ class _TestToolsEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i16.Protocol()
+              (record) => _igqrxdcj.Protocol()
                   .deserialize<List<(String, (int, bool))>>(record),
             );
         return _localReturnValue;
@@ -14436,14 +14560,14 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<(int, _i8.SimpleData)> returnRecordWithSerializableObject(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<(int, _i685tvwm.SimpleData)> returnRecordWithSerializableObject(
+    _ist.TestSessionBuilder sessionBuilder,
     int number,
-    _i8.SimpleData data,
+    _i685tvwm.SimpleData data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'returnRecordWithSerializableObject',
           );
@@ -14452,7 +14576,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'returnRecordWithSerializableObject',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'number': number,
             'data': data,
           }),
@@ -14464,8 +14588,8 @@ class _TestToolsEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _i16.Protocol().deserialize<(int, _i8.SimpleData)>(record),
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<(int, _i685tvwm.SimpleData)>(record),
             );
         return _localReturnValue;
       } finally {
@@ -14474,26 +14598,29 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Stream<
-    (String, (Map<String, int>, {bool flag, _i8.SimpleData simpleData}))
+  _ida.Stream<
+    (String, (Map<String, int>, {bool flag, _i685tvwm.SimpleData simpleData}))
   >
   recordEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    (String, (Map<String, int>, {bool flag, _i8.SimpleData simpleData}))
+    _ist.TestSessionBuilder sessionBuilder,
+    (String, (Map<String, int>, {bool flag, _i685tvwm.SimpleData simpleData}))
     initialValue,
-    _i4.Stream<
-      (String, (Map<String, int>, {bool flag, _i8.SimpleData simpleData}))
+    _ida.Stream<
+      (String, (Map<String, int>, {bool flag, _i685tvwm.SimpleData simpleData}))
     >
     stream,
   ) {
     var _localTestStreamManager =
-        _i1.TestStreamManager<
-          (String, (Map<String, int>, {bool flag, _i8.SimpleData simpleData}))
+        _ist.TestStreamManager<
+          (
+            String,
+            (Map<String, int>, {bool flag, _i685tvwm.SimpleData simpleData}),
+          )
         >();
-    _i1.callStreamFunctionAndHandleExceptions(
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'recordEchoStream',
             );
@@ -14503,9 +14630,9 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'recordEchoStream',
               arguments: {
-                'initialValue': _i24.jsonDecode(
-                  _i2.SerializationManager.encode(
-                    _i16.Protocol().mapRecordToJson(initialValue),
+                'initialValue': _idc.jsonDecode(
+                  _is.SerializationManager.encode(
+                    _igqrxdcj.Protocol().mapRecordToJson(initialValue),
                   ),
                 ),
               },
@@ -14523,16 +14650,16 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<List<(String, int)>> listOfRecordEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<List<(String, int)>> listOfRecordEchoStream(
+    _ist.TestSessionBuilder sessionBuilder,
     List<(String, int)> initialValue,
-    _i4.Stream<List<(String, int)>> stream,
+    _ida.Stream<List<(String, int)>> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<List<(String, int)>>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<List<(String, int)>>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'listOfRecordEchoStream',
             );
@@ -14542,9 +14669,9 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'listOfRecordEchoStream',
               arguments: {
-                'initialValue': _i24.jsonDecode(
-                  _i2.SerializationManager.encode(
-                    _i16.Protocol().mapContainerToJson(initialValue),
+                'initialValue': _idc.jsonDecode(
+                  _is.SerializationManager.encode(
+                    _igqrxdcj.Protocol().mapContainerToJson(initialValue),
                   ),
                 ),
               },
@@ -14562,26 +14689,32 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<
-    (String, (Map<String, int>, {bool flag, _i8.SimpleData simpleData}))?
+  _ida.Stream<
+    (String, (Map<String, int>, {bool flag, _i685tvwm.SimpleData simpleData}))?
   >
   nullableRecordEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    (String, (Map<String, int>, {bool flag, _i8.SimpleData simpleData}))?
+    _ist.TestSessionBuilder sessionBuilder,
+    (String, (Map<String, int>, {bool flag, _i685tvwm.SimpleData simpleData}))?
     initialValue,
-    _i4.Stream<
-      (String, (Map<String, int>, {bool flag, _i8.SimpleData simpleData}))?
+    _ida.Stream<
+      (
+        String,
+        (Map<String, int>, {bool flag, _i685tvwm.SimpleData simpleData}),
+      )?
     >
     stream,
   ) {
     var _localTestStreamManager =
-        _i1.TestStreamManager<
-          (String, (Map<String, int>, {bool flag, _i8.SimpleData simpleData}))?
+        _ist.TestStreamManager<
+          (
+            String,
+            (Map<String, int>, {bool flag, _i685tvwm.SimpleData simpleData}),
+          )?
         >();
-    _i1.callStreamFunctionAndHandleExceptions(
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'nullableRecordEchoStream',
             );
@@ -14591,9 +14724,9 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'nullableRecordEchoStream',
               arguments: {
-                'initialValue': _i24.jsonDecode(
-                  _i2.SerializationManager.encode(
-                    _i16.Protocol().mapRecordToJson(initialValue),
+                'initialValue': _idc.jsonDecode(
+                  _is.SerializationManager.encode(
+                    _igqrxdcj.Protocol().mapRecordToJson(initialValue),
                   ),
                 ),
               },
@@ -14611,16 +14744,17 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<List<(String, int)>?> nullableListOfRecordEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<List<(String, int)>?> nullableListOfRecordEchoStream(
+    _ist.TestSessionBuilder sessionBuilder,
     List<(String, int)>? initialValue,
-    _i4.Stream<List<(String, int)>?> stream,
+    _ida.Stream<List<(String, int)>?> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<List<(String, int)>?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<List<(String, int)>?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'nullableListOfRecordEchoStream',
             );
@@ -14632,9 +14766,9 @@ class _TestToolsEndpoint {
               arguments: {
                 'initialValue': initialValue == null
                     ? null
-                    : _i24.jsonDecode(
-                        _i2.SerializationManager.encode(
-                          _i16.Protocol().mapContainerToJson(initialValue),
+                    : _idc.jsonDecode(
+                        _is.SerializationManager.encode(
+                          _igqrxdcj.Protocol().mapContainerToJson(initialValue),
                         ),
                       ),
               },
@@ -14652,16 +14786,17 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Stream<_i25.TypesRecord?> modelWithRecordsEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i25.TypesRecord? initialValue,
-    _i4.Stream<_i25.TypesRecord?> stream,
+  _ida.Stream<_ix95ig49.TypesRecord?> modelWithRecordsEchoStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ix95ig49.TypesRecord? initialValue,
+    _ida.Stream<_ix95ig49.TypesRecord?> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i25.TypesRecord?>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_ix95ig49.TypesRecord?>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'modelWithRecordsEchoStream',
             );
@@ -14671,8 +14806,8 @@ class _TestToolsEndpoint {
               endpointPath: 'testTools',
               methodName: 'modelWithRecordsEchoStream',
               arguments: {
-                'initialValue': _i24.jsonDecode(
-                  _i2.SerializationManager.encode(initialValue),
+                'initialValue': _idc.jsonDecode(
+                  _is.SerializationManager.encode(initialValue),
                 ),
               },
               requestedInputStreams: ['stream'],
@@ -14689,12 +14824,12 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> logMessageWithSession(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> logMessageWithSession(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'logMessageWithSession',
           );
@@ -14703,7 +14838,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'logMessageWithSession',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14711,7 +14846,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14719,12 +14854,12 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> addWillCloseListenerToSessionAndThrow(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> addWillCloseListenerToSessionAndThrow(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'addWillCloseListenerToSessionAndThrow',
           );
@@ -14733,7 +14868,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'addWillCloseListenerToSessionAndThrow',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14741,7 +14876,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14749,14 +14884,14 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'testTools',
               method: 'addWillCloseListenerToSessionIntStreamMethodAndThrow',
             );
@@ -14781,14 +14916,14 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<void> putInLocalCache(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> putInLocalCache(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
-    _i8.SimpleData data,
+    _i685tvwm.SimpleData data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'putInLocalCache',
           );
@@ -14797,7 +14932,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'putInLocalCache',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'key': key,
             'data': data,
           }),
@@ -14808,7 +14943,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14816,13 +14951,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<_i8.SimpleData?> getFromLocalCache(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i685tvwm.SimpleData?> getFromLocalCache(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'getFromLocalCache',
           );
@@ -14831,7 +14966,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'getFromLocalCache',
-          parameters: _i1.testObjectToJson({'key': key}),
+          parameters: _ist.testObjectToJson({'key': key}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14839,7 +14974,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData?>);
+                as _ida.Future<_i685tvwm.SimpleData?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14847,14 +14982,14 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> putInLocalPrioCache(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> putInLocalPrioCache(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
-    _i8.SimpleData data,
+    _i685tvwm.SimpleData data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'putInLocalPrioCache',
           );
@@ -14863,7 +14998,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'putInLocalPrioCache',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'key': key,
             'data': data,
           }),
@@ -14874,7 +15009,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14882,13 +15017,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<_i8.SimpleData?> getFromLocalPrioCache(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i685tvwm.SimpleData?> getFromLocalPrioCache(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'getFromLocalPrioCache',
           );
@@ -14897,7 +15032,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'getFromLocalPrioCache',
-          parameters: _i1.testObjectToJson({'key': key}),
+          parameters: _ist.testObjectToJson({'key': key}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14905,7 +15040,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData?>);
+                as _ida.Future<_i685tvwm.SimpleData?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14913,14 +15048,14 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> putInQueryCache(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> putInQueryCache(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
-    _i8.SimpleData data,
+    _i685tvwm.SimpleData data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'putInQueryCache',
           );
@@ -14929,7 +15064,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'putInQueryCache',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'key': key,
             'data': data,
           }),
@@ -14940,7 +15075,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14948,13 +15083,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<_i8.SimpleData?> getFromQueryCache(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i685tvwm.SimpleData?> getFromQueryCache(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'getFromQueryCache',
           );
@@ -14963,7 +15098,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'getFromQueryCache',
-          parameters: _i1.testObjectToJson({'key': key}),
+          parameters: _ist.testObjectToJson({'key': key}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -14971,7 +15106,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.SimpleData?>);
+                as _ida.Future<_i685tvwm.SimpleData?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -14979,15 +15114,15 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> putInLocalCacheWithGroup(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> putInLocalCacheWithGroup(
+    _ist.TestSessionBuilder sessionBuilder,
     String key,
-    _i8.SimpleData data,
+    _i685tvwm.SimpleData data,
     String group,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'putInLocalCacheWithGroup',
           );
@@ -14996,7 +15131,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'putInLocalCacheWithGroup',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'key': key,
             'data': data,
             'group': group,
@@ -15008,7 +15143,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15023,17 +15158,17 @@ class _AuthenticatedTestToolsEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> returnsString(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> returnsString(
+    _ist.TestSessionBuilder sessionBuilder,
     String string,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'authenticatedTestTools',
             method: 'returnsString',
           );
@@ -15042,7 +15177,7 @@ class _AuthenticatedTestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'authenticatedTestTools',
           methodName: 'returnsString',
-          parameters: _i1.testObjectToJson({'string': string}),
+          parameters: _ist.testObjectToJson({'string': string}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -15050,7 +15185,7 @@ class _AuthenticatedTestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15058,15 +15193,15 @@ class _AuthenticatedTestToolsEndpoint {
     });
   }
 
-  _i4.Stream<int> returnsStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<int> returnsStream(
+    _ist.TestSessionBuilder sessionBuilder,
     int n,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'authenticatedTestTools',
               method: 'returnsStream',
             );
@@ -15090,15 +15225,15 @@ class _AuthenticatedTestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<List<int>> returnsListFromInputStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> numbers,
+  _ida.Future<List<int>> returnsListFromInputStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> numbers,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
-    return _i1.callAwaitableFunctionWithStreamInputAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<List<int>>();
+    return _ist.callAwaitableFunctionWithStreamInputAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'authenticatedTestTools',
               method: 'returnsListFromInputStream',
             );
@@ -15121,15 +15256,15 @@ class _AuthenticatedTestToolsEndpoint {
     );
   }
 
-  _i4.Stream<int> intEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i4.Stream<int> stream,
+  _ida.Stream<int> intEchoStream(
+    _ist.TestSessionBuilder sessionBuilder,
+    _ida.Stream<int> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'authenticatedTestTools',
               method: 'intEchoStream',
             );
@@ -15160,16 +15295,16 @@ class _UnauthenticatedEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> unauthenticatedMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> unauthenticatedMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'unauthenticated',
             method: 'unauthenticatedMethod',
           );
@@ -15178,7 +15313,7 @@ class _UnauthenticatedEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'unauthenticated',
           methodName: 'unauthenticatedMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -15186,7 +15321,7 @@ class _UnauthenticatedEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15194,14 +15329,14 @@ class _UnauthenticatedEndpoint {
     });
   }
 
-  _i4.Stream<bool> unauthenticatedStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<bool> unauthenticatedStream(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<bool>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<bool>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'unauthenticated',
               method: 'unauthenticatedStream',
             );
@@ -15232,16 +15367,16 @@ class _PartiallyUnauthenticatedEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> unauthenticatedMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> unauthenticatedMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'partiallyUnauthenticated',
             method: 'unauthenticatedMethod',
           );
@@ -15250,7 +15385,7 @@ class _PartiallyUnauthenticatedEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'partiallyUnauthenticated',
           methodName: 'unauthenticatedMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -15258,7 +15393,7 @@ class _PartiallyUnauthenticatedEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15266,14 +15401,14 @@ class _PartiallyUnauthenticatedEndpoint {
     });
   }
 
-  _i4.Stream<bool> unauthenticatedStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<bool> unauthenticatedStream(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<bool>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<bool>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'partiallyUnauthenticated',
               method: 'unauthenticatedStream',
             );
@@ -15297,12 +15432,12 @@ class _PartiallyUnauthenticatedEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i4.Future<bool> authenticatedMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> authenticatedMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'partiallyUnauthenticated',
             method: 'authenticatedMethod',
           );
@@ -15311,7 +15446,7 @@ class _PartiallyUnauthenticatedEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'partiallyUnauthenticated',
           methodName: 'authenticatedMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -15319,7 +15454,7 @@ class _PartiallyUnauthenticatedEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15327,12 +15462,14 @@ class _PartiallyUnauthenticatedEndpoint {
     });
   }
 
-  _i4.Stream<bool> authenticatedStream(_i1.TestSessionBuilder sessionBuilder) {
-    var _localTestStreamManager = _i1.TestStreamManager<bool>();
-    _i1.callStreamFunctionAndHandleExceptions(
+  _ida.Stream<bool> authenticatedStream(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) {
+    var _localTestStreamManager = _ist.TestStreamManager<bool>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'partiallyUnauthenticated',
               method: 'authenticatedStream',
             );
@@ -15363,16 +15500,16 @@ class _UnauthenticatedRequireLoginEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> unauthenticatedMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> unauthenticatedMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'unauthenticatedRequireLogin',
             method: 'unauthenticatedMethod',
           );
@@ -15381,7 +15518,7 @@ class _UnauthenticatedRequireLoginEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'unauthenticatedRequireLogin',
           methodName: 'unauthenticatedMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -15389,7 +15526,7 @@ class _UnauthenticatedRequireLoginEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15397,14 +15534,14 @@ class _UnauthenticatedRequireLoginEndpoint {
     });
   }
 
-  _i4.Stream<bool> unauthenticatedStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<bool> unauthenticatedStream(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<bool>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<bool>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'unauthenticatedRequireLogin',
               method: 'unauthenticatedStream',
             );
@@ -15435,16 +15572,16 @@ class _RequireLoginEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> unauthenticatedMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> unauthenticatedMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'requireLogin',
             method: 'unauthenticatedMethod',
           );
@@ -15453,7 +15590,7 @@ class _RequireLoginEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'requireLogin',
           methodName: 'unauthenticatedMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -15461,7 +15598,7 @@ class _RequireLoginEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15469,14 +15606,14 @@ class _RequireLoginEndpoint {
     });
   }
 
-  _i4.Stream<bool> unauthenticatedStream(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Stream<bool> unauthenticatedStream(
+    _ist.TestSessionBuilder sessionBuilder,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<bool>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager = _ist.TestStreamManager<bool>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'requireLogin',
               method: 'unauthenticatedStream',
             );
@@ -15507,18 +15644,18 @@ class _UploadEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> uploadByteData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> uploadByteData(
+    _ist.TestSessionBuilder sessionBuilder,
     String path,
-    _i6.ByteData data,
+    _idt.ByteData data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'upload',
             method: 'uploadByteData',
           );
@@ -15527,7 +15664,7 @@ class _UploadEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'upload',
           methodName: 'uploadByteData',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'path': path,
             'data': data,
           }),
@@ -15538,7 +15675,7 @@ class _UploadEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15553,16 +15690,16 @@ class _MyFeatureEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<String> myFeatureMethod(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> myFeatureMethod(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'myFeature',
             method: 'myFeatureMethod',
           );
@@ -15571,7 +15708,7 @@ class _MyFeatureEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'myFeature',
           methodName: 'myFeatureMethod',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -15579,7 +15716,7 @@ class _MyFeatureEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15587,12 +15724,12 @@ class _MyFeatureEndpoint {
     });
   }
 
-  _i4.Future<_i30.MyFeatureModel> myFeatureModel(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_iivg8skz.MyFeatureModel> myFeatureModel(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'myFeature',
             method: 'myFeatureModel',
           );
@@ -15601,7 +15738,7 @@ class _MyFeatureEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'myFeature',
           methodName: 'myFeatureModel',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -15609,7 +15746,7 @@ class _MyFeatureEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i30.MyFeatureModel>);
+                as _ida.Future<_iivg8skz.MyFeatureModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15620,13 +15757,13 @@ class _MyFeatureEndpoint {
 
 class _TestCallFutureCall {
   Future<void> run(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.SimpleData? data,
+    _ist.TestSessionBuilder sessionBuilder,
+    _i685tvwm.SimpleData? data,
   ) async {
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
-      await _i31.TestCallRunFutureCall().invoke(
+      await _i3an2vcw.TestCallRunFutureCall().invoke(
         _localUniqueSession,
         data,
       );
@@ -15638,13 +15775,13 @@ class _TestCallFutureCall {
 
 class _TestExceptionCallFutureCall {
   Future<void> run(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.SimpleData? data,
+    _ist.TestSessionBuilder sessionBuilder,
+    _i685tvwm.SimpleData? data,
   ) async {
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
-      await _i31.TestExceptionCallRunFutureCall().invoke(
+      await _i3an2vcw.TestExceptionCallRunFutureCall().invoke(
         _localUniqueSession,
         data,
       );
@@ -15656,14 +15793,14 @@ class _TestExceptionCallFutureCall {
 
 class _TestGeneratedCallFutureCall {
   Future<void> hello(
-    _i1.TestSessionBuilder sessionBuilder,
+    _ist.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
-    var object = _i32.TestGeneratedCallHelloModel(name: name);
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
+    var object = _irznr7ew.TestGeneratedCallHelloModel(name: name);
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
-      await _i31.TestGeneratedCallHelloFutureCall().invoke(
+      await _i3an2vcw.TestGeneratedCallHelloFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15673,18 +15810,18 @@ class _TestGeneratedCallFutureCall {
   }
 
   Future<void> bye(
-    _i1.TestSessionBuilder sessionBuilder,
+    _ist.TestSessionBuilder sessionBuilder,
     String name, {
     int code = 0,
   }) async {
-    var object = _i33.TestGeneratedCallByeModel(
+    var object = _i4lt3urh.TestGeneratedCallByeModel(
       name: name,
       code: code,
     );
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
-      await _i31.TestGeneratedCallByeFutureCall().invoke(
+      await _i3an2vcw.TestGeneratedCallByeFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15694,13 +15831,13 @@ class _TestGeneratedCallFutureCall {
   }
 
   Future<void> logData(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.SimpleData data,
+    _ist.TestSessionBuilder sessionBuilder,
+    _i685tvwm.SimpleData data,
   ) async {
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
-      await _i31.TestGeneratedCallLogDataFutureCall().invoke(
+      await _i3an2vcw.TestGeneratedCallLogDataFutureCall().invoke(
         _localUniqueSession,
         data,
       );
@@ -15709,11 +15846,11 @@ class _TestGeneratedCallFutureCall {
     }
   }
 
-  Future<void> doTask(_i1.TestSessionBuilder sessionBuilder) async {
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
+  Future<void> doTask(_ist.TestSessionBuilder sessionBuilder) async {
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
-      await _i31.TestGeneratedCallDoTaskFutureCall().invoke(
+      await _i3an2vcw.TestGeneratedCallDoTaskFutureCall().invoke(
         _localUniqueSession,
         null,
       );
@@ -15723,14 +15860,14 @@ class _TestGeneratedCallFutureCall {
   }
 
   Future<void> invoke(
-    _i1.TestSessionBuilder sessionBuilder,
+    _ist.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
-    var object = _i34.TestGeneratedCallInvokeModel(name: name);
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
+    var object = _i8808sn4.TestGeneratedCallInvokeModel(name: name);
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
-      await _i31.TestGeneratedCallInvokeFutureCall().invoke(
+      await _i3an2vcw.TestGeneratedCallInvokeFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15740,18 +15877,18 @@ class _TestGeneratedCallFutureCall {
   }
 
   Future<void> executeWithTrigger(
-    _i1.TestSessionBuilder sessionBuilder,
+    _ist.TestSessionBuilder sessionBuilder,
     String entityId, {
-    required _i35.MyTriggerType triggerType,
+    required _icum80ls.MyTriggerType triggerType,
   }) async {
-    var object = _i36.TestGeneratedCallExecuteWithTriggerModel(
+    var object = _i1l5bdpk.TestGeneratedCallExecuteWithTriggerModel(
       entityId: entityId,
       triggerType: triggerType,
     );
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
-      await _i31.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
+      await _i3an2vcw.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
         _localUniqueSession,
         object,
       );

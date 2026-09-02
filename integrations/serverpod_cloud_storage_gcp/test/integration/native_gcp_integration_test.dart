@@ -5,6 +5,7 @@ library;
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_client/serverpod_client.dart';
@@ -95,7 +96,7 @@ void main() {
 
           expect(retrieved, isNotNull);
           final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
+            retrieved.buffer.asUint8List(),
           );
           expect(retrievedContent, content);
         },
@@ -195,9 +196,61 @@ void main() {
 
           expect(retrieved, isNotNull);
           final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
+            retrieved.buffer.asUint8List(),
           );
           expect(retrievedContent, updatedContent);
+        },
+      );
+    });
+
+    group('Given an existing file in private storage', () {
+      late String path;
+      late String content;
+
+      setUp(() async {
+        path = testPath('url-download-test.txt');
+        content = 'URL download content ${DateTime.now()}';
+        await storage.storeFile(
+          session: session,
+          path: path,
+          byteData: ByteData.view(
+            Uint8List.fromList(content.codeUnits).buffer,
+          ),
+        );
+      });
+
+      test(
+        'when the existing file is fetched through a temporary download URL, '
+        'then the response contains the file contents',
+        () async {
+          final url = await storage.temporaryDownloadUrl(
+            session: session,
+            path: path,
+          );
+
+          final downloaded = await http.readBytes(url);
+
+          expect(String.fromCharCodes(downloaded), content);
+        },
+      );
+
+      test(
+        'when the existing file is fetched through a temporary download URL after it has expired, '
+        'then an exception is thrown',
+        () async {
+          final url = await storage.temporaryDownloadUrl(
+            session: session,
+            path: path,
+            options: const TemporaryDownloadUrlOptions(
+              expirationDuration: Duration(seconds: 1),
+            ),
+          );
+          await Future<void>.delayed(const Duration(seconds: 2));
+
+          await expectLater(
+            () => http.readBytes(url),
+            throwsA(isA<http.ClientException>()),
+          );
         },
       );
     });
@@ -217,15 +270,16 @@ void main() {
       );
 
       test(
-        'when retrieving it then it returns null',
+        'when retrieving it, '
+        'then it throws CloudStorageFileNotFoundException',
         () async {
-          final retrieved = await storage.retrieveFile(
-            session: session,
-            path:
-                'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
-          );
+          final path =
+              'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt';
 
-          expect(retrieved, isNull);
+          expect(
+            () => storage.retrieveFile(session: session, path: path),
+            throwsA(isA<CloudStorageFileNotFoundException>()),
+          );
         },
       );
 
@@ -262,7 +316,7 @@ void main() {
           );
 
           expect(retrieved, isNotNull);
-          expect(retrieved!.buffer.asUint8List(), bytes);
+          expect(retrieved.buffer.asUint8List(), bytes);
         },
       );
 
@@ -291,21 +345,106 @@ void main() {
       );
     });
 
+    group('Given a file with metadata', () {
+      const metadata = FileMetadata(
+        contentType: 'text/plain',
+        cacheControl: 'private, max-age=60',
+        contentDisposition: 'attachment',
+        contentEncoding: 'gzip',
+        custom: {
+          'integration-test': 'native-gcp',
+          'tenant': 'serverpod',
+        },
+      );
+
+      void expectMetadata(FileStat stat) {
+        expect(stat.contentType, metadata.contentType);
+        expect(stat.cacheControl, metadata.cacheControl);
+        expect(stat.contentDisposition, metadata.contentDisposition);
+        expect(stat.contentEncoding, metadata.contentEncoding);
+        expect(
+          stat.custom,
+          containsPair('integration-test', 'native-gcp'),
+        );
+        expect(stat.custom, containsPair('tenant', 'serverpod'));
+      }
+
+      test(
+        'when uploading with storeFile, '
+        'then the metadata is stored',
+        () async {
+          final path = testPath('store-file-metadata.txt.gz');
+          final bytes = Uint8List.fromList(
+            gzip.encode('storeFile metadata ${DateTime.now()}'.codeUnits),
+          );
+
+          await storage.storeFile(
+            session: session,
+            path: path,
+            byteData: ByteData.sublistView(bytes),
+            options: const StoreFileOptions(metadata: metadata),
+          );
+
+          final stat = await storage.statFile(
+            session: session,
+            path: path,
+          );
+
+          expectMetadata(stat);
+        },
+      );
+
+      test(
+        'when uploading with a direct upload description, '
+        'then the metadata is stored',
+        () async {
+          final path = testPath('direct-upload-metadata.txt.gz');
+          final bytes = Uint8List.fromList(
+            gzip.encode('direct upload metadata ${DateTime.now()}'.codeUnits),
+          );
+          final data = ByteData.sublistView(bytes);
+          final description = await storage.createUploadDescription(
+            session: session,
+            path: path,
+            options: UploadOptions(
+              expirationDuration: const Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+              contentLength: data.lengthInBytes,
+              metadata: metadata,
+            ),
+          );
+
+          final uploader = FileUploader(description.encode());
+          final success = await uploader.uploadByteData(data);
+          expect(success, isTrue);
+
+          final stat = await storage.statFile(
+            session: session,
+            path: path,
+          );
+
+          expectMetadata(stat);
+        },
+      );
+    });
+
     group('Given a valid upload description', () {
       test(
-        'when creating a direct file upload description then a non-empty string is returned',
+        'when creating a direct file upload description, '
+        'then a typed description that encodes a non-empty string is returned',
         () async {
           final path = testPath('presigned-description-test.txt');
 
-          final description = await storage.createDirectFileUploadDescription(
+          final description = await storage.createUploadDescription(
             session: session,
             path: path,
-            expirationDuration: Duration(minutes: 5),
-            maxFileSize: 10 * 1024 * 1024,
+            options: UploadOptions(
+              expirationDuration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+            ),
           );
 
-          expect(description, isNotNull);
-          expect(description, isNotEmpty);
+          expect(description.encode(), isNotEmpty);
 
           // Remove from cleanup since we didn't actually upload
           testFiles.remove(path);
@@ -321,17 +460,17 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage.createDirectFileUploadDescription(
+          final description = await storage.createUploadDescription(
             session: session,
             path: path,
-            expirationDuration: Duration(minutes: 5),
-            maxFileSize: 10 * 1024 * 1024,
+            options: UploadOptions(
+              expirationDuration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+            ),
           );
 
-          expect(description, isNotNull);
-
           // Use FileUploader to upload (simulates client-side)
-          final uploader = FileUploader(description!);
+          final uploader = FileUploader(description.encode());
           final success = await uploader.uploadByteData(data);
 
           expect(success, isTrue);
@@ -344,7 +483,7 @@ void main() {
 
           expect(retrieved, isNotNull);
           final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
+            retrieved.buffer.asUint8List(),
           );
           expect(retrievedContent, content);
         },
@@ -359,18 +498,17 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage
-              .createDirectFileUploadDescriptionWithOptions(
-                session: session,
-                path: path,
-                expirationDuration: Duration(minutes: 5),
-                maxFileSize: 10 * 1024 * 1024,
-                options: CloudStorageOptions(contentLength: data.lengthInBytes),
-              );
+          final description = await storage.createUploadDescription(
+            session: session,
+            path: path,
+            options: UploadOptions(
+              expirationDuration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+              contentLength: data.lengthInBytes,
+            ),
+          );
 
-          expect(description, isNotNull);
-
-          final uploader = FileUploader(description!);
+          final uploader = FileUploader(description.encode());
           final success = await uploader.uploadByteData(data);
 
           expect(success, isTrue);
@@ -382,7 +520,7 @@ void main() {
 
           expect(retrieved, isNotNull);
           final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
+            retrieved.buffer.asUint8List(),
           );
           expect(retrievedContent, content);
         },
@@ -397,20 +535,20 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage.createDirectFileUploadDescription(
+          final description = await storage.createUploadDescription(
             session: session,
             path: path,
-            expirationDuration: Duration(minutes: 5),
-            maxFileSize: 10 * 1024 * 1024,
+            options: UploadOptions(
+              expirationDuration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+            ),
           );
 
-          expect(description, isNotNull);
-
-          final uploader = FileUploader(description!);
+          final uploader = FileUploader(description.encode());
           final success = await uploader.uploadByteData(data);
           expect(success, isTrue);
 
-          final verified = await storage.verifyDirectFileUpload(
+          final verified = await storage.verifyUpload(
             session: session,
             path: path,
           );
@@ -422,7 +560,7 @@ void main() {
       test(
         'when verifying a non-existent file then it returns false',
         () async {
-          final verified = await storage.verifyDirectFileUpload(
+          final verified = await storage.verifyUpload(
             session: session,
             path:
                 'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
@@ -441,17 +579,17 @@ void main() {
           );
           final data = ByteData.view(bytes.buffer);
 
-          final description = await storage.createDirectFileUploadDescription(
+          final description = await storage.createUploadDescription(
             session: session,
             path: path,
-            expirationDuration: Duration(minutes: 5),
-            maxFileSize: 10 * 1024 * 1024,
+            options: UploadOptions(
+              expirationDuration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+            ),
           );
 
-          expect(description, isNotNull);
-
           // Use FileUploader to upload
-          final uploader = FileUploader(description!);
+          final uploader = FileUploader(description.encode());
           final success = await uploader.uploadByteData(data);
 
           expect(success, isTrue);
@@ -463,14 +601,14 @@ void main() {
           );
 
           expect(retrieved, isNotNull);
-          expect(retrieved!.buffer.asUint8List(), bytes);
+          expect(retrieved.buffer.asUint8List(), bytes);
         },
       );
     });
 
     group('Given a new file path with preventOverwrite enabled', () {
       test(
-        'when uploading via storeFileWithOptions then the upload succeeds',
+        'when uploading via storeFile then the upload succeeds',
         () async {
           final path = testPath('prevent-overwrite-new.txt');
           final content = 'New file content';
@@ -478,11 +616,11 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          await storage.storeFileWithOptions(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
-            options: CloudStorageOptions(preventOverwrite: true),
+            options: StoreFileOptions(preventOverwrite: true),
           );
 
           final retrieved = await storage.retrieveFile(
@@ -492,7 +630,7 @@ void main() {
 
           expect(retrieved, isNotNull);
           final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
+            retrieved.buffer.asUint8List(),
           );
           expect(retrievedContent, content);
         },
@@ -507,18 +645,17 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage
-              .createDirectFileUploadDescriptionWithOptions(
-                session: session,
-                path: path,
-                expirationDuration: Duration(minutes: 5),
-                maxFileSize: 10 * 1024 * 1024,
-                options: CloudStorageOptions(preventOverwrite: true),
-              );
+          final description = await storage.createUploadDescription(
+            session: session,
+            path: path,
+            options: UploadOptions(
+              expirationDuration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+              preventOverwrite: true,
+            ),
+          );
 
-          expect(description, isNotNull);
-
-          final uploader = FileUploader(description!);
+          final uploader = FileUploader(description.encode());
           final success = await uploader.uploadByteData(data);
 
           expect(success, isTrue);
@@ -530,7 +667,7 @@ void main() {
 
           expect(retrieved, isNotNull);
           final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
+            retrieved.buffer.asUint8List(),
           );
           expect(retrievedContent, content);
         },
@@ -539,7 +676,7 @@ void main() {
 
     group('Given an existing file with preventOverwrite enabled', () {
       test(
-        'when uploading via storeFileWithOptions then it throws',
+        'when uploading via storeFile then it throws',
         () async {
           final path = testPath('prevent-overwrite-existing.txt');
           final data = ByteData.view(
@@ -559,11 +696,11 @@ void main() {
           );
 
           expect(
-            () => storage.storeFileWithOptions(
+            () => storage.storeFile(
               session: session,
               path: path,
               byteData: duplicateData,
-              options: CloudStorageOptions(preventOverwrite: true),
+              options: StoreFileOptions(preventOverwrite: true),
             ),
             throwsA(isA<Exception>()),
           );
@@ -576,7 +713,7 @@ void main() {
 
           expect(retrieved, isNotNull);
           final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
+            retrieved.buffer.asUint8List(),
           );
           expect(retrievedContent, 'original');
         },
@@ -598,23 +735,22 @@ void main() {
           );
 
           // Create direct upload description with preventOverwrite
-          final description = await storage
-              .createDirectFileUploadDescriptionWithOptions(
-                session: session,
-                path: path,
-                expirationDuration: Duration(minutes: 5),
-                maxFileSize: 10 * 1024 * 1024,
-                options: CloudStorageOptions(preventOverwrite: true),
-              );
-
-          expect(description, isNotNull);
+          final description = await storage.createUploadDescription(
+            session: session,
+            path: path,
+            options: UploadOptions(
+              expirationDuration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+              preventOverwrite: true,
+            ),
+          );
 
           final duplicateData = ByteData.view(
             Uint8List.fromList('duplicate'.codeUnits).buffer,
           );
 
           // Upload should fail (returns false or throws)
-          final uploader = FileUploader(description!);
+          final uploader = FileUploader(description.encode());
           final success = await uploader.uploadByteData(duplicateData);
 
           expect(success, isFalse);
@@ -627,7 +763,7 @@ void main() {
 
           expect(retrieved, isNotNull);
           final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
+            retrieved.buffer.asUint8List(),
           );
           expect(retrievedContent, 'original');
         },
@@ -657,7 +793,7 @@ void main() {
 
           expect(retrieved, isNotNull);
           final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
+            retrieved.buffer.asUint8List(),
           );
           expect(retrievedContent, content);
         },

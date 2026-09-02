@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
 abstract class ServerHealthConnectionInfo
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ServerHealthConnectionInfo._({
     this.id,
     required this.serverId,
@@ -43,7 +43,7 @@ abstract class ServerHealthConnectionInfo
     return ServerHealthConnectionInfo(
       id: jsonSerialization['id'] as int?,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp: _i1.DateTimeJsonExtension.fromJson(
+      timestamp: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['timestamp'],
       ),
       active: jsonSerialization['active'] as int,
@@ -80,11 +80,11 @@ abstract class ServerHealthConnectionInfo
   int granularity;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ServerHealthConnectionInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ServerHealthConnectionInfo copyWith({
     int? id,
     String? serverId,
@@ -127,11 +127,11 @@ abstract class ServerHealthConnectionInfo
   }
 
   static ServerHealthConnectionInfoIncludeList includeList({
-    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     ServerHealthConnectionInfoInclude? include,
   }) {
     return ServerHealthConnectionInfoIncludeList._(
@@ -146,7 +146,7 @@ abstract class ServerHealthConnectionInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -173,7 +173,7 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
 
   /// Returns a shallow copy of this [ServerHealthConnectionInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ServerHealthConnectionInfo copyWith({
     Object? id = _Undefined,
@@ -197,66 +197,66 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
 }
 
 class ServerHealthConnectionInfoUpdateTable
-    extends _i1.UpdateTable<ServerHealthConnectionInfoTable> {
+    extends _is.UpdateTable<ServerHealthConnectionInfoTable> {
   ServerHealthConnectionInfoUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> serverId(String value) => _is.ColumnValue(
     table.serverId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
+      _is.ColumnValue(
         table.timestamp,
         value,
       );
 
-  _i1.ColumnValue<int, int> active(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> active(int value) => _is.ColumnValue(
     table.active,
     value,
   );
 
-  _i1.ColumnValue<int, int> closing(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> closing(int value) => _is.ColumnValue(
     table.closing,
     value,
   );
 
-  _i1.ColumnValue<int, int> idle(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> idle(int value) => _is.ColumnValue(
     table.idle,
     value,
   );
 
-  _i1.ColumnValue<int, int> granularity(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> granularity(int value) => _is.ColumnValue(
     table.granularity,
     value,
   );
 }
 
-class ServerHealthConnectionInfoTable extends _i1.Table<int?> {
+class ServerHealthConnectionInfoTable extends _is.Table<int?> {
   ServerHealthConnectionInfoTable({super.tableRelation})
     : super(tableName: 'serverpod_health_connection_info') {
     updateTable = ServerHealthConnectionInfoUpdateTable(this);
-    serverId = _i1.ColumnString(
+    serverId = _is.ColumnString(
       'serverId',
       this,
     );
-    timestamp = _i1.ColumnDateTime(
+    timestamp = _is.ColumnDateTime(
       'timestamp',
       this,
     );
-    active = _i1.ColumnInt(
+    active = _is.ColumnInt(
       'active',
       this,
     );
-    closing = _i1.ColumnInt(
+    closing = _is.ColumnInt(
       'closing',
       this,
     );
-    idle = _i1.ColumnInt(
+    idle = _is.ColumnInt(
       'idle',
       this,
     );
-    granularity = _i1.ColumnInt(
+    granularity = _is.ColumnInt(
       'granularity',
       this,
     );
@@ -265,26 +265,26 @@ class ServerHealthConnectionInfoTable extends _i1.Table<int?> {
   late final ServerHealthConnectionInfoUpdateTable updateTable;
 
   /// The server associated with this connection info.
-  late final _i1.ColumnString serverId;
+  late final _is.ColumnString serverId;
 
   /// The time when the connections was checked, granularity is one minute.
-  late final _i1.ColumnDateTime timestamp;
+  late final _is.ColumnDateTime timestamp;
 
   /// Number of active connections currently open.
-  late final _i1.ColumnInt active;
+  late final _is.ColumnInt active;
 
   /// Number of connections currently closing.
-  late final _i1.ColumnInt closing;
+  late final _is.ColumnInt closing;
 
   /// Number of connections currently idle.
-  late final _i1.ColumnInt idle;
+  late final _is.ColumnInt idle;
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  late final _i1.ColumnInt granularity;
+  late final _is.ColumnInt granularity;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     serverId,
     timestamp,
@@ -295,19 +295,19 @@ class ServerHealthConnectionInfoTable extends _i1.Table<int?> {
   ];
 }
 
-class ServerHealthConnectionInfoInclude extends _i1.IncludeObject {
+class ServerHealthConnectionInfoInclude extends _is.IncludeObject {
   ServerHealthConnectionInfoInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ServerHealthConnectionInfo.t;
+  _is.Table<int?> get table => ServerHealthConnectionInfo.t;
 }
 
-class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
+class ServerHealthConnectionInfoIncludeList extends _is.IncludeList {
   ServerHealthConnectionInfoIncludeList._({
-    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -318,10 +318,10 @@ class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ServerHealthConnectionInfo.t;
+  _is.Table<int?> get table => ServerHealthConnectionInfo.t;
 }
 
 class ServerHealthConnectionInfoRepository {
@@ -350,15 +350,15 @@ class ServerHealthConnectionInfoRepository {
   /// );
   /// ```
   Future<List<ServerHealthConnectionInfo>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
@@ -390,14 +390,14 @@ class ServerHealthConnectionInfoRepository {
   /// );
   /// ```
   Future<ServerHealthConnectionInfo?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
@@ -412,11 +412,11 @@ class ServerHealthConnectionInfoRepository {
 
   /// Finds a single [ServerHealthConnectionInfo] by its [id] or null if no such row exists.
   Future<ServerHealthConnectionInfo?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ServerHealthConnectionInfo>(
       id,
@@ -441,9 +441,9 @@ class ServerHealthConnectionInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthConnectionInfo>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerHealthConnectionInfo> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -459,9 +459,9 @@ class ServerHealthConnectionInfoRepository {
   ///
   /// The returned [ServerHealthConnectionInfo] will have its `id` field set.
   Future<ServerHealthConnectionInfo> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerHealthConnectionInfo row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ServerHealthConnectionInfo>(
       row,
@@ -490,13 +490,13 @@ class ServerHealthConnectionInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthConnectionInfo>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerHealthConnectionInfo> rows, {
-    required _i1.ColumnSelections<ServerHealthConnectionInfoTable>
+    required _is.ColumnSelections<ServerHealthConnectionInfoTable>
     conflictColumns,
-    _i1.ColumnSelections<ServerHealthConnectionInfoTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerHealthConnectionInfoTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ServerHealthConnectionInfo>(
@@ -523,13 +523,13 @@ class ServerHealthConnectionInfoRepository {
   ///
   /// The returned [ServerHealthConnectionInfo] will have its `id` field set.
   Future<ServerHealthConnectionInfo?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerHealthConnectionInfo row, {
-    required _i1.ColumnSelections<ServerHealthConnectionInfoTable>
+    required _is.ColumnSelections<ServerHealthConnectionInfoTable>
     conflictColumns,
-    _i1.ColumnSelections<ServerHealthConnectionInfoTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerHealthConnectionInfoTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ServerHealthConnectionInfo>(
       row,
@@ -550,10 +550,10 @@ class ServerHealthConnectionInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthConnectionInfo>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerHealthConnectionInfo> rows, {
-    _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ServerHealthConnectionInfo>(
@@ -568,10 +568,10 @@ class ServerHealthConnectionInfoRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ServerHealthConnectionInfo> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerHealthConnectionInfo row, {
-    _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ServerHealthConnectionInfo>(
       row,
@@ -583,11 +583,11 @@ class ServerHealthConnectionInfoRepository {
   /// Updates a single [ServerHealthConnectionInfo] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ServerHealthConnectionInfo?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ServerHealthConnectionInfoUpdateTable>
+    required _is.ColumnValueListBuilder<ServerHealthConnectionInfoUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ServerHealthConnectionInfo>(
       id,
@@ -603,15 +603,15 @@ class ServerHealthConnectionInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthConnectionInfo>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ServerHealthConnectionInfoUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ServerHealthConnectionInfoUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
+    required _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ServerHealthConnectionInfo>(
@@ -638,11 +638,11 @@ class ServerHealthConnectionInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthConnectionInfo>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerHealthConnectionInfo> rows, {
-    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ServerHealthConnectionInfo>(
@@ -656,9 +656,9 @@ class ServerHealthConnectionInfoRepository {
 
   /// Deletes a single [ServerHealthConnectionInfo].
   Future<ServerHealthConnectionInfo> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerHealthConnectionInfo row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ServerHealthConnectionInfo>(
       row,
@@ -675,11 +675,11 @@ class ServerHealthConnectionInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthConnectionInfo>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
-    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
+    _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ServerHealthConnectionInfo>(
@@ -694,10 +694,10 @@ class ServerHealthConnectionInfoRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
@@ -708,11 +708,11 @@ class ServerHealthConnectionInfoRepository {
 
   /// Acquires row-level locks on [ServerHealthConnectionInfo] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ServerHealthConnectionInfo>(
       where: where(ServerHealthConnectionInfo.t),

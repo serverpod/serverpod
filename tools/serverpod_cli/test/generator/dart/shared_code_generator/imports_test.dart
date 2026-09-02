@@ -325,7 +325,7 @@ void main() {
           );
           expect(
             protocolSource,
-            contains('extends _i1.SerializationManager'),
+            contains('extends _iss.SerializationManager'),
           );
         },
       );

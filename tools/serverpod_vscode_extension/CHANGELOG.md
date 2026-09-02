@@ -1,3 +1,11 @@
+## 1.5.0
+
+- refactor: BREAKING. Drops support for bare `.yaml`/`.yml` model files. The language server is only attached to `.spy.yaml`, `.spy.yml` and `.spy` files, and the extension no longer activates for every yaml file.
+
+## 1.4.0
+
+- feat: Hooks into the device selection for VS Code debugger launch when no device is set on the config file.
+
 ## 1.3.0
 
 - feat: Adds support for Enum properties on models.

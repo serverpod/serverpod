@@ -16,6 +16,7 @@ import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
+import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/pubspec_lock_parser.dart';
 import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -89,6 +90,10 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     } catch (e) {
       log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
+
+    if (await LegacyModelFiles.report(config)) {
+      throw ExitException.error();
     }
 
     var serverPubspecFile = File(

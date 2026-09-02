@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/one_to_many/order.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../changed_id_type/one_to_many/order.dart' as _ivss21qh;
 
 abstract class CustomerInt
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CustomerInt._({
     this.id,
     required this.name,
@@ -25,7 +26,7 @@ abstract class CustomerInt
   factory CustomerInt({
     int? id,
     required String name,
-    List<_i2.OrderUuid>? orders,
+    List<_ivss21qh.OrderUuid>? orders,
   }) = _CustomerIntImpl;
 
   factory CustomerInt.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,7 +35,7 @@ abstract class CustomerInt
       name: jsonSerialization['name'] as String,
       orders: jsonSerialization['orders'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.OrderUuid>>(
+          : _i0ntutnq.Protocol().deserialize<List<_ivss21qh.OrderUuid>>(
               jsonSerialization['orders'],
             ),
     );
@@ -47,15 +48,15 @@ abstract class CustomerInt
 
   String name;
 
-  List<_i2.OrderUuid>? orders;
+  List<_ivss21qh.OrderUuid>? orders;
 
   /// Returns a shallow copy of this [CustomerInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CustomerInt copyWith({
     int? id,
     String? name,
-    List<_i2.OrderUuid>? orders,
+    List<_ivss21qh.OrderUuid>? orders,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -81,7 +82,7 @@ abstract class CustomerInt
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -91,7 +92,7 @@ class _CustomerIntImpl extends CustomerInt {
   _CustomerIntImpl({
     int? id,
     required String name,
-    List<_i2.OrderUuid>? orders,
+    List<_ivss21qh.OrderUuid>? orders,
   }) : super._(
          id: id,
          name: name,
@@ -100,7 +101,7 @@ class _CustomerIntImpl extends CustomerInt {
 
   /// Returns a shallow copy of this [CustomerInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CustomerInt copyWith({
     Object? id = _Undefined,
@@ -110,7 +111,7 @@ class _CustomerIntImpl extends CustomerInt {
     return CustomerInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.OrderUuid>?
+      orders: orders is List<_ivss21qh.OrderUuid>?
           ? orders
           : this.orders?.map((e0) => e0.copyWith()).toList(),
     );

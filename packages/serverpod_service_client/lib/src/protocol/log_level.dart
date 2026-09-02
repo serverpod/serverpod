@@ -10,16 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Represents different log levels.
-enum LogLevel implements _i1.SerializableModel {
+enum LogLevel implements _isc.SerializableModel {
   debug,
   info,
   warning,
   error,
-  fatal,
-  ;
+  fatal;
 
   static LogLevel fromJson(int index) {
     switch (index) {

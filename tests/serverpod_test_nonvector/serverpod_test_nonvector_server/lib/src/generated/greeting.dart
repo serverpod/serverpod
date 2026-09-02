@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// A greeting message which can be sent to or from the server.
 abstract class Greeting
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Greeting._({
     this.id,
     required this.message,
@@ -34,7 +34,7 @@ abstract class Greeting
       id: jsonSerialization['id'] as int?,
       message: jsonSerialization['message'] as String,
       author: jsonSerialization['author'] as String,
-      timestamp: _i1.DateTimeJsonExtension.fromJson(
+      timestamp: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['timestamp'],
       ),
     );
@@ -57,11 +57,11 @@ abstract class Greeting
   DateTime timestamp;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Greeting]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Greeting copyWith({
     int? id,
     String? message,
@@ -95,11 +95,11 @@ abstract class Greeting
   }
 
   static GreetingIncludeList includeList({
-    _i1.WhereExpressionBuilder<GreetingTable>? where,
+    _is.WhereExpressionBuilder<GreetingTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GreetingTable>? orderBy,
-    _i1.OrderByListBuilder<GreetingTable>? orderByList,
+    _is.OrderByBuilder<GreetingTable>? orderBy,
+    _is.OrderByListBuilder<GreetingTable>? orderByList,
     GreetingInclude? include,
   }) {
     return GreetingIncludeList._(
@@ -114,7 +114,7 @@ abstract class Greeting
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -135,7 +135,7 @@ class _GreetingImpl extends Greeting {
 
   /// Returns a shallow copy of this [Greeting]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Greeting copyWith({
     Object? id = _Undefined,
@@ -152,38 +152,38 @@ class _GreetingImpl extends Greeting {
   }
 }
 
-class GreetingUpdateTable extends _i1.UpdateTable<GreetingTable> {
+class GreetingUpdateTable extends _is.UpdateTable<GreetingTable> {
   GreetingUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> message(String value) => _is.ColumnValue(
     table.message,
     value,
   );
 
-  _i1.ColumnValue<String, String> author(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> author(String value) => _is.ColumnValue(
     table.author,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
+      _is.ColumnValue(
         table.timestamp,
         value,
       );
 }
 
-class GreetingTable extends _i1.Table<int?> {
+class GreetingTable extends _is.Table<int?> {
   GreetingTable({super.tableRelation}) : super(tableName: 'greeting') {
     updateTable = GreetingUpdateTable(this);
-    message = _i1.ColumnString(
+    message = _is.ColumnString(
       'message',
       this,
     );
-    author = _i1.ColumnString(
+    author = _is.ColumnString(
       'author',
       this,
     );
-    timestamp = _i1.ColumnDateTime(
+    timestamp = _is.ColumnDateTime(
       'timestamp',
       this,
     );
@@ -192,16 +192,16 @@ class GreetingTable extends _i1.Table<int?> {
   late final GreetingUpdateTable updateTable;
 
   /// The greeting message.
-  late final _i1.ColumnString message;
+  late final _is.ColumnString message;
 
   /// The author of the greeting message.
-  late final _i1.ColumnString author;
+  late final _is.ColumnString author;
 
   /// The time when the message was created.
-  late final _i1.ColumnDateTime timestamp;
+  late final _is.ColumnDateTime timestamp;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     message,
     author,
@@ -209,19 +209,19 @@ class GreetingTable extends _i1.Table<int?> {
   ];
 }
 
-class GreetingInclude extends _i1.IncludeObject {
+class GreetingInclude extends _is.IncludeObject {
   GreetingInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => Greeting.t;
+  _is.Table<int?> get table => Greeting.t;
 }
 
-class GreetingIncludeList extends _i1.IncludeList {
+class GreetingIncludeList extends _is.IncludeList {
   GreetingIncludeList._({
-    _i1.WhereExpressionBuilder<GreetingTable>? where,
+    _is.WhereExpressionBuilder<GreetingTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -232,10 +232,10 @@ class GreetingIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Greeting.t;
+  _is.Table<int?> get table => Greeting.t;
 }
 
 class GreetingRepository {
@@ -264,15 +264,15 @@ class GreetingRepository {
   /// );
   /// ```
   Future<List<Greeting>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GreetingTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GreetingTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GreetingTable>? orderBy,
-    _i1.OrderByListBuilder<GreetingTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<GreetingTable>? orderBy,
+    _is.OrderByListBuilder<GreetingTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Greeting>(
       where: where?.call(Greeting.t),
@@ -304,14 +304,14 @@ class GreetingRepository {
   /// );
   /// ```
   Future<Greeting?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GreetingTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GreetingTable>? where,
     int? offset,
-    _i1.OrderByBuilder<GreetingTable>? orderBy,
-    _i1.OrderByListBuilder<GreetingTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<GreetingTable>? orderBy,
+    _is.OrderByListBuilder<GreetingTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Greeting>(
       where: where?.call(Greeting.t),
@@ -326,11 +326,11 @@ class GreetingRepository {
 
   /// Finds a single [Greeting] by its [id] or null if no such row exists.
   Future<Greeting?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Greeting>(
       id,
@@ -355,9 +355,9 @@ class GreetingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Greeting> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -373,9 +373,9 @@ class GreetingRepository {
   ///
   /// The returned [Greeting] will have its `id` field set.
   Future<Greeting> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Greeting row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<Greeting>(
       row,
@@ -404,12 +404,12 @@ class GreetingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Greeting> rows, {
-    required _i1.ColumnSelections<GreetingTable> conflictColumns,
-    _i1.ColumnSelections<GreetingTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GreetingTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<GreetingTable> conflictColumns,
+    _is.ColumnSelections<GreetingTable>? updateColumns,
+    _is.WhereExpressionBuilder<GreetingTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Greeting>(
@@ -436,12 +436,12 @@ class GreetingRepository {
   ///
   /// The returned [Greeting] will have its `id` field set.
   Future<Greeting?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Greeting row, {
-    required _i1.ColumnSelections<GreetingTable> conflictColumns,
-    _i1.ColumnSelections<GreetingTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GreetingTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<GreetingTable> conflictColumns,
+    _is.ColumnSelections<GreetingTable>? updateColumns,
+    _is.WhereExpressionBuilder<GreetingTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Greeting>(
       row,
@@ -462,10 +462,10 @@ class GreetingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Greeting> rows, {
-    _i1.ColumnSelections<GreetingTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GreetingTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Greeting>(
@@ -480,10 +480,10 @@ class GreetingRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Greeting> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Greeting row, {
-    _i1.ColumnSelections<GreetingTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GreetingTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<Greeting>(
       row,
@@ -495,10 +495,10 @@ class GreetingRepository {
   /// Updates a single [Greeting] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Greeting?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<GreetingUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<GreetingUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<Greeting>(
       id,
@@ -514,14 +514,14 @@ class GreetingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<GreetingUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<GreetingTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<GreetingUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<GreetingTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GreetingTable>? orderBy,
-    _i1.OrderByListBuilder<GreetingTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GreetingTable>? orderBy,
+    _is.OrderByListBuilder<GreetingTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Greeting>(
@@ -548,11 +548,11 @@ class GreetingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Greeting> rows, {
-    _i1.OrderByBuilder<GreetingTable>? orderBy,
-    _i1.OrderByListBuilder<GreetingTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GreetingTable>? orderBy,
+    _is.OrderByListBuilder<GreetingTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Greeting>(
@@ -566,9 +566,9 @@ class GreetingRepository {
 
   /// Deletes a single [Greeting].
   Future<Greeting> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Greeting row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Greeting>(
       row,
@@ -585,11 +585,11 @@ class GreetingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GreetingTable> where,
-    _i1.OrderByBuilder<GreetingTable>? orderBy,
-    _i1.OrderByListBuilder<GreetingTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GreetingTable> where,
+    _is.OrderByBuilder<GreetingTable>? orderBy,
+    _is.OrderByListBuilder<GreetingTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Greeting>(
@@ -604,10 +604,10 @@ class GreetingRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GreetingTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GreetingTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<Greeting>(
       where: where?.call(Greeting.t),
@@ -618,11 +618,11 @@ class GreetingRepository {
 
   /// Acquires row-level locks on [Greeting] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GreetingTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GreetingTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Greeting>(
       where: where(Greeting.t),

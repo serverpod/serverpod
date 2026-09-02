@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
 abstract class EmailFailedSignIn
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   EmailFailedSignIn._({
     this.id,
     required this.email,
@@ -34,7 +34,7 @@ abstract class EmailFailedSignIn
     return EmailFailedSignIn(
       id: jsonSerialization['id'] as int?,
       email: jsonSerialization['email'] as String,
-      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      time: _isc.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
       ipAddress: jsonSerialization['ipAddress'] as String,
     );
   }
@@ -55,7 +55,7 @@ abstract class EmailFailedSignIn
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   EmailFailedSignIn copyWith({
     int? id,
     String? email,
@@ -86,7 +86,7 @@ abstract class EmailFailedSignIn
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -107,7 +107,7 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   EmailFailedSignIn copyWith({
     Object? id = _Undefined,

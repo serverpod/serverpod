@@ -1,10 +1,19 @@
 // Test shim: emits a fixed `--machine` event sequence, then waits for
 // SIGINT/SIGTERM. `--ws=<uri>` overrides the wsUri in app.debugPort.
+// `--pid-file=<path>` writes the shim's pid there on startup, so a test
+// can kill the process directly to simulate a spontaneous app exit
+// (e.g. browser closed).
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 Future<void> main(List<String> args) async {
+  final pidFile = args
+      .where((a) => a.startsWith('--pid-file='))
+      .map((a) => a.substring('--pid-file='.length))
+      .firstOrNull;
+  if (pidFile != null) File(pidFile).writeAsStringSync('$pid');
+
   final wsUri = args
       .firstWhere(
         (a) => a.startsWith('--ws='),

@@ -5,7 +5,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import 'fake_token_storage.dart';
 
-class FakeTokenManager implements TokenManager {
+class FakeTokenManager extends TokenManager {
   final FakeTokenStorage _storage;
   final String _tokenIssuer;
   final bool _usesRefreshTokens;
@@ -21,7 +21,7 @@ class FakeTokenManager implements TokenManager {
        _authUsers = authUsers;
 
   @override
-  Future<AuthSuccess> issueToken(
+  Future<AuthSuccess> createToken(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,

@@ -300,7 +300,6 @@ void main() {
         watchers.map((watcher) => watcher['globPattern']),
         containsAll([
           '**/*.{spy,spy.yaml,spy.yml}',
-          '**/lib/src/{models,protocol}/**/*.{yaml,yml}',
           '**/lib/**',
         ]),
       );

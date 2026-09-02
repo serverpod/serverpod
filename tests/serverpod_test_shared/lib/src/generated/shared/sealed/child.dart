@@ -11,8 +11,8 @@
 
 part of 'parent.dart';
 
-abstract class SharedSealedChild extends _i1.SharedSealedParent
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class SharedSealedChild extends _ilwf0zl1.SharedSealedParent
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   SharedSealedChild._({
     required super.sharedSealedField,
     required this.sharedSealedChildField,
@@ -36,7 +36,7 @@ abstract class SharedSealedChild extends _i1.SharedSealedParent
   /// Returns a shallow copy of this [SharedSealedChild]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_iss.useResult
   SharedSealedChild copyWith({
     String? sharedSealedField,
     String? sharedSealedChildField,
@@ -61,7 +61,7 @@ abstract class SharedSealedChild extends _i1.SharedSealedParent
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -76,7 +76,7 @@ class _SharedSealedChildImpl extends SharedSealedChild {
 
   /// Returns a shallow copy of this [SharedSealedChild]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_iss.useResult
   @override
   SharedSealedChild copyWith({
     String? sharedSealedField,

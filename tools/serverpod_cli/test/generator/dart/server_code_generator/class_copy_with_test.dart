@@ -144,7 +144,7 @@ void main() {
           }, skip: copyWithMethod == null);
 
           test('annotated with @useResult', () {
-            expect(copyWithMethod?.metadata.first.toSource(), '@_i1.useResult');
+            expect(copyWithMethod?.metadata.first.toSource(), '@_is.useResult');
           }, skip: copyWithMethod == null);
 
           test('annotated with @override', () {

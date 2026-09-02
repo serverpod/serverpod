@@ -10,14 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
-enum DatabaseMigrationWarningType implements _i1.SerializableModel {
+enum DatabaseMigrationWarningType implements _iss.SerializableModel {
   tableDropped,
   columnDropped,
   notNullAdded,
-  uniqueIndexCreated,
-  ;
+  uniqueIndexCreated;
 
   static DatabaseMigrationWarningType fromJson(String name) {
     switch (name) {

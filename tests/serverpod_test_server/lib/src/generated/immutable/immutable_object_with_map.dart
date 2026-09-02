@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 
-@_i1.immutable
+@_is.immutable
 abstract class ImmutableObjectWithMap
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   const ImmutableObjectWithMap._({required this.mapVariable});
 
   const factory ImmutableObjectWithMap({
@@ -27,7 +27,7 @@ abstract class ImmutableObjectWithMap
     Map<String, dynamic> jsonSerialization,
   ) {
     return ImmutableObjectWithMap(
-      mapVariable: _i2.Protocol().deserialize<Map<String, String>>(
+      mapVariable: _igqrxdcj.Protocol().deserialize<Map<String, String>>(
         jsonSerialization['mapVariable'],
       ),
     );
@@ -37,7 +37,7 @@ abstract class ImmutableObjectWithMap
 
   /// Returns a shallow copy of this [ImmutableObjectWithMap]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ImmutableObjectWithMap copyWith({Map<String, String>? mapVariable});
   @override
   bool operator ==(Object other) {
@@ -47,7 +47,7 @@ abstract class ImmutableObjectWithMap
         ) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithMap &&
-            const _i3.DeepCollectionEquality().equals(
+            const _iss.DeepCollectionEquality().equals(
               other.mapVariable,
               mapVariable,
             );
@@ -57,7 +57,7 @@ abstract class ImmutableObjectWithMap
   int get hashCode {
     return Object.hash(
       runtimeType,
-      const _i3.DeepCollectionEquality().hash(mapVariable),
+      const _iss.DeepCollectionEquality().hash(mapVariable),
     );
   }
 
@@ -79,7 +79,7 @@ abstract class ImmutableObjectWithMap
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -89,7 +89,7 @@ class _ImmutableObjectWithMapImpl extends ImmutableObjectWithMap {
 
   /// Returns a shallow copy of this [ImmutableObjectWithMap]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ImmutableObjectWithMap copyWith({Map<String, String>? mapVariable}) {
     return ImmutableObjectWithMap(

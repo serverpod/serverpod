@@ -10,77 +10,77 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../common/endpoints/status_endpoint.dart' as _i2;
-import '../profile/endpoints/user_profile_base_endpoint.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../common/endpoints/status_endpoint.dart' as _id66yt13;
+import '../profile/endpoints/user_profile_base_endpoint.dart' as _ijdx9s01;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'status': _i2.StatusEndpoint()
+  void initializeEndpoints(_is.Server server) {
+    var endpoints = <String, _is.Endpoint>{
+      'status': _id66yt13.StatusEndpoint()
         ..initialize(
           server,
           'status',
           'serverpod_auth_core',
         ),
-      'userProfileInfo': _i3.UserProfileInfoEndpoint()
+      'userProfileInfo': _ijdx9s01.UserProfileInfoEndpoint()
         ..initialize(
           server,
           'userProfileInfo',
           'serverpod_auth_core',
         ),
     };
-    connectors['status'] = _i1.EndpointConnector(
+    connectors['status'] = _is.EndpointConnector(
       name: 'status',
       endpoint: endpoints['status']!,
       methodConnectors: {
-        'isSignedIn': _i1.MethodConnector(
+        'isSignedIn': _is.MethodConnector(
           name: 'isSignedIn',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['status'] as _i2.StatusEndpoint).isSignedIn(
-                session,
-              ),
+              ) async => (endpoints['status'] as _id66yt13.StatusEndpoint)
+                  .isSignedIn(session),
         ),
-        'signOutDevice': _i1.MethodConnector(
+        'signOutDevice': _is.MethodConnector(
           name: 'signOutDevice',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['status'] as _i2.StatusEndpoint)
+              ) async => (endpoints['status'] as _id66yt13.StatusEndpoint)
                   .signOutDevice(session),
         ),
-        'signOutAllDevices': _i1.MethodConnector(
+        'signOutAllDevices': _is.MethodConnector(
           name: 'signOutAllDevices',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['status'] as _i2.StatusEndpoint)
+              ) async => (endpoints['status'] as _id66yt13.StatusEndpoint)
                   .signOutAllDevices(session),
         ),
       },
     );
-    connectors['userProfileInfo'] = _i1.EndpointConnector(
+    connectors['userProfileInfo'] = _is.EndpointConnector(
       name: 'userProfileInfo',
       endpoint: endpoints['userProfileInfo']!,
       methodConnectors: {
-        'get': _i1.MethodConnector(
+        'get': _is.MethodConnector(
           name: 'get',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['userProfileInfo'] as _i3.UserProfileInfoEndpoint)
+                  (endpoints['userProfileInfo']
+                          as _ijdx9s01.UserProfileInfoEndpoint)
                       .get(session),
         ),
       },

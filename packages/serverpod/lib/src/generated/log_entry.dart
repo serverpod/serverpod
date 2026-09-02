@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'log_level.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'log_level.dart' as _iavjjqw5;
 
 /// Bindings to a log entry in the database.
 abstract class LogEntry
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   LogEntry._({
     this.id,
     required this.sessionLogId,
@@ -37,7 +37,7 @@ abstract class LogEntry
     String? reference,
     required String serverId,
     required DateTime time,
-    required _i2.LogLevel logLevel,
+    required _iavjjqw5.LogLevel logLevel,
     required String message,
     String? error,
     String? stackTrace,
@@ -51,8 +51,10 @@ abstract class LogEntry
       messageId: jsonSerialization['messageId'] as int?,
       reference: jsonSerialization['reference'] as String?,
       serverId: jsonSerialization['serverId'] as String,
-      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
-      logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
+      time: _is.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      logLevel: _iavjjqw5.LogLevel.fromJson(
+        (jsonSerialization['logLevel'] as int),
+      ),
       message: jsonSerialization['message'] as String,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
@@ -83,7 +85,7 @@ abstract class LogEntry
   DateTime time;
 
   /// The log level of this entry.
-  _i2.LogLevel logLevel;
+  _iavjjqw5.LogLevel logLevel;
 
   /// The logging message.
   String message;
@@ -98,11 +100,11 @@ abstract class LogEntry
   int order;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [LogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   LogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -110,7 +112,7 @@ abstract class LogEntry
     String? reference,
     String? serverId,
     DateTime? time,
-    _i2.LogLevel? logLevel,
+    _iavjjqw5.LogLevel? logLevel,
     String? message,
     String? error,
     String? stackTrace,
@@ -157,11 +159,11 @@ abstract class LogEntry
   }
 
   static LogEntryIncludeList includeList({
-    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    _is.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
+    _is.OrderByBuilder<LogEntryTable>? orderBy,
+    _is.OrderByListBuilder<LogEntryTable>? orderByList,
     LogEntryInclude? include,
   }) {
     return LogEntryIncludeList._(
@@ -176,7 +178,7 @@ abstract class LogEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -190,7 +192,7 @@ class _LogEntryImpl extends LogEntry {
     String? reference,
     required String serverId,
     required DateTime time,
-    required _i2.LogLevel logLevel,
+    required _iavjjqw5.LogLevel logLevel,
     required String message,
     String? error,
     String? stackTrace,
@@ -211,7 +213,7 @@ class _LogEntryImpl extends LogEntry {
 
   /// Returns a shallow copy of this [LogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   LogEntry copyWith({
     Object? id = _Undefined,
@@ -220,7 +222,7 @@ class _LogEntryImpl extends LogEntry {
     Object? reference = _Undefined,
     String? serverId,
     DateTime? time,
-    _i2.LogLevel? logLevel,
+    _iavjjqw5.LogLevel? logLevel,
     String? message,
     Object? error = _Undefined,
     Object? stackTrace = _Undefined,
@@ -242,102 +244,103 @@ class _LogEntryImpl extends LogEntry {
   }
 }
 
-class LogEntryUpdateTable extends _i1.UpdateTable<LogEntryTable> {
+class LogEntryUpdateTable extends _is.UpdateTable<LogEntryTable> {
   LogEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> sessionLogId(int value) => _is.ColumnValue(
     table.sessionLogId,
     value,
   );
 
-  _i1.ColumnValue<int, int> messageId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> messageId(int? value) => _is.ColumnValue(
     table.messageId,
     value,
   );
 
-  _i1.ColumnValue<String, String> reference(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> reference(String? value) => _is.ColumnValue(
     table.reference,
     value,
   );
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> serverId(String value) => _is.ColumnValue(
     table.serverId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> time(DateTime value) => _is.ColumnValue(
     table.time,
     value,
   );
 
-  _i1.ColumnValue<_i2.LogLevel, _i2.LogLevel> logLevel(_i2.LogLevel value) =>
-      _i1.ColumnValue(
-        table.logLevel,
-        value,
-      );
+  _is.ColumnValue<_iavjjqw5.LogLevel, _iavjjqw5.LogLevel> logLevel(
+    _iavjjqw5.LogLevel value,
+  ) => _is.ColumnValue(
+    table.logLevel,
+    value,
+  );
 
-  _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> message(String value) => _is.ColumnValue(
     table.message,
     value,
   );
 
-  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> error(String? value) => _is.ColumnValue(
     table.error,
     value,
   );
 
-  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> stackTrace(String? value) => _is.ColumnValue(
     table.stackTrace,
     value,
   );
 
-  _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> order(int value) => _is.ColumnValue(
     table.order,
     value,
   );
 }
 
-class LogEntryTable extends _i1.Table<int?> {
+class LogEntryTable extends _is.Table<int?> {
   LogEntryTable({super.tableRelation}) : super(tableName: 'serverpod_log') {
     updateTable = LogEntryUpdateTable(this);
-    sessionLogId = _i1.ColumnInt(
+    sessionLogId = _is.ColumnInt(
       'sessionLogId',
       this,
     );
-    messageId = _i1.ColumnInt(
+    messageId = _is.ColumnInt(
       'messageId',
       this,
     );
-    reference = _i1.ColumnString(
+    reference = _is.ColumnString(
       'reference',
       this,
     );
-    serverId = _i1.ColumnString(
+    serverId = _is.ColumnString(
       'serverId',
       this,
     );
-    time = _i1.ColumnDateTime(
+    time = _is.ColumnDateTime(
       'time',
       this,
     );
-    logLevel = _i1.ColumnEnum(
+    logLevel = _is.ColumnEnum(
       'logLevel',
       this,
-      _i1.EnumSerialization.byIndex,
+      _is.EnumSerialization.byIndex,
     );
-    message = _i1.ColumnString(
+    message = _is.ColumnString(
       'message',
       this,
     );
-    error = _i1.ColumnString(
+    error = _is.ColumnString(
       'error',
       this,
     );
-    stackTrace = _i1.ColumnString(
+    stackTrace = _is.ColumnString(
       'stackTrace',
       this,
     );
-    order = _i1.ColumnInt(
+    order = _is.ColumnInt(
       'order',
       this,
     );
@@ -346,37 +349,37 @@ class LogEntryTable extends _i1.Table<int?> {
   late final LogEntryUpdateTable updateTable;
 
   /// The id of the session this log entry is associated with.
-  late final _i1.ColumnInt sessionLogId;
+  late final _is.ColumnInt sessionLogId;
 
   /// The message id this entry is associated with, if in a streaming session.
-  late final _i1.ColumnInt messageId;
+  late final _is.ColumnInt messageId;
 
   /// Currently unused.
-  late final _i1.ColumnString reference;
+  late final _is.ColumnString reference;
 
   /// The id of the server which created this log entry.
-  late final _i1.ColumnString serverId;
+  late final _is.ColumnString serverId;
 
   /// Timestamp of this log entry.
-  late final _i1.ColumnDateTime time;
+  late final _is.ColumnDateTime time;
 
   /// The log level of this entry.
-  late final _i1.ColumnEnum<_i2.LogLevel> logLevel;
+  late final _is.ColumnEnum<_iavjjqw5.LogLevel> logLevel;
 
   /// The logging message.
-  late final _i1.ColumnString message;
+  late final _is.ColumnString message;
 
   /// Optional error associated with this log entry.
-  late final _i1.ColumnString error;
+  late final _is.ColumnString error;
 
   /// Optional stack trace associated with this log entry.
-  late final _i1.ColumnString stackTrace;
+  late final _is.ColumnString stackTrace;
 
   /// The order of this log entry, used for sorting.
-  late final _i1.ColumnInt order;
+  late final _is.ColumnInt order;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     sessionLogId,
     messageId,
@@ -391,19 +394,19 @@ class LogEntryTable extends _i1.Table<int?> {
   ];
 }
 
-class LogEntryInclude extends _i1.IncludeObject {
+class LogEntryInclude extends _is.IncludeObject {
   LogEntryInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => LogEntry.t;
+  _is.Table<int?> get table => LogEntry.t;
 }
 
-class LogEntryIncludeList extends _i1.IncludeList {
+class LogEntryIncludeList extends _is.IncludeList {
   LogEntryIncludeList._({
-    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    _is.WhereExpressionBuilder<LogEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -414,10 +417,10 @@ class LogEntryIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => LogEntry.t;
+  _is.Table<int?> get table => LogEntry.t;
 }
 
 class LogEntryRepository {
@@ -446,15 +449,15 @@ class LogEntryRepository {
   /// );
   /// ```
   Future<List<LogEntry>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<LogEntryTable>? orderBy,
+    _is.OrderByListBuilder<LogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LogEntry>(
       where: where?.call(LogEntry.t),
@@ -486,14 +489,14 @@ class LogEntryRepository {
   /// );
   /// ```
   Future<LogEntry?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LogEntryTable>? where,
     int? offset,
-    _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<LogEntryTable>? orderBy,
+    _is.OrderByListBuilder<LogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LogEntry>(
       where: where?.call(LogEntry.t),
@@ -508,11 +511,11 @@ class LogEntryRepository {
 
   /// Finds a single [LogEntry] by its [id] or null if no such row exists.
   Future<LogEntry?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<LogEntry>(
       id,
@@ -537,9 +540,9 @@ class LogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LogEntry>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LogEntry> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -555,9 +558,9 @@ class LogEntryRepository {
   ///
   /// The returned [LogEntry] will have its `id` field set.
   Future<LogEntry> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LogEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<LogEntry>(
       row,
@@ -586,12 +589,12 @@ class LogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LogEntry>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LogEntry> rows, {
-    required _i1.ColumnSelections<LogEntryTable> conflictColumns,
-    _i1.ColumnSelections<LogEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LogEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<LogEntryTable> conflictColumns,
+    _is.ColumnSelections<LogEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<LogEntryTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<LogEntry>(
@@ -618,12 +621,12 @@ class LogEntryRepository {
   ///
   /// The returned [LogEntry] will have its `id` field set.
   Future<LogEntry?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LogEntry row, {
-    required _i1.ColumnSelections<LogEntryTable> conflictColumns,
-    _i1.ColumnSelections<LogEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LogEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<LogEntryTable> conflictColumns,
+    _is.ColumnSelections<LogEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<LogEntryTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<LogEntry>(
       row,
@@ -644,10 +647,10 @@ class LogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LogEntry>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LogEntry> rows, {
-    _i1.ColumnSelections<LogEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LogEntryTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<LogEntry>(
@@ -662,10 +665,10 @@ class LogEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<LogEntry> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LogEntry row, {
-    _i1.ColumnSelections<LogEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LogEntryTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<LogEntry>(
       row,
@@ -677,10 +680,10 @@ class LogEntryRepository {
   /// Updates a single [LogEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<LogEntry?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<LogEntryUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<LogEntryUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<LogEntry>(
       id,
@@ -696,14 +699,14 @@ class LogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LogEntry>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<LogEntryUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<LogEntryTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<LogEntryUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<LogEntryTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LogEntryTable>? orderBy,
+    _is.OrderByListBuilder<LogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<LogEntry>(
@@ -730,11 +733,11 @@ class LogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LogEntry>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LogEntry> rows, {
-    _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LogEntryTable>? orderBy,
+    _is.OrderByListBuilder<LogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<LogEntry>(
@@ -748,9 +751,9 @@ class LogEntryRepository {
 
   /// Deletes a single [LogEntry].
   Future<LogEntry> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LogEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<LogEntry>(
       row,
@@ -767,11 +770,11 @@ class LogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LogEntry>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<LogEntryTable> where,
-    _i1.OrderByBuilder<LogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<LogEntryTable> where,
+    _is.OrderByBuilder<LogEntryTable>? orderBy,
+    _is.OrderByListBuilder<LogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LogEntry>(
@@ -786,10 +789,10 @@ class LogEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<LogEntry>(
       where: where?.call(LogEntry.t),
@@ -800,11 +803,11 @@ class LogEntryRepository {
 
   /// Acquires row-level locks on [LogEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<LogEntryTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<LogEntryTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<LogEntry>(
       where: where(LogEntry.t),

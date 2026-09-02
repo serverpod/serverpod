@@ -91,7 +91,12 @@ Future<NoctermTester> _pumpLaunchPanel({
 }
 
 /// Builds a single ready app tab with [device] and [url], then pumps it.
-Future<NoctermTester> _pumpReadyAppTab({String? device, String? url}) async {
+/// When [openUrl] is given, it replaces the holder's browser opener.
+Future<NoctermTester> _pumpReadyAppTab({
+  String? device,
+  String? url,
+  Future<bool> Function(Uri url)? openUrl,
+}) async {
   final state = ServerWatchState();
   state.showSplash = false;
   state.serverReady = true;
@@ -108,12 +113,18 @@ Future<NoctermTester> _pumpReadyAppTab({String? device, String? url}) async {
   tab.device = device;
   tab.url = url;
   state.tabs.focusTab(tab);
-  return _pump(state, const Size(200, 30));
+  return _pump(state, const Size(200, 30), openUrl: openUrl);
 }
 
 /// Pumps [state] at [size] and returns the tester, disposing it on teardown.
-Future<NoctermTester> _pump(ServerWatchState state, Size size) async {
+/// When [openUrl] is given, it replaces the holder's browser opener.
+Future<NoctermTester> _pump(
+  ServerWatchState state,
+  Size size, {
+  Future<bool> Function(Uri url)? openUrl,
+}) async {
   final holder = StartAppStateHolder(state);
+  if (openUrl != null) holder.openUrl = openUrl;
   final tester = await NoctermTester.create(size: size);
   addTearDown(() async {
     tester.dispose();
@@ -161,6 +172,54 @@ void main() {
         expect(label.first.y, lessThan(logLine.first.y));
       });
 
+      test('then the pane divider tees into the outer border', () {
+        final ts = tester.terminalState;
+
+        // The border rows are where the outer box's corners sit.
+        final topBorderRow = ts.findText('╭').first.y;
+        final bottomBorderRow = ts.findText('╰').first.y;
+
+        // The divider between the panes merges with the border rows instead
+        // of leaving gaps.
+        final tee = ts.findText('┬');
+        expect(tee.isNotEmpty, isTrue);
+        expect(tee.first.y, topBorderRow);
+        final bottomTee = ts.findText('┴');
+        expect(bottomTee.isNotEmpty, isTrue);
+        expect(bottomTee.first.y, bottomBorderRow);
+        expect(tee.first.x, bottomTee.first.x);
+      });
+
+      test('then the tab bar underline crosses the pane divider', () {
+        final ts = tester.terminalState;
+
+        // The pane divider column is where the top border tees.
+        final dividerX = ts.findText('┬').first.x;
+        // Both panes' tab bars share the underline row.
+        final underlineRow = ts.findText(_tabBarRule).first.y;
+
+        // The dividers paint in an underlay before the panes, so the
+        // underline joins the pane divider from both sides, forming a
+        // cross instead of stopping short on the left.
+        expect(ts.getTextAt(dividerX, underlineRow, length: 1), '┿');
+        // The underline's outer ends merge into the box border sides.
+        expect(ts.getTextAt(0, underlineRow, length: 1), '┝');
+        expect(ts.getTextAt(199, underlineRow, length: 1), '┥');
+      });
+
+      test('then the app status rule tees into the pane edges', () {
+        final ts = tester.terminalState;
+
+        // The focused app tab renders a status rule under its breadcrumb;
+        // its left end joins the pane divider and its right end joins the
+        // outer border.
+        final left = ts.findText('├');
+        final right = ts.findText('┤');
+        expect(left.isNotEmpty, isTrue);
+        expect(right.isNotEmpty, isTrue);
+        expect(left.first.y, right.first.y);
+      });
+
       test(
         'when an app tab is clicked then it is selected and the view updates',
         () async {
@@ -184,6 +243,20 @@ void main() {
 
     setUp(() async {
       tester = await _pumpAppsLayout(const Size(100, 24));
+    });
+
+    test('then the app status rule tees into the outer border', () {
+      final ts = tester.terminalState;
+
+      // In the merged layout the status rule spans the full content width,
+      // joining the outer border on both sides.
+      final left = ts.findText('├');
+      final right = ts.findText('┤');
+      expect(left.isNotEmpty, isTrue);
+      expect(right.isNotEmpty, isTrue);
+      expect(left.first.y, right.first.y);
+      expect(left.first.x, 0);
+      expect(right.first.x, 99);
     });
 
     test('then one merged tab bar lists every tab', () {
@@ -249,6 +322,42 @@ void main() {
     test('then the title reads "Relaunch app"', () {
       // Selecting the focused running app relaunches it.
       expect(tester.terminalState.containsText('Relaunch app'), isTrue);
+    });
+
+    test('then the panel border tees into the outer border', () {
+      final ts = tester.terminalState;
+
+      final topBorderRow = ts.findText('╭').first.y;
+      final bottomBorderRow = ts.findText('╰').first.y;
+      // The panel is 30 columns wide plus its border, anchored to the right
+      // edge (119), so its left border sits at column 88.
+      const panelLeft = 88;
+
+      // The panel's corners land on the outer border and merge into tees
+      // instead of overwriting it.
+      expect(ts.getTextAt(panelLeft, topBorderRow, length: 1), '┬');
+      expect(ts.getTextAt(panelLeft, bottomBorderRow, length: 1), '┴');
+      // The rule under the panel title joins the panel's own borders.
+      final headerRule = ts.findText('├').first;
+      expect(headerRule.x, panelLeft);
+      expect(ts.getTextAt(119, headerRule.y, length: 1), '┤');
+      // The outer box's corners stay rounded.
+      expect(ts.getTextAt(0, topBorderRow, length: 1), '╭');
+      expect(ts.getTextAt(119, topBorderRow, length: 1), '╮');
+    });
+
+    test('then the title divider matches the panel border color', () {
+      final ts = tester.terminalState;
+
+      const panelLeft = 88;
+      final headerRule = ts.findText('├').first;
+
+      // The rule's line cells share the border's color instead of falling
+      // back to the default (bright) divider color. The reference cell is
+      // the panel's own left border, one row below the rule's junction.
+      expect(ts.getTextAt(panelLeft + 1, headerRule.y, length: 1), '─');
+      final rule = ts.getCellAt(panelLeft + 1, headerRule.y)!.style.color;
+      expect(rule, ts.getCellAt(panelLeft, headerRule.y + 1)!.style.color);
     });
   });
 
@@ -342,11 +451,17 @@ void main() {
 
   group('Given a ready Flutter app tab with a published URL', () {
     late NoctermTester tester;
+    late List<Uri> openedUrls;
 
     setUp(() async {
+      openedUrls = [];
       tester = await _pumpReadyAppTab(
         device: 'chrome',
         url: 'http://localhost:8080',
+        openUrl: (url) async {
+          openedUrls.add(url);
+          return true;
+        },
       );
     });
 
@@ -356,6 +471,22 @@ void main() {
         isTrue,
       );
       expect(tester.terminalState.containsText('Running on device'), isFalse);
+    });
+
+    test('then the URL renders underlined', () {
+      final urlText = tester.terminalState.getStyledText().firstWhere(
+        (s) => s.text.contains('http://localhost:8080'),
+      );
+      expect(urlText.style.decoration?.hasUnderline, isTrue);
+    });
+
+    test('when the URL is clicked then it opens in the browser', () async {
+      final url = tester.terminalState.findText('http://localhost:8080').first;
+
+      await tester.tap(url.x, url.y);
+      await tester.pump();
+
+      expect(openedUrls, [Uri.parse('http://localhost:8080')]);
     });
   });
 

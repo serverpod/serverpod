@@ -45,7 +45,13 @@ name: ${projectName}_server
 
   void writeServerModel(String name) {
     File(
-        path.join(serverDirectory.path, 'lib', 'src', 'models', '$name.yaml'),
+        path.join(
+          serverDirectory.path,
+          'lib',
+          'src',
+          'models',
+          '$name.spy.yaml',
+        ),
       )
       ..createSync(recursive: true)
       ..writeAsStringSync('''
@@ -58,7 +64,13 @@ fields:
 
   void writeHostClientModel(String name) {
     File(
-        path.join(serverDirectory.path, 'lib', 'src', 'models', '$name.yaml'),
+        path.join(
+          serverDirectory.path,
+          'lib',
+          'src',
+          'models',
+          '$name.spy.yaml',
+        ),
       )
       ..createSync(recursive: true)
       ..writeAsStringSync('''

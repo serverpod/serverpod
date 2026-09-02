@@ -1,12 +1,14 @@
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:serverpod/serverpod.dart';
 
 /// Exception thrown when an S3-compatible API returns an error.
-class S3Exception implements Exception {
+class S3Exception extends CloudStorageException {
   /// The HTTP response that caused this exception.
-  final Response response;
+  final http.Response response;
 
   /// Creates an S3Exception from an HTTP response.
-  S3Exception(this.response);
+  S3Exception(this.response)
+    : super('S3 request failed with status ${response.statusCode}.');
 
   @override
   String toString() {

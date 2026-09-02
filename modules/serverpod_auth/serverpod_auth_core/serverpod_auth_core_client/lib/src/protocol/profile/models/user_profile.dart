@@ -10,17 +10,18 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../auth_user/models/auth_user.dart' as _i2;
-import '../../profile/models/user_profile_image.dart' as _i3;
-import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_auth_core_client/src/protocol/protocol.dart'
+    as _ifwxqeej;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../../auth_user/models/auth_user.dart' as _ivyervu7;
+import '../../profile/models/user_profile_image.dart' as _i7y29ltp;
 
 /// Core database entity representing a user profile in the authentication system.
 ///
 /// This class is meant to be used only to interact with the database. To transfer
 /// user profile data, use the [UserProfileModel] DTO.
 abstract class UserProfile
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UserProfile._({
     this.id,
     required this.authUserId,
@@ -34,28 +35,28 @@ abstract class UserProfile
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserProfile({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _isc.UuidValue? id,
+    required _isc.UuidValue authUserId,
+    _ivyervu7.AuthUser? authUser,
     String? userName,
     String? fullName,
     String? email,
     DateTime? createdAt,
-    _i1.UuidValue? imageId,
-    _i3.UserProfileImage? image,
+    _isc.UuidValue? imageId,
+    _i7y29ltp.UserProfileImage? image,
   }) = _UserProfileImpl;
 
   factory UserProfile.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserProfile(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _isc.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.AuthUser>(
+          : _ifwxqeej.Protocol().deserialize<_ivyervu7.AuthUser>(
               jsonSerialization['authUser'],
             ),
       userName: jsonSerialization['userName'] as String?,
@@ -63,13 +64,13 @@ abstract class UserProfile
       email: jsonSerialization['email'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       imageId: jsonSerialization['imageId'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),
       image: jsonSerialization['image'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.UserProfileImage>(
+          : _ifwxqeej.Protocol().deserialize<_i7y29ltp.UserProfileImage>(
               jsonSerialization['image'],
             ),
     );
@@ -78,12 +79,12 @@ abstract class UserProfile
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  _i1.UuidValue? id;
+  _isc.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _isc.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to.
-  _i2.AuthUser? authUser;
+  _ivyervu7.AuthUser? authUser;
 
   /// The first name of the user or the user's nickname.
   String? userName;
@@ -102,24 +103,24 @@ abstract class UserProfile
   /// The time when this user was created.
   DateTime createdAt;
 
-  _i1.UuidValue? imageId;
+  _isc.UuidValue? imageId;
 
   /// The user's profile image.
-  _i3.UserProfileImage? image;
+  _i7y29ltp.UserProfileImage? image;
 
   /// Returns a shallow copy of this [UserProfile]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UserProfile copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _isc.UuidValue? id,
+    _isc.UuidValue? authUserId,
+    _ivyervu7.AuthUser? authUser,
     String? userName,
     String? fullName,
     String? email,
     DateTime? createdAt,
-    _i1.UuidValue? imageId,
-    _i3.UserProfileImage? image,
+    _isc.UuidValue? imageId,
+    _i7y29ltp.UserProfileImage? image,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -155,7 +156,7 @@ abstract class UserProfile
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -163,15 +164,15 @@ class _Undefined {}
 
 class _UserProfileImpl extends UserProfile {
   _UserProfileImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _isc.UuidValue? id,
+    required _isc.UuidValue authUserId,
+    _ivyervu7.AuthUser? authUser,
     String? userName,
     String? fullName,
     String? email,
     DateTime? createdAt,
-    _i1.UuidValue? imageId,
-    _i3.UserProfileImage? image,
+    _isc.UuidValue? imageId,
+    _i7y29ltp.UserProfileImage? image,
   }) : super._(
          id: id,
          authUserId: authUserId,
@@ -186,11 +187,11 @@ class _UserProfileImpl extends UserProfile {
 
   /// Returns a shallow copy of this [UserProfile]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UserProfile copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _isc.UuidValue? authUserId,
     Object? authUser = _Undefined,
     Object? userName = _Undefined,
     Object? fullName = _Undefined,
@@ -200,17 +201,19 @@ class _UserProfileImpl extends UserProfile {
     Object? image = _Undefined,
   }) {
     return UserProfile(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _ivyervu7.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
       createdAt: createdAt ?? this.createdAt,
-      imageId: imageId is _i1.UuidValue? ? imageId : this.imageId,
-      image: image is _i3.UserProfileImage? ? image : this.image?.copyWith(),
+      imageId: imageId is _isc.UuidValue? ? imageId : this.imageId,
+      image: image is _i7y29ltp.UserProfileImage?
+          ? image
+          : this.image?.copyWith(),
     );
   }
 }

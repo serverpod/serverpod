@@ -10,33 +10,34 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'cluster_server_info.dart' as _i2;
-import 'package:serverpod/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod/src/generated/protocol.dart' as _ic00rqxb;
+import 'cluster_server_info.dart' as _i0iseagh;
 
 /// Information about a cluster of servers.
 abstract class ClusterInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ClusterInfo._({required this.servers});
 
-  factory ClusterInfo({required List<_i2.ClusterServerInfo> servers}) =
+  factory ClusterInfo({required List<_i0iseagh.ClusterServerInfo> servers}) =
       _ClusterInfoImpl;
 
   factory ClusterInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return ClusterInfo(
-      servers: _i3.Protocol().deserialize<List<_i2.ClusterServerInfo>>(
-        jsonSerialization['servers'],
-      ),
+      servers: _ic00rqxb.Protocol()
+          .deserialize<List<_i0iseagh.ClusterServerInfo>>(
+            jsonSerialization['servers'],
+          ),
     );
   }
 
   /// List of servers in the cluster.
-  List<_i2.ClusterServerInfo> servers;
+  List<_i0iseagh.ClusterServerInfo> servers;
 
   /// Returns a shallow copy of this [ClusterInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
-  ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers});
+  @_is.useResult
+  ClusterInfo copyWith({List<_i0iseagh.ClusterServerInfo>? servers});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -55,19 +56,19 @@ abstract class ClusterInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _ClusterInfoImpl extends ClusterInfo {
-  _ClusterInfoImpl({required List<_i2.ClusterServerInfo> servers})
+  _ClusterInfoImpl({required List<_i0iseagh.ClusterServerInfo> servers})
     : super._(servers: servers);
 
   /// Returns a shallow copy of this [ClusterInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
-  ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers}) {
+  ClusterInfo copyWith({List<_i0iseagh.ClusterServerInfo>? servers}) {
     return ClusterInfo(
       servers: servers ?? this.servers.map((e0) => e0.copyWith()).toList(),
     );

@@ -10,38 +10,38 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
+import 'dart:async' as _ida;
+import 'dart:typed_data' as _idt;
 import 'package:serverpod_auth_core_client/src/protocol/common/models/auth_success.dart'
-    as _i3;
+    as _i0hc49pk;
 import 'package:serverpod_auth_core_client/src/protocol/profile/models/user_profile_model.dart'
-    as _i4;
-import 'dart:typed_data' as _i5;
+    as _i4q88qrd;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Endpoint for getting status and managing a signed in user.
 /// {@category Endpoint}
-class EndpointStatus extends _i1.EndpointRef {
-  EndpointStatus(_i1.EndpointCaller caller) : super(caller);
+class EndpointStatus extends _isc.EndpointRef {
+  EndpointStatus(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth_core.status';
 
   /// Returns true if the client user is signed in.
-  _i2.Future<bool> isSignedIn() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> isSignedIn() => caller.callServerEndpoint<bool>(
     'serverpod_auth_core.status',
     'isSignedIn',
     {},
   );
 
   /// Signs out a user from the current device.
-  _i2.Future<void> signOutDevice() => caller.callServerEndpoint<void>(
+  _ida.Future<void> signOutDevice() => caller.callServerEndpoint<void>(
     'serverpod_auth_core.status',
     'signOutDevice',
     {},
   );
 
   /// Signs out a user from all active devices.
-  _i2.Future<void> signOutAllDevices() => caller.callServerEndpoint<void>(
+  _ida.Future<void> signOutAllDevices() => caller.callServerEndpoint<void>(
     'serverpod_auth_core.status',
     'signOutAllDevices',
     {},
@@ -50,10 +50,15 @@ class EndpointStatus extends _i1.EndpointRef {
 
 /// Endpoint for JWT tokens management.
 /// {@category Endpoint}
-abstract class EndpointRefreshJwtTokens extends _i1.EndpointRef {
-  EndpointRefreshJwtTokens(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointRefreshJwtTokens extends _isc.EndpointRef {
+  EndpointRefreshJwtTokens(_isc.EndpointCaller caller) : super(caller);
 
   /// Creates a new token pair for the given [refreshToken].
+  ///
+  /// If [refreshToken] is omitted, cookie-mode web clients fall back to the
+  /// configured HttpOnly refresh cookie. When neither source is present this
+  /// throws [RefreshTokenNotFoundException], the same public "no usable refresh
+  /// credential" exception used for unknown refresh tokens.
   ///
   /// Can throw the following exceptions:
   /// -[RefreshTokenMalformedException]: refresh token is malformed and could
@@ -71,22 +76,20 @@ abstract class EndpointRefreshJwtTokens extends _i1.EndpointRef {
   ///
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
-  _i2.Future<_i3.AuthSuccess> refreshAccessToken({
-    required String refreshToken,
-  });
+  _ida.Future<_i0hc49pk.AuthSuccess> refreshAccessToken({String? refreshToken});
 }
 
 /// Endpoint for read-only access to user profile information.
 /// {@category Endpoint}
-class EndpointUserProfileInfo extends _i1.EndpointRef {
-  EndpointUserProfileInfo(_i1.EndpointCaller caller) : super(caller);
+class EndpointUserProfileInfo extends _isc.EndpointRef {
+  EndpointUserProfileInfo(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth_core.userProfileInfo';
 
   /// Returns the user profile of the current user.
-  _i2.Future<_i4.UserProfileModel> get() =>
-      caller.callServerEndpoint<_i4.UserProfileModel>(
+  _ida.Future<_i4q88qrd.UserProfileModel> get() =>
+      caller.callServerEndpoint<_i4q88qrd.UserProfileModel>(
         'serverpod_auth_core.userProfileInfo',
         'get',
         {},
@@ -99,29 +102,29 @@ class EndpointUserProfileInfo extends _i1.EndpointRef {
 /// concrete class on your server.
 /// {@category Endpoint}
 abstract class EndpointUserProfileEditBase extends EndpointUserProfileInfo {
-  EndpointUserProfileEditBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointUserProfileEditBase(_isc.EndpointCaller caller) : super(caller);
 
   /// Removes the user's uploaded image, setting it to null.
   ///
   /// The client should handle displaying a placeholder for users without images.
-  _i2.Future<_i4.UserProfileModel> removeUserImage();
+  _ida.Future<_i4q88qrd.UserProfileModel> removeUserImage();
 
   /// Sets a new user image for the signed in user.
-  _i2.Future<_i4.UserProfileModel> setUserImage(_i5.ByteData image);
+  _ida.Future<_i4q88qrd.UserProfileModel> setUserImage(_idt.ByteData image);
 
   /// Changes the name of a user.
-  _i2.Future<_i4.UserProfileModel> changeUserName(String? userName);
+  _ida.Future<_i4q88qrd.UserProfileModel> changeUserName(String? userName);
 
   /// Changes the full name of a user.
-  _i2.Future<_i4.UserProfileModel> changeFullName(String? fullName);
+  _ida.Future<_i4q88qrd.UserProfileModel> changeFullName(String? fullName);
 
   /// Returns the user profile of the current user.
   @override
-  _i2.Future<_i4.UserProfileModel> get();
+  _ida.Future<_i4q88qrd.UserProfileModel> get();
 }
 
-class Caller extends _i1.ModuleEndpointCaller {
-  Caller(_i1.ServerpodClientShared client) : super(client) {
+class Caller extends _isc.ModuleEndpointCaller {
+  Caller(_isc.ServerpodClientShared client) : super(client) {
     status = EndpointStatus(this);
     userProfileInfo = EndpointUserProfileInfo(this);
   }
@@ -131,7 +134,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   late final EndpointUserProfileInfo userProfileInfo;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+  Map<String, _isc.EndpointRef> get endpointRefLookup => {
     'serverpod_auth_core.status': status,
     'serverpod_auth_core.userProfileInfo': userProfileInfo,
   };

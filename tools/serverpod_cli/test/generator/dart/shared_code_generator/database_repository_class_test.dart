@@ -360,7 +360,7 @@ void main() {
           expect(
             lockRowsMethod?.parameters?.toSource(),
             contains(
-              'required _i1.WhereExpressionBuilder<${testClassName}Table> where',
+              'required _isd.WhereExpressionBuilder<${testClassName}Table> where',
             ),
           );
         });
@@ -368,14 +368,14 @@ void main() {
         test('that takes the lockMode as a named required param', () {
           expect(
             lockRowsMethod?.parameters?.toSource(),
-            matches(r'required _i\d+\.LockMode lockMode'),
+            matches(r'required _i[a-z0-9]+\.LockMode lockMode'),
           );
         });
 
         test('that takes the transaction as a named required param', () {
           expect(
             lockRowsMethod?.parameters?.toSource(),
-            matches(r'required _i\d+\.Transaction transaction'),
+            matches(r'required _i[a-z0-9]+\.Transaction transaction'),
           );
         });
 
@@ -385,7 +385,7 @@ void main() {
             expect(
               lockRowsMethod?.parameters?.toSource(),
               matches(
-                r'_i\d+\.LockBehavior lockBehavior = _i\d+\.LockBehavior\.wait',
+                r'_i[a-z0-9]+\.LockBehavior lockBehavior = _i[a-z0-9]+\.LockBehavior\.wait',
               ),
             );
           },
@@ -841,7 +841,7 @@ void main() {
           expect(
             params,
             matches(
-              r'required _i\d+\.ColumnValueListBuilder<'
+              r'required _i[a-z0-9]+\.ColumnValueListBuilder<'
               '$testClassName'
               r'UpdateTable> columnValues',
             ),
@@ -895,7 +895,7 @@ void main() {
           expect(
             params,
             matches(
-              r'required _i\d+\.ColumnValueListBuilder<'
+              r'required _i[a-z0-9]+\.ColumnValueListBuilder<'
               '$testClassName'
               r'UpdateTable> columnValues',
             ),
@@ -907,7 +907,7 @@ void main() {
           expect(
             params,
             matches(
-              r'required _i\d+\.WhereExpressionBuilder<'
+              r'required _i[a-z0-9]+\.WhereExpressionBuilder<'
               '$testClassName'
               r'Table> where',
             ),

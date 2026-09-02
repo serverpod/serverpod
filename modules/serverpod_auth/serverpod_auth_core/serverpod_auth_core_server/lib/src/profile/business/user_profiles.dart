@@ -313,10 +313,10 @@ class UserProfiles {
       path: path,
       byteData: ByteData.view(reEncodedImageBytes.buffer),
     );
-    final publicUrl = (await session.storage.getPublicUrl(
+    final publicUrl = await session.storage.publicDownloadUrl(
       storageId: storageId,
       path: path,
-    ))!;
+    );
 
     final profileImage = UserProfileImage(
       userProfileId: userProfile.id!,

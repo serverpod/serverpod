@@ -53,6 +53,32 @@ void main() {
       () {
         expect(
           () => authSuccess.jwtRefreshTokenId,
+          throwsA(
+            isA<FormatException>().having(
+              (final e) => e.message,
+              'message',
+              contains('cookie-mode sign-in'),
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  group('Given an `AuthSuccess` with an empty refresh token', () {
+    final authSuccess = AuthSuccess(
+      authStrategy: 'jwt',
+      token: 'access-token',
+      refreshToken: '',
+      authUserId: const Uuid().v4obj(),
+      scopeNames: {},
+    );
+
+    test(
+      'when reading the `jwtRefreshTokenId` field, then it throws a FormatException.',
+      () {
+        expect(
+          () => authSuccess.jwtRefreshTokenId,
           throwsA(isA<FormatException>()),
         );
       },

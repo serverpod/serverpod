@@ -39,7 +39,7 @@ void main() {
         expect(
           UniqueData.db.insert(session, data),
           throwsA(
-            isA<DatabaseQueryException>().having(
+            isA<DatabaseUniqueViolationException>().having(
               (e) => e.code,
               'code',
               SqliteErrorCode.uniqueViolation,

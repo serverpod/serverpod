@@ -11,36 +11,36 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
-    as _i2;
-import 'package:serverpod_client/serverpod_client.dart' as _i3;
+    as _ivdm85cg;
 export 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
     hide Protocol;
 export 'client.dart';
 
-class Protocol extends _i1.DatabaseSerializationManager {
+class Protocol extends _isd.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i3.SerializationManager> _hostProtocols = {};
+  final Set<_isc.SerializationManager> _hostProtocols = {};
 
-  static List<_i1.TableDefinition> get targetTableDefinitions => [
-    ..._i2.Protocol() is _i1.DatabaseSerializationManager
-        ? (_i2.Protocol() as _i1.DatabaseSerializationManager)
+  static List<_isd.TableDefinition> get targetTableDefinitions => [
+    ..._ivdm85cg.Protocol() is _isd.DatabaseSerializationManager
+        ? (_ivdm85cg.Protocol() as _isd.DatabaseSerializationManager)
               .getTargetTableDefinitions()
         : [],
   ];
 
   void registerHostProtocol(
     String projectName,
-    _i3.SerializationManager protocol,
+    _isc.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
-    _i2.Protocol().registerHostProtocol(projectName, protocol);
+    _ivdm85cg.Protocol().registerHostProtocol(projectName, protocol);
   }
 
   static String? getClassNameFromObjectJson(dynamic data) {
@@ -66,7 +66,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _isc.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
@@ -74,8 +74,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i3.DeserializationTypeNotFoundException catch (_) {}
+      return _ivdm85cg.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -97,7 +97,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       );
     }
 
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _ivdm85cg.Protocol().getClassNameForObject(data);
     if (className != null) return className;
     return null;
   }
@@ -109,8 +109,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     try {
-      return _i2.Protocol().deserializeByClassName(data);
-    } on FormatException catch (_) {}
+      return _ivdm85cg.Protocol().deserializeByClassName(data);
+    } on _isc.DeserializationClassNameNotFoundException catch (_) {}
     return super.deserializeByClassName(data);
   }
 
@@ -132,8 +132,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i3.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i3.SerializationManager.toEncodable(wrapped);
+          ? _isc.SerializationManager.toEncodableForProtocol(wrapped)
+          : _isc.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -167,18 +167,18 @@ class Protocol extends _i1.DatabaseSerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on FormatException catch (_) {}
+        } on _isc.DeserializationClassNameNotFoundException catch (_) {}
       }
     }
     return deserializeByClassName(value);
   }
 
   @override
-  _i1.Table? getTableForType(Type t) {
+  _isd.Table? getTableForType(Type t) {
     {
-      var protocol = _i2.Protocol();
-      var table = protocol is _i1.DatabaseSerializationManager
-          ? (protocol as _i1.DatabaseSerializationManager).getTableForType(t)
+      var protocol = _ivdm85cg.Protocol();
+      var table = protocol is _isd.DatabaseSerializationManager
+          ? (protocol as _isd.DatabaseSerializationManager).getTableForType(t)
           : null;
       if (table != null) {
         return table;
@@ -188,7 +188,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
   }
 
   @override
-  List<_i1.TableDefinition> getTargetTableDefinitions() =>
+  List<_isd.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override

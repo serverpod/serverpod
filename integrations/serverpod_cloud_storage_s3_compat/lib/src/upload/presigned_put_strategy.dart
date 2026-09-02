@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
@@ -6,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod/serverpod.dart';
 
 import '../client/exceptions.dart';
 import '../config/s3_endpoint_config.dart';
@@ -21,6 +21,9 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
   String get uploadType => 'binary';
 
   @override
+  bool get supportsPreventOverwrite => true;
+
+  @override
   Future<void> uploadData({
     required String accessKey,
     required String secretKey,
@@ -30,6 +33,7 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
     required String path,
     required bool public,
     required S3EndpointConfig endpoints,
+    FileMetadata metadata = const FileMetadata(),
     bool preventOverwrite = false,
   }) async {
     final bucketUri = endpoints.buildBucketUri(bucket, region);
@@ -55,6 +59,7 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
     if (preventOverwrite) {
       signedHeaderMap['if-none-match'] = '*';
     }
+    signedHeaderMap.addAll(_metadataHeaders(metadata));
 
     final sortedHeaderNames = signedHeaderMap.keys.toList()..sort();
     final signedHeaders = sortedHeaderNames.join(';');
@@ -130,7 +135,7 @@ $payloadHash''';
   }
 
   @override
-  Future<String?> createDirectUploadDescription({
+  Future<UploadDescription> createUploadDescription({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -140,14 +145,19 @@ $payloadHash''';
     required int maxFileSize,
     required bool public,
     required S3EndpointConfig endpoints,
+    FileMetadata metadata = const FileMetadata(),
     int? contentLength,
     bool preventOverwrite = false,
   }) async {
     final fileName = p.basename(path);
-    final contentType = lookupMimeType(fileName) ?? 'application/octet-stream';
+    final contentType =
+        metadata.contentType ??
+        lookupMimeType(fileName) ??
+        'application/octet-stream';
 
     final headers = <String, String>{
       'Content-Type': contentType,
+      ..._metadataHeaders(metadata, includeContentType: false),
     };
     if (contentLength != null) {
       headers['Content-Length'] = contentLength.toString();
@@ -167,15 +177,12 @@ $payloadHash''';
       headers: headers,
     );
 
-    final uploadDescriptionData = {
-      'url': presignedUrl,
-      'type': uploadType,
-      'method': 'PUT',
-      'file-name': fileName,
-      'headers': headers,
-    };
-
-    return jsonEncode(uploadDescriptionData);
+    return BinaryUploadDescription(
+      url: Uri.parse(presignedUrl),
+      method: 'PUT',
+      fileName: fileName,
+      headers: headers,
+    );
   }
 
   /// Creates a presigned PUT URL for direct uploads.
@@ -263,4 +270,19 @@ UNSIGNED-PAYLOAD''';
 
     return uri.toString();
   }
+
+  static Map<String, String> _metadataHeaders(
+    FileMetadata metadata, {
+    bool includeContentType = true,
+  }) => {
+    if (includeContentType && metadata.contentType != null)
+      'content-type': metadata.contentType!,
+    if (metadata.cacheControl != null) 'cache-control': metadata.cacheControl!,
+    if (metadata.contentDisposition != null)
+      'content-disposition': metadata.contentDisposition!,
+    if (metadata.contentEncoding != null)
+      'content-encoding': metadata.contentEncoding!,
+    for (final entry in metadata.custom.entries)
+      'x-amz-meta-${entry.key.toLowerCase()}': entry.value,
+  };
 }

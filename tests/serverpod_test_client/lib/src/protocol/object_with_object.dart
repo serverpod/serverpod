@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class ObjectWithObject
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithObject._({
     this.id,
     required this.data,
@@ -31,60 +31,63 @@ abstract class ObjectWithObject
 
   factory ObjectWithObject({
     int? id,
-    required _i2.SimpleData data,
-    _i2.SimpleData? nullableData,
-    required List<_i2.SimpleData> dataList,
-    List<_i2.SimpleData>? nullableDataList,
-    required List<_i2.SimpleData?> listWithNullableData,
-    List<_i2.SimpleData?>? nullableListWithNullableData,
-    List<List<_i2.SimpleData>>? nestedDataList,
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap,
-    Map<String, Map<int, _i2.SimpleData>>? nestedDataMap,
+    required _i0zisc0t.SimpleData data,
+    _i0zisc0t.SimpleData? nullableData,
+    required List<_i0zisc0t.SimpleData> dataList,
+    List<_i0zisc0t.SimpleData>? nullableDataList,
+    required List<_i0zisc0t.SimpleData?> listWithNullableData,
+    List<_i0zisc0t.SimpleData?>? nullableListWithNullableData,
+    List<List<_i0zisc0t.SimpleData>>? nestedDataList,
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
+    nestedDataListInMap,
+    Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap,
   }) = _ObjectWithObjectImpl;
 
   factory ObjectWithObject.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithObject(
       id: jsonSerialization['id'] as int?,
-      data: _i3.Protocol().deserialize<_i2.SimpleData>(
+      data: _iza9lbb5.Protocol().deserialize<_i0zisc0t.SimpleData>(
         jsonSerialization['data'],
       ),
       nullableData: jsonSerialization['nullableData'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SimpleData>(
+          : _iza9lbb5.Protocol().deserialize<_i0zisc0t.SimpleData>(
               jsonSerialization['nullableData'],
             ),
-      dataList: _i3.Protocol().deserialize<List<_i2.SimpleData>>(
+      dataList: _iza9lbb5.Protocol().deserialize<List<_i0zisc0t.SimpleData>>(
         jsonSerialization['dataList'],
       ),
       nullableDataList: jsonSerialization['nullableDataList'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.SimpleData>>(
+          : _iza9lbb5.Protocol().deserialize<List<_i0zisc0t.SimpleData>>(
               jsonSerialization['nullableDataList'],
             ),
-      listWithNullableData: _i3.Protocol().deserialize<List<_i2.SimpleData?>>(
-        jsonSerialization['listWithNullableData'],
-      ),
+      listWithNullableData: _iza9lbb5.Protocol()
+          .deserialize<List<_i0zisc0t.SimpleData?>>(
+            jsonSerialization['listWithNullableData'],
+          ),
       nullableListWithNullableData:
           jsonSerialization['nullableListWithNullableData'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.SimpleData?>>(
+          : _iza9lbb5.Protocol().deserialize<List<_i0zisc0t.SimpleData?>>(
               jsonSerialization['nullableListWithNullableData'],
             ),
       nestedDataList: jsonSerialization['nestedDataList'] == null
           ? null
-          : _i3.Protocol().deserialize<List<List<_i2.SimpleData>>>(
+          : _iza9lbb5.Protocol().deserialize<List<List<_i0zisc0t.SimpleData>>>(
               jsonSerialization['nestedDataList'],
             ),
       nestedDataListInMap: jsonSerialization['nestedDataListInMap'] == null
           ? null
-          : _i3.Protocol().deserialize<
-              Map<String, List<List<Map<int, _i2.SimpleData>>?>>
+          : _iza9lbb5.Protocol().deserialize<
+              Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>
             >(jsonSerialization['nestedDataListInMap']),
       nestedDataMap: jsonSerialization['nestedDataMap'] == null
           ? null
-          : _i3.Protocol().deserialize<Map<String, Map<int, _i2.SimpleData>>>(
-              jsonSerialization['nestedDataMap'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<Map<String, Map<int, _i0zisc0t.SimpleData>>>(
+                  jsonSerialization['nestedDataMap'],
+                ),
     );
   }
 
@@ -93,38 +96,39 @@ abstract class ObjectWithObject
   /// the id will be null.
   int? id;
 
-  _i2.SimpleData data;
+  _i0zisc0t.SimpleData data;
 
-  _i2.SimpleData? nullableData;
+  _i0zisc0t.SimpleData? nullableData;
 
-  List<_i2.SimpleData> dataList;
+  List<_i0zisc0t.SimpleData> dataList;
 
-  List<_i2.SimpleData>? nullableDataList;
+  List<_i0zisc0t.SimpleData>? nullableDataList;
 
-  List<_i2.SimpleData?> listWithNullableData;
+  List<_i0zisc0t.SimpleData?> listWithNullableData;
 
-  List<_i2.SimpleData?>? nullableListWithNullableData;
+  List<_i0zisc0t.SimpleData?>? nullableListWithNullableData;
 
-  List<List<_i2.SimpleData>>? nestedDataList;
+  List<List<_i0zisc0t.SimpleData>>? nestedDataList;
 
-  Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap;
+  Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>? nestedDataListInMap;
 
-  Map<String, Map<int, _i2.SimpleData>>? nestedDataMap;
+  Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap;
 
   /// Returns a shallow copy of this [ObjectWithObject]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithObject copyWith({
     int? id,
-    _i2.SimpleData? data,
-    _i2.SimpleData? nullableData,
-    List<_i2.SimpleData>? dataList,
-    List<_i2.SimpleData>? nullableDataList,
-    List<_i2.SimpleData?>? listWithNullableData,
-    List<_i2.SimpleData?>? nullableListWithNullableData,
-    List<List<_i2.SimpleData>>? nestedDataList,
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap,
-    Map<String, Map<int, _i2.SimpleData>>? nestedDataMap,
+    _i0zisc0t.SimpleData? data,
+    _i0zisc0t.SimpleData? nullableData,
+    List<_i0zisc0t.SimpleData>? dataList,
+    List<_i0zisc0t.SimpleData>? nullableDataList,
+    List<_i0zisc0t.SimpleData?>? listWithNullableData,
+    List<_i0zisc0t.SimpleData?>? nullableListWithNullableData,
+    List<List<_i0zisc0t.SimpleData>>? nestedDataList,
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
+    nestedDataListInMap,
+    Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -208,7 +212,7 @@ abstract class ObjectWithObject
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -217,15 +221,16 @@ class _Undefined {}
 class _ObjectWithObjectImpl extends ObjectWithObject {
   _ObjectWithObjectImpl({
     int? id,
-    required _i2.SimpleData data,
-    _i2.SimpleData? nullableData,
-    required List<_i2.SimpleData> dataList,
-    List<_i2.SimpleData>? nullableDataList,
-    required List<_i2.SimpleData?> listWithNullableData,
-    List<_i2.SimpleData?>? nullableListWithNullableData,
-    List<List<_i2.SimpleData>>? nestedDataList,
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap,
-    Map<String, Map<int, _i2.SimpleData>>? nestedDataMap,
+    required _i0zisc0t.SimpleData data,
+    _i0zisc0t.SimpleData? nullableData,
+    required List<_i0zisc0t.SimpleData> dataList,
+    List<_i0zisc0t.SimpleData>? nullableDataList,
+    required List<_i0zisc0t.SimpleData?> listWithNullableData,
+    List<_i0zisc0t.SimpleData?>? nullableListWithNullableData,
+    List<List<_i0zisc0t.SimpleData>>? nestedDataList,
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
+    nestedDataListInMap,
+    Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap,
   }) : super._(
          id: id,
          data: data,
@@ -241,15 +246,15 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
 
   /// Returns a shallow copy of this [ObjectWithObject]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithObject copyWith({
     Object? id = _Undefined,
-    _i2.SimpleData? data,
+    _i0zisc0t.SimpleData? data,
     Object? nullableData = _Undefined,
-    List<_i2.SimpleData>? dataList,
+    List<_i0zisc0t.SimpleData>? dataList,
     Object? nullableDataList = _Undefined,
-    List<_i2.SimpleData?>? listWithNullableData,
+    List<_i0zisc0t.SimpleData?>? listWithNullableData,
     Object? nullableListWithNullableData = _Undefined,
     Object? nestedDataList = _Undefined,
     Object? nestedDataListInMap = _Undefined,
@@ -258,30 +263,30 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
     return ObjectWithObject(
       id: id is int? ? id : this.id,
       data: data ?? this.data.copyWith(),
-      nullableData: nullableData is _i2.SimpleData?
+      nullableData: nullableData is _i0zisc0t.SimpleData?
           ? nullableData
           : this.nullableData?.copyWith(),
       dataList: dataList ?? this.dataList.map((e0) => e0.copyWith()).toList(),
-      nullableDataList: nullableDataList is List<_i2.SimpleData>?
+      nullableDataList: nullableDataList is List<_i0zisc0t.SimpleData>?
           ? nullableDataList
           : this.nullableDataList?.map((e0) => e0.copyWith()).toList(),
       listWithNullableData:
           listWithNullableData ??
           this.listWithNullableData.map((e0) => e0?.copyWith()).toList(),
       nullableListWithNullableData:
-          nullableListWithNullableData is List<_i2.SimpleData?>?
+          nullableListWithNullableData is List<_i0zisc0t.SimpleData?>?
           ? nullableListWithNullableData
           : this.nullableListWithNullableData
                 ?.map((e0) => e0?.copyWith())
                 .toList(),
-      nestedDataList: nestedDataList is List<List<_i2.SimpleData>>?
+      nestedDataList: nestedDataList is List<List<_i0zisc0t.SimpleData>>?
           ? nestedDataList
           : this.nestedDataList
                 ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
                 .toList(),
       nestedDataListInMap:
           nestedDataListInMap
-              is Map<String, List<List<Map<int, _i2.SimpleData>>?>>?
+              is Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
           ? nestedDataListInMap
           : this.nestedDataListInMap?.map(
               (
@@ -308,7 +313,8 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
                     .toList(),
               ),
             ),
-      nestedDataMap: nestedDataMap is Map<String, Map<int, _i2.SimpleData>>?
+      nestedDataMap:
+          nestedDataMap is Map<String, Map<int, _i0zisc0t.SimpleData>>?
           ? nestedDataMap
           : this.nestedDataMap?.map(
               (

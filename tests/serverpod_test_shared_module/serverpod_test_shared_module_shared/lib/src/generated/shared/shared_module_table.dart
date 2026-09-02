@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 import 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
-    as _i3;
+    as _ivdm85cg;
 
 abstract class SharedModuleTable
-    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
+    implements _isd.TableRow<int?>, _iss.ProtocolSerialization {
   SharedModuleTable._({
     this.id,
     required this.name,
@@ -33,7 +33,7 @@ abstract class SharedModuleTable
     return SharedModuleTable(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      data: _i3.Protocol().deserializeDynamicFieldValue(
+      data: _ivdm85cg.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['data'],
       ),
     );
@@ -51,11 +51,11 @@ abstract class SharedModuleTable
   dynamic data;
 
   @override
-  _i1.Table<int?> get table => t;
+  _isd.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [SharedModuleTable]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_iss.useResult
   SharedModuleTable copyWith({
     int? id,
     String? name,
@@ -67,7 +67,7 @@ abstract class SharedModuleTable
       '__className__': 'serverpod_test_shared_module.SharedModuleTable',
       if (id != null) 'id': id,
       'name': name,
-      'data': _i3.Protocol().dynamicFieldToJson(data),
+      'data': _ivdm85cg.Protocol().dynamicFieldToJson(data),
     };
   }
 
@@ -77,7 +77,7 @@ abstract class SharedModuleTable
       '__className__': 'serverpod_test_shared_module.SharedModuleTable',
       if (id != null) 'id': id,
       'name': name,
-      'data': _i3.Protocol().dynamicFieldToJson(
+      'data': _ivdm85cg.Protocol().dynamicFieldToJson(
         data,
         forProtocol: true,
       ),
@@ -89,11 +89,11 @@ abstract class SharedModuleTable
   }
 
   static SharedModuleTableIncludeList includeList({
-    _i1.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SharedModuleTableTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModuleTableTable>? orderByList,
+    _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
+    _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
     SharedModuleTableInclude? include,
   }) {
     return SharedModuleTableIncludeList._(
@@ -108,7 +108,7 @@ abstract class SharedModuleTable
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -127,7 +127,7 @@ class _SharedModuleTableImpl extends SharedModuleTable {
 
   /// Returns a shallow copy of this [SharedModuleTable]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_iss.useResult
   @override
   SharedModuleTable copyWith({
     Object? id = _Undefined,
@@ -143,29 +143,29 @@ class _SharedModuleTableImpl extends SharedModuleTable {
 }
 
 class SharedModuleTableUpdateTable
-    extends _i1.UpdateTable<SharedModuleTableTable> {
+    extends _isd.UpdateTable<SharedModuleTableTable> {
   SharedModuleTableUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _isd.ColumnValue<String, String> name(String value) => _isd.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<dynamic, dynamic> data(dynamic value) => _i1.ColumnValue(
+  _isd.ColumnValue<dynamic, dynamic> data(dynamic value) => _isd.ColumnValue(
     table.data,
     value,
   );
 }
 
-class SharedModuleTableTable extends _i1.Table<int?> {
+class SharedModuleTableTable extends _isd.Table<int?> {
   SharedModuleTableTable({super.tableRelation})
     : super(tableName: 'shared_module_table') {
     updateTable = SharedModuleTableUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _isd.ColumnString(
       'name',
       this,
     );
-    data = _i1.ColumnSerializable<dynamic>(
+    data = _isd.ColumnSerializable<dynamic>(
       'data',
       this,
     );
@@ -173,31 +173,31 @@ class SharedModuleTableTable extends _i1.Table<int?> {
 
   late final SharedModuleTableUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _isd.ColumnString name;
 
-  late final _i1.ColumnSerializable<dynamic> data;
+  late final _isd.ColumnSerializable<dynamic> data;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_isd.Column> get columns => [
     id,
     name,
     data,
   ];
 }
 
-class SharedModuleTableInclude extends _i1.IncludeObject {
+class SharedModuleTableInclude extends _isd.IncludeObject {
   SharedModuleTableInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _isd.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => SharedModuleTable.t;
+  _isd.Table<int?> get table => SharedModuleTable.t;
 }
 
-class SharedModuleTableIncludeList extends _i1.IncludeList {
+class SharedModuleTableIncludeList extends _isd.IncludeList {
   SharedModuleTableIncludeList._({
-    _i1.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -208,10 +208,10 @@ class SharedModuleTableIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => SharedModuleTable.t;
+  _isd.Table<int?> get table => SharedModuleTable.t;
 }
 
 class SharedModuleTableRepository {
@@ -240,15 +240,15 @@ class SharedModuleTableRepository {
   /// );
   /// ```
   Future<List<SharedModuleTable>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SharedModuleTableTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModuleTableTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
+    _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SharedModuleTable>(
       where: where?.call(SharedModuleTable.t),
@@ -280,14 +280,14 @@ class SharedModuleTableRepository {
   /// );
   /// ```
   Future<SharedModuleTable?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
     int? offset,
-    _i1.OrderByBuilder<SharedModuleTableTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModuleTableTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
+    _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SharedModuleTable>(
       where: where?.call(SharedModuleTable.t),
@@ -302,11 +302,11 @@ class SharedModuleTableRepository {
 
   /// Finds a single [SharedModuleTable] by its [id] or null if no such row exists.
   Future<SharedModuleTable?> findById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<SharedModuleTable>(
       id,
@@ -331,9 +331,9 @@ class SharedModuleTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModuleTable>> insert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<SharedModuleTable> rows, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -349,9 +349,9 @@ class SharedModuleTableRepository {
   ///
   /// The returned [SharedModuleTable] will have its `id` field set.
   Future<SharedModuleTable> insertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     SharedModuleTable row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.insertRow<SharedModuleTable>(
       row,
@@ -380,12 +380,12 @@ class SharedModuleTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModuleTable>> upsert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<SharedModuleTable> rows, {
-    required _i1.ColumnSelections<SharedModuleTableTable> conflictColumns,
-    _i1.ColumnSelections<SharedModuleTableTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SharedModuleTableTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<SharedModuleTableTable> conflictColumns,
+    _isd.ColumnSelections<SharedModuleTableTable>? updateColumns,
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? updateWhere,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<SharedModuleTable>(
@@ -412,12 +412,12 @@ class SharedModuleTableRepository {
   ///
   /// The returned [SharedModuleTable] will have its `id` field set.
   Future<SharedModuleTable?> upsertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     SharedModuleTable row, {
-    required _i1.ColumnSelections<SharedModuleTableTable> conflictColumns,
-    _i1.ColumnSelections<SharedModuleTableTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SharedModuleTableTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<SharedModuleTableTable> conflictColumns,
+    _isd.ColumnSelections<SharedModuleTableTable>? updateColumns,
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? updateWhere,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SharedModuleTable>(
       row,
@@ -438,10 +438,10 @@ class SharedModuleTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModuleTable>> update(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<SharedModuleTable> rows, {
-    _i1.ColumnSelections<SharedModuleTableTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<SharedModuleTableTable>? columns,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<SharedModuleTable>(
@@ -456,10 +456,10 @@ class SharedModuleTableRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SharedModuleTable> updateRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     SharedModuleTable row, {
-    _i1.ColumnSelections<SharedModuleTableTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<SharedModuleTableTable>? columns,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateRow<SharedModuleTable>(
       row,
@@ -471,11 +471,11 @@ class SharedModuleTableRepository {
   /// Updates a single [SharedModuleTable] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SharedModuleTable?> updateById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<SharedModuleTableUpdateTable>
+    required _isd.ColumnValueListBuilder<SharedModuleTableUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateById<SharedModuleTable>(
       id,
@@ -491,15 +491,15 @@ class SharedModuleTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModuleTable>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<SharedModuleTableUpdateTable>
+    _isd.DatabaseSession session, {
+    required _isd.ColumnValueListBuilder<SharedModuleTableUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<SharedModuleTableTable> where,
+    required _isd.WhereExpressionBuilder<SharedModuleTableTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SharedModuleTableTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModuleTableTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
+    _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SharedModuleTable>(
@@ -526,11 +526,11 @@ class SharedModuleTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModuleTable>> delete(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<SharedModuleTable> rows, {
-    _i1.OrderByBuilder<SharedModuleTableTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModuleTableTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
+    _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<SharedModuleTable>(
@@ -544,9 +544,9 @@ class SharedModuleTableRepository {
 
   /// Deletes a single [SharedModuleTable].
   Future<SharedModuleTable> deleteRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     SharedModuleTable row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.deleteRow<SharedModuleTable>(
       row,
@@ -563,11 +563,11 @@ class SharedModuleTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModuleTable>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SharedModuleTableTable> where,
-    _i1.OrderByBuilder<SharedModuleTableTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModuleTableTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<SharedModuleTableTable> where,
+    _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
+    _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SharedModuleTable>(
@@ -582,10 +582,10 @@ class SharedModuleTableRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.count<SharedModuleTable>(
       where: where?.call(SharedModuleTable.t),
@@ -596,11 +596,11 @@ class SharedModuleTableRepository {
 
   /// Acquires row-level locks on [SharedModuleTable] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SharedModuleTableTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<SharedModuleTableTable> where,
+    required _isd.LockMode lockMode,
+    required _isd.Transaction transaction,
+    _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SharedModuleTable>(
       where: where(SharedModuleTable.t),

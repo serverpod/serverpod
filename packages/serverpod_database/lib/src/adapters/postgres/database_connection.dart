@@ -13,8 +13,6 @@ import 'postgres_database_result.dart';
 import 'postgres_pool_manager.dart';
 import 'sql_query_builder.dart';
 
-part 'postgres_exceptions.dart';
-
 /// A connection to the database. In most cases the [Database] db object in
 /// the [DatabaseSession] object should be used when connecting with the database.
 @internal
@@ -209,7 +207,7 @@ class PostgresDatabaseConnection
     );
 
     if (result.length != 1) {
-      throw _PgDatabaseInsertRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to insert row, updated number of rows is ${result.length} != 1',
       );
     }
@@ -296,7 +294,7 @@ class PostgresDatabaseConnection
     // Defensive: upsertRow passes a single row, so the underlying upsert can
     // never return more than one row. Guards against future adapter bugs.
     if (result.length > 1) {
-      throw _PgDatabaseUpsertRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to upsert row, affected number of rows is ${result.length} != 1',
       );
     }
@@ -371,7 +369,7 @@ class PostgresDatabaseConnection
     );
 
     if (updated.isEmpty) {
-      throw _PgDatabaseUpdateRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to update row, no rows updated',
       );
     }
@@ -411,7 +409,7 @@ class PostgresDatabaseConnection
     );
 
     if (result.isEmpty) {
-      throw _PgDatabaseUpdateRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to update row, no rows updated',
       );
     }
@@ -543,7 +541,7 @@ class PostgresDatabaseConnection
     );
 
     if (result.isEmpty) {
-      throw _PgDatabaseDeleteRowException(
+      throw DatabaseUnexpectedResultException(
         'Failed to delete row, no rows deleted.',
       );
     }
@@ -689,7 +687,7 @@ class PostgresDatabaseConnection
         (_) => exception.message,
       };
 
-      var serverpodException = _PgDatabaseQueryException.fromServerException(
+      var serverpodException = _queryExceptionFromServerException(
         exception,
         messageOverride: message,
       );
@@ -703,7 +701,7 @@ class PostgresDatabaseConnection
       );
       Error.throwWithStackTrace(serverpodException, trace);
     } on pg.PgException catch (exception, trace) {
-      var serverpodException = _PgDatabaseQueryException(exception.message);
+      var serverpodException = DatabaseQueryException(exception.message);
       _logQuery(
         session,
         query,
@@ -868,23 +866,24 @@ class PostgresDatabaseConnection
     final connection = await _postgresConnection;
     try {
       return await connection.runTx<R>(
-        (ctx) {
+        (ctx) async {
           var transaction = _PostgresTransaction(
             ctx,
             session,
             this,
           );
+          if (settings.deferConstraints) {
+            await transaction._query('SET CONSTRAINTS ALL DEFERRED;');
+          }
           return transactionFunction(transaction);
         },
         settings: pgTransactionSettings,
       );
     } on pg.ServerException catch (exception, trace) {
-      var serverpodException = _PgDatabaseQueryException.fromServerException(
-        exception,
-      );
+      var serverpodException = _queryExceptionFromServerException(exception);
       Error.throwWithStackTrace(serverpodException, trace);
     } on pg.PgException catch (exception, trace) {
-      var serverpodException = _PgDatabaseQueryException(exception.message);
+      var serverpodException = DatabaseQueryException(exception.message);
       Error.throwWithStackTrace(serverpodException, trace);
     }
   }
@@ -1026,7 +1025,8 @@ class PostgresDatabaseConnection
               .map((column) {
                 var unformattedValue = row[column.columnName];
 
-                var formattedValue = poolManager.encoder.convert(
+                var formattedValue = poolManager.encoder.encodeColumnValue(
+                  column,
                   unformattedValue,
                 );
 
@@ -1237,4 +1237,26 @@ Set<T> _extractPrimaryKeyForRelation<T>(
 
   var ids = resultSet.map((e) => e[idFieldName] as T?).whereType<T>().toSet();
   return ids;
+}
+
+DatabaseQueryException _queryExceptionFromServerException(
+  pg.ServerException e, {
+  String? messageOverride,
+}) {
+  final builder = switch (e.code) {
+    PgErrorCode.uniqueViolation => DatabaseUniqueViolationException.new,
+    PgErrorCode.foreignKeyViolation => DatabaseForeignKeyViolationException.new,
+    _ => DatabaseQueryException.new,
+  };
+
+  return builder(
+    messageOverride ?? e.message,
+    code: e.code,
+    detail: e.detail,
+    hint: e.hint,
+    tableName: e.tableName,
+    columnName: e.columnName,
+    constraintName: e.constraintName,
+    position: e.position,
+  );
 }

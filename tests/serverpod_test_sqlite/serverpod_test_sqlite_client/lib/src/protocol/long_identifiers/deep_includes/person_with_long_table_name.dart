@@ -10,13 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
-    as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+    as _imc5i9r4;
 
 abstract class PersonWithLongTableName
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   PersonWithLongTableName._({
     this.id,
     required this.name,
@@ -28,7 +29,7 @@ abstract class PersonWithLongTableName
     int? id,
     required String name,
     int? organizationId,
-    _i2.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization,
   }) = _PersonWithLongTableNameImpl;
 
   factory PersonWithLongTableName.fromJson(
@@ -40,9 +41,10 @@ abstract class PersonWithLongTableName
       organizationId: jsonSerialization['organizationId'] as int?,
       organization: jsonSerialization['organization'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.OrganizationWithLongTableName>(
-              jsonSerialization['organization'],
-            ),
+          : _i0ntutnq.Protocol()
+                .deserialize<_imc5i9r4.OrganizationWithLongTableName>(
+                  jsonSerialization['organization'],
+                ),
     );
   }
 
@@ -55,16 +57,16 @@ abstract class PersonWithLongTableName
 
   int? organizationId;
 
-  _i2.OrganizationWithLongTableName? organization;
+  _imc5i9r4.OrganizationWithLongTableName? organization;
 
   /// Returns a shallow copy of this [PersonWithLongTableName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   PersonWithLongTableName copyWith({
     int? id,
     String? name,
     int? organizationId,
-    _i2.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -91,7 +93,7 @@ abstract class PersonWithLongTableName
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -102,7 +104,7 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     int? id,
     required String name,
     int? organizationId,
-    _i2.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization,
   }) : super._(
          id: id,
          name: name,
@@ -112,7 +114,7 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
 
   /// Returns a shallow copy of this [PersonWithLongTableName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   PersonWithLongTableName copyWith({
     Object? id = _Undefined,
@@ -126,7 +128,7 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _i2.OrganizationWithLongTableName?
+      organization: organization is _imc5i9r4.OrganizationWithLongTableName?
           ? organization
           : this.organization?.copyWith(),
     );

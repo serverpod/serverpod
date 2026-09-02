@@ -181,4 +181,61 @@ class ExampleEndpoint extends Endpoint {
       });
     },
   );
+
+  group(
+    'Given a live endpoint file and a valid endpoint file under an unrendered Mustache directory '
+    'when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        var templateEndpointFile = File(
+          path.join(
+            testDirectory.path,
+            '{{#auth}}auth{{!auth}}',
+            'email_idp_endpoint.dart',
+          ),
+        );
+        templateEndpointFile.createSync(recursive: true);
+        templateEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class EmailIdpEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+        var liveEndpointFile = File(
+          path.join(testDirectory.path, 'greeting_endpoint.dart'),
+        );
+        liveEndpointFile.createSync(recursive: true);
+        liveEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class GreetingEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then only the live endpoint definition is created.', () {
+        expect(endpointDefinitions, hasLength(1));
+        expect(endpointDefinitions.single.className, 'GreetingEndpoint');
+      });
+    },
+  );
 }

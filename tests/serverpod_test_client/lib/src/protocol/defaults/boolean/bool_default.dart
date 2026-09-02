@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class BoolDefault
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   BoolDefault._({
     this.id,
     bool? boolDefaultTrue,
@@ -35,17 +35,17 @@ abstract class BoolDefault
       id: jsonSerialization['id'] as int?,
       boolDefaultTrue: jsonSerialization['boolDefaultTrue'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _isc.BoolJsonExtension.fromJson(
               jsonSerialization['boolDefaultTrue'],
             ),
       boolDefaultFalse: jsonSerialization['boolDefaultFalse'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _isc.BoolJsonExtension.fromJson(
               jsonSerialization['boolDefaultFalse'],
             ),
       boolDefaultNullFalse: jsonSerialization['boolDefaultNullFalse'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _isc.BoolJsonExtension.fromJson(
               jsonSerialization['boolDefaultNullFalse'],
             ),
     );
@@ -64,7 +64,7 @@ abstract class BoolDefault
 
   /// Returns a shallow copy of this [BoolDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   BoolDefault copyWith({
     int? id,
     bool? boolDefaultTrue,
@@ -97,7 +97,7 @@ abstract class BoolDefault
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -118,7 +118,7 @@ class _BoolDefaultImpl extends BoolDefault {
 
   /// Returns a shallow copy of this [BoolDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   BoolDefault copyWith({
     Object? id = _Undefined,

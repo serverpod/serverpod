@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
 
 abstract class EmptyModelRelationItem
-    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
+    implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   EmptyModelRelationItem._({
     this.id,
     required this.name,
@@ -49,11 +49,11 @@ abstract class EmptyModelRelationItem
   final int? _relationEmptyModelItemsRelationEmptyModelId;
 
   @override
-  _i1.Table<int?> get table => t;
+  _isd.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   EmptyModelRelationItem copyWith({
     int? id,
     String? name,
@@ -84,11 +84,11 @@ abstract class EmptyModelRelationItem
   }
 
   static EmptyModelRelationItemIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
+    _isd.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
+    _isd.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    _isd.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     EmptyModelRelationItemInclude? include,
   }) {
     return EmptyModelRelationItemIncludeList._(
@@ -103,7 +103,7 @@ abstract class EmptyModelRelationItem
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -120,7 +120,7 @@ class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
 
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   EmptyModelRelationItem copyWith({
     Object? id = _Undefined,
@@ -164,31 +164,31 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
 }
 
 class EmptyModelRelationItemUpdateTable
-    extends _i1.UpdateTable<EmptyModelRelationItemTable> {
+    extends _isd.UpdateTable<EmptyModelRelationItemTable> {
   EmptyModelRelationItemUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _isd.ColumnValue<String, String> name(String value) => _isd.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> $_relationEmptyModelItemsRelationEmptyModelId(
+  _isd.ColumnValue<int, int> $_relationEmptyModelItemsRelationEmptyModelId(
     int? value,
-  ) => _i1.ColumnValue(
+  ) => _isd.ColumnValue(
     table.$_relationEmptyModelItemsRelationEmptyModelId,
     value,
   );
 }
 
-class EmptyModelRelationItemTable extends _i1.Table<int?> {
+class EmptyModelRelationItemTable extends _isd.Table<int?> {
   EmptyModelRelationItemTable({super.tableRelation})
     : super(tableName: 'empty_model_relation_item') {
     updateTable = EmptyModelRelationItemUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _isd.ColumnString(
       'name',
       this,
     );
-    $_relationEmptyModelItemsRelationEmptyModelId = _i1.ColumnInt(
+    $_relationEmptyModelItemsRelationEmptyModelId = _isd.ColumnInt(
       '_relationEmptyModelItemsRelationEmptyModelId',
       this,
     );
@@ -196,37 +196,37 @@ class EmptyModelRelationItemTable extends _i1.Table<int?> {
 
   late final EmptyModelRelationItemUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _isd.ColumnString name;
 
-  late final _i1.ColumnInt $_relationEmptyModelItemsRelationEmptyModelId;
+  late final _isd.ColumnInt $_relationEmptyModelItemsRelationEmptyModelId;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_isd.Column> get columns => [
     id,
     name,
     $_relationEmptyModelItemsRelationEmptyModelId,
   ];
 
   @override
-  List<_i1.Column> get managedColumns => [
+  List<_isd.Column> get managedColumns => [
     id,
     name,
   ];
 }
 
-class EmptyModelRelationItemInclude extends _i1.IncludeObject {
+class EmptyModelRelationItemInclude extends _isd.IncludeObject {
   EmptyModelRelationItemInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _isd.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => EmptyModelRelationItem.t;
+  _isd.Table<int?> get table => EmptyModelRelationItem.t;
 }
 
-class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
+class EmptyModelRelationItemIncludeList extends _isd.IncludeList {
   EmptyModelRelationItemIncludeList._({
-    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
+    _isd.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -237,10 +237,10 @@ class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EmptyModelRelationItem.t;
+  _isd.Table<int?> get table => EmptyModelRelationItem.t;
 }
 
 class EmptyModelRelationItemRepository {
@@ -269,15 +269,15 @@ class EmptyModelRelationItemRepository {
   /// );
   /// ```
   Future<List<EmptyModelRelationItem>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    _isd.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
@@ -309,14 +309,14 @@ class EmptyModelRelationItemRepository {
   /// );
   /// ```
   Future<EmptyModelRelationItem?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    _isd.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
@@ -331,11 +331,11 @@ class EmptyModelRelationItemRepository {
 
   /// Finds a single [EmptyModelRelationItem] by its [id] or null if no such row exists.
   Future<EmptyModelRelationItem?> findById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmptyModelRelationItem>(
       id,
@@ -360,9 +360,9 @@ class EmptyModelRelationItemRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> insert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<EmptyModelRelationItem> rows, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -378,9 +378,9 @@ class EmptyModelRelationItemRepository {
   ///
   /// The returned [EmptyModelRelationItem] will have its `id` field set.
   Future<EmptyModelRelationItem> insertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     EmptyModelRelationItem row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.insertRow<EmptyModelRelationItem>(
       row,
@@ -409,12 +409,12 @@ class EmptyModelRelationItemRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> upsert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<EmptyModelRelationItem> rows, {
-    required _i1.ColumnSelections<EmptyModelRelationItemTable> conflictColumns,
-    _i1.ColumnSelections<EmptyModelRelationItemTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<EmptyModelRelationItemTable> conflictColumns,
+    _isd.ColumnSelections<EmptyModelRelationItemTable>? updateColumns,
+    _isd.WhereExpressionBuilder<EmptyModelRelationItemTable>? updateWhere,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EmptyModelRelationItem>(
@@ -441,12 +441,12 @@ class EmptyModelRelationItemRepository {
   ///
   /// The returned [EmptyModelRelationItem] will have its `id` field set.
   Future<EmptyModelRelationItem?> upsertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     EmptyModelRelationItem row, {
-    required _i1.ColumnSelections<EmptyModelRelationItemTable> conflictColumns,
-    _i1.ColumnSelections<EmptyModelRelationItemTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<EmptyModelRelationItemTable> conflictColumns,
+    _isd.ColumnSelections<EmptyModelRelationItemTable>? updateColumns,
+    _isd.WhereExpressionBuilder<EmptyModelRelationItemTable>? updateWhere,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmptyModelRelationItem>(
       row,
@@ -467,10 +467,10 @@ class EmptyModelRelationItemRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> update(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<EmptyModelRelationItem> rows, {
-    _i1.ColumnSelections<EmptyModelRelationItemTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<EmptyModelRelationItemTable>? columns,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EmptyModelRelationItem>(
@@ -485,10 +485,10 @@ class EmptyModelRelationItemRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmptyModelRelationItem> updateRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     EmptyModelRelationItem row, {
-    _i1.ColumnSelections<EmptyModelRelationItemTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<EmptyModelRelationItemTable>? columns,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateRow<EmptyModelRelationItem>(
       row,
@@ -500,11 +500,11 @@ class EmptyModelRelationItemRepository {
   /// Updates a single [EmptyModelRelationItem] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmptyModelRelationItem?> updateById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
+    required _isd.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateById<EmptyModelRelationItem>(
       id,
@@ -520,15 +520,15 @@ class EmptyModelRelationItemRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
+    _isd.DatabaseSession session, {
+    required _isd.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
+    required _isd.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    _isd.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmptyModelRelationItem>(
@@ -555,11 +555,11 @@ class EmptyModelRelationItemRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> delete(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<EmptyModelRelationItem> rows, {
-    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    _isd.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EmptyModelRelationItem>(
@@ -573,9 +573,9 @@ class EmptyModelRelationItemRepository {
 
   /// Deletes a single [EmptyModelRelationItem].
   Future<EmptyModelRelationItem> deleteRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     EmptyModelRelationItem row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EmptyModelRelationItem>(
       row,
@@ -592,11 +592,11 @@ class EmptyModelRelationItemRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelRelationItem>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
-    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
+    _isd.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    _isd.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmptyModelRelationItem>(
@@ -611,10 +611,10 @@ class EmptyModelRelationItemRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.count<EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
@@ -625,11 +625,11 @@ class EmptyModelRelationItemRepository {
 
   /// Acquires row-level locks on [EmptyModelRelationItem] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
+    required _isd.LockMode lockMode,
+    required _isd.Transaction transaction,
+    _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmptyModelRelationItem>(
       where: where(EmptyModelRelationItem.t),

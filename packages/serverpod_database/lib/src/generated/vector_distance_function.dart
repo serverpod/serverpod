@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Vector distance functions exposed by pgvector.
-enum VectorDistanceFunction implements _i1.SerializableModel {
+enum VectorDistanceFunction implements _iss.SerializableModel {
   /// L2 (Euclidean) distance
   l2,
 
@@ -30,8 +30,7 @@ enum VectorDistanceFunction implements _i1.SerializableModel {
   hamming,
 
   /// Jaccard distance (binary vectors)
-  jaccard,
-  ;
+  jaccard;
 
   static VectorDistanceFunction fromJson(String name) {
     switch (name) {

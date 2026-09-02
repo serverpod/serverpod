@@ -26,20 +26,22 @@ Uncaught endpoint exceptions are logged as session failures in `serverpod_sessio
 - **Database:** Tables `serverpod_log`, `serverpod_query_log`, `serverpod_session_log` (when persistent enabled)
 - **Console:** When console logging enabled (format: `text` or `json`)
 
-Defaults: with database configured (PostgreSQL only), persistent on + console off; without database, persistent off + console on.
+Defaults: persistent logging is on when a database is configured, and it is only applied on PostgreSQL (SQLite has no persistent session logs). Console logging is on without a database and in the `development` run mode; the console format is `text` in `development` and `json` in the other run modes.
 
 ## Configuration
 
-Under `sessionLogs:` in config YAML or env vars:
+Under `sessionLogs:` in the config YAML:
 
-| Setting | Env var | Default |
-| ------- | ------- | ------- |
-| persistentEnabled | `SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED` | true (with DB) |
-| consoleEnabled | `SERVERPOD_SESSION_CONSOLE_LOG_ENABLED` | false (with DB) |
-| consoleLogFormat | `SERVERPOD_SESSION_CONSOLE_LOG_FORMAT` | text |
-| cleanupInterval | `SERVERPOD_SESSION_LOG_CLEANUP_INTERVAL` | 24h |
-| retentionPeriod | `SERVERPOD_SESSION_LOG_RETENTION_PERIOD` | 90d |
-| retentionCount | `SERVERPOD_SESSION_LOG_RETENTION_COUNT` | 100000 |
+| Setting | Default |
+| ------- | ------- |
+| persistentEnabled | true (with DB) |
+| consoleEnabled | true (no DB, or development) |
+| consoleLogFormat | text (development), json (other modes) |
+| cleanupInterval | 24h |
+| retentionPeriod | 90d |
+| retentionCount | 100000 |
+
+Each setting also has a `SERVERPOD_SESSION_*` environment variable, listed in [`serverpod-configuration/references/environment-variables.md`](../serverpod-configuration/references/environment-variables.md).
 
 Set retention so log tables don't grow unbounded. Avoid logging sensitive data.
 

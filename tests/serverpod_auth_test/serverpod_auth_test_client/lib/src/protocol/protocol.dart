@@ -11,22 +11,22 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'user_data.dart' as _i2;
-import 'dart:typed_data' as _i3;
+import 'dart:typed_data' as _idt;
 import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
-    as _i4;
+    as _iabc;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i312scxx;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i5;
+    as _iacc;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i6;
+    as _iaic;
 import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
-    as _i7;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i8;
+    as _iamc;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'user_data.dart' as _iq4j08kb;
 export 'user_data.dart';
 export 'client.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _isc.SerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -53,52 +53,55 @@ class Protocol extends _i1.SerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _isc.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i2.UserData) {
-      return _i2.UserData.fromJson(data) as T;
+    if (t == _iq4j08kb.UserData) {
+      return _iq4j08kb.UserData.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.UserData?>()) {
-      return (data != null ? _i2.UserData.fromJson(data) : null) as T;
+    if (t == _isc.getType<_iq4j08kb.UserData?>()) {
+      return (data != null ? _iq4j08kb.UserData.fromJson(data) : null) as T;
+    }
+    if (t == List<String?>) {
+      return (data as List).map((e) => deserialize<String?>(e)).toList() as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }
-    if (t == _i1.getType<({_i3.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _isc.getType<({_idt.ByteData challenge, _isc.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i3.ByteData>(
+            challenge: deserialize<_idt.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
-            id: deserialize<_i1.UuidValue>(data['n']['id']),
+            id: deserialize<_isc.UuidValue>(data['n']['id']),
           )
           as T;
     }
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iabc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i5.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iacc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i6.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iaic.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i7.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iamc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i8.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _i312scxx.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.UserData => 'UserData',
+      _iq4j08kb.UserData => 'UserData',
       _ => null,
     };
   }
@@ -116,34 +119,34 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.UserData():
+      case _iq4j08kb.UserData():
         return 'UserData';
     }
-    className = _i4.Protocol().getClassNameForObject(data);
+    className = _iabc.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_bridge.$className';
     }
-    className = _i5.Protocol().getClassNameForObject(data);
+    className = _iacc.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_core.$className';
     }
-    className = _i6.Protocol().getClassNameForObject(data);
+    className = _iaic.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_idp.$className';
     }
-    className = _i7.Protocol().getClassNameForObject(data);
+    className = _iamc.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_migration.$className';
     }
-    className = _i8.Protocol().getClassNameForObject(data);
+    className = _i312scxx.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod_auth.$className';
     }
@@ -157,37 +160,37 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'UserData') {
-      return deserialize<_i2.UserData>(data['data']);
+      return deserialize<_iq4j08kb.UserData>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_bridge.')) {
       data['className'] = dataClassName.substring(22);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _iabc.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i5.Protocol().deserializeByClassName(data);
+      return _iacc.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i6.Protocol().deserializeByClassName(data);
+      return _iaic.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_migration.')) {
       data['className'] = dataClassName.substring(25);
-      return _i7.Protocol().deserializeByClassName(data);
+      return _iamc.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i8.Protocol().deserializeByClassName(data);
+      return _i312scxx.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i4.Protocol().registerHostProtocol('serverpod_auth_test', this);
-    _i5.Protocol().registerHostProtocol('serverpod_auth_test', this);
-    _i6.Protocol().registerHostProtocol('serverpod_auth_test', this);
-    _i7.Protocol().registerHostProtocol('serverpod_auth_test', this);
-    _i8.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _iabc.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _iacc.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _iaic.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _iamc.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _i312scxx.Protocol().registerHostProtocol('serverpod_auth_test', this);
   }
 
   @override
@@ -202,7 +205,7 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i3.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_idt.ByteData challenge, _isc.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
@@ -211,19 +214,19 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i4.Protocol().mapRecordToJson(record);
+      return _iabc.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i5.Protocol().mapRecordToJson(record);
+      return _iacc.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i6.Protocol().mapRecordToJson(record);
+      return _iaic.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i7.Protocol().mapRecordToJson(record);
+      return _iamc.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i8.Protocol().mapRecordToJson(record);
+      return _i312scxx.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

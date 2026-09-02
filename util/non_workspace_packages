@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Packages that are deliberately NOT members of the pub workspace declared in
+# the root `pubspec.yaml`, and therefore have to be resolved, analyzed and
+# tested on their own.
+#
+# Melos derives its package list from the workspace, so `melos exec` -- and
+# every script built on top of it -- silently skips these. They are covered by:
+#
+#   * `dart run melos bootstrap`, via its post hook, which resolves them.
+#   * `dart run melos run lint` / `lint_loose` / `lint_strict`, via `util/analyze_non_workspace`.
+#   * `dart run melos run test`, via `util/run_tests_non_workspace`.
+#
+# Why each package is excluded:
+#
+#   * `serverpod_auth_google_flutter` is pinned to `google_sign_in: ^6`, while
+#     `serverpod_auth_idp_flutter` requires `^7`. The legacy module stays on v6
+#     on purpose: upgrading it would push legacy users through the v7 migration
+#     (Android Credential Manager, minSdk 24, iOS 13).
+#   * `auth_example_flutter` depends on `serverpod_auth_google_flutter`.
+#   * The `serverpod_chat` packages and the `chat` example are frozen at
+#     4.0.0-beta.0 on the legacy streaming API, see issue #5443.
+#   * The `serverpod_auth_idp_flutter` storybook is a standalone app.
+#
+# This file is meant to be sourced, not executed.
+
+declare -a NON_WORKSPACE_PACKAGE_PATHS=(
+    "modules/legacy/serverpod_auth/serverpod_auth_google_flutter"
+    "examples/legacy/auth_example/auth_example_flutter"
+
+    "modules/legacy/serverpod_chat/serverpod_chat_server"
+    "modules/legacy/serverpod_chat/serverpod_chat_client"
+    "modules/legacy/serverpod_chat/serverpod_chat_flutter"
+
+    "examples/legacy/chat/chat_server"
+    "examples/legacy/chat/chat_client"
+    "examples/legacy/chat/chat_flutter"
+
+    "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter/storybook"
+)

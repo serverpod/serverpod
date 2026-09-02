@@ -24,7 +24,7 @@ void main() {
     () {
       var statefulAnalyzer = StatefulAnalyzer(config, []);
 
-      var modelUri = Uri(path: 'lib/src/model/example.yaml');
+      var modelUri = Uri(path: 'lib/src/model/example.spy.yaml');
       var yamlSource = ModelSourceBuilder()
           .withYamlSourceUri(modelUri)
           .withYaml(
@@ -49,7 +49,7 @@ void main() {
     () {
       var statefulAnalyzer = StatefulAnalyzer(config, []);
 
-      var modelUri = Uri(path: 'lib/src/model/example.yaml');
+      var modelUri = Uri(path: 'lib/src/model/example.spy.yaml');
       statefulAnalyzer.removeYamlModel(modelUri);
 
       var models = statefulAnalyzer.validateAll();
@@ -101,7 +101,7 @@ void main() {
     () {
       var statefulAnalyzer = StatefulAnalyzer(config, []);
 
-      var modelUri = Uri(path: 'lib/src/model/example.yaml');
+      var modelUri = Uri(path: 'lib/src/model/example.spy.yaml');
       var yaml = '''
 class: Example
 fields:
@@ -249,7 +249,7 @@ and neither is this line
   test(
     'Given a model that was invalid on first validation, when validating the same model with an updated valid syntax, then the previous errors are cleared.',
     () {
-      var modelUri = Uri(path: 'lib/src/model/example.yaml');
+      var modelUri = Uri(path: 'lib/src/model/example.spy.yaml');
       var invalidSource = ModelSourceBuilder()
           .withYamlSourceUri(modelUri)
           .withYaml(

@@ -10,41 +10,41 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import '../../../../providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart'
-    as _i2;
+    as _iq4vueu9;
 
 /// Exception to be thrown if anonymous account creation fails.
 ///
 /// Inspect the [reason] field to understand this exception.
 abstract class AnonymousAccountBlockedException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _isc.SerializableException,
+        _isc.SerializableModel,
+        _isc.ProtocolSerialization {
   AnonymousAccountBlockedException._({required this.reason});
 
   factory AnonymousAccountBlockedException({
-    required _i2.AnonymousAccountBlockedExceptionReason reason,
+    required _iq4vueu9.AnonymousAccountBlockedExceptionReason reason,
   }) = _AnonymousAccountBlockedExceptionImpl;
 
   factory AnonymousAccountBlockedException.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return AnonymousAccountBlockedException(
-      reason: _i2.AnonymousAccountBlockedExceptionReason.fromJson(
+      reason: _iq4vueu9.AnonymousAccountBlockedExceptionReason.fromJson(
         (jsonSerialization['reason'] as String),
       ),
     );
   }
 
-  _i2.AnonymousAccountBlockedExceptionReason reason;
+  _iq4vueu9.AnonymousAccountBlockedExceptionReason reason;
 
   /// Returns a shallow copy of this [AnonymousAccountBlockedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AnonymousAccountBlockedException copyWith({
-    _i2.AnonymousAccountBlockedExceptionReason? reason,
+    _iq4vueu9.AnonymousAccountBlockedExceptionReason? reason,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -71,15 +71,15 @@ abstract class AnonymousAccountBlockedException
 class _AnonymousAccountBlockedExceptionImpl
     extends AnonymousAccountBlockedException {
   _AnonymousAccountBlockedExceptionImpl({
-    required _i2.AnonymousAccountBlockedExceptionReason reason,
+    required _iq4vueu9.AnonymousAccountBlockedExceptionReason reason,
   }) : super._(reason: reason);
 
   /// Returns a shallow copy of this [AnonymousAccountBlockedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AnonymousAccountBlockedException copyWith({
-    _i2.AnonymousAccountBlockedExceptionReason? reason,
+    _iq4vueu9.AnonymousAccountBlockedExceptionReason? reason,
   }) {
     return AnonymousAccountBlockedException(reason: reason ?? this.reason);
   }

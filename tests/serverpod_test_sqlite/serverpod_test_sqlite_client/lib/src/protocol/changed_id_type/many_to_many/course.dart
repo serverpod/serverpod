@@ -10,52 +10,53 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../changed_id_type/many_to_many/enrollment.dart' as _ih6xbg05;
 
 abstract class CourseUuid
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CourseUuid._({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required this.name,
     this.enrollments,
-  }) : id = id ?? const _i1.Uuid().v7obj();
+  }) : id = id ?? const _isc.Uuid().v7obj();
 
   factory CourseUuid({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required String name,
-    List<_i2.EnrollmentInt>? enrollments,
+    List<_ih6xbg05.EnrollmentInt>? enrollments,
   }) = _CourseUuidImpl;
 
   factory CourseUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return CourseUuid(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       enrollments: jsonSerialization['enrollments'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.EnrollmentInt>>(
+          : _i0ntutnq.Protocol().deserialize<List<_ih6xbg05.EnrollmentInt>>(
               jsonSerialization['enrollments'],
             ),
     );
   }
 
   /// The id of the object.
-  _i1.UuidValue? id;
+  _isc.UuidValue? id;
 
   String name;
 
-  List<_i2.EnrollmentInt>? enrollments;
+  List<_ih6xbg05.EnrollmentInt>? enrollments;
 
   /// Returns a shallow copy of this [CourseUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CourseUuid copyWith({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     String? name,
-    List<_i2.EnrollmentInt>? enrollments,
+    List<_ih6xbg05.EnrollmentInt>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,7 +84,7 @@ abstract class CourseUuid
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -91,9 +92,9 @@ class _Undefined {}
 
 class _CourseUuidImpl extends CourseUuid {
   _CourseUuidImpl({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required String name,
-    List<_i2.EnrollmentInt>? enrollments,
+    List<_ih6xbg05.EnrollmentInt>? enrollments,
   }) : super._(
          id: id,
          name: name,
@@ -102,7 +103,7 @@ class _CourseUuidImpl extends CourseUuid {
 
   /// Returns a shallow copy of this [CourseUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CourseUuid copyWith({
     Object? id = _Undefined,
@@ -110,9 +111,9 @@ class _CourseUuidImpl extends CourseUuid {
     Object? enrollments = _Undefined,
   }) {
     return CourseUuid(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.EnrollmentInt>?
+      enrollments: enrollments is List<_ih6xbg05.EnrollmentInt>?
           ? enrollments
           : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );

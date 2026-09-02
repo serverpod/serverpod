@@ -518,7 +518,7 @@ class DefaultValueRestriction extends ValueRestriction {
     }
 
     String invalidValueError =
-        'The "$key" value must be a a valid Uri string (e.g., "$key"=\'http://serverpod.dev\').';
+        'The "$key" value must be a valid Uri string (e.g., "$key"=\'http://serverpod.dev\').';
 
     if (value is! String || value.isEmpty) {
       return [

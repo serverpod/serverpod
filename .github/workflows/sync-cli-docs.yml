@@ -13,6 +13,7 @@ on:
       - "tools/serverpod_cli/bin/**"
       - "tools/serverpod_cli/scripts/generate_command_usages.dart"
       - ".github/actions/retry/**"
+      - ".github/actions/use-dart-only-workspace/**"
       - ".github/actions/use-dart-test-retry/**"
       - ".github/workflows/sync-cli-docs.yml"
   workflow_dispatch:
@@ -50,11 +51,16 @@ jobs:
         with:
           path: src
 
+      - name: Use Dart-only workspace
+        uses: ./src/.github/actions/use-dart-only-workspace
+        with:
+          workspace-root: src
+
       # serverpod_cli is a pure Dart package, so the Dart SDK is all we need.
       # (Most monorepo workflows pull Flutter only because their packages need
       # it.)
       - name: Set up Dart
-        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        uses: dart-lang/setup-dart@7654d458321ee25acccccfdb86cd48bd95768ff1 # v1.8.0
         with:
           sdk: stable
 

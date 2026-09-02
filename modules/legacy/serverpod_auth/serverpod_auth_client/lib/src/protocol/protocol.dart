@@ -11,21 +11,21 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'apple_auth_info.dart' as _i2;
-import 'auth_key.dart' as _i3;
-import 'authentication_fail_reason.dart' as _i4;
-import 'authentication_response.dart' as _i5;
-import 'email_auth.dart' as _i6;
-import 'email_create_account_request.dart' as _i7;
-import 'email_failed_sign_in.dart' as _i8;
-import 'email_password_reset.dart' as _i9;
-import 'email_reset.dart' as _i10;
-import 'google_refresh_token.dart' as _i11;
-import 'user_image.dart' as _i12;
-import 'user_info.dart' as _i13;
-import 'user_info_public.dart' as _i14;
-import 'user_settings_config.dart' as _i15;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'apple_auth_info.dart' as _iy492fk4;
+import 'auth_key.dart' as _i8lzboul;
+import 'authentication_fail_reason.dart' as _ika0ufek;
+import 'authentication_response.dart' as _i6gspdjt;
+import 'email_auth.dart' as _il95bqq6;
+import 'email_create_account_request.dart' as _ilnsxyj8;
+import 'email_failed_sign_in.dart' as _iaz0raab;
+import 'email_password_reset.dart' as _iiusgova;
+import 'email_reset.dart' as _ifm8n60r;
+import 'google_refresh_token.dart' as _is585jau;
+import 'user_image.dart' as _i0mx5j5p;
+import 'user_info.dart' as _iliwsvmu;
+import 'user_info_public.dart' as _iabwsxht;
+import 'user_settings_config.dart' as _i5rdiffu;
 export 'apple_auth_info.dart';
 export 'auth_key.dart';
 export 'authentication_fail_reason.dart';
@@ -42,18 +42,18 @@ export 'user_info_public.dart';
 export 'user_settings_config.dart';
 export 'client.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _isc.SerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  final Set<_isc.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _isc.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -80,102 +80,110 @@ class Protocol extends _i1.SerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _isc.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i2.AppleAuthInfo) {
-      return _i2.AppleAuthInfo.fromJson(data) as T;
+    if (t == _iy492fk4.AppleAuthInfo) {
+      return _iy492fk4.AppleAuthInfo.fromJson(data) as T;
     }
-    if (t == _i3.AuthKey) {
-      return _i3.AuthKey.fromJson(data) as T;
+    if (t == _i8lzboul.AuthKey) {
+      return _i8lzboul.AuthKey.fromJson(data) as T;
     }
-    if (t == _i4.AuthenticationFailReason) {
-      return _i4.AuthenticationFailReason.fromJson(data) as T;
+    if (t == _ika0ufek.AuthenticationFailReason) {
+      return _ika0ufek.AuthenticationFailReason.fromJson(data) as T;
     }
-    if (t == _i5.AuthenticationResponse) {
-      return _i5.AuthenticationResponse.fromJson(data) as T;
+    if (t == _i6gspdjt.AuthenticationResponse) {
+      return _i6gspdjt.AuthenticationResponse.fromJson(data) as T;
     }
-    if (t == _i6.EmailAuth) {
-      return _i6.EmailAuth.fromJson(data) as T;
+    if (t == _il95bqq6.EmailAuth) {
+      return _il95bqq6.EmailAuth.fromJson(data) as T;
     }
-    if (t == _i7.EmailCreateAccountRequest) {
-      return _i7.EmailCreateAccountRequest.fromJson(data) as T;
+    if (t == _ilnsxyj8.EmailCreateAccountRequest) {
+      return _ilnsxyj8.EmailCreateAccountRequest.fromJson(data) as T;
     }
-    if (t == _i8.EmailFailedSignIn) {
-      return _i8.EmailFailedSignIn.fromJson(data) as T;
+    if (t == _iaz0raab.EmailFailedSignIn) {
+      return _iaz0raab.EmailFailedSignIn.fromJson(data) as T;
     }
-    if (t == _i9.EmailPasswordReset) {
-      return _i9.EmailPasswordReset.fromJson(data) as T;
+    if (t == _iiusgova.EmailPasswordReset) {
+      return _iiusgova.EmailPasswordReset.fromJson(data) as T;
     }
-    if (t == _i10.EmailReset) {
-      return _i10.EmailReset.fromJson(data) as T;
+    if (t == _ifm8n60r.EmailReset) {
+      return _ifm8n60r.EmailReset.fromJson(data) as T;
     }
-    if (t == _i11.GoogleRefreshToken) {
-      return _i11.GoogleRefreshToken.fromJson(data) as T;
+    if (t == _is585jau.GoogleRefreshToken) {
+      return _is585jau.GoogleRefreshToken.fromJson(data) as T;
     }
-    if (t == _i12.UserImage) {
-      return _i12.UserImage.fromJson(data) as T;
+    if (t == _i0mx5j5p.UserImage) {
+      return _i0mx5j5p.UserImage.fromJson(data) as T;
     }
-    if (t == _i13.UserInfo) {
-      return _i13.UserInfo.fromJson(data) as T;
+    if (t == _iliwsvmu.UserInfo) {
+      return _iliwsvmu.UserInfo.fromJson(data) as T;
     }
-    if (t == _i14.UserInfoPublic) {
-      return _i14.UserInfoPublic.fromJson(data) as T;
+    if (t == _iabwsxht.UserInfoPublic) {
+      return _iabwsxht.UserInfoPublic.fromJson(data) as T;
     }
-    if (t == _i15.UserSettingsConfig) {
-      return _i15.UserSettingsConfig.fromJson(data) as T;
+    if (t == _i5rdiffu.UserSettingsConfig) {
+      return _i5rdiffu.UserSettingsConfig.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.AppleAuthInfo?>()) {
-      return (data != null ? _i2.AppleAuthInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i3.AuthKey?>()) {
-      return (data != null ? _i3.AuthKey.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i4.AuthenticationFailReason?>()) {
-      return (data != null ? _i4.AuthenticationFailReason.fromJson(data) : null)
+    if (t == _isc.getType<_iy492fk4.AppleAuthInfo?>()) {
+      return (data != null ? _iy492fk4.AppleAuthInfo.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i5.AuthenticationResponse?>()) {
-      return (data != null ? _i5.AuthenticationResponse.fromJson(data) : null)
-          as T;
+    if (t == _isc.getType<_i8lzboul.AuthKey?>()) {
+      return (data != null ? _i8lzboul.AuthKey.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.EmailAuth?>()) {
-      return (data != null ? _i6.EmailAuth.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i7.EmailCreateAccountRequest?>()) {
+    if (t == _isc.getType<_ika0ufek.AuthenticationFailReason?>()) {
       return (data != null
-              ? _i7.EmailCreateAccountRequest.fromJson(data)
+              ? _ika0ufek.AuthenticationFailReason.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i8.EmailFailedSignIn?>()) {
-      return (data != null ? _i8.EmailFailedSignIn.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.EmailPasswordReset?>()) {
-      return (data != null ? _i9.EmailPasswordReset.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.EmailReset?>()) {
-      return (data != null ? _i10.EmailReset.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.GoogleRefreshToken?>()) {
-      return (data != null ? _i11.GoogleRefreshToken.fromJson(data) : null)
+    if (t == _isc.getType<_i6gspdjt.AuthenticationResponse?>()) {
+      return (data != null
+              ? _i6gspdjt.AuthenticationResponse.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i12.UserImage?>()) {
-      return (data != null ? _i12.UserImage.fromJson(data) : null) as T;
+    if (t == _isc.getType<_il95bqq6.EmailAuth?>()) {
+      return (data != null ? _il95bqq6.EmailAuth.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.UserInfo?>()) {
-      return (data != null ? _i13.UserInfo.fromJson(data) : null) as T;
+    if (t == _isc.getType<_ilnsxyj8.EmailCreateAccountRequest?>()) {
+      return (data != null
+              ? _ilnsxyj8.EmailCreateAccountRequest.fromJson(data)
+              : null)
+          as T;
     }
-    if (t == _i1.getType<_i14.UserInfoPublic?>()) {
-      return (data != null ? _i14.UserInfoPublic.fromJson(data) : null) as T;
+    if (t == _isc.getType<_iaz0raab.EmailFailedSignIn?>()) {
+      return (data != null ? _iaz0raab.EmailFailedSignIn.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i15.UserSettingsConfig?>()) {
-      return (data != null ? _i15.UserSettingsConfig.fromJson(data) : null)
+    if (t == _isc.getType<_iiusgova.EmailPasswordReset?>()) {
+      return (data != null ? _iiusgova.EmailPasswordReset.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ifm8n60r.EmailReset?>()) {
+      return (data != null ? _ifm8n60r.EmailReset.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_is585jau.GoogleRefreshToken?>()) {
+      return (data != null ? _is585jau.GoogleRefreshToken.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i0mx5j5p.UserImage?>()) {
+      return (data != null ? _i0mx5j5p.UserImage.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iliwsvmu.UserInfo?>()) {
+      return (data != null ? _iliwsvmu.UserInfo.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iabwsxht.UserInfoPublic?>()) {
+      return (data != null ? _iabwsxht.UserInfoPublic.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i5rdiffu.UserSettingsConfig?>()) {
+      return (data != null ? _i5rdiffu.UserSettingsConfig.fromJson(data) : null)
           as T;
     }
     if (t == List<String>) {
@@ -186,20 +194,20 @@ class Protocol extends _i1.SerializationManager {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.AppleAuthInfo => 'AppleAuthInfo',
-      _i3.AuthKey => 'AuthKey',
-      _i4.AuthenticationFailReason => 'AuthenticationFailReason',
-      _i5.AuthenticationResponse => 'AuthenticationResponse',
-      _i6.EmailAuth => 'EmailAuth',
-      _i7.EmailCreateAccountRequest => 'EmailCreateAccountRequest',
-      _i8.EmailFailedSignIn => 'EmailFailedSignIn',
-      _i9.EmailPasswordReset => 'EmailPasswordReset',
-      _i10.EmailReset => 'EmailReset',
-      _i11.GoogleRefreshToken => 'GoogleRefreshToken',
-      _i12.UserImage => 'UserImage',
-      _i13.UserInfo => 'UserInfo',
-      _i14.UserInfoPublic => 'UserInfoPublic',
-      _i15.UserSettingsConfig => 'UserSettingsConfig',
+      _iy492fk4.AppleAuthInfo => 'AppleAuthInfo',
+      _i8lzboul.AuthKey => 'AuthKey',
+      _ika0ufek.AuthenticationFailReason => 'AuthenticationFailReason',
+      _i6gspdjt.AuthenticationResponse => 'AuthenticationResponse',
+      _il95bqq6.EmailAuth => 'EmailAuth',
+      _ilnsxyj8.EmailCreateAccountRequest => 'EmailCreateAccountRequest',
+      _iaz0raab.EmailFailedSignIn => 'EmailFailedSignIn',
+      _iiusgova.EmailPasswordReset => 'EmailPasswordReset',
+      _ifm8n60r.EmailReset => 'EmailReset',
+      _is585jau.GoogleRefreshToken => 'GoogleRefreshToken',
+      _i0mx5j5p.UserImage => 'UserImage',
+      _iliwsvmu.UserInfo => 'UserInfo',
+      _iabwsxht.UserInfoPublic => 'UserInfoPublic',
+      _i5rdiffu.UserSettingsConfig => 'UserSettingsConfig',
       _ => null,
     };
   }
@@ -217,33 +225,33 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.AppleAuthInfo():
+      case _iy492fk4.AppleAuthInfo():
         return 'AppleAuthInfo';
-      case _i3.AuthKey():
+      case _i8lzboul.AuthKey():
         return 'AuthKey';
-      case _i4.AuthenticationFailReason():
+      case _ika0ufek.AuthenticationFailReason():
         return 'AuthenticationFailReason';
-      case _i5.AuthenticationResponse():
+      case _i6gspdjt.AuthenticationResponse():
         return 'AuthenticationResponse';
-      case _i6.EmailAuth():
+      case _il95bqq6.EmailAuth():
         return 'EmailAuth';
-      case _i7.EmailCreateAccountRequest():
+      case _ilnsxyj8.EmailCreateAccountRequest():
         return 'EmailCreateAccountRequest';
-      case _i8.EmailFailedSignIn():
+      case _iaz0raab.EmailFailedSignIn():
         return 'EmailFailedSignIn';
-      case _i9.EmailPasswordReset():
+      case _iiusgova.EmailPasswordReset():
         return 'EmailPasswordReset';
-      case _i10.EmailReset():
+      case _ifm8n60r.EmailReset():
         return 'EmailReset';
-      case _i11.GoogleRefreshToken():
+      case _is585jau.GoogleRefreshToken():
         return 'GoogleRefreshToken';
-      case _i12.UserImage():
+      case _i0mx5j5p.UserImage():
         return 'UserImage';
-      case _i13.UserInfo():
+      case _iliwsvmu.UserInfo():
         return 'UserInfo';
-      case _i14.UserInfoPublic():
+      case _iabwsxht.UserInfoPublic():
         return 'UserInfoPublic';
-      case _i15.UserSettingsConfig():
+      case _i5rdiffu.UserSettingsConfig():
         return 'UserSettingsConfig';
     }
     return null;
@@ -256,46 +264,46 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'AppleAuthInfo') {
-      return deserialize<_i2.AppleAuthInfo>(data['data']);
+      return deserialize<_iy492fk4.AppleAuthInfo>(data['data']);
     }
     if (dataClassName == 'AuthKey') {
-      return deserialize<_i3.AuthKey>(data['data']);
+      return deserialize<_i8lzboul.AuthKey>(data['data']);
     }
     if (dataClassName == 'AuthenticationFailReason') {
-      return deserialize<_i4.AuthenticationFailReason>(data['data']);
+      return deserialize<_ika0ufek.AuthenticationFailReason>(data['data']);
     }
     if (dataClassName == 'AuthenticationResponse') {
-      return deserialize<_i5.AuthenticationResponse>(data['data']);
+      return deserialize<_i6gspdjt.AuthenticationResponse>(data['data']);
     }
     if (dataClassName == 'EmailAuth') {
-      return deserialize<_i6.EmailAuth>(data['data']);
+      return deserialize<_il95bqq6.EmailAuth>(data['data']);
     }
     if (dataClassName == 'EmailCreateAccountRequest') {
-      return deserialize<_i7.EmailCreateAccountRequest>(data['data']);
+      return deserialize<_ilnsxyj8.EmailCreateAccountRequest>(data['data']);
     }
     if (dataClassName == 'EmailFailedSignIn') {
-      return deserialize<_i8.EmailFailedSignIn>(data['data']);
+      return deserialize<_iaz0raab.EmailFailedSignIn>(data['data']);
     }
     if (dataClassName == 'EmailPasswordReset') {
-      return deserialize<_i9.EmailPasswordReset>(data['data']);
+      return deserialize<_iiusgova.EmailPasswordReset>(data['data']);
     }
     if (dataClassName == 'EmailReset') {
-      return deserialize<_i10.EmailReset>(data['data']);
+      return deserialize<_ifm8n60r.EmailReset>(data['data']);
     }
     if (dataClassName == 'GoogleRefreshToken') {
-      return deserialize<_i11.GoogleRefreshToken>(data['data']);
+      return deserialize<_is585jau.GoogleRefreshToken>(data['data']);
     }
     if (dataClassName == 'UserImage') {
-      return deserialize<_i12.UserImage>(data['data']);
+      return deserialize<_i0mx5j5p.UserImage>(data['data']);
     }
     if (dataClassName == 'UserInfo') {
-      return deserialize<_i13.UserInfo>(data['data']);
+      return deserialize<_iliwsvmu.UserInfo>(data['data']);
     }
     if (dataClassName == 'UserInfoPublic') {
-      return deserialize<_i14.UserInfoPublic>(data['data']);
+      return deserialize<_iabwsxht.UserInfoPublic>(data['data']);
     }
     if (dataClassName == 'UserSettingsConfig') {
-      return deserialize<_i15.UserSettingsConfig>(data['data']);
+      return deserialize<_i5rdiffu.UserSettingsConfig>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -318,8 +326,8 @@ class Protocol extends _i1.SerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _isc.SerializationManager.toEncodableForProtocol(wrapped)
+          : _isc.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -353,7 +361,7 @@ class Protocol extends _i1.SerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on FormatException catch (_) {}
+        } on _isc.DeserializationClassNameNotFoundException catch (_) {}
       }
     }
     return deserializeByClassName(value);

@@ -1,11 +1,19 @@
 include: package:serverpod_lints/public_flutter.yaml
 
+analyzer:
+  exclude:
+    # storybook is a standalone Flutter app, not part of the Pub workspace, so
+    # its dependencies (e.g. storybook_toolkit) are not resolved by the root
+    # workspace analyzer.
+    - storybook/**
+
 linter:
   rules:
     prefer_const_constructors: true
     public_member_api_docs: true
     unawaited_futures: true
     discarded_futures: true
+    prefer_initializing_formals: false
 
 formatter:
   trailing_commas: preserve

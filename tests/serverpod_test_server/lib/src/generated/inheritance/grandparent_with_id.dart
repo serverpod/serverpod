@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 class GrandparentClassWithId
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   GrandparentClassWithId({
     this.id,
     required this.grandParentField,
@@ -25,24 +25,24 @@ class GrandparentClassWithId
     return GrandparentClassWithId(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       grandParentField: jsonSerialization['grandParentField'] as String,
     );
   }
 
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String grandParentField;
 
   /// Returns a shallow copy of this [GrandparentClassWithId]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   GrandparentClassWithId copyWith({
     Object? id = _Undefined,
     String? grandParentField,
   }) {
     return GrandparentClassWithId(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       grandParentField: grandParentField ?? this.grandParentField,
     );
   }
@@ -67,7 +67,7 @@ class GrandparentClassWithId
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 

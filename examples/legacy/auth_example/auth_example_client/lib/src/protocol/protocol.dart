@@ -11,13 +11,13 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'example.dart' as _i2;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i312scxx;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'example.dart' as _itx02h2p;
 export 'example.dart';
 export 'client.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _isc.SerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -44,28 +44,28 @@ class Protocol extends _i1.SerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _isc.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i2.Example) {
-      return _i2.Example.fromJson(data) as T;
+    if (t == _itx02h2p.Example) {
+      return _itx02h2p.Example.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.Example?>()) {
-      return (data != null ? _i2.Example.fromJson(data) : null) as T;
+    if (t == _isc.getType<_itx02h2p.Example?>()) {
+      return (data != null ? _itx02h2p.Example.fromJson(data) : null) as T;
     }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _i312scxx.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.Example => 'Example',
+      _itx02h2p.Example => 'Example',
       _ => null,
     };
   }
@@ -83,10 +83,10 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.Example():
+      case _itx02h2p.Example():
         return 'Example';
     }
-    className = _i3.Protocol().getClassNameForObject(data);
+    className = _i312scxx.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod_auth.$className';
     }
@@ -100,17 +100,17 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'Example') {
-      return deserialize<_i2.Example>(data['data']);
+      return deserialize<_itx02h2p.Example>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _i312scxx.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i3.Protocol().registerHostProtocol('auth_example', this);
+    _i312scxx.Protocol().registerHostProtocol('auth_example', this);
   }
 
   @override
@@ -126,7 +126,7 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _i312scxx.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

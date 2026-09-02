@@ -11,13 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../profile/models/user_profile.dart' as _i2;
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
+    as _i8reeoob;
+import '../../profile/models/user_profile.dart' as _ixqiikps;
 
 /// Database entity for storing user profile image information.
 abstract class UserProfileImage
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   UserProfileImage._({
     this.id,
     required this.userProfileId,
@@ -29,9 +30,9 @@ abstract class UserProfileImage
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserProfileImage({
-    _i1.UuidValue? id,
-    required _i1.UuidValue userProfileId,
-    _i2.UserProfile? userProfile,
+    _is.UuidValue? id,
+    required _is.UuidValue userProfileId,
+    _ixqiikps.UserProfile? userProfile,
     DateTime? createdAt,
     required String storageId,
     required String path,
@@ -42,21 +43,21 @@ abstract class UserProfileImage
     return UserProfileImage(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      userProfileId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      userProfileId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['userProfileId'],
       ),
       userProfile: jsonSerialization['userProfile'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.UserProfile>(
+          : _i8reeoob.Protocol().deserialize<_ixqiikps.UserProfile>(
               jsonSerialization['userProfile'],
             ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),
+      url: _is.UriJsonExtension.fromJson(jsonSerialization['url']),
     );
   }
 
@@ -65,12 +66,12 @@ abstract class UserProfileImage
   static const db = UserProfileImageRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue userProfileId;
+  _is.UuidValue userProfileId;
 
   /// The [UserProfile] this image belongs to.
-  _i2.UserProfile? userProfile;
+  _ixqiikps.UserProfile? userProfile;
 
   /// The time when this profile image was created.
   DateTime createdAt;
@@ -85,15 +86,15 @@ abstract class UserProfileImage
   Uri url;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [UserProfileImage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UserProfileImage copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? userProfileId,
-    _i2.UserProfile? userProfile,
+    _is.UuidValue? id,
+    _is.UuidValue? userProfileId,
+    _ixqiikps.UserProfile? userProfile,
     DateTime? createdAt,
     String? storageId,
     String? path,
@@ -128,17 +129,17 @@ abstract class UserProfileImage
   }
 
   static UserProfileImageInclude include({
-    _i2.UserProfileInclude? userProfile,
+    _ixqiikps.UserProfileInclude? userProfile,
   }) {
     return UserProfileImageInclude._(userProfile: userProfile);
   }
 
   static UserProfileImageIncludeList includeList({
-    _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
+    _is.WhereExpressionBuilder<UserProfileImageTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    _is.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
     UserProfileImageInclude? include,
   }) {
     return UserProfileImageIncludeList._(
@@ -153,7 +154,7 @@ abstract class UserProfileImage
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -161,9 +162,9 @@ class _Undefined {}
 
 class _UserProfileImageImpl extends UserProfileImage {
   _UserProfileImageImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue userProfileId,
-    _i2.UserProfile? userProfile,
+    _is.UuidValue? id,
+    required _is.UuidValue userProfileId,
+    _ixqiikps.UserProfile? userProfile,
     DateTime? createdAt,
     required String storageId,
     required String path,
@@ -180,11 +181,11 @@ class _UserProfileImageImpl extends UserProfileImage {
 
   /// Returns a shallow copy of this [UserProfileImage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UserProfileImage copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? userProfileId,
+    _is.UuidValue? userProfileId,
     Object? userProfile = _Undefined,
     DateTime? createdAt,
     String? storageId,
@@ -192,9 +193,9 @@ class _UserProfileImageImpl extends UserProfileImage {
     Uri? url,
   }) {
     return UserProfileImage(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       userProfileId: userProfileId ?? this.userProfileId,
-      userProfile: userProfile is _i2.UserProfile?
+      userProfile: userProfile is _ixqiikps.UserProfile?
           ? userProfile
           : this.userProfile?.copyWith(),
       createdAt: createdAt ?? this.createdAt,
@@ -206,60 +207,60 @@ class _UserProfileImageImpl extends UserProfileImage {
 }
 
 class UserProfileImageUpdateTable
-    extends _i1.UpdateTable<UserProfileImageTable> {
+    extends _is.UpdateTable<UserProfileImageTable> {
   UserProfileImageUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> userProfileId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> userProfileId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.userProfileId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> storageId(String value) => _is.ColumnValue(
     table.storageId,
     value,
   );
 
-  _i1.ColumnValue<String, String> path(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> path(String value) => _is.ColumnValue(
     table.path,
     value,
   );
 
-  _i1.ColumnValue<Uri, Uri> url(Uri value) => _i1.ColumnValue(
+  _is.ColumnValue<Uri, Uri> url(Uri value) => _is.ColumnValue(
     table.url,
     value,
   );
 }
 
-class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
+class UserProfileImageTable extends _is.Table<_is.UuidValue?> {
   UserProfileImageTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_core_profile_image') {
     updateTable = UserProfileImageUpdateTable(this);
-    userProfileId = _i1.ColumnUuid(
+    userProfileId = _is.ColumnUuid(
       'userProfileId',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
       hasDefault: true,
     );
-    storageId = _i1.ColumnString(
+    storageId = _is.ColumnString(
       'storageId',
       this,
     );
-    path = _i1.ColumnString(
+    path = _is.ColumnString(
       'path',
       this,
     );
-    url = _i1.ColumnUri(
+    url = _is.ColumnUri(
       'url',
       this,
     );
@@ -267,38 +268,38 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
 
   late final UserProfileImageUpdateTable updateTable;
 
-  late final _i1.ColumnUuid userProfileId;
+  late final _is.ColumnUuid userProfileId;
 
   /// The [UserProfile] this image belongs to.
-  _i2.UserProfileTable? _userProfile;
+  _ixqiikps.UserProfileTable? _userProfile;
 
   /// The time when this profile image was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
   /// Storage in which the image is stored.
-  late final _i1.ColumnString storageId;
+  late final _is.ColumnString storageId;
 
   /// Path inside [storageId] at which the image is stored.
-  late final _i1.ColumnString path;
+  late final _is.ColumnString path;
 
   /// The public URL to access the image.
-  late final _i1.ColumnUri url;
+  late final _is.ColumnUri url;
 
-  _i2.UserProfileTable get userProfile {
+  _ixqiikps.UserProfileTable get userProfile {
     if (_userProfile != null) return _userProfile!;
-    _userProfile = _i1.createRelationTable(
+    _userProfile = _is.createRelationTable(
       relationFieldName: 'userProfile',
       field: UserProfileImage.t.userProfileId,
-      foreignField: _i2.UserProfile.t.id,
+      foreignField: _ixqiikps.UserProfile.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.UserProfileTable(tableRelation: foreignTableRelation),
+          _ixqiikps.UserProfileTable(tableRelation: foreignTableRelation),
     );
     return _userProfile!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     userProfileId,
     createdAt,
@@ -308,7 +309,7 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'userProfile') {
       return userProfile;
     }
@@ -316,23 +317,23 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class UserProfileImageInclude extends _i1.IncludeObject {
-  UserProfileImageInclude._({_i2.UserProfileInclude? userProfile}) {
+class UserProfileImageInclude extends _is.IncludeObject {
+  UserProfileImageInclude._({_ixqiikps.UserProfileInclude? userProfile}) {
     _userProfile = userProfile;
   }
 
-  _i2.UserProfileInclude? _userProfile;
+  _ixqiikps.UserProfileInclude? _userProfile;
 
   @override
-  Map<String, _i1.Include?> get includes => {'userProfile': _userProfile};
+  Map<String, _is.Include?> get includes => {'userProfile': _userProfile};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => UserProfileImage.t;
+  _is.Table<_is.UuidValue?> get table => UserProfileImage.t;
 }
 
-class UserProfileImageIncludeList extends _i1.IncludeList {
+class UserProfileImageIncludeList extends _is.IncludeList {
   UserProfileImageIncludeList._({
-    _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
+    _is.WhereExpressionBuilder<UserProfileImageTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -343,10 +344,10 @@ class UserProfileImageIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => UserProfileImage.t;
+  _is.Table<_is.UuidValue?> get table => UserProfileImage.t;
 }
 
 class UserProfileImageRepository {
@@ -377,16 +378,16 @@ class UserProfileImageRepository {
   /// );
   /// ```
   Future<List<UserProfileImage>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileImageTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    _is.Transaction? transaction,
     UserProfileImageInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserProfileImage>(
       where: where?.call(UserProfileImage.t),
@@ -419,15 +420,15 @@ class UserProfileImageRepository {
   /// );
   /// ```
   Future<UserProfileImage?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileImageTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    _is.Transaction? transaction,
     UserProfileImageInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserProfileImage>(
       where: where?.call(UserProfileImage.t),
@@ -443,12 +444,12 @@ class UserProfileImageRepository {
 
   /// Finds a single [UserProfileImage] by its [id] or null if no such row exists.
   Future<UserProfileImage?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     UserProfileImageInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserProfileImage>(
       id,
@@ -474,9 +475,9 @@ class UserProfileImageRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserProfileImage> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -492,9 +493,9 @@ class UserProfileImageRepository {
   ///
   /// The returned [UserProfileImage] will have its `id` field set.
   Future<UserProfileImage> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfileImage row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<UserProfileImage>(
       row,
@@ -523,12 +524,12 @@ class UserProfileImageRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserProfileImage> rows, {
-    required _i1.ColumnSelections<UserProfileImageTable> conflictColumns,
-    _i1.ColumnSelections<UserProfileImageTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserProfileImageTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserProfileImageTable> conflictColumns,
+    _is.ColumnSelections<UserProfileImageTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserProfileImageTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<UserProfileImage>(
@@ -555,12 +556,12 @@ class UserProfileImageRepository {
   ///
   /// The returned [UserProfileImage] will have its `id` field set.
   Future<UserProfileImage?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfileImage row, {
-    required _i1.ColumnSelections<UserProfileImageTable> conflictColumns,
-    _i1.ColumnSelections<UserProfileImageTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserProfileImageTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserProfileImageTable> conflictColumns,
+    _is.ColumnSelections<UserProfileImageTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserProfileImageTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UserProfileImage>(
       row,
@@ -581,10 +582,10 @@ class UserProfileImageRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserProfileImage> rows, {
-    _i1.ColumnSelections<UserProfileImageTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserProfileImageTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<UserProfileImage>(
@@ -599,10 +600,10 @@ class UserProfileImageRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UserProfileImage> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfileImage row, {
-    _i1.ColumnSelections<UserProfileImageTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserProfileImageTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<UserProfileImage>(
       row,
@@ -614,11 +615,11 @@ class UserProfileImageRepository {
   /// Updates a single [UserProfileImage] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserProfileImage?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<UserProfileImageUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<UserProfileImageUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<UserProfileImage>(
       id,
@@ -634,15 +635,15 @@ class UserProfileImageRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<UserProfileImageUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<UserProfileImageUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
+    required _is.WhereExpressionBuilder<UserProfileImageTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserProfileImage>(
@@ -669,11 +670,11 @@ class UserProfileImageRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserProfileImage> rows, {
-    _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<UserProfileImage>(
@@ -687,9 +688,9 @@ class UserProfileImageRepository {
 
   /// Deletes a single [UserProfileImage].
   Future<UserProfileImage> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfileImage row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<UserProfileImage>(
       row,
@@ -706,11 +707,11 @@ class UserProfileImageRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
-    _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserProfileImageTable> where,
+    _is.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserProfileImage>(
@@ -725,10 +726,10 @@ class UserProfileImageRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileImageTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<UserProfileImage>(
       where: where?.call(UserProfileImage.t),
@@ -739,11 +740,11 @@ class UserProfileImageRepository {
 
   /// Acquires row-level locks on [UserProfileImage] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserProfileImageTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserProfileImage>(
       where: where(UserProfileImage.t),
@@ -760,10 +761,10 @@ class UserProfileImageAttachRowRepository {
   /// Creates a relation between the given [UserProfileImage] and [UserProfile]
   /// by setting the [UserProfileImage]'s foreign key `userProfileId` to refer to the [UserProfile].
   Future<void> userProfile(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfileImage userProfileImage,
-    _i2.UserProfile userProfile, {
-    _i1.Transaction? transaction,
+    _ixqiikps.UserProfile userProfile, {
+    _is.Transaction? transaction,
   }) async {
     if (userProfileImage.id == null) {
       throw ArgumentError.notNull('userProfileImage.id');

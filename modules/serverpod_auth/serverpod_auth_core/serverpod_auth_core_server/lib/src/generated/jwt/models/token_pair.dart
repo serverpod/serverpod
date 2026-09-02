@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// A pair of refresh and access tokens, in their external format.
 abstract class TokenPair
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   TokenPair._({
     required this.refreshToken,
     required this.accessToken,
@@ -42,7 +42,7 @@ abstract class TokenPair
 
   /// Returns a shallow copy of this [TokenPair]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   TokenPair copyWith({
     String? refreshToken,
     String? accessToken,
@@ -67,7 +67,7 @@ abstract class TokenPair
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -82,7 +82,7 @@ class _TokenPairImpl extends TokenPair {
 
   /// Returns a shallow copy of this [TokenPair]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   TokenPair copyWith({
     String? refreshToken,

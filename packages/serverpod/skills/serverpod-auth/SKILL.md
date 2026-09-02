@@ -1,64 +1,13 @@
 ---
 name: serverpod-auth
-description: Serverpod Authentication — Signing in users, verify if they are authenticated, assinging scopes (e.g., admin). Use when adding features that require the user to be signed in.
+description: Serverpod authentication — signing in users, checking whether they are authenticated, assigning scopes (e.g. admin). Use when adding features that require the user to be signed in.
 ---
 
 # Serverpod Authentication
 
-Serverpod has authentication built in. Pre-configured with email. Most social sign-ins supported (Apple, Google, GitHub, Facebook, Microsoft, etc) but need configuration.
+Serverpod has authentication built in. Projects created with `serverpod create` have it enabled by default (unless `--no-auth`, or the project has no database), pre-configured with email and already wired up in `lib/server.dart` and in the Flutter app.
 
-## Flutter app
-
-Use `SignInWidget`. It provides its own Material surface, so it also renders
-correctly when mixed with non-Material design systems. Simplified example:
-
-```dart
-import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
-
-class _SignInScreenState extends State<SignInScreen> {
-  bool _isSignedIn = false;
-
-  @override
-  void initState() {
-    super.initState();
-    client.auth.authInfoListenable.addListener(_updateSignedInState);
-    _isSignedIn = client.auth.isAuthenticated;
-  }
-
-  @override
-  void dispose() {
-    client.auth.authInfoListenable.removeListener(_updateSignedInState);
-    super.dispose();
-  }
-
-  void _updateSignedInState() {
-    setState(() {
-      _isSignedIn = client.auth.isAuthenticated;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _isSignedIn
-        ? widget.child
-        : Center(
-            child: SignInWidget(
-              client: client,
-              onAuthenticated: () {
-                _showSnackBar(message: 'User authenticated.');
-              },
-              onError: (error) {
-                _showSnackBar(message: 'Authentication failed: $error');
-              },
-            ),
-          );
-  }
-}
-```
-
-**Check signed-in state**: `_isSignedIn = client.auth.isAuthenticated;`
-**Sign out**: `client.auth.signOutAllDevices()` or `client.auth.signOutDevice()`
-**Get user profile (email, full name, etc)**: `final userProfile = await client.modules.serverpod_auth_core.userProfileInfo.get()`
+In server application code, import `package:serverpod_auth_idp_server/core.dart` and `package:serverpod_auth_idp_server/providers/<provider>.dart`. Do NOT import `package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart` — that library exists for the code generator.
 
 ## Server-side
 
@@ -85,7 +34,7 @@ class MyEndpoint extends Endpoint {
 ### User id and info
 
 ```dart
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
 // Get authenticated user's ID.
 final userIdUuidValue = session.authenticated?.authUserId;
@@ -110,75 +59,23 @@ final authUser = await authUsers.get(
 );
 ```
 
-### Attaching additional info to a user
+## Flutter app
 
-Create a model:
-
-```yaml
-class: MyDomainData
-table: my_domain_data
-fields:
-  ### The [AuthUser] this profile belongs to
-  authUser: module:serverpod_auth_core:AuthUser?, relation(onDelete=Cascade)
-  additionalInfo: String
-
-indexes:
-  auth_user_id_unique_idx:
-    fields: authUserId
-    unique: true
-```
-
-Find the info:
+Use `SignInWidget` to sign the user in. It provides its own Material surface, so it also renders correctly when mixed with non-Material design systems:
 
 ```dart
-final authUserId = session.authenticated?.authUserId;
-final additionalInfo = await MyDomainData.db.findFirstRow(
-    session,
-    where: (t) => t.authUserId.equals(authUserId!),
-);
+SignInWidget(
+  client: client,
+  onAuthenticated: () => _showSnackBar(message: 'User authenticated.'),
+  onError: (error) => _showSnackBar(message: 'Authentication failed: $error'),
+)
 ```
 
-### Managing scopes
+- **Signed-in state**: `client.auth.isAuthenticated`. Rebuild on changes by listening to `client.auth.authInfoListenable` (a `ValueListenable<AuthSuccess?>`, so `ValueListenableBuilder` works too), and remove the listener in `dispose`.
+- **Sign out**: `client.auth.signOutAllDevices()` or `client.auth.signOutDevice()`.
+- **User profile (email, full name, etc)**: `await client.modules.serverpod_auth_core.userProfileInfo.get()`.
 
-```dart
-import 'package:serverpod_auth_idp_server/core.dart';
+## More
 
-// Update a user's scope.
-await AuthServices.instance.authUsers.update(
-  session,
-  authUserId: authUserId,
-  scopes: {Scope.admin},
-);
-
-// Use custom scope.
-class CustomScope extends Scope {
-  const CustomScope(String name) : super(name);
-
-  static const userRead = CustomScope('userRead');
-  static const userWrite = CustomScope('userWrite');
-}
-```
-
-### Enable editing user profile (from the client)
-
-```dart
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
-
-class UserProfileEditEndpoint extends UserProfileEditBaseEndpoint {}
-```
-
-### Social sign-ins
-
-Requires set up by the user to configure (e.g., GCP console or Apple developer portal). Use official docs as reference. Supported:
-
-- [Anonymous](https://docs.serverpod.dev/concepts/authentication/providers/anonymous/setup)
-- [Email (pre-configured)](https://docs.serverpod.dev/concepts/authentication/providers/email/setup)
-- [Google](https://docs.serverpod.dev/concepts/authentication/providers/google/setup)
-- [Apple](https://docs.serverpod.dev/concepts/authentication/providers/apple/setup)
-- [Facebook](https://docs.serverpod.dev/concepts/authentication/providers/facebook/setup)
-- [Firebase](https://docs.serverpod.dev/concepts/authentication/providers/firebase/setup)
-- [GitHub](https://docs.serverpod.dev/concepts/authentication/providers/github/setup)
-- [Microsoft](https://docs.serverpod.dev/concepts/authentication/providers/microsoft/setup)
-- [Passkey](https://docs.serverpod.dev/concepts/authentication/providers/passkey/setup)
-- [Custom (write your own)](https://docs.serverpod.dev/concepts/authentication/providers/custom-providers/overview)
+- [`references/setup.md`](references/setup.md) — adding the auth packages to a project created without auth, initializing the services in `server.dart`, wiring the Flutter client, configuring social sign-ins, migrating off the legacy `serverpod_auth` module.
+- [`references/user-management.md`](references/user-management.md) — attaching your own data to a user, editing scopes, letting the client edit its profile.

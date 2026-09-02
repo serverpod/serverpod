@@ -182,4 +182,4 @@ echo "Restore pubspecs"
 restore_pubspecs
 
 echo "dart pub get"
-melos bootstrap
+dart pub get

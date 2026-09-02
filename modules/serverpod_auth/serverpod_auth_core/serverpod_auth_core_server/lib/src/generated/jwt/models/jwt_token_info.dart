@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
+    as _i8reeoob;
 
 /// DTO for transferring JWT token information between server and client.
 abstract class JwtTokenInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   JwtTokenInfo._({
     required this.id,
     required this.authUserId,
@@ -27,8 +28,8 @@ abstract class JwtTokenInfo
   });
 
   factory JwtTokenInfo({
-    required _i1.UuidValue id,
-    required _i1.UuidValue authUserId,
+    required _is.UuidValue id,
+    required _is.UuidValue authUserId,
     required Set<String> scopeNames,
     String? extraClaimsJSON,
     required DateTime lastUpdatedAt,
@@ -38,28 +39,28 @@ abstract class JwtTokenInfo
 
   factory JwtTokenInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return JwtTokenInfo(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+      id: _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
-      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+      scopeNames: _i8reeoob.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
       extraClaimsJSON: jsonSerialization['extraClaimsJSON'] as String?,
-      lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
+      lastUpdatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastUpdatedAt'],
       ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
       method: jsonSerialization['method'] as String,
     );
   }
 
-  _i1.UuidValue id;
+  _is.UuidValue id;
 
   /// The [AuthUser] this refresh token belongs to.
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The scopes given to this session.
   Set<String> scopeNames;
@@ -80,10 +81,10 @@ abstract class JwtTokenInfo
 
   /// Returns a shallow copy of this [JwtTokenInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   JwtTokenInfo copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
     Set<String>? scopeNames,
     String? extraClaimsJSON,
     DateTime? lastUpdatedAt,
@@ -120,7 +121,7 @@ abstract class JwtTokenInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -128,8 +129,8 @@ class _Undefined {}
 
 class _JwtTokenInfoImpl extends JwtTokenInfo {
   _JwtTokenInfoImpl({
-    required _i1.UuidValue id,
-    required _i1.UuidValue authUserId,
+    required _is.UuidValue id,
+    required _is.UuidValue authUserId,
     required Set<String> scopeNames,
     String? extraClaimsJSON,
     required DateTime lastUpdatedAt,
@@ -147,11 +148,11 @@ class _JwtTokenInfoImpl extends JwtTokenInfo {
 
   /// Returns a shallow copy of this [JwtTokenInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   JwtTokenInfo copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
     Set<String>? scopeNames,
     Object? extraClaimsJSON = _Undefined,
     DateTime? lastUpdatedAt,

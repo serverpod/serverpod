@@ -10,41 +10,42 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../greeting_endpoint.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../greeting_endpoint.dart' as _ikvw90o4;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'greeting': _i2.GreetingEndpoint()
+  void initializeEndpoints(_is.Server server) {
+    var endpoints = <String, _is.Endpoint>{
+      'greeting': _ikvw90o4.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
           null,
         ),
     };
-    connectors['greeting'] = _i1.EndpointConnector(
+    connectors['greeting'] = _is.EndpointConnector(
       name: 'greeting',
       endpoint: endpoints['greeting']!,
       methodConnectors: {
-        'hello': _i1.MethodConnector(
+        'hello': _is.MethodConnector(
           name: 'hello',
           params: {
-            'name': _i1.ParameterDescription(
+            'name': _is.ParameterDescription(
               name: 'name',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['greeting'] as _i2.GreetingEndpoint).hello(
-                session,
-                params['name'],
-              ),
+              ) async =>
+                  (endpoints['greeting'] as _ikvw90o4.GreetingEndpoint).hello(
+                    session,
+                    params['name'],
+                  ),
         ),
       },
     );

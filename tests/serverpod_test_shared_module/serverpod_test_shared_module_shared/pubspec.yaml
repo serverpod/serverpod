@@ -9,18 +9,14 @@ description: Shared table models owned by the Serverpod shared-module fixture.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
+
+resolution: workspace
 
 dependencies:
-  serverpod_database: 4.0.0-beta.1
-  serverpod_serialization: 4.0.0-beta.1
+  serverpod_database: 4.0.0-rc.1
+  serverpod_serialization: 4.0.0-rc.1
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   test: ^1.25.5
-
-dependency_overrides:
-  serverpod_database:
-    path: ../../../packages/serverpod_database
-  serverpod_serialization:
-    path: ../../../packages/serverpod_serialization

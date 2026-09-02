@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/one_to_many/order.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../changed_id_type/one_to_many/order.dart' as _ivss21qh;
 
 abstract class CommentInt
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CommentInt._({
     this.id,
     required this.description,
@@ -26,20 +27,20 @@ abstract class CommentInt
   factory CommentInt({
     int? id,
     required String description,
-    required _i1.UuidValue orderId,
-    _i2.OrderUuid? order,
+    required _isc.UuidValue orderId,
+    _ivss21qh.OrderUuid? order,
   }) = _CommentIntImpl;
 
   factory CommentInt.fromJson(Map<String, dynamic> jsonSerialization) {
     return CommentInt(
       id: jsonSerialization['id'] as int?,
       description: jsonSerialization['description'] as String,
-      orderId: _i1.UuidValueJsonExtension.fromJson(
+      orderId: _isc.UuidValueJsonExtension.fromJson(
         jsonSerialization['orderId'],
       ),
       order: jsonSerialization['order'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.OrderUuid>(
+          : _i0ntutnq.Protocol().deserialize<_ivss21qh.OrderUuid>(
               jsonSerialization['order'],
             ),
     );
@@ -52,18 +53,18 @@ abstract class CommentInt
 
   String description;
 
-  _i1.UuidValue orderId;
+  _isc.UuidValue orderId;
 
-  _i2.OrderUuid? order;
+  _ivss21qh.OrderUuid? order;
 
   /// Returns a shallow copy of this [CommentInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CommentInt copyWith({
     int? id,
     String? description,
-    _i1.UuidValue? orderId,
-    _i2.OrderUuid? order,
+    _isc.UuidValue? orderId,
+    _ivss21qh.OrderUuid? order,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -89,7 +90,7 @@ abstract class CommentInt
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -99,8 +100,8 @@ class _CommentIntImpl extends CommentInt {
   _CommentIntImpl({
     int? id,
     required String description,
-    required _i1.UuidValue orderId,
-    _i2.OrderUuid? order,
+    required _isc.UuidValue orderId,
+    _ivss21qh.OrderUuid? order,
   }) : super._(
          id: id,
          description: description,
@@ -110,19 +111,19 @@ class _CommentIntImpl extends CommentInt {
 
   /// Returns a shallow copy of this [CommentInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CommentInt copyWith({
     Object? id = _Undefined,
     String? description,
-    _i1.UuidValue? orderId,
+    _isc.UuidValue? orderId,
     Object? order = _Undefined,
   }) {
     return CommentInt(
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       orderId: orderId ?? this.orderId,
-      order: order is _i2.OrderUuid? ? order : this.order?.copyWith(),
+      order: order is _ivss21qh.OrderUuid? ? order : this.order?.copyWith(),
     );
   }
 }

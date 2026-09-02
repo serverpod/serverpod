@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../models_with_list_relations/organization.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../models_with_list_relations/organization.dart' as _i0ptycc3;
 
 abstract class Person
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Person._({
     this.id,
     required this.name,
@@ -27,7 +27,7 @@ abstract class Person
     int? id,
     required String name,
     int? organizationId,
-    _i2.Organization? organization,
+    _i0ptycc3.Organization? organization,
   }) = _PersonImpl;
 
   factory Person.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +37,7 @@ abstract class Person
       organizationId: jsonSerialization['organizationId'] as int?,
       organization: jsonSerialization['organization'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Organization>(
+          : _iza9lbb5.Protocol().deserialize<_i0ptycc3.Organization>(
               jsonSerialization['organization'],
             ),
     );
@@ -52,16 +52,16 @@ abstract class Person
 
   int? organizationId;
 
-  _i2.Organization? organization;
+  _i0ptycc3.Organization? organization;
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Person copyWith({
     int? id,
     String? name,
     int? organizationId,
-    _i2.Organization? organization,
+    _i0ptycc3.Organization? organization,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -88,7 +88,7 @@ abstract class Person
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -99,7 +99,7 @@ class _PersonImpl extends Person {
     int? id,
     required String name,
     int? organizationId,
-    _i2.Organization? organization,
+    _i0ptycc3.Organization? organization,
   }) : super._(
          id: id,
          name: name,
@@ -109,7 +109,7 @@ class _PersonImpl extends Person {
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Person copyWith({
     Object? id = _Undefined,
@@ -123,7 +123,7 @@ class _PersonImpl extends Person {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _i2.Organization?
+      organization: organization is _i0ptycc3.Organization?
           ? organization
           : this.organization?.copyWith(),
     );

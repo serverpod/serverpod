@@ -11,12 +11,12 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'greeting.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'greeting.dart' as _ig8bxnp5;
 export 'greeting.dart';
 export 'client.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _isc.SerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -43,25 +43,25 @@ class Protocol extends _i1.SerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _isc.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i2.Greeting) {
-      return _i2.Greeting.fromJson(data) as T;
+    if (t == _ig8bxnp5.Greeting) {
+      return _ig8bxnp5.Greeting.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.Greeting?>()) {
-      return (data != null ? _i2.Greeting.fromJson(data) : null) as T;
+    if (t == _isc.getType<_ig8bxnp5.Greeting?>()) {
+      return (data != null ? _ig8bxnp5.Greeting.fromJson(data) : null) as T;
     }
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.Greeting => 'Greeting',
+      _ig8bxnp5.Greeting => 'Greeting',
       _ => null,
     };
   }
@@ -76,7 +76,7 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.Greeting():
+      case _ig8bxnp5.Greeting():
         return 'Greeting';
     }
     return null;
@@ -89,7 +89,7 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i2.Greeting>(data['data']);
+      return deserialize<_ig8bxnp5.Greeting>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

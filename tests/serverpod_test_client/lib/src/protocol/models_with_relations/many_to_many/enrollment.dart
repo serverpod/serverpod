@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/many_to_many/student.dart' as _i2;
-import '../../models_with_relations/many_to_many/course.dart' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/many_to_many/course.dart' as _iwlbbfis;
+import '../../models_with_relations/many_to_many/student.dart' as _i2rea1ue;
 
 abstract class Enrollment
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Enrollment._({
     this.id,
     required this.studentId,
@@ -28,9 +28,9 @@ abstract class Enrollment
   factory Enrollment({
     int? id,
     required int studentId,
-    _i2.Student? student,
+    _i2rea1ue.Student? student,
     required int courseId,
-    _i3.Course? course,
+    _iwlbbfis.Course? course,
   }) = _EnrollmentImpl;
 
   factory Enrollment.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,13 +39,15 @@ abstract class Enrollment
       studentId: jsonSerialization['studentId'] as int,
       student: jsonSerialization['student'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Student>(
+          : _iza9lbb5.Protocol().deserialize<_i2rea1ue.Student>(
               jsonSerialization['student'],
             ),
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Course>(jsonSerialization['course']),
+          : _iza9lbb5.Protocol().deserialize<_iwlbbfis.Course>(
+              jsonSerialization['course'],
+            ),
     );
   }
 
@@ -56,21 +58,21 @@ abstract class Enrollment
 
   int studentId;
 
-  _i2.Student? student;
+  _i2rea1ue.Student? student;
 
   int courseId;
 
-  _i3.Course? course;
+  _iwlbbfis.Course? course;
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Enrollment copyWith({
     int? id,
     int? studentId,
-    _i2.Student? student,
+    _i2rea1ue.Student? student,
     int? courseId,
-    _i3.Course? course,
+    _iwlbbfis.Course? course,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,7 +100,7 @@ abstract class Enrollment
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -108,9 +110,9 @@ class _EnrollmentImpl extends Enrollment {
   _EnrollmentImpl({
     int? id,
     required int studentId,
-    _i2.Student? student,
+    _i2rea1ue.Student? student,
     required int courseId,
-    _i3.Course? course,
+    _iwlbbfis.Course? course,
   }) : super._(
          id: id,
          studentId: studentId,
@@ -121,7 +123,7 @@ class _EnrollmentImpl extends Enrollment {
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Enrollment copyWith({
     Object? id = _Undefined,
@@ -133,9 +135,11 @@ class _EnrollmentImpl extends Enrollment {
     return Enrollment(
       id: id is int? ? id : this.id,
       studentId: studentId ?? this.studentId,
-      student: student is _i2.Student? ? student : this.student?.copyWith(),
+      student: student is _i2rea1ue.Student?
+          ? student
+          : this.student?.copyWith(),
       courseId: courseId ?? this.courseId,
-      course: course is _i3.Course? ? course : this.course?.copyWith(),
+      course: course is _iwlbbfis.Course? ? course : this.course?.copyWith(),
     );
   }
 }

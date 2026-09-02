@@ -10,27 +10,28 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
-import 'package:serverpod_auth_client/src/protocol/user_info.dart' as _i3;
+import 'dart:async' as _ida;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod_auth_client/src/protocol/apple_auth_info.dart'
+    as _ixcvk3l9;
 import 'package:serverpod_auth_client/src/protocol/authentication_response.dart'
-    as _i4;
-import 'package:serverpod_auth_client/src/protocol/apple_auth_info.dart' as _i5;
+    as _iasth1pm;
+import 'package:serverpod_auth_client/src/protocol/user_info.dart' as _ih7rw17i;
 import 'package:serverpod_auth_client/src/protocol/user_settings_config.dart'
-    as _i6;
-import 'dart:typed_data' as _i7;
+    as _i02slxw5;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Endpoint for handling admin functions.
 /// {@category Endpoint}
-class EndpointAdmin extends _i1.EndpointRef {
-  EndpointAdmin(_i1.EndpointCaller caller) : super(caller);
+class EndpointAdmin extends _isc.EndpointRef {
+  EndpointAdmin(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.admin';
 
   /// Finds a user by its id.
-  _i2.Future<_i3.UserInfo?> getUserInfo(int userId) =>
-      caller.callServerEndpoint<_i3.UserInfo?>(
+  _ida.Future<_ih7rw17i.UserInfo?> getUserInfo(int userId) =>
+      caller.callServerEndpoint<_ih7rw17i.UserInfo?>(
         'serverpod_auth.admin',
         'getUserInfo',
         {'userId': userId},
@@ -39,14 +40,14 @@ class EndpointAdmin extends _i1.EndpointRef {
   /// Marks a user as blocked so that they can't log in, and invalidates their
   /// auth key so that they can't keep calling endpoints through their current
   /// session.
-  _i2.Future<void> blockUser(int userId) => caller.callServerEndpoint<void>(
+  _ida.Future<void> blockUser(int userId) => caller.callServerEndpoint<void>(
     'serverpod_auth.admin',
     'blockUser',
     {'userId': userId},
   );
 
   /// Unblocks a user so that they can log in again.
-  _i2.Future<void> unblockUser(int userId) => caller.callServerEndpoint<void>(
+  _ida.Future<void> unblockUser(int userId) => caller.callServerEndpoint<void>(
     'serverpod_auth.admin',
     'unblockUser',
     {'userId': userId},
@@ -55,16 +56,16 @@ class EndpointAdmin extends _i1.EndpointRef {
 
 /// Endpoint for handling Sign in with Apple.
 /// {@category Endpoint}
-class EndpointApple extends _i1.EndpointRef {
-  EndpointApple(_i1.EndpointCaller caller) : super(caller);
+class EndpointApple extends _isc.EndpointRef {
+  EndpointApple(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.apple';
 
   /// Authenticates a user with Apple.
-  _i2.Future<_i4.AuthenticationResponse> authenticate(
-    _i5.AppleAuthInfo authInfo,
-  ) => caller.callServerEndpoint<_i4.AuthenticationResponse>(
+  _ida.Future<_iasth1pm.AuthenticationResponse> authenticate(
+    _ixcvk3l9.AppleAuthInfo authInfo,
+  ) => caller.callServerEndpoint<_iasth1pm.AuthenticationResponse>(
     'serverpod_auth.apple',
     'authenticate',
     {'authInfo': authInfo},
@@ -73,18 +74,18 @@ class EndpointApple extends _i1.EndpointRef {
 
 /// Endpoint for handling Sign in with Email.
 /// {@category Endpoint}
-class EndpointEmail extends _i1.EndpointRef {
-  EndpointEmail(_i1.EndpointCaller caller) : super(caller);
+class EndpointEmail extends _isc.EndpointRef {
+  EndpointEmail(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.email';
 
   /// Authenticates a user with email and password. Returns an
   /// [AuthenticationResponse] with the users information.
-  _i2.Future<_i4.AuthenticationResponse> authenticate(
+  _ida.Future<_iasth1pm.AuthenticationResponse> authenticate(
     String email,
     String password,
-  ) => caller.callServerEndpoint<_i4.AuthenticationResponse>(
+  ) => caller.callServerEndpoint<_iasth1pm.AuthenticationResponse>(
     'serverpod_auth.email',
     'authenticate',
     {
@@ -94,7 +95,7 @@ class EndpointEmail extends _i1.EndpointRef {
   );
 
   /// Changes a users password.
-  _i2.Future<bool> changePassword(
+  _ida.Future<bool> changePassword(
     String oldPassword,
     String newPassword,
   ) => caller.callServerEndpoint<bool>(
@@ -108,7 +109,7 @@ class EndpointEmail extends _i1.EndpointRef {
 
   /// Initiates a password reset and sends an email with the reset code to the
   /// user.
-  _i2.Future<bool> initiatePasswordReset(String email) =>
+  _ida.Future<bool> initiatePasswordReset(String email) =>
       caller.callServerEndpoint<bool>(
         'serverpod_auth.email',
         'initiatePasswordReset',
@@ -116,7 +117,7 @@ class EndpointEmail extends _i1.EndpointRef {
       );
 
   /// Resets a users password using the reset code.
-  _i2.Future<bool> resetPassword(
+  _ida.Future<bool> resetPassword(
     String verificationCode,
     String password,
   ) => caller.callServerEndpoint<bool>(
@@ -130,7 +131,7 @@ class EndpointEmail extends _i1.EndpointRef {
 
   /// Starts the procedure for creating an account by sending an email with
   /// a verification code.
-  _i2.Future<bool> createAccountRequest(
+  _ida.Future<bool> createAccountRequest(
     String userName,
     String email,
     String password,
@@ -145,10 +146,10 @@ class EndpointEmail extends _i1.EndpointRef {
   );
 
   /// Creates a new account using a verification code.
-  _i2.Future<_i3.UserInfo?> createAccount(
+  _ida.Future<_ih7rw17i.UserInfo?> createAccount(
     String email,
     String verificationCode,
-  ) => caller.callServerEndpoint<_i3.UserInfo?>(
+  ) => caller.callServerEndpoint<_ih7rw17i.UserInfo?>(
     'serverpod_auth.email',
     'createAccount',
     {
@@ -160,15 +161,15 @@ class EndpointEmail extends _i1.EndpointRef {
 
 /// Endpoint for handling Sign in with Firebase.
 /// {@category Endpoint}
-class EndpointFirebase extends _i1.EndpointRef {
-  EndpointFirebase(_i1.EndpointCaller caller) : super(caller);
+class EndpointFirebase extends _isc.EndpointRef {
+  EndpointFirebase(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.firebase';
 
   /// Authenticate a user with a Firebase id token.
-  _i2.Future<_i4.AuthenticationResponse> authenticate(String idToken) =>
-      caller.callServerEndpoint<_i4.AuthenticationResponse>(
+  _ida.Future<_iasth1pm.AuthenticationResponse> authenticate(String idToken) =>
+      caller.callServerEndpoint<_iasth1pm.AuthenticationResponse>(
         'serverpod_auth.firebase',
         'authenticate',
         {'idToken': idToken},
@@ -177,17 +178,17 @@ class EndpointFirebase extends _i1.EndpointRef {
 
 /// Endpoint for handling Sign in with Google.
 /// {@category Endpoint}
-class EndpointGoogle extends _i1.EndpointRef {
-  EndpointGoogle(_i1.EndpointCaller caller) : super(caller);
+class EndpointGoogle extends _isc.EndpointRef {
+  EndpointGoogle(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.google';
 
   /// Authenticates a user with Google using the serverAuthCode.
-  _i2.Future<_i4.AuthenticationResponse> authenticateWithServerAuthCode(
+  _ida.Future<_iasth1pm.AuthenticationResponse> authenticateWithServerAuthCode(
     String authenticationCode,
     String? redirectUri,
-  ) => caller.callServerEndpoint<_i4.AuthenticationResponse>(
+  ) => caller.callServerEndpoint<_iasth1pm.AuthenticationResponse>(
     'serverpod_auth.google',
     'authenticateWithServerAuthCode',
     {
@@ -197,9 +198,9 @@ class EndpointGoogle extends _i1.EndpointRef {
   );
 
   /// Authenticates a user using an id token.
-  _i2.Future<_i4.AuthenticationResponse> authenticateWithIdToken(
+  _ida.Future<_iasth1pm.AuthenticationResponse> authenticateWithIdToken(
     String idToken,
-  ) => caller.callServerEndpoint<_i4.AuthenticationResponse>(
+  ) => caller.callServerEndpoint<_iasth1pm.AuthenticationResponse>(
     'serverpod_auth.google',
     'authenticateWithIdToken',
     {'idToken': idToken},
@@ -208,28 +209,28 @@ class EndpointGoogle extends _i1.EndpointRef {
 
 /// Endpoint for getting status for a signed in user and module configuration.
 /// {@category Endpoint}
-class EndpointStatus extends _i1.EndpointRef {
-  EndpointStatus(_i1.EndpointCaller caller) : super(caller);
+class EndpointStatus extends _isc.EndpointRef {
+  EndpointStatus(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.status';
 
   /// Returns true if the client user is signed in.
-  _i2.Future<bool> isSignedIn() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> isSignedIn() => caller.callServerEndpoint<bool>(
     'serverpod_auth.status',
     'isSignedIn',
     {},
   );
 
   /// Signs out a user from the current device.
-  _i2.Future<void> signOutDevice() => caller.callServerEndpoint<void>(
+  _ida.Future<void> signOutDevice() => caller.callServerEndpoint<void>(
     'serverpod_auth.status',
     'signOutDevice',
     {},
   );
 
   /// Signs out a user from all active devices.
-  _i2.Future<void> signOutAllDevices() => caller.callServerEndpoint<void>(
+  _ida.Future<void> signOutAllDevices() => caller.callServerEndpoint<void>(
     'serverpod_auth.status',
     'signOutAllDevices',
     {},
@@ -237,16 +238,16 @@ class EndpointStatus extends _i1.EndpointRef {
 
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently
   /// not signed in with the server.
-  _i2.Future<_i3.UserInfo?> getUserInfo() =>
-      caller.callServerEndpoint<_i3.UserInfo?>(
+  _ida.Future<_ih7rw17i.UserInfo?> getUserInfo() =>
+      caller.callServerEndpoint<_ih7rw17i.UserInfo?>(
         'serverpod_auth.status',
         'getUserInfo',
         {},
       );
 
   /// Gets the server configuration.
-  _i2.Future<_i6.UserSettingsConfig> getUserSettingsConfig() =>
-      caller.callServerEndpoint<_i6.UserSettingsConfig>(
+  _ida.Future<_i02slxw5.UserSettingsConfig> getUserSettingsConfig() =>
+      caller.callServerEndpoint<_i02slxw5.UserSettingsConfig>(
         'serverpod_auth.status',
         'getUserSettingsConfig',
         {},
@@ -255,22 +256,22 @@ class EndpointStatus extends _i1.EndpointRef {
 
 /// Endpoint with methods for managing the currently signed in user.
 /// {@category Endpoint}
-class EndpointUser extends _i1.EndpointRef {
-  EndpointUser(_i1.EndpointCaller caller) : super(caller);
+class EndpointUser extends _isc.EndpointRef {
+  EndpointUser(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.user';
 
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
-  _i2.Future<bool> removeUserImage() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> removeUserImage() => caller.callServerEndpoint<bool>(
     'serverpod_auth.user',
     'removeUserImage',
     {},
   );
 
   /// Sets a new user image for the signed in user.
-  _i2.Future<bool> setUserImage(_i7.ByteData image) =>
+  _ida.Future<bool> setUserImage(_idt.ByteData image) =>
       caller.callServerEndpoint<bool>(
         'serverpod_auth.user',
         'setUserImage',
@@ -278,7 +279,7 @@ class EndpointUser extends _i1.EndpointRef {
       );
 
   /// Changes the name of a user.
-  _i2.Future<bool> changeUserName(String userName) =>
+  _ida.Future<bool> changeUserName(String userName) =>
       caller.callServerEndpoint<bool>(
         'serverpod_auth.user',
         'changeUserName',
@@ -286,7 +287,7 @@ class EndpointUser extends _i1.EndpointRef {
       );
 
   /// Changes the full name of a user.
-  _i2.Future<bool> changeFullName(String fullName) =>
+  _ida.Future<bool> changeFullName(String fullName) =>
       caller.callServerEndpoint<bool>(
         'serverpod_auth.user',
         'changeFullName',
@@ -294,8 +295,8 @@ class EndpointUser extends _i1.EndpointRef {
       );
 }
 
-class Caller extends _i1.ModuleEndpointCaller {
-  Caller(_i1.ServerpodClientShared client) : super(client) {
+class Caller extends _isc.ModuleEndpointCaller {
+  Caller(_isc.ServerpodClientShared client) : super(client) {
     admin = EndpointAdmin(this);
     apple = EndpointApple(this);
     email = EndpointEmail(this);
@@ -320,7 +321,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   late final EndpointUser user;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+  Map<String, _isc.EndpointRef> get endpointRefLookup => {
     'serverpod_auth.admin': admin,
     'serverpod_auth.apple': apple,
     'serverpod_auth.email': email,

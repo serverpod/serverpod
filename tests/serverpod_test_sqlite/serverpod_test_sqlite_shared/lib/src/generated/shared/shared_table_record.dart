@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 import 'package:serverpod_test_sqlite_shared/serverpod_test_sqlite_shared.dart'
-    as _i3;
+    as _iqfgygbv;
 
 abstract class SharedTableRecord
-    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
+    implements _isd.TableRow<int?>, _iss.ProtocolSerialization {
   SharedTableRecord._({
     this.id,
     required this.name,
@@ -28,8 +28,8 @@ abstract class SharedTableRecord
   factory SharedTableRecord({
     int? id,
     required String name,
-    required _i3.SharedEnum sharedEnum,
-    _i3.SharedSubclass? sharedSubclass,
+    required _iqfgygbv.SharedEnum sharedEnum,
+    _iqfgygbv.SharedSubclass? sharedSubclass,
     int? itemCount,
   }) = _SharedTableRecordImpl;
 
@@ -37,12 +37,12 @@ abstract class SharedTableRecord
     return SharedTableRecord(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      sharedEnum: _i3.SharedEnum.fromJson(
+      sharedEnum: _iqfgygbv.SharedEnum.fromJson(
         (jsonSerialization['sharedEnum'] as String),
       ),
       sharedSubclass: jsonSerialization['sharedSubclass'] == null
           ? null
-          : _i3.Protocol().deserialize<_i3.SharedSubclass>(
+          : _iqfgygbv.Protocol().deserialize<_iqfgygbv.SharedSubclass>(
               jsonSerialization['sharedSubclass'],
             ),
       itemCount: jsonSerialization['itemCount'] as int?,
@@ -58,23 +58,23 @@ abstract class SharedTableRecord
 
   String name;
 
-  _i3.SharedEnum sharedEnum;
+  _iqfgygbv.SharedEnum sharedEnum;
 
-  _i3.SharedSubclass? sharedSubclass;
+  _iqfgygbv.SharedSubclass? sharedSubclass;
 
   int itemCount;
 
   @override
-  _i1.Table<int?> get table => t;
+  _isd.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [SharedTableRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_iss.useResult
   SharedTableRecord copyWith({
     int? id,
     String? name,
-    _i3.SharedEnum? sharedEnum,
-    _i3.SharedSubclass? sharedSubclass,
+    _iqfgygbv.SharedEnum? sharedEnum,
+    _iqfgygbv.SharedSubclass? sharedSubclass,
     int? itemCount,
   });
   @override
@@ -107,11 +107,11 @@ abstract class SharedTableRecord
   }
 
   static SharedTableRecordIncludeList includeList({
-    _i1.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     SharedTableRecordInclude? include,
   }) {
     return SharedTableRecordIncludeList._(
@@ -126,7 +126,7 @@ abstract class SharedTableRecord
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -136,8 +136,8 @@ class _SharedTableRecordImpl extends SharedTableRecord {
   _SharedTableRecordImpl({
     int? id,
     required String name,
-    required _i3.SharedEnum sharedEnum,
-    _i3.SharedSubclass? sharedSubclass,
+    required _iqfgygbv.SharedEnum sharedEnum,
+    _iqfgygbv.SharedSubclass? sharedSubclass,
     int? itemCount,
   }) : super._(
          id: id,
@@ -149,12 +149,12 @@ class _SharedTableRecordImpl extends SharedTableRecord {
 
   /// Returns a shallow copy of this [SharedTableRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_iss.useResult
   @override
   SharedTableRecord copyWith({
     Object? id = _Undefined,
     String? name,
-    _i3.SharedEnum? sharedEnum,
+    _iqfgygbv.SharedEnum? sharedEnum,
     Object? sharedSubclass = _Undefined,
     int? itemCount,
   }) {
@@ -162,7 +162,7 @@ class _SharedTableRecordImpl extends SharedTableRecord {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       sharedEnum: sharedEnum ?? this.sharedEnum,
-      sharedSubclass: sharedSubclass is _i3.SharedSubclass?
+      sharedSubclass: sharedSubclass is _iqfgygbv.SharedSubclass?
           ? sharedSubclass
           : this.sharedSubclass?.copyWith(),
       itemCount: itemCount ?? this.itemCount,
@@ -171,52 +171,51 @@ class _SharedTableRecordImpl extends SharedTableRecord {
 }
 
 class SharedTableRecordUpdateTable
-    extends _i1.UpdateTable<SharedTableRecordTable> {
+    extends _isd.UpdateTable<SharedTableRecordTable> {
   SharedTableRecordUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _isd.ColumnValue<String, String> name(String value) => _isd.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<_i3.SharedEnum, _i3.SharedEnum> sharedEnum(
-    _i3.SharedEnum value,
-  ) => _i1.ColumnValue(
+  _isd.ColumnValue<_iqfgygbv.SharedEnum, _iqfgygbv.SharedEnum> sharedEnum(
+    _iqfgygbv.SharedEnum value,
+  ) => _isd.ColumnValue(
     table.sharedEnum,
     value,
   );
 
-  _i1.ColumnValue<_i3.SharedSubclass, _i3.SharedSubclass> sharedSubclass(
-    _i3.SharedSubclass? value,
-  ) => _i1.ColumnValue(
+  _isd.ColumnValue<_iqfgygbv.SharedSubclass, _iqfgygbv.SharedSubclass>
+  sharedSubclass(_iqfgygbv.SharedSubclass? value) => _isd.ColumnValue(
     table.sharedSubclass,
     value,
   );
 
-  _i1.ColumnValue<int, int> itemCount(int value) => _i1.ColumnValue(
+  _isd.ColumnValue<int, int> itemCount(int value) => _isd.ColumnValue(
     table.itemCount,
     value,
   );
 }
 
-class SharedTableRecordTable extends _i1.Table<int?> {
+class SharedTableRecordTable extends _isd.Table<int?> {
   SharedTableRecordTable({super.tableRelation})
     : super(tableName: 'shared_table_record') {
     updateTable = SharedTableRecordUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _isd.ColumnString(
       'name',
       this,
     );
-    sharedEnum = _i1.ColumnEnum(
+    sharedEnum = _isd.ColumnEnum(
       'sharedEnum',
       this,
-      _i1.EnumSerialization.byName,
+      _isd.EnumSerialization.byName,
     );
-    sharedSubclass = _i1.ColumnSerializable<_i3.SharedSubclass>(
+    sharedSubclass = _isd.ColumnSerializable<_iqfgygbv.SharedSubclass>(
       'sharedSubclass',
       this,
     );
-    itemCount = _i1.ColumnInt(
+    itemCount = _isd.ColumnInt(
       'itemCount',
       this,
       hasDefault: true,
@@ -225,16 +224,16 @@ class SharedTableRecordTable extends _i1.Table<int?> {
 
   late final SharedTableRecordUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _isd.ColumnString name;
 
-  late final _i1.ColumnEnum<_i3.SharedEnum> sharedEnum;
+  late final _isd.ColumnEnum<_iqfgygbv.SharedEnum> sharedEnum;
 
-  late final _i1.ColumnSerializable<_i3.SharedSubclass> sharedSubclass;
+  late final _isd.ColumnSerializable<_iqfgygbv.SharedSubclass> sharedSubclass;
 
-  late final _i1.ColumnInt itemCount;
+  late final _isd.ColumnInt itemCount;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_isd.Column> get columns => [
     id,
     name,
     sharedEnum,
@@ -243,19 +242,19 @@ class SharedTableRecordTable extends _i1.Table<int?> {
   ];
 }
 
-class SharedTableRecordInclude extends _i1.IncludeObject {
+class SharedTableRecordInclude extends _isd.IncludeObject {
   SharedTableRecordInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _isd.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => SharedTableRecord.t;
+  _isd.Table<int?> get table => SharedTableRecord.t;
 }
 
-class SharedTableRecordIncludeList extends _i1.IncludeList {
+class SharedTableRecordIncludeList extends _isd.IncludeList {
   SharedTableRecordIncludeList._({
-    _i1.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -266,10 +265,10 @@ class SharedTableRecordIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => SharedTableRecord.t;
+  _isd.Table<int?> get table => SharedTableRecord.t;
 }
 
 class SharedTableRecordRepository {
@@ -298,15 +297,15 @@ class SharedTableRecordRepository {
   /// );
   /// ```
   Future<List<SharedTableRecord>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SharedTableRecord>(
       where: where?.call(SharedTableRecord.t),
@@ -338,14 +337,14 @@ class SharedTableRecordRepository {
   /// );
   /// ```
   Future<SharedTableRecord?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
     int? offset,
-    _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SharedTableRecord>(
       where: where?.call(SharedTableRecord.t),
@@ -360,11 +359,11 @@ class SharedTableRecordRepository {
 
   /// Finds a single [SharedTableRecord] by its [id] or null if no such row exists.
   Future<SharedTableRecord?> findById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<SharedTableRecord>(
       id,
@@ -389,9 +388,9 @@ class SharedTableRecordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedTableRecord>> insert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<SharedTableRecord> rows, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -407,9 +406,9 @@ class SharedTableRecordRepository {
   ///
   /// The returned [SharedTableRecord] will have its `id` field set.
   Future<SharedTableRecord> insertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     SharedTableRecord row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.insertRow<SharedTableRecord>(
       row,
@@ -438,12 +437,12 @@ class SharedTableRecordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedTableRecord>> upsert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<SharedTableRecord> rows, {
-    required _i1.ColumnSelections<SharedTableRecordTable> conflictColumns,
-    _i1.ColumnSelections<SharedTableRecordTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SharedTableRecordTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<SharedTableRecordTable> conflictColumns,
+    _isd.ColumnSelections<SharedTableRecordTable>? updateColumns,
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? updateWhere,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<SharedTableRecord>(
@@ -470,12 +469,12 @@ class SharedTableRecordRepository {
   ///
   /// The returned [SharedTableRecord] will have its `id` field set.
   Future<SharedTableRecord?> upsertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     SharedTableRecord row, {
-    required _i1.ColumnSelections<SharedTableRecordTable> conflictColumns,
-    _i1.ColumnSelections<SharedTableRecordTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SharedTableRecordTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<SharedTableRecordTable> conflictColumns,
+    _isd.ColumnSelections<SharedTableRecordTable>? updateColumns,
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? updateWhere,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SharedTableRecord>(
       row,
@@ -496,10 +495,10 @@ class SharedTableRecordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedTableRecord>> update(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<SharedTableRecord> rows, {
-    _i1.ColumnSelections<SharedTableRecordTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<SharedTableRecordTable>? columns,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<SharedTableRecord>(
@@ -514,10 +513,10 @@ class SharedTableRecordRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SharedTableRecord> updateRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     SharedTableRecord row, {
-    _i1.ColumnSelections<SharedTableRecordTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<SharedTableRecordTable>? columns,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateRow<SharedTableRecord>(
       row,
@@ -529,11 +528,11 @@ class SharedTableRecordRepository {
   /// Updates a single [SharedTableRecord] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SharedTableRecord?> updateById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<SharedTableRecordUpdateTable>
+    required _isd.ColumnValueListBuilder<SharedTableRecordUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateById<SharedTableRecord>(
       id,
@@ -549,15 +548,15 @@ class SharedTableRecordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedTableRecord>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<SharedTableRecordUpdateTable>
+    _isd.DatabaseSession session, {
+    required _isd.ColumnValueListBuilder<SharedTableRecordUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<SharedTableRecordTable> where,
+    required _isd.WhereExpressionBuilder<SharedTableRecordTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SharedTableRecord>(
@@ -584,11 +583,11 @@ class SharedTableRecordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedTableRecord>> delete(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<SharedTableRecord> rows, {
-    _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<SharedTableRecord>(
@@ -602,9 +601,9 @@ class SharedTableRecordRepository {
 
   /// Deletes a single [SharedTableRecord].
   Future<SharedTableRecord> deleteRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     SharedTableRecord row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.deleteRow<SharedTableRecord>(
       row,
@@ -621,11 +620,11 @@ class SharedTableRecordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedTableRecord>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SharedTableRecordTable> where,
-    _i1.OrderByBuilder<SharedTableRecordTable>? orderBy,
-    _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<SharedTableRecordTable> where,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SharedTableRecord>(
@@ -640,10 +639,10 @@ class SharedTableRecordRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.count<SharedTableRecord>(
       where: where?.call(SharedTableRecord.t),
@@ -654,11 +653,11 @@ class SharedTableRecordRepository {
 
   /// Acquires row-level locks on [SharedTableRecord] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SharedTableRecordTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<SharedTableRecordTable> where,
+    required _isd.LockMode lockMode,
+    required _isd.Transaction transaction,
+    _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SharedTableRecord>(
       where: where(SharedTableRecord.t),

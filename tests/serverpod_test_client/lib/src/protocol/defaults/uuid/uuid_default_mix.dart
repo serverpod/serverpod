@@ -10,30 +10,30 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class UuidDefaultMix
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UuidDefaultMix._({
     this.id,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultAndDefaultModel,
+    _isc.UuidValue? uuidDefaultAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultModelAndDefaultPersist,
   }) : uuidDefaultAndDefaultModel =
            uuidDefaultAndDefaultModel ??
-           _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+           _isc.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
        uuidDefaultAndDefaultPersist =
            uuidDefaultAndDefaultPersist ??
-           _i1.UuidValue.fromString('6fa459ea-ee8a-3ca4-894e-db77e160355e'),
+           _isc.UuidValue.fromString('6fa459ea-ee8a-3ca4-894e-db77e160355e'),
        uuidDefaultModelAndDefaultPersist =
            uuidDefaultModelAndDefaultPersist ??
-           _i1.UuidValue.fromString('d9428888-122b-11e1-b85c-61cd3cbb3210');
+           _isc.UuidValue.fromString('d9428888-122b-11e1-b85c-61cd3cbb3210');
 
   factory UuidDefaultMix({
     int? id,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultAndDefaultModel,
+    _isc.UuidValue? uuidDefaultAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultModelAndDefaultPersist,
   }) = _UuidDefaultMixImpl;
 
   factory UuidDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -42,19 +42,19 @@ abstract class UuidDefaultMix
       uuidDefaultAndDefaultModel:
           jsonSerialization['uuidDefaultAndDefaultModel'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultAndDefaultModel'],
             ),
       uuidDefaultAndDefaultPersist:
           jsonSerialization['uuidDefaultAndDefaultPersist'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultAndDefaultPersist'],
             ),
       uuidDefaultModelAndDefaultPersist:
           jsonSerialization['uuidDefaultModelAndDefaultPersist'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultModelAndDefaultPersist'],
             ),
     );
@@ -65,20 +65,20 @@ abstract class UuidDefaultMix
   /// the id will be null.
   int? id;
 
-  _i1.UuidValue uuidDefaultAndDefaultModel;
+  _isc.UuidValue uuidDefaultAndDefaultModel;
 
-  _i1.UuidValue uuidDefaultAndDefaultPersist;
+  _isc.UuidValue uuidDefaultAndDefaultPersist;
 
-  _i1.UuidValue uuidDefaultModelAndDefaultPersist;
+  _isc.UuidValue uuidDefaultModelAndDefaultPersist;
 
   /// Returns a shallow copy of this [UuidDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UuidDefaultMix copyWith({
     int? id,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultAndDefaultModel,
+    _isc.UuidValue? uuidDefaultAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultModelAndDefaultPersist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -106,7 +106,7 @@ abstract class UuidDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -115,9 +115,9 @@ class _Undefined {}
 class _UuidDefaultMixImpl extends UuidDefaultMix {
   _UuidDefaultMixImpl({
     int? id,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultAndDefaultModel,
+    _isc.UuidValue? uuidDefaultAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultModelAndDefaultPersist,
   }) : super._(
          id: id,
          uuidDefaultAndDefaultModel: uuidDefaultAndDefaultModel,
@@ -127,13 +127,13 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
 
   /// Returns a shallow copy of this [UuidDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UuidDefaultMix copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultAndDefaultModel,
+    _isc.UuidValue? uuidDefaultAndDefaultPersist,
+    _isc.UuidValue? uuidDefaultModelAndDefaultPersist,
   }) {
     return UuidDefaultMix(
       id: id is int? ? id : this.id,

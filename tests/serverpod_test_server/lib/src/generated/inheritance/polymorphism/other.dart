@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// An unrelated class with the same fields as the Parent class.
 abstract class SimilarButNotParent
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   SimilarButNotParent._({required this.parent});
 
   factory SimilarButNotParent({required String parent}) =
@@ -29,7 +29,7 @@ abstract class SimilarButNotParent
 
   /// Returns a shallow copy of this [SimilarButNotParent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SimilarButNotParent copyWith({String? parent});
   @override
   Map<String, dynamic> toJson() {
@@ -49,7 +49,7 @@ abstract class SimilarButNotParent
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -58,7 +58,7 @@ class _SimilarButNotParentImpl extends SimilarButNotParent {
 
   /// Returns a shallow copy of this [SimilarButNotParent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SimilarButNotParent copyWith({String? parent}) {
     return SimilarButNotParent(parent: parent ?? this.parent);

@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
 abstract class ServerHealthMetric
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ServerHealthMetric._({
     this.id,
     required this.name,
@@ -42,10 +42,10 @@ abstract class ServerHealthMetric
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp: _i1.DateTimeJsonExtension.fromJson(
+      timestamp: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['timestamp'],
       ),
-      isHealthy: _i1.BoolJsonExtension.fromJson(jsonSerialization['isHealthy']),
+      isHealthy: _is.BoolJsonExtension.fromJson(jsonSerialization['isHealthy']),
       value: (jsonSerialization['value'] as num).toDouble(),
       granularity: jsonSerialization['granularity'] as int,
     );
@@ -78,11 +78,11 @@ abstract class ServerHealthMetric
   int granularity;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ServerHealthMetric]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ServerHealthMetric copyWith({
     int? id,
     String? name,
@@ -125,11 +125,11 @@ abstract class ServerHealthMetric
   }
 
   static ServerHealthMetricIncludeList includeList({
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    _is.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     ServerHealthMetricInclude? include,
   }) {
     return ServerHealthMetricIncludeList._(
@@ -144,7 +144,7 @@ abstract class ServerHealthMetric
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -171,7 +171,7 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
 
   /// Returns a shallow copy of this [ServerHealthMetric]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ServerHealthMetric copyWith({
     Object? id = _Undefined,
@@ -195,66 +195,66 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
 }
 
 class ServerHealthMetricUpdateTable
-    extends _i1.UpdateTable<ServerHealthMetricTable> {
+    extends _is.UpdateTable<ServerHealthMetricTable> {
   ServerHealthMetricUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> serverId(String value) => _is.ColumnValue(
     table.serverId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
+      _is.ColumnValue(
         table.timestamp,
         value,
       );
 
-  _i1.ColumnValue<bool, bool> isHealthy(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> isHealthy(bool value) => _is.ColumnValue(
     table.isHealthy,
     value,
   );
 
-  _i1.ColumnValue<double, double> value(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> value(double value) => _is.ColumnValue(
     table.value,
     value,
   );
 
-  _i1.ColumnValue<int, int> granularity(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> granularity(int value) => _is.ColumnValue(
     table.granularity,
     value,
   );
 }
 
-class ServerHealthMetricTable extends _i1.Table<int?> {
+class ServerHealthMetricTable extends _is.Table<int?> {
   ServerHealthMetricTable({super.tableRelation})
     : super(tableName: 'serverpod_health_metric') {
     updateTable = ServerHealthMetricUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    serverId = _i1.ColumnString(
+    serverId = _is.ColumnString(
       'serverId',
       this,
     );
-    timestamp = _i1.ColumnDateTime(
+    timestamp = _is.ColumnDateTime(
       'timestamp',
       this,
     );
-    isHealthy = _i1.ColumnBool(
+    isHealthy = _is.ColumnBool(
       'isHealthy',
       this,
     );
-    value = _i1.ColumnDouble(
+    value = _is.ColumnDouble(
       'value',
       this,
     );
-    granularity = _i1.ColumnInt(
+    granularity = _is.ColumnInt(
       'granularity',
       this,
     );
@@ -263,26 +263,26 @@ class ServerHealthMetricTable extends _i1.Table<int?> {
   late final ServerHealthMetricUpdateTable updateTable;
 
   /// The name of the metric.
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
   /// The server associated with this metric.
-  late final _i1.ColumnString serverId;
+  late final _is.ColumnString serverId;
 
   /// The time when the connections was checked, granularity is one minute.
-  late final _i1.ColumnDateTime timestamp;
+  late final _is.ColumnDateTime timestamp;
 
   /// True if the metric is healthy.
-  late final _i1.ColumnBool isHealthy;
+  late final _is.ColumnBool isHealthy;
 
   /// The value of the metric.
-  late final _i1.ColumnDouble value;
+  late final _is.ColumnDouble value;
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  late final _i1.ColumnInt granularity;
+  late final _is.ColumnInt granularity;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     serverId,
@@ -293,19 +293,19 @@ class ServerHealthMetricTable extends _i1.Table<int?> {
   ];
 }
 
-class ServerHealthMetricInclude extends _i1.IncludeObject {
+class ServerHealthMetricInclude extends _is.IncludeObject {
   ServerHealthMetricInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ServerHealthMetric.t;
+  _is.Table<int?> get table => ServerHealthMetric.t;
 }
 
-class ServerHealthMetricIncludeList extends _i1.IncludeList {
+class ServerHealthMetricIncludeList extends _is.IncludeList {
   ServerHealthMetricIncludeList._({
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -316,10 +316,10 @@ class ServerHealthMetricIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ServerHealthMetric.t;
+  _is.Table<int?> get table => ServerHealthMetric.t;
 }
 
 class ServerHealthMetricRepository {
@@ -348,15 +348,15 @@ class ServerHealthMetricRepository {
   /// );
   /// ```
   Future<List<ServerHealthMetric>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
@@ -388,14 +388,14 @@ class ServerHealthMetricRepository {
   /// );
   /// ```
   Future<ServerHealthMetric?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
@@ -410,11 +410,11 @@ class ServerHealthMetricRepository {
 
   /// Finds a single [ServerHealthMetric] by its [id] or null if no such row exists.
   Future<ServerHealthMetric?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ServerHealthMetric>(
       id,
@@ -439,9 +439,9 @@ class ServerHealthMetricRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthMetric>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerHealthMetric> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -457,9 +457,9 @@ class ServerHealthMetricRepository {
   ///
   /// The returned [ServerHealthMetric] will have its `id` field set.
   Future<ServerHealthMetric> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerHealthMetric row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ServerHealthMetric>(
       row,
@@ -488,12 +488,12 @@ class ServerHealthMetricRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthMetric>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerHealthMetric> rows, {
-    required _i1.ColumnSelections<ServerHealthMetricTable> conflictColumns,
-    _i1.ColumnSelections<ServerHealthMetricTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ServerHealthMetricTable> conflictColumns,
+    _is.ColumnSelections<ServerHealthMetricTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServerHealthMetricTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ServerHealthMetric>(
@@ -520,12 +520,12 @@ class ServerHealthMetricRepository {
   ///
   /// The returned [ServerHealthMetric] will have its `id` field set.
   Future<ServerHealthMetric?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerHealthMetric row, {
-    required _i1.ColumnSelections<ServerHealthMetricTable> conflictColumns,
-    _i1.ColumnSelections<ServerHealthMetricTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ServerHealthMetricTable> conflictColumns,
+    _is.ColumnSelections<ServerHealthMetricTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServerHealthMetricTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ServerHealthMetric>(
       row,
@@ -546,10 +546,10 @@ class ServerHealthMetricRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthMetric>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerHealthMetric> rows, {
-    _i1.ColumnSelections<ServerHealthMetricTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerHealthMetricTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ServerHealthMetric>(
@@ -564,10 +564,10 @@ class ServerHealthMetricRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ServerHealthMetric> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerHealthMetric row, {
-    _i1.ColumnSelections<ServerHealthMetricTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerHealthMetricTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ServerHealthMetric>(
       row,
@@ -579,11 +579,11 @@ class ServerHealthMetricRepository {
   /// Updates a single [ServerHealthMetric] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ServerHealthMetric?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
+    required _is.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ServerHealthMetric>(
       id,
@@ -599,15 +599,15 @@ class ServerHealthMetricRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthMetric>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
+    required _is.WhereExpressionBuilder<ServerHealthMetricTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ServerHealthMetric>(
@@ -634,11 +634,11 @@ class ServerHealthMetricRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthMetric>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerHealthMetric> rows, {
-    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ServerHealthMetric>(
@@ -652,9 +652,9 @@ class ServerHealthMetricRepository {
 
   /// Deletes a single [ServerHealthMetric].
   Future<ServerHealthMetric> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerHealthMetric row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ServerHealthMetric>(
       row,
@@ -671,11 +671,11 @@ class ServerHealthMetricRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerHealthMetric>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
-    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
-    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServerHealthMetricTable> where,
+    _is.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ServerHealthMetric>(
@@ -690,10 +690,10 @@ class ServerHealthMetricRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
@@ -704,11 +704,11 @@ class ServerHealthMetricRepository {
 
   /// Acquires row-level locks on [ServerHealthMetric] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServerHealthMetricTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ServerHealthMetric>(
       where: where(ServerHealthMetric.t),

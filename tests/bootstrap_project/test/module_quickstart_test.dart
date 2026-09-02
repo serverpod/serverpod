@@ -342,14 +342,16 @@ void main() {
           );
         });
 
-        test('has no AGENTS.md', () {
+        test('has AGENTS.md', () {
           final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
-          expect(agentsMd.existsSync(), isFalse);
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), contains('Serverpod module'));
         });
 
-        test('has no CLAUDE.md', () {
+        test('has CLAUDE.md', () {
           final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
-          expect(claudeMd.existsSync(), isFalse);
+          expect(claudeMd.existsSync(), isTrue);
+          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
         });
 
         test('has agent skills installed', () {
@@ -373,16 +375,12 @@ void main() {
           );
         });
 
-        group('has Serverpod and Dart MCP servers configured', () {
-          final serverDirRelative = '${projectName}_server';
-          final genericConfig =
-              '''
+        // A module has no runnable server, so the Serverpod MCP server would
+        // have nothing to connect to and all of its tools would error.
+        group('has only the Dart MCP server configured', () {
+          const genericConfig = '''
 {
   "mcpServers": {
-    "serverpod": {
-      "command": "serverpod",
-      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
-    },
     "dart": {
       "command": "dart",
       "args": ["mcp-server"]

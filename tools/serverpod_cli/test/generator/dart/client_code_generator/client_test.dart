@@ -110,11 +110,11 @@ void main() {
       test(
         'then client file contains endpoint method for the streaming endpoint.',
         () {
-          expect(endpointsFile, contains('_i2.Stream<String> $methodName()'));
+          expect(endpointsFile, contains('_ida.Stream<String> $methodName()'));
           expect(
             endpointsFile,
             contains(
-              'caller.callStreamingServerEndpoint<_i2.Stream<String>, String',
+              'caller.callStreamingServerEndpoint<_ida.Stream<String>, String',
             ),
           );
         },
@@ -165,7 +165,7 @@ void main() {
         expect(
           endpointsFile,
           contains(
-            'Future<String> $methodName(_i2.Stream<String> streamParam)',
+            'Future<String> $methodName(_ida.Stream<String> streamParam)',
           ),
         );
         expect(
@@ -461,7 +461,9 @@ void main() {
         expect(clientFile, isNotNull);
         expect(
           clientFile,
-          matches(r'Future<_i[\d+]\.ClientDatabaseSession> createSession\('),
+          matches(
+            r'Future<_i[a-z0-9]+\.ClientDatabaseSession> createSession\(',
+          ),
         );
       });
 

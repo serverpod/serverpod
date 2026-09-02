@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Runs the unit tests of the packages that are not members of the pub
+# workspace, which `melos exec` cannot reach. See util/non_workspace_packages.
+#
+# Packages without a `test` directory are skipped, and so is a package whose
+# `test` directory only holds placeholder files: `dart test` and `flutter test`
+# exit with 79 when a package declares no tests at all, which is not a failure
+# here.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_non_workspace"
+    exit 1
+fi
+
+. "util/non_workspace_packages"
+
+util/pub_get_non_workspace || exit 1
+
+exit_code=0
+
+for pkg in "${NON_WORKSPACE_PACKAGE_PATHS[@]}"
+do
+    if [ ! -d "$pkg/test" ]; then
+        continue
+    fi
+
+    if grep -Eq '^[[:space:]]+sdk:[[:space:]]+flutter[[:space:]]*$' "$pkg/pubspec.yaml"; then
+        runner="flutter"
+    else
+        runner="dart"
+    fi
+
+    echo "### Running $runner test in $pkg"
+    (cd "$pkg" && $runner test --reporter=failures-only)
+    status=$?
+
+    if [ $status != 0 ] && [ $status != 79 ]; then
+        exit_code=1
+    fi
+done
+
+exit $exit_code

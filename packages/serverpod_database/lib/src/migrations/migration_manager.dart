@@ -285,8 +285,8 @@ class MigrationManager {
           transaction: transaction,
         );
         migrationsApplied.add(code.version);
-      } catch (e) {
-        log.error('Failed to apply migration ${code.version}.', error: e);
+      } catch (_) {
+        log.error('Failed to apply migration ${code.version}.');
         rethrow;
       }
     }

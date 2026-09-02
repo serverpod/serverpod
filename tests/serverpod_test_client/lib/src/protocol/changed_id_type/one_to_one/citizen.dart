@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/one_to_one/address.dart' as _i2;
-import '../../changed_id_type/one_to_one/company.dart' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../changed_id_type/one_to_one/address.dart' as _ih0efjtk;
+import '../../changed_id_type/one_to_one/company.dart' as _i441ok8u;
 
 abstract class CitizenInt
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CitizenInt._({
     this.id,
     required this.name,
@@ -30,11 +30,11 @@ abstract class CitizenInt
   factory CitizenInt({
     int? id,
     required String name,
-    _i2.AddressUuid? address,
-    required _i1.UuidValue companyId,
-    _i3.CompanyUuid? company,
-    _i1.UuidValue? oldCompanyId,
-    _i3.CompanyUuid? oldCompany,
+    _ih0efjtk.AddressUuid? address,
+    required _isc.UuidValue companyId,
+    _i441ok8u.CompanyUuid? company,
+    _isc.UuidValue? oldCompanyId,
+    _i441ok8u.CompanyUuid? oldCompany,
   }) = _CitizenIntImpl;
 
   factory CitizenInt.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -43,25 +43,25 @@ abstract class CitizenInt
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.AddressUuid>(
+          : _iza9lbb5.Protocol().deserialize<_ih0efjtk.AddressUuid>(
               jsonSerialization['address'],
             ),
-      companyId: _i1.UuidValueJsonExtension.fromJson(
+      companyId: _isc.UuidValueJsonExtension.fromJson(
         jsonSerialization['companyId'],
       ),
       company: jsonSerialization['company'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.CompanyUuid>(
+          : _iza9lbb5.Protocol().deserialize<_i441ok8u.CompanyUuid>(
               jsonSerialization['company'],
             ),
       oldCompanyId: jsonSerialization['oldCompanyId'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['oldCompanyId'],
             ),
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.CompanyUuid>(
+          : _iza9lbb5.Protocol().deserialize<_i441ok8u.CompanyUuid>(
               jsonSerialization['oldCompany'],
             ),
     );
@@ -74,27 +74,27 @@ abstract class CitizenInt
 
   String name;
 
-  _i2.AddressUuid? address;
+  _ih0efjtk.AddressUuid? address;
 
-  _i1.UuidValue companyId;
+  _isc.UuidValue companyId;
 
-  _i3.CompanyUuid? company;
+  _i441ok8u.CompanyUuid? company;
 
-  _i1.UuidValue? oldCompanyId;
+  _isc.UuidValue? oldCompanyId;
 
-  _i3.CompanyUuid? oldCompany;
+  _i441ok8u.CompanyUuid? oldCompany;
 
   /// Returns a shallow copy of this [CitizenInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CitizenInt copyWith({
     int? id,
     String? name,
-    _i2.AddressUuid? address,
-    _i1.UuidValue? companyId,
-    _i3.CompanyUuid? company,
-    _i1.UuidValue? oldCompanyId,
-    _i3.CompanyUuid? oldCompany,
+    _ih0efjtk.AddressUuid? address,
+    _isc.UuidValue? companyId,
+    _i441ok8u.CompanyUuid? company,
+    _isc.UuidValue? oldCompanyId,
+    _i441ok8u.CompanyUuid? oldCompany,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -126,7 +126,7 @@ abstract class CitizenInt
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -136,11 +136,11 @@ class _CitizenIntImpl extends CitizenInt {
   _CitizenIntImpl({
     int? id,
     required String name,
-    _i2.AddressUuid? address,
-    required _i1.UuidValue companyId,
-    _i3.CompanyUuid? company,
-    _i1.UuidValue? oldCompanyId,
-    _i3.CompanyUuid? oldCompany,
+    _ih0efjtk.AddressUuid? address,
+    required _isc.UuidValue companyId,
+    _i441ok8u.CompanyUuid? company,
+    _isc.UuidValue? oldCompanyId,
+    _i441ok8u.CompanyUuid? oldCompany,
   }) : super._(
          id: id,
          name: name,
@@ -153,13 +153,13 @@ class _CitizenIntImpl extends CitizenInt {
 
   /// Returns a shallow copy of this [CitizenInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CitizenInt copyWith({
     Object? id = _Undefined,
     String? name,
     Object? address = _Undefined,
-    _i1.UuidValue? companyId,
+    _isc.UuidValue? companyId,
     Object? company = _Undefined,
     Object? oldCompanyId = _Undefined,
     Object? oldCompany = _Undefined,
@@ -167,13 +167,17 @@ class _CitizenIntImpl extends CitizenInt {
     return CitizenInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _i2.AddressUuid? ? address : this.address?.copyWith(),
+      address: address is _ih0efjtk.AddressUuid?
+          ? address
+          : this.address?.copyWith(),
       companyId: companyId ?? this.companyId,
-      company: company is _i3.CompanyUuid? ? company : this.company?.copyWith(),
-      oldCompanyId: oldCompanyId is _i1.UuidValue?
+      company: company is _i441ok8u.CompanyUuid?
+          ? company
+          : this.company?.copyWith(),
+      oldCompanyId: oldCompanyId is _isc.UuidValue?
           ? oldCompanyId
           : this.oldCompanyId,
-      oldCompany: oldCompany is _i3.CompanyUuid?
+      oldCompany: oldCompany is _i441ok8u.CompanyUuid?
           ? oldCompany
           : this.oldCompany?.copyWith(),
     );

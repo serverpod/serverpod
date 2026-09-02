@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Describes how to react if the row a foreign key refers to changes / is deleted.
-enum ForeignKeyAction implements _i1.SerializableModel {
+enum ForeignKeyAction implements _iss.SerializableModel {
   /// [setNull] specifies that the appropriate values
   /// of a row referencing an other one should be set to
   /// null on update or deletion.
@@ -35,8 +35,7 @@ enum ForeignKeyAction implements _i1.SerializableModel {
 
   /// [cascade] specifies that deletion or updating of a
   /// referred row, should be propagated down.
-  cascade,
-  ;
+  cascade;
 
   static ForeignKeyAction fromJson(int index) {
     switch (index) {

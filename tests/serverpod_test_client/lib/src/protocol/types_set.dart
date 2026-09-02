@@ -10,15 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:typed_data' as _i2;
-import 'test_enum.dart' as _i3;
-import 'test_enum_stringified.dart' as _i4;
-import 'types.dart' as _i5;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i6;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'test_enum.dart' as _ionapfu9;
+import 'test_enum_stringified.dart' as _i7liykk2;
+import 'types.dart' as _iwxwszsz;
 
 abstract class TypesSet
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   TypesSet._({
     this.anInt,
     this.aBool,
@@ -44,15 +44,15 @@ abstract class TypesSet
     Set<double>? aDouble,
     Set<DateTime>? aDateTime,
     Set<String>? aString,
-    Set<_i2.ByteData>? aByteData,
+    Set<_idt.ByteData>? aByteData,
     Set<Duration>? aDuration,
-    Set<_i1.UuidValue>? aUuid,
+    Set<_isc.UuidValue>? aUuid,
     Set<BigInt>? aBigInt,
-    Set<_i3.TestEnum>? anEnum,
-    Set<_i4.TestEnumStringified>? aStringifiedEnum,
-    Set<_i5.Types>? anObject,
-    Set<Map<String, _i5.Types>>? aMap,
-    Set<List<_i5.Types>>? aList,
+    Set<_ionapfu9.TestEnum>? anEnum,
+    Set<_i7liykk2.TestEnumStringified>? aStringifiedEnum,
+    Set<_iwxwszsz.Types>? anObject,
+    Set<Map<String, _iwxwszsz.Types>>? aMap,
+    Set<List<_iwxwszsz.Types>>? aList,
     Set<(int,)>? aRecord,
     Set<(int,)?>? aNullableRecord,
   }) = _TypesSetImpl;
@@ -61,78 +61,83 @@ abstract class TypesSet
     return TypesSet(
       anInt: jsonSerialization['anInt'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<int>>(jsonSerialization['anInt']),
+          : _iza9lbb5.Protocol().deserialize<Set<int>>(
+              jsonSerialization['anInt'],
+            ),
       aBool: jsonSerialization['aBool'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<bool>>(jsonSerialization['aBool']),
+          : _iza9lbb5.Protocol().deserialize<Set<bool>>(
+              jsonSerialization['aBool'],
+            ),
       aDouble: jsonSerialization['aDouble'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<double>>(
+          : _iza9lbb5.Protocol().deserialize<Set<double>>(
               jsonSerialization['aDouble'],
             ),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<DateTime>>(
+          : _iza9lbb5.Protocol().deserialize<Set<DateTime>>(
               jsonSerialization['aDateTime'],
             ),
       aString: jsonSerialization['aString'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<String>>(
+          : _iza9lbb5.Protocol().deserialize<Set<String>>(
               jsonSerialization['aString'],
             ),
       aByteData: jsonSerialization['aByteData'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<_i2.ByteData>>(
+          : _iza9lbb5.Protocol().deserialize<Set<_idt.ByteData>>(
               jsonSerialization['aByteData'],
             ),
       aDuration: jsonSerialization['aDuration'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<Duration>>(
+          : _iza9lbb5.Protocol().deserialize<Set<Duration>>(
               jsonSerialization['aDuration'],
             ),
       aUuid: jsonSerialization['aUuid'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<_i1.UuidValue>>(
+          : _iza9lbb5.Protocol().deserialize<Set<_isc.UuidValue>>(
               jsonSerialization['aUuid'],
             ),
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<BigInt>>(
+          : _iza9lbb5.Protocol().deserialize<Set<BigInt>>(
               jsonSerialization['aBigInt'],
             ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<_i3.TestEnum>>(
+          : _iza9lbb5.Protocol().deserialize<Set<_ionapfu9.TestEnum>>(
               jsonSerialization['anEnum'],
             ),
       aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<_i4.TestEnumStringified>>(
-              jsonSerialization['aStringifiedEnum'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<Set<_i7liykk2.TestEnumStringified>>(
+                  jsonSerialization['aStringifiedEnum'],
+                ),
       anObject: jsonSerialization['anObject'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<_i5.Types>>(
+          : _iza9lbb5.Protocol().deserialize<Set<_iwxwszsz.Types>>(
               jsonSerialization['anObject'],
             ),
       aMap: jsonSerialization['aMap'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<Map<String, _i5.Types>>>(
+          : _iza9lbb5.Protocol().deserialize<Set<Map<String, _iwxwszsz.Types>>>(
               jsonSerialization['aMap'],
             ),
       aList: jsonSerialization['aList'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<List<_i5.Types>>>(
+          : _iza9lbb5.Protocol().deserialize<Set<List<_iwxwszsz.Types>>>(
               jsonSerialization['aList'],
             ),
       aRecord: jsonSerialization['aRecord'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<(int,)>>(
+          : _iza9lbb5.Protocol().deserialize<Set<(int,)>>(
               jsonSerialization['aRecord'],
             ),
       aNullableRecord: jsonSerialization['aNullableRecord'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<(int,)?>>(
+          : _iza9lbb5.Protocol().deserialize<Set<(int,)?>>(
               jsonSerialization['aNullableRecord'],
             ),
     );
@@ -148,23 +153,23 @@ abstract class TypesSet
 
   Set<String>? aString;
 
-  Set<_i2.ByteData>? aByteData;
+  Set<_idt.ByteData>? aByteData;
 
   Set<Duration>? aDuration;
 
-  Set<_i1.UuidValue>? aUuid;
+  Set<_isc.UuidValue>? aUuid;
 
   Set<BigInt>? aBigInt;
 
-  Set<_i3.TestEnum>? anEnum;
+  Set<_ionapfu9.TestEnum>? anEnum;
 
-  Set<_i4.TestEnumStringified>? aStringifiedEnum;
+  Set<_i7liykk2.TestEnumStringified>? aStringifiedEnum;
 
-  Set<_i5.Types>? anObject;
+  Set<_iwxwszsz.Types>? anObject;
 
-  Set<Map<String, _i5.Types>>? aMap;
+  Set<Map<String, _iwxwszsz.Types>>? aMap;
 
-  Set<List<_i5.Types>>? aList;
+  Set<List<_iwxwszsz.Types>>? aList;
 
   Set<(int,)>? aRecord;
 
@@ -172,22 +177,22 @@ abstract class TypesSet
 
   /// Returns a shallow copy of this [TypesSet]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   TypesSet copyWith({
     Set<int>? anInt,
     Set<bool>? aBool,
     Set<double>? aDouble,
     Set<DateTime>? aDateTime,
     Set<String>? aString,
-    Set<_i2.ByteData>? aByteData,
+    Set<_idt.ByteData>? aByteData,
     Set<Duration>? aDuration,
-    Set<_i1.UuidValue>? aUuid,
+    Set<_isc.UuidValue>? aUuid,
     Set<BigInt>? aBigInt,
-    Set<_i3.TestEnum>? anEnum,
-    Set<_i4.TestEnumStringified>? aStringifiedEnum,
-    Set<_i5.Types>? anObject,
-    Set<Map<String, _i5.Types>>? aMap,
-    Set<List<_i5.Types>>? aList,
+    Set<_ionapfu9.TestEnum>? anEnum,
+    Set<_i7liykk2.TestEnumStringified>? aStringifiedEnum,
+    Set<_iwxwszsz.Types>? anObject,
+    Set<Map<String, _iwxwszsz.Types>>? aMap,
+    Set<List<_iwxwszsz.Types>>? aList,
     Set<(int,)>? aRecord,
     Set<(int,)?>? aNullableRecord,
   });
@@ -225,9 +230,11 @@ abstract class TypesSet
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
         ),
       if (aRecord != null)
-        'aRecord': _i6.Protocol().mapContainerToJson(aRecord!),
+        'aRecord': _iza9lbb5.Protocol().mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
-        'aNullableRecord': _i6.Protocol().mapContainerToJson(aNullableRecord!),
+        'aNullableRecord': _iza9lbb5.Protocol().mapContainerToJson(
+          aNullableRecord!,
+        ),
     };
   }
 
@@ -267,15 +274,17 @@ abstract class TypesSet
               v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
       if (aRecord != null)
-        'aRecord': _i6.Protocol().mapContainerToJson(aRecord!),
+        'aRecord': _iza9lbb5.Protocol().mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
-        'aNullableRecord': _i6.Protocol().mapContainerToJson(aNullableRecord!),
+        'aNullableRecord': _iza9lbb5.Protocol().mapContainerToJson(
+          aNullableRecord!,
+        ),
     };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -288,15 +297,15 @@ class _TypesSetImpl extends TypesSet {
     Set<double>? aDouble,
     Set<DateTime>? aDateTime,
     Set<String>? aString,
-    Set<_i2.ByteData>? aByteData,
+    Set<_idt.ByteData>? aByteData,
     Set<Duration>? aDuration,
-    Set<_i1.UuidValue>? aUuid,
+    Set<_isc.UuidValue>? aUuid,
     Set<BigInt>? aBigInt,
-    Set<_i3.TestEnum>? anEnum,
-    Set<_i4.TestEnumStringified>? aStringifiedEnum,
-    Set<_i5.Types>? anObject,
-    Set<Map<String, _i5.Types>>? aMap,
-    Set<List<_i5.Types>>? aList,
+    Set<_ionapfu9.TestEnum>? anEnum,
+    Set<_i7liykk2.TestEnumStringified>? aStringifiedEnum,
+    Set<_iwxwszsz.Types>? anObject,
+    Set<Map<String, _iwxwszsz.Types>>? aMap,
+    Set<List<_iwxwszsz.Types>>? aList,
     Set<(int,)>? aRecord,
     Set<(int,)?>? aNullableRecord,
   }) : super._(
@@ -320,7 +329,7 @@ class _TypesSetImpl extends TypesSet {
 
   /// Returns a shallow copy of this [TypesSet]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   TypesSet copyWith({
     Object? anInt = _Undefined,
@@ -352,28 +361,28 @@ class _TypesSetImpl extends TypesSet {
       aString: aString is Set<String>?
           ? aString
           : this.aString?.map((e0) => e0).toSet(),
-      aByteData: aByteData is Set<_i2.ByteData>?
+      aByteData: aByteData is Set<_idt.ByteData>?
           ? aByteData
           : this.aByteData?.map((e0) => e0.clone()).toSet(),
       aDuration: aDuration is Set<Duration>?
           ? aDuration
           : this.aDuration?.map((e0) => e0).toSet(),
-      aUuid: aUuid is Set<_i1.UuidValue>?
+      aUuid: aUuid is Set<_isc.UuidValue>?
           ? aUuid
           : this.aUuid?.map((e0) => e0).toSet(),
       aBigInt: aBigInt is Set<BigInt>?
           ? aBigInt
           : this.aBigInt?.map((e0) => e0).toSet(),
-      anEnum: anEnum is Set<_i3.TestEnum>?
+      anEnum: anEnum is Set<_ionapfu9.TestEnum>?
           ? anEnum
           : this.anEnum?.map((e0) => e0).toSet(),
-      aStringifiedEnum: aStringifiedEnum is Set<_i4.TestEnumStringified>?
+      aStringifiedEnum: aStringifiedEnum is Set<_i7liykk2.TestEnumStringified>?
           ? aStringifiedEnum
           : this.aStringifiedEnum?.map((e0) => e0).toSet(),
-      anObject: anObject is Set<_i5.Types>?
+      anObject: anObject is Set<_iwxwszsz.Types>?
           ? anObject
           : this.anObject?.map((e0) => e0.copyWith()).toSet(),
-      aMap: aMap is Set<Map<String, _i5.Types>>?
+      aMap: aMap is Set<Map<String, _iwxwszsz.Types>>?
           ? aMap
           : this.aMap
                 ?.map(
@@ -388,7 +397,7 @@ class _TypesSetImpl extends TypesSet {
                   ),
                 )
                 .toSet(),
-      aList: aList is Set<List<_i5.Types>>?
+      aList: aList is Set<List<_iwxwszsz.Types>>?
           ? aList
           : this.aList
                 ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())

@@ -10,274 +10,229 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/insights.dart' as _i2;
-import 'package:serverpod/src/generated/runtime_settings.dart' as _i3;
-import 'package:serverpod/src/generated/session_log_filter.dart' as _i4;
-import 'package:serverpod_database/serverpod_database.dart' as _i5;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod/src/generated/runtime_settings.dart' as _inixclsf;
+import 'package:serverpod/src/generated/session_log_filter.dart' as _i23rl7tl;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import '../endpoints/insights.dart' as _iodc3uo0;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'insights': _i2.InsightsEndpoint()
+  void initializeEndpoints(_is.Server server) {
+    var endpoints = <String, _is.Endpoint>{
+      'insights': _iodc3uo0.InsightsEndpoint()
         ..initialize(
           server,
           'insights',
           null,
         ),
     };
-    connectors['insights'] = _i1.EndpointConnector(
+    connectors['insights'] = _is.EndpointConnector(
       name: 'insights',
       endpoint: endpoints['insights']!,
       methodConnectors: {
-        'getRuntimeSettings': _i1.MethodConnector(
+        'getRuntimeSettings': _is.MethodConnector(
           name: 'getRuntimeSettings',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .getRuntimeSettings(session),
         ),
-        'setRuntimeSettings': _i1.MethodConnector(
+        'setRuntimeSettings': _is.MethodConnector(
           name: 'setRuntimeSettings',
           params: {
-            'runtimeSettings': _i1.ParameterDescription(
+            'runtimeSettings': _is.ParameterDescription(
               name: 'runtimeSettings',
-              type: _i1.getType<_i3.RuntimeSettings>(),
+              type: _is.getType<_inixclsf.RuntimeSettings>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .setRuntimeSettings(
                     session,
                     params['runtimeSettings'],
                   ),
         ),
-        'clearAllLogs': _i1.MethodConnector(
+        'clearAllLogs': _is.MethodConnector(
           name: 'clearAllLogs',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .clearAllLogs(session),
         ),
-        'getSessionLog': _i1.MethodConnector(
+        'getSessionLog': _is.MethodConnector(
           name: 'getSessionLog',
           params: {
-            'numEntries': _i1.ParameterDescription(
+            'numEntries': _is.ParameterDescription(
               name: 'numEntries',
-              type: _i1.getType<int?>(),
+              type: _is.getType<int?>(),
               nullable: true,
             ),
-            'filter': _i1.ParameterDescription(
+            'filter': _is.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i4.SessionLogFilter?>(),
+              type: _is.getType<_i23rl7tl.SessionLogFilter?>(),
               nullable: true,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['insights'] as _i2.InsightsEndpoint).getSessionLog(
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
+                  .getSessionLog(
                     session,
                     params['numEntries'],
                     params['filter'],
                   ),
         ),
-        'getOpenSessionLog': _i1.MethodConnector(
-          name: 'getOpenSessionLog',
-          params: {
-            'numEntries': _i1.ParameterDescription(
-              name: 'numEntries',
-              type: _i1.getType<int?>(),
-              nullable: true,
-            ),
-            'filter': _i1.ParameterDescription(
-              name: 'filter',
-              type: _i1.getType<_i4.SessionLogFilter?>(),
-              nullable: true,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
-                  .getOpenSessionLog(
-                    session,
-                    params['numEntries'],
-                    params['filter'],
-                  ),
-        ),
-        'getCachesInfo': _i1.MethodConnector(
+        'getCachesInfo': _is.MethodConnector(
           name: 'getCachesInfo',
           params: {
-            'fetchKeys': _i1.ParameterDescription(
+            'fetchKeys': _is.ParameterDescription(
               name: 'fetchKeys',
-              type: _i1.getType<bool>(),
+              type: _is.getType<bool>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['insights'] as _i2.InsightsEndpoint).getCachesInfo(
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
+                  .getCachesInfo(
                     session,
                     params['fetchKeys'],
                   ),
         ),
-        'shutdown': _i1.MethodConnector(
-          name: 'shutdown',
-          params: {},
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
-                  .shutdown(session),
-        ),
-        'checkHealth': _i1.MethodConnector(
+        'checkHealth': _is.MethodConnector(
           name: 'checkHealth',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .checkHealth(session),
         ),
-        'getHealthData': _i1.MethodConnector(
+        'getHealthData': _is.MethodConnector(
           name: 'getHealthData',
           params: {
-            'start': _i1.ParameterDescription(
+            'start': _is.ParameterDescription(
               name: 'start',
-              type: _i1.getType<DateTime>(),
+              type: _is.getType<DateTime>(),
               nullable: false,
             ),
-            'end': _i1.ParameterDescription(
+            'end': _is.ParameterDescription(
               name: 'end',
-              type: _i1.getType<DateTime>(),
+              type: _is.getType<DateTime>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['insights'] as _i2.InsightsEndpoint).getHealthData(
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
+                  .getHealthData(
                     session,
                     params['start'],
                     params['end'],
                   ),
         ),
-        'hotReload': _i1.MethodConnector(
-          name: 'hotReload',
-          params: {},
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
-                  .hotReload(session),
-        ),
-        'getTargetTableDefinition': _i1.MethodConnector(
+        'getTargetTableDefinition': _is.MethodConnector(
           name: 'getTargetTableDefinition',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .getTargetTableDefinition(session),
         ),
-        'getLiveDatabaseDefinition': _i1.MethodConnector(
+        'getLiveDatabaseDefinition': _is.MethodConnector(
           name: 'getLiveDatabaseDefinition',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .getLiveDatabaseDefinition(session),
         ),
-        'applyMigrations': _i1.MethodConnector(
+        'applyMigrations': _is.MethodConnector(
           name: 'applyMigrations',
           params: {
-            'applyRepairMigration': _i1.ParameterDescription(
+            'applyRepairMigration': _is.ParameterDescription(
               name: 'applyRepairMigration',
-              type: _i1.getType<bool>(),
+              type: _is.getType<bool>(),
               nullable: false,
             ),
-            'applyMigrations': _i1.ParameterDescription(
+            'applyMigrations': _is.ParameterDescription(
               name: 'applyMigrations',
-              type: _i1.getType<bool>(),
+              type: _is.getType<bool>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .applyMigrations(
                     session,
                     applyRepairMigration: params['applyRepairMigration'],
                     applyMigrations: params['applyMigrations'],
                   ),
         ),
-        'getDatabaseDefinitions': _i1.MethodConnector(
+        'getDatabaseDefinitions': _is.MethodConnector(
           name: 'getDatabaseDefinitions',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .getDatabaseDefinitions(session),
         ),
-        'fetchDatabaseBulkData': _i1.MethodConnector(
+        'fetchDatabaseBulkData': _is.MethodConnector(
           name: 'fetchDatabaseBulkData',
           params: {
-            'table': _i1.ParameterDescription(
+            'table': _is.ParameterDescription(
               name: 'table',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'startingId': _i1.ParameterDescription(
+            'startingId': _is.ParameterDescription(
               name: 'startingId',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
-            'limit': _i1.ParameterDescription(
+            'limit': _is.ParameterDescription(
               name: 'limit',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
-            'filter': _i1.ParameterDescription(
+            'filter': _is.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i5.Filter?>(),
+              type: _is.getType<_isd.Filter?>(),
               nullable: true,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .fetchDatabaseBulkData(
                     session,
                     table: params['table'],
@@ -286,78 +241,78 @@ class Endpoints extends _i1.EndpointDispatch {
                     filter: params['filter'],
                   ),
         ),
-        'runQueries': _i1.MethodConnector(
+        'runQueries': _is.MethodConnector(
           name: 'runQueries',
           params: {
-            'queries': _i1.ParameterDescription(
+            'queries': _is.ParameterDescription(
               name: 'queries',
-              type: _i1.getType<List<String>>(),
+              type: _is.getType<List<String>>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['insights'] as _i2.InsightsEndpoint).runQueries(
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
+                  .runQueries(
                     session,
                     params['queries'],
                   ),
         ),
-        'getDatabaseRowCount': _i1.MethodConnector(
+        'getDatabaseRowCount': _is.MethodConnector(
           name: 'getDatabaseRowCount',
           params: {
-            'table': _i1.ParameterDescription(
+            'table': _is.ParameterDescription(
               name: 'table',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
                   .getDatabaseRowCount(
                     session,
                     table: params['table'],
                   ),
         ),
-        'executeSql': _i1.MethodConnector(
+        'executeSql': _is.MethodConnector(
           name: 'executeSql',
           params: {
-            'sql': _i1.ParameterDescription(
+            'sql': _is.ParameterDescription(
               name: 'sql',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['insights'] as _i2.InsightsEndpoint).executeSql(
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
+                  .executeSql(
                     session,
                     params['sql'],
                   ),
         ),
-        'fetchFile': _i1.MethodConnector(
+        'fetchFile': _is.MethodConnector(
           name: 'fetchFile',
           params: {
-            'path': _i1.ParameterDescription(
+            'path': _is.ParameterDescription(
               name: 'path',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['insights'] as _i2.InsightsEndpoint).fetchFile(
+              ) async => (endpoints['insights'] as _iodc3uo0.InsightsEndpoint)
+                  .fetchFile(
                     session,
                     params['path'],
                   ),

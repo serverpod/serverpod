@@ -14,9 +14,8 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
+import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
@@ -40,6 +39,7 @@ import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
@@ -47,6 +47,8 @@ import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:vm_service/vm_service.dart'
+    show Event, EventStreams, RPCError, VmService;
 import 'package:vm_service/vm_service_io.dart';
 
 /// Options for the `start` command.
@@ -158,6 +160,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
+      if (await LegacyModelFiles.report(config)) throw ExitException.error();
 
       // Fire-and-forget: analytics must never delay session start.
       unawaited(
@@ -203,6 +206,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
     }
 
     if (await _detectExistingInstance(config)) return;
+    if (await LegacyModelFiles.report(config)) throw ExitException.error();
 
     // Fire-and-forget: analytics must never delay session start.
     unawaited(
@@ -239,6 +243,11 @@ class StartCommand extends ServerpodCommand<StartOption> {
         keepOpenOnFailure: watch,
         launchFlutterApp: launchFlutterApp,
         shutdown: shutdown,
+        // Nothing renders the history here; it is kept solely so the MCP log
+        // tools work the same as they do under the TUI, which also leaves the
+        // terminal free for the Flutter output.
+        logHistory: StartLogHistory(),
+        echoFlutterOutput: true,
       );
       switch (result) {
         case WatchLoopAborted(:final exitCode):
@@ -486,22 +495,23 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required bool keepOpenOnFailure,
   required bool launchFlutterApp,
   required _ShutdownSignal shutdown,
+  // Session-wide log retention. Filled here rather than by the presentation
+  // layer, so the MCP log tools serve the same content with and without the
+  // TUI. See [StartLogHistory].
+  required StartLogHistory logHistory,
+  // Whether raw Flutter output is also written to this process's
+  // stdout/stderr. False under the TUI, which owns the terminal and renders
+  // the recorded lines itself.
+  required bool echoFlutterOutput,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
-  IOSink Function(FlutterAppConfig app)? flutterStdoutSinkFor,
-  IOSink Function(FlutterAppConfig app)? flutterStderrSinkFor,
   void Function(FlutterAppConfig app)? onEnsureFlutterAppTab,
   void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
-  void Function(FlutterAppConfig app, FlutterLogEvent event)? onFlutterLog,
   void Function(FlutterAppConfig app, String? url)? onFlutterReady,
   void Function(FlutterAppConfig app)? onFlutterLaunchFailed,
   void Function(FlutterAppConfig app)? onFlutterStop,
   Future<void> Function(ServerProcess server)? onServerStart,
-  Future<void> Function(FlutterAppConfig app, FlutterProcess flutter)?
-  onFlutterStart,
   void Function(List<FlutterAppConfig>)? onFlutterAppsLoaded,
-  List<Object> Function()? mcpGetLogHistory,
-  List<String> Function(String appId)? mcpGetFlutterLogHistory,
 }) async {
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
 
@@ -716,15 +726,22 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     serverPackageDirectoryPathParts: config.serverPackageDirectoryPathParts,
     onProgress: (app, stage) => onFlutterProgress?.call(app, stage),
     onReady: (app, url) => onFlutterReady?.call(app, url),
-    onStart: (app, process) async {
-      if (onFlutterStart != null) await onFlutterStart(app, process);
-    },
+    onStart: (app, process) => _recordExtensionEvents(
+      process.vmService,
+      (event) => logHistory.recordFlutterExtensionEvent(app.id, event),
+    ),
     onStop: (app) => onFlutterStop?.call(app),
     onLaunchFailed: (app) => onFlutterLaunchFailed?.call(app),
     onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
-    onLog: (app, event) => onFlutterLog?.call(app, event),
-    stdoutSinkFor: (app) => flutterStdoutSinkFor?.call(app) ?? stdout,
-    stderrSinkFor: (app) => flutterStderrSinkFor?.call(app) ?? stderr,
+    onLog: (app, event) => logHistory.recordFlutterLogEvent(app.id, event),
+    stdoutSinkFor: (app) => logHistory.flutterOutputSink(
+      app.id,
+      forwardTo: echoFlutterOutput ? stdout : null,
+    ),
+    stderrSinkFor: (app) => logHistory.flutterOutputSink(
+      app.id,
+      forwardTo: echoFlutterOutput ? stderr : null,
+    ),
   );
   await flutterManager.initialize();
   onFlutterAppsLoaded?.call(flutterManager.apps.toList());
@@ -742,9 +759,14 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       vmServiceInfoFile: podInfoFile,
       stdoutSink: serverStdoutSink,
       stderrSink: serverStderrSink,
+      onDispose: logHistory.discardActiveServerScopes,
     );
     await serverProcess.start(dillPath: dillPath);
     await serverProcess.connectToVmService();
+    await _recordExtensionEvents(
+      serverProcess.vmService,
+      logHistory.recordServerLogEvent,
+    );
     if (onServerStart != null) await onServerStart(serverProcess);
     proxy = await _mountOrRetargetProxy(
       serverProcess: serverProcess,
@@ -888,9 +910,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
           ),
       onHotReload: session.forceReload,
       onHotRestart: session.forceRestart,
-      getLogHistory: mcpGetLogHistory,
+      getLogHistory: () => logHistory.serverEntries.toList(),
       getFlutterAppIds: () => [for (final app in flutterManager.apps) app.id],
-      getFlutterLogHistory: mcpGetFlutterLogHistory,
+      getFlutterLogHistory: (appId) =>
+          logHistory.flutterLinesFor(appId).toList(),
       onSpawnFlutterApp: session.spawnFlutterApp,
       getVmServiceUri: () => proxy?.httpUri.toString(),
       getFlutterDtdUris: () => flutterManager.dtdUris,
@@ -916,6 +939,26 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       vmServiceInfoFile: vmServiceInfoFile,
     ),
   );
+}
+
+/// Forwards [vmService]'s `Extension` events to [onEvent] for as long as the
+/// process is connected.
+///
+/// This is where the structured logs of the server and of every Flutter app
+/// enter the session's [StartLogHistory]. A stream that cannot be subscribed
+/// to costs those logs, not the session, so it is warned about, not thrown.
+Future<void> _recordExtensionEvents(
+  VmService? vmService,
+  void Function(Event event) onEvent,
+) async {
+  if (vmService == null) return;
+  try {
+    await vmService.streamListen(EventStreams.kExtension);
+  } on RPCError catch (e) {
+    log.warning('Could not subscribe to the VM service log stream: $e');
+    return;
+  }
+  vmService.onExtensionEvent.listen(onEvent);
 }
 
 /// Boots the initial server process, recovering once from a corrupt cached
@@ -1176,6 +1219,8 @@ Future<int> _runWithTui({
   final holder = StartAppStateHolder(
     ServerWatchState()..watchModeEnabled = watch,
   );
+  // The watch loop fills the history; from here on the TUI renders it.
+  holder.state.history.attachHolder(holder);
   var backendStarted = false;
 
   // Shared shutdown signal
@@ -1305,18 +1350,11 @@ Future<void> _runTuiBackend({
       keepOpenOnFailure: true,
       launchFlutterApp: launchFlutterApp,
       shutdown: shutdown,
+      logHistory: holder.state.history,
+      // The TUI owns the terminal, so Flutter output is only recorded.
+      echoFlutterOutput: false,
       serverStdoutSink: stdoutSink,
       serverStderrSink: stderrSink,
-      flutterStdoutSinkFor: (app) => TuiLogSink(
-        holder,
-        addLine: (line) => handleFlutterOutput(holder, app.id, line),
-      ),
-      flutterStderrSinkFor: (app) => TuiLogSink(
-        holder,
-        addLine: (line) => handleFlutterOutput(holder, app.id, line),
-      ),
-      onFlutterLog: (app, event) =>
-          handleFlutterLogEvent(holder, app.id, event),
       onEnsureFlutterAppTab: (app) {
         final tab = holder.state.getOrCreateAppLogTab(
           appId: app.id,
@@ -1370,20 +1408,6 @@ Future<void> _runTuiBackend({
         holder.state.serverReady = true;
         holder.state.serverStartable = false;
         holder.markDirty();
-        final vmService = server.vmService;
-        if (vmService == null) return;
-        await vmService.streamListen('Extension');
-        vmService.onExtensionEvent.listen(
-          (event) => handleServerLogEvent(holder, event),
-        );
-      },
-      onFlutterStart: (app, flutter) async {
-        final vmService = flutter.vmService;
-        if (vmService == null) return;
-        await vmService.streamListen('Extension');
-        vmService.onExtensionEvent.listen(
-          (event) => handleFlutterExtensionEvent(holder, app.id, event),
-        );
       },
       onFlutterStop: (app) {
         final tab = holder.state.appLogTabFor(app.id);
@@ -1409,9 +1433,6 @@ Future<void> _runTuiBackend({
             runModeFromServerArgs(serverArgs) == 'development';
         holder.markDirty();
       },
-      mcpGetLogHistory: () => holder.state.logHistory.toList(),
-      mcpGetFlutterLogHistory: (appId) =>
-          holder.state.appLogTabFor(appId)?.lines.toList() ?? <String>[],
     );
 
     switch (result) {

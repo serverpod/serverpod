@@ -1,0 +1,11 @@
+# One-to-one FK side. `companyId` is generated from `fk` and attached to the
+# unique index even though the field is not declared on the model.
+class: FkRelationOffice
+table: fk_relation_office
+fields:
+  address: String
+  company: FkRelationCompany?, relation(name=fk_relation_company_office, fk)
+indexes:
+  fk_relation_office_company_unique_idx:
+    fields: companyId
+    unique: true

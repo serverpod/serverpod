@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Represents a version of a database migration.
 class DatabaseMigrationVersionModel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   DatabaseMigrationVersionModel({
     required this.module,
     required this.version,
@@ -29,7 +29,7 @@ class DatabaseMigrationVersionModel
       version: jsonSerialization['version'] as String,
       timestamp: jsonSerialization['timestamp'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+          : _iss.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
     );
   }
 
@@ -44,7 +44,7 @@ class DatabaseMigrationVersionModel
 
   /// Returns a shallow copy of this [DatabaseMigrationVersionModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   DatabaseMigrationVersionModel copyWith({
     String? module,
     String? version,
@@ -79,7 +79,7 @@ class DatabaseMigrationVersionModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 

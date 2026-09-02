@@ -131,7 +131,7 @@ class Analyzers {
 
     if (requirements.generateModels) {
       for (final path in affectedPaths) {
-        if (ModelHelper.isModelFile(path, loadConfig: config)) {
+        if (ModelHelper.isModelFile(path)) {
           shouldGenerate = true;
           final file = File(path);
           if (file.existsSync()) {

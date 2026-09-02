@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class ForeignRelationDefinitionBuilder {
@@ -6,6 +7,7 @@ class ForeignRelationDefinitionBuilder {
   String referenceFieldName = 'id';
   ForeignKeyAction onDelete = ForeignKeyAction.cascade;
   ForeignKeyAction onUpdate = ForeignKeyAction.noAction;
+  DeferrableConstraint? deferrable;
 
   ForeignRelationDefinitionBuilder withParentTable(String parentTable) {
     this.parentTable = parentTable;
@@ -29,12 +31,20 @@ class ForeignRelationDefinitionBuilder {
     return this;
   }
 
+  ForeignRelationDefinitionBuilder withDeferrable(
+    DeferrableConstraint? deferrable,
+  ) {
+    this.deferrable = deferrable;
+    return this;
+  }
+
   ForeignRelationDefinition build() {
     return ForeignRelationDefinition(
       parentTable: parentTable,
       foreignFieldName: referenceFieldName,
       onDelete: onDelete,
       onUpdate: onUpdate,
+      deferrable: deferrable,
     );
   }
 }

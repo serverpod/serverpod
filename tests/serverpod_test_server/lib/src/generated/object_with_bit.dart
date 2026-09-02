@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithBit
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithBit._({
     this.id,
     required this.bit,
@@ -26,31 +26,31 @@ abstract class ObjectWithBit
 
   factory ObjectWithBit({
     int? id,
-    required _i1.Bit bit,
-    _i1.Bit? bitNullable,
-    required _i1.Bit bitIndexedHnsw,
-    required _i1.Bit bitIndexedHnswWithParams,
-    required _i1.Bit bitIndexedIvfflat,
-    required _i1.Bit bitIndexedIvfflatWithParams,
+    required _is.Bit bit,
+    _is.Bit? bitNullable,
+    required _is.Bit bitIndexedHnsw,
+    required _is.Bit bitIndexedHnswWithParams,
+    required _is.Bit bitIndexedIvfflat,
+    required _is.Bit bitIndexedIvfflatWithParams,
   }) = _ObjectWithBitImpl;
 
   factory ObjectWithBit.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithBit(
       id: jsonSerialization['id'] as int?,
-      bit: _i1.BitJsonExtension.fromJson(jsonSerialization['bit']),
+      bit: _is.BitJsonExtension.fromJson(jsonSerialization['bit']),
       bitNullable: jsonSerialization['bitNullable'] == null
           ? null
-          : _i1.BitJsonExtension.fromJson(jsonSerialization['bitNullable']),
-      bitIndexedHnsw: _i1.BitJsonExtension.fromJson(
+          : _is.BitJsonExtension.fromJson(jsonSerialization['bitNullable']),
+      bitIndexedHnsw: _is.BitJsonExtension.fromJson(
         jsonSerialization['bitIndexedHnsw'],
       ),
-      bitIndexedHnswWithParams: _i1.BitJsonExtension.fromJson(
+      bitIndexedHnswWithParams: _is.BitJsonExtension.fromJson(
         jsonSerialization['bitIndexedHnswWithParams'],
       ),
-      bitIndexedIvfflat: _i1.BitJsonExtension.fromJson(
+      bitIndexedIvfflat: _is.BitJsonExtension.fromJson(
         jsonSerialization['bitIndexedIvfflat'],
       ),
-      bitIndexedIvfflatWithParams: _i1.BitJsonExtension.fromJson(
+      bitIndexedIvfflatWithParams: _is.BitJsonExtension.fromJson(
         jsonSerialization['bitIndexedIvfflatWithParams'],
       ),
     );
@@ -63,32 +63,32 @@ abstract class ObjectWithBit
   @override
   int? id;
 
-  _i1.Bit bit;
+  _is.Bit bit;
 
-  _i1.Bit? bitNullable;
+  _is.Bit? bitNullable;
 
-  _i1.Bit bitIndexedHnsw;
+  _is.Bit bitIndexedHnsw;
 
-  _i1.Bit bitIndexedHnswWithParams;
+  _is.Bit bitIndexedHnswWithParams;
 
-  _i1.Bit bitIndexedIvfflat;
+  _is.Bit bitIndexedIvfflat;
 
-  _i1.Bit bitIndexedIvfflatWithParams;
+  _is.Bit bitIndexedIvfflatWithParams;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithBit]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithBit copyWith({
     int? id,
-    _i1.Bit? bit,
-    _i1.Bit? bitNullable,
-    _i1.Bit? bitIndexedHnsw,
-    _i1.Bit? bitIndexedHnswWithParams,
-    _i1.Bit? bitIndexedIvfflat,
-    _i1.Bit? bitIndexedIvfflatWithParams,
+    _is.Bit? bit,
+    _is.Bit? bitNullable,
+    _is.Bit? bitIndexedHnsw,
+    _is.Bit? bitIndexedHnswWithParams,
+    _is.Bit? bitIndexedIvfflat,
+    _is.Bit? bitIndexedIvfflatWithParams,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -123,11 +123,11 @@ abstract class ObjectWithBit
   }
 
   static ObjectWithBitIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     ObjectWithBitInclude? include,
   }) {
     return ObjectWithBitIncludeList._(
@@ -142,7 +142,7 @@ abstract class ObjectWithBit
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -151,12 +151,12 @@ class _Undefined {}
 class _ObjectWithBitImpl extends ObjectWithBit {
   _ObjectWithBitImpl({
     int? id,
-    required _i1.Bit bit,
-    _i1.Bit? bitNullable,
-    required _i1.Bit bitIndexedHnsw,
-    required _i1.Bit bitIndexedHnswWithParams,
-    required _i1.Bit bitIndexedIvfflat,
-    required _i1.Bit bitIndexedIvfflatWithParams,
+    required _is.Bit bit,
+    _is.Bit? bitNullable,
+    required _is.Bit bitIndexedHnsw,
+    required _is.Bit bitIndexedHnswWithParams,
+    required _is.Bit bitIndexedIvfflat,
+    required _is.Bit bitIndexedIvfflatWithParams,
   }) : super._(
          id: id,
          bit: bit,
@@ -169,21 +169,21 @@ class _ObjectWithBitImpl extends ObjectWithBit {
 
   /// Returns a shallow copy of this [ObjectWithBit]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithBit copyWith({
     Object? id = _Undefined,
-    _i1.Bit? bit,
+    _is.Bit? bit,
     Object? bitNullable = _Undefined,
-    _i1.Bit? bitIndexedHnsw,
-    _i1.Bit? bitIndexedHnswWithParams,
-    _i1.Bit? bitIndexedIvfflat,
-    _i1.Bit? bitIndexedIvfflatWithParams,
+    _is.Bit? bitIndexedHnsw,
+    _is.Bit? bitIndexedHnswWithParams,
+    _is.Bit? bitIndexedIvfflat,
+    _is.Bit? bitIndexedIvfflatWithParams,
   }) {
     return ObjectWithBit(
       id: id is int? ? id : this.id,
       bit: bit ?? this.bit.clone(),
-      bitNullable: bitNullable is _i1.Bit?
+      bitNullable: bitNullable is _is.Bit?
           ? bitNullable
           : this.bitNullable?.clone(),
       bitIndexedHnsw: bitIndexedHnsw ?? this.bitIndexedHnsw.clone(),
@@ -197,76 +197,76 @@ class _ObjectWithBitImpl extends ObjectWithBit {
   }
 }
 
-class ObjectWithBitUpdateTable extends _i1.UpdateTable<ObjectWithBitTable> {
+class ObjectWithBitUpdateTable extends _is.UpdateTable<ObjectWithBitTable> {
   ObjectWithBitUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.Bit, _i1.Bit> bit(_i1.Bit value) => _i1.ColumnValue(
+  _is.ColumnValue<_is.Bit, _is.Bit> bit(_is.Bit value) => _is.ColumnValue(
     table.bit,
     value,
   );
 
-  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitNullable(_i1.Bit? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_is.Bit, _is.Bit> bitNullable(_is.Bit? value) =>
+      _is.ColumnValue(
         table.bitNullable,
         value,
       );
 
-  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedHnsw(_i1.Bit value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_is.Bit, _is.Bit> bitIndexedHnsw(_is.Bit value) =>
+      _is.ColumnValue(
         table.bitIndexedHnsw,
         value,
       );
 
-  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedHnswWithParams(_i1.Bit value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_is.Bit, _is.Bit> bitIndexedHnswWithParams(_is.Bit value) =>
+      _is.ColumnValue(
         table.bitIndexedHnswWithParams,
         value,
       );
 
-  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedIvfflat(_i1.Bit value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_is.Bit, _is.Bit> bitIndexedIvfflat(_is.Bit value) =>
+      _is.ColumnValue(
         table.bitIndexedIvfflat,
         value,
       );
 
-  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedIvfflatWithParams(
-    _i1.Bit value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.Bit, _is.Bit> bitIndexedIvfflatWithParams(
+    _is.Bit value,
+  ) => _is.ColumnValue(
     table.bitIndexedIvfflatWithParams,
     value,
   );
 }
 
-class ObjectWithBitTable extends _i1.Table<int?> {
+class ObjectWithBitTable extends _is.Table<int?> {
   ObjectWithBitTable({super.tableRelation})
     : super(tableName: 'object_with_bit') {
     updateTable = ObjectWithBitUpdateTable(this);
-    bit = _i1.ColumnBit(
+    bit = _is.ColumnBit(
       'bit',
       this,
       dimension: 512,
     );
-    bitNullable = _i1.ColumnBit(
+    bitNullable = _is.ColumnBit(
       'bitNullable',
       this,
       dimension: 512,
     );
-    bitIndexedHnsw = _i1.ColumnBit(
+    bitIndexedHnsw = _is.ColumnBit(
       'bitIndexedHnsw',
       this,
       dimension: 512,
     );
-    bitIndexedHnswWithParams = _i1.ColumnBit(
+    bitIndexedHnswWithParams = _is.ColumnBit(
       'bitIndexedHnswWithParams',
       this,
       dimension: 512,
     );
-    bitIndexedIvfflat = _i1.ColumnBit(
+    bitIndexedIvfflat = _is.ColumnBit(
       'bitIndexedIvfflat',
       this,
       dimension: 512,
     );
-    bitIndexedIvfflatWithParams = _i1.ColumnBit(
+    bitIndexedIvfflatWithParams = _is.ColumnBit(
       'bitIndexedIvfflatWithParams',
       this,
       dimension: 512,
@@ -275,20 +275,20 @@ class ObjectWithBitTable extends _i1.Table<int?> {
 
   late final ObjectWithBitUpdateTable updateTable;
 
-  late final _i1.ColumnBit bit;
+  late final _is.ColumnBit bit;
 
-  late final _i1.ColumnBit bitNullable;
+  late final _is.ColumnBit bitNullable;
 
-  late final _i1.ColumnBit bitIndexedHnsw;
+  late final _is.ColumnBit bitIndexedHnsw;
 
-  late final _i1.ColumnBit bitIndexedHnswWithParams;
+  late final _is.ColumnBit bitIndexedHnswWithParams;
 
-  late final _i1.ColumnBit bitIndexedIvfflat;
+  late final _is.ColumnBit bitIndexedIvfflat;
 
-  late final _i1.ColumnBit bitIndexedIvfflatWithParams;
+  late final _is.ColumnBit bitIndexedIvfflatWithParams;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     bit,
     bitNullable,
@@ -299,19 +299,19 @@ class ObjectWithBitTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithBitInclude extends _i1.IncludeObject {
+class ObjectWithBitInclude extends _is.IncludeObject {
   ObjectWithBitInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithBit.t;
+  _is.Table<int?> get table => ObjectWithBit.t;
 }
 
-class ObjectWithBitIncludeList extends _i1.IncludeList {
+class ObjectWithBitIncludeList extends _is.IncludeList {
   ObjectWithBitIncludeList._({
-    _i1.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -322,10 +322,10 @@ class ObjectWithBitIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithBit.t;
+  _is.Table<int?> get table => ObjectWithBit.t;
 }
 
 class ObjectWithBitRepository {
@@ -354,15 +354,15 @@ class ObjectWithBitRepository {
   /// );
   /// ```
   Future<List<ObjectWithBit>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithBit>(
       where: where?.call(ObjectWithBit.t),
@@ -394,14 +394,14 @@ class ObjectWithBitRepository {
   /// );
   /// ```
   Future<ObjectWithBit?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithBit>(
       where: where?.call(ObjectWithBit.t),
@@ -416,11 +416,11 @@ class ObjectWithBitRepository {
 
   /// Finds a single [ObjectWithBit] by its [id] or null if no such row exists.
   Future<ObjectWithBit?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithBit>(
       id,
@@ -445,9 +445,9 @@ class ObjectWithBitRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithBit>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithBit> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -463,9 +463,9 @@ class ObjectWithBitRepository {
   ///
   /// The returned [ObjectWithBit] will have its `id` field set.
   Future<ObjectWithBit> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithBit row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithBit>(
       row,
@@ -494,12 +494,12 @@ class ObjectWithBitRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithBit>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithBit> rows, {
-    required _i1.ColumnSelections<ObjectWithBitTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithBitTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithBitTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithBitTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithBitTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithBit>(
@@ -526,12 +526,12 @@ class ObjectWithBitRepository {
   ///
   /// The returned [ObjectWithBit] will have its `id` field set.
   Future<ObjectWithBit?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithBit row, {
-    required _i1.ColumnSelections<ObjectWithBitTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithBitTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithBitTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithBitTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithBitTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithBit>(
       row,
@@ -552,10 +552,10 @@ class ObjectWithBitRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithBit>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithBit> rows, {
-    _i1.ColumnSelections<ObjectWithBitTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithBitTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithBit>(
@@ -570,10 +570,10 @@ class ObjectWithBitRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithBit> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithBit row, {
-    _i1.ColumnSelections<ObjectWithBitTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithBitTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithBit>(
       row,
@@ -585,10 +585,10 @@ class ObjectWithBitRepository {
   /// Updates a single [ObjectWithBit] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithBit?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithBitUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ObjectWithBitUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithBit>(
       id,
@@ -604,14 +604,14 @@ class ObjectWithBitRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithBit>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithBitUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithBitTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithBitUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ObjectWithBitTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithBit>(
@@ -638,11 +638,11 @@ class ObjectWithBitRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithBit>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithBit> rows, {
-    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithBit>(
@@ -656,9 +656,9 @@ class ObjectWithBitRepository {
 
   /// Deletes a single [ObjectWithBit].
   Future<ObjectWithBit> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithBit row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithBit>(
       row,
@@ -675,11 +675,11 @@ class ObjectWithBitRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithBit>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithBitTable> where,
-    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithBitTable> where,
+    _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithBit>(
@@ -694,10 +694,10 @@ class ObjectWithBitRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithBit>(
       where: where?.call(ObjectWithBit.t),
@@ -708,11 +708,11 @@ class ObjectWithBitRepository {
 
   /// Acquires row-level locks on [ObjectWithBit] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithBitTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithBitTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithBit>(
       where: where(ObjectWithBit.t),

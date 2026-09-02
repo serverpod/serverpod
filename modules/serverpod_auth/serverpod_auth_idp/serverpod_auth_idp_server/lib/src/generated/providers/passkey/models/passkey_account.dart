@@ -11,15 +11,16 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
-import 'dart:typed_data' as _i3;
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i4;
+    as _iacs;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
+    as _i99s0abf;
 
 /// A fully configured passkey to be used for logins.
 abstract class PasskeyAccount
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   PasskeyAccount._({
     this.id,
     required this.authUserId,
@@ -33,42 +34,42 @@ abstract class PasskeyAccount
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory PasskeyAccount({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? createdAt,
-    required _i3.ByteData keyId,
+    required _idt.ByteData keyId,
     required String keyIdBase64,
-    required _i3.ByteData clientDataJSON,
-    required _i3.ByteData attestationObject,
-    required _i3.ByteData originalChallenge,
+    required _idt.ByteData clientDataJSON,
+    required _idt.ByteData attestationObject,
+    required _idt.ByteData originalChallenge,
   }) = _PasskeyAccountImpl;
 
   factory PasskeyAccount.fromJson(Map<String, dynamic> jsonSerialization) {
     return PasskeyAccount(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.AuthUser>(
+          : _i99s0abf.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['authUser'],
             ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      keyId: _i1.ByteDataJsonExtension.fromJson(jsonSerialization['keyId']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      keyId: _is.ByteDataJsonExtension.fromJson(jsonSerialization['keyId']),
       keyIdBase64: jsonSerialization['keyIdBase64'] as String,
-      clientDataJSON: _i1.ByteDataJsonExtension.fromJson(
+      clientDataJSON: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['clientDataJSON'],
       ),
-      attestationObject: _i1.ByteDataJsonExtension.fromJson(
+      attestationObject: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['attestationObject'],
       ),
-      originalChallenge: _i1.ByteDataJsonExtension.fromJson(
+      originalChallenge: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['originalChallenge'],
       ),
     );
@@ -79,47 +80,47 @@ abstract class PasskeyAccount
   static const db = PasskeyAccountRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUser? authUser;
+  _iacs.AuthUser? authUser;
 
   /// The time when this authentication was created.
   DateTime createdAt;
 
   /// The ID of the [publicKey].
-  _i3.ByteData keyId;
+  _idt.ByteData keyId;
 
   /// Base64 variant of the key ID (to enable DB lookups).
   String keyIdBase64;
 
   /// The authenticator's JSON client data sent during the registration.
-  _i3.ByteData clientDataJSON;
+  _idt.ByteData clientDataJSON;
 
   /// The attestation object used during the registration.
-  _i3.ByteData attestationObject;
+  _idt.ByteData attestationObject;
 
   /// The challenge used during registration.
-  _i3.ByteData originalChallenge;
+  _idt.ByteData originalChallenge;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [PasskeyAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   PasskeyAccount copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? createdAt,
-    _i3.ByteData? keyId,
+    _idt.ByteData? keyId,
     String? keyIdBase64,
-    _i3.ByteData? clientDataJSON,
-    _i3.ByteData? attestationObject,
-    _i3.ByteData? originalChallenge,
+    _idt.ByteData? clientDataJSON,
+    _idt.ByteData? attestationObject,
+    _idt.ByteData? originalChallenge,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -142,16 +143,16 @@ abstract class PasskeyAccount
     return {};
   }
 
-  static PasskeyAccountInclude include({_i2.AuthUserInclude? authUser}) {
+  static PasskeyAccountInclude include({_iacs.AuthUserInclude? authUser}) {
     return PasskeyAccountInclude._(authUser: authUser);
   }
 
   static PasskeyAccountIncludeList includeList({
-    _i1.WhereExpressionBuilder<PasskeyAccountTable>? where,
+    _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
+    _is.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
     PasskeyAccountInclude? include,
   }) {
     return PasskeyAccountIncludeList._(
@@ -166,7 +167,7 @@ abstract class PasskeyAccount
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -174,15 +175,15 @@ class _Undefined {}
 
 class _PasskeyAccountImpl extends PasskeyAccount {
   _PasskeyAccountImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? createdAt,
-    required _i3.ByteData keyId,
+    required _idt.ByteData keyId,
     required String keyIdBase64,
-    required _i3.ByteData clientDataJSON,
-    required _i3.ByteData attestationObject,
-    required _i3.ByteData originalChallenge,
+    required _idt.ByteData clientDataJSON,
+    required _idt.ByteData attestationObject,
+    required _idt.ByteData originalChallenge,
   }) : super._(
          id: id,
          authUserId: authUserId,
@@ -197,23 +198,23 @@ class _PasskeyAccountImpl extends PasskeyAccount {
 
   /// Returns a shallow copy of this [PasskeyAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   PasskeyAccount copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     DateTime? createdAt,
-    _i3.ByteData? keyId,
+    _idt.ByteData? keyId,
     String? keyIdBase64,
-    _i3.ByteData? clientDataJSON,
-    _i3.ByteData? attestationObject,
-    _i3.ByteData? originalChallenge,
+    _idt.ByteData? clientDataJSON,
+    _idt.ByteData? attestationObject,
+    _idt.ByteData? originalChallenge,
   }) {
     return PasskeyAccount(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacs.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       createdAt: createdAt ?? this.createdAt,
@@ -226,84 +227,84 @@ class _PasskeyAccountImpl extends PasskeyAccount {
   }
 }
 
-class PasskeyAccountUpdateTable extends _i1.UpdateTable<PasskeyAccountTable> {
+class PasskeyAccountUpdateTable extends _is.UpdateTable<PasskeyAccountTable> {
   PasskeyAccountUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> keyId(_i3.ByteData value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_idt.ByteData, _idt.ByteData> keyId(_idt.ByteData value) =>
+      _is.ColumnValue(
         table.keyId,
         value,
       );
 
-  _i1.ColumnValue<String, String> keyIdBase64(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> keyIdBase64(String value) => _is.ColumnValue(
     table.keyIdBase64,
     value,
   );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> clientDataJSON(
-    _i3.ByteData value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_idt.ByteData, _idt.ByteData> clientDataJSON(
+    _idt.ByteData value,
+  ) => _is.ColumnValue(
     table.clientDataJSON,
     value,
   );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> attestationObject(
-    _i3.ByteData value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_idt.ByteData, _idt.ByteData> attestationObject(
+    _idt.ByteData value,
+  ) => _is.ColumnValue(
     table.attestationObject,
     value,
   );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> originalChallenge(
-    _i3.ByteData value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_idt.ByteData, _idt.ByteData> originalChallenge(
+    _idt.ByteData value,
+  ) => _is.ColumnValue(
     table.originalChallenge,
     value,
   );
 }
 
-class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
+class PasskeyAccountTable extends _is.Table<_is.UuidValue?> {
   PasskeyAccountTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_passkey_account') {
     updateTable = PasskeyAccountUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    keyId = _i1.ColumnByteData(
+    keyId = _is.ColumnByteData(
       'keyId',
       this,
     );
-    keyIdBase64 = _i1.ColumnString(
+    keyIdBase64 = _is.ColumnString(
       'keyIdBase64',
       this,
     );
-    clientDataJSON = _i1.ColumnByteData(
+    clientDataJSON = _is.ColumnByteData(
       'clientDataJSON',
       this,
     );
-    attestationObject = _i1.ColumnByteData(
+    attestationObject = _is.ColumnByteData(
       'attestationObject',
       this,
     );
-    originalChallenge = _i1.ColumnByteData(
+    originalChallenge = _is.ColumnByteData(
       'originalChallenge',
       this,
     );
@@ -311,44 +312,44 @@ class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   late final PasskeyAccountUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUserTable? _authUser;
+  _iacs.AuthUserTable? _authUser;
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
   /// The ID of the [publicKey].
-  late final _i1.ColumnByteData keyId;
+  late final _is.ColumnByteData keyId;
 
   /// Base64 variant of the key ID (to enable DB lookups).
-  late final _i1.ColumnString keyIdBase64;
+  late final _is.ColumnString keyIdBase64;
 
   /// The authenticator's JSON client data sent during the registration.
-  late final _i1.ColumnByteData clientDataJSON;
+  late final _is.ColumnByteData clientDataJSON;
 
   /// The attestation object used during the registration.
-  late final _i1.ColumnByteData attestationObject;
+  late final _is.ColumnByteData attestationObject;
 
   /// The challenge used during registration.
-  late final _i1.ColumnByteData originalChallenge;
+  late final _is.ColumnByteData originalChallenge;
 
-  _i2.AuthUserTable get authUser {
+  _iacs.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: PasskeyAccount.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     createdAt,
@@ -360,7 +361,7 @@ class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -368,23 +369,23 @@ class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class PasskeyAccountInclude extends _i1.IncludeObject {
-  PasskeyAccountInclude._({_i2.AuthUserInclude? authUser}) {
+class PasskeyAccountInclude extends _is.IncludeObject {
+  PasskeyAccountInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _iacs.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PasskeyAccount.t;
+  _is.Table<_is.UuidValue?> get table => PasskeyAccount.t;
 }
 
-class PasskeyAccountIncludeList extends _i1.IncludeList {
+class PasskeyAccountIncludeList extends _is.IncludeList {
   PasskeyAccountIncludeList._({
-    _i1.WhereExpressionBuilder<PasskeyAccountTable>? where,
+    _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -395,10 +396,10 @@ class PasskeyAccountIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PasskeyAccount.t;
+  _is.Table<_is.UuidValue?> get table => PasskeyAccount.t;
 }
 
 class PasskeyAccountRepository {
@@ -429,16 +430,16 @@ class PasskeyAccountRepository {
   /// );
   /// ```
   Future<List<PasskeyAccount>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PasskeyAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
+    _is.Transaction? transaction,
     PasskeyAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<PasskeyAccount>(
       where: where?.call(PasskeyAccount.t),
@@ -471,15 +472,15 @@ class PasskeyAccountRepository {
   /// );
   /// ```
   Future<PasskeyAccount?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PasskeyAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
     int? offset,
-    _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
+    _is.Transaction? transaction,
     PasskeyAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<PasskeyAccount>(
       where: where?.call(PasskeyAccount.t),
@@ -495,12 +496,12 @@ class PasskeyAccountRepository {
 
   /// Finds a single [PasskeyAccount] by its [id] or null if no such row exists.
   Future<PasskeyAccount?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     PasskeyAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<PasskeyAccount>(
       id,
@@ -526,9 +527,9 @@ class PasskeyAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyAccount>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PasskeyAccount> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -544,9 +545,9 @@ class PasskeyAccountRepository {
   ///
   /// The returned [PasskeyAccount] will have its `id` field set.
   Future<PasskeyAccount> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PasskeyAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<PasskeyAccount>(
       row,
@@ -575,12 +576,12 @@ class PasskeyAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyAccount>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PasskeyAccount> rows, {
-    required _i1.ColumnSelections<PasskeyAccountTable> conflictColumns,
-    _i1.ColumnSelections<PasskeyAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PasskeyAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PasskeyAccountTable> conflictColumns,
+    _is.ColumnSelections<PasskeyAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<PasskeyAccountTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<PasskeyAccount>(
@@ -607,12 +608,12 @@ class PasskeyAccountRepository {
   ///
   /// The returned [PasskeyAccount] will have its `id` field set.
   Future<PasskeyAccount?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PasskeyAccount row, {
-    required _i1.ColumnSelections<PasskeyAccountTable> conflictColumns,
-    _i1.ColumnSelections<PasskeyAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PasskeyAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PasskeyAccountTable> conflictColumns,
+    _is.ColumnSelections<PasskeyAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<PasskeyAccountTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<PasskeyAccount>(
       row,
@@ -633,10 +634,10 @@ class PasskeyAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyAccount>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PasskeyAccount> rows, {
-    _i1.ColumnSelections<PasskeyAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PasskeyAccountTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<PasskeyAccount>(
@@ -651,10 +652,10 @@ class PasskeyAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<PasskeyAccount> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PasskeyAccount row, {
-    _i1.ColumnSelections<PasskeyAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PasskeyAccountTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<PasskeyAccount>(
       row,
@@ -666,10 +667,10 @@ class PasskeyAccountRepository {
   /// Updates a single [PasskeyAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<PasskeyAccount?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<PasskeyAccountUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<PasskeyAccountUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<PasskeyAccount>(
       id,
@@ -685,14 +686,14 @@ class PasskeyAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyAccount>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<PasskeyAccountUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<PasskeyAccountTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<PasskeyAccountUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<PasskeyAccountTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<PasskeyAccount>(
@@ -719,11 +720,11 @@ class PasskeyAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyAccount>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PasskeyAccount> rows, {
-    _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<PasskeyAccount>(
@@ -737,9 +738,9 @@ class PasskeyAccountRepository {
 
   /// Deletes a single [PasskeyAccount].
   Future<PasskeyAccount> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PasskeyAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<PasskeyAccount>(
       row,
@@ -756,11 +757,11 @@ class PasskeyAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyAccount>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PasskeyAccountTable> where,
-    _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PasskeyAccountTable> where,
+    _is.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<PasskeyAccount>(
@@ -775,10 +776,10 @@ class PasskeyAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PasskeyAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<PasskeyAccount>(
       where: where?.call(PasskeyAccount.t),
@@ -789,11 +790,11 @@ class PasskeyAccountRepository {
 
   /// Acquires row-level locks on [PasskeyAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PasskeyAccountTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PasskeyAccountTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<PasskeyAccount>(
       where: where(PasskeyAccount.t),
@@ -810,10 +811,10 @@ class PasskeyAccountAttachRowRepository {
   /// Creates a relation between the given [PasskeyAccount] and [AuthUser]
   /// by setting the [PasskeyAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PasskeyAccount passkeyAccount,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (passkeyAccount.id == null) {
       throw ArgumentError.notNull('passkeyAccount.id');

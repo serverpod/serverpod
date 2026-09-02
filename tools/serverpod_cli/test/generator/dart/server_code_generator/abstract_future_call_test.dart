@@ -84,8 +84,8 @@ void main() {
             isNot(
               matches(
                 r'  @override\n'
-                r'  _i\d.FutureCallDispatch\? get futureCalls \{\n'
-                r'    return _i\d.FutureCalls\(\);\n'
+                r'  _i[a-z0-9]+.FutureCallDispatch\? get futureCalls \{\n'
+                r'    return _i[a-z0-9]+.FutureCalls\(\);\n'
                 r'  \}\n',
               ),
             ),
@@ -180,8 +180,8 @@ void main() {
             endpointsFile,
             matches(
               r'  @override\n'
-              r'  _i\d.FutureCallDispatch\? get futureCalls \{\n'
-              r'    return _i\d.FutureCalls\(\);\n'
+              r'  _i[a-z0-9]+.FutureCallDispatch\? get futureCalls \{\n'
+              r'    return _i[a-z0-9]+.FutureCalls\(\);\n'
               r'  \}\n',
             ),
           );

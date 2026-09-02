@@ -13,6 +13,30 @@ fields:
 
   ### Access key for retrieving a private file.
   authKey: String
+
+  ### Maximum accepted upload size in bytes.
+  maxFileSize: int, default=10485760
+
+  ### Exact expected upload size in bytes, if known.
+  contentLength: int?
+
+  ### Whether an existing file must not be overwritten.
+  preventOverwrite: bool, default=false
+
+  ### MIME type to store with the uploaded file.
+  contentType: String?
+
+  ### HTTP cache control value to store with the uploaded file.
+  cacheControl: String?
+
+  ### HTTP content disposition value to store with the uploaded file.
+  contentDisposition: String?
+
+  ### HTTP content encoding value to store with the uploaded file.
+  contentEncoding: String?
+
+  ### JSON-encoded custom metadata to store with the uploaded file.
+  customMetadata: String?
 indexes:
   serverpod_cloud_storage_direct_upload_storage_path:
     fields: storageId, path

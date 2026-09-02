@@ -1,0 +1,7 @@
+# Parent used to test `relation(..., fk)` as the foreign-key owner.
+class: FkRelationCompany
+table: fk_relation_company
+fields:
+  name: String
+  office: FkRelationOffice?, relation(name=fk_relation_company_office)
+  employees: List<FkRelationEmployee>?, relation(name=fk_relation_company_employees)
