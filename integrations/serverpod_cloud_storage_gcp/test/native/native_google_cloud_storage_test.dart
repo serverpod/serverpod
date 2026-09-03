@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+// Version 17 deprecated this library in favor of `package:google_cloud_storage`
+// ignore: deprecated_member_use
 import 'package:googleapis/storage/v1.dart' as gcs;
 import 'package:googleapis_auth/auth_io.dart' as gcs;
 import 'package:http/http.dart' as http;

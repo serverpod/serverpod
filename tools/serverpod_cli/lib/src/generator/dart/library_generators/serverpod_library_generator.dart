@@ -9,6 +9,7 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
   /// [PackageType.server] (modules are never booted on their own).
   Library generateServerpodClass() {
     var library = LibraryBuilder();
+    var syncModule = config.syncModule;
 
     // Re-export the framework, hiding its Serverpod class in favor of the
     // generated one, so `server.dart` only needs to import this file.
@@ -40,6 +41,12 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
             '/// ```dart',
             '/// final pod = Serverpod(args);',
             '/// ```',
+            if (syncModule != null) ...[
+              '///',
+              '/// The `serverpod_offline_sync` engine is initialized with the tables',
+              '/// declared with `database: sync`, wrapping any provided',
+              '/// [databaseInterceptor] with `crdtDatabaseInterceptor`.',
+            ],
           ])
           ..name = 'Serverpod'
           ..extend = refer('Serverpod', serverpodUrl(true))
@@ -187,11 +194,41 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
                           'runtimeParametersBuilder': refer(
                             'runtimeParametersBuilder',
                           ),
-                          'databaseInterceptor': refer('databaseInterceptor'),
+                          'databaseInterceptor': syncModule == null
+                              ? refer('databaseInterceptor')
+                              : Method(
+                                  (m) => m
+                                    ..requiredParameters.add(
+                                      Parameter((p) => p..name = 'session'),
+                                    )
+                                    ..requiredParameters.add(
+                                      Parameter((p) => p..name = 'inner'),
+                                    )
+                                    ..lambda = true
+                                    ..body =
+                                        refer(
+                                          'crdtDatabaseInterceptor',
+                                          syncModule.dartImportUrl(true),
+                                        ).call([
+                                          refer('session'),
+                                          refer('databaseInterceptor')
+                                              .nullSafeProperty('call')
+                                              .call([
+                                                refer('session'),
+                                                refer('inner'),
+                                              ])
+                                              .ifNullThen(refer('inner')),
+                                        ]).code,
+                                ).closure,
                         },
                       )
                       .code,
                 );
+              if (syncModule != null) {
+                c.body = refer('initializeCrdtSync').call([], {
+                  'syncTables': refer('syncTables', 'sync_tables.dart'),
+                }).statement;
+              }
             }),
           ),
       ),
