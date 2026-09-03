@@ -1009,11 +1009,80 @@ return deserializeByClassName(value);
                     ).call([]).returned.statement,
                   ]),
               ),
+
+            if (protocolDefinition.shouldGenerateOnStartup(config))
+              _buildOnStartupMethod(),
           ]),
       ),
     );
 
     return library.build();
+  }
+
+  Method _buildOnStartupMethod() {
+    final statements = <Code>[];
+
+    final module = protocolDefinition.module;
+    if (module != null) {
+      statements.add(
+        refer(module.className, _modulePath(module))
+            .call([])
+            .property('onStartup')
+            .call([refer('session')])
+            .awaited
+            .statement,
+      );
+    }
+
+    // Host packages only: flat fan-out via the root modules map. Module
+    // packages must not recurse into nested Endpoints (those are duplicate
+    // instances of packages already listed on the host).
+    if (config.type == PackageType.server && config.modules.isNotEmpty) {
+      final sortedModules = [...config.modules]
+        ..sort((a, b) => a.name.compareTo(b.name));
+      for (final moduleConfig in sortedModules) {
+        statements.add(
+          refer('modules')
+              .index(literalString(moduleConfig.name))
+              .nullChecked
+              .property('onStartup')
+              .call([refer('session')])
+              .awaited
+              .statement,
+        );
+      }
+    }
+
+    return Method(
+      (m) => m
+        ..annotations.add(refer('override'))
+        ..modifier = MethodModifier.async
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Future'
+            ..types.add(refer('void')),
+        )
+        ..name = 'onStartup'
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'session'
+              ..type = refer('Session', serverpodUrl(true)),
+          ),
+        )
+        ..body = Block.of(statements),
+    );
+  }
+
+  String _modulePath(ModuleDefinition module) {
+    if (module.filePath.startsWith('package:')) return module.filePath;
+
+    var relativePath = p.relative(
+      module.filePath,
+      from: _buildGeneratedDirectoryPath(),
+    );
+
+    return p.split(relativePath).join('/');
   }
 
   /// Generates endpoint calls for the client side.
