@@ -177,7 +177,8 @@ void main() {
           isA<CloudStorageException>().having(
             (error) => error.message,
             'message',
-            contains('SERVERPOD_CLOUD_STORAGE_SERVICE_ACCOUNT_KEY is missing'),
+            'SERVERPOD_CLOUD_STORAGE_SERVICE_ACCOUNT_KEY is missing or empty while '
+                'Serverpod Cloud storage is configured.',
           ),
         ),
       );
@@ -227,8 +228,7 @@ void main() {
   );
 
   test(
-    'Given valid Serverpod Cloud storage environment variables '
-    'and a storage factory that throws, '
+    'Given valid Serverpod Cloud storage environment variables and a storage factory that throws, '
     'when calling createServerpodCloudStorage, '
     'then the error is propagated',
     () async {
