@@ -126,6 +126,18 @@ class LanguageServerTestSession {
     });
   }
 
+  /// Sends the custom `serverpod/modelDefinition` request used to navigate
+  /// from generated Dart code back to a model definition.
+  Future<dynamic> requestModelDefinition(
+    String className, {
+    String? moduleAlias,
+  }) {
+    return client.sendRequest('serverpod/modelDefinition', {
+      'className': className,
+      'moduleAlias': ?moduleAlias,
+    });
+  }
+
   Future<dynamic> requestReferences(
     String filePath, {
     required int line,

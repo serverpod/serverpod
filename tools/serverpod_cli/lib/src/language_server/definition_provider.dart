@@ -107,6 +107,29 @@ class DefinitionProvider {
     );
   }
 
+  /// Resolves the location of the model declaration for [className],
+  /// optionally qualified with [moduleAlias].
+  ///
+  /// Backs the `serverpod/modelDefinition` custom request, which lets the
+  /// editor navigate from generated Dart code back to the model file.
+  static Location? resolveModelByName({
+    required StatefulAnalyzer analyzer,
+    required String className,
+    String? moduleAlias,
+  }) {
+    var model = analyzer.findModelByName(className, moduleAlias: moduleAlias);
+    if (model == null) return null;
+
+    var source = analyzer.getModelSourceForModel(model);
+    if (source == null) return null;
+
+    var range = findModelDefinitionRange(
+      source.yaml.split('\n'),
+      model.className,
+    );
+    return Location(uri: source.yamlSourceUri, range: range);
+  }
+
   static Either3<Location, List<Location>, List<LocationLink>> _buildResult({
     required Uri targetUri,
     required Range targetSelectionRange,

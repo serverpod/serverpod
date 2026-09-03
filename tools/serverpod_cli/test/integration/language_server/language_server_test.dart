@@ -672,6 +672,32 @@ fields:
     );
 
     test(
+      'when a model definition is requested by class name, '
+      'then it returns the location of the model definition.',
+      () async {
+        var result = await session.requestModelDefinition('User');
+
+        expect(result, isNotNull);
+        var location = result as Map<String, dynamic>;
+        var range = location['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        expect(location['uri'], Uri.file(userModelPath).toString());
+        expect(start['line'], 0);
+        expect(start['character'], 7);
+      },
+    );
+
+    test(
+      'when a model definition is requested by an unknown class name, '
+      'then it returns null.',
+      () async {
+        var result = await session.requestModelDefinition('NonExistent');
+
+        expect(result, isNull);
+      },
+    );
+
+    test(
       'when definition is requested on a project: type reference, '
       'then it returns null.',
       () async {
@@ -976,6 +1002,25 @@ fields:
             orderModelPath,
             line: 3,
             character: 21,
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var range = location['range'] as Map<String, dynamic>;
+          var start = range['start'] as Map<String, dynamic>;
+          expect(location['uri'], Uri.file(moduleModelPath).toString());
+          expect(start['line'], 0);
+          expect(start['character'], 7);
+        },
+      );
+
+      test(
+        'when a model definition is requested by module-qualified class name, '
+        'then it returns the location of the module model definition.',
+        () async {
+          var result = await session.requestModelDefinition(
+            'UserInfo',
+            moduleAlias: 'auth',
           );
 
           expect(result, isNotNull);

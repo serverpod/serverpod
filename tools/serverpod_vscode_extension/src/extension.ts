@@ -10,6 +10,7 @@ import {
 import { execSync } from 'child_process';
 import { satisfies, coerce } from 'semver';
 import { resolveServerpodFlutterAttach } from './flutter_device_selection';
+import { registerModelNavigation } from './model_navigation';
 
 let client: LanguageClient;
 
@@ -64,6 +65,8 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
+
+	registerModelNavigation(context, client);
 
 	client.start();
 }
