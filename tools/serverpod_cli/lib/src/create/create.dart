@@ -1112,24 +1112,26 @@ Future<List<String>> _copyServerUpgrade(
     ],
   );
 
-  log.debug(
-    'Adding cloud storage path overrides to root pubspec',
-    newParagraph: true,
-  );
-  _addDependenciesToPubspec(
-    pubspecFile: File(
-      p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
-    ),
-    additions: [
-      (
-        name: 'serverpod_cloud_storage',
-        source: DependencySourcePath(
-          '$customServerpodPath/integrations/serverpod_cloud_storage',
-        ),
-        type: DependencyType.override,
+  if (customServerpodPath != null) {
+    log.debug(
+      'Adding cloud storage path overrides to root pubspec',
+      newParagraph: true,
+    );
+    _addDependenciesToPubspec(
+      pubspecFile: File(
+        p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
       ),
-    ],
-  );
+      additions: [
+        (
+          name: 'serverpod_cloud_storage',
+          source: DependencySourcePath(
+            '$customServerpodPath/integrations/serverpod_cloud_storage',
+          ),
+          type: DependencyType.override,
+        ),
+      ],
+    );
+  }
 
   return writtenPaths;
 }
