@@ -4,6 +4,7 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
@@ -48,6 +49,57 @@ class LibraryGenerator {
       config.type != PackageType.module &&
       (config.modules.isNotEmpty ||
           config.sharedModelsSourcePathsParts.isNotEmpty);
+
+  /// Generates the `sync_tables.dart` library with the tables synchronized by
+  /// the `serverpod_offline_sync` package, or `null` when the module is not
+  /// part of the project.
+  Library? generateSyncTables() {
+    var syncModule = config.syncModule;
+    if (syncModule == null) return null;
+
+    var syncTableModels =
+        protocolDefinition.models
+            .whereType<ModelClassDefinition>()
+            .where((model) => model.isSyncTable)
+            .toList()
+          ..sort((a, b) => a.tableName!.compareTo(b.tableName!));
+
+    var library = LibraryBuilder();
+    library.body.add(
+      Field(
+        (f) => f
+          ..docs.add('''
+/// The tables synchronized between client and server by the
+/// `serverpod_offline_sync` package, including the ones owned by modules and
+/// shared packages.''')
+          ..name = 'syncTables'
+          ..modifier = FieldModifier.final$
+          ..type = TypeReference(
+            (t) => t
+              ..symbol = 'List'
+              ..types.add(
+                refer('Table', serverpodDatabaseRuntimeUrl(serverCode)),
+              ),
+          )
+          ..assignment = literalList([
+            for (var model in syncTableModels)
+              refer(
+                model.className,
+                // Shared-package models are referenced through their own
+                // package; host-owned models through the generated protocol.
+                model.isSharedModel
+                    ? 'package:${model.sharedPackageName}/'
+                          '${model.sharedPackageName}.dart'
+                    : TypeDefinition.getRef(model),
+              ).property('t'),
+            for (var module in config.modules)
+              if (module.hasSyncTables)
+                refer('syncTables', module.dartImportUrl(serverCode)).spread,
+          ]).code,
+      ),
+    );
+    return library.build();
+  }
 
   /// Generate the protocol library.
   Library generateProtocol() {
@@ -99,6 +151,8 @@ class LibraryGenerator {
             hide: const ['Protocol'],
           ),
       if (!serverCode && !sharedPackage) Directive.export('client.dart'),
+      if (!sharedPackage && config.syncModule != null)
+        Directive.export('sync_tables.dart'),
     ]);
 
     // Ignore warnings introduced by checking the DatabaseSerializationManager
@@ -1054,6 +1108,10 @@ return deserializeByClassName(value);
       ]);
     }
 
+    var syncModule = config.type != PackageType.module
+        ? config.syncModule
+        : null;
+
     var hasModules =
         config.modules.isNotEmpty && config.type != PackageType.module;
 
@@ -1549,12 +1607,95 @@ return deserializeByClassName(value);
                             .returned
                             .statement,
                 ),
+              if (hasClientDatabaseTables && syncModule != null)
+                _buildCreateSyncSessionMethod(syncModule),
             ],
           ),
       ),
     );
 
     return library.build();
+  }
+
+  Method _buildCreateSyncSessionMethod(ModuleConfig syncModule) {
+    var syncUrl = syncModule.dartImportUrl(false);
+    return Method(
+      (m) => m
+        ..docs.add('''
+  /// Creates a new client-side database session for the given path, wrapped
+  /// with the `serverpod_offline_sync` engine for the tables declared with
+  /// `database: sync`. See [createSession] for the [path], [runMigrations] and
+  /// [isDebugMode] parameters.
+  ///
+  /// The [persistentUserId] is the user all local operations belong to. When
+  /// omitted, the user must be passed through the transaction.''')
+        ..name = 'createSyncSession'
+        ..modifier = MethodModifier.async
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Future'
+            ..url = 'dart:async'
+            ..types.add(refer('CrdtDatabaseSession', syncUrl)),
+        )
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'path'
+              ..type = refer('String'),
+          ),
+        )
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'runMigrations'
+              ..named = true
+              ..type = refer('bool')
+              ..defaultTo = literalTrue.code,
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'isDebugMode'
+              ..named = true
+              ..type = refer('bool')
+              ..defaultTo = literalFalse.code,
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'persistentUserId'
+              ..named = true
+              ..type = refer('UuidValue?', serverpodUrl(false)),
+          ),
+        ])
+        ..body = Block.of([
+          declareFinal('session')
+              .assign(
+                refer('CrdtDatabaseSession', syncUrl)
+                    .property('wraps')
+                    .call(
+                      [
+                        refer('createSession')
+                            .call(
+                              [refer('path')],
+                              {
+                                'runMigrations': refer('runMigrations'),
+                                'isDebugMode': refer('isDebugMode'),
+                              },
+                            )
+                            .awaited,
+                      ],
+                      {
+                        'syncTables': refer('syncTables', 'sync_tables.dart'),
+                        'persistentUserId': refer('persistentUserId'),
+                      },
+                    ),
+              )
+              .statement,
+          refer(
+            'session',
+          ).property('db').property('initialize').call([]).awaited.statement,
+          refer('session').returned.statement,
+        ]),
+    );
   }
 
   String _getClientPathFromServer(String packageName) {

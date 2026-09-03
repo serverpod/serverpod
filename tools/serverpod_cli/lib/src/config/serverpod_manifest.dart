@@ -13,21 +13,28 @@ final class ServerpodManifest {
 
   static const _versionKey = 'version';
   static const _sharedPackagesKey = 'shared_packages';
+  static const _syncTablesKey = 'sync_tables';
 
   /// The list of shared packages that the owner package exports.
   final List<String> sharedPackages;
+
+  /// Whether the owner package exports a generated sync tables list for the
+  /// `serverpod_offline_sync` package.
+  final bool syncTables;
 
   /// Creates a new Serverpod manifest.
   ///
   /// [sharedPackages] is the list of shared packages that the owner package
   /// exports.
-  ServerpodManifest({required Iterable<String> sharedPackages})
-    : sharedPackages = List.unmodifiable(sharedPackages);
+  ServerpodManifest({
+    required Iterable<String> sharedPackages,
+    this.syncTables = false,
+  }) : sharedPackages = List.unmodifiable(sharedPackages);
 
   /// Whether the manifest is empty.
   ///
   /// Empty manifests are not written to the file system.
-  bool get isEmpty => sharedPackages.isEmpty;
+  bool get isEmpty => sharedPackages.isEmpty && !syncTables;
 
   /// Tries to load a Serverpod manifest from a file.
   ///
@@ -64,9 +71,20 @@ final class ServerpodManifest {
       );
     }
 
+    var syncTables = document[_syncTablesKey];
+    if (syncTables is! bool?) {
+      throw ServerpodManifestException(
+        'Invalid Serverpod manifest at ${file.path}: '
+        '$_syncTablesKey must be a boolean.',
+      );
+    }
+
     var sharedPackages = document[_sharedPackagesKey];
     if (sharedPackages == null) {
-      return ServerpodManifest(sharedPackages: const []);
+      return ServerpodManifest(
+        sharedPackages: const [],
+        syncTables: syncTables ?? false,
+      );
     }
     if (sharedPackages is! List ||
         sharedPackages.any((packageName) => packageName is! String)) {
@@ -76,19 +94,25 @@ final class ServerpodManifest {
       );
     }
 
-    return ServerpodManifest(sharedPackages: sharedPackages.cast<String>());
+    return ServerpodManifest(
+      sharedPackages: sharedPackages.cast<String>(),
+      syncTables: syncTables ?? false,
+    );
   }
 
   /// Converts the manifest to a YAML string.
   String toYaml() {
     var out = '$_versionKey: $currentVersion\n';
     if (sharedPackages.isEmpty) {
-      return '$out$_sharedPackagesKey: []\n';
+      out += '$_sharedPackagesKey: []\n';
+    } else {
+      out += '$_sharedPackagesKey:\n';
+      for (var packageName in sharedPackages) {
+        out += '  - $packageName\n';
+      }
     }
-
-    out += '$_sharedPackagesKey:\n';
-    for (var packageName in sharedPackages) {
-      out += '  - $packageName\n';
+    if (syncTables) {
+      out += '$_syncTablesKey: true\n';
     }
     return out;
   }
