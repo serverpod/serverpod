@@ -55,6 +55,16 @@ class CliInstallation {
   /// Whether an upgrade replaces the running executable.
   bool get upgradesRunningExecutable => kind == CliInstallationKind.managed;
 
+  /// The executable the user typed, which differs from [runningExecutable]
+  /// when a binstub starts the Dart VM instead of a `serverpod` executable.
+  String get invokedExecutable =>
+      p.equals(
+        p.basenameWithoutExtension(runningExecutable),
+        _executableName,
+      )
+      ? runningExecutable
+      : executableOnPath ?? runningExecutable;
+
   /// Inspects the process and environment to find these installations.
   static CliInstallation resolve() {
     final managedExecutable = dartInstalledExecutable(_executableName);

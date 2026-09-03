@@ -128,6 +128,38 @@ void main() {
     });
   });
 
+  group('Given a pub global binstub started the Dart VM,', () {
+    test('when naming the executable that ran, then the binstub is named', () {
+      final binstub = p.join(p.separator, 'pub-cache', 'bin', 'serverpod');
+
+      final installation = CliInstallation(
+        kind: CliInstallationKind.foreign,
+        runningExecutable: p.join(p.separator, 'dart-sdk', 'bin', 'dart'),
+        managedExecutable: _managedExecutable,
+        executableOnPath: binstub,
+        pathResolvesToManaged: false,
+      );
+
+      expect(installation.invokedExecutable, binstub);
+    });
+  });
+
+  group('Given a serverpod executable dart install does not manage,', () {
+    test('when naming the executable that ran, then it is named', () {
+      final stray = p.join(p.separator, 'usr', 'local', 'bin', 'serverpod');
+
+      final installation = CliInstallation(
+        kind: CliInstallationKind.foreign,
+        runningExecutable: stray,
+        managedExecutable: _managedExecutable,
+        executableOnPath: _managedExecutable,
+        pathResolvesToManaged: true,
+      );
+
+      expect(installation.invokedExecutable, stray);
+    });
+  });
+
   group('Given a binstub and the binary it wraps,', () {
     test(
       'when comparing the executables, then the platform extension is ignored',

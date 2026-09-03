@@ -159,7 +159,7 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
             'this checkout.',
       CliInstallationKind.foreign =>
         'Serverpod $templateVersion is running from '
-            '${installation.runningExecutable}, which "dart install" does not '
+            '${installation.invokedExecutable}, which "dart install" does not '
             'manage. Upgrading installs into '
             '${installation.managedBinDirectory} and leaves the executable '
             'you just ran untouched.\n'
