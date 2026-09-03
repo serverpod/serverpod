@@ -192,16 +192,16 @@ void main() async {
           );
         });
 
-        test('has the Serverpod Cloud provider dependency', () {
+        test('has the Serverpod Cloud storage dependency', () {
           final content = File(
             path.join(tempPath, serverDir, 'pubspec.yaml'),
           ).readAsStringSync();
 
           expect(
             content,
-            contains('serverpod_cloud_provider:'),
+            contains('serverpod_cloud_storage:'),
             reason:
-                'Server pubspec does not depend on serverpod_cloud_provider.',
+                'Server pubspec does not depend on serverpod_cloud_storage.',
           );
         });
 
@@ -251,17 +251,12 @@ void main() async {
 
             expect(
               content,
-              contains(
-                'pod.addCloudStorage(await ServerpodCloudProvider.private())',
-              ),
-              reason:
-                  'server.dart does not contain cloud storage configurations.',
-            );
-
-            expect(
-              content,
-              contains(
-                'pod.addCloudStorage(await ServerpodCloudProvider.public())',
+              allOf(
+                contains('pod.addCloudStorage('),
+                contains('await ServerpodCloudProvider.private('),
+                contains("fallback: () => DatabaseCloudStorage('private')"),
+                contains('await ServerpodCloudProvider.public('),
+                contains("fallback: () => DatabaseCloudStorage('public')"),
               ),
               reason:
                   'server.dart does not contain cloud storage configurations.',
