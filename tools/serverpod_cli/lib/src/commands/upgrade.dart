@@ -12,6 +12,14 @@ import '../generated/version.dart';
 
 const _packageName = 'serverpod_cli';
 
+/// Parses `--version` values, rejecting anything but a single version.
+class _VersionParser extends ValueParser<Version> {
+  const _VersionParser();
+
+  @override
+  Version parse(final String value) => Version.parse(value);
+}
+
 enum UpgradeOption<V> implements OptionDefinition<V> {
   channel(
     EnumOption(
@@ -29,12 +37,13 @@ enum UpgradeOption<V> implements OptionDefinition<V> {
     ),
   ),
   version(
-    StringOption(
+    ComparableValueOption<Version>(
+      valueParser: _VersionParser(),
       argName: 'version',
+      valueHelp: 'version',
       helpText:
-          'Install a specific version or version constraint instead of the '
-          'newest one in the channel. This is the only way to move the '
-          'installation backwards.',
+          'Install a specific version instead of the newest one in the '
+          'channel. This is the only way to move the installation backwards.',
     ),
   ),
   force(
@@ -71,12 +80,7 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
     final Configuration commandConfig,
   ) async {
     final force = commandConfig.value(UpgradeOption.force);
-    final requestedArgument = commandConfig.optionalValue(
-      UpgradeOption.version,
-    );
-    final requested = requestedArgument == null
-        ? null
-        : _parseConstraint(requestedArgument);
+    final requested = commandConfig.optionalValue(UpgradeOption.version);
 
     final installation = CliInstallation.resolve();
     _verifyInstallationIsUpgradable(installation, force: force);
@@ -91,7 +95,7 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
       await _installWithoutVersionLookup(
         installation: installation,
         channel: channel,
-        requested: requestedArgument,
+        requested: requested,
       );
       return;
     }
@@ -105,9 +109,8 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
 
     if (target == null) {
       log.error(
-        requestedArgument != null
-            ? 'No published version of $_packageName matches '
-                  '"$requestedArgument".'
+        requested != null
+            ? 'Version $requested of $_packageName is not published.'
             : 'Found no published versions of $_packageName.',
       );
       throw ExitException.error();
@@ -184,7 +187,7 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
   Future<void> _installWithoutVersionLookup({
     required final CliInstallation installation,
     required final UpgradeChannel channel,
-    required final String? requested,
+    required final Version? requested,
   }) async {
     if (requested == null && channel == UpgradeChannel.any) {
       log.error(
@@ -302,15 +305,6 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
     } on FormatException catch (e) {
       log.debug('Ignoring unparsable version "$version": ${e.message}');
       return null;
-    }
-  }
-
-  VersionConstraint _parseConstraint(final String value) {
-    try {
-      return VersionConstraint.parse(value);
-    } on FormatException catch (e) {
-      log.error('Invalid --version value "$value": ${e.message}');
-      throw ExitException.error();
     }
   }
 }

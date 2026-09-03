@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/upgrade/cli_installation.dart';
 import 'package:serverpod_cli/src/commands/upgrade/upgrade_target.dart';
 import 'package:test/test.dart';
@@ -148,51 +149,37 @@ void main() {
     );
   });
 
-  group('Given a stable installation and an open ended version range,', () {
-    test(
-      'when resolving the target on the stable channel, '
-      'then no prerelease is selected',
-      () {
-        final stable = Version.parse('3.4.11');
-        final newerStable = Version.parse('3.4.12');
-        final releaseCandidate = Version.parse('4.0.0-rc.1');
+  group('Given a value passed to --version,', () {
+    late UpgradeCommand command;
 
-        // Unlike ^3.4.0, this range has no upper bound to exclude against.
-        expect(
-          VersionConstraint.parse('>=3.4.0').allows(releaseCandidate),
-          isTrue,
-        );
+    setUp(() => command = UpgradeCommand());
 
-        final target = resolveUpgradeTarget(
-          current: stable,
-          published: [stable, newerStable, releaseCandidate],
-          channel: UpgradeChannel.stable,
-          requested: VersionConstraint.parse('>=3.4.0'),
-        )!;
+    Iterable<Object?> errorsFor(final String value) => command
+        .resolveConfiguration(command.argParser.parse(['--version', value]))
+        .errors;
 
-        expect(target.version, newerStable);
-      },
-    );
-  });
-
-  group('Given a version constraint the upgrade command accepts,', () {
-    for (final constraint in const [
+    for (final value in const [
       '4.0.0',
-      '^4.0.0',
       '4.0.0-beta.4',
-      'any',
+      '4.0.0+1',
+      '1.2.3-rc.1+build.5',
+    ]) {
+      test('when "$value" is given, then dart install can parse it too', () {
+        expect(errorsFor(value), isEmpty);
+        expect(() => loadYaml(value), returnsNormally);
+      });
+    }
+
+    for (final value in const [
       '>=4.0.0 <5.0.0',
       '>=4.0.0',
       '>4.0.0',
+      '^4.0.0',
+      'any',
     ]) {
-      test(
-        'when "$constraint" reaches dart install, then it can be parsed',
-        () {
-          expect(() => VersionConstraint.parse(constraint), returnsNormally);
-
-          expect(() => loadYaml(constraint), returnsNormally);
-        },
-      );
+      test('when the constraint "$value" is given, then it is rejected', () {
+        expect(errorsFor(value), isNotEmpty);
+      });
     }
   });
 

@@ -43,16 +43,16 @@ class UpgradeTarget {
 /// Picks the version to install from those [published] to pub.dev, or `null`
 /// if none is a candidate.
 ///
-/// The newest version allowed by [requested], or by [channel] when nothing was
-/// requested, wins.
+/// [requested] wins when it was published. When nothing was requested, the
+/// newest version [channel] admits wins.
 UpgradeTarget? resolveUpgradeTarget({
   required final Version current,
   required final Iterable<Version> published,
   required final UpgradeChannel channel,
-  final VersionConstraint? requested,
+  final Version? requested,
 }) {
   final candidates = published.where((final version) {
-    if (requested != null) return requested.allows(version);
+    if (requested != null) return version == requested;
     return channel == UpgradeChannel.any || !version.isPreRelease;
   }).toList()..sort();
 

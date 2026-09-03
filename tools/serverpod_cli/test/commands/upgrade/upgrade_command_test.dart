@@ -1,3 +1,4 @@
+import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/upgrade/upgrade_target.dart';
 import 'package:test/test.dart';
@@ -50,7 +51,10 @@ void main() {
         );
 
         expect(config.errors, isEmpty);
-        expect(config.optionalValue(UpgradeOption.version), '4.0.0-beta.4');
+        expect(
+          config.optionalValue(UpgradeOption.version),
+          Version.parse('4.0.0-beta.4'),
+        );
         expect(config.value(UpgradeOption.force), isTrue);
       },
     );

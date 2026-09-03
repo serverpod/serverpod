@@ -95,7 +95,7 @@ void main() {
           current: newerPrerelease,
           published: published,
           channel: UpgradeChannel.forVersion(newerPrerelease),
-          requested: VersionConstraint.parse('3.4.12'),
+          requested: newerStable,
         )!;
 
         expect(target.action, UpgradeAction.install);
@@ -104,14 +104,14 @@ void main() {
     );
 
     test(
-      'when the requested constraint allows a prerelease on a stable channel, '
+      'when the requested version is a prerelease on a stable channel, '
       'then the prerelease is selected',
       () {
         final target = resolveUpgradeTarget(
           current: stable,
           published: published,
           channel: UpgradeChannel.stable,
-          requested: VersionConstraint.parse('^4.0.0-beta.3'),
+          requested: newerPrerelease,
         )!;
 
         expect(target.action, UpgradeAction.install);
@@ -120,14 +120,14 @@ void main() {
     );
 
     test(
-      'when no published version matches the constraint, '
+      'when the requested version is not published, '
       'then there is no candidate',
       () {
         final target = resolveUpgradeTarget(
           current: newerPrerelease,
           published: published,
           channel: UpgradeChannel.forVersion(newerPrerelease),
-          requested: VersionConstraint.parse('^9.0.0'),
+          requested: Version.parse('9.0.0'),
         );
 
         expect(target, isNull);
