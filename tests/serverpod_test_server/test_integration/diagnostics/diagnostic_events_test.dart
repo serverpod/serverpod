@@ -5,6 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart' as shared;
+import 'package:serverpod_shared/log_io.dart'
+    show TestLogWriter; // ignore: invalid_use_of_visible_for_testing_member
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart' as e;
@@ -320,9 +323,12 @@ void main() {
       var exceptionHandler = TestExceptionHandler();
       late Serverpod pod;
       late DiagnosticEventRecord<ExceptionEvent> record;
+      final logWriterCapture = TestLogWriter();
 
       setUpAll(() async {
         exceptionHandler = TestExceptionHandler();
+        shared.logWriter.add(logWriterCapture);
+        addTearDown(() => shared.logWriter.remove(logWriterCapture));
 
         final config = ServerpodConfig(
           database: DatabaseConfig(
@@ -351,6 +357,12 @@ void main() {
             .timeout(const Duration(seconds: 2));
         await expectLater(result, throwsA(isA<TimeoutException>()));
         record = await exceptionHandler.events.first.timeout(timeout);
+        // start() keeps retrying the unreachable DB every 10s; stop it so
+        // this isolate does not hold the serial shard until those retries
+        // (and HTTP sockets bound before connect) are torn down.
+        try {
+          await pod.shutdown(exitProcess: false);
+        } catch (_) {}
       });
 
       tearDownAll(() async {
@@ -401,6 +413,22 @@ void main() {
               containsPair('serverRunMode', 'production'),
             ]),
           );
+        },
+      );
+
+      test(
+        'then the console error omits the stack trace',
+        () async {
+          await shared.log.flush();
+          final errors = logWriterCapture.entries
+              .where((e) => e.level == shared.LogLevel.error)
+              .toList();
+          expect(errors, isNotEmpty);
+          expect(
+            errors.first.message,
+            startsWith('Failed to connect to the database'),
+          );
+          expect(errors.first.stackTrace, isNull);
         },
       );
     },

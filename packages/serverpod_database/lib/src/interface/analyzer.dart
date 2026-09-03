@@ -68,9 +68,22 @@ abstract class DatabaseAnalyzer {
           ),
       ];
     } catch (e) {
-      // Ignore if the table does not exist.
+      if (isUndefinedTableError(e, tableName: 'serverpod_migrations')) {
+        log.warning(
+          'The serverpod_migrations table is missing. '
+          'Have you applied the database migrations?',
+        );
+        return [];
+      }
       log.error('Failed to get installed migrations', error: e);
-      return [];
+      // SQLite e2e shares one file between the insights server and CLI
+      // apply/create steps. Lock/busy is not "undefined table"; rethrowing
+      // hangs Insights until the 5-minute test timeout. Postgres still
+      // rethrows so connection loss is not reported as every table missing.
+      if (database.dialect == DatabaseDialect.sqlite) {
+        return [];
+      }
+      rethrow;
     }
   }
 }

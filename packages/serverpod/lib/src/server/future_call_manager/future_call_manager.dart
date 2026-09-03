@@ -41,6 +41,7 @@ class FutureCallManager {
 
   final _futureCalls = <String, InvokableFutureCall>{};
   final FutureCallDiagnosticsService _diagnosticsService;
+  final ShouldSkipScan? _skipDatabaseWork;
 
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
@@ -74,11 +75,13 @@ class FutureCallManager {
     required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
     Duration? heartbeatInterval,
+    ShouldSkipScan? skipDatabaseWork,
   }) : _diagnosticsService = diagnosticsService,
        _internalSession = internalSession,
        _logSession = logSession,
        _sessionBuilder = sessionProvider,
        _initializeFutureCall = initializeFutureCall,
+       _skipDatabaseWork = skipDatabaseWork,
        _heartbeatInterval = heartbeatInterval ?? const Duration(minutes: 1) {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
@@ -87,7 +90,9 @@ class FutureCallManager {
     _scanner = FutureCallScanner(
       internalSession: _internalSession,
       scanInterval: _config.scanInterval,
-      shouldSkipScan: _scheduler.isConcurrentLimitReached,
+      shouldSkipScan: () =>
+          _scheduler.isConcurrentLimitReached() ||
+          (_skipDatabaseWork?.call() ?? false),
       dispatchEntries: _dispatchEntries,
       diagnosticsService: _diagnosticsService,
     );
@@ -135,6 +140,12 @@ class FutureCallManager {
   /// If no future calls are registered, this method will skip processing
   /// and return immediately.
   Future<void> runScheduledFutureCalls() async {
+    if (_skipDatabaseWork?.call() ?? false) {
+      log.info(
+        'Future call tables are not available. Skipping processing.',
+      );
+      return;
+    }
     await _checkBrokenFutureCalls();
     if (_futureCalls.isEmpty) {
       log.info(
@@ -193,7 +204,9 @@ class FutureCallManager {
   /// Instead, the scanner will be started when the first future call is
   /// registered via [registerFutureCall].
   Future<void> start() async {
-    await _checkBrokenFutureCalls();
+    if (!(_skipDatabaseWork?.call() ?? false)) {
+      await _checkBrokenFutureCalls();
+    }
     if (_futureCalls.isNotEmpty) {
       _scanner.start();
     } else {
@@ -235,6 +248,13 @@ class FutureCallManager {
 
     _scheduler.addTaskCallbacks(callbacks.nonNulls.toList());
   }
+
+  /// Contention while claiming: another replica won the row, or the
+  /// transaction was rolled back so a later scan can retry.
+  static bool _isLostClaimSqlState(String? code) =>
+      code == PgErrorCode.serializationFailure ||
+      code == PgErrorCode.deadlockDetected ||
+      code == PgErrorCode.uniqueViolation;
 
   /// Collection of active claim heartbeat timers used for testing purposes.
   @visibleForTesting
@@ -328,8 +348,7 @@ class FutureCallManager {
         return timer;
       }
     } catch (error, stackTrace) {
-      if (error is DatabaseQueryException &&
-          error.code == PgErrorCode.serializationFailure) {
+      if (error is DatabaseQueryException && _isLostClaimSqlState(error.code)) {
         return null;
       }
       _diagnosticsService.submitFrameworkException(error, stackTrace);

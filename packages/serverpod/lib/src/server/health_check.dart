@@ -1,6 +1,5 @@
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/serverpod.dart';
-import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 
 import '../../serverpod.dart';
 import '../generated/protocol.dart';
@@ -50,16 +49,21 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     try {
       var startTime = DateTime.now();
 
-      dbHealthy = await pod.internalSession.db.testConnection();
+      // Legacy GET / uses this path. After HTTP-before-DB bind, the pool
+      // may still be attaching; do not wait on `pool.started` forever.
+      dbHealthy = await pod.internalSession.db.testConnection().timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => false,
+      );
 
       dbResponseTime =
           DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
     } catch (e, stackTrace) {
       dbHealthy = false;
-      pod.internalSubmitEvent(
-        ExceptionEvent(e, stackTrace),
-        space: OriginSpace.framework,
-        context: contextFromServer(pod.server),
+      pod.reportFrameworkException(
+        wrapConnectFailure(e),
+        stackTrace,
+        message: 'Failed to connect to the database during health check.',
       );
     }
   }
