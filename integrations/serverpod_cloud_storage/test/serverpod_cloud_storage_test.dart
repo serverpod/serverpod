@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_cloud_provider/src/serverpod_cloud_provider.dart';
+import 'package:serverpod_cloud_storage/src/serverpod_cloud_provider.dart';
 import 'package:test/test.dart';
 
 const _serviceAccountJson = '{"type":"service_account"}';
