@@ -12,6 +12,25 @@ String get dartInstallRoot => getDartDataHome('install');
 /// The directory `dart install` writes executables to.
 String get dartInstallBinDirectory => p.join(dartInstallRoot, 'bin');
 
+/// The pub cache directory, or `null` when it cannot be located.
+String? get pubCacheDirectory {
+  final pubCache = Platform.environment['PUB_CACHE'];
+  if (pubCache != null && pubCache.isNotEmpty) return pubCache;
+
+  if (Platform.isWindows) {
+    final localAppData = Platform.environment['LOCALAPPDATA'];
+    if (localAppData != null && localAppData.isNotEmpty) {
+      return p.join(localAppData, 'Pub', 'Cache');
+    }
+  }
+
+  final home =
+      Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+  if (home == null || home.isEmpty) return null;
+
+  return p.join(home, '.pub-cache');
+}
+
 /// The executable `dart install` writes for the package executable [name].
 String dartInstalledExecutable(final String name) =>
     p.join(dartInstallBinDirectory, Platform.isWindows ? '$name.bat' : name);

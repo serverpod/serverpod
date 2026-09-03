@@ -134,33 +134,13 @@ String getScloudExecutablePath() {
     return dartInstallPath;
   }
 
-  final pubCacheBin = _resolvePubCacheBinDirectory();
-  if (pubCacheBin != null) {
-    final pubCachePath = p.join(pubCacheBin, name);
+  final pubCache = pubCacheDirectory;
+  if (pubCache != null) {
+    final pubCachePath = p.join(pubCache, 'bin', name);
     if (File(pubCachePath).existsSync()) {
       return pubCachePath;
     }
   }
 
   return dartInstallPath;
-}
-
-String? _resolvePubCacheBinDirectory() {
-  final pubCache = Platform.environment['PUB_CACHE'];
-  if (pubCache != null && pubCache.isNotEmpty) {
-    return p.join(pubCache, 'bin');
-  }
-
-  if (Platform.isWindows) {
-    final localAppData = Platform.environment['LOCALAPPDATA'];
-    if (localAppData != null && localAppData.isNotEmpty) {
-      return p.join(localAppData, 'Pub', 'Cache', 'bin');
-    }
-  }
-
-  final home =
-      Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
-  if (home == null || home.isEmpty) return null;
-
-  return p.join(home, '.pub-cache', 'bin');
 }
