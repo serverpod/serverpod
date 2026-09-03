@@ -17,4 +17,23 @@ export 'src/common/rate_limited_request_attempt/rate_limited_request_attempt_uti
 export 'src/common/secret_challenge/secret_challenge_config.dart';
 export 'src/common/secret_challenge/secret_challenge_exceptions.dart';
 export 'src/common/secret_challenge/secret_challenge_util.dart';
+export 'src/common/web/configure_web_auth_routes.dart';
+export 'src/common/web/csrf.dart'
+    show csrfCookieName, generateCsrfToken, setCsrfCookie;
+export 'src/common/web/hmac_payload.dart'
+    show
+        decodeHmacPayload,
+        encodeHmacPayload,
+        generateSecureRandomString,
+        oauthStateMaxAge,
+        pkceS256Challenge,
+        timingSafeEquals,
+        webAuthOAuthStatePepperPasswordKey;
+export 'src/common/web/oauth_web_flow.dart'
+    show
+        OAuthCallbackRoute,
+        OAuthLoginFn,
+        OAuthStartRoute,
+        oauthStateCookieName;
+export 'src/common/web/web_auth_helpers.dart' show WebAuthFlowConfig;
 export 'src/generated/protocol.dart' hide Protocol;

@@ -322,13 +322,21 @@ class MethodCallSession extends Session {
 /// created. It contains all data associated with the current connection and
 /// provides easy access to the database.
 class WebCallSession extends Session {
-  /// Creates a new [Session] for a method call to an endpoint.
+  final Request _request;
+
+  /// The [Request] associated with the call.
+  @override
+  Request get request => _request;
+
+  /// Creates a new [Session] for a web-server call.
   WebCallSession._({
     required super.server,
     required super.endpoint,
     required super.authenticationKey,
+    required Request request,
     super.enableLogging = true,
-  });
+  }) : _request = request,
+       super(request: request);
 }
 
 /// When a connection is made to the [Server] to an endpoint method that uses a
@@ -658,12 +666,14 @@ extension SessionInternalMethods on Session {
     required Server server,
     required String endpoint,
     required String? authenticationKey,
+    required Request request,
     bool enableLogging = true,
   }) async {
     final session = WebCallSession._(
       server: server,
       endpoint: endpoint,
       authenticationKey: authenticationKey,
+      request: request,
       enableLogging: enableLogging,
     );
     await session.initializeAuthentication();

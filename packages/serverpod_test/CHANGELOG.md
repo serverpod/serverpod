@@ -105,6 +105,7 @@ To allow easily building offline-first Flutter apps, the experimental `database:
 
 #### Authentication:
 
+- feat: Adds Relic HTML document login (`configureWebAuthRoutes`) with SAS HttpOnly cookies. Closes #4818. (RFC #2008)
 - feat: Adds account merging mechanics to the auth module. ([@craiglabenz](https://github.com/craiglabenz))
 - feat: Adds `ServerpodCloudEmailIdpConfig` as default email IDP using Serverpod Cloud.
 - feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.

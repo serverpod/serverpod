@@ -68,7 +68,21 @@ class Server implements RouterInjectable {
   late AuthenticationHandler _authenticationHandler;
 
   /// [AuthenticationHandler] responsible for authenticating users.
-  AuthenticationHandler get authenticationHandler => _authenticationHandler;
+  ///
+  /// The user-facing API server prefers [Serverpod.authenticationHandler] when
+  /// that field is set, so a handler assigned after [start] (for example by
+  /// `initializeAuthServices` in a `withServerpod` test) is visible to Relic
+  /// and API sessions.
+  ///
+  /// Insights keeps the service handler passed to [start]. Sharing the user
+  /// handler would reject the service secret and break Insights, migration
+  /// e2e, and the service protocol.
+  AuthenticationHandler get authenticationHandler {
+    if (!identical(this, serverpod.server)) {
+      return _authenticationHandler;
+    }
+    return serverpod.authenticationHandler ?? _authenticationHandler;
+  }
 
   /// Caches used by the server.
   final Caches caches;
@@ -328,27 +342,16 @@ class Server implements RouterInjectable {
     };
   }
 
-  /// The `Origin` header of [req] normalized to lowercase with any trailing
-  /// slash dropped, or null if absent.
-  String? _requestOrigin(Request req) => req
-      .headers[Headers.originHeader]
-      ?.firstOrNull
-      ?.trim()
-      .toLowerCase()
-      .replaceFirst(RegExp(r'/+$'), '');
-
   /// Whether [req] carries an `Origin` that is present but not in
   /// [ServerpodConfig.allowedOrigins].
   ///
   /// A missing `Origin` (native / mobile / server-to-server, which don't send
   /// one) or an unset allow-list is not rejected. Shared by the WebSocket
   /// handshake and the HTTP cookie-auth origin gates so the two cannot drift.
-  bool _isOriginDisallowed(Request req) {
-    var allowedOrigins = serverpod.config.allowedOrigins;
-    if (allowedOrigins == null) return false;
-    var origin = _requestOrigin(req);
-    return origin != null && !allowedOrigins.contains(origin);
-  }
+  /// Relic HTML is stricter on missing Origin when authenticating from the
+  /// auth cookie; that policy lives in `_SessionMiddleware`.
+  bool _isOriginDisallowed(Request req) =>
+      isPresentOriginDisallowed(req, serverpod.config.allowedOrigins);
 
   /// When cookie-based web auth is enabled, credentialed CORS requires echoing
   /// the specific request `Origin` (the wildcard `*` is invalid with
@@ -359,7 +362,7 @@ class Server implements RouterInjectable {
     if (serverpod.config.authCookie == null) return headers;
 
     var allowedOrigins = serverpod.config.allowedOrigins;
-    var origin = _requestOrigin(req);
+    var origin = requestOrigin(req);
 
     // Echo the specific origin (the wildcard `*` is invalid with credentials)
     // only for an allow-listed origin. Guard the parse so a
