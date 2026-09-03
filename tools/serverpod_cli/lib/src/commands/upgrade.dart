@@ -1,8 +1,8 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
-import 'package:pub_api_client/pub_api_client.dart' show PubClient;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/upgrade/cli_installation.dart';
+import 'package:serverpod_cli/src/commands/upgrade/published_versions.dart';
 import 'package:serverpod_cli/src/commands/upgrade/upgrade_target.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/dart_install.dart';
@@ -281,30 +281,10 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
     List<Version>? published;
 
     await log.progress('Looking up published Serverpod versions', () async {
-      final client = PubClient();
-      try {
-        final versions = await client
-            .packageVersions(_packageName)
-            .timeout(const Duration(seconds: 10));
-        published = versions.map(_tryParseVersion).nonNulls.toList();
-        return true;
-      } catch (e) {
-        log.debug('Failed to look up published versions of $_packageName: $e');
-        return false;
-      } finally {
-        client.close();
-      }
+      published = await fetchPublishedVersions(_packageName);
+      return published != null;
     });
 
     return published;
-  }
-
-  Version? _tryParseVersion(final String version) {
-    try {
-      return Version.parse(version);
-    } on FormatException catch (e) {
-      log.debug('Ignoring unparsable version "$version": ${e.message}');
-      return null;
-    }
   }
 }
