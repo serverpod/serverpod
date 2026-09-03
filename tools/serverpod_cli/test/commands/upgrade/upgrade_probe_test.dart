@@ -5,6 +5,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/upgrade/cli_installation.dart';
 import 'package:serverpod_cli/src/commands/upgrade/upgrade_target.dart';
+import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
@@ -189,17 +190,15 @@ void main() {
       'then upgrading installs the version it named',
       () {
         final current = Version.parse('4.0.0-rc.1');
+        final newestStable = Version.parse('4.0.0');
+        final newestPrerelease = Version.parse('4.1.0-beta.1');
         final published = [
           Version.parse('3.4.12'),
-          Version.parse('4.0.0'),
-          Version.parse('4.1.0-beta.1'),
+          newestStable,
+          newestPrerelease,
         ];
 
-        // promptToUpdateIfNeeded asks for the latest stable release.
-        final prompted = published
-            .where((final version) => !version.isPreRelease)
-            .reduce((final a, final b) => a > b ? a : b);
-        expect(current < prompted, isTrue);
+        final prompted = latestVersionToPrompt(current, published);
 
         final target = resolveUpgradeTarget(
           current: current,
@@ -207,7 +206,9 @@ void main() {
           channel: UpgradeChannel.forVersion(current),
         )!;
 
-        expect(target.version, prompted);
+        expect(prompted, target.version);
+        expect(prompted, newestPrerelease);
+        expect(current < prompted!, isTrue);
       },
     );
   });
