@@ -1,7 +1,7 @@
 # TEMPLATE
 
 name: serverpod_cloud_storage
-description: Cloud storage integration for Serverpod Cloud projects
+description: Cloud storage integration for Serverpod Cloud projects.
 version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
