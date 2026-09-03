@@ -64,8 +64,34 @@ fi
 # Tests tagged migration_artifacts mutate the checked-out migrations/protocol
 # directories and have a dedicated serial CI suite; running them here can race
 # every other isolate while it loads those files during server startup.
-echo "### Running concurrent integration tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
-INTEGRATION_TEST_SERVERPOD_MODE=test dart test "${shard_test_files[@]}" -t integration -x migration_artifacts --reporter=failures-only
+#
+# Timing-tagged files (wall-clock bounds, 4s start-timeout child, 32MB
+# existence-cost) currently all land in shard 9. Starting them in the same
+# dart test as the rest of the shard starves withServerpod's 120s start
+# timeout - CI then fails at ~2m. Run them serially first, then the rest.
+timing_test_files=()
+other_test_files=()
+for test_file in "${shard_test_files[@]}"; do
+    if grep -Fq "@Tags(['timing'])" "$test_file"; then
+        timing_test_files+=("$test_file")
+    else
+        other_test_files+=("$test_file")
+    fi
+done
+
+if [ ${#timing_test_files[@]} -gt 0 ]; then
+    echo "### Running timing integration tests serially (${#timing_test_files[@]} files, shard $shard_index/$total_shards)"
+    INTEGRATION_TEST_SERVERPOD_MODE=test dart test "${timing_test_files[@]}" \
+        -t integration -x migration_artifacts --concurrency=1 --reporter=failures-only
+fi
+
+if [ ${#other_test_files[@]} -eq 0 ]; then
+    echo "### No non-timing test files assigned to shard $shard_index/$total_shards"
+else
+    echo "### Running concurrent integration tests (${#other_test_files[@]} files, shard $shard_index/$total_shards)"
+    INTEGRATION_TEST_SERVERPOD_MODE=test dart test "${other_test_files[@]}" \
+        -t integration -x migration_artifacts -x timing --reporter=failures-only
+fi
 
 # Verify the embedded data path was created. Don't remove it here: the tests
 # leave the postmaster running (it is reaped on the next start), so an rm would
