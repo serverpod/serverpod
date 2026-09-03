@@ -7,13 +7,9 @@ import 'package:test/test.dart';
 /// The name `dart install` gives the Serverpod executable on this platform.
 final _executableName = Platform.isWindows ? 'serverpod.bat' : 'serverpod';
 
-final _managedExecutable = p.join(
-  p.separator,
-  'data-home',
-  'install',
-  'bin',
-  'serverpod',
-);
+final _installRoot = p.join(p.separator, 'data-home', 'install');
+
+final _managedExecutable = p.join(_installRoot, 'bin', 'serverpod');
 
 String _pathVariable(final List<String> directories) =>
     directories.join(Platform.isWindows ? ';' : ':');
@@ -77,7 +73,7 @@ void main() {
       expect(
         classifyInstallation(
           runningExecutable: _managedExecutable,
-          managedExecutable: _managedExecutable,
+          installRoot: _installRoot,
         ),
         CliInstallationKind.managed,
       );
@@ -94,7 +90,7 @@ void main() {
             'bin',
             'serverpod',
           ),
-          managedExecutable: _managedExecutable,
+          installRoot: _installRoot,
         ),
         CliInstallationKind.foreign,
       );
@@ -106,7 +102,7 @@ void main() {
       expect(
         classifyInstallation(
           runningExecutable: p.join(p.separator, 'dart-sdk', 'bin', 'dart'),
-          managedExecutable: _managedExecutable,
+          installRoot: _installRoot,
         ),
         CliInstallationKind.source,
       );

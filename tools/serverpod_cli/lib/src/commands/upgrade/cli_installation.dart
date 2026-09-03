@@ -65,7 +65,7 @@ class CliInstallation {
     return CliInstallation(
       kind: classifyInstallation(
         runningExecutable: _canonicalize(Platform.resolvedExecutable),
-        managedExecutable: canonicalManaged,
+        installRoot: _canonicalize(dartInstallRoot),
       ),
       runningExecutable: Platform.resolvedExecutable,
       managedExecutable: managedExecutable,
@@ -79,21 +79,26 @@ class CliInstallation {
 
 /// Determines which installation [runningExecutable] belongs to.
 ///
+/// [installRoot] is the directory `dart install` owns, holding both the bin
+/// entries and the app bundles they point at. Where in there the executable
+/// sits differs by platform, since the bin entry is a symbolic link on Unix
+/// and a batch file wrapper on Windows, so only containment is checked.
+///
 /// Both paths must be canonical, as produced by [CliInstallation.resolve].
 CliInstallationKind classifyInstallation({
   required final String runningExecutable,
-  required final String managedExecutable,
+  required final String installRoot,
 }) {
-  if (!p.equals(
-    p.basenameWithoutExtension(runningExecutable),
-    p.basenameWithoutExtension(managedExecutable),
-  )) {
-    return CliInstallationKind.source;
+  if (p.isWithin(installRoot, runningExecutable)) {
+    return CliInstallationKind.managed;
   }
 
-  return isSameExecutable(runningExecutable, managedExecutable)
-      ? CliInstallationKind.managed
-      : CliInstallationKind.foreign;
+  return p.equals(
+        p.basenameWithoutExtension(runningExecutable),
+        _executableName,
+      )
+      ? CliInstallationKind.foreign
+      : CliInstallationKind.source;
 }
 
 /// Returns the first executable named [name] on `PATH`, the way a shell

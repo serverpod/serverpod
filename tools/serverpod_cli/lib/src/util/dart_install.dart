@@ -6,8 +6,11 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/process_io.dart';
 
+/// The directory `dart install` keeps its executables and app bundles in.
+String get dartInstallRoot => getDartDataHome('install');
+
 /// The directory `dart install` writes executables to.
-String get dartInstallBinDirectory => p.join(getDartDataHome('install'), 'bin');
+String get dartInstallBinDirectory => p.join(dartInstallRoot, 'bin');
 
 /// The executable `dart install` writes for the package executable [name].
 String dartInstalledExecutable(final String name) =>
