@@ -1,63 +1,78 @@
 import 'package:lsp_server/lsp_server.dart';
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Provides Go to Definition (CTRL+Click) resolution for Serverpod model files.
 class DefinitionProvider {
-  static const Set<String> _primitiveTypes = {
-    'int',
-    'double',
-    'String',
-    'bool',
-    'DateTime',
-    'ByteData',
-    'Duration',
-    'UuidValue',
-    'BigInt',
-    'num',
+  static final Set<String> _primitiveTypes = {
+    ...autoSerializedTypes,
+    ...extensionSerializedTypes,
     'dynamic',
     'void',
-    'List',
-    'Map',
-    'Set',
+    'num',
   };
 
-  static const Set<String> _ignoredKeywords = {
-    'class',
-    'enum',
-    'exception',
-    'table',
-    'fields',
-    'indexes',
-    'relation',
-    'name',
-    'onDelete',
-    'onUpdate',
-    'unique',
-    'true',
-    'false',
+  static final Set<String> _ignoredKeywords = {
+    /// All valid YAML keywords defined for model files.
+    Keyword.classType,
+    Keyword.exceptionType,
+    Keyword.enumType,
+    Keyword.serializationDataType,
+    Keyword.serialized,
+    Keyword.isSealed,
+    Keyword.isImmutable,
+    Keyword.extendsClass,
+    Keyword.serverOnly,
+    Keyword.table,
+    Keyword.managedMigration,
+    Keyword.fields,
+    Keyword.indexes,
+    Keyword.properties,
+    Keyword.values,
+    Keyword.type,
+    Keyword.unique,
+    Keyword.nullsDistinct,
+    Keyword.per,
+    Keyword.operatorClass,
+    Keyword.distanceFunction,
+    Keyword.parameters,
+    Keyword.parent,
+    Keyword.relation,
+    Keyword.field,
+    Keyword.onUpdate,
+    Keyword.onDelete,
+    Keyword.deferrable,
+    Keyword.deferred,
+    Keyword.name,
+    Keyword.api,
+    Keyword.database,
+    Keyword.optional,
+    Keyword.fk,
+    Keyword.scope,
+    Keyword.persist,
+    Keyword.requiredKey,
+    Keyword.tail,
+    Keyword.defaultKey,
+    Keyword.defaultModelKey,
+    Keyword.defaultPersistKey,
+    Keyword.columnKey,
+    Keyword.jsonKey,
+    ...ForeignKeyAction.values.expand(
+      (e) => [e.name, '${e.name[0].toUpperCase()}${e.name.substring(1)}'],
+    ),
+    ...ModelDatabaseDefinition.values.map((e) => e.name),
+    ...ModelFieldScopeDefinition.values.map((e) => e.name),
+    defaultBooleanTrue,
+    defaultBooleanFalse,
     'null',
-    'serverOnly',
-    'database',
-    'all',
-    'client',
-    'server',
-    'none',
-    'optional',
-    'order',
-    'persist',
-    'default',
-    'defaultModel',
-    'defaultPersist',
-    'cascade',
-    'noAction',
-    'restrict',
-    'setNull',
-    'setDefault',
   };
 
   /// Resolves the definition location for a symbol at [position] in the document at [documentUri].
-  static Either3<Location, List<Location>, List<LocationLink>>? resolveDefinition({
+  static Either3<Location, List<Location>, List<LocationLink>>?
+  resolveDefinition({
     required StatefulAnalyzer analyzer,
     required Uri documentUri,
     required Position position,
@@ -88,7 +103,8 @@ class DefinitionProvider {
     // 1. Check if token is a reference to a field in the current model
     // e.g. relation(field=authorId) or fields: authorId in index
     var currentModel = analyzer.getModel(documentUri);
-    if (currentModel is ClassDefinition && _isFieldReferenceContext(line, wordMatch)) {
+    if (currentModel is ClassDefinition &&
+        _isFieldReferenceContext(line, wordMatch)) {
       var field = currentModel.findField(token);
       if (field != null) {
         var fieldLocation = _findFieldDefinitionRange(lines, token);
@@ -135,7 +151,10 @@ class DefinitionProvider {
     }
 
     // 3. Search model by className and moduleAlias
-    var targetModel = analyzer.findModelByName(className, moduleAlias: moduleAlias);
+    var targetModel = analyzer.findModelByName(
+      className,
+      moduleAlias: moduleAlias,
+    );
 
     // 4. If not found by class name, try searching by database table name
     // e.g. parentTable=citizen
@@ -252,7 +271,8 @@ class DefinitionProvider {
     // Allow ':' only if it connects identifier parts (like module:auth:User)
     if (char == ':') {
       var hasPrev = index > 0 && _isIdentifierChar(line[index - 1]);
-      var hasNext = index + 1 < line.length && _isIdentifierChar(line[index + 1]);
+      var hasNext =
+          index + 1 < line.length && _isIdentifierChar(line[index + 1]);
       return hasPrev && hasNext;
     }
 
@@ -277,7 +297,10 @@ class DefinitionProvider {
     return false;
   }
 
-  static Range? _findFieldDefinitionRange(List<String> lines, String fieldName) {
+  static Range? _findFieldDefinitionRange(
+    List<String> lines,
+    String fieldName,
+  ) {
     var fieldRegex = RegExp(r'^\s*' + RegExp.escape(fieldName) + r'\s*:');
     for (var i = 0; i < lines.length; i++) {
       var l = lines[i];
