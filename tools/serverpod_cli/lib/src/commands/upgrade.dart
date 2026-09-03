@@ -92,12 +92,11 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
 
     final published = await _fetchPublishedVersions();
     if (published == null) {
-      await _installWithoutVersionLookup(
-        installation: installation,
-        channel: channel,
-        requested: requested,
+      log.error(
+        'Could not reach pub.dev to look up the published versions of '
+        '$_packageName.',
       );
-      return;
+      throw ExitException.error();
     }
 
     final target = resolveUpgradeTarget(
@@ -180,36 +179,6 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
 
     log.error('$message\nRe-run with --force to install anyway.');
     throw ExitException.error();
-  }
-
-  /// Installs without knowing the resulting version, all that is possible
-  /// when pub.dev cannot be reached.
-  Future<void> _installWithoutVersionLookup({
-    required final CliInstallation installation,
-    required final UpgradeChannel channel,
-    required final Version? requested,
-  }) async {
-    if (requested == null && channel == UpgradeChannel.any) {
-      log.error(
-        'Could not reach pub.dev to look up the published versions of '
-        '$_packageName. Installing without a version would replace the '
-        'installation with the latest stable release, which this channel does '
-        'not track. Re-run with --version to pick a version explicitly.',
-      );
-      throw ExitException.error();
-    }
-
-    final descriptor = requested == null
-        ? _packageName
-        : '$_packageName@$requested';
-    await _install(descriptor);
-
-    log.info(
-      'Installed $descriptor to ${installation.managedBinDirectory}. pub.dev '
-      'could not be reached to look up version numbers, so run '
-      '"serverpod version" to see what was installed.',
-    );
-    _warnAboutPathMismatch(installation);
   }
 
   /// Reports what was installed, and nothing about what `serverpod` runs.
