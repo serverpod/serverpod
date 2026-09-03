@@ -505,6 +505,7 @@ void main() {
         allowedOrigins: const [_allowedOrigin],
       );
       pod.webServer.addRoute(_HtmlCookieRoute(), '/html-cookie');
+      // ignore: invalid_use_of_visible_for_testing_member
       pod.webServer.setDevModeForTesting(true);
       await pod.start();
       port = pod.webServer.port!;

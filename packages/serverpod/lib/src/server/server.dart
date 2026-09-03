@@ -69,10 +69,20 @@ class Server implements RouterInjectable {
 
   /// [AuthenticationHandler] responsible for authenticating users.
   ///
-  /// Prefers [Serverpod.authenticationHandler] when that field is set, so a
-  /// handler assigned after [start] is visible to Relic and API sessions.
-  AuthenticationHandler get authenticationHandler =>
-      serverpod.authenticationHandler ?? _authenticationHandler;
+  /// The user-facing API server prefers [Serverpod.authenticationHandler] when
+  /// that field is set, so a handler assigned after [start] (for example by
+  /// `initializeAuthServices` in a `withServerpod` test) is visible to Relic
+  /// and API sessions.
+  ///
+  /// Insights keeps the service handler passed to [start]. Sharing the user
+  /// handler would reject the service secret and break Insights, migration
+  /// e2e, and the service protocol.
+  AuthenticationHandler get authenticationHandler {
+    if (!identical(this, serverpod.server)) {
+      return _authenticationHandler;
+    }
+    return serverpod.authenticationHandler ?? _authenticationHandler;
+  }
 
   /// Caches used by the server.
   final Caches caches;
