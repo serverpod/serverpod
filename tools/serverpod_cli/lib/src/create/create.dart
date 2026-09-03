@@ -811,6 +811,8 @@ Future<List<String>> _copyFlutterUpgrade(
           ),
           type: DependencyType.normal,
         ),
+        // 11.x requires compileSdk 37, above Flutter's current default, so new
+        // projects stay on 10.x until Flutter's default catches up.
         (
           name: 'flutter_secure_storage',
           source: DependencySource.version(
