@@ -192,6 +192,19 @@ void main() async {
           );
         });
 
+        test('has the Serverpod Cloud storage dependency', () {
+          final content = File(
+            path.join(tempPath, serverDir, 'pubspec.yaml'),
+          ).readAsStringSync();
+
+          expect(
+            content,
+            contains('serverpod_cloud_storage:'),
+            reason:
+                'Server pubspec does not depend on serverpod_cloud_storage.',
+          );
+        });
+
         test('has a .gitignore file', () {
           expect(
             File(path.join(tempPath, serverDir, '.gitignore')).existsSync(),
@@ -228,6 +241,28 @@ void main() async {
             reason: 'Server server.dart file does not exist.',
           );
         });
+
+        test(
+          'then server.dart contains Serverpod Cloud storage configurations',
+          () {
+            final content = File(
+              path.join(tempPath, serverDir, 'lib', 'server.dart'),
+            ).readAsStringSync();
+
+            expect(
+              content,
+              allOf(
+                contains('pod.addCloudStorage('),
+                contains('await ServerpodCloudProvider.private('),
+                contains("fallback: () => DatabaseCloudStorage('private')"),
+                contains('await ServerpodCloudProvider.public('),
+                contains("fallback: () => DatabaseCloudStorage('public')"),
+              ),
+              reason:
+                  'server.dart does not contain cloud storage configurations.',
+            );
+          },
+        );
 
         test(
           'then the server.dart contains webapp configurations',
