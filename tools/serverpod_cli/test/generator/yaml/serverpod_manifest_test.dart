@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
 import 'package:serverpod_cli/src/generator/yaml/serverpod_manifest_generator.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';
+import '../../test_util/builders/module_config_builder.dart';
 
 const generator = ServerpodManifestGenerator();
 const protocolDefinition = ProtocolDefinition(
@@ -48,6 +50,41 @@ void main() {
 version: 1
 shared_packages:
   - example_shared
+''',
+        }),
+      );
+    },
+  );
+
+  test(
+    'Given a module with the databaseSync experimental feature and the '
+    'serverpod_offline_sync module, '
+    'when generating its Serverpod manifest, '
+    'then the manifest contains the sync tables flag.',
+    () {
+      var config = GeneratorConfigBuilder()
+          .withPackageType(PackageType.module)
+          .withEnabledExperimentalFeatures([ExperimentalFeature.databaseSync])
+          .withModules([
+            ModuleConfigBuilder(
+              'serverpod_offline_sync',
+              'offline_sync',
+            ).build(),
+          ])
+          .build();
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      expect(
+        codeMap,
+        equals({
+          expectedFileName: '''
+version: 1
+shared_packages: []
+sync_tables: true
 ''',
         }),
       );

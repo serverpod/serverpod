@@ -66,6 +66,17 @@ class DartClientCodeGenerator extends CodeGenerator {
           .generateClientEndpointCalls()
           .generateCode(formatter: GeneratedDartFormatters.of(clientPath)),
     };
+
+    var syncTables = clientClassGenerator.generateSyncTables();
+    if (syncTables != null) {
+      var syncTablesPath = p.joinAll([
+        ...config.generatedDartClientModelPathParts,
+        'sync_tables.dart',
+      ]);
+      files[syncTablesPath] = syncTables.generateCode(
+        formatter: GeneratedDartFormatters.of(syncTablesPath),
+      );
+    }
     if (protocolDefinition.models.hasHostClientDatabaseTables &&
         config.type != PackageType.module) {
       files[p.joinAll([

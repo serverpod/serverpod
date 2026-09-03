@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:async/async.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
-import 'package:dart_data_home/dart_data_home.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/util/dart_install.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-import 'package:serverpod_shared/process_io.dart';
 
 /// Forwards to the Serverpod Cloud CLI (`scloud`).
 class CloudCommand extends ServerpodCommand {
@@ -106,64 +104,43 @@ Future<Process> _startScloudProcess(
 }
 
 Future<void> _installScloud() async {
-  final dartExecutable = p.join(getSdkPath(), 'bin', 'dart');
-  final success = await log.progress(
-    'Installing Serverpod Cloud CLI...',
-    () async {
-      final installProcess = await Process.start(dartExecutable, [
-        'install',
-        'serverpod_cloud_cli',
-      ]);
-
-      installProcess.stdout.transform(const Utf8Decoder()).listen(log.debug);
-      installProcess.stderr.transform(const Utf8Decoder()).listen(log.error);
-
-      return (await installProcess.exitCode) == 0;
-    },
+  final result = await runDartInstall(
+    'serverpod_cloud_cli',
+    message: 'Installing Serverpod Cloud CLI',
   );
+  if (result.success) return;
 
-  if (!success) {
-    log.error('Failed to install Serverpod Cloud CLI.');
-    throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-  }
+  final details = result.errorOutput;
+  log.error(
+    'Failed to install Serverpod Cloud CLI.'
+    '${details.isEmpty ? '' : '\n$details'}',
+  );
+  throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
 }
 
 /// Resolves the full path to the Serverpod Cloud CLI (`scloud`) executable.
 ///
 /// Tries in order:
 /// 1. The `dart install` bin directory (where `_installScloud` places it)
-/// 2. The legacy pub-cache bin directory
+/// 2. The legacy pub-cache bin directory, when it can be located
 ///
 /// Returns the preferred `dart install` path even when the executable is
 /// missing so callers can trigger installation.
 String getScloudExecutablePath() {
   final name = Platform.isWindows ? 'scloud.bat' : 'scloud';
 
-  final dartInstallPath = p.join(getDartDataHome('install'), 'bin', name);
+  final dartInstallPath = dartInstalledExecutable('scloud');
   if (File(dartInstallPath).existsSync()) {
     return dartInstallPath;
   }
 
-  final pubCachePath = p.join(_resolvePubCacheBinDirectory(), name);
-  if (File(pubCachePath).existsSync()) {
-    return pubCachePath;
-  }
-
-  return dartInstallPath;
-}
-
-String _resolvePubCacheBinDirectory() {
-  final pubCache = Platform.environment['PUB_CACHE'];
-  if (pubCache != null && pubCache.isNotEmpty) {
-    return p.join(pubCache, 'bin');
-  }
-
-  if (Platform.isWindows) {
-    final localAppData = Platform.environment['LOCALAPPDATA'];
-    if (localAppData != null && localAppData.isNotEmpty) {
-      return p.join(localAppData, 'Pub', 'Cache', 'bin');
+  final pubCache = pubCacheDirectory;
+  if (pubCache != null) {
+    final pubCachePath = p.join(pubCache, 'bin', name);
+    if (File(pubCachePath).existsSync()) {
+      return pubCachePath;
     }
   }
 
-  return p.join(Platform.environment['HOME'] ?? '', '.pub-cache', 'bin');
+  return dartInstallPath;
 }

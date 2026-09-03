@@ -14,6 +14,7 @@ import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
+import '../commands/upgrade.dart' show UpgradeCommand;
 import '../commands/version.dart' show VersionCommand;
 import '../generated/completion_script_carapace.dart';
 
@@ -35,11 +36,14 @@ Future<void> _preCommandEnvironmentChecks() async {
 }
 
 Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
-  if (runner._productionMode) {
-    await promptToUpdateIfNeeded(runner._cliVersion);
-  } else {
+  if (!runner._productionMode) {
     log.debug('Development mode.');
+    return;
   }
+
+  if (runner._invokedCommandName == UpgradeCommand.commandName) return;
+
+  await promptToUpdateIfNeeded(runner._cliVersion);
 }
 
 Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
@@ -50,6 +54,7 @@ Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
 class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
   final bool _productionMode;
   final Version _cliVersion;
+  String? _invokedCommandName;
 
   ServerpodCommandRunner(
     super.executableName,
@@ -90,7 +95,7 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
 
     // Counted straight off the registered command list, so a renamed or newly
     // added command is picked up without touching the analytics code.
-    final commandName = topLevelResults.command?.name;
+    final commandName = _invokedCommandName = topLevelResults.command?.name;
     if (commandName != null &&
         commands.containsKey(commandName) &&
         cliAnalytics.enabled) {
