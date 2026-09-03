@@ -2,7 +2,7 @@ import 'package:lsp_server/lsp_server.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/language_server/definition_provider.dart';
+import 'package:serverpod_cli/src/language_server/model_navigation_utils.dart';
 
 /// Provides Find References resolution for Serverpod model files.
 class ReferenceProvider {
@@ -20,64 +20,43 @@ class ReferenceProvider {
     if (position.line < 0 || position.line >= lines.length) return [];
 
     var line = lines[position.line];
-    var wordMatch = DefinitionProvider.extractWordAt(line, position.character);
+    var wordMatch = extractWordAt(line, position.character);
     if (wordMatch == null) return [];
 
     var token = wordMatch.word;
 
-    // Skip primitive types and common keywords
-    if (DefinitionProvider.primitiveTypes.contains(token) ||
-        DefinitionProvider.ignoredKeywords.contains(token)) {
+    // 1. Check if token is a field of the current model. This runs before
+    // the keyword skip so that fields named like keywords (e.g. `name`)
+    // stay searchable.
+    var currentModel = analyzer.getModel(documentUri);
+    if (currentModel is ClassDefinition &&
+        currentModel.findField(token) != null) {
+      return _findFieldReferences(
+        lines: lines,
+        documentUri: documentUri,
+        fieldName: token,
+        includeDeclaration: context.includeDeclaration,
+      );
+    }
+
+    // 2. Skip primitive types and common keywords
+    if (primitiveTypes.contains(token) || ignoredKeywords.contains(token)) {
       return [];
     }
 
-    // 1. Check if token is a reference to a field in the current model
-    var currentModel = analyzer.getModel(documentUri);
-    if (currentModel is ClassDefinition) {
-      var isField =
-          currentModel.findField(token) != null ||
-          DefinitionProvider.isFieldReferenceContext(line, wordMatch);
-      if (isField && currentModel.findField(token) != null) {
-        return _findFieldReferences(
-          lines: lines,
-          documentUri: documentUri,
-          fieldName: token,
-          includeDeclaration: context.includeDeclaration,
-        );
-      }
-    }
+    // 3. Parse potential model / class target from token.
+    // `project:` and `package:` tokens denote plain Dart classes and can
+    // never resolve to a model.
+    var modelToken = parseModelToken(token);
+    if (modelToken == null) return [];
 
-    // 2. Parse potential model / class target from token
-    String? moduleAlias;
-    String className = token;
-
-    if (token.startsWith('module:')) {
-      var parts = token.split(':');
-      if (parts.length >= 3) {
-        moduleAlias = parts[1];
-        className = parts.sublist(2).join(':');
-      }
-    } else if (token.startsWith('project:')) {
-      var parts = token.split(':');
-      if (parts.length >= 3) {
-        moduleAlias = parts[1];
-        className = parts.sublist(2).join(':');
-      }
-    } else if (token.contains(':')) {
-      var parts = token.split(':');
-      if (parts.length == 2) {
-        moduleAlias = parts[0];
-        className = parts[1];
-      }
-    }
-
-    // 3. Search model by className and moduleAlias
+    // 4. Search model by className and moduleAlias
     var targetModel = analyzer.findModelByName(
-      className,
-      moduleAlias: moduleAlias,
+      modelToken.className,
+      moduleAlias: modelToken.moduleAlias,
     );
 
-    // 4. If not found by class name, try searching by database table name
+    // 5. If not found by class name, try searching by database table name
     targetModel ??= analyzer.findModelByTableName(token);
 
     if (targetModel == null) return [];
@@ -101,7 +80,7 @@ class ReferenceProvider {
     // 1. Declaration site
     if (includeDeclaration && targetSource != null && targetUri != null) {
       var targetLines = targetSource.yaml.split('\n');
-      var declRange = DefinitionProvider.findModelDefinitionRange(
+      var declRange = findModelDefinitionRange(
         targetLines,
         targetModel.className,
       );
@@ -124,7 +103,8 @@ class ReferenceProvider {
         var rawLine = modelLines[lineIdx];
 
         // Skip the declaration line itself in the declaration file (already handled above if includeDeclaration is true)
-        if (isDeclarationFile && _isDeclarationLine(rawLine, className)) {
+        if (isDeclarationFile &&
+            modelDeclarationColumn(rawLine, className) != null) {
           continue;
         }
 
@@ -172,21 +152,18 @@ class ReferenceProvider {
 
     for (var i = 0; i < lines.length; i++) {
       var line = lines[i];
-      var isDecl = RegExp(
-        r'^\s*' + RegExp.escape(fieldName) + r'\s*:',
-      ).hasMatch(line);
+      var declColumn = fieldDeclarationColumn(line, fieldName);
 
-      if (isDecl) {
+      if (declColumn != null) {
         if (includeDeclaration) {
-          var col = line.indexOf(fieldName);
           locations.add(
             Location(
               uri: documentUri,
               range: Range(
-                start: Position(line: i, character: col >= 0 ? col : 0),
+                start: Position(line: i, character: declColumn),
                 end: Position(
                   line: i,
-                  character: col >= 0 ? col + fieldName.length : line.length,
+                  character: declColumn + fieldName.length,
                 ),
               ),
             ),
@@ -199,35 +176,21 @@ class ReferenceProvider {
       for (var match in matches) {
         if (_isCommentIndex(line, match.start)) continue;
 
-        var before = line.substring(0, match.start);
-        var isRef =
-            before.contains('field=') ||
-            before.contains('fields:') ||
-            before.contains('field:') ||
-            before.contains('fields=[');
+        if (!isFieldReferenceContext(line, match.start)) continue;
 
-        if (isRef) {
-          locations.add(
-            Location(
-              uri: documentUri,
-              range: Range(
-                start: Position(line: i, character: match.start),
-                end: Position(line: i, character: match.end),
-              ),
+        locations.add(
+          Location(
+            uri: documentUri,
+            range: Range(
+              start: Position(line: i, character: match.start),
+              end: Position(line: i, character: match.end),
             ),
-          );
-        }
+          ),
+        );
       }
     }
 
     return locations;
-  }
-
-  static bool _isDeclarationLine(String line, String className) {
-    var defRegex = RegExp(
-      r'^\s*(class|enum|exception)\s*:\s*' + RegExp.escape(className) + r'\b',
-    );
-    return defRegex.hasMatch(line);
   }
 
   static bool _isCommentIndex(String line, int index) {
@@ -262,13 +225,9 @@ class ReferenceProvider {
     if (startCol > 0 && line[startCol - 1] == ':') {
       var prefix = line.substring(0, startCol - 1);
       var delimiterIdx = prefix.lastIndexOf(RegExp(r'[\s,<(?:]'));
-      var word = delimiterIdx >= 0
+      var alias = delimiterIdx >= 0
           ? prefix.substring(delimiterIdx + 1)
           : prefix;
-      var parts = word.split(':');
-      var alias = parts.length >= 2 && parts[0] == 'module'
-          ? parts[1]
-          : parts.last;
       if (alias.isNotEmpty && targetModel.type.moduleAlias != alias) {
         return false;
       }
