@@ -65,7 +65,9 @@ class CliInstallation {
     return CliInstallation(
       kind: classifyInstallation(
         runningExecutable: _canonicalize(Platform.resolvedExecutable),
+        runningScript: _runningScript(),
         installRoot: _canonicalize(dartInstallRoot),
+        globalPackagesRoot: _globalPackagesRoot(),
       ),
       runningExecutable: Platform.resolvedExecutable,
       managedExecutable: managedExecutable,
@@ -84,21 +86,50 @@ class CliInstallation {
 /// sits differs by platform, since the bin entry is a symbolic link on Unix
 /// and a batch file wrapper on Windows, so only containment is checked.
 ///
-/// Both paths must be canonical, as produced by [CliInstallation.resolve].
+/// A `dart pub global activate` binstub runs the Dart VM, so it is told
+/// apart from a checkout by [runningScript] pointing into
+/// [globalPackagesRoot].
+///
+/// All paths must be canonical, as produced by [CliInstallation.resolve].
 CliInstallationKind classifyInstallation({
   required final String runningExecutable,
+  required final String runningScript,
   required final String installRoot,
+  required final String? globalPackagesRoot,
 }) {
   if (p.isWithin(installRoot, runningExecutable)) {
     return CliInstallationKind.managed;
   }
 
-  return p.equals(
-        p.basenameWithoutExtension(runningExecutable),
-        _executableName,
-      )
-      ? CliInstallationKind.foreign
-      : CliInstallationKind.source;
+  if (p.equals(
+    p.basenameWithoutExtension(runningExecutable),
+    _executableName,
+  )) {
+    return CliInstallationKind.foreign;
+  }
+
+  if (globalPackagesRoot != null &&
+      p.isWithin(globalPackagesRoot, runningScript)) {
+    return CliInstallationKind.foreign;
+  }
+
+  return CliInstallationKind.source;
+}
+
+/// The script this process is running, canonical and absolute. Empty when
+/// there is no file to point at, as for an AOT compiled executable.
+String _runningScript() {
+  final script = Platform.script;
+  if (!script.isScheme('file')) return '';
+  return _canonicalize(script.toFilePath());
+}
+
+/// Where `dart pub global activate` keeps the packages it installs, or `null`
+/// when the pub cache cannot be located.
+String? _globalPackagesRoot() {
+  final pubCache = pubCacheDirectory;
+  if (pubCache == null) return null;
+  return _canonicalize(p.join(pubCache, 'global_packages'));
 }
 
 /// Returns the first executable named [name] on `PATH`, the way a shell

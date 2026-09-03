@@ -66,7 +66,9 @@ void main() {
         expect(
           classifyInstallation(
             runningExecutable: canonicalize(bundleExecutable),
+            runningScript: '',
             installRoot: installRoot,
+            globalPackagesRoot: null,
           ),
           CliInstallationKind.managed,
         );
@@ -89,7 +91,9 @@ void main() {
         expect(
           classifyInstallation(
             runningExecutable: canonicalize(bundleExecutable),
+            runningScript: '',
             installRoot: installRoot,
+            globalPackagesRoot: null,
           ),
           CliInstallationKind.managed,
         );
@@ -116,10 +120,24 @@ void main() {
           'dart pub global run serverpod_cli:serverpod_cli "\$@"\n',
         );
 
+        final globalPackages = Directory(
+          p.join(root.path, '.pub-cache', 'global_packages'),
+        )..createSync(recursive: true);
+        final snapshotDirectory = Directory(
+          p.join(globalPackages.path, 'serverpod_cli', 'bin'),
+        )..createSync(recursive: true);
+        final snapshot = p.join(
+          snapshotDirectory.path,
+          'serverpod_cli.dart-3.13.2.snapshot',
+        );
+        File(snapshot).writeAsStringSync('');
+
         expect(
           classifyInstallation(
             runningExecutable: canonicalize(dartExecutable),
+            runningScript: canonicalize(snapshot),
             installRoot: canonicalize(p.join(root.path, 'install')),
+            globalPackagesRoot: canonicalize(globalPackages.path),
           ),
           isNot(CliInstallationKind.source),
           reason:

@@ -11,6 +11,19 @@ final _installRoot = p.join(p.separator, 'data-home', 'install');
 
 final _managedExecutable = p.join(_installRoot, 'bin', 'serverpod');
 
+final _globalPackagesRoot = p.join(
+  p.separator,
+  'pub-cache',
+  'global_packages',
+);
+
+final _sourceScript = p.join(
+  p.separator,
+  'checkout',
+  'bin',
+  'serverpod_cli.dart',
+);
+
 String _pathVariable(final List<String> directories) =>
     directories.join(Platform.isWindows ? ';' : ':');
 
@@ -73,7 +86,9 @@ void main() {
       expect(
         classifyInstallation(
           runningExecutable: _managedExecutable,
+          runningScript: '',
           installRoot: _installRoot,
+          globalPackagesRoot: _globalPackagesRoot,
         ),
         CliInstallationKind.managed,
       );
@@ -90,7 +105,9 @@ void main() {
             'bin',
             'serverpod',
           ),
+          runningScript: '',
           installRoot: _installRoot,
+          globalPackagesRoot: _globalPackagesRoot,
         ),
         CliInstallationKind.foreign,
       );
@@ -102,7 +119,9 @@ void main() {
       expect(
         classifyInstallation(
           runningExecutable: p.join(p.separator, 'dart-sdk', 'bin', 'dart'),
+          runningScript: _sourceScript,
           installRoot: _installRoot,
+          globalPackagesRoot: _globalPackagesRoot,
         ),
         CliInstallationKind.source,
       );
