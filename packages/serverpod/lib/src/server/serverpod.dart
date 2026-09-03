@@ -865,6 +865,16 @@ class Serverpod {
       _internalLogVerbose('Redis is disabled, skipping.');
     }
 
+    // Run Module.onStartup hooks after migrations and Redis, before Insights
+    // and user-facing servers. Skip when maintenance mode exits immediately
+    // after applying migrations.
+    var appliedMigrations =
+        config.applyMigrations || config.applyRepairMigration;
+    if (!(config.role == ServerpodRole.maintenance && appliedMigrations)) {
+      _internalLogVerbose('Running module startup hooks.');
+      await endpoints.onStartup(internalSession);
+    }
+
     // Start servers.
     if (config.role == ServerpodRole.monolith ||
         config.role == ServerpodRole.serverless) {
@@ -907,8 +917,6 @@ class Serverpod {
     // Start maintenance tasks. If we are running in maintenance mode, we
     // will only run the maintenance tasks once. If we are applying migrations
     // no other maintenance tasks will be run.
-    var appliedMigrations =
-        (config.applyMigrations || config.applyRepairMigration);
     if (config.role == ServerpodRole.monolith ||
         (config.role == ServerpodRole.maintenance && !appliedMigrations)) {
       _internalLogVerbose('Starting maintenance tasks.');

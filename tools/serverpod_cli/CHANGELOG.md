@@ -83,6 +83,7 @@ To allow easily building offline-first Flutter apps, the experimental `database:
 
 #### Server, web server and client:
 
+- feat: Adds `Module.onStartup` hooks invoked after migrations and before servers start.
 - feat: Ensures at-least-once semantics for future calls execution.
 - feat: Adds dedicated support for recurring future calls.
 - feat: Exposes configuration options for finding and deleting broken future calls on server startup.

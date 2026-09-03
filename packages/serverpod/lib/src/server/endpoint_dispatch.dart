@@ -23,6 +23,17 @@ abstract class EndpointDispatch {
   /// Initializes all endpoints that are connected to the dispatch.
   void initializeEndpoints(Server server);
 
+  /// Runs package [Module] startup hooks after migrations and Redis connect,
+  /// before user-facing servers start.
+  ///
+  /// Generated [Endpoints] classes override this to invoke the local
+  /// [Module] (if any) and, for host packages, each nested module's hook
+  /// exactly once (flat fan-out). The default is a no-op.
+  ///
+  /// [session] is the server's internal session — no auth context; do not
+  /// close or retain it past this call.
+  Future<void> onStartup(Session session) async {}
+
   /// Reference to the generated future calls.
   FutureCallDispatch? get futureCalls => null;
 

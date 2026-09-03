@@ -21,6 +21,7 @@ import '../endpoints/record_streaming.dart' as _i157ib2o;
 import '../endpoints/streaming.dart' as _i8rqmf36;
 import '../endpoints/unauthenticated.dart' as _ius7wovq;
 import '../module_feature/endpoints/my_feature_endpoint.dart' as _iv1xl3uy;
+import '../test_module_module.dart' as _idn2qzyz;
 
 class Endpoints extends _is.EndpointDispatch {
   @override
@@ -356,5 +357,10 @@ class Endpoints extends _is.EndpointDispatch {
         ),
       },
     );
+  }
+
+  @override
+  Future<void> onStartup(_is.Session session) async {
+    await _idn2qzyz.TestModuleModule().onStartup(session);
   }
 }

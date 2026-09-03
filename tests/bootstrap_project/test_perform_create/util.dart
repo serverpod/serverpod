@@ -52,13 +52,33 @@ TempProject setUpPerformCreateInTempDir({required TemplateContext context}) {
     project.workingDir = Directory.systemTemp.createTempSync(
       'sp_perform_create_',
     );
-    await performCreate(
+    final result = await performCreate(
       project.name,
       false,
       interactive: false,
       context: context,
       workingDirectory: project.workingDir,
     );
+    if (result is! CreateSuccess) {
+      final root = project.projectRoot;
+      final listing = <String>[];
+      for (final rel in [
+        '.agents/skills',
+        '.agent/skills',
+        '.claude/skills',
+        '.cursor/skills',
+        '.opencode/skills',
+        'AGENTS.md',
+        'CLAUDE.md',
+      ]) {
+        final path = p.join(root, rel);
+        listing.add('${FileSystemEntity.typeSync(path)} $rel');
+      }
+      fail(
+        'performCreate failed for ${project.name}.\n'
+        '${listing.join('\n')}',
+      );
+    }
   });
   tearDownAll(() {
     try {
