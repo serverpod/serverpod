@@ -73,14 +73,14 @@ class RunnerSocketServer {
     _closing = true;
     await _eventSub?.cancel();
     _eventSub = null;
-    for (final socket in _sockets.toList()) {
-      try {
-        await socket.flush();
-      } catch (_) {}
-    }
-    await Future.wait([for (final peer in _peers.toList()) peer.close()]);
+    await ([
+      for (final peer in _peers.toList()) peer.close().catchError((_) {}),
+    ]).wait;
     _peers.clear();
     for (final socket in _sockets.toList()) {
+      try {
+        await socket.close();
+      } catch (_) {}
       socket.destroy();
     }
     _sockets.clear();

@@ -44,7 +44,13 @@ StreamChannel<String> socketChannel(Socket socket) {
         // Peer may have already disconnected
       }
     },
-    onDone: () => socket.close().catchError((_) {}),
+    onDone: () async {
+      try {
+        await socket.close();
+      } catch (_) {
+        socket.destroy();
+      }
+    },
   );
 
   unawaited(socket.done.catchError((_) {}));
