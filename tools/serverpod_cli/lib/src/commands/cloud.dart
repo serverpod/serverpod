@@ -10,6 +10,39 @@ import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/dart_install.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
+/// The exit codes `scloud` uses to hand its self-update over to the launcher.
+abstract final class ScloudExitCode {
+  /// `scloud` needs a breaking update that it could not install itself.
+  static const int updateRequired = 69;
+
+  /// `scloud` installed an update and the command must be run again with
+  /// the new version.
+  static const int updatedRerunRequired = 75;
+}
+
+/// The environment variables `scloud` reads from its launcher.
+abstract final class ScloudEnvironment {
+  /// The command name `scloud` shows in its user-facing text.
+  static const String baseCommand = 'SERVERPOD_CLOUD_BASE_COMMAND';
+
+  /// Makes `scloud` exit with [ScloudExitCode.updatedRerunRequired] after
+  /// updating itself, instead of rerunning the command in a nested process.
+  static const String exitOnUpdated = 'SERVERPOD_CLOUD_EXIT_ON_UPDATED';
+}
+
+/// The command name shown to users who invoke `scloud` through this command.
+const scloudBaseCommand = 'serverpod cloud';
+
+/// Starts `scloud` with [args] and [environment], and returns its exit code.
+typedef ScloudStarter =
+    Future<int> Function(
+      List<String> args, {
+      required Map<String, String> environment,
+    });
+
+/// Installs the latest `scloud`, throwing [ExitException] on failure.
+typedef ScloudInstaller = Future<void> Function();
+
 /// Forwards to the Serverpod Cloud CLI (`scloud`).
 class CloudCommand extends ServerpodCommand {
   CloudCommand() : super(options: []);
@@ -43,34 +76,89 @@ class CloudCommand extends ServerpodCommand {
   Future<void> runWithConfig(Configuration commandConfig) async {
     final scloudArgs = argResults?.rest ?? [];
 
-    final process = await _startScloudProcess(
+    final exitCode = await runScloud(
       scloudArgs,
-      installIfMissing: true,
+      start: _startScloud,
+      install: _installScloud,
     );
 
-    final sigSubscription =
-        StreamGroup.merge(
-          [
-            ProcessSignal.sigint,
-            if (!Platform.isWindows) ProcessSignal.sigterm,
-          ].map((signal) => signal.watch()),
-        ).listen((signal) {
-          process.kill(signal);
-        });
-
-    try {
-      final exitCode = await process.exitCode;
-      if (exitCode != 0) {
-        throw ExitException(exitCode);
-      }
-    } finally {
-      await sigSubscription.cancel();
+    if (exitCode != 0) {
+      throw ExitException(exitCode);
     }
+  }
+}
+
+/// Runs `scloud` with [args] and returns the exit code of its last launch.
+///
+/// The first launch asks `scloud` to exit instead of rerunning itself after
+/// a self-update, so that only one process inherits the terminal at a time.
+/// Exit code [ScloudExitCode.updatedRerunRequired] relaunches the command
+/// once. Exit code [ScloudExitCode.updateRequired] installs the latest
+/// `scloud` with [install] first, then relaunches once.
+Future<int> runScloud(
+  List<String> args, {
+  required ScloudStarter start,
+  required ScloudInstaller install,
+}) async {
+  final exitCode = await start(
+    args,
+    environment: {
+      ScloudEnvironment.baseCommand: scloudBaseCommand,
+      ScloudEnvironment.exitOnUpdated: 'true',
+    },
+  );
+
+  switch (exitCode) {
+    case ScloudExitCode.updatedRerunRequired:
+      log.debug(
+        'Serverpod Cloud CLI updated itself, running the command again.',
+      );
+    case ScloudExitCode.updateRequired:
+      log.debug(
+        'Serverpod Cloud CLI requires an update it could not install itself, '
+        'installing it.',
+      );
+      await install();
+    default:
+      return exitCode;
+  }
+
+  return start(
+    args,
+    environment: {ScloudEnvironment.baseCommand: scloudBaseCommand},
+  );
+}
+
+Future<int> _startScloud(
+  List<String> args, {
+  required Map<String, String> environment,
+}) async {
+  final process = await _startScloudProcess(
+    args,
+    environment: environment,
+    installIfMissing: true,
+  );
+
+  final sigSubscription =
+      StreamGroup.merge(
+        [
+          ProcessSignal.sigint,
+          if (!Platform.isWindows) ProcessSignal.sigterm,
+        ].map((signal) => signal.watch()),
+      ).listen((signal) {
+        process.kill(signal);
+      });
+
+  try {
+    return await process.exitCode;
+  } finally {
+    await sigSubscription.cancel();
   }
 }
 
 Future<Process> _startScloudProcess(
   List<String> args, {
+  required Map<String, String> environment,
   required bool installIfMissing,
 }) async {
   final scloudExecutable = getScloudExecutablePath();
@@ -78,7 +166,11 @@ Future<Process> _startScloudProcess(
   if (!File(scloudExecutable).existsSync()) {
     if (installIfMissing) {
       await _installScloud();
-      return _startScloudProcess(args, installIfMissing: false);
+      return _startScloudProcess(
+        args,
+        environment: environment,
+        installIfMissing: false,
+      );
     }
 
     log.error(
@@ -93,6 +185,7 @@ Future<Process> _startScloudProcess(
       scloudExecutable,
       args,
       workingDirectory: Directory.current.path,
+      environment: environment,
       mode: ProcessStartMode.inheritStdio,
     );
   } on ProcessException catch (exception) {
