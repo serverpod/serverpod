@@ -329,4 +329,193 @@ void main() {
       expect(session.registrations, isEmpty);
     },
   );
+
+  group('Given an initialized language server with registered models,', () {
+    late LanguageServerTestSession session;
+    late String modelsDir;
+    late String userModelPath;
+    late String postModelPath;
+
+    setUp(() async {
+      await ProjectDirectoryBuilder().build().create();
+
+      modelsDir = p.join(
+        d.sandbox,
+        'project',
+        'my_project_server',
+        'lib',
+        'src',
+        'models',
+      );
+
+      userModelPath = p.join(modelsDir, 'user.spy.yaml');
+      postModelPath = p.join(modelsDir, 'post.spy.yaml');
+
+      File(userModelPath).writeAsStringSync('''
+class: User
+table: user
+fields:
+  name: String
+''');
+
+      File(postModelPath).writeAsStringSync('''
+class: Post
+table: post
+fields:
+  title: String
+  authorId: int
+  author: User?, relation(field=authorId)
+''');
+
+      session = LanguageServerTestSession();
+      await session.initialize(
+        Uri.directory(p.join(d.sandbox, 'project')),
+        linkSupport: false,
+      );
+      session.sendInitialized();
+    });
+
+    tearDown(() async {
+      await session.dispose();
+    });
+
+    test(
+      'when definition is requested on a model type name, '
+      'then it returns the location of the model definition.',
+      () async {
+        // Line 5 in post.spy.yaml is: "  author: User?, relation(field=authorId)"
+        // "User" is at column 10
+        var result = await session.requestDefinition(
+          postModelPath,
+          line: 5,
+          character: 11,
+        );
+
+        expect(result, isNotNull);
+        var location = result as Map<String, dynamic>;
+        var range = location['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        expect(location['uri'], Uri.file(userModelPath).toString());
+        expect(start['line'], 0);
+        expect(start['character'], 7);
+      },
+    );
+
+    test(
+      'when definition is requested on a relation field reference, '
+      'then it returns the location of that field in the current file.',
+      () async {
+        // Line 5 in post.spy.yaml is: "  author: User?, relation(field=authorId)"
+        // "authorId" is at column 32
+        var result = await session.requestDefinition(
+          postModelPath,
+          line: 5,
+          character: 34,
+        );
+
+        expect(result, isNotNull);
+        var location = result as Map<String, dynamic>;
+        var range = location['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        expect(location['uri'], Uri.file(postModelPath).toString());
+        // authorId is defined at line 4: "  authorId: int"
+        expect(start['line'], 4);
+      },
+    );
+
+    test(
+      'when definition is requested on a primitive type, '
+      'then it returns null.',
+      () async {
+        // Line 3 in post.spy.yaml: "  title: String" -> "String" is at column 9
+        var result = await session.requestDefinition(
+          postModelPath,
+          line: 3,
+          character: 10,
+        );
+
+        expect(result, isNull);
+      },
+    );
+  });
+
+  group('Given an initialized language server with linkSupport enabled,', () {
+    late LanguageServerTestSession session;
+    late String modelsDir;
+    late String userModelPath;
+    late String postModelPath;
+
+    setUp(() async {
+      await ProjectDirectoryBuilder().build().create();
+
+      modelsDir = p.join(
+        d.sandbox,
+        'project',
+        'my_project_server',
+        'lib',
+        'src',
+        'models',
+      );
+
+      userModelPath = p.join(modelsDir, 'user.spy.yaml');
+      postModelPath = p.join(modelsDir, 'post.spy.yaml');
+
+      File(userModelPath).writeAsStringSync('''
+class: User
+table: user
+fields:
+  name: String
+''');
+
+      File(postModelPath).writeAsStringSync('''
+class: Post
+table: post
+fields:
+  title: String
+  author: User?
+''');
+
+      session = LanguageServerTestSession();
+      await session.initialize(
+        Uri.directory(p.join(d.sandbox, 'project')),
+        linkSupport: true,
+      );
+      session.sendInitialized();
+    });
+
+    tearDown(() async {
+      await session.dispose();
+    });
+
+    test(
+      'when definition is requested with linkSupport, '
+      'then it returns a list containing LocationLink.',
+      () async {
+        // Line 4 in post.spy.yaml is: "  author: User?" -> "User" is at column 10
+        var result = await session.requestDefinition(
+          postModelPath,
+          line: 4,
+          character: 11,
+        );
+
+        expect(result, isNotNull);
+        expect(result, isA<List>());
+        var link = (result as List).first as Map<String, dynamic>;
+        var targetSelectionRange =
+            link['targetSelectionRange'] as Map<String, dynamic>;
+        var targetStart = targetSelectionRange['start'] as Map<String, dynamic>;
+        var originSelectionRange =
+            link['originSelectionRange'] as Map<String, dynamic>;
+        var originStart = originSelectionRange['start'] as Map<String, dynamic>;
+        var originEnd = originSelectionRange['end'] as Map<String, dynamic>;
+
+        expect(link['targetUri'], Uri.file(userModelPath).toString());
+        expect(targetStart['line'], 0);
+        expect(targetStart['character'], 7);
+        expect(originStart['line'], 4);
+        expect(originStart['character'], 10);
+        expect(originEnd['character'], 14);
+      },
+    );
+  });
 }

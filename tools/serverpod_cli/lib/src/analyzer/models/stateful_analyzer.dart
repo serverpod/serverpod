@@ -80,6 +80,58 @@ class StatefulAnalyzer {
     return _modelStates.containsKey(_modelStateKey(uri));
   }
 
+  /// Returns the [ModelSource] for the registered model with [uri].
+  ModelSource? getModelSource(Uri uri) {
+    return _modelStates[_modelStateKey(uri)]?.source;
+  }
+
+  /// Returns the [SerializableModelDefinition] for the registered model with [uri].
+  SerializableModelDefinition? getModel(Uri uri) {
+    return _modelStates[_modelStateKey(uri)]?.model;
+  }
+
+  /// Returns the [ModelSource] for the given [model].
+  ModelSource? getModelSourceForModel(SerializableModelDefinition model) {
+    for (var state in _modelStates.values) {
+      if (state.model == model) return state.source;
+      if (state.model?.className == model.className &&
+          state.model?.type.moduleAlias == model.type.moduleAlias) {
+        return state.source;
+      }
+    }
+    return null;
+  }
+
+  /// Finds a registered model by [className], optionally qualified with [moduleAlias].
+  SerializableModelDefinition? findModelByName(
+    String className, {
+    String? moduleAlias,
+  }) {
+    if (moduleAlias != null && moduleAlias.isNotEmpty) {
+      return models
+          .where((m) =>
+              m.className == className && m.type.moduleAlias == moduleAlias)
+          .firstOrNull;
+    }
+
+    var projectModel = models
+        .where((m) =>
+            m.className == className &&
+            m.type.moduleAlias == defaultModuleAlias)
+        .firstOrNull;
+    if (projectModel != null) return projectModel;
+
+    return models.where((m) => m.className == className).firstOrNull;
+  }
+
+  /// Finds a registered model by its database [tableName].
+  SerializableModelDefinition? findModelByTableName(String tableName) {
+    return models
+        .whereType<ModelClassDefinition>()
+        .where((m) => m.tableName == tableName)
+        .firstOrNull;
+  }
+
   /// Removes a model from the state but leaves the responsibility of validating
   /// the new state to the caller. Please note that [validateAll] should be called to
   /// guarantee that all related errors are cleared.

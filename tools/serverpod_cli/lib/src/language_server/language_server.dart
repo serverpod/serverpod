@@ -7,6 +7,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/language_server/definition_provider.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -32,6 +33,7 @@ Future<void> runLanguageServer({
   ServerProject? serverProject;
   Exception? exception;
   var clientSupportsWatchedFilesRegistration = false;
+  var clientSupportsDefinitionLink = false;
 
   // The editor buffer is authoritative for open documents; rescans from disk
   // must not replace or remove them.
@@ -52,6 +54,9 @@ Future<void> runLanguageServer({
             ?.dynamicRegistration ??
         false;
 
+    clientSupportsDefinitionLink =
+        params.capabilities.textDocument?.definition?.linkSupport ?? false;
+
     var rootUri = params.rootUri;
     if (rootUri != null) {
       try {
@@ -66,6 +71,7 @@ Future<void> runLanguageServer({
     return InitializeResult(
       capabilities: ServerCapabilities(
         textDocumentSync: const Either2.t1(TextDocumentSyncKind.Full),
+        definitionProvider: const Either2.t1(true),
       ),
     );
   });
@@ -170,6 +176,18 @@ Future<void> runLanguageServer({
     serverProject?.analyzer.validateModel(
       contentChanges.first.text,
       params.textDocument.uri,
+    );
+  });
+
+  conn.onDefinition((params) async {
+    var project = serverProject;
+    if (project == null) return null;
+
+    return DefinitionProvider.resolveDefinition(
+      analyzer: project.analyzer,
+      documentUri: params.textDocument.uri,
+      position: params.position,
+      linkSupport: clientSupportsDefinitionLink,
     );
   });
 
