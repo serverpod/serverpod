@@ -13,51 +13,80 @@ const _serviceAccountEnvironmentVariable =
 abstract final class ServerpodCloudProvider {
   /// Creates the private cloud storage configured by Serverpod Cloud.
   ///
-  /// Returns a [DatabaseCloudStorage] when the environment does not
-  /// contain valid configurations.
-  static Future<CloudStorage> private() => createServerpodCloudStorage(
+  /// Returns [fallback] when Serverpod Cloud storage is not configured.
+  /// Invalid configuration throws a [CloudStorageException].
+  static Future<CloudStorage> private({
+    required FutureOr<CloudStorage> Function() fallback,
+  }) => createServerpodCloudStorage(
     storageId: 'private',
     environment: Platform.environment,
+    fallback: fallback,
   );
 
   /// Creates the public cloud storage configured by Serverpod Cloud.
   ///
-  /// Returns a [DatabaseCloudStorage] when the environment does not
-  /// contain valid configurations.
-  static Future<CloudStorage> public() => createServerpodCloudStorage(
+  /// Returns [fallback] when Serverpod Cloud storage is not configured.
+  /// Invalid configuration throws a [CloudStorageException].
+  static Future<CloudStorage> public({
+    required FutureOr<CloudStorage> Function() fallback,
+  }) => createServerpodCloudStorage(
     storageId: 'public',
     environment: Platform.environment,
+    fallback: fallback,
   );
 }
 
 /// Creates a Serverpod Cloud storage for [storageId].
+///
+/// The [fallback] is returned when the Serverpod Cloud environment
+/// variables are absent. Invalid configuration and storage creation
+/// failures throw a [CloudStorageException].
 Future<CloudStorage> createServerpodCloudStorage({
   required String storageId,
   required Map<String, String> environment,
+  required FutureOr<CloudStorage> Function() fallback,
   ServerpodCloudStorageFactory createStorage = _createNativeStorage,
 }) async {
-  try {
-    final configuration = _configurationForStorageId(
-      environment[_bucketsEnvironmentVariable],
-      storageId,
-    );
-    if (configuration == null) return DatabaseCloudStorage(storageId);
+  final bucketsJson = environment[_bucketsEnvironmentVariable];
+  final serviceAccountJson = environment[_serviceAccountEnvironmentVariable];
 
-    final serviceAccountJson = _nonEmptyString(
-      environment[_serviceAccountEnvironmentVariable],
-    );
-    if (serviceAccountJson == null) return DatabaseCloudStorage(storageId);
-
-    return await createStorage(
-      storageId: storageId,
-      bucket: configuration.bucket,
-      public: configuration.public,
-      serviceAccountJson: serviceAccountJson,
-      publicHost: configuration.publicUrl,
-    );
-  } catch (_) {
-    return DatabaseCloudStorage(storageId);
+  if (bucketsJson == null && serviceAccountJson == null) {
+    return await fallback();
   }
+
+  final validBucketsJson = _nonEmptyString(bucketsJson);
+  if (validBucketsJson == null) {
+    throw CloudStorageException(
+      '$_bucketsEnvironmentVariable is missing or empty while Serverpod Cloud '
+      'storage is configured.',
+    );
+  }
+
+  final validServiceAccountJson = _nonEmptyString(serviceAccountJson);
+  if (validServiceAccountJson == null) {
+    throw CloudStorageException(
+      '$_serviceAccountEnvironmentVariable is missing or empty while '
+      'Serverpod Cloud storage is configured.',
+    );
+  }
+
+  final configuration = _configurationForStorageId(
+    validBucketsJson,
+    storageId,
+  );
+  if (configuration == null) {
+    throw CloudStorageException(
+      'No GCP cloud storage configuration found for storage ID "$storageId".',
+    );
+  }
+
+  return await createStorage(
+    storageId: storageId,
+    bucket: configuration.bucket,
+    public: configuration.public,
+    serviceAccountJson: validServiceAccountJson,
+    publicHost: configuration.publicUrl,
+  );
 }
 
 /// Creates a cloud storage instance from Serverpod Cloud configuration.
@@ -85,13 +114,17 @@ Future<CloudStorage> _createNativeStorage({
 );
 
 _BucketConfiguration? _configurationForStorageId(
-  String? bucketsJson,
+  String bucketsJson,
   String storageId,
 ) {
-  if (_nonEmptyString(bucketsJson) == null) return null;
-
-  final decoded = jsonDecode(bucketsJson!);
-  if (decoded is! List) return null;
+  List decoded;
+  try {
+    decoded = List.from(jsonDecode(bucketsJson));
+  } catch (error) {
+    throw CloudStorageException(
+      'Invalid JSON in $_bucketsEnvironmentVariable: $error',
+    );
+  }
 
   for (final value in decoded) {
     if (value is! Map ||
@@ -103,7 +136,9 @@ _BucketConfiguration? _configurationForStorageId(
     final bucket = _nonEmptyString(value['bucketName']);
     final visibility = _nonEmptyString(value['visibility']);
     if (bucket == null || (visibility != 'public' && visibility != 'private')) {
-      return null;
+      throw CloudStorageException(
+        'Invalid GCP cloud storage configuration for storage ID "$storageId".',
+      );
     }
 
     return _BucketConfiguration(

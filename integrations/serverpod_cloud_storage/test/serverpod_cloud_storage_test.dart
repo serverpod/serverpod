@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_cloud_storage/src/serverpod_cloud_provider.dart';
+import 'package:serverpod_cloud_storage/src/serverpod_cloud_storage.dart';
 import 'package:test/test.dart';
 
 const _serviceAccountJson = '{"type":"service_account"}';
@@ -71,6 +71,7 @@ void main() {
             publicUrl: 'https://cdn.example.com/public-bucket',
           ),
         ]),
+        fallback: _unexpectedFallback,
         createStorage: _testStorageFactory,
       );
 
@@ -108,6 +109,7 @@ void main() {
             publicUrl: 'https://cdn.example.com/private-bucket',
           ),
         ]),
+        fallback: _unexpectedFallback,
         createStorage: _testStorageFactory,
       );
 
@@ -129,56 +131,127 @@ void main() {
   test(
     'Given no matching bucket configuration, '
     'when calling createServerpodCloudStorage, '
-    'then database cloud storage is returned',
+    'then a CloudStorageException is thrown',
     () async {
-      final storage = await createServerpodCloudStorage(
-        storageId: 'public',
-        environment: _environmentWithBuckets([
-          _bucket(visibility: 'private', bucketName: 'private-bucket'),
-        ]),
+      await expectLater(
+        createServerpodCloudStorage(
+          storageId: 'public',
+          environment: _environmentWithBuckets([
+            _bucket(visibility: 'private', bucketName: 'private-bucket'),
+          ]),
+          fallback: _unexpectedFallback,
+        ),
+        throwsA(
+          isA<CloudStorageException>().having(
+            (error) => error.message,
+            'message',
+            contains(
+              'No GCP cloud storage configuration found for storage ID "public"',
+            ),
+          ),
+        ),
       );
-
-      expect(storage, isA<DatabaseCloudStorage>());
     },
   );
 
   test(
     'Given a matching bucket without service account credentials, '
     'when calling createServerpodCloudStorage, '
-    'then database cloud storage is returned',
+    'then a CloudStorageException is thrown',
     () async {
-      final storage = await createServerpodCloudStorage(
-        storageId: 'private-assets',
-        environment: {
-          'SERVERPOD_CLOUD_STORAGE_BUCKETS': jsonEncode([
-            _bucket(
-              storageId: 'private-assets',
-              visibility: 'private',
-              bucketName: 'private-bucket',
-            ),
-          ]),
-        },
+      await expectLater(
+        createServerpodCloudStorage(
+          storageId: 'private-assets',
+          environment: {
+            'SERVERPOD_CLOUD_STORAGE_BUCKETS': jsonEncode([
+              _bucket(
+                storageId: 'private-assets',
+                visibility: 'private',
+                bucketName: 'private-bucket',
+              ),
+            ]),
+          },
+          fallback: _unexpectedFallback,
+        ),
+        throwsA(
+          isA<CloudStorageException>().having(
+            (error) => error.message,
+            'message',
+            contains('SERVERPOD_CLOUD_STORAGE_SERVICE_ACCOUNT_KEY is missing'),
+          ),
+        ),
       );
-
-      expect(storage, isA<DatabaseCloudStorage>());
-      expect(storage.storageId, 'private-assets');
     },
   );
 
   test(
     'Given malformed bucket metadata, '
     'when calling createServerpodCloudStorage, '
-    'then database cloud storage is returned',
+    'then a CloudStorageException is thrown',
     () async {
+      await expectLater(
+        createServerpodCloudStorage(
+          storageId: 'public',
+          environment: const {
+            'SERVERPOD_CLOUD_STORAGE_BUCKETS': 'not-json',
+            'SERVERPOD_CLOUD_STORAGE_SERVICE_ACCOUNT_KEY': _serviceAccountJson,
+          },
+          fallback: _unexpectedFallback,
+        ),
+        throwsA(
+          isA<CloudStorageException>().having(
+            (error) => error.message,
+            'message',
+            contains('Invalid JSON in SERVERPOD_CLOUD_STORAGE_BUCKETS'),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given no Serverpod Cloud storage environment variables, '
+    'when calling createServerpodCloudStorage, '
+    'then the configured fallback is returned',
+    () async {
+      final fallback = DatabaseCloudStorage('public');
+
       final storage = await createServerpodCloudStorage(
         storageId: 'public',
-        environment: const {
-          'SERVERPOD_CLOUD_STORAGE_BUCKETS': 'not-json',
-          'SERVERPOD_CLOUD_STORAGE_SERVICE_ACCOUNT_KEY': _serviceAccountJson,
-        },
+        environment: const {},
+        fallback: () => fallback,
       );
 
-      expect(storage, isA<DatabaseCloudStorage>());
+      expect(storage, same(fallback));
+    },
+  );
+
+  test(
+    'Given valid Serverpod Cloud storage environment variables '
+    'and a storage factory that throws, '
+    'when calling createServerpodCloudStorage, '
+    'then the error is propagated',
+    () async {
+      await expectLater(
+        createServerpodCloudStorage(
+          storageId: 'public',
+          environment: _environmentWithBuckets([
+            _bucket(visibility: 'public', bucketName: 'public-bucket'),
+          ]),
+          fallback: _unexpectedFallback,
+          createStorage:
+              ({
+                required storageId,
+                required bucket,
+                required public,
+                required serviceAccountJson,
+                publicHost,
+              }) => throw StateError('Unable to create storage.'),
+        ),
+        throwsA(isA<StateError>()),
+      );
     },
   );
 }
+
+Never _unexpectedFallback() => fail('The fallback should not be called.');

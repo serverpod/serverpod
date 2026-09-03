@@ -1,1 +1,1 @@
-export 'src/serverpod_cloud_provider.dart' show ServerpodCloudProvider;
+export 'src/serverpod_cloud_storage.dart' show ServerpodCloudProvider;
