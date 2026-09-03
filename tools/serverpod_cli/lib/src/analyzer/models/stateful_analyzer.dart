@@ -64,6 +64,10 @@ class StatefulAnalyzer {
       .map((state) => state.source.yamlSourceUri)
       .toList(growable: false);
 
+  /// The sources of all models currently registered in the state.
+  List<ModelSource> get registeredModelSources =>
+      _modelStates.values.map((state) => state.source).toList(growable: false);
+
   /// Adds a new model to the state but leaves the responsibility of validating
   /// it to the caller. Please note that [validateAll] should be called to
   /// guarantee that all errors are found.
@@ -109,15 +113,19 @@ class StatefulAnalyzer {
   }) {
     if (moduleAlias != null && moduleAlias.isNotEmpty) {
       return models
-          .where((m) =>
-              m.className == className && m.type.moduleAlias == moduleAlias)
+          .where(
+            (m) =>
+                m.className == className && m.type.moduleAlias == moduleAlias,
+          )
           .firstOrNull;
     }
 
     var projectModel = models
-        .where((m) =>
-            m.className == className &&
-            m.type.moduleAlias == defaultModuleAlias)
+        .where(
+          (m) =>
+              m.className == className &&
+              m.type.moduleAlias == defaultModuleAlias,
+        )
         .firstOrNull;
     if (projectModel != null) return projectModel;
 

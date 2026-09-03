@@ -7,7 +7,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Provides Go to Definition (CTRL+Click) resolution for Serverpod model files.
 class DefinitionProvider {
-  static final Set<String> _primitiveTypes = {
+  static final Set<String> primitiveTypes = {
     ...autoSerializedTypes,
     ...extensionSerializedTypes,
     'dynamic',
@@ -15,7 +15,7 @@ class DefinitionProvider {
     'num',
   };
 
-  static final Set<String> _ignoredKeywords = {
+  static final Set<String> ignoredKeywords = {
     /// All valid YAML keywords defined for model files.
     Keyword.classType,
     Keyword.exceptionType,
@@ -85,13 +85,13 @@ class DefinitionProvider {
     if (position.line < 0 || position.line >= lines.length) return null;
 
     var line = lines[position.line];
-    var wordMatch = _extractWordAt(line, position.character);
+    var wordMatch = extractWordAt(line, position.character);
     if (wordMatch == null) return null;
 
     var token = wordMatch.word;
 
     // Skip primitive types and common keywords
-    if (_primitiveTypes.contains(token) || _ignoredKeywords.contains(token)) {
+    if (primitiveTypes.contains(token) || ignoredKeywords.contains(token)) {
       return null;
     }
 
@@ -104,10 +104,10 @@ class DefinitionProvider {
     // e.g. relation(field=authorId) or fields: authorId in index
     var currentModel = analyzer.getModel(documentUri);
     if (currentModel is ClassDefinition &&
-        _isFieldReferenceContext(line, wordMatch)) {
+        isFieldReferenceContext(line, wordMatch)) {
       var field = currentModel.findField(token);
       if (field != null) {
-        var fieldLocation = _findFieldDefinitionRange(lines, token);
+        var fieldLocation = findFieldDefinitionRange(lines, token);
         if (fieldLocation != null) {
           return _buildResult(
             targetUri: documentUri,
@@ -166,7 +166,7 @@ class DefinitionProvider {
     if (targetSource == null) return null;
 
     var targetLines = targetSource.yaml.split('\n');
-    var targetSelectionRange = _findModelDefinitionRange(
+    var targetSelectionRange = findModelDefinitionRange(
       targetLines,
       targetModel.className,
     );
@@ -215,7 +215,7 @@ class DefinitionProvider {
   }
 
   /// Extracts the word / identifier at the given column position in [line].
-  static _WordMatch? _extractWordAt(String line, int column) {
+  static WordMatch? extractWordAt(String line, int column) {
     if (line.isEmpty || column < 0) return null;
 
     // Adjust column if at end of line or right after a word character
@@ -249,7 +249,7 @@ class DefinitionProvider {
     var word = line.substring(start, end);
     if (word.isEmpty) return null;
 
-    return _WordMatch(
+    return WordMatch(
       word: word,
       startColumn: start,
       endColumn: end,
@@ -287,7 +287,7 @@ class DefinitionProvider {
         code == 95;
   }
 
-  static bool _isFieldReferenceContext(String line, _WordMatch wordMatch) {
+  static bool isFieldReferenceContext(String line, WordMatch wordMatch) {
     var beforeWord = line.substring(0, wordMatch.startColumn);
     if (beforeWord.contains('field=') ||
         beforeWord.contains('field:') ||
@@ -297,7 +297,7 @@ class DefinitionProvider {
     return false;
   }
 
-  static Range? _findFieldDefinitionRange(
+  static Range? findFieldDefinitionRange(
     List<String> lines,
     String fieldName,
   ) {
@@ -318,7 +318,7 @@ class DefinitionProvider {
     return null;
   }
 
-  static Range _findModelDefinitionRange(
+  static Range findModelDefinitionRange(
     List<String> targetLines,
     String targetClassName,
   ) {
@@ -347,12 +347,12 @@ class DefinitionProvider {
   }
 }
 
-class _WordMatch {
+class WordMatch {
   final String word;
   final int startColumn;
   final int endColumn;
 
-  _WordMatch({
+  WordMatch({
     required this.word,
     required this.startColumn,
     required this.endColumn,

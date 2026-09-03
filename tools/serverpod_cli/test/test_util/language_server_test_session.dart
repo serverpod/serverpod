@@ -126,6 +126,19 @@ class LanguageServerTestSession {
     });
   }
 
+  Future<dynamic> requestReferences(
+    String filePath, {
+    required int line,
+    required int character,
+    bool includeDeclaration = true,
+  }) {
+    return client.sendRequest('textDocument/references', {
+      'textDocument': {'uri': Uri.file(filePath).toString()},
+      'position': {'line': line, 'character': character},
+      'context': {'includeDeclaration': includeDeclaration},
+    });
+  }
+
   Future<void> dispose() async {
     await _clientToServer.close();
     await _serverToClient.close();

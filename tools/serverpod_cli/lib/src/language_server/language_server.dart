@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/language_server/definition_provider.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
+import 'package:serverpod_cli/src/language_server/reference_provider.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
@@ -72,6 +73,7 @@ Future<void> runLanguageServer({
       capabilities: ServerCapabilities(
         textDocumentSync: const Either2.t1(TextDocumentSyncKind.Full),
         definitionProvider: const Either2.t1(true),
+        referencesProvider: const Either2.t1(true),
       ),
     );
   });
@@ -188,6 +190,18 @@ Future<void> runLanguageServer({
       documentUri: params.textDocument.uri,
       position: params.position,
       linkSupport: clientSupportsDefinitionLink,
+    );
+  });
+
+  conn.onReferences((params) async {
+    var project = serverProject;
+    if (project == null) return [];
+
+    return ReferenceProvider.findReferences(
+      analyzer: project.analyzer,
+      documentUri: params.textDocument.uri,
+      position: params.position,
+      context: params.context,
     );
   });
 

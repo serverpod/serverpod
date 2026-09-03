@@ -437,6 +437,158 @@ fields:
         expect(result, isNull);
       },
     );
+
+    test(
+      'when references are requested for a class on its declaration line with includeDeclaration false, '
+      'then it returns references across other model files.',
+      () async {
+        // Line 0 in user.spy.yaml: "class: User" -> "User" is at column 7
+        var result = await session.requestReferences(
+          userModelPath,
+          line: 0,
+          character: 8,
+          includeDeclaration: false,
+        );
+
+        expect(result, isNotNull);
+        expect(result, isA<List>());
+        var locations = (result as List).cast<Map<String, dynamic>>();
+        expect(locations, hasLength(1));
+
+        var loc = locations.first;
+        expect(loc['uri'], Uri.file(postModelPath).toString());
+        var range = loc['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        var end = range['end'] as Map<String, dynamic>;
+        // In post.spy.yaml: "  author: User?, relation(field=authorId)" -> line 5, col 10..14
+        expect(start['line'], 5);
+        expect(start['character'], 10);
+        expect(end['character'], 14);
+      },
+    );
+
+    test(
+      'when references are requested for a class on its declaration line with includeDeclaration true, '
+      'then it returns the declaration and all references.',
+      () async {
+        var result = await session.requestReferences(
+          userModelPath,
+          line: 0,
+          character: 8,
+          includeDeclaration: true,
+        );
+
+        expect(result, isNotNull);
+        expect(result, isA<List>());
+        var locations = (result as List).cast<Map<String, dynamic>>();
+        expect(locations, hasLength(2));
+
+        var declLoc = locations.firstWhere(
+          (loc) => loc['uri'] == Uri.file(userModelPath).toString(),
+        );
+        var declStart = (declLoc['range'] as Map)['start'] as Map;
+        expect(declStart['line'], 0);
+        expect(declStart['character'], 7);
+
+        var refLoc = locations.firstWhere(
+          (loc) => loc['uri'] == Uri.file(postModelPath).toString(),
+        );
+        var refStart = (refLoc['range'] as Map)['start'] as Map;
+        expect(refStart['line'], 5);
+        expect(refStart['character'], 10);
+      },
+    );
+
+    test(
+      'when references are requested for a field, '
+      'then it returns occurrences in relations and declarations.',
+      () async {
+        // Line 4 in post.spy.yaml: "  authorId: int" -> "authorId" is at column 4
+        var result = await session.requestReferences(
+          postModelPath,
+          line: 4,
+          character: 5,
+          includeDeclaration: true,
+        );
+
+        expect(result, isNotNull);
+        expect(result, isA<List>());
+        var locations = (result as List).cast<Map<String, dynamic>>();
+        expect(locations, hasLength(2));
+
+        // Declaration at line 4
+        var decl = locations.firstWhere(
+          (l) => ((l['range'] as Map)['start'] as Map)['line'] == 4,
+        );
+        expect(decl['uri'], Uri.file(postModelPath).toString());
+
+        // Relation reference at line 5
+        var rel = locations.firstWhere(
+          (l) => ((l['range'] as Map)['start'] as Map)['line'] == 5,
+        );
+        expect(rel['uri'], Uri.file(postModelPath).toString());
+      },
+    );
+
+    test(
+      'when references are requested for an enum on its declaration line, '
+      'then it returns references across other model files.',
+      () async {
+        var enumPath = p.join(modelsDir, 'stage_family.spy.yaml');
+        var jobPath = p.join(modelsDir, 'job.spy.yaml');
+
+        File(enumPath).writeAsStringSync('''
+enum: IngestionStageFamily
+serialized: byName
+values:
+  - alpha
+  - beta
+''');
+
+        File(jobPath).writeAsStringSync('''
+class: Job
+table: job
+fields:
+  stage: IngestionStageFamily
+''');
+
+        session.openDocument(enumPath, File(enumPath).readAsStringSync());
+        session.openDocument(jobPath, File(jobPath).readAsStringSync());
+
+        var result = await session.requestReferences(
+          enumPath,
+          line: 0,
+          character: 8,
+          includeDeclaration: false,
+        );
+
+        expect(result, isNotNull);
+        var locations = (result as List).cast<Map<String, dynamic>>();
+        expect(locations, hasLength(1));
+
+        var loc = locations.first;
+        expect(loc['uri'], Uri.file(jobPath).toString());
+        var start = (loc['range'] as Map)['start'] as Map;
+        // In job.spy.yaml: "  stage: IngestionStageFamily" -> line 3, col 9
+        expect(start['line'], 3);
+        expect(start['character'], 9);
+      },
+    );
+
+    test(
+      'when references are requested for a primitive type, '
+      'then it returns an empty list.',
+      () async {
+        var result = await session.requestReferences(
+          postModelPath,
+          line: 3,
+          character: 10,
+        );
+
+        expect(result, isA<List>());
+        expect(result as List, isEmpty);
+      },
+    );
   });
 
   group('Given an initialized language server with linkSupport enabled,', () {
