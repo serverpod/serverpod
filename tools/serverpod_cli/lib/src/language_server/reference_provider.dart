@@ -35,12 +35,15 @@ class ReferenceProvider {
 
     var token = wordMatch.word;
 
-    // 1. Check if token is a field of the current model. This runs before
+    // 1. Check if token names a field of the current model. This runs before
     // the value checks so that fields named like keys (e.g. `name`)
-    // stay searchable.
+    // stay searchable. The position matters: a token that merely spells out
+    // a field name, such as the table of relation(parent=record), refers to
+    // whatever its own position names.
     var currentModel = analyzer.getModel(documentUri);
     if (currentModel is ClassDefinition &&
-        currentModel.findField(token) != null) {
+        currentModel.findField(token) != null &&
+        _namesField(lines, position, wordMatch, token)) {
       return _findFieldReferences(
         lines: lines,
         documentUri: documentUri,
@@ -87,6 +90,24 @@ class ReferenceProvider {
       targetModel: targetModel,
       includeDeclaration: context.includeDeclaration,
     );
+  }
+
+  /// Whether [wordMatch] names the field [fieldName], either at the field
+  /// declaration itself or in a reference to it such as
+  /// `relation(field=authorId)`.
+  static bool _namesField(
+    List<String> lines,
+    Position position,
+    WordMatch wordMatch,
+    String fieldName,
+  ) {
+    var line = lines[position.line];
+    if (isFieldReferenceContext(line, wordMatch.startColumn)) return true;
+
+    var declaration = findFieldDefinitionRange(lines, fieldName);
+    return declaration != null &&
+        declaration.start.line == position.line &&
+        declaration.start.character == wordMatch.startColumn;
   }
 
   static List<Location> _findModelReferences({

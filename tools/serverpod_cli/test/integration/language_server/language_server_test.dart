@@ -1154,6 +1154,7 @@ fields:
       late String ownerModelPath;
       late String noteModelPath;
       late String labelModelPath;
+      late String ticketModelPath;
 
       setUp(() async {
         await ProjectDirectoryBuilder()
@@ -1202,6 +1203,14 @@ table: owner
 fields:
   item: Cascade?, relation(onDelete=CASCADE)
 '''),
+              // A field named after the table it points at.
+              d.file('ticket.spy.yaml', '''
+class: Ticket
+table: ticket
+fields:
+  recordId: int, relation(parent=record)
+  record: Record?, relation(field=recordId)
+'''),
               // Quoted defaults that spell out a model and a table name.
               d.file('label.spy.yaml', '''
 class: Label
@@ -1238,6 +1247,7 @@ fields:
         ownerModelPath = p.join(modelsDir, 'owner.spy.yaml');
         noteModelPath = p.join(modelsDir, 'note.spy.yaml');
         labelModelPath = p.join(modelsDir, 'label.spy.yaml');
+        ticketModelPath = p.join(modelsDir, 'ticket.spy.yaml');
 
         session = LanguageServerTestSession();
         await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
@@ -1474,6 +1484,38 @@ fields:
             locations.map((loc) => loc['uri']),
             isNot(contains(Uri.file(labelModelPath).toString())),
           );
+        },
+      );
+
+      test(
+        'when references are requested on a parent table that is also the '
+        'name of a field of the same model, '
+        'then it returns the usages of the model behind that table.',
+        () async {
+          // Line 3 in ticket.spy.yaml:
+          // "  recordId: int, relation(parent=record)"
+          // -> "record" is at column 33
+          var result = await session.requestReferences(
+            ticketModelPath,
+            line: 3,
+            character: 35,
+            includeDeclaration: false,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(locations, hasLength(2));
+          expect(
+            locations.map((loc) => loc['uri']),
+            everyElement(Uri.file(ticketModelPath).toString()),
+          );
+
+          // The table usage on line 3 and the class name on line 4, never the
+          // "record:" field declaration.
+          var starts = locations
+              .map((loc) => (loc['range'] as Map)['start'] as Map)
+              .toList();
+          expect(starts.map((start) => start['line']), [3, 4]);
+          expect(starts.map((start) => start['character']), [33, 10]);
         },
       );
     },
