@@ -207,24 +207,22 @@ Future<void> runLanguageServer({
 
   // Custom request used by the editor extension to navigate from generated
   // Dart code back to the model definition.
-  unawaited(
-    conn.onRequest('serverpod/modelDefinition', (params) async {
-      var project = serverProject;
-      if (project == null) return null;
+  await conn.onRequest('serverpod/modelDefinition', (params) async {
+    var project = serverProject;
+    if (project == null) return null;
 
-      var map = params.value;
-      if (map is! Map) return null;
-      var className = map['className'];
-      if (className is! String) return null;
-      var moduleAlias = map['moduleAlias'];
+    var map = params.value;
+    if (map is! Map) return null;
+    var className = map['className'];
+    if (className is! String) return null;
+    var moduleAlias = map['moduleAlias'];
 
-      return DefinitionProvider.resolveModelByName(
-        analyzer: project.analyzer,
-        className: className,
-        moduleAlias: moduleAlias is String ? moduleAlias : null,
-      )?.toJson();
-    }),
-  );
+    return DefinitionProvider.resolveModelByName(
+      analyzer: project.analyzer,
+      className: className,
+      moduleAlias: moduleAlias is String ? moduleAlias : null,
+    )?.toJson();
+  });
 
   await conn.listen();
 }
