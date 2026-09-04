@@ -44,6 +44,17 @@ class RedisController {
 
   final Map<String, RedisSubscriptionCallback> _subscriptions = {};
 
+  /// `SUBSCRIBE` commands that Redis has not confirmed yet, keyed by channel.
+  final Map<String, List<_PendingConfirmation>> _pendingSubscribes = {};
+
+  /// `UNSUBSCRIBE` commands that Redis has not confirmed yet, keyed by channel.
+  final Map<String, List<_PendingConfirmation>> _pendingUnsubscribes = {};
+
+  /// Backstop for how long to wait for Redis to confirm a subscription change.
+  /// A broken connection resolves the pending commands through
+  /// [_invalidatePubSub] well before this elapses.
+  static const _subscriptionConfirmationTimeout = Duration(seconds: 10);
+
   Command? _command;
   bool _connecting = false;
 
@@ -72,6 +83,9 @@ class RedisController {
     bool Function(Exception e)? handleError,
     Duration? connectTimeout,
   }) async {
+    // Reset so a controller that was previously stopped can be started again.
+    _running = true;
+
     final connected = await _connect(handleError, connectTimeout);
     if (!connected && handleError != null) {
       return;
@@ -84,8 +98,21 @@ class RedisController {
   /// Stops the controller and closes all open connections.
   Future<void> stop() async {
     _running = false;
-    await _command?.get_connection().close();
-    await _pubSubCommand?.get_connection().close();
+
+    var command = _command;
+    var pubSubCommand = _pubSubCommand;
+
+    // Cleared alongside closing, so a later [start] reconnects instead of
+    // handing out the closed connections.
+    _command = null;
+    _pubSub = null;
+    _pubSubCommand = null;
+
+    _failAllPending(_pendingSubscribes);
+    _failAllPending(_pendingUnsubscribes);
+
+    await command?.get_connection().close();
+    await pubSubCommand?.get_connection().close();
   }
 
   Future<Socket> _openRedisSocket([Duration? connectTimeoutOverride]) async {
@@ -206,17 +233,26 @@ class RedisController {
   Future<void> _listenToSubscriptions(Stream stream) async {
     try {
       await for (var message in stream) {
-        if (message is List && message.length == 3) {
-          if (message[0] == 'message') {
+        if (message is! List || message.length != 3) continue;
+
+        var channel = message[1];
+        if (channel is! String) continue;
+
+        switch (message[0]) {
+          case 'message':
             // We got a message (can also be confirmation on publish)
-            String channel = message[1];
             String data = message[2];
 
             var callback = _subscriptions[channel];
             if (callback != null) {
               callback(channel, data);
             }
-          }
+          case 'subscribe':
+            // The channel is now active on the server, so anyone waiting for
+            // this subscription can safely start publishing to it.
+            _resolvePending(_pendingSubscribes, channel, true);
+          case 'unsubscribe':
+            _resolvePending(_pendingUnsubscribes, channel, true);
         }
       }
     } catch (e) {
@@ -224,6 +260,29 @@ class RedisController {
       return;
     }
     _invalidatePubSub();
+  }
+
+  /// Resolves every command outstanding for [channel]. One confirmation
+  /// satisfies all of them, since they all describe the same server side
+  /// state.
+  void _resolvePending(
+    Map<String, List<_PendingConfirmation>> register,
+    String channel,
+    bool result,
+  ) {
+    for (var pending in List.of(
+      register[channel] ?? const <_PendingConfirmation>[],
+    )) {
+      pending.complete(result);
+    }
+  }
+
+  /// Fails every outstanding command, used when the connection carrying the
+  /// confirmations goes away.
+  void _failAllPending(Map<String, List<_PendingConfirmation>> register) {
+    for (var channel in register.keys.toList()) {
+      _resolvePending(register, channel, false);
+    }
   }
 
   void _invalidateCommand() {
@@ -243,6 +302,9 @@ class RedisController {
     }
     _pubSub = null;
     _pubSubCommand = null;
+
+    _failAllPending(_pendingSubscribes);
+    _failAllPending(_pendingUnsubscribes);
   }
 
   /// Sets a [String] in the Redis cache, which optionally expires.
@@ -307,33 +369,60 @@ class RedisController {
   /// Subscribes to a Redis channel. When a message is published on the channel
   /// the [listener] callback is called. Only one subscription call should be
   /// made per channel.
+  ///
+  /// The returned future does not complete until Redis has confirmed the
+  /// subscription. Awaiting it is optional: [publish] waits for an in-flight
+  /// subscription to the same channel on its own, so a message published
+  /// straight after this call is not delivered before the server is ready to
+  /// route it.
   Future<bool> subscribe(
     String channel,
     RedisSubscriptionCallback listener,
   ) async {
+    // Registered before the first await, so a publish issued immediately after
+    // this call already observes the subscription as in flight.
+    var pending = _PendingConfirmation(_pendingSubscribes, channel);
+
     try {
-      await _connectPubSub();
-      _pubSub!.subscribe([channel]);
+      if (!await _connectPubSub()) return pending.complete(false);
+
+      // In place before the command is sent, so the listener is ready by the
+      // time the server starts delivering messages for the channel.
       _subscriptions[channel] = listener;
-      return true;
+      _pubSub!.subscribe([channel]);
+
+      return await pending.confirmed.timeout(
+        _subscriptionConfirmationTimeout,
+        onTimeout: () => pending.complete(false),
+      );
     } catch (e) {
       _invalidatePubSub();
-      return false;
+      return pending.complete(false);
     }
   }
 
   /// Unsubscribes from a Redis channel.
+  ///
+  /// The returned future does not complete until Redis has confirmed that the
+  /// subscription is gone.
   Future<bool> unsubscribe(
     String channel,
   ) async {
+    var pending = _PendingConfirmation(_pendingUnsubscribes, channel);
+
     try {
-      await _connectPubSub();
-      _pubSub!.unsubscribe([channel]);
+      if (!await _connectPubSub()) return pending.complete(false);
+
       _subscriptions.remove(channel);
-      return true;
+      _pubSub!.unsubscribe([channel]);
+
+      return await pending.confirmed.timeout(
+        _subscriptionConfirmationTimeout,
+        onTimeout: () => pending.complete(false),
+      );
     } catch (e) {
       _invalidatePubSub();
-      return false;
+      return pending.complete(false);
     }
   }
 
@@ -342,6 +431,8 @@ class RedisController {
   ///
   /// Returns true if the message was successfully published.
   Future<bool> publish(String channel, String message) async {
+    await _awaitPendingSubscribe(channel);
+
     try {
       if (!await _connect()) {
         return false;
@@ -355,6 +446,26 @@ class RedisController {
       _invalidateCommand();
       return false;
     }
+  }
+
+  /// Waits for an in-flight [subscribe] on [channel] to be confirmed.
+  ///
+  /// Subscriptions are usually started without being awaited - [MessageCentral]
+  /// registers listeners synchronously - and the `SUBSCRIBE` travels on the
+  /// pub/sub connection while `PUBLISH` travels on the command connection.
+  /// Without this wait the publish can reach the server first, and Redis drops
+  /// a message that has no subscriber yet.
+  ///
+  /// Only subscriptions started through this controller are covered. A
+  /// subscriber on another server in the cluster cannot be waited for, which
+  /// is inherent to pub/sub rather than something this can solve.
+  Future<void> _awaitPendingSubscribe(String channel) async {
+    var pending = _pendingSubscribes[channel];
+    if (pending == null || pending.isEmpty) return;
+
+    await Future.wait([
+      for (var confirmation in List.of(pending)) confirmation.confirmed,
+    ]);
   }
 
   /// Returns the underlying Redis [Command] connection.
@@ -390,4 +501,36 @@ class RedisController {
 
   /// Returns a list of subscribed channels.
   List<String> get subscribedChannels => _subscriptions.keys.toList();
+}
+
+/// A subscription command that has been handed to Redis and is waiting for the
+/// server's confirmation frame.
+///
+/// It registers itself on construction and unregisters itself on [complete], so
+/// a command that fails, times out, or loses its connection can never leave a
+/// publisher waiting on a confirmation that will never arrive.
+class _PendingConfirmation {
+  final Map<String, List<_PendingConfirmation>> _register;
+  final String _channel;
+  final Completer<bool> _completer = Completer<bool>();
+
+  _PendingConfirmation(this._register, this._channel) {
+    _register.putIfAbsent(_channel, () => []).add(this);
+  }
+
+  /// Completes once the server has answered, or the command was given up on.
+  Future<bool> get confirmed => _completer.future;
+
+  /// Settles this command with [result], which is also returned so callers can
+  /// `return pending.complete(false)` on their failure paths.
+  bool complete(bool result) {
+    var pending = _register[_channel];
+    if (pending != null) {
+      pending.remove(this);
+      if (pending.isEmpty) _register.remove(_channel);
+    }
+
+    if (!_completer.isCompleted) _completer.complete(result);
+    return result;
+  }
 }
