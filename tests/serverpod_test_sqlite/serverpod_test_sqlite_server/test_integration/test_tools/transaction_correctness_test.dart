@@ -11,7 +11,8 @@ void main() {
     'Given transaction call in test and rollbacks are enabled',
     rollbackDatabase: RollbackDatabase.afterEach,
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       test('when inserting an object '
           'then should be persisted if transaction completes', () async {
@@ -254,7 +255,8 @@ void main() {
     'Given transaction calls when rollbacks are disabled',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -336,7 +338,8 @@ void main() {
   withServerpod(
     'Given transaction call in test with database rollbacks enabled (default)',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       test(
         'when database exception occurs '
         'then transaction WILL NOT throw exception if it was caught in the transaction',
@@ -362,7 +365,8 @@ void main() {
     'Given transaction call in test with database rollbacks disabled',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await UniqueData.db.deleteWhere(
