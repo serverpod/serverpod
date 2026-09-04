@@ -24,7 +24,16 @@ StreamChannel<String> socketChannel(Socket socket) {
   final inStream = socket
       .cast<List<int>>()
       .transform(utf8.decoder)
-      .transform(const LineSplitter());
+      .transform(const LineSplitter())
+      // A socket error is a disconnect, and dart:io sends `done` right behind
+      // it, so dropping it costs the peer nothing: it ends either way. Passing
+      // it on can instead reach a subscription whose error handler
+      // `StreamChannel`'s close guarantee detached when the sink closed, and
+      // dart:async hands that to the zone as an uncaught error. Linux resets a
+      // connection whose peer closed with bytes still unread, so an ordinary
+      // detach raises one. Only a socket error is dropped, since a decoding
+      // error carries no `done` and has to reach the peer to end it.
+      .handleError((_) {}, test: (error) => error is SocketException);
 
   final outController = StreamController<String>();
   outController.stream.listen(
