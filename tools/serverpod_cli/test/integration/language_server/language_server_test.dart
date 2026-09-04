@@ -1152,6 +1152,7 @@ fields:
       late String holderModelPath;
       late String recordModelPath;
       late String ownerModelPath;
+      late String noteModelPath;
 
       setUp(() async {
         await ProjectDirectoryBuilder()
@@ -1200,6 +1201,16 @@ table: owner
 fields:
   item: Cascade?, relation(onDelete=CASCADE)
 '''),
+              // A comment dedented below the entries of the fields block.
+              d.file('note.spy.yaml', '''
+class: Note
+table: note
+fields:
+  title: String
+# foreign key
+  authorId: int
+  author: Cascade?, relation(field=authorId)
+'''),
             ])
             .build()
             .create();
@@ -1216,6 +1227,7 @@ fields:
         holderModelPath = p.join(modelsDir, 'holder.spy.yaml');
         recordModelPath = p.join(modelsDir, 'record.spy.yaml');
         ownerModelPath = p.join(modelsDir, 'owner.spy.yaml');
+        noteModelPath = p.join(modelsDir, 'note.spy.yaml');
 
         session = LanguageServerTestSession();
         await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
@@ -1343,6 +1355,58 @@ fields:
             locations.map((loc) => loc['uri']),
             everyElement(Uri.file(holderModelPath).toString()),
           );
+        },
+      );
+
+      test(
+        'when definition is requested on a field of a fields block that holds '
+        'a dedented comment, '
+        'then it returns the location of the field declaration.',
+        () async {
+          // Line 6 in note.spy.yaml:
+          // "  author: Cascade?, relation(field=authorId)"
+          // -> the referenced "authorId" is at column 35
+          var result = await session.requestDefinition(
+            noteModelPath,
+            line: 6,
+            character: 37,
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var start = (location['range'] as Map)['start'] as Map;
+          expect(location['uri'], Uri.file(noteModelPath).toString());
+          // authorId is declared at line 5, below the comment on line 4
+          expect(start['line'], 5);
+          expect(start['character'], 2);
+        },
+      );
+
+      test(
+        'when references are requested for a field of a fields block that '
+        'holds a dedented comment, '
+        'then the declaration is reported alongside the relation usage.',
+        () async {
+          // Line 5 in note.spy.yaml: "  authorId: int"
+          var result = await session.requestReferences(
+            noteModelPath,
+            line: 5,
+            character: 4,
+            includeDeclaration: true,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(locations, hasLength(2));
+
+          var starts = locations
+              .map((loc) => (loc['range'] as Map)['start'] as Map)
+              .toList();
+          expect(
+            locations.map((loc) => loc['uri']),
+            everyElement(Uri.file(noteModelPath).toString()),
+          );
+          expect(starts.map((start) => start['line']), [5, 6]);
+          expect(starts.map((start) => start['character']), [2, 35]);
         },
       );
     },

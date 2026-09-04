@@ -184,9 +184,12 @@ Range? findFieldDefinitionRange(List<String> lines, String fieldName) {
   int? fieldsIndent;
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
-    if (line.trim().isEmpty) continue;
+    // Blank and comment only lines carry no structure, so their indentation
+    // never closes the fields block.
+    var trimmed = line.trimLeft();
+    if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
 
-    var indent = line.length - line.trimLeft().length;
+    var indent = line.length - trimmed.length;
     if (fieldsIndent != null && indent <= fieldsIndent) fieldsIndent = null;
 
     if (fieldsIndent == null) {
