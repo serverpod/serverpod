@@ -67,10 +67,16 @@
       }
     ],
     "menus": {
+      "commandPalette": [
+        {
+          "command": "serverpod.goToModelDefinition",
+          "when": "serverpod.modelNavigationEnabled"
+        }
+      ],
       "editor/context": [
         {
           "command": "serverpod.goToModelDefinition",
-          "when": "editorLangId == dart",
+          "when": "serverpod.modelNavigationEnabled && editorLangId == dart",
           "group": "navigation"
         }
       ]
@@ -80,7 +86,7 @@
         "command": "serverpod.goToModelDefinition",
         "key": "ctrl+alt+f12",
         "mac": "cmd+alt+f12",
-        "when": "editorTextFocus && editorLangId == dart"
+        "when": "serverpod.modelNavigationEnabled && editorTextFocus && editorLangId == dart"
       }
     ]
   },

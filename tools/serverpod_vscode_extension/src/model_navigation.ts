@@ -16,6 +16,7 @@ import {
 import { ErrorCodes, LanguageClient, ResponseError, State } from 'vscode-languageclient/node';
 
 const modelDefinitionRequest = 'serverpod/modelDefinition';
+const modelNavigationEnabledContext = 'serverpod.modelNavigationEnabled';
 const modelFilePattern = '**/*.spy.yaml';
 const unsupportedByCliMessage =
 	'Go to Model Definition requires a newer Serverpod CLI. Please upgrade the Serverpod CLI to navigate from Dart code to model files.';
@@ -47,11 +48,22 @@ export function registerModelNavigation(context: ExtensionContext, client: Langu
 			{ language: 'dart', scheme: 'file' },
 			new ServerpodModelDefinitionProvider(resolver)
 		),
-		commands.registerCommand('serverpod.goToModelDefinition', () => goToModelDefinition(resolver))
+		commands.registerCommand('serverpod.goToModelDefinition', () => goToModelDefinition(resolver)),
+		new Disposable(() => setModelNavigationEnabled(false))
 	);
+
+	// The menu entry, the palette entry and the keybinding are contributed
+	// statically, while the command is only registered here. Without the
+	// context key they would still be offered when activation stopped at the
+	// CLI check, and invoking them would fail with "command not found".
+	setModelNavigationEnabled(true);
 
 	currentRegistration = registration;
 	context.subscriptions.push(registration);
+}
+
+function setModelNavigationEnabled(enabled: boolean): void {
+	commands.executeCommand('setContext', modelNavigationEnabledContext, enabled);
 }
 
 /// Resolves model class names to their yaml declaration.

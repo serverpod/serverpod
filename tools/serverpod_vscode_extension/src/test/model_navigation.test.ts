@@ -9,6 +9,7 @@ suite('Model Navigation', () => {
 	let registerCommandStub: sinon.SinonStub;
 	let showTextDocumentStub: sinon.SinonStub;
 	let showWarningMessageStub: sinon.SinonStub;
+	let executeCommandStub: sinon.SinonStub;
 	let capturedProvider: vscode.DefinitionProvider;
 	let commandHandler: () => Promise<void>;
 	let modelFileChangeHandlers: (() => void)[];
@@ -65,6 +66,7 @@ suite('Model Navigation', () => {
 				commandHandler = handler;
 				return trackedDisposable();
 			}) as never);
+		executeCommandStub = sinon.stub(vscode.commands, 'executeCommand');
 		showTextDocumentStub = sinon.stub(vscode.window, 'showTextDocument');
 		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage');
 		modelFileChangeHandlers = [];
@@ -99,6 +101,29 @@ suite('Model Navigation', () => {
 			assert.deepStrictEqual(registerDefinitionProviderStub.firstCall.args[0], { language: 'dart', scheme: 'file' });
 			assert.strictEqual(registerCommandStub.calledOnce, true);
 			assert.strictEqual(registerCommandStub.firstCall.args[0], 'serverpod.goToModelDefinition');
+		});
+
+		test('Given a running language client when navigation is registered then the model navigation context key is enabled.', () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+
+			registerModelNavigation(context, mockClient(sinon.stub()));
+
+			assert.strictEqual(
+				executeCommandStub.calledWithExactly('setContext', 'serverpod.modelNavigationEnabled', true),
+				true
+			);
+		});
+
+		test('Given navigation is registered when the registration is disposed then the model navigation context key is disabled.', () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			registerModelNavigation(context, mockClient(sinon.stub()));
+
+			(context.subscriptions[0] as vscode.Disposable).dispose();
+
+			assert.strictEqual(
+				executeCommandStub.calledWithExactly('setContext', 'serverpod.modelNavigationEnabled', false),
+				true
+			);
 		});
 
 		test('Given a dart document with a model class name when definition is requested then the provider returns the yaml model location.', async () => {
