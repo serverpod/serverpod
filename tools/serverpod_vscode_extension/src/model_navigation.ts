@@ -2,6 +2,7 @@ import {
 	commands,
 	Definition,
 	DefinitionProvider,
+	Disposable,
 	ExtensionContext,
 	languages,
 	Location,
@@ -10,12 +11,12 @@ import {
 	TextDocument,
 	Uri,
 	window,
+	workspace,
 } from 'vscode';
 import { LanguageClient } from 'vscode-languageclient/node';
 
 const modelDefinitionRequest = 'serverpod/modelDefinition';
-
-var navigationDisposables: { dispose(): void }[] = [];
+const modelFilePattern = '**/*.spy.yaml';
 
 interface ModelDefinitionResult {
 	uri: string;
@@ -25,35 +26,92 @@ interface ModelDefinitionResult {
 	};
 }
 
+let currentRegistration: Disposable | undefined;
+
 /// Wires Dart-to-model navigation: CTRL+Click on a model class name in Dart
 /// code surfaces the yaml model definition alongside the generated Dart
 /// class, and the `serverpod.goToModelDefinition` command jumps straight to
 /// the yaml model.
 export function registerModelNavigation(context: ExtensionContext, client: LanguageClient): void {
-	// Re-activation replaces previous registrations instead of conflicting
-	// with them.
-	for (const disposable of navigationDisposables) {
-		disposable.dispose();
-	}
-	navigationDisposables = [
+	// Commands are registered with the editor globally, so activating again
+	// without a deactivate in between would fail with "command already
+	// exists". Replace the previous registration instead.
+	currentRegistration?.dispose();
+
+	const resolver = new ModelLocationResolver(client);
+	const registration = Disposable.from(
+		resolver,
 		languages.registerDefinitionProvider(
 			{ language: 'dart', scheme: 'file' },
-			new ServerpodModelDefinitionProvider(client)
+			new ServerpodModelDefinitionProvider(resolver)
 		),
-		commands.registerCommand('serverpod.goToModelDefinition', () => goToModelDefinition(client)),
-	];
-	context.subscriptions.push(...navigationDisposables);
+		commands.registerCommand('serverpod.goToModelDefinition', () => goToModelDefinition(resolver))
+	);
+
+	currentRegistration = registration;
+	context.subscriptions.push(registration);
+}
+
+/// Resolves model class names to their yaml declaration.
+///
+/// The editor asks for a definition on every CTRL+hover, so resolutions are
+/// cached until a model file changes to keep those hovers off the wire.
+class ModelLocationResolver implements Disposable {
+	private readonly cache = new Map<string, Location | undefined>();
+	private readonly watcher = workspace.createFileSystemWatcher(modelFilePattern);
+
+	constructor(private client: LanguageClient) {
+		const clearCache = () => this.cache.clear();
+		this.watcher.onDidCreate(clearCache);
+		this.watcher.onDidChange(clearCache);
+		this.watcher.onDidDelete(clearCache);
+	}
+
+	async resolve(className: string): Promise<Location | undefined> {
+		if (this.cache.has(className)) {
+			return this.cache.get(className);
+		}
+
+		let result: ModelDefinitionResult | null;
+		try {
+			// Older CLI versions do not implement the request; treat failures as
+			// "no model" so navigation falls back to the Dart analyzer results.
+			// Failures are not cached, so recovering takes effect at once.
+			result = await this.client.sendRequest(modelDefinitionRequest, { className });
+		} catch (_) {
+			return undefined;
+		}
+
+		const location = result
+			? new Location(
+				Uri.parse(result.uri),
+				new Range(
+					result.range.start.line,
+					result.range.start.character,
+					result.range.end.line,
+					result.range.end.character
+				)
+			)
+			: undefined;
+		this.cache.set(className, location);
+		return location;
+	}
+
+	dispose(): void {
+		this.watcher.dispose();
+		this.cache.clear();
+	}
 }
 
 class ServerpodModelDefinitionProvider implements DefinitionProvider {
-	constructor(private client: LanguageClient) { }
+	constructor(private resolver: ModelLocationResolver) { }
 
 	async provideDefinition(document: TextDocument, position: Position): Promise<Definition | undefined> {
 		const className = modelClassNameAt(document, position);
 		if (!className) {
 			return undefined;
 		}
-		return resolveModelLocation(this.client, className);
+		return this.resolver.resolve(className);
 	}
 }
 
@@ -71,30 +129,7 @@ export function modelClassNameAt(document: TextDocument, position: Position): st
 	return word;
 }
 
-async function resolveModelLocation(client: LanguageClient, className: string): Promise<Location | undefined> {
-	let result: ModelDefinitionResult | null;
-	try {
-		// Older CLI versions do not implement the request; treat failures as
-		// "no model" so navigation falls back to the Dart analyzer results.
-		result = await client.sendRequest(modelDefinitionRequest, { className });
-	} catch (_) {
-		return undefined;
-	}
-	if (!result) {
-		return undefined;
-	}
-	return new Location(
-		Uri.parse(result.uri),
-		new Range(
-			result.range.start.line,
-			result.range.start.character,
-			result.range.end.line,
-			result.range.end.character
-		)
-	);
-}
-
-async function goToModelDefinition(client: LanguageClient): Promise<void> {
+async function goToModelDefinition(resolver: ModelLocationResolver): Promise<void> {
 	const editor = window.activeTextEditor;
 	if (!editor) {
 		return;
@@ -103,7 +138,7 @@ async function goToModelDefinition(client: LanguageClient): Promise<void> {
 	if (!className) {
 		return;
 	}
-	const location = await resolveModelLocation(client, className);
+	const location = await resolver.resolve(className);
 	if (!location) {
 		return;
 	}

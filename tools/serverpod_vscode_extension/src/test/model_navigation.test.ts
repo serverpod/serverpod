@@ -10,6 +10,8 @@ suite('Model Navigation', () => {
 	let showTextDocumentStub: sinon.SinonStub;
 	let capturedProvider: vscode.DefinitionProvider;
 	let commandHandler: () => Promise<void>;
+	let modelFileChangeHandlers: (() => void)[];
+	let disposeStubs: sinon.SinonStub[];
 
 	const modelLocationResult = {
 		uri: 'file:///project/my_project_server/lib/src/models/user.spy.yaml',
@@ -33,19 +35,40 @@ suite('Model Navigation', () => {
 	}
 
 	setup(() => {
+		disposeStubs = [];
+		const trackedDisposable = () => {
+			const dispose = sinon.stub();
+			disposeStubs.push(dispose);
+			return { dispose };
+		};
 		registerDefinitionProviderStub = sinon
 			.stub(vscode.languages, 'registerDefinitionProvider')
 			.callsFake(((_selector: vscode.DocumentSelector, provider: vscode.DefinitionProvider) => {
 				capturedProvider = provider;
-				return { dispose: () => { } };
+				return trackedDisposable();
 			}) as never);
 		registerCommandStub = sinon
 			.stub(vscode.commands, 'registerCommand')
 			.callsFake(((_command: string, handler: () => Promise<void>) => {
 				commandHandler = handler;
-				return { dispose: () => { } };
+				return trackedDisposable();
 			}) as never);
 		showTextDocumentStub = sinon.stub(vscode.window, 'showTextDocument');
+		modelFileChangeHandlers = [];
+		sinon
+			.stub(vscode.workspace, 'createFileSystemWatcher')
+			.callsFake((() => {
+				const register = (handler: () => void) => {
+					modelFileChangeHandlers.push(handler);
+					return { dispose: () => { } };
+				};
+				return {
+					onDidCreate: register,
+					onDidChange: register,
+					onDidDelete: register,
+					dispose: () => { },
+				};
+			}) as never);
 	});
 
 	teardown(() => {
@@ -138,6 +161,79 @@ suite('Model Navigation', () => {
 			);
 
 			assert.strictEqual(result, undefined);
+		});
+
+		test('Given navigation is already registered when it is registered again then the previous registrations are disposed.', () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			registerModelNavigation(context, mockClient(sinon.stub()));
+			const firstRegistrationDisposals = [...disposeStubs];
+
+			registerModelNavigation(context, mockClient(sinon.stub()));
+
+			assert.strictEqual(
+				firstRegistrationDisposals.every((dispose) => dispose.calledOnce),
+				true
+			);
+			assert.strictEqual(registerCommandStub.callCount, 2);
+		});
+
+		test('Given a model class name already resolved when definition is requested again then the cached location is returned without querying the server.', async () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			const sendRequest = sinon.stub().resolves(modelLocationResult);
+			registerModelNavigation(context, mockClient(sendRequest));
+
+			await capturedProvider.provideDefinition(
+				mockDocument('User'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+			const result = await capturedProvider.provideDefinition(
+				mockDocument('User'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+
+			assert.strictEqual(sendRequest.callCount, 1);
+			assert.strictEqual((result as vscode.Location).uri.toString(), modelLocationResult.uri);
+		});
+
+		test('Given a model class name already resolved when a model file changes then the next definition request queries the server again.', async () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			const sendRequest = sinon.stub().resolves(modelLocationResult);
+			registerModelNavigation(context, mockClient(sendRequest));
+
+			await capturedProvider.provideDefinition(
+				mockDocument('User'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+			modelFileChangeHandlers.forEach((handler) => handler());
+			await capturedProvider.provideDefinition(
+				mockDocument('User'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+
+			assert.strictEqual(sendRequest.callCount, 2);
+		});
+
+		test('Given a failed model definition request when definition is requested again then the server is queried again.', async () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			const sendRequest = sinon.stub().rejects(new Error('Method not found: serverpod/modelDefinition'));
+			registerModelNavigation(context, mockClient(sendRequest));
+
+			await capturedProvider.provideDefinition(
+				mockDocument('User'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+			await capturedProvider.provideDefinition(
+				mockDocument('User'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+
+			assert.strictEqual(sendRequest.callCount, 2);
 		});
 
 		test('Given a dart document with a model class name when the go to model definition command runs then the yaml model is opened at the declaration range.', async () => {
