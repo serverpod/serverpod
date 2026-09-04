@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
 import * as sinon from 'sinon';
-import { LanguageClient } from 'vscode-languageclient/node';
+import { ErrorCodes, LanguageClient, ResponseError, State } from 'vscode-languageclient/node';
 import { registerModelNavigation, modelClassNameAt } from '../model_navigation';
 
 suite('Model Navigation', () => {
@@ -12,6 +12,7 @@ suite('Model Navigation', () => {
 	let commandHandler: () => Promise<void>;
 	let modelFileChangeHandlers: (() => void)[];
 	let disposeStubs: sinon.SinonStub[];
+	let stateChangeHandlers: ((event: { oldState: State; newState: State }) => void)[];
 
 	const modelLocationResult = {
 		uri: 'file:///project/my_project_server/lib/src/models/user.spy.yaml',
@@ -31,7 +32,17 @@ suite('Model Navigation', () => {
 	}
 
 	function mockClient(sendRequest: sinon.SinonStub): LanguageClient {
-		return { sendRequest } as unknown as LanguageClient;
+		return {
+			sendRequest,
+			onDidChangeState: (handler: (event: { oldState: State; newState: State }) => void) => {
+				stateChangeHandlers.push(handler);
+				return { dispose: () => { } };
+			},
+		} as unknown as LanguageClient;
+	}
+
+	function methodNotFoundError(): ResponseError<void> {
+		return new ResponseError(ErrorCodes.MethodNotFound, 'Unknown method "serverpod/modelDefinition".');
 	}
 
 	setup(() => {
@@ -55,6 +66,7 @@ suite('Model Navigation', () => {
 			}) as never);
 		showTextDocumentStub = sinon.stub(vscode.window, 'showTextDocument');
 		modelFileChangeHandlers = [];
+		stateChangeHandlers = [];
 		sinon
 			.stub(vscode.workspace, 'createFileSystemWatcher')
 			.callsFake((() => {
@@ -217,7 +229,49 @@ suite('Model Navigation', () => {
 			assert.strictEqual(sendRequest.callCount, 2);
 		});
 
-		test('Given a failed model definition request when definition is requested again then the server is queried again.', async () => {
+		test('Given a CLI that does not implement the model definition request when definition is requested twice then the server is only queried once.', async () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			const sendRequest = sinon.stub().rejects(methodNotFoundError());
+			registerModelNavigation(context, mockClient(sendRequest));
+
+			await capturedProvider.provideDefinition(
+				mockDocument('User'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+			const result = await capturedProvider.provideDefinition(
+				mockDocument('Post'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+
+			assert.strictEqual(result, undefined);
+			assert.strictEqual(sendRequest.callCount, 1);
+		});
+
+		test('Given a CLI that does not implement the model definition request when the language server restarts then the request is tried again.', async () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			const sendRequest = sinon.stub().rejects(methodNotFoundError());
+			registerModelNavigation(context, mockClient(sendRequest));
+
+			await capturedProvider.provideDefinition(
+				mockDocument('User'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+			sendRequest.resolves(modelLocationResult);
+			stateChangeHandlers.forEach((handler) => handler({ oldState: State.Starting, newState: State.Running }));
+			const result = await capturedProvider.provideDefinition(
+				mockDocument('User'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+
+			assert.strictEqual(sendRequest.callCount, 2);
+			assert.strictEqual((result as vscode.Location).uri.toString(), modelLocationResult.uri);
+		});
+
+		test('Given a transient failure of the model definition request when definition is requested again then the server is queried again.', async () => {
 			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
 			const sendRequest = sinon.stub().rejects(new Error('Method not found: serverpod/modelDefinition'));
 			registerModelNavigation(context, mockClient(sendRequest));

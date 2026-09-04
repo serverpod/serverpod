@@ -13,7 +13,7 @@ import {
 	window,
 	workspace,
 } from 'vscode';
-import { LanguageClient } from 'vscode-languageclient/node';
+import { ErrorCodes, LanguageClient, ResponseError, State } from 'vscode-languageclient/node';
 
 const modelDefinitionRequest = 'serverpod/modelDefinition';
 const modelFilePattern = '**/*.spy.yaml';
@@ -59,26 +59,43 @@ export function registerModelNavigation(context: ExtensionContext, client: Langu
 class ModelLocationResolver implements Disposable {
 	private readonly cache = new Map<string, Location | undefined>();
 	private readonly watcher = workspace.createFileSystemWatcher(modelFilePattern);
+	private readonly stateListener: Disposable;
+	private unsupported = false;
 
 	constructor(private client: LanguageClient) {
 		const clearCache = () => this.cache.clear();
 		this.watcher.onDidCreate(clearCache);
 		this.watcher.onDidChange(clearCache);
 		this.watcher.onDidDelete(clearCache);
+		this.stateListener = client.onDidChangeState((event) => {
+			// A restarted server may be running a different CLI version.
+			if (event.newState === State.Running) {
+				this.unsupported = false;
+				this.cache.clear();
+			}
+		});
 	}
 
 	async resolve(className: string): Promise<Location | undefined> {
+		if (this.unsupported) {
+			return undefined;
+		}
 		if (this.cache.has(className)) {
 			return this.cache.get(className);
 		}
 
 		let result: ModelDefinitionResult | null;
 		try {
-			// Older CLI versions do not implement the request; treat failures as
-			// "no model" so navigation falls back to the Dart analyzer results.
-			// Failures are not cached, so recovering takes effect at once.
 			result = await this.client.sendRequest(modelDefinitionRequest, { className });
-		} catch (_) {
+		} catch (error) {
+			// Older CLI versions do not implement the request. Treat failures as
+			// "no model" so navigation falls back to the Dart analyzer results,
+			// and stop asking a server that does not know the request at all.
+			// Transient failures are retried, and the flag is cleared whenever
+			// the server restarts, so upgrading the CLI takes effect.
+			if ((error as ResponseError<void>)?.code === ErrorCodes.MethodNotFound) {
+				this.unsupported = true;
+			}
 			return undefined;
 		}
 
@@ -98,6 +115,7 @@ class ModelLocationResolver implements Disposable {
 	}
 
 	dispose(): void {
+		this.stateListener.dispose();
 		this.watcher.dispose();
 		this.cache.clear();
 	}

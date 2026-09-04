@@ -100,7 +100,8 @@ suite('VS Code Extension', () => {
 
             let capturedClientOptions: any = null;
             const mockClient = {
-                start: sinon.stub()
+                start: sinon.stub(),
+                onDidChangeState: sinon.stub().returns({ dispose: () => { } })
             };
 
             const LanguageClientModule = require('vscode-languageclient/node');
