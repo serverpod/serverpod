@@ -3,7 +3,7 @@
 
 name: serverpod_auth_idp_flutter_facebook
 description: Facebook-specific Flutter package for the Serverpod authentication module.
-version: 4.0.0-rc.1
+version: 4.0.0-rc.2
 repository: https://github.com/serverpod/serverpod
 
 environment:
@@ -16,10 +16,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_facebook_auth: ^7.1.5
-  serverpod_auth_idp_client: 4.0.0-rc.1
-  serverpod_auth_idp_flutter: 4.0.0-rc.1
+  serverpod_auth_idp_client: 4.0.0-rc.2
+  serverpod_auth_idp_flutter: 4.0.0-rc.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 4.0.0-rc.1
+  serverpod_lints: 4.0.0-rc.2

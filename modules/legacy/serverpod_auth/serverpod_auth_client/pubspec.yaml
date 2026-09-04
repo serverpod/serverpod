@@ -3,7 +3,7 @@
 
 name: serverpod_auth_client
 description: Serverpod authentication client.
-version: 4.0.0-rc.1
+version: 4.0.0-rc.2
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -15,4 +15,4 @@ resolution: workspace
 
 dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_client: 4.0.0-rc.1
+  serverpod_client: 4.0.0-rc.2

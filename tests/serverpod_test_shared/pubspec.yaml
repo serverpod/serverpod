@@ -15,8 +15,8 @@ resolution: workspace
 dependencies:
   freezed_annotation: ^3.1.0
   json_annotation: ^4.8.0
-  serverpod_database: 4.0.0-rc.1
-  serverpod_serialization: 4.0.0-rc.1
+  serverpod_database: 4.0.0-rc.2
+  serverpod_serialization: 4.0.0-rc.2
 
 dev_dependencies:
   build_runner: ^2.4.1

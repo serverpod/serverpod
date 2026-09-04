@@ -1,3 +1,16 @@
+## 4.0.0-rc.2
+
+- feat: Allows Ctrl/Cmd+Click to navigate to model definitions on VS Code IDEs.
+- feat: Auto-upgrades and relaunches `scloud` when invoked from `serverpod cloud`.
+- feat: Adds the `serverpod_cloud_storage` package for native Serverpod Cloud provider support.
+- feat: Generates the sync tables list and session wrappers for `database: sync` models.
+- fix: Keeps detecting pub artifact changes after file recreation on Windows.
+- fix: Prints correct version on `serverpod upgrade`, and prevents accidental downgrades.
+- fix: Preserves recognized-class deserialization errors. ([@Emrecil69](https://github.com/Emrecil69))
+- fix: Runs `serverpod create` without TUI in default mode when stdin/stdout is not a TTY.
+- fix: Fixes `Serverpod.shutdown` not releasing `ProcessSignal` watchers after in-process shutdown/start calls.
+- chore: Extracts client setup into `client.dart` in template to avoid circular dependencies.
+
 ## 4.0.0-rc.1
 
 Release candidate for Serverpod 4.
