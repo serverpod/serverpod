@@ -23,6 +23,12 @@ class DefinitionProvider {
     var wordMatch = extractWordAt(line, position.character);
     if (wordMatch == null) return null;
 
+    // Quoted values and comments are plain text and never reference a model
+    // or a field of one.
+    if (lineContextAt(line, wordMatch.startColumn) != LineContext.code) {
+      return null;
+    }
+
     var token = wordMatch.word;
 
     var originSelectionRange = Range(

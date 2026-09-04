@@ -27,6 +27,12 @@ class ReferenceProvider {
     var wordMatch = extractWordAt(line, position.character);
     if (wordMatch == null) return [];
 
+    // Quoted values and comments are plain text and never reference a model
+    // or a field of one.
+    if (lineContextAt(line, wordMatch.startColumn) != LineContext.code) {
+      return [];
+    }
+
     var token = wordMatch.word;
 
     // 1. Check if token is a field of the current model. This runs before
@@ -138,8 +144,8 @@ class ReferenceProvider {
         var columns = <int, int>{};
 
         for (var match in classRegex.allMatches(rawLine)) {
-          // Ignore matches inside comments
-          if (_isCommentIndex(rawLine, match.start)) continue;
+          // Ignore matches inside comments and quoted values
+          if (lineContextAt(rawLine, match.start) != LineContext.code) continue;
 
           // Must be in a value position, never a key or a sequence entry
           if (!isValuePosition(rawLine, match.start)) continue;
@@ -154,7 +160,7 @@ class ReferenceProvider {
         }
 
         for (var match in tableRegex?.allMatches(rawLine) ?? <RegExpMatch>[]) {
-          if (_isCommentIndex(rawLine, match.start)) continue;
+          if (lineContextAt(rawLine, match.start) != LineContext.code) continue;
           if (!isTableReferenceContext(rawLine, match.start)) continue;
 
           columns[match.start] = match.end;
@@ -199,7 +205,7 @@ class ReferenceProvider {
 
       var matches = fieldRegex.allMatches(line);
       for (var match in matches) {
-        if (_isCommentIndex(line, match.start)) continue;
+        if (lineContextAt(line, match.start) != LineContext.code) continue;
 
         if (!isFieldReferenceContext(line, match.start)) continue;
 
@@ -216,22 +222,6 @@ class ReferenceProvider {
     }
 
     return locations;
-  }
-
-  static bool _isCommentIndex(String line, int index) {
-    var inSingleQuote = false;
-    var inDoubleQuote = false;
-    for (var i = 0; i < line.length && i <= index; i++) {
-      var char = line[i];
-      if (char == "'" && !inDoubleQuote) {
-        inSingleQuote = !inSingleQuote;
-      } else if (char == '"' && !inSingleQuote) {
-        inDoubleQuote = !inDoubleQuote;
-      } else if (char == '#' && !inSingleQuote && !inDoubleQuote) {
-        return index >= i;
-      }
-    }
-    return false;
   }
 
   static bool _matchesModule(

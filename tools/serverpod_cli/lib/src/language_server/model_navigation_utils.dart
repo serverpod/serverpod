@@ -33,6 +33,39 @@ final _literalValues = {
 bool isLiteralValue(String token) =>
     _literalValues.contains(token.toLowerCase());
 
+/// Where a column of a model file line sits with respect to quoting and
+/// comments.
+enum LineContext {
+  /// Model file syntax, the only place a model or a field is referenced.
+  code,
+
+  /// Inside a quoted string, such as the `user` of `default='user'`. Quoted
+  /// values are plain text, never a reference.
+  quoted,
+
+  /// Inside a `#` comment.
+  comment,
+}
+
+/// Classifies the character at [column] of [line].
+LineContext lineContextAt(String line, int column) {
+  var inSingleQuote = false;
+  var inDoubleQuote = false;
+  for (var i = 0; i < line.length && i <= column; i++) {
+    var char = line[i];
+    if (char == "'" && !inDoubleQuote) {
+      inSingleQuote = !inSingleQuote;
+    } else if (char == '"' && !inSingleQuote) {
+      inDoubleQuote = !inDoubleQuote;
+    } else if (char == '#' && !inSingleQuote && !inDoubleQuote) {
+      return LineContext.comment;
+    }
+  }
+
+  if (inSingleQuote || inDoubleQuote) return LineContext.quoted;
+  return LineContext.code;
+}
+
 final _keyRegex = RegExp(r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:');
 
 /// Returns the mapping key declared on [line], or null when [line] is not a

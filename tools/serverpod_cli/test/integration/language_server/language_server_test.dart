@@ -1153,6 +1153,7 @@ fields:
       late String recordModelPath;
       late String ownerModelPath;
       late String noteModelPath;
+      late String labelModelPath;
 
       setUp(() async {
         await ProjectDirectoryBuilder()
@@ -1201,6 +1202,14 @@ table: owner
 fields:
   item: Cascade?, relation(onDelete=CASCADE)
 '''),
+              // Quoted defaults that spell out a model and a table name.
+              d.file('label.spy.yaml', '''
+class: Label
+table: label
+fields:
+  name: String, default='Parameter'
+  code: String, default='parameters'
+'''),
               // A comment dedented below the entries of the fields block.
               d.file('note.spy.yaml', '''
 class: Note
@@ -1228,6 +1237,7 @@ fields:
         recordModelPath = p.join(modelsDir, 'record.spy.yaml');
         ownerModelPath = p.join(modelsDir, 'owner.spy.yaml');
         noteModelPath = p.join(modelsDir, 'note.spy.yaml');
+        labelModelPath = p.join(modelsDir, 'label.spy.yaml');
 
         session = LanguageServerTestSession();
         await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
@@ -1407,6 +1417,63 @@ fields:
           );
           expect(starts.map((start) => start['line']), [5, 6]);
           expect(starts.map((start) => start['character']), [2, 35]);
+        },
+      );
+
+      test(
+        'when definition is requested on a quoted default that spells out a '
+        'model name, '
+        'then it returns null.',
+        () async {
+          // Line 3 in label.spy.yaml:
+          // "  name: String, default='Parameter'"
+          // -> "Parameter" is at column 25
+          var result = await session.requestDefinition(
+            labelModelPath,
+            line: 3,
+            character: 27,
+          );
+
+          expect(result, isNull);
+        },
+      );
+
+      test(
+        'when definition is requested on a quoted default that spells out a '
+        'table name, '
+        'then it returns null.',
+        () async {
+          // Line 4 in label.spy.yaml:
+          // "  code: String, default='parameters'"
+          // -> "parameters" is at column 25
+          var result = await session.requestDefinition(
+            labelModelPath,
+            line: 4,
+            character: 27,
+          );
+
+          expect(result, isNull);
+        },
+      );
+
+      test(
+        'when references are requested for a model whose name is spelled out '
+        'by a quoted default, '
+        'then the quoted default is not reported as a reference.',
+        () async {
+          // Line 0 in parameter.spy.yaml: "class: Parameter"
+          var result = await session.requestReferences(
+            parameterModelPath,
+            line: 0,
+            character: 8,
+            includeDeclaration: false,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(
+            locations.map((loc) => loc['uri']),
+            isNot(contains(Uri.file(labelModelPath).toString())),
+          );
         },
       );
     },
