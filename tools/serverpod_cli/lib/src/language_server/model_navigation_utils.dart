@@ -70,6 +70,24 @@ final ignoredKeywords = {
   'null',
 };
 
+final _keyRegex = RegExp(r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:');
+
+/// Returns the mapping key declared on [line], or null when [line] is not a
+/// mapping entry (a sequence entry such as `- alpha`, for instance).
+String? lineKey(String line) => _keyRegex.firstMatch(line)?.group(1);
+
+/// Returns true when [column] in [line] sits in the value of a mapping entry.
+///
+/// Sequence entries are deliberately excluded: only enum values and index
+/// field lists live there, and neither references a model. Values of the
+/// `values` key are excluded for the same reason.
+bool isValuePosition(String line, int column) {
+  var keyMatch = _keyRegex.firstMatch(line);
+  if (keyMatch == null) return false;
+  if (column < keyMatch.end) return false;
+  return keyMatch.group(1) != Keyword.values;
+}
+
 /// A word extracted from a line of text, with its column span.
 class WordMatch {
   /// Creates a [WordMatch].

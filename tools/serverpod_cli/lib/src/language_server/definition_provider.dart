@@ -58,24 +58,28 @@ class DefinitionProvider {
       }
     }
 
-    // 2. Skip primitive types and common keywords
+    // 2. Only values reference models. Keys name the model syntax itself and
+    // sequence entries only ever hold enum values or index field names.
+    if (!isValuePosition(line, wordMatch.startColumn)) return null;
+
+    // 3. Skip primitive types and common keywords
     if (primitiveTypes.contains(token) || ignoredKeywords.contains(token)) {
       return null;
     }
 
-    // 3. Parse potential model / class target from token.
+    // 4. Parse potential model / class target from token.
     // `project:` and `package:` tokens denote plain Dart classes and can
     // never resolve to a model.
     var modelToken = parseModelToken(token);
     if (modelToken == null) return null;
 
-    // 4. Search model by className and moduleAlias
+    // 5. Search model by className and moduleAlias
     var targetModel = analyzer.findModelByName(
       modelToken.className,
       moduleAlias: modelToken.moduleAlias,
     );
 
-    // 5. If not found by class name, try searching by database table name
+    // 6. If not found by class name, try searching by database table name
     // e.g. parentTable=citizen
     targetModel ??= analyzer.findModelByTableName(token);
 

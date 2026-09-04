@@ -1142,4 +1142,86 @@ fields:
       },
     );
   });
+
+  group(
+    'Given an initialized language server with models whose table names and '
+    'fields collide with the model file syntax,',
+    () {
+      late LanguageServerTestSession session;
+      late String parameterModelPath;
+      late String holderModelPath;
+
+      setUp(() async {
+        await ProjectDirectoryBuilder()
+            .withModelDirContents([
+              d.file('parameter.spy.yaml', '''
+class: Parameter
+table: parameters
+fields:
+  name: String
+'''),
+              d.file('holder.spy.yaml', '''
+class: Holder
+table: holder
+fields:
+  param: Parameter?, relation(parent=parameters)
+'''),
+              // An enum value that shares the name of a model.
+              d.file('role.spy.yaml', '''
+enum: Role
+serialized: byName
+values:
+  - Parameter
+  - guest
+'''),
+            ])
+            .build()
+            .create();
+
+        var modelsDir = p.join(
+          d.sandbox,
+          'project',
+          'my_project_server',
+          'lib',
+          'src',
+          'models',
+        );
+        parameterModelPath = p.join(modelsDir, 'parameter.spy.yaml');
+        holderModelPath = p.join(modelsDir, 'holder.spy.yaml');
+
+        session = LanguageServerTestSession();
+        await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
+        session.sendInitialized();
+      });
+
+      tearDown(() async {
+        await session.dispose();
+      });
+
+      test(
+        'when references are requested for a model that shares its name with '
+        'an enum value, '
+        'then the enum value is not reported as a reference.',
+        () async {
+          // Line 0 in parameter.spy.yaml: "class: Parameter"
+          var result = await session.requestReferences(
+            parameterModelPath,
+            line: 0,
+            character: 8,
+            includeDeclaration: false,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(
+            locations.map((loc) => loc['uri']),
+            isNot(contains(contains('role.spy.yaml'))),
+          );
+          expect(
+            locations.map((loc) => loc['uri']),
+            everyElement(Uri.file(holderModelPath).toString()),
+          );
+        },
+      );
+    },
+  );
 }
