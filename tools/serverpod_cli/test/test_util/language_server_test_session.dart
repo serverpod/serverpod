@@ -47,6 +47,7 @@ class LanguageServerTestSession {
   Future<void> initialize(
     Uri rootUri, {
     bool supportsWatchedFilesRegistration = true,
+    bool linkSupport = false,
   }) async {
     await client.sendRequest('initialize', {
       'processId': null,
@@ -55,6 +56,10 @@ class LanguageServerTestSession {
         if (supportsWatchedFilesRegistration)
           'workspace': {
             'didChangeWatchedFiles': {'dynamicRegistration': true},
+          },
+        if (linkSupport)
+          'textDocument': {
+            'definition': {'linkSupport': true},
           },
       },
     });
@@ -108,6 +113,42 @@ class LanguageServerTestSession {
   /// Completes with the next capability registration requested by the server.
   Future<Registration> nextRegistration() {
     return _registrations.stream.first.timeout(const Duration(seconds: 10));
+  }
+
+  Future<dynamic> requestDefinition(
+    String filePath, {
+    required int line,
+    required int character,
+  }) {
+    return client.sendRequest('textDocument/definition', {
+      'textDocument': {'uri': Uri.file(filePath).toString()},
+      'position': {'line': line, 'character': character},
+    });
+  }
+
+  /// Sends the custom `serverpod/modelDefinition` request used to navigate
+  /// from generated Dart code back to a model definition.
+  Future<dynamic> requestModelDefinition(
+    String className, {
+    String? moduleAlias,
+  }) {
+    return client.sendRequest('serverpod/modelDefinition', {
+      'className': className,
+      'moduleAlias': ?moduleAlias,
+    });
+  }
+
+  Future<dynamic> requestReferences(
+    String filePath, {
+    required int line,
+    required int character,
+    bool includeDeclaration = true,
+  }) {
+    return client.sendRequest('textDocument/references', {
+      'textDocument': {'uri': Uri.file(filePath).toString()},
+      'position': {'line': line, 'character': character},
+      'context': {'includeDeclaration': includeDeclaration},
+    });
   }
 
   Future<void> dispose() async {

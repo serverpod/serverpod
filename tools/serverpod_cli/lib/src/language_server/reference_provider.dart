@@ -1,0 +1,270 @@
+import 'package:lsp_server/lsp_server.dart';
+import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/language_server/model_navigation_utils.dart';
+
+/// Provides Find References resolution for Serverpod model files.
+///
+/// References are resolved across model files only. Usages in Dart code, such
+/// as endpoints and business logic, are outside the scope of this analyzer and
+/// are left to the Dart language server.
+class ReferenceProvider {
+  /// Finds all references to the symbol at [position] in [documentUri].
+  static List<Location> findReferences({
+    required StatefulAnalyzer analyzer,
+    required Uri documentUri,
+    required Position position,
+    required ReferenceContext context,
+  }) {
+    var source = analyzer.getModelSource(documentUri);
+    if (source == null) return [];
+
+    var lines = source.yaml.split('\n');
+    if (position.line < 0 || position.line >= lines.length) return [];
+
+    var line = lines[position.line];
+    var wordMatch = extractWordAt(line, position.character);
+    if (wordMatch == null) return [];
+
+    // Quoted values and comments are plain text and never reference a model
+    // or a field of one.
+    if (lineContextAt(line, wordMatch.startColumn) != LineContext.code) {
+      return [];
+    }
+
+    var token = wordMatch.word;
+
+    // 1. Check if token names a field of the current model. This runs before
+    // the value checks so that fields named like keys (e.g. `name`)
+    // stay searchable. The position matters: a token that merely spells out
+    // a field name, such as the table of relation(parent=record), refers to
+    // whatever its own position names.
+    var currentModel = analyzer.getModel(documentUri);
+    if (currentModel is ClassDefinition &&
+        currentModel.findField(token) != null &&
+        _namesField(lines, position, wordMatch, token)) {
+      return _findFieldReferences(
+        lines: lines,
+        documentUri: documentUri,
+        fieldName: token,
+        includeDeclaration: context.includeDeclaration,
+      );
+    }
+
+    // 2. A token in table reference position, e.g. relation(parent=citizen),
+    // names a database table. It is resolved before the checks below since
+    // table names may collide with the literal values of the model syntax.
+    if (isTableReferenceContext(line, wordMatch.startColumn)) {
+      return _findModelReferences(
+        analyzer: analyzer,
+        targetModel: analyzer.findModelByTableName(token),
+        includeDeclaration: context.includeDeclaration,
+      );
+    }
+
+    // 3. Only values reference models. Keys name the model syntax itself and
+    // sequence entries only ever hold enum values or index field names.
+    if (!isValuePosition(line, wordMatch.startColumn)) return [];
+
+    // 4. Skip primitive types and literal values of the model syntax.
+    if (primitiveTypes.contains(token) || isLiteralValue(token)) return [];
+
+    // 5. Parse potential model / class target from token.
+    // `project:` and `package:` tokens denote plain Dart classes and can
+    // never resolve to a model.
+    var modelToken = parseModelToken(token);
+    if (modelToken == null) return [];
+
+    // 6. Search model by className and moduleAlias, falling back to the
+    // database table name.
+    var targetModel =
+        analyzer.findModelByName(
+          modelToken.className,
+          moduleAlias: modelToken.moduleAlias,
+        ) ??
+        analyzer.findModelByTableName(token);
+
+    return _findModelReferences(
+      analyzer: analyzer,
+      targetModel: targetModel,
+      includeDeclaration: context.includeDeclaration,
+    );
+  }
+
+  /// Whether [wordMatch] names the field [fieldName], either at the field
+  /// declaration itself or in a reference to it such as
+  /// `relation(field=authorId)`.
+  static bool _namesField(
+    List<String> lines,
+    Position position,
+    WordMatch wordMatch,
+    String fieldName,
+  ) {
+    var line = lines[position.line];
+    if (isFieldReferenceContext(line, wordMatch.startColumn)) return true;
+
+    var declaration = findFieldDefinitionRange(lines, fieldName);
+    return declaration != null &&
+        declaration.start.line == position.line &&
+        declaration.start.character == wordMatch.startColumn;
+  }
+
+  static List<Location> _findModelReferences({
+    required StatefulAnalyzer analyzer,
+    required SerializableModelDefinition? targetModel,
+    required bool includeDeclaration,
+  }) {
+    if (targetModel == null) return [];
+
+    var locations = <Location>[];
+    var targetSource = analyzer.getModelSourceForModel(targetModel);
+    var targetUri = targetSource?.yamlSourceUri;
+
+    // 1. Declaration site
+    if (includeDeclaration && targetSource != null && targetUri != null) {
+      var targetLines = targetSource.yaml.split('\n');
+      var declRange = findModelDefinitionRange(
+        targetLines,
+        targetModel.className,
+      );
+      locations.add(Location(uri: targetUri, range: declRange));
+    }
+
+    var className = targetModel.className;
+    var classRegex = RegExp(r'\b' + RegExp.escape(className) + r'\b');
+
+    // A table backed model is also referenced by its table name, e.g. in
+    // relation(parent=citizen).
+    var tableName = targetModel is ModelClassDefinition
+        ? targetModel.tableName
+        : null;
+    var tableRegex = tableName == null
+        ? null
+        : RegExp(r'\b' + RegExp.escape(tableName) + r'\b');
+
+    // 2. Search all registered models
+    for (var source in analyzer.registeredModelSources) {
+      var modelUri = source.yamlSourceUri;
+      var isDeclarationFile =
+          targetUri != null &&
+          p.canonicalize(modelUri.toFilePath()) ==
+              p.canonicalize(targetUri.toFilePath());
+
+      var modelLines = source.yaml.split('\n');
+      for (var lineIdx = 0; lineIdx < modelLines.length; lineIdx++) {
+        var rawLine = modelLines[lineIdx];
+
+        // Skip the declaration line itself in the declaration file (already
+        // handled above if includeDeclaration is true)
+        if (isDeclarationFile &&
+            modelDeclarationColumn(rawLine, className) != null) {
+          continue;
+        }
+
+        var columns = <int, int>{};
+
+        for (var match in classRegex.allMatches(rawLine)) {
+          // Ignore matches inside comments and quoted values
+          if (lineContextAt(rawLine, match.start) != LineContext.code) continue;
+
+          // Must be in a value position, never a key or a sequence entry
+          if (!isValuePosition(rawLine, match.start)) continue;
+
+          // Check for module qualification mismatch
+          if (!_matchesModule(rawLine, match.start, targetModel)) continue;
+
+          // Not a relation name= parameter
+          if (_isRelationNameParam(rawLine, match.start)) continue;
+
+          columns[match.start] = match.end;
+        }
+
+        for (var match in tableRegex?.allMatches(rawLine) ?? <RegExpMatch>[]) {
+          if (lineContextAt(rawLine, match.start) != LineContext.code) continue;
+          if (!isTableReferenceContext(rawLine, match.start)) continue;
+
+          columns[match.start] = match.end;
+        }
+
+        for (var startCol in columns.keys.toList()..sort()) {
+          locations.add(
+            Location(
+              uri: modelUri,
+              range: Range(
+                start: Position(line: lineIdx, character: startCol),
+                end: Position(line: lineIdx, character: columns[startCol]!),
+              ),
+            ),
+          );
+        }
+      }
+    }
+
+    return locations;
+  }
+
+  static List<Location> _findFieldReferences({
+    required List<String> lines,
+    required Uri documentUri,
+    required String fieldName,
+    required bool includeDeclaration,
+  }) {
+    var locations = <Location>[];
+    var declarationRange = findFieldDefinitionRange(lines, fieldName);
+    var fieldRegex = RegExp(r'\b' + RegExp.escape(fieldName) + r'\b');
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+
+      if (i == declarationRange?.start.line) {
+        if (includeDeclaration) {
+          locations.add(Location(uri: documentUri, range: declarationRange!));
+        }
+        continue;
+      }
+
+      var matches = fieldRegex.allMatches(line);
+      for (var match in matches) {
+        if (lineContextAt(line, match.start) != LineContext.code) continue;
+
+        if (!isFieldReferenceContext(line, match.start)) continue;
+
+        locations.add(
+          Location(
+            uri: documentUri,
+            range: Range(
+              start: Position(line: i, character: match.start),
+              end: Position(line: i, character: match.end),
+            ),
+          ),
+        );
+      }
+    }
+
+    return locations;
+  }
+
+  static bool _matchesModule(
+    String line,
+    int startCol,
+    SerializableModelDefinition targetModel,
+  ) {
+    if (startCol > 0 && line[startCol - 1] == ':') {
+      var prefix = line.substring(0, startCol - 1);
+      var delimiterIdx = prefix.lastIndexOf(RegExp(r'[\s,<(?:]'));
+      var alias = delimiterIdx >= 0
+          ? prefix.substring(delimiterIdx + 1)
+          : prefix;
+      if (alias.isNotEmpty && targetModel.type.moduleAlias != alias) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  static bool _isRelationNameParam(String line, int startCol) {
+    var before = line.substring(0, startCol);
+    return before.endsWith('name=') || before.endsWith('name: ');
+  }
+}
