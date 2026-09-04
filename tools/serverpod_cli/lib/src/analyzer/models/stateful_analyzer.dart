@@ -97,11 +97,7 @@ class StatefulAnalyzer {
   /// Returns the [ModelSource] for the given [model].
   ModelSource? getModelSourceForModel(SerializableModelDefinition model) {
     for (var state in _modelStates.values) {
-      if (state.model == model) return state.source;
-      if (state.model?.className == model.className &&
-          state.model?.type.moduleAlias == model.type.moduleAlias) {
-        return state.source;
-      }
+      if (identical(state.model, model)) return state.source;
     }
     return null;
   }
