@@ -14,19 +14,19 @@ environment:
 resolution: workspace
 
 dependencies:
-  serverpod: 4.0.0-rc.1
-  serverpod_auth_core_server: 4.0.0-rc.1
-  serverpod_auth_idp_server: 4.0.0-rc.1
-  serverpod_service_client: 4.0.0-rc.1
+  serverpod: 4.0.0-rc.2
+  serverpod_auth_core_server: 4.0.0-rc.2
+  serverpod_auth_idp_server: 4.0.0-rc.2
+  serverpod_service_client: 4.0.0-rc.2
   serverpod_test_shared_module_server:
     path: ../../serverpod_test_shared_module/serverpod_test_shared_module_server
   serverpod_test_sqlite_shared:
     path: ../serverpod_test_sqlite_shared
 
 dev_dependencies:
-  serverpod_cli: 4.0.0-rc.1
-  serverpod_lints: 4.0.0-rc.1
-  serverpod_test: 4.0.0-rc.1
+  serverpod_cli: 4.0.0-rc.2
+  serverpod_lints: 4.0.0-rc.2
+  serverpod_test: 4.0.0-rc.2
   serverpod_test_client:
     path: ../../serverpod_test_client
   serverpod_test_server:

@@ -23,7 +23,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_database: 4.0.0-rc.1
+  serverpod_database: 4.0.0-rc.2
 
 flutter:
   uses-material-design: true
