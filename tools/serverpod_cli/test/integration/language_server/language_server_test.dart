@@ -1156,6 +1156,7 @@ fields:
       setUp(() async {
         await ProjectDirectoryBuilder()
             .withModelDirContents([
+              // The table name is also a key of the model file syntax.
               d.file('parameter.spy.yaml', '''
 class: Parameter
 table: parameters

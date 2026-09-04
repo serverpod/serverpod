@@ -5,6 +5,10 @@ import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/language_server/model_navigation_utils.dart';
 
 /// Provides Find References resolution for Serverpod model files.
+///
+/// References are resolved across model files only. Usages in Dart code, such
+/// as endpoints and business logic, are outside the scope of this analyzer and
+/// are left to the Dart language server.
 class ReferenceProvider {
   /// Finds all references to the symbol at [position] in [documentUri].
   static List<Location> findReferences({
