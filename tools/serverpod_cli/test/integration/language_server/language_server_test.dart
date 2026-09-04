@@ -1034,8 +1034,7 @@ fields:
       );
 
       test(
-        'when a model definition is requested with an import prefix that '
-        'names no module, '
+        'when a model definition is requested with an import prefix that names no module, '
         'then it falls back to the unqualified model definition.',
         () async {
           // Generated Dart code imports modules under prefixes such as _i2,
@@ -1277,8 +1276,7 @@ fields:
       });
 
       test(
-        'when definition is requested on a parent table name that is also a '
-        'key of the model file syntax, '
+        'when definition is requested on a parent table name that is also a key of the model file syntax, '
         'then it returns the location of the model definition.',
         () async {
           // Line 3 in holder.spy.yaml:
@@ -1300,8 +1298,7 @@ fields:
       );
 
       test(
-        'when definition is requested on a field that is named like a top '
-        'level key, '
+        'when definition is requested on a field that is named like a top level key, '
         'then it returns the location of the field declaration.',
         () async {
           // Line 6 in record.spy.yaml: "    fields: table"
@@ -1323,8 +1320,7 @@ fields:
       );
 
       test(
-        'when definition is requested on a foreign key action written in a '
-        'different casing than a model that shares its name, '
+        'when definition is requested on a foreign key action written in a different casing than a model that shares its name, '
         'then it returns null.',
         () async {
           // Line 3 in owner.spy.yaml:
@@ -1372,8 +1368,7 @@ fields:
       );
 
       test(
-        'when references are requested for a model that shares its name with '
-        'an enum value, '
+        'when references are requested for a model that shares its name with an enum value, '
         'then the enum value is not reported as a reference.',
         () async {
           // Line 0 in parameter.spy.yaml: "class: Parameter"
@@ -1397,8 +1392,7 @@ fields:
       );
 
       test(
-        'when definition is requested on a field of a fields block that holds '
-        'a dedented comment, '
+        'when definition is requested on a field of a fields block that holds a dedented comment, '
         'then it returns the location of the field declaration.',
         () async {
           // Line 6 in note.spy.yaml:
@@ -1421,8 +1415,7 @@ fields:
       );
 
       test(
-        'when references are requested for a field of a fields block that '
-        'holds a dedented comment, '
+        'when references are requested for a field of a fields block that holds a dedented comment, '
         'then the declaration is reported alongside the relation usage.',
         () async {
           // Line 5 in note.spy.yaml: "  authorId: int"
@@ -1449,8 +1442,7 @@ fields:
       );
 
       test(
-        'when definition is requested on a quoted default that spells out a '
-        'model name, '
+        'when definition is requested on a quoted default that spells out a model name, '
         'then it returns null.',
         () async {
           // Line 3 in label.spy.yaml:
@@ -1467,8 +1459,7 @@ fields:
       );
 
       test(
-        'when definition is requested on a quoted default that spells out a '
-        'table name, '
+        'when definition is requested on a quoted default that spells out a table name, '
         'then it returns null.',
         () async {
           // Line 4 in label.spy.yaml:
@@ -1485,8 +1476,7 @@ fields:
       );
 
       test(
-        'when references are requested for a model whose name is spelled out '
-        'by a quoted default, '
+        'when references are requested for a model whose name is spelled out by a quoted default, '
         'then the quoted default is not reported as a reference.',
         () async {
           // Line 0 in parameter.spy.yaml: "class: Parameter"
@@ -1506,8 +1496,7 @@ fields:
       );
 
       test(
-        'when references are requested on a parent table that is also the '
-        'name of a field of the same model, '
+        'when references are requested on a parent table that is also the name of a field of the same model, '
         'then it returns the usages of the model behind that table.',
         () async {
           // Line 3 in ticket.spy.yaml:
