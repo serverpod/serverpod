@@ -204,7 +204,7 @@ void main() {
 
     test(
       'when the event is dispatched, '
-      'then it is added to the app instead of the server log.',
+      'then it is added to the app instead of the server log',
       () {
         history.recordFlutterExtensionEvent(
           'serverpod-app',
@@ -212,7 +212,7 @@ void main() {
             'type': 'log',
             'level': 'warning',
             'message': 'Application warning',
-            'timestamp': '2026-07-14T03:00:00.000Z',
+            'time': '2026-07-14T03:00:00.000Z',
           }),
         );
 

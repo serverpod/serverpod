@@ -14,6 +14,9 @@ import 'package:serverpod_shared/log_io.dart';
 /// Singleton instance of logger.
 cli.Logger? _logger;
 
+/// Whether [_logger] is the default one [initializeLogger] installs.
+bool _loggerIsDefault = false;
+
 /// Replacements for emojis that are not supported on Windows.
 final Map<String, String> _windowsLoggerReplacements = {
   '🥳': '=D',
@@ -31,15 +34,31 @@ void initializeLogger() {
     'Only one logger initialization is allowed.',
   );
 
-  _logger = ServerpodCliLogger(
-    IsolatedLogWriter(
-      () => StdOutLogWriter(
-        replacements: Platform.isWindows ? _windowsLoggerReplacements : null,
-      ),
-    ),
-  );
+  _logger = ServerpodCliLogger(stdOutLogWriter());
+  _loggerIsDefault = true;
   _attachGlobalLogBridge();
 }
+
+/// Whether the logger singleton is the default one [initializeLogger] installs,
+/// rather than one something else put there.
+///
+/// A command that wants its output somewhere else too asks this before
+/// replacing the singleton. Composing over the CLI's own logger redirects only
+/// what this entry point set up. Composing over an installed one, a test's or
+/// an embedder's, takes away what that installer is there to see.
+bool get loggerIsDefault => _logger == null || _loggerIsDefault;
+
+/// The writer [initializeLogger] installs, putting the CLI's own output on
+/// stdout.
+///
+/// Exposed for a command that writes elsewhere too. The runner records its
+/// output in the history it serves attached clients, and composes this in for
+/// the terminal half.
+shared.LogWriter stdOutLogWriter() => IsolatedLogWriter(
+  () => StdOutLogWriter(
+    replacements: Platform.isWindows ? _windowsLoggerReplacements : null,
+  ),
+);
 
 /// Replaces the logger singleton with the given [logger].
 ///
@@ -50,6 +69,7 @@ void initializeLoggerWith(cli.Logger logger) {
     logger.logLevel = previous.logLevel;
   }
   _logger = logger;
+  _loggerIsDefault = false;
   _attachGlobalLogBridge();
 }
 
@@ -135,6 +155,7 @@ Future<void> closeLogger() async {
   await _detachGlobalLogBridge();
   final logger = _logger;
   _logger = null;
+  _loggerIsDefault = false;
   if (logger == null) return;
   await logger.flush();
   if (logger is ServerpodCliLogger) {

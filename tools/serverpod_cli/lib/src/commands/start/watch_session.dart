@@ -91,6 +91,10 @@ final _endpointOrFutureCallRegex = RegExp(
 /// Action invoked by [WatchSession.applyMigration].
 typedef ApplyMigrationsAction = Future<void> Function();
 
+/// The default for [WatchSession]'s `servesWeb`: assume there is a browser to
+/// refresh. A caller that knows better says so.
+bool _alwaysServesWeb() => true;
+
 /// Orchestrates the watch-mode reload cycle.
 ///
 /// Handles file change events by determining whether code generation,
@@ -131,6 +135,12 @@ class WatchSession {
 
   final FlutterAppManager? _flutterManager;
   final FlutterAppsLoader? _flutterAppsLoader;
+
+  /// Whether the pod serves web pages, and so has a browser to refresh after
+  /// a reload.
+  ///
+  /// Resolved at call time, not fixed at construction.
+  final bool Function() _servesWeb;
 
   /// Whether a Flutter app process is currently running. Used e.g. to label
   /// the Ctrl+R action as a start or a restart.
@@ -204,7 +214,9 @@ class WatchSession {
     PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
     FlutterAppsLoader? flutterAppsLoader,
+    bool Function() servesWeb = _alwaysServesWeb,
   }) : _compiler = compiler,
+       _servesWeb = servesWeb,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
        _fullGenerate = fullGenerate,
@@ -447,7 +459,10 @@ class WatchSession {
   /// static change counter, which the dev auto-refresh script polls. Called
   /// both for static file changes and after the server reloads new Dart code,
   /// so server-rendered web pages stay in sync.
+  ///
+  /// A no-op when the project serves no web.
   Future<void> _notifyBrowserRefresh() async {
+    if (!_servesWeb()) return;
     final server = _server;
     if (server == null || !server.isVmServiceConnected) {
       log.debug('Server VM service not connected; skipping browser refresh.');
@@ -693,11 +708,23 @@ class WatchSession {
     }, whenDisposed: () {});
   }
 
+  /// Arms auto-launch and launches every app flagged `auto_launch` that is not
+  /// already running.
+  ///
+  /// Serialized behind any in-flight reload, restart or migration, and a no-op
+  /// once disposed, so a UI attaching during shutdown cannot spawn a process
+  /// nothing will clean up.
+  Future<void> launchAutoLaunchApps() {
+    return _chainGuarded(() async {
+      await _flutterManager?.launchAutoLaunchApps();
+    }, whenDisposed: () {});
+  }
+
   /// Recovers from a degraded start: re-runs a full code generation and, on
   /// success, compiles and boots the server.
   ///
   /// This is the manual counterpart to the automatic recovery that the file
-  /// watcher drives in watch mode — it is the recovery path for `--no-watch`,
+  /// watcher drives in watch mode - it is the recovery path for `--no-watch`,
   /// where no watcher exists. A no-op if a server is already running (use
   /// [forceRestart] then). Throws a [StateError] if the session has been
   /// disposed.

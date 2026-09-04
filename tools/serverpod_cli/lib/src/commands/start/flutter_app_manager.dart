@@ -40,12 +40,13 @@ class FlutterAppManager {
   FlutterAppManager({
     required this.serverpodToolDir,
     required this.runMode,
-    required this.onProgress,
+    this.onProgress,
     required this.onReady,
     required this.onStart,
     required this.onStop,
     required this.onLaunchFailed,
-    required this.onEnsureAppTab,
+    this.onLaunching,
+    this.onEnsureAppTab,
     required this.onLog,
     required this.stdoutSinkFor,
     required this.stderrSinkFor,
@@ -90,7 +91,18 @@ class FlutterAppManager {
 
   final String serverpodToolDir;
   final String runMode;
-  final void Function(FlutterAppConfig app, String stage) onProgress;
+
+  /// Whether [launch] can do anything.
+  ///
+  /// Apps are configured and listed in every run mode, but only development
+  /// launches them.
+  bool get canLaunchApps => runMode == 'development';
+
+  /// Launch progress for a presentation layer that shows stages of its own.
+  ///
+  /// Null in the runner, which reports progress as log lines an attached client
+  /// renders like any other.
+  final void Function(FlutterAppConfig app, String stage)? onProgress;
 
   /// Fires once per launch when the app is up: on the published web URL
   /// for web devices, or on the daemon's `app.started` event otherwise
@@ -100,7 +112,18 @@ class FlutterAppManager {
   onStart;
   final void Function(FlutterAppConfig app) onStop;
   final void Function(FlutterAppConfig app) onLaunchFailed;
-  final void Function(FlutterAppConfig app) onEnsureAppTab;
+
+  /// Invoked when a spawn goes in flight, before the app is ready.
+  ///
+  /// The start of a launch, where [onReady], [onStop] and [onLaunchFailed]
+  /// report its end.
+  final void Function(FlutterAppConfig app)? onLaunching;
+
+  /// Asks a presentation layer to make sure [app] has somewhere to render.
+  ///
+  /// Null in the runner: an attached client opens its own tabs from the app
+  /// list the snapshot and [FlutterAppsChangedEvent] carry.
+  final void Function(FlutterAppConfig app)? onEnsureAppTab;
   final void Function(FlutterAppConfig app, FlutterLogEvent event) onLog;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
   final IOSink Function(FlutterAppConfig app) stderrSinkFor;
@@ -110,7 +133,19 @@ class FlutterAppManager {
   final File serverPubspecFile;
   final List<String> serverPackageDirectoryPathParts;
   final String projectName;
-  final bool launchFlutterApp;
+
+  /// The API server's resolved URL, once the pod has reported it.
+  ///
+  /// Null before the first boot, and when the pod bound the configured port
+  /// after all.
+  String? resolvedApiUrl;
+
+  /// Whether an app flagged `auto_launch` is launched when the configuration
+  /// is loaded.
+  ///
+  /// Starts false in the runner and is armed by [launchAutoLaunchApps] when
+  /// a UI first attaches.
+  bool launchFlutterApp;
 
   String? _cachedFlutterAppsFingerprint;
 
@@ -136,6 +171,13 @@ class FlutterAppManager {
   /// the tool's output.
   Map<String, String?> get dtdUris => {
     for (final appId in runningAppIds) appId: processFor(appId)?.dtdUri,
+  };
+
+  /// URLs of running apps, keyed by app id, in the manner of [dtdUris].
+  ///
+  /// A web app with no URL yet, and every non-web device, maps to null.
+  Map<String, String?> get appUrls => {
+    for (final appId in runningAppIds) appId: processFor(appId)?.flutterAppUrl,
   };
 
   /// Returns the [FlutterProcess] for [appId], if any.
@@ -241,7 +283,7 @@ class FlutterAppManager {
       await launchOverrideForTesting!(appId);
       return;
     }
-    if (runMode != 'development') return;
+    if (!canLaunchApps) return;
 
     final runtime = _runtimeFor(appId);
     if (runtime == null) return;
@@ -253,10 +295,11 @@ class FlutterAppManager {
     runtime.spawnInFlight = true;
     runtime.readySignaled = false;
     runtime.stopSignaled = false;
+    onLaunching?.call(runtime.app);
     final isRelaunch = runtime.relaunchInProgress;
     runtime.relaunchInProgress = false;
 
-    onEnsureAppTab(runtime.app);
+    onEnsureAppTab?.call(runtime.app);
 
     final device =
         runtime.app.device ?? ideDevice() ?? flutterDeviceWebServerWithBrowser;
@@ -265,7 +308,10 @@ class FlutterAppManager {
     process = FlutterProcess(
       flutterPackageDir: p.joinAll(runtime.app.pathParts),
       device: device,
-      extraArgs: runtime.app.extraRunArgs,
+      extraArgs: [
+        ...runtime.app.extraRunArgs,
+        for (final define in serverUrlDefines()) '--dart-define=$define',
+      ],
       flutterProxy: runtime.proxy,
       flutterExecutable: flutterExecutableForTesting ?? 'flutter',
       machineArgsOverride: argsOverrideForTesting?.call(runtime.app),
@@ -273,7 +319,7 @@ class FlutterAppManager {
       stderrSink: stderrSinkFor(runtime.app),
       onLog: (event) => onLog(runtime.app, event),
       onProgress: (stage) {
-        onProgress(runtime.app, stage);
+        onProgress?.call(runtime.app, stage);
         log.info('  ${runtime.app.name}: $stage');
       },
       // The ready signal for non-web devices, which never publish a URL. Web
@@ -287,9 +333,11 @@ class FlutterAppManager {
     } on FlutterNotInstalledException catch (e) {
       log.warning(e.message);
       runtime.spawnInFlight = false;
+      onLaunchFailed(runtime.app);
       return;
     } catch (_) {
       runtime.spawnInFlight = false;
+      onLaunchFailed(runtime.app);
       rethrow;
     }
 
@@ -416,6 +464,28 @@ class FlutterAppManager {
       if (launchFlutterApp && app.autoLaunch) {
         await launch(app.id);
       }
+    }
+  }
+
+  /// The `--dart-define` assignments telling an app where the pod is.
+  ///
+  /// `SERVER_URL` is the env var `getServerUrl` in `serverpod_flutter` reads
+  /// ahead of `assets/config.json`. Empty until the pod reports an address.
+  List<String> serverUrlDefines() {
+    final url = resolvedApiUrl;
+    return url == null ? const [] : ['SERVER_URL=$url'];
+  }
+
+  /// Arms auto-launch and launches every configured app flagged
+  /// `auto_launch` that is not already running.
+  ///
+  /// Idempotent. A second call launches nothing new.
+  Future<void> launchAutoLaunchApps() async {
+    if (launchFlutterApp) return;
+    launchFlutterApp = true;
+    for (final app in _apps) {
+      if (!app.autoLaunch || isRunning(app.id)) continue;
+      await launch(app.id);
     }
   }
 

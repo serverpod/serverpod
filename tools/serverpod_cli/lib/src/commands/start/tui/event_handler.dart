@@ -27,6 +27,7 @@ extension TuiLogHistory on StartLogHistory {
     // The entry's raw text is already in this history; only the structured
     // copy the app's tab renders is left to add.
     onFlutterEntry = holder.state.addFlutterLogEntry;
+    onServerLine = holder.state.rawLines.add;
   }
 }
 

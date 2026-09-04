@@ -78,6 +78,26 @@ Future<void> waitForServerRunning(KeywordSearchInStream streamSearch) async {
   await Future.delayed(const Duration(seconds: 1));
 }
 
+/// Stops the runner serving [serverDirPath], if one is still up.
+///
+/// Killing the `serverpod start` process is not enough: it is only a client of
+/// a detached runner, and SIGINT to a client detaches it rather than stopping
+/// the stack. A runner left behind holds the project, so the next test that
+/// starts one with different options is refused outright.
+Future<void> stopRunner(String serverDirPath) async {
+  var result = await runServerpod(
+    ['runner', 'stop'],
+    workingDirectory: serverDirPath,
+  );
+  expect(
+    result.exitCode,
+    0,
+    reason:
+        'Could not stop the runner for $serverDirPath, so it would outlive '
+        'this test:\n${result.stdout}\n${result.stderr}',
+  );
+}
+
 Future<void> waitForGeneratedOutput(
   bool Function() isReady, {
   Duration timeout = const Duration(seconds: 30),
@@ -95,7 +115,7 @@ Future<void> waitForGeneratedOutput(
 }
 
 void main() async {
-  group('Given a server project', () {
+  group('Given a server project,', () {
     late String sandboxDir;
     var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
@@ -126,6 +146,7 @@ void main() async {
     tearDown(() async {
       await serverProcess?.killAndWaitForExit();
       streamSearch?.cancel();
+      await stopRunner(path.join(sandboxDir, serverDir));
 
       serverProcess = null;
       streamSearch = null;
@@ -357,7 +378,7 @@ fields:
     });
   });
 
-  group('Given a project with a configured Flutter app', () {
+  group('Given a project with a configured Flutter app,', () {
     const projectName = 'vscode_test_app';
     late String sandboxDir;
     late String serverDir;
@@ -425,6 +446,7 @@ fields:
       await serverProcess?.killAndWaitForExit();
       await stdoutSubscription?.cancel();
       await stderrSubscription?.cancel();
+      await stopRunner(serverDir);
       serverProcess = null;
       stdoutSubscription = null;
       stderrSubscription = null;

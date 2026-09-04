@@ -14,6 +14,7 @@ import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/vm_service_addresses.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_cleanup.dart';
@@ -101,6 +102,15 @@ class Serverpod {
 
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
+
+  /// [config] as it was configured, before any bound port was folded into it.
+  ///
+  /// [_publishResolvedAddresses] rewrites [config] with the ports the
+  /// listeners actually bound, erasing the 0 that marks a port as ephemeral.
+  /// The user-facing servers restart around a migration and bind a new
+  /// ephemeral port, so resolving from the rewritten config would advertise
+  /// the first bind's port while the server listens on the second's.
+  late final ServerpodConfig _configuredConfig = config;
 
   /// A function to override the server configuration.
   ///
@@ -893,6 +903,8 @@ class Serverpod {
         );
       }
 
+      _publishResolvedAddresses();
+
       _internalLogVerbose('All servers started.');
     }
 
@@ -1207,6 +1219,7 @@ class Serverpod {
       return await action();
     } finally {
       await _startUserFacingServers();
+      _publishResolvedAddresses();
     }
   }
 
@@ -1228,6 +1241,41 @@ class Serverpod {
     }
     return ok;
   }
+
+  /// Folds the ports the listeners actually bound back into [config], then
+  /// announces the resulting addresses over the VM service.
+  ///
+  /// A configured port of 0 asks for an ephemeral one, so the real port is
+  /// known only now. Advertising the configured port would send clients
+  /// somewhere nothing listens.
+  void _publishResolvedAddresses() {
+    final configured = _configuredConfig;
+    final api = configured.apiServer.withResolvedPort(server.port);
+    final insights = _insightsServer == null
+        ? null
+        : configured.insightsServer?.withResolvedPort(_insightsServer!.port);
+    final webPort = Features.enableWebServer(_webServer)
+        ? webServer.port
+        : null;
+    final web = webPort == null
+        ? null
+        : configured.webServer?.withResolvedPort(webPort);
+
+    config = config.copyWith(
+      apiServer: api,
+      insightsServer: insights,
+      webServer: web,
+    );
+
+    postServerpodAddresses(
+      api: _publicUrl(api),
+      insights: insights == null ? null : _publicUrl(insights),
+      web: web == null ? null : _publicUrl(web),
+    );
+  }
+
+  static String _publicUrl(ServerConfig server) =>
+      '${server.publicScheme}://${server.publicHost}:${server.publicPort}';
 
   /// Shuts down the Serverpod and all associated servers.
   /// If [exitProcess] is set to false, the process will not exit at the end of

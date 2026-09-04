@@ -1,7 +1,10 @@
-import 'dart:convert';
+import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
+import 'package:serverpod_cli/src/runner/line_sink.dart';
+import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart'
@@ -21,6 +24,18 @@ class StartLogHistory {
 
   /// Maximum number of raw output lines kept per Flutter app.
   static const maxFlutterLines = 10000;
+
+  /// Maximum number of raw server output lines kept.
+  static const maxServerLines = 10000;
+
+  /// The pod's raw stdout and stderr, oldest first, ANSI-free.
+  ///
+  /// Separate from [serverEntries]: those are structured entries the pod
+  /// reports over its VM service, while this is what it actually printed -
+  /// which is the only place a crash before the VM service is up shows at all.
+  final BoundedQueueList<String> serverLines = BoundedQueueList<String>(
+    maxServerLines,
+  );
 
   /// Structured server history, oldest first: [LogEntry] from the pod's
   /// `ext.serverpod.log` events, [CompletedOperation] for finished server
@@ -54,6 +69,39 @@ class StartLogHistory {
   /// line buffer.
   void Function(String appId, LogEntry entry)? onFlutterEntry;
 
+  /// Called for each raw server output line appended to [serverLines].
+  void Function(String line)? onServerLine;
+
+  /// When each of [activeOperations] began, so a client attaching mid-operation
+  /// can tell how long it has been running.
+  ///
+  /// [TrackedOperation] measures with a [Stopwatch] it starts on construction,
+  /// which cannot cross a socket.
+  final Map<String, DateTime> operationStartTimes = {};
+
+  final StreamController<RunnerEvent> _events =
+      StreamController<RunnerEvent>.broadcast();
+
+  /// Every mutation, as an attach-protocol event.
+  ///
+  /// Broadcast and additive: the single [onChanged]/[onServerEntry] hooks stay
+  /// for the in-process terminal UI, which took them first, while any number of
+  /// attached clients read this.
+  Stream<RunnerEvent> get events => _events.stream;
+
+  void _emit(RunnerEvent event) {
+    if (!_events.isClosed) _events.add(event);
+  }
+
+  /// Stops emitting events.
+  ///
+  /// The buffers stay readable for a final snapshot.
+  Future<void> close() => _events.close();
+
+  /// The retained output of every Flutter app that has produced any, by id.
+  Map<String, List<String>> get flutterLines =>
+      UnmodifiableMapView(_flutterLines);
+
   /// The raw output lines of the Flutter app [appId], oldest first.
   ///
   /// Created on first use, so output is retained even when nothing displays
@@ -64,11 +112,79 @@ class StartLogHistory {
         () => BoundedQueueList<String>(maxFlutterLines),
       );
 
+  /// Replaces every app's retained output with [lines], dropping the buffer of
+  /// any app [lines] does not name.
+  ///
+  /// A reconnecting client can meet a runner whose project no longer
+  /// configures an app it holds output for.
+  void replaceFlutterLines(Map<String, List<String>> lines) {
+    _flutterLines.removeWhere((appId, _) => !lines.containsKey(appId));
+    for (final entry in lines.entries) {
+      flutterLinesFor(entry.key)
+        ..clear()
+        ..addAll(entry.value);
+    }
+    onChanged?.call();
+  }
+
   /// Appends [line] to the raw output of the Flutter app [appId].
   void addFlutterLine(String appId, String line) {
     flutterLinesFor(appId).add(line);
+    _emit(FlutterLineEvent(appId: appId, line: line));
     onChanged?.call();
   }
+
+  /// Whether the runner is receiving the pod's structured log.
+  ///
+  /// False from the moment a pod process starts until the runner has
+  /// subscribed to its VM service, and again once that process is gone.
+  /// `postEvent` drops what it posts while nobody is listening, so for that
+  /// window - which covers the whole boot sequence - the raw line is the only
+  /// copy an entry has. After it, the pod's stdout writer repeats every entry
+  /// verbatim.
+  ///
+  /// This is the one place that knows the difference, so it is the one place
+  /// that decides: see [addServerLine].
+  bool _serverStructuredLogging = false;
+
+  /// Records that the pod's structured log is now reaching
+  /// [recordServerLogEvent].
+  void markServerStructuredLogging() => _serverStructuredLogging = true;
+
+  /// Records that the pod process is gone, taking its structured log with it.
+  void serverProcessGone() {
+    _serverStructuredLogging = false;
+    discardActiveServerScopes();
+  }
+
+  /// Appends [line] to the pod's raw output.
+  ///
+  /// A line the pod's structured log does not also carry joins
+  /// [serverEntries]: it is part of the account, and putting it there is what
+  /// keeps that account in order, which two buffers with no shared timestamp
+  /// could not be merged into afterwards.
+  void addServerLine(String line) {
+    final duplicatesEntry = _serverStructuredLogging;
+    serverLines.add(line);
+    if (!duplicatesEntry) serverEntries.add(line);
+    _emit(ServerLineEvent(line, duplicatesEntry: duplicatesEntry));
+    onServerLine?.call(line);
+    onChanged?.call();
+  }
+
+  /// An [IOSink] that records everything written to it as the pod's raw
+  /// output.
+  ///
+  /// [forwardTo] receives the original writes verbatim, ANSI styling included,
+  /// and is the terminal in a foreground session. [echoLine] receives each
+  /// finished line in split, ANSI-free form, as the runner's log file wants.
+  IOSink serverOutputSink({
+    IOSink? forwardTo,
+    void Function(String line)? echoLine,
+  }) => LineSink((line) {
+    addServerLine(line);
+    echoLine?.call(line);
+  }, forwardTo);
 
   /// An [IOSink] that records everything written to it as raw output lines of
   /// the Flutter app [appId].
@@ -77,19 +193,20 @@ class StartLogHistory {
   /// the real stdout/stderr outside the TUI; under the TUI it is null, since
   /// the TUI owns the terminal and renders the recorded lines itself.
   IOSink flutterOutputSink(String appId, {IOSink? forwardTo}) =>
-      _FlutterOutputSink(this, appId, forwardTo);
+      LineSink((line) => addFlutterLine(appId, line), forwardTo);
 
   /// Records an `ext.serverpod.log` event posted by the pod over its VM
   /// service. Other extension events are ignored.
   void recordServerLogEvent(Event event) {
-    if (event.extensionKind != 'ext.serverpod.log') return;
+    if (event.extensionKind != serverpodLogEvent) return;
     final data = event.extensionData?.data;
     if (data == null) return;
 
     switch (data['type'] as String?) {
       case 'log':
-        final entry = _logEntryFromEventData(data, scopeLabel: 'server');
+        final entry = decodeLogEntry(data, fallbackScopeLabel: 'server');
         serverEntries.add(entry);
+        _emit(ServerLogEvent(entry));
         onServerEntry?.call(entry);
 
       case 'scope_start':
@@ -97,8 +214,12 @@ class StartLogHistory {
         // Don't track internal scopes as operations.
         if (label == 'INTERNAL') break;
         final id = data['id'] as String? ?? '';
-        activeOperations[id] = TrackedOperation(id: id, label: label);
+        final operation = TrackedOperation(id: id, label: label);
+        final startedAt = DateTime.now();
+        activeOperations[id] = operation;
         _activeServerScopeIds.add(id);
+        operationStartTimes[id] = startedAt;
+        _emit(OperationStartedEvent(operation, startedAt: startedAt));
 
       case 'scope_end':
         final id = data['id'] as String? ?? '';
@@ -107,32 +228,40 @@ class StartLogHistory {
         // non-server operation that later reused the same id.
         if (!_activeServerScopeIds.remove(id)) break;
         final operation = activeOperations.remove(id);
+        operationStartTimes.remove(id);
         if (operation == null) break;
         operation.stopwatch.stop();
         final serverDuration = (data['duration'] as num?)?.toDouble();
-        serverEntries.add(
-          CompletedOperation(
-            label: operation.label,
-            success: data['success'] as bool? ?? true,
-            duration: serverDuration != null
-                ? Duration(microseconds: (serverDuration * 1000000).round())
-                : operation.stopwatch.elapsed,
-          ),
+        final completed = CompletedOperation(
+          label: operation.label,
+          success: data['success'] as bool? ?? true,
+          duration: serverDuration != null
+              ? Duration(microseconds: (serverDuration * 1000000).round())
+              : operation.stopwatch.elapsed,
         );
+        serverEntries.add(completed);
+        _emit(OperationCompletedEvent(completed, id: id));
     }
     onChanged?.call();
   }
 
   /// Discards every owned active scope.
+  ///
+  /// Attached clients are told which, since no `scope_end` will follow for
+  /// a process that is gone.
   void discardActiveServerScopes() {
     if (_activeServerScopeIds.isEmpty) return;
 
-    var changed = false;
+    final discarded = <String>[];
     for (final id in _activeServerScopeIds) {
-      changed = activeOperations.remove(id) != null || changed;
+      if (activeOperations.remove(id) == null) continue;
+      operationStartTimes.remove(id);
+      discarded.add(id);
     }
     _activeServerScopeIds.clear();
-    if (changed) onChanged?.call();
+    if (discarded.isEmpty) return;
+    _emit(OperationsDiscardedEvent(discarded));
+    onChanged?.call();
   }
 
   /// Records a structured log [event] from the Flutter app [appId], as
@@ -142,7 +271,9 @@ class StartLogHistory {
   /// which is already recorded. Only the structured entry is decoded and
   /// handed to [onFlutterEntry].
   void recordFlutterLogEvent(String appId, FlutterLogEvent event) {
-    onFlutterEntry?.call(appId, _flutterLogEntry(appId, event));
+    final entry = _flutterLogEntry(appId, event);
+    _emit(FlutterLogEntryEvent(appId: appId, entry: entry));
+    onFlutterEntry?.call(appId, entry);
     onChanged?.call();
   }
 
@@ -178,16 +309,85 @@ class StartLogHistory {
           ),
         );
 
-      case 'ext.serverpod.log':
+      case serverpodLogEvent:
         if (data['type'] != 'log') return;
-        entry = _logEntryFromEventData(data, scopeLabel: appId);
+        entry = decodeLogEntry(data, fallbackScopeLabel: appId);
 
       default:
         return;
     }
 
-    _addFlutterEntryLines(appId, entry);
+    addFlutterEntryLines(appId, entry);
+    _emit(
+      FlutterLogEntryEvent(appId: appId, entry: entry, appendedToLines: true),
+    );
     onFlutterEntry?.call(appId, entry);
+    onChanged?.call();
+  }
+
+  /// Records a log entry the CLI itself produced, as opposed to one the pod
+  /// reported over its VM service.
+  ///
+  /// The two share [serverEntries] because a reader wants one chronological
+  /// account: "generating code", "compilation failed" and the pod's own
+  /// startup lines are one story, and the CLI half is the half that explains
+  /// why a stack never came up.
+  void recordCliLogEntry(LogEntry entry) {
+    serverEntries.add(entry);
+    _emit(ServerLogEvent(entry));
+    onServerEntry?.call(entry);
+    onChanged?.call();
+  }
+
+  /// Records the start of a CLI operation - a `log.progress` scope - so a
+  /// client attaching mid-flight sees it running rather than nothing at all.
+  void startCliOperation(String id, String label) {
+    final operation = TrackedOperation(id: id, label: label);
+    final startedAt = DateTime.now();
+    activeOperations[id] = operation;
+    operationStartTimes[id] = startedAt;
+    _emit(OperationStartedEvent(operation, startedAt: startedAt));
+    onChanged?.call();
+  }
+
+  /// Records the end of the CLI operation [id], if it is still open.
+  ///
+  /// [error] follows it into the history as an entry of its own, since
+  /// [CompletedOperation] has nowhere to carry a reason.
+  void completeCliOperation(
+    String id, {
+    required bool success,
+    required Duration duration,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    final operation = activeOperations.remove(id);
+    final startedAt = operationStartTimes.remove(id);
+    if (operation == null) return;
+    operation.stopwatch.stop();
+    final completed = CompletedOperation(
+      label: operation.label,
+      success: success,
+      duration: duration,
+    );
+    serverEntries.add(completed);
+    _emit(OperationCompletedEvent(completed, id: id));
+    if (error != null) {
+      recordCliLogEntry(
+        LogEntry(
+          time: DateTime.now(),
+          level: LogLevel.error,
+          message: operation.label,
+          scope: LogScope(
+            id: id,
+            label: operation.label,
+            startTime: startedAt ?? DateTime.now(),
+          ),
+          error: error.toString(),
+          stackTrace: stackTrace,
+        ),
+      );
+    }
     onChanged?.call();
   }
 
@@ -197,6 +397,7 @@ class StartLogHistory {
   /// migration still completes into the cleared history.
   void clear() {
     serverEntries.clear();
+    serverLines.clear();
     for (final lines in _flutterLines.values) {
       lines.clear();
     }
@@ -205,7 +406,12 @@ class StartLogHistory {
 
   /// Appends [entry]'s message, error and stack trace as raw lines of the
   /// Flutter app [appId], mirroring how the app would have printed them.
-  void _addFlutterEntryLines(String appId, LogEntry entry) {
+  ///
+  /// Emits no line events: the caller emits the structured entry covering the
+  /// same text, and a client rendering both would print it twice. That entry
+  /// carries `appendedToLines` instead, so an attached client can run this
+  /// against its own copy of the buffer and hold the same lines.
+  void addFlutterEntryLines(String appId, LogEntry entry) {
     final raw = StringBuffer(entry.message);
     if (entry.error != null) {
       if (raw.isNotEmpty) raw.writeln();
@@ -248,121 +454,37 @@ LogEntry _flutterLogEntry(String appId, FlutterLogEvent event) {
   );
 }
 
-/// The [LogEntry] carried by an `ext.serverpod.log` event of type `log`.
-LogEntry _logEntryFromEventData(
-  Map<String, dynamic> data, {
-  required String scopeLabel,
-}) {
-  final stackTrace = data['stackTrace'] as String?;
-  return LogEntry(
-    level: parseLogLevel(data['level'] as String? ?? 'info'),
-    time:
-        DateTime.tryParse(data['timestamp'] as String? ?? '') ?? DateTime.now(),
-    message: data['message'] as String? ?? '',
-    scope: LogScope.root(scopeLabel),
-    error: data['error']?.toString(),
-    stackTrace: stackTrace != null && stackTrace.isNotEmpty
-        ? StackTrace.fromString(stackTrace)
-        : null,
-    metadata: data['metadata'] is Map
-        ? Map<String, Object?>.from(data['metadata'] as Map)
-        : null,
-  );
-}
-
-/// The [LogLevel] named by [level]; unknown names are treated as info.
-LogLevel parseLogLevel(String level) {
-  return switch (level) {
-    'debug' => LogLevel.debug,
-    'info' => LogLevel.info,
-    'warning' || 'warn' => LogLevel.warning,
-    'error' => LogLevel.error,
-    'fatal' => LogLevel.fatal,
-    _ => LogLevel.info,
-  };
-}
-
-/// [IOSink] that splits what is written to it into ANSI-free lines and records
-/// them as raw output of one Flutter app, optionally passing the original
-/// writes on to another sink unchanged.
-class _FlutterOutputSink implements IOSink {
-  _FlutterOutputSink(this._history, this._appId, this._forwardTo);
+/// A [LogWriter] that folds the CLI's own logging into a [StartLogHistory].
+///
+/// Without this the runner's `log.*` calls reach only its log file, and an
+/// attached client shows the pod's output with nothing around it: no
+/// generation errors, no compile failures, no progress for the minutes a cold
+/// start takes. The in-process terminal UI used to get this by owning the
+/// logger; a detached runner has to put it somewhere a client can read.
+class StartLogHistoryWriter extends LogWriter {
+  StartLogHistoryWriter(this._history);
 
   final StartLogHistory _history;
-  final String _appId;
-  final IOSink? _forwardTo;
-  final StringBuffer _lineBuffer = StringBuffer();
 
   @override
-  void add(List<int> data) {
-    _forwardTo?.add(data);
-    _record(utf8.decode(data, allowMalformed: true));
-  }
-
-  /// Forwards text as text rather than as bytes, so the terminal keeps
-  /// encoding it the way it would have without this sink in between.
-  @override
-  void write(Object? object) {
-    _forwardTo?.write(object);
-    _record('$object');
-  }
+  Future<void> log(LogEntry entry) async => _history.recordCliLogEntry(entry);
 
   @override
-  void writeln([Object? object = '']) => write('$object\n');
+  Future<void> openScope(LogScope scope) async =>
+      _history.startCliOperation(scope.id, scope.label);
 
   @override
-  void writeAll(Iterable<Object?> objects, [String separator = '']) =>
-      write(objects.join(separator));
-
-  @override
-  void writeCharCode(int charCode) => write(String.fromCharCode(charCode));
-
-  @override
-  void addError(Object error, [StackTrace? stackTrace]) {
-    _history.addFlutterLine(_appId, stripAnsi('ERROR: $error'));
-    if (stackTrace != null) {
-      _history.addFlutterLine(_appId, stripAnsi('$stackTrace'));
-    }
-    _forwardTo?.addError(error, stackTrace);
-  }
-
-  @override
-  Future<void> addStream(Stream<List<int>> stream) => stream.forEach(add);
-
-  @override
-  Future<void> flush() async => _forwardTo?.flush();
-
-  /// Records whatever was written without a trailing newline. Never closes
-  /// [_forwardTo]: outside the TUI that is the process's own stdout/stderr.
-  @override
-  Future<void> close() async {
-    if (_lineBuffer.isNotEmpty) _emitLine();
-  }
-
-  @override
-  Encoding get encoding => utf8;
-
-  @override
-  set encoding(Encoding value) {}
-
-  @override
-  Future<void> get done => Future.value();
-
-  /// Splits [text] on newlines, holding back a trailing partial line until the
-  /// rest of it arrives.
-  void _record(String text) {
-    for (var i = 0; i < text.length; i++) {
-      final char = text[i];
-      if (char == '\n') {
-        _emitLine();
-      } else if (char != '\r') {
-        _lineBuffer.writeCharCode(char.codeUnitAt(0));
-      }
-    }
-  }
-
-  void _emitLine() {
-    _history.addFlutterLine(_appId, stripAnsi(_lineBuffer.toString()));
-    _lineBuffer.clear();
-  }
+  Future<void> closeScope(
+    LogScope scope, {
+    required bool success,
+    required Duration duration,
+    Object? error,
+    StackTrace? stackTrace,
+  }) async => _history.completeCliOperation(
+    scope.id,
+    success: success,
+    duration: duration,
+    error: error,
+    stackTrace: stackTrace,
+  );
 }

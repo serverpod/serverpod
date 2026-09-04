@@ -534,6 +534,19 @@ class ServerConfig {
     );
   }
 
+  /// This configuration with [resolvedPort] as the bind port.
+  ///
+  /// When the configured port is 0 the real one is only known after binding,
+  /// and it is also what clients have to reach, so [publicPort] follows it.
+  /// A configured non-zero port leaves [publicPort] alone: a deployment behind
+  /// a proxy advertises a port it deliberately does not bind.
+  ServerConfig withResolvedPort(int resolvedPort) => ServerConfig(
+    port: resolvedPort,
+    publicScheme: publicScheme,
+    publicHost: publicHost,
+    publicPort: port == 0 ? resolvedPort : publicPort,
+  ).._name = _name;
+
   @override
   String toString() {
     var str = '';

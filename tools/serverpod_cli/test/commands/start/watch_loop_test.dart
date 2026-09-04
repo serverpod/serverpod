@@ -14,6 +14,8 @@ import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/fake_runner_api.dart';
+
 CompileResult _successResult({String? dillOutput = '/out.dill'}) {
   return CompileResultInternal.create(
     dillOutput: dillOutput,
@@ -153,7 +155,7 @@ void main() {
     );
   });
 
-  group('Given a WatchLoopContext', () {
+  group('Given a WatchLoopContext,', () {
     late _FakeCompiler compiler;
     late _FakeServer server;
     late _FakeProxy proxy;
@@ -212,9 +214,11 @@ void main() {
     WatchLoopContext build({bool startedDocker = false}) {
       return WatchLoopContext(
         session: _buildSession(compiler, server),
+        runnerApi: FakeRunnerApi(),
         proxy: () => proxy,
         flutterManager: flutterManager,
         mcpSocket: mcp,
+        attachSocket: null,
         stopFileWatcher: () => stopFileWatcherCalls++,
         closeAnalyzers: () async {
           closeAnalyzersCalls++;
@@ -276,6 +280,36 @@ void main() {
     );
 
     test(
+      'when a teardown step throws, '
+      'then the steps after it still run, so nothing is left behind',
+      () async {
+        final ctx = WatchLoopContext(
+          session: _buildSession(compiler, server),
+          runnerApi: FakeRunnerApi(),
+          proxy: () => proxy,
+          flutterManager: flutterManager,
+          mcpSocket: mcp,
+          attachSocket: null,
+          stopFileWatcher: () => stopFileWatcherCalls++,
+          closeAnalyzers: () async {
+            closeAnalyzersCalls++;
+            throw StateError('analyzer isolate is already gone');
+          },
+          stopDocker: () async {
+            stopDockerCalls++;
+          },
+          vmServiceInfoFile: vmServiceInfoFile,
+        );
+
+        await expectLater(ctx.dispose(), completes);
+
+        expect(server.calls, contains('stop'));
+        expect(File(vmServiceInfoFile).existsSync(), isFalse);
+        expect(stopDockerCalls, 1);
+      },
+    );
+
+    test(
       'when stopDocker is null (Docker was not started), '
       'then dispose skips the Docker step',
       () async {
@@ -307,9 +341,11 @@ void main() {
       () async {
         final ctx = WatchLoopContext(
           session: _buildSession(compiler, server),
+          runnerApi: FakeRunnerApi(),
           proxy: () => null,
           flutterManager: flutterManager,
           mcpSocket: null,
+          attachSocket: null,
           stopFileWatcher: () => stopFileWatcherCalls++,
           closeAnalyzers: () async {
             closeAnalyzersCalls++;

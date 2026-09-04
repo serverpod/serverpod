@@ -9,6 +9,8 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
 
+import '../test_util/fake_runner_api.dart';
+
 /// End-to-end test for the thin-proxy bridge:
 ///
 ///   test client (in-memory channel)
@@ -24,7 +26,7 @@ import 'package:test/test.dart';
 /// upfront regardless of whether the runner is currently up.
 void main() {
   group(
-    'Given a BridgeMcpServer wired to a running runner socket',
+    'Given a BridgeMcpServer wired to a running runner socket,',
     skip: !hasUnixSocketSupport(),
     () {
       late Directory tempServerDir;
@@ -40,12 +42,10 @@ void main() {
 
         applyMigrationCalls = 0;
         runner.connect(
-          onApplyMigration: () async {
-            applyMigrationCalls++;
-          },
-          getLogHistory: () => [],
-          getFlutterAppIds: () => [],
-          getFlutterLogHistory: (_) => [],
+          FakeRunnerApi()
+            ..onApplyMigrations = () async {
+              applyMigrationCalls++;
+            },
         );
 
         pair = await _makeBridgePair(runner.socketPath);
@@ -182,7 +182,7 @@ void main() {
   );
 
   group(
-    'Given a BridgeMcpServer that auto-connects after the runner appears',
+    'Given a BridgeMcpServer that auto-connects after the runner appears,',
     skip: !hasUnixSocketSupport(),
     () {
       test(
@@ -209,12 +209,10 @@ void main() {
           addTearDown(runner.close);
           var calls = 0;
           runner.connect(
-            onApplyMigration: () async {
-              calls++;
-            },
-            getLogHistory: () => [],
-            getFlutterAppIds: () => [],
-            getFlutterLogHistory: (_) => [],
+            FakeRunnerApi()
+              ..onApplyMigrations = () async {
+                calls++;
+              },
           );
 
           // Second call: bridge transparently reconnects.

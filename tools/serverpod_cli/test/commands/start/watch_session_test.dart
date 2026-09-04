@@ -359,6 +359,7 @@ void main() {
     PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
     FlutterAppsLoader? flutterAppsLoader,
+    bool servesWeb = true,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -388,6 +389,7 @@ void main() {
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterManager: flutterManager,
       flutterAppsLoader: flutterAppsLoader,
+      servesWeb: () => servesWeb,
     );
   }
 
@@ -402,6 +404,26 @@ void main() {
     testLogger.infoMessages.clear();
 
     session = buildSession(compiler: compiler, initialServer: server);
+  });
+
+  group('Given a project that serves no web,', () {
+    test(
+      'when static files change, '
+      'then no browser refresh is attempted, since nothing registers the extension that would answer it',
+      () async {
+        final webless = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          servesWeb: false,
+        );
+
+        await webless.handleFileChange(
+          FileChangeEvent(dartFiles: {}, staticFilesChanged: true),
+        );
+
+        expect(server.calls, isEmpty);
+      },
+    );
   });
 
   group('Given static-only file changes and VM service connected', () {

@@ -2,8 +2,8 @@ import 'package:args/command_runner.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
@@ -190,7 +190,7 @@ void main() {
   setUp(() {
     fixture = createTestFixture(testLogger, version);
   });
-  group('Logger Initialization - ', () {
+  group('Logger Initialization -,', () {
     test('when no log level flag is provided', () async {
       List<String> args = [];
 
@@ -250,16 +250,19 @@ void main() {
     );
   });
 
-  test('Given version subcommand when run then prints only version', () async {
-    await fixture.runner.run(['version']);
+  test(
+    'Given version subcommand, when run, then prints only version',
+    () async {
+      await fixture.runner.run(['version']);
 
-    var logOutput = fixture.logOutput;
-    expect(logOutput.messages, hasLength(1));
-    expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
-  });
+      var logOutput = fixture.logOutput;
+      expect(logOutput.messages, hasLength(1));
+      expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
+    },
+  );
 
   test(
-    'Given --version flag when run then should exit early and not show help',
+    'Given --version flag, when run, then should exit early and not show help',
     () async {
       await fixture.runner.run(['--version']);
 
@@ -270,15 +273,15 @@ void main() {
   );
 
   test(
-    'Given command runner then completion command is registered',
+    'Given command runner, then completion command is registered',
     () {
       expect(fixture.runner.commands.containsKey('completion'), isTrue);
     },
   );
 
-  group('Interactive flag - ', () {
+  group('Interactive flag -,', () {
     test(
-      'when no interactive flag is provided then value should be null',
+      'when no interactive flag is provided, then value should be null',
       () async {
         List<String> args = [MockCommand.commandName];
 
@@ -292,7 +295,7 @@ void main() {
     );
 
     test(
-      'when --interactive flag is provided then value should be true',
+      'when --interactive flag is provided, then value should be true',
       () async {
         List<String> args = [
           '--interactive',
@@ -309,7 +312,7 @@ void main() {
     );
 
     test(
-      'when --no-interactive flag is provided then value should be false',
+      'when --no-interactive flag is provided, then value should be false',
       () async {
         List<String> args = [
           '--no-interactive',

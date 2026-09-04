@@ -27,6 +27,7 @@ class MainScreen extends StatelessComponent {
     this.onLaunchApp,
     this.onTabSelected,
     this.onQuit,
+    this.onStopStack,
     required this.onCopyAlert,
     required this.onDismissAlert,
     required this.onStopOrCloseAppTab,
@@ -49,6 +50,12 @@ class MainScreen extends StatelessComponent {
   /// Invoked after a tab is selected via mouse click so the screen redraws.
   final VoidCallback? onTabSelected;
   final VoidCallback? onQuit;
+
+  /// Stops the whole stack, as opposed to [onQuit], which only leaves the UI.
+  ///
+  /// A detached runner outlives the session that started it, so the two need to
+  /// be different keystrokes.
+  final VoidCallback? onStopStack;
 
   /// Copies the pinned alert's segment (also bound to the `C` key).
   final VoidCallback onCopyAlert;
@@ -90,6 +97,8 @@ class MainScreen extends StatelessComponent {
         ('Shift+P', 'Force Repair migration'),
         ('E', 'Expand / collapse stack traces'),
         ('S', 'Show raw server logs'),
+        ('Q', 'Detach, leaving the stack running'),
+        ('Shift+Q', 'Stop the stack'),
       ],
     ),
   ];
@@ -240,8 +249,6 @@ class MainScreen extends StatelessComponent {
     final apps = state.launchableApps;
     final isRunning = state.isAppRunning;
 
-    // The enterAction tracks the highlighted row: a running app is relaunched, a
-    // stopped one is launched — matching what pressing Enter does.
     final focusedIndex = apps.isEmpty
         ? -1
         : state.launchPanelIndex.clamp(0, apps.length - 1);
@@ -464,9 +471,11 @@ class MainScreen extends StatelessComponent {
   /// still launching. The server log tab has no indicator.
   TabActivity _tabActivity(PaneTab tab) {
     if (tab is! AppLogTab) return TabActivity.none;
-    if (tab.stopped) return TabActivity.stopped;
-    if (tab.ready) return TabActivity.running;
-    return TabActivity.loading;
+    return switch (tab.runState) {
+      AppRunState.stopped => TabActivity.stopped,
+      AppRunState.ready => TabActivity.running,
+      AppRunState.launching => TabActivity.loading,
+    };
   }
 
   Component _buildEmptyAppsPlaceholder(ServerpodThemeData st) {
@@ -516,21 +525,22 @@ class MainScreen extends StatelessComponent {
       fontWeight: FontWeight.dim,
     );
 
-    final loading = !tab.ready && !tab.stopped;
+    final loading = tab.launching;
 
     String statusText;
-    if (tab.ready) {
-      final device = tab.device;
-      statusText =
-          tab.url ?? 'Running on device${device == null ? '' : ' $device'}';
-    } else if (tab.stopped) {
-      statusText = 'App stopped';
-    } else {
-      var value = tab.startupStage ?? 'Launching';
-      if (value.contains('.')) {
-        value = value.replaceFirst(RegExp(r'\.+$'), '');
-      }
-      statusText = value;
+    switch (tab.runState) {
+      case AppRunState.ready:
+        final device = tab.device;
+        statusText =
+            tab.url ?? 'Running on device${device == null ? '' : ' $device'}';
+      case AppRunState.stopped:
+        statusText = 'App stopped';
+      case AppRunState.launching:
+        var value = tab.startupStage ?? 'Launching';
+        if (value.contains('.')) {
+          value = value.replaceFirst(RegExp(r'\.+$'), '');
+        }
+        statusText = value;
     }
 
     final xLabel = tab.stopped ? 'Close Tab' : 'Stop App';
@@ -686,6 +696,9 @@ class MainScreen extends StatelessComponent {
                   key: ValueKey(index),
                   operation: item,
                 );
+              }
+              if (item is String) {
+                return Text(item, key: ValueKey(index));
               }
               return const SizedBox.shrink();
             },
@@ -853,6 +866,7 @@ class MainScreen extends StatelessComponent {
               shutdownTuiApp(0);
             }
           },
+          onShiftActivate: (_) => onStopStack?.call(),
         ),
       ],
     );

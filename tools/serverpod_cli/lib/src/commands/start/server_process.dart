@@ -29,8 +29,12 @@ class ServerProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Called at most once after a started process and its VM-service resources
-  /// have been discarded, whether it stopped normally or exited unexpectedly.
+  /// Called at most once as a started process is discarded, whether stopped
+  /// normally or exited unexpectedly.
+  ///
+  /// Fires before teardown, while the process's last output is still arriving
+  /// on the sinks this is about to cancel. Told afterwards, a listener would
+  /// read that output as coming from a process it still believes alive.
   final void Function()? _onDispose;
 
   /// Path to write the VM service info JSON file to. When set, passed
@@ -65,7 +69,9 @@ class ServerProcess {
     IOSink? stdoutSink,
     IOSink? stderrSink,
     void Function()? onDispose,
+    Map<String, String>? environment,
   }) : _serverDir = serverDir,
+       _environment = environment,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
        _enableVmService = enableVmService,
@@ -73,6 +79,10 @@ class ServerProcess {
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _onDispose = onDispose;
+
+  /// Extra environment for the pod, merged over the inherited one, carrying
+  /// port overrides when another worktree's stack holds the configured ports.
+  final Map<String, String>? _environment;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -130,6 +140,7 @@ class ServerProcess {
       _dartExecutable,
       args,
       workingDirectory: _serverDir,
+      environment: _environment,
     );
     _process = process;
 
@@ -334,7 +345,7 @@ class ServerProcess {
     final completer = Completer<void>();
     _cleanupCompleter = completer;
 
-    unawaited(completer.future.whenComplete(() => _onDispose?.call()));
+    _onDispose?.call();
 
     try {
       _process = null;
