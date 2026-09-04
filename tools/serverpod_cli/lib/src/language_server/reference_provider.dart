@@ -103,6 +103,15 @@ class ReferenceProvider {
     var className = targetModel.className;
     var classRegex = RegExp(r'\b' + RegExp.escape(className) + r'\b');
 
+    // A table backed model is also referenced by its table name, e.g. in
+    // relation(parent=citizen).
+    var tableName = targetModel is ModelClassDefinition
+        ? targetModel.tableName
+        : null;
+    var tableRegex = tableName == null
+        ? null
+        : RegExp(r'\b' + RegExp.escape(tableName) + r'\b');
+
     // 2. Search all registered models
     for (var source in analyzer.registeredModelSources) {
       var modelUri = source.yamlSourceUri;
@@ -122,6 +131,8 @@ class ReferenceProvider {
           continue;
         }
 
+        var columns = <int, int>{};
+
         for (var match in classRegex.allMatches(rawLine)) {
           // Ignore matches inside comments
           if (_isCommentIndex(rawLine, match.start)) continue;
@@ -135,12 +146,23 @@ class ReferenceProvider {
           // Not a relation name= parameter
           if (_isRelationNameParam(rawLine, match.start)) continue;
 
+          columns[match.start] = match.end;
+        }
+
+        for (var match in tableRegex?.allMatches(rawLine) ?? <RegExpMatch>[]) {
+          if (_isCommentIndex(rawLine, match.start)) continue;
+          if (!isTableReferenceContext(rawLine, match.start)) continue;
+
+          columns[match.start] = match.end;
+        }
+
+        for (var startCol in columns.keys.toList()..sort()) {
           locations.add(
             Location(
               uri: modelUri,
               range: Range(
-                start: Position(line: lineIdx, character: match.start),
-                end: Position(line: lineIdx, character: match.end),
+                start: Position(line: lineIdx, character: startCol),
+                end: Position(line: lineIdx, character: columns[startCol]!),
               ),
             ),
           );

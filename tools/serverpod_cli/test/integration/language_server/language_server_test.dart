@@ -1255,6 +1255,37 @@ fields:
       );
 
       test(
+        'when references are requested for a table backed model, '
+        'then it returns both the class name and the parent table usages.',
+        () async {
+          // Line 0 in parameter.spy.yaml: "class: Parameter"
+          var result = await session.requestReferences(
+            parameterModelPath,
+            line: 0,
+            character: 8,
+            includeDeclaration: false,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(locations, hasLength(2));
+          expect(
+            locations.every(
+              (loc) => loc['uri'] == Uri.file(holderModelPath).toString(),
+            ),
+            isTrue,
+          );
+
+          // "  param: Parameter?, relation(parent=parameters)"
+          // -> "Parameter" at column 9, "parameters" at column 37
+          var starts = locations
+              .map((loc) => (loc['range'] as Map)['start'] as Map)
+              .toList();
+          expect(starts.map((start) => start['line']), everyElement(3));
+          expect(starts.map((start) => start['character']), [9, 37]);
+        },
+      );
+
+      test(
         'when references are requested for a model that shares its name with '
         'an enum value, '
         'then the enum value is not reported as a reference.',
