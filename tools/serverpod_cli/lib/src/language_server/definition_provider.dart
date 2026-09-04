@@ -32,7 +32,7 @@ class DefinitionProvider {
 
     // 1. Check if token is a reference to a field in the current model
     // e.g. relation(field=authorId) or fields: authorId in index.
-    // This runs before the keyword skip so that fields named like keywords
+    // This runs before the value checks so that fields named like keys
     // (e.g. `name`) stay navigable.
     var currentModel = analyzer.getModel(documentUri);
     if (currentModel is ClassDefinition &&
@@ -58,31 +58,55 @@ class DefinitionProvider {
       }
     }
 
-    // 2. Only values reference models. Keys name the model syntax itself and
+    // 2. A token in table reference position, e.g. relation(parent=citizen),
+    // names a database table. It is resolved before the checks below since
+    // table names may collide with the literal values of the model syntax.
+    if (isTableReferenceContext(line, wordMatch.startColumn)) {
+      return _buildModelResult(
+        analyzer: analyzer,
+        targetModel: analyzer.findModelByTableName(token),
+        originSelectionRange: originSelectionRange,
+        linkSupport: linkSupport,
+      );
+    }
+
+    // 3. Only values reference models. Keys name the model syntax itself and
     // sequence entries only ever hold enum values or index field names.
     if (!isValuePosition(line, wordMatch.startColumn)) return null;
 
-    // 3. Skip primitive types and common keywords
-    if (primitiveTypes.contains(token) || ignoredKeywords.contains(token)) {
-      return null;
-    }
+    // 4. Skip primitive types and literal values of the model syntax.
+    if (primitiveTypes.contains(token) || isLiteralValue(token)) return null;
 
-    // 4. Parse potential model / class target from token.
+    // 5. Parse potential model / class target from token.
     // `project:` and `package:` tokens denote plain Dart classes and can
     // never resolve to a model.
     var modelToken = parseModelToken(token);
     if (modelToken == null) return null;
 
-    // 5. Search model by className and moduleAlias
-    var targetModel = analyzer.findModelByName(
-      modelToken.className,
-      moduleAlias: modelToken.moduleAlias,
+    // 6. Search model by className and moduleAlias, falling back to the
+    // database table name, e.g. `table: citizen`.
+    var targetModel =
+        analyzer.findModelByName(
+          modelToken.className,
+          moduleAlias: modelToken.moduleAlias,
+        ) ??
+        analyzer.findModelByTableName(token);
+
+    return _buildModelResult(
+      analyzer: analyzer,
+      targetModel: targetModel,
+      originSelectionRange: originSelectionRange,
+      linkSupport: linkSupport,
     );
+  }
 
-    // 6. If not found by class name, try searching by database table name
-    // e.g. parentTable=citizen
-    targetModel ??= analyzer.findModelByTableName(token);
-
+  static Either3<Location, List<Location>, List<LocationLink>>?
+  _buildModelResult({
+    required StatefulAnalyzer analyzer,
+    required SerializableModelDefinition? targetModel,
+    required Range originSelectionRange,
+    required bool linkSupport,
+  }) {
     if (targetModel == null) return null;
 
     var targetSource = analyzer.getModelSourceForModel(targetModel);
@@ -94,18 +118,16 @@ class DefinitionProvider {
       targetModel.className,
     );
 
-    var targetRange = Range(
-      start: Position(line: targetSelectionRange.start.line, character: 0),
-      end: Position(
-        line: targetSelectionRange.start.line,
-        character: targetLines[targetSelectionRange.start.line].length,
-      ),
-    );
-
     return _buildResult(
       targetUri: targetSource.yamlSourceUri,
       targetSelectionRange: targetSelectionRange,
-      targetRange: targetRange,
+      targetRange: Range(
+        start: Position(line: targetSelectionRange.start.line, character: 0),
+        end: Position(
+          line: targetSelectionRange.start.line,
+          character: targetLines[targetSelectionRange.start.line].length,
+        ),
+      ),
       originSelectionRange: originSelectionRange,
       linkSupport: linkSupport,
     );

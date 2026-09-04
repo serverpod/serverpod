@@ -1150,6 +1150,7 @@ fields:
       late LanguageServerTestSession session;
       late String parameterModelPath;
       late String holderModelPath;
+      late String ownerModelPath;
 
       setUp(() async {
         await ProjectDirectoryBuilder()
@@ -1174,6 +1175,19 @@ values:
   - Parameter
   - guest
 '''),
+              // A model that shares the name of a foreign key action.
+              d.file('cascade.spy.yaml', '''
+class: Cascade
+table: cascade
+fields:
+  name: String
+'''),
+              d.file('owner.spy.yaml', '''
+class: Owner
+table: owner
+fields:
+  item: Cascade?, relation(onDelete=CASCADE)
+'''),
             ])
             .build()
             .create();
@@ -1188,6 +1202,7 @@ values:
         );
         parameterModelPath = p.join(modelsDir, 'parameter.spy.yaml');
         holderModelPath = p.join(modelsDir, 'holder.spy.yaml');
+        ownerModelPath = p.join(modelsDir, 'owner.spy.yaml');
 
         session = LanguageServerTestSession();
         await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
@@ -1197,6 +1212,47 @@ values:
       tearDown(() async {
         await session.dispose();
       });
+
+      test(
+        'when definition is requested on a parent table name that is also a '
+        'key of the model file syntax, '
+        'then it returns the location of the model definition.',
+        () async {
+          // Line 3 in holder.spy.yaml:
+          // "  param: Parameter?, relation(parent=parameters)"
+          // -> "parameters" is at column 37
+          var result = await session.requestDefinition(
+            holderModelPath,
+            line: 3,
+            character: 40,
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var start = (location['range'] as Map)['start'] as Map;
+          expect(location['uri'], Uri.file(parameterModelPath).toString());
+          expect(start['line'], 0);
+          expect(start['character'], 7);
+        },
+      );
+
+      test(
+        'when definition is requested on a foreign key action written in a '
+        'different casing than a model that shares its name, '
+        'then it returns null.',
+        () async {
+          // Line 3 in owner.spy.yaml:
+          // "  item: Cascade?, relation(onDelete=CASCADE)"
+          // -> "CASCADE" is at column 36
+          var result = await session.requestDefinition(
+            ownerModelPath,
+            line: 3,
+            character: 38,
+          );
+
+          expect(result, isNull);
+        },
+      );
 
       test(
         'when references are requested for a model that shares its name with '

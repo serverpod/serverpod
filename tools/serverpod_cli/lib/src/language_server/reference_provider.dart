@@ -26,7 +26,7 @@ class ReferenceProvider {
     var token = wordMatch.word;
 
     // 1. Check if token is a field of the current model. This runs before
-    // the keyword skip so that fields named like keywords (e.g. `name`)
+    // the value checks so that fields named like keys (e.g. `name`)
     // stay searchable.
     var currentModel = analyzer.getModel(documentUri);
     if (currentModel is ClassDefinition &&
@@ -39,31 +39,38 @@ class ReferenceProvider {
       );
     }
 
-    // 2. Only values reference models. Keys name the model syntax itself and
+    // 2. A token in table reference position, e.g. relation(parent=citizen),
+    // names a database table. It is resolved before the checks below since
+    // table names may collide with the literal values of the model syntax.
+    if (isTableReferenceContext(line, wordMatch.startColumn)) {
+      return _findModelReferences(
+        analyzer: analyzer,
+        targetModel: analyzer.findModelByTableName(token),
+        includeDeclaration: context.includeDeclaration,
+      );
+    }
+
+    // 3. Only values reference models. Keys name the model syntax itself and
     // sequence entries only ever hold enum values or index field names.
     if (!isValuePosition(line, wordMatch.startColumn)) return [];
 
-    // 3. Skip primitive types and common keywords
-    if (primitiveTypes.contains(token) || ignoredKeywords.contains(token)) {
-      return [];
-    }
+    // 4. Skip primitive types and literal values of the model syntax.
+    if (primitiveTypes.contains(token) || isLiteralValue(token)) return [];
 
-    // 4. Parse potential model / class target from token.
+    // 5. Parse potential model / class target from token.
     // `project:` and `package:` tokens denote plain Dart classes and can
     // never resolve to a model.
     var modelToken = parseModelToken(token);
     if (modelToken == null) return [];
 
-    // 5. Search model by className and moduleAlias
-    var targetModel = analyzer.findModelByName(
-      modelToken.className,
-      moduleAlias: modelToken.moduleAlias,
-    );
-
-    // 6. If not found by class name, try searching by database table name
-    targetModel ??= analyzer.findModelByTableName(token);
-
-    if (targetModel == null) return [];
+    // 6. Search model by className and moduleAlias, falling back to the
+    // database table name.
+    var targetModel =
+        analyzer.findModelByName(
+          modelToken.className,
+          moduleAlias: modelToken.moduleAlias,
+        ) ??
+        analyzer.findModelByTableName(token);
 
     return _findModelReferences(
       analyzer: analyzer,
@@ -74,9 +81,11 @@ class ReferenceProvider {
 
   static List<Location> _findModelReferences({
     required StatefulAnalyzer analyzer,
-    required SerializableModelDefinition targetModel,
+    required SerializableModelDefinition? targetModel,
     required bool includeDeclaration,
   }) {
+    if (targetModel == null) return [];
+
     var locations = <Location>[];
     var targetSource = analyzer.getModelSourceForModel(targetModel);
     var targetUri = targetSource?.yamlSourceUri;
@@ -106,35 +115,32 @@ class ReferenceProvider {
       for (var lineIdx = 0; lineIdx < modelLines.length; lineIdx++) {
         var rawLine = modelLines[lineIdx];
 
-        // Skip the declaration line itself in the declaration file (already handled above if includeDeclaration is true)
+        // Skip the declaration line itself in the declaration file (already
+        // handled above if includeDeclaration is true)
         if (isDeclarationFile &&
             modelDeclarationColumn(rawLine, className) != null) {
           continue;
         }
 
-        var matches = classRegex.allMatches(rawLine);
-        for (var match in matches) {
-          var startCol = match.start;
-          var endCol = match.end;
-
+        for (var match in classRegex.allMatches(rawLine)) {
           // Ignore matches inside comments
-          if (_isCommentIndex(rawLine, startCol)) continue;
+          if (_isCommentIndex(rawLine, match.start)) continue;
 
           // Must be in a value position, never a key or a sequence entry
-          if (!isValuePosition(rawLine, startCol)) continue;
+          if (!isValuePosition(rawLine, match.start)) continue;
 
           // Check for module qualification mismatch
-          if (!_matchesModule(rawLine, startCol, targetModel)) continue;
+          if (!_matchesModule(rawLine, match.start, targetModel)) continue;
 
           // Not a relation name= parameter
-          if (_isRelationNameParam(rawLine, startCol)) continue;
+          if (_isRelationNameParam(rawLine, match.start)) continue;
 
           locations.add(
             Location(
               uri: modelUri,
               range: Range(
-                start: Position(line: lineIdx, character: startCol),
-                end: Position(line: lineIdx, character: endCol),
+                start: Position(line: lineIdx, character: match.start),
+                end: Position(line: lineIdx, character: match.end),
               ),
             ),
           );

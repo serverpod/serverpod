@@ -14,61 +14,24 @@ final primitiveTypes = {
   'num',
 };
 
-/// All valid YAML keywords and literal values defined for model files.
-/// These can never resolve to a model or field definition.
-final ignoredKeywords = {
-  Keyword.classType,
-  Keyword.exceptionType,
-  Keyword.enumType,
-  Keyword.serializationDataType,
-  Keyword.serialized,
-  Keyword.isSealed,
-  Keyword.isImmutable,
-  Keyword.extendsClass,
-  Keyword.serverOnly,
-  Keyword.table,
-  Keyword.managedMigration,
-  Keyword.fields,
-  Keyword.indexes,
-  Keyword.properties,
-  Keyword.values,
-  Keyword.type,
-  Keyword.unique,
-  Keyword.nullsDistinct,
-  Keyword.per,
-  Keyword.operatorClass,
-  Keyword.distanceFunction,
-  Keyword.parameters,
-  Keyword.parent,
-  Keyword.relation,
-  Keyword.field,
-  Keyword.onUpdate,
-  Keyword.onDelete,
-  Keyword.deferrable,
-  Keyword.deferred,
-  Keyword.name,
-  Keyword.api,
-  Keyword.database,
-  Keyword.optional,
-  Keyword.fk,
-  Keyword.scope,
-  Keyword.persist,
-  Keyword.requiredKey,
-  Keyword.tail,
-  Keyword.defaultKey,
-  Keyword.defaultModelKey,
-  Keyword.defaultPersistKey,
-  Keyword.columnKey,
-  Keyword.jsonKey,
-  ...ForeignKeyAction.values.expand(
-    (e) => [e.name, '${e.name[0].toUpperCase()}${e.name.substring(1)}'],
-  ),
-  ...ModelDatabaseDefinition.values.map((e) => e.name),
-  ...ModelFieldScopeDefinition.values.map((e) => e.name),
-  defaultBooleanTrue,
-  defaultBooleanFalse,
+/// The literal values a model file may hold in a value position, lowercased.
+///
+/// The analyzer matches these case insensitively, so `onDelete: CASCADE` and
+/// `onDelete: cascade` are equally valid. They can never resolve to a model,
+/// even when a model shares their name.
+final _literalValues = {
+  for (var value in ForeignKeyAction.values) value.name.toLowerCase(),
+  for (var value in ModelDatabaseDefinition.values) value.name.toLowerCase(),
+  for (var value in ModelFieldScopeDefinition.values) value.name.toLowerCase(),
+  defaultBooleanTrue.toLowerCase(),
+  defaultBooleanFalse.toLowerCase(),
   'null',
 };
+
+/// Returns true if [token] is a literal value of the model file syntax, such
+/// as `cascade` or `serverOnly`, rather than a reference to a model.
+bool isLiteralValue(String token) =>
+    _literalValues.contains(token.toLowerCase());
 
 final _keyRegex = RegExp(r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:');
 
@@ -184,6 +147,14 @@ bool isFieldReferenceContext(String line, int column) {
   return beforeWord.endsWith('field=') ||
       beforeWord.contains(RegExp(r'\bfield:\s*$')) ||
       beforeWord.contains(RegExp(r'\bfields:'));
+}
+
+/// Returns true if the word at [column] in [line] is positioned where a
+/// database table is referenced, e.g. `relation(parent=citizen)`.
+bool isTableReferenceContext(String line, int column) {
+  var beforeWord = line.substring(0, column);
+  return beforeWord.endsWith('${Keyword.parent}=') ||
+      beforeWord.contains(RegExp('\\b${Keyword.parent}:\\s*\$'));
 }
 
 /// Returns the column at which [fieldName] is declared on [line]
