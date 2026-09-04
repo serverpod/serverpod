@@ -1150,6 +1150,7 @@ fields:
       late LanguageServerTestSession session;
       late String parameterModelPath;
       late String holderModelPath;
+      late String recordModelPath;
       late String ownerModelPath;
 
       setUp(() async {
@@ -1174,6 +1175,16 @@ serialized: byName
 values:
   - Parameter
   - guest
+'''),
+              // A field that is named like a top level key.
+              d.file('record.spy.yaml', '''
+class: Record
+table: record
+fields:
+  table: String
+indexes:
+  record_table_idx:
+    fields: table
 '''),
               // A model that shares the name of a foreign key action.
               d.file('cascade.spy.yaml', '''
@@ -1202,6 +1213,7 @@ fields:
         );
         parameterModelPath = p.join(modelsDir, 'parameter.spy.yaml');
         holderModelPath = p.join(modelsDir, 'holder.spy.yaml');
+        recordModelPath = p.join(modelsDir, 'record.spy.yaml');
         ownerModelPath = p.join(modelsDir, 'owner.spy.yaml');
 
         session = LanguageServerTestSession();
@@ -1233,6 +1245,29 @@ fields:
           expect(location['uri'], Uri.file(parameterModelPath).toString());
           expect(start['line'], 0);
           expect(start['character'], 7);
+        },
+      );
+
+      test(
+        'when definition is requested on a field that is named like a top '
+        'level key, '
+        'then it returns the location of the field declaration.',
+        () async {
+          // Line 6 in record.spy.yaml: "    fields: table"
+          // -> the referenced "table" is at column 12
+          var result = await session.requestDefinition(
+            recordModelPath,
+            line: 6,
+            character: 14,
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var start = (location['range'] as Map)['start'] as Map;
+          expect(location['uri'], Uri.file(recordModelPath).toString());
+          // The field is declared at line 3, not at the "table:" key on line 1
+          expect(start['line'], 3);
+          expect(start['character'], 2);
         },
       );
 

@@ -160,8 +160,7 @@ bool isTableReferenceContext(String line, int column) {
 /// Returns the column at which [fieldName] is declared on [line]
 /// (i.e. the line has the shape `<indent><fieldName>:`), or null.
 int? fieldDeclarationColumn(String line, String fieldName) {
-  var declRegex = RegExp(r'^\s*' + RegExp.escape(fieldName) + r'\s*:');
-  if (!declRegex.hasMatch(line)) return null;
+  if (lineKey(line) != fieldName) return null;
   return line.indexOf(fieldName);
 }
 
@@ -177,9 +176,25 @@ int? modelDeclarationColumn(String line, String className) {
 
 /// Finds the range of the declaration of the field [fieldName] in [lines],
 /// or null if the field is not declared.
+///
+/// Only entries nested under the `fields` key are considered, so a field
+/// named like a top level key (`table`, for instance) resolves to its own
+/// declaration rather than to that key.
 Range? findFieldDefinitionRange(List<String> lines, String fieldName) {
+  int? fieldsIndent;
   for (var i = 0; i < lines.length; i++) {
-    var col = fieldDeclarationColumn(lines[i], fieldName);
+    var line = lines[i];
+    if (line.trim().isEmpty) continue;
+
+    var indent = line.length - line.trimLeft().length;
+    if (fieldsIndent != null && indent <= fieldsIndent) fieldsIndent = null;
+
+    if (fieldsIndent == null) {
+      if (lineKey(line) == Keyword.fields) fieldsIndent = indent;
+      continue;
+    }
+
+    var col = fieldDeclarationColumn(line, fieldName);
     if (col == null) continue;
     return Range(
       start: Position(line: i, character: col),

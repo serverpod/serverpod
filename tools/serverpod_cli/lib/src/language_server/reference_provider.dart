@@ -180,26 +180,15 @@ class ReferenceProvider {
     required bool includeDeclaration,
   }) {
     var locations = <Location>[];
+    var declarationRange = findFieldDefinitionRange(lines, fieldName);
     var fieldRegex = RegExp(r'\b' + RegExp.escape(fieldName) + r'\b');
 
     for (var i = 0; i < lines.length; i++) {
       var line = lines[i];
-      var declColumn = fieldDeclarationColumn(line, fieldName);
 
-      if (declColumn != null) {
+      if (i == declarationRange?.start.line) {
         if (includeDeclaration) {
-          locations.add(
-            Location(
-              uri: documentUri,
-              range: Range(
-                start: Position(line: i, character: declColumn),
-                end: Position(
-                  line: i,
-                  character: declColumn + fieldName.length,
-                ),
-              ),
-            ),
-          );
+          locations.add(Location(uri: documentUri, range: declarationRange!));
         }
         continue;
       }
