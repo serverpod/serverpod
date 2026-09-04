@@ -17,6 +17,8 @@ import { ErrorCodes, LanguageClient, ResponseError, State } from 'vscode-languag
 
 const modelDefinitionRequest = 'serverpod/modelDefinition';
 const modelFilePattern = '**/*.spy.yaml';
+const unsupportedByCliMessage =
+	'Go to Model Definition requires a newer Serverpod CLI. Please upgrade the Serverpod CLI to navigate from Dart code to model files.';
 
 interface ModelDefinitionResult {
 	uri: string;
@@ -74,6 +76,12 @@ class ModelLocationResolver implements Disposable {
 				this.cache.clear();
 			}
 		});
+	}
+
+	/// Whether the language server answered that it does not know the model
+	/// definition request, which an older Serverpod CLI does.
+	get isUnsupported(): boolean {
+		return this.unsupported;
 	}
 
 	async resolve(className: string): Promise<Location | undefined> {
@@ -158,6 +166,12 @@ async function goToModelDefinition(resolver: ModelLocationResolver): Promise<voi
 	}
 	const location = await resolver.resolve(className);
 	if (!location) {
+		// Only an outdated CLI is worth reporting. Invoking the command on a
+		// class that is not a model stays silent, since it is also bound to a
+		// keybinding.
+		if (resolver.isUnsupported) {
+			window.showWarningMessage(unsupportedByCliMessage);
+		}
 		return;
 	}
 	await window.showTextDocument(location.uri, { selection: location.range });

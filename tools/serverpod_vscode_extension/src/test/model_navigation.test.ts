@@ -8,6 +8,7 @@ suite('Model Navigation', () => {
 	let registerDefinitionProviderStub: sinon.SinonStub;
 	let registerCommandStub: sinon.SinonStub;
 	let showTextDocumentStub: sinon.SinonStub;
+	let showWarningMessageStub: sinon.SinonStub;
 	let capturedProvider: vscode.DefinitionProvider;
 	let commandHandler: () => Promise<void>;
 	let modelFileChangeHandlers: (() => void)[];
@@ -65,6 +66,7 @@ suite('Model Navigation', () => {
 				return trackedDisposable();
 			}) as never);
 		showTextDocumentStub = sinon.stub(vscode.window, 'showTextDocument');
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage');
 		modelFileChangeHandlers = [];
 		stateChangeHandlers = [];
 		sinon
@@ -306,6 +308,38 @@ suite('Model Navigation', () => {
 			const [uri, options] = showTextDocumentStub.firstCall.args;
 			assert.strictEqual(uri.toString(), modelLocationResult.uri);
 			assert.strictEqual((options.selection as vscode.Range).start.line, 0);
+		});
+
+		test('Given a CLI that does not implement the model definition request when the go to model definition command runs then an upgrade message is shown.', async () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			const sendRequest = sinon.stub().rejects(methodNotFoundError());
+			registerModelNavigation(context, mockClient(sendRequest));
+
+			sinon.stub(vscode.window, 'activeTextEditor').value({
+				document: mockDocument('User'),
+				selection: { active: new vscode.Position(0, 2) },
+			});
+
+			await commandHandler();
+
+			assert.strictEqual(showWarningMessageStub.calledOnce, true);
+			assert.match(showWarningMessageStub.firstCall.args[0], /newer Serverpod CLI/);
+			assert.strictEqual(showTextDocumentStub.called, false);
+		});
+
+		test('Given a class name that is not a model when the go to model definition command runs then no message is shown.', async () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			const sendRequest = sinon.stub().resolves(null);
+			registerModelNavigation(context, mockClient(sendRequest));
+
+			sinon.stub(vscode.window, 'activeTextEditor').value({
+				document: mockDocument('String'),
+				selection: { active: new vscode.Position(0, 2) },
+			});
+
+			await commandHandler();
+
+			assert.strictEqual(showWarningMessageStub.called, false);
 		});
 
 		test('Given a class name that is not a model when the go to model definition command runs then no document is opened.', async () => {
