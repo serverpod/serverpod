@@ -21,6 +21,13 @@ const modelFilePattern = '**/*.spy.yaml';
 const unsupportedByCliMessage =
 	'Go to Model Definition requires a newer Serverpod CLI. Please upgrade the Serverpod CLI to navigate from Dart code to model files.';
 
+/// A model class reference read out of Dart code, with the import prefix it
+/// was written under, if any.
+export interface ModelReference {
+	className: string;
+	moduleAlias?: string;
+}
+
 interface ModelDefinitionResult {
 	uri: string;
 	range: {
@@ -96,17 +103,20 @@ class ModelLocationResolver implements Disposable {
 		return this.unsupported;
 	}
 
-	async resolve(className: string): Promise<Location | undefined> {
+	async resolve(reference: ModelReference): Promise<Location | undefined> {
 		if (this.unsupported) {
 			return undefined;
 		}
-		if (this.cache.has(className)) {
-			return this.cache.get(className);
+		// References written under different import prefixes may resolve to
+		// different models, so the prefix is part of the key.
+		const key = `${reference.moduleAlias ?? ''}.${reference.className}`;
+		if (this.cache.has(key)) {
+			return this.cache.get(key);
 		}
 
 		let result: ModelDefinitionResult | null;
 		try {
-			result = await this.client.sendRequest(modelDefinitionRequest, { className });
+			result = await this.client.sendRequest(modelDefinitionRequest, reference);
 		} catch (error) {
 			// Older CLI versions do not implement the request. Treat failures as
 			// "no model" so navigation falls back to the Dart analyzer results,
@@ -130,7 +140,7 @@ class ModelLocationResolver implements Disposable {
 				)
 			)
 			: undefined;
-		this.cache.set(className, location);
+		this.cache.set(key, location);
 		return location;
 	}
 
@@ -145,26 +155,34 @@ class ServerpodModelDefinitionProvider implements DefinitionProvider {
 	constructor(private resolver: ModelLocationResolver) { }
 
 	async provideDefinition(document: TextDocument, position: Position): Promise<Definition | undefined> {
-		const className = modelClassNameAt(document, position);
-		if (!className) {
+		const reference = modelReferenceAt(document, position);
+		if (!reference) {
 			return undefined;
 		}
-		return this.resolver.resolve(className);
+		return this.resolver.resolve(reference);
 	}
 }
 
 /// Returns the identifier at [position] when it looks like a model class
-/// name (PascalCase), otherwise undefined.
-export function modelClassNameAt(document: TextDocument, position: Position): string | undefined {
+/// name (PascalCase), together with the import prefix it is written under,
+/// otherwise undefined.
+export function modelReferenceAt(document: TextDocument, position: Position): ModelReference | undefined {
 	const range = document.getWordRangeAtPosition(position);
 	if (!range) {
 		return undefined;
 	}
-	const word = document.getText(range);
-	if (!/^[A-Z][A-Za-z0-9_]*$/.test(word)) {
+	const className = document.getText(range);
+	if (!/^[A-Z][A-Za-z0-9_]*$/.test(className)) {
 		return undefined;
 	}
-	return word;
+
+	// The Dart word range stops at the dot, so `auth.UserInfo` reads as
+	// `UserInfo`. The prefix is picked at the import site and need not match
+	// the module alias, so the server treats it as a hint.
+	const beforeWord = document.getText(new Range(new Position(range.start.line, 0), range.start));
+	const moduleAlias = /([A-Za-z_$][A-Za-z0-9_$]*)\s*\.\s*$/.exec(beforeWord)?.[1];
+
+	return moduleAlias === undefined ? { className } : { className, moduleAlias };
 }
 
 async function goToModelDefinition(resolver: ModelLocationResolver): Promise<void> {
@@ -172,11 +190,11 @@ async function goToModelDefinition(resolver: ModelLocationResolver): Promise<voi
 	if (!editor) {
 		return;
 	}
-	const className = modelClassNameAt(editor.document, editor.selection.active);
-	if (!className) {
+	const reference = modelReferenceAt(editor.document, editor.selection.active);
+	if (!reference) {
 		return;
 	}
-	const location = await resolver.resolve(className);
+	const location = await resolver.resolve(reference);
 	if (!location) {
 		// Only an outdated CLI is worth reporting. Invoking the command on a
 		// class that is not a model stays silent, since it is also bound to a

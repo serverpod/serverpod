@@ -143,13 +143,19 @@ class DefinitionProvider {
   /// optionally qualified with [moduleAlias].
   ///
   /// Backs the `serverpod/modelDefinition` custom request, which lets the
-  /// editor navigate from generated Dart code back to the model file.
+  /// editor navigate from generated Dart code back to the model file. The
+  /// editor derives [moduleAlias] from the import prefix of the Dart
+  /// reference, which is picked at the import site and need not match the
+  /// alias of the module, so an alias that names no model falls back to the
+  /// unqualified lookup.
   static Location? resolveModelByName({
     required StatefulAnalyzer analyzer,
     required String className,
     String? moduleAlias,
   }) {
-    var model = analyzer.findModelByName(className, moduleAlias: moduleAlias);
+    var model =
+        analyzer.findModelByName(className, moduleAlias: moduleAlias) ??
+        (moduleAlias == null ? null : analyzer.findModelByName(className));
     if (model == null) return null;
 
     var source = analyzer.getModelSourceForModel(model);

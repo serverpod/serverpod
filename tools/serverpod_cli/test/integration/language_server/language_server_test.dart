@@ -1034,6 +1034,24 @@ fields:
       );
 
       test(
+        'when a model definition is requested with an import prefix that '
+        'names no module, '
+        'then it falls back to the unqualified model definition.',
+        () async {
+          // Generated Dart code imports modules under prefixes such as _i2,
+          // which say nothing about the module alias.
+          var result = await session.requestModelDefinition(
+            'UserInfo',
+            moduleAlias: '_i2',
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          expect(location['uri'], Uri.file(moduleModelPath).toString());
+        },
+      );
+
+      test(
         'when references are requested for a module model on its declaration line, '
         'then it returns module-qualified references in project model files.',
         () async {

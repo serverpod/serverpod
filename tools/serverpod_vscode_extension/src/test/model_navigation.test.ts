@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import { ErrorCodes, LanguageClient, ResponseError, State } from 'vscode-languageclient/node';
-import { registerModelNavigation, modelClassNameAt } from '../model_navigation';
+import { registerModelNavigation, modelReferenceAt } from '../model_navigation';
 
 suite('Model Navigation', () => {
 	let registerDefinitionProviderStub: sinon.SinonStub;
@@ -24,12 +24,17 @@ suite('Model Navigation', () => {
 		},
 	};
 
-	function mockDocument(word: string | undefined): vscode.TextDocument {
+	/// Builds a document holding `<prefix><word>` on its first line, where the
+	/// prefix stands for an import prefix such as `auth.`.
+	function mockDocument(word: string | undefined, prefix = ''): vscode.TextDocument {
+		const start = prefix.length;
 		return {
 			getWordRangeAtPosition: sinon.stub().returns(
-				word === undefined ? undefined : new vscode.Range(0, 0, 0, word.length)
+				word === undefined ? undefined : new vscode.Range(0, start, 0, start + word.length)
 			),
-			getText: sinon.stub().returns(word),
+			getText: sinon.stub().callsFake((range?: vscode.Range) =>
+				range !== undefined && range.end.character === start ? prefix : word
+			),
 		} as unknown as vscode.TextDocument;
 	}
 
@@ -236,6 +241,42 @@ suite('Model Navigation', () => {
 			assert.strictEqual((result as vscode.Location).uri.toString(), modelLocationResult.uri);
 		});
 
+		test('Given a prefixed model class name when definition is requested then the import prefix is sent as the module alias.', async () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			const sendRequest = sinon.stub().resolves(modelLocationResult);
+			registerModelNavigation(context, mockClient(sendRequest));
+
+			await capturedProvider.provideDefinition(
+				mockDocument('UserInfo', 'auth.'),
+				new vscode.Position(0, 7),
+				{} as vscode.CancellationToken
+			);
+
+			assert.deepStrictEqual(
+				sendRequest.firstCall.args,
+				['serverpod/modelDefinition', { className: 'UserInfo', moduleAlias: 'auth' }]
+			);
+		});
+
+		test('Given a model class name resolved under one import prefix when definition is requested under another then the server is queried again.', async () => {
+			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+			const sendRequest = sinon.stub().resolves(modelLocationResult);
+			registerModelNavigation(context, mockClient(sendRequest));
+
+			await capturedProvider.provideDefinition(
+				mockDocument('UserInfo', 'auth.'),
+				new vscode.Position(0, 7),
+				{} as vscode.CancellationToken
+			);
+			await capturedProvider.provideDefinition(
+				mockDocument('UserInfo'),
+				new vscode.Position(0, 2),
+				{} as vscode.CancellationToken
+			);
+
+			assert.strictEqual(sendRequest.callCount, 2);
+		});
+
 		test('Given a model class name already resolved when a model file changes then the next definition request queries the server again.', async () => {
 			const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
 			const sendRequest = sinon.stub().resolves(modelLocationResult);
@@ -383,21 +424,33 @@ suite('Model Navigation', () => {
 		});
 	});
 
-	suite('modelClassNameAt', () => {
-		test('Given a PascalCase identifier at the position when the class name is extracted then the identifier is returned.', () => {
-			const result = modelClassNameAt(mockDocument('UserInfo'), new vscode.Position(0, 2));
+	suite('modelReferenceAt', () => {
+		test('Given a PascalCase identifier at the position when the reference is extracted then the identifier is returned.', () => {
+			const result = modelReferenceAt(mockDocument('UserInfo'), new vscode.Position(0, 2));
 
-			assert.strictEqual(result, 'UserInfo');
+			assert.deepStrictEqual(result, { className: 'UserInfo' });
 		});
 
-		test('Given a camelCase identifier at the position when the class name is extracted then undefined is returned.', () => {
-			const result = modelClassNameAt(mockDocument('userInfo'), new vscode.Position(0, 2));
+		test('Given a prefixed identifier at the position when the reference is extracted then the import prefix is returned as the module alias.', () => {
+			const result = modelReferenceAt(mockDocument('UserInfo', 'auth.'), new vscode.Position(0, 7));
+
+			assert.deepStrictEqual(result, { className: 'UserInfo', moduleAlias: 'auth' });
+		});
+
+		test('Given an identifier after an unrelated expression when the reference is extracted then no module alias is returned.', () => {
+			const result = modelReferenceAt(mockDocument('UserInfo', 'var user = '), new vscode.Position(0, 13));
+
+			assert.deepStrictEqual(result, { className: 'UserInfo' });
+		});
+
+		test('Given a camelCase identifier at the position when the reference is extracted then undefined is returned.', () => {
+			const result = modelReferenceAt(mockDocument('userInfo'), new vscode.Position(0, 2));
 
 			assert.strictEqual(result, undefined);
 		});
 
-		test('Given no identifier at the position when the class name is extracted then undefined is returned.', () => {
-			const result = modelClassNameAt(mockDocument(undefined), new vscode.Position(0, 0));
+		test('Given no identifier at the position when the reference is extracted then undefined is returned.', () => {
+			const result = modelReferenceAt(mockDocument(undefined), new vscode.Position(0, 0));
 
 			assert.strictEqual(result, undefined);
 		});
