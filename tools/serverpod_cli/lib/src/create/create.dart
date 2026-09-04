@@ -1131,6 +1131,20 @@ Future<List<String>> _copyServerUpgrade(
           ),
           type: DependencyType.override,
         ),
+        (
+          name: 'serverpod_cloud_storage_gcp',
+          source: DependencySourcePath(
+            '$customServerpodPath/integrations/serverpod_cloud_storage_gcp',
+          ),
+          type: DependencyType.override,
+        ),
+        (
+          name: 'serverpod_cloud_storage_s3_compat',
+          source: DependencySourcePath(
+            '$customServerpodPath/integrations/serverpod_cloud_storage_s3_compat',
+          ),
+          type: DependencyType.override,
+        ),
       ],
     );
   }
