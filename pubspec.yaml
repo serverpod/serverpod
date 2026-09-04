@@ -134,7 +134,7 @@ melos:
     downgrade:
       run: dart run melos downgrade_flutter && dart run melos downgrade_dart
     sort_pubspec_dependencies:
-      run: dart run melos exec -- "cd \"\$SERVERPOD_HOME\" && dart run sort_pubspec_dependencies --pubspec-path=\"\$MELOS_PACKAGE_PATH/pubspec.yaml\""
+      run: util/sort_pubspec_dependencies
 
 serverpod_cli:
   analyze_pubspecs:

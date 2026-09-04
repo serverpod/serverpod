@@ -1,19 +1,16 @@
 #!/bin/bash
 
-sort_pubspec() {
-    local pubspec_path="$1"
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/sort_pubspec_dependencies"
+    exit 1
+fi
 
-    if dart run sort_pubspec_dependencies --pubspec-path="$pubspec_path" > /dev/null; then
-        echo "✓ Sorted: $pubspec_path"
-    else
-        echo -e "✗ Failed to sort: $pubspec_path. Contents:\n\n$(cat "$pubspec_path")\n\n"
-    fi
-}
-
-export -f sort_pubspec
+# Makes script exit on first non-zero error code
+set -e
 
 echo "Sort all pubspecs dependencies"
 
-# Exclude the top level pubspec.yaml to avoid breaking the `dart run` for other processes.
-pubspecs=$(find . -name "pubspec.yaml" -type f ! -path "./pubspec.yaml")
-echo "$pubspecs" | xargs -P $(util/get_max_cores) -I {} bash -c 'sort_pubspec "{}"'
+# One `dart run` for the whole tree. Parallel `dart run` from the workspace
+# root races on member pubspecs — see util/sort_pubspec_dependencies.dart.
+dart run util/sort_pubspec_dependencies.dart
