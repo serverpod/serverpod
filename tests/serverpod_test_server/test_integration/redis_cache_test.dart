@@ -413,8 +413,8 @@ void main() {
       };
 
       setUp(() async {
-        session.messages.addListener(uniqueChannelName, uniqueChannelListener);
         uniqueChannelMessageCompleter = Completer();
+        session.messages.addListener(uniqueChannelName, uniqueChannelListener);
       });
 
       tearDown(() async {
@@ -437,9 +437,15 @@ void main() {
               Duration(seconds: 10),
               onTimeout: () => null,
             );
+
+        // Both channels were subscribed on the same Redis connection, and
+        // [channelName] first, so Redis had applied that subscription by the
+        // time this message came back. The listener on [channelName] was
+        // therefore live and would have been notified if the channels were
+        // not isolated.
         expect(uniqueChannelMessageReceived, isNotNull);
 
-        expectLater(
+        await expectLater(
           messageCompleter.future.timeout(
             Duration(milliseconds: 100),
           ),
