@@ -72,9 +72,15 @@ abstract class SimpleDateTime
     };
   }
 
+  /// Builds a complete [SimpleDateTimeInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static SimpleDateTimeInclude include() {
     return SimpleDateTimeInclude._();
   }
+
+  /// Builds a complete [SimpleDateTimeIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SimpleDateTimeIncludeList includeList({
     _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
@@ -85,12 +91,52 @@ abstract class SimpleDateTime
     SimpleDateTimeInclude? include,
   }) {
     return SimpleDateTimeIncludeList._(
-      where: where,
+      where: where?.call(SimpleDateTime.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SimpleDateTimeJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SimpleDateTimeJsonInclude includeJson({
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+  }) {
+    return _SimpleDateTimeJsonInclude._(
+      selectedColumns: select?.call(SimpleDateTime.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SimpleDateTimeJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SimpleDateTimeJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SimpleDateTimeTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
+    SimpleDateTimeJsonInclude? include,
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+  }) {
+    return _SimpleDateTimeJsonIncludeList._(
+      where: where?.call(SimpleDateTime.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SimpleDateTime.t),
+      orderByList: orderByList?.call(SimpleDateTime.t),
+      include: include,
+      selectedColumns: select?.call(SimpleDateTime.t),
     );
   }
 
@@ -158,7 +204,14 @@ class SimpleDateTimeTable extends _is.Table<int?> {
   ];
 }
 
-class SimpleDateTimeInclude extends _is.IncludeObject {
+abstract interface class SimpleDateTimeJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class SimpleDateTimeJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class SimpleDateTimeInclude extends _is.IncludeObject
+    implements SimpleDateTimeJsonInclude, _is.FullModelInclude {
   SimpleDateTimeInclude._();
 
   @override
@@ -168,17 +221,52 @@ class SimpleDateTimeInclude extends _is.IncludeObject {
   _is.Table<int?> get table => SimpleDateTime.t;
 }
 
-class SimpleDateTimeIncludeList extends _is.IncludeList {
+final class SimpleDateTimeIncludeList extends _is.IncludeList
+    implements SimpleDateTimeJsonIncludeList, _is.FullModelInclude {
   SimpleDateTimeIncludeList._({
-    _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(SimpleDateTime.t);
-  }
+    SimpleDateTimeInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => SimpleDateTime.t;
+}
+
+final class _SimpleDateTimeJsonInclude extends _is.IncludeObject
+    implements SimpleDateTimeJsonInclude {
+  _SimpleDateTimeJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => SimpleDateTime.t;
+}
+
+final class _SimpleDateTimeJsonIncludeList extends _is.IncludeList
+    implements SimpleDateTimeJsonIncludeList {
+  _SimpleDateTimeJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SimpleDateTimeJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -284,6 +372,129 @@ class SimpleDateTimeRepository {
     return session.db.findById<SimpleDateTime>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SimpleDateTimeTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SimpleDateTime>(
+      where: where?.call(SimpleDateTime.t),
+      orderBy: orderBy?.call(SimpleDateTime.t),
+      orderByList: orderByList?.call(SimpleDateTime.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SimpleDateTime.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    int? offset,
+    _is.OrderByBuilder<SimpleDateTimeTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SimpleDateTime>(
+      where: where?.call(SimpleDateTime.t),
+      orderBy: orderBy?.call(SimpleDateTime.t),
+      orderByList: orderByList?.call(SimpleDateTime.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SimpleDateTime.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SimpleDateTime>(
+      id,
+      transaction: transaction,
+      select: select?.call(SimpleDateTime.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

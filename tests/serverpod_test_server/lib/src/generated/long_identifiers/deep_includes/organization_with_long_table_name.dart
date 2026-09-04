@@ -111,6 +111,9 @@ abstract class OrganizationWithLongTableName
     };
   }
 
+  /// Builds a complete [OrganizationWithLongTableNameInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static OrganizationWithLongTableNameInclude include({
     _i5nficvp.PersonWithLongTableNameIncludeList? people,
     _ii8bs4lb.CityWithLongTableNameInclude? city,
@@ -121,6 +124,9 @@ abstract class OrganizationWithLongTableName
     );
   }
 
+  /// Builds a complete [OrganizationWithLongTableNameIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static OrganizationWithLongTableNameIncludeList includeList({
     _is.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
     int? limit,
@@ -130,12 +136,56 @@ abstract class OrganizationWithLongTableName
     OrganizationWithLongTableNameInclude? include,
   }) {
     return OrganizationWithLongTableNameIncludeList._(
-      where: where,
+      where: where?.call(OrganizationWithLongTableName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [OrganizationWithLongTableNameJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static OrganizationWithLongTableNameJsonInclude includeJson({
+    _i5nficvp.PersonWithLongTableNameJsonIncludeList? people,
+    _ii8bs4lb.CityWithLongTableNameJsonInclude? city,
+    _is.SelectColumnsBuilder<OrganizationWithLongTableNameTable>? select,
+  }) {
+    return _OrganizationWithLongTableNameJsonInclude._(
+      people: people,
+      city: city,
+      selectedColumns: select?.call(OrganizationWithLongTableName.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [OrganizationWithLongTableNameJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static OrganizationWithLongTableNameJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<OrganizationWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<OrganizationWithLongTableNameTable>? orderByList,
+    OrganizationWithLongTableNameJsonInclude? include,
+    _is.SelectColumnsBuilder<OrganizationWithLongTableNameTable>? select,
+  }) {
+    return _OrganizationWithLongTableNameJsonIncludeList._(
+      where: where?.call(OrganizationWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(OrganizationWithLongTableName.t),
+      orderByList: orderByList?.call(OrganizationWithLongTableName.t),
+      include: include,
+      selectedColumns: select?.call(OrganizationWithLongTableName.t),
     );
   }
 
@@ -300,7 +350,14 @@ class OrganizationWithLongTableNameTable extends _is.Table<int?> {
   }
 }
 
-class OrganizationWithLongTableNameInclude extends _is.IncludeObject {
+abstract interface class OrganizationWithLongTableNameJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class OrganizationWithLongTableNameJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class OrganizationWithLongTableNameInclude extends _is.IncludeObject
+    implements OrganizationWithLongTableNameJsonInclude, _is.FullModelInclude {
   OrganizationWithLongTableNameInclude._({
     _i5nficvp.PersonWithLongTableNameIncludeList? people,
     _ii8bs4lb.CityWithLongTableNameInclude? city,
@@ -323,17 +380,69 @@ class OrganizationWithLongTableNameInclude extends _is.IncludeObject {
   _is.Table<int?> get table => OrganizationWithLongTableName.t;
 }
 
-class OrganizationWithLongTableNameIncludeList extends _is.IncludeList {
+final class OrganizationWithLongTableNameIncludeList extends _is.IncludeList
+    implements
+        OrganizationWithLongTableNameJsonIncludeList,
+        _is.FullModelInclude {
   OrganizationWithLongTableNameIncludeList._({
-    _is.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    OrganizationWithLongTableNameInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => OrganizationWithLongTableName.t;
+}
+
+final class _OrganizationWithLongTableNameJsonInclude extends _is.IncludeObject
+    implements OrganizationWithLongTableNameJsonInclude {
+  _OrganizationWithLongTableNameJsonInclude._({
+    _i5nficvp.PersonWithLongTableNameJsonIncludeList? people,
+    _ii8bs4lb.CityWithLongTableNameJsonInclude? city,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(OrganizationWithLongTableName.t);
+    _people = people;
+    _city = city;
   }
+
+  _i5nficvp.PersonWithLongTableNameJsonIncludeList? _people;
+
+  _ii8bs4lb.CityWithLongTableNameJsonInclude? _city;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'people': _people,
+    'city': _city,
+  };
+
+  @override
+  _is.Table<int?> get table => OrganizationWithLongTableName.t;
+}
+
+final class _OrganizationWithLongTableNameJsonIncludeList
+    extends _is.IncludeList
+    implements OrganizationWithLongTableNameJsonIncludeList {
+  _OrganizationWithLongTableNameJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    OrganizationWithLongTableNameJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -453,6 +562,135 @@ class OrganizationWithLongTableNameRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<OrganizationWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<OrganizationWithLongTableNameTable>? orderByList,
+    _is.Transaction? transaction,
+    OrganizationWithLongTableNameJsonInclude? include,
+    _is.SelectColumnsBuilder<OrganizationWithLongTableNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<OrganizationWithLongTableName>(
+      where: where?.call(OrganizationWithLongTableName.t),
+      orderBy: orderBy?.call(OrganizationWithLongTableName.t),
+      orderByList: orderByList?.call(OrganizationWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(OrganizationWithLongTableName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
+    int? offset,
+    _is.OrderByBuilder<OrganizationWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<OrganizationWithLongTableNameTable>? orderByList,
+    _is.Transaction? transaction,
+    OrganizationWithLongTableNameJsonInclude? include,
+    _is.SelectColumnsBuilder<OrganizationWithLongTableNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<OrganizationWithLongTableName>(
+      where: where?.call(OrganizationWithLongTableName.t),
+      orderBy: orderBy?.call(OrganizationWithLongTableName.t),
+      orderByList: orderByList?.call(OrganizationWithLongTableName.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(OrganizationWithLongTableName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    OrganizationWithLongTableNameJsonInclude? include,
+    _is.SelectColumnsBuilder<OrganizationWithLongTableNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<OrganizationWithLongTableName>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(OrganizationWithLongTableName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -117,9 +117,15 @@ abstract class GoogleAccount
     return {};
   }
 
+  /// Builds a complete [GoogleAccountInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static GoogleAccountInclude include({_iacs.AuthUserInclude? authUser}) {
     return GoogleAccountInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [GoogleAccountIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static GoogleAccountIncludeList includeList({
     _is.WhereExpressionBuilder<GoogleAccountTable>? where,
@@ -130,12 +136,54 @@ abstract class GoogleAccount
     GoogleAccountInclude? include,
   }) {
     return GoogleAccountIncludeList._(
-      where: where,
+      where: where?.call(GoogleAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GoogleAccount.t),
       orderByList: orderByList?.call(GoogleAccount.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [GoogleAccountJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static GoogleAccountJsonInclude includeJson({
+    _iacs.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
+  }) {
+    return _GoogleAccountJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(GoogleAccount.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [GoogleAccountJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static GoogleAccountJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    GoogleAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
+  }) {
+    return _GoogleAccountJsonIncludeList._(
+      where: where?.call(GoogleAccount.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(GoogleAccount.t),
+      orderByList: orderByList?.call(GoogleAccount.t),
+      include: include,
+      selectedColumns: select?.call(GoogleAccount.t),
     );
   }
 
@@ -291,7 +339,14 @@ class GoogleAccountTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class GoogleAccountInclude extends _is.IncludeObject {
+abstract interface class GoogleAccountJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class GoogleAccountJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class GoogleAccountInclude extends _is.IncludeObject
+    implements GoogleAccountJsonInclude, _is.FullModelInclude {
   GoogleAccountInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
@@ -305,17 +360,59 @@ class GoogleAccountInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => GoogleAccount.t;
 }
 
-class GoogleAccountIncludeList extends _is.IncludeList {
+final class GoogleAccountIncludeList extends _is.IncludeList
+    implements GoogleAccountJsonIncludeList, _is.FullModelInclude {
   GoogleAccountIncludeList._({
-    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    GoogleAccountInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => GoogleAccount.t;
+}
+
+final class _GoogleAccountJsonInclude extends _is.IncludeObject
+    implements GoogleAccountJsonInclude {
+  _GoogleAccountJsonInclude._({
+    _iacs.AuthUserJsonInclude? authUser,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(GoogleAccount.t);
+    _authUser = authUser;
   }
+
+  _iacs.AuthUserJsonInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => GoogleAccount.t;
+}
+
+final class _GoogleAccountJsonIncludeList extends _is.IncludeList
+    implements GoogleAccountJsonIncludeList {
+  _GoogleAccountJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    GoogleAccountJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -429,6 +526,135 @@ class GoogleAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    GoogleAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<GoogleAccount>(
+      where: where?.call(GoogleAccount.t),
+      orderBy: orderBy?.call(GoogleAccount.t),
+      orderByList: orderByList?.call(GoogleAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GoogleAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    GoogleAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<GoogleAccount>(
+      where: where?.call(GoogleAccount.t),
+      orderBy: orderBy?.call(GoogleAccount.t),
+      orderByList: orderByList?.call(GoogleAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GoogleAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    GoogleAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<GoogleAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GoogleAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

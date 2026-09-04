@@ -184,6 +184,9 @@ final class ModelClassDefinition extends ClassDefinition {
   /// The index over the primary key `id` is not part of this list.
   final List<SerializableModelIndexDefinition> indexes;
 
+  /// The projections defined for this model class.
+  final List<SerializableModelProjectionDefinition> projections;
+
   final bool manageMigration;
 
   /// If set to true the class is immutable.
@@ -192,6 +195,12 @@ final class ModelClassDefinition extends ClassDefinition {
   /// If set, the default data type used for serialization of the JSON columns in this class.
   /// It can be overridden for each field.
   final SerializationDataType? serializationDataType;
+
+  /// If this model is a projection, the name of the base model's class.
+  final String? baseClassName;
+
+  /// Whether this model is a projection of another model.
+  final bool isProjection;
 
   /// Create a new [ModelClassDefinition].
   ModelClassDefinition({
@@ -208,8 +217,11 @@ final class ModelClassDefinition extends ClassDefinition {
     super.extendsClass,
     this.database = ModelDatabaseDefinition.server,
     this.tableName,
+    this.baseClassName,
+    this.isProjection = false,
     this.serializationDataType,
     this.indexes = const [],
+    this.projections = const [],
     super.subDirParts,
     super.documentation,
     super.sharedPackageName,
@@ -413,6 +425,13 @@ class SerializableModelFieldDefinition {
   /// Whether this field should have a unique index auto-generated for it.
   bool get shouldCreateUniqueIndex => uniquePerFieldNames != null;
 
+  /// If this field is forwarded from a relation (e.g. `author.name`), this
+  /// holds the dot-separated path.
+  final String? forwardedFrom;
+
+  /// The type of the relation that was flattened, if [forwardedFrom] is not null.
+  final TypeDefinition? forwardedRelationType;
+
   /// Create a new [SerializableModelFieldDefinition].
   SerializableModelFieldDefinition({
     required this.name,
@@ -428,6 +447,8 @@ class SerializableModelFieldDefinition {
     String? columnNameOverride,
     String? jsonKeyOverride,
     this.uniquePerFieldNames,
+    this.forwardedFrom,
+    this.forwardedRelationType,
   }) : _columnNameOverride = columnNameOverride,
        _jsonKeyOverride = jsonKeyOverride;
 
@@ -949,3 +970,37 @@ List<SerializableModelFieldDefinition> _fieldsWithTailFieldsLast({
   ...fields.where((field) => field.isTail),
   ...inheritedFields.where((field) => field.isTail),
 ];
+
+/// Describes a projection for a database model.
+class SerializableModelProjectionDefinition {
+  /// The name of the projection class to be generated.
+  final String name;
+
+  /// The list of field names that should be included in the projection.
+  final List<ProjectionFieldDefinition> fields;
+
+  /// Whether the fields represent an exclusion list rather than an inclusion list.
+  final bool isExclude;
+
+  /// Create a new [SerializableModelProjectionDefinition].
+  SerializableModelProjectionDefinition({
+    required this.name,
+    required this.fields,
+    this.isExclude = false,
+  });
+}
+
+/// Describes a specific field inside a projection.
+class ProjectionFieldDefinition {
+  /// The name of the field to include.
+  final String name;
+
+  /// An optional specific projection type to map a relation field to.
+  final String? projectedType;
+
+  /// Create a new [ProjectionFieldDefinition].
+  ProjectionFieldDefinition({
+    required this.name,
+    this.projectedType,
+  });
+}

@@ -68,9 +68,15 @@ abstract class ObjectWithParent
     };
   }
 
+  /// Builds a complete [ObjectWithParentInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ObjectWithParentInclude include() {
     return ObjectWithParentInclude._();
   }
+
+  /// Builds a complete [ObjectWithParentIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithParentIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithParentTable>? where,
@@ -81,12 +87,52 @@ abstract class ObjectWithParent
     ObjectWithParentInclude? include,
   }) {
     return ObjectWithParentIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithParent.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithParent.t),
       orderByList: orderByList?.call(ObjectWithParent.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithParentJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithParentJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
+  }) {
+    return _ObjectWithParentJsonInclude._(
+      selectedColumns: select?.call(ObjectWithParent.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithParentJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithParentJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithParentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithParentTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithParentTable>? orderByList,
+    ObjectWithParentJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
+  }) {
+    return _ObjectWithParentJsonIncludeList._(
+      where: where?.call(ObjectWithParent.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithParent.t),
+      orderByList: orderByList?.call(ObjectWithParent.t),
+      include: include,
+      selectedColumns: select?.call(ObjectWithParent.t),
     );
   }
 
@@ -153,7 +199,14 @@ class ObjectWithParentTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithParentInclude extends _is.IncludeObject {
+abstract interface class ObjectWithParentJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithParentJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithParentInclude extends _is.IncludeObject
+    implements ObjectWithParentJsonInclude, _is.FullModelInclude {
   ObjectWithParentInclude._();
 
   @override
@@ -163,17 +216,52 @@ class ObjectWithParentInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithParent.t;
 }
 
-class ObjectWithParentIncludeList extends _is.IncludeList {
+final class ObjectWithParentIncludeList extends _is.IncludeList
+    implements ObjectWithParentJsonIncludeList, _is.FullModelInclude {
   ObjectWithParentIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithParentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(ObjectWithParent.t);
-  }
+    ObjectWithParentInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithParent.t;
+}
+
+final class _ObjectWithParentJsonInclude extends _is.IncludeObject
+    implements ObjectWithParentJsonInclude {
+  _ObjectWithParentJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithParent.t;
+}
+
+final class _ObjectWithParentJsonIncludeList extends _is.IncludeList
+    implements ObjectWithParentJsonIncludeList {
+  _ObjectWithParentJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithParentJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -279,6 +367,129 @@ class ObjectWithParentRepository {
     return session.db.findById<ObjectWithParent>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithParentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithParentTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithParentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithParent>(
+      where: where?.call(ObjectWithParent.t),
+      orderBy: orderBy?.call(ObjectWithParent.t),
+      orderByList: orderByList?.call(ObjectWithParent.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithParent.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithParentTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithParentTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithParentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithParent>(
+      where: where?.call(ObjectWithParent.t),
+      orderBy: orderBy?.call(ObjectWithParent.t),
+      orderByList: orderByList?.call(ObjectWithParent.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithParent.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithParent>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithParent.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

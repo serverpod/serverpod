@@ -80,9 +80,15 @@ abstract class StringDefaultModel
     };
   }
 
+  /// Builds a complete [StringDefaultModelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static StringDefaultModelInclude include() {
     return StringDefaultModelInclude._();
   }
+
+  /// Builds a complete [StringDefaultModelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static StringDefaultModelIncludeList includeList({
     _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
@@ -93,12 +99,52 @@ abstract class StringDefaultModel
     StringDefaultModelInclude? include,
   }) {
     return StringDefaultModelIncludeList._(
-      where: where,
+      where: where?.call(StringDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [StringDefaultModelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static StringDefaultModelJsonInclude includeJson({
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+  }) {
+    return _StringDefaultModelJsonInclude._(
+      selectedColumns: select?.call(StringDefaultModel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [StringDefaultModelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static StringDefaultModelJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    StringDefaultModelJsonInclude? include,
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+  }) {
+    return _StringDefaultModelJsonIncludeList._(
+      where: where?.call(StringDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StringDefaultModel.t),
+      orderByList: orderByList?.call(StringDefaultModel.t),
+      include: include,
+      selectedColumns: select?.call(StringDefaultModel.t),
     );
   }
 
@@ -184,7 +230,14 @@ class StringDefaultModelTable extends _is.Table<int?> {
   ];
 }
 
-class StringDefaultModelInclude extends _is.IncludeObject {
+abstract interface class StringDefaultModelJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class StringDefaultModelJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class StringDefaultModelInclude extends _is.IncludeObject
+    implements StringDefaultModelJsonInclude, _is.FullModelInclude {
   StringDefaultModelInclude._();
 
   @override
@@ -194,17 +247,52 @@ class StringDefaultModelInclude extends _is.IncludeObject {
   _is.Table<int?> get table => StringDefaultModel.t;
 }
 
-class StringDefaultModelIncludeList extends _is.IncludeList {
+final class StringDefaultModelIncludeList extends _is.IncludeList
+    implements StringDefaultModelJsonIncludeList, _is.FullModelInclude {
   StringDefaultModelIncludeList._({
-    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(StringDefaultModel.t);
-  }
+    StringDefaultModelInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => StringDefaultModel.t;
+}
+
+final class _StringDefaultModelJsonInclude extends _is.IncludeObject
+    implements StringDefaultModelJsonInclude {
+  _StringDefaultModelJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => StringDefaultModel.t;
+}
+
+final class _StringDefaultModelJsonIncludeList extends _is.IncludeList
+    implements StringDefaultModelJsonIncludeList {
+  _StringDefaultModelJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    StringDefaultModelJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -310,6 +398,129 @@ class StringDefaultModelRepository {
     return session.db.findById<StringDefaultModel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<StringDefaultModel>(
+      where: where?.call(StringDefaultModel.t),
+      orderBy: orderBy?.call(StringDefaultModel.t),
+      orderByList: orderByList?.call(StringDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(StringDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<StringDefaultModel>(
+      where: where?.call(StringDefaultModel.t),
+      orderBy: orderBy?.call(StringDefaultModel.t),
+      orderByList: orderByList?.call(StringDefaultModel.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(StringDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<StringDefaultModel>(
+      id,
+      transaction: transaction,
+      select: select?.call(StringDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

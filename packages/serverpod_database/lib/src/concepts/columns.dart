@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../../serverpod_database.dart';
@@ -7,6 +8,9 @@ import '../adapters/sqlite/value_encoder.dart';
 
 /// A function that returns a [Column] for a [Table].
 typedef ColumnSelections<T extends Table> = List<Column> Function(T);
+
+/// A function that returns a list of [Column]s for a [Table] to be selected in queries.
+typedef SelectColumnsBuilder<T extends Table> = List<Column> Function(T table);
 
 /// Abstract class representing a database [Column]. Subclassed by the different
 /// supported column types such as [ColumnInt] or [ColumnString].
@@ -72,6 +76,17 @@ class ColumnSerializable<T> extends Column<T> {
     super.hasDefault,
     super.fieldName,
   });
+
+  /// Returns a [ColumnJsonField] that extracts the JSON property [key] from
+  /// this column in database queries.
+  @internal
+  ColumnJsonField<R> jsonKey<R>(String key, {String? fieldName}) {
+    return ColumnJsonField<R>(
+      key,
+      this,
+      fieldName: fieldName ?? '${this.fieldName}_$key',
+    );
+  }
 }
 
 /// A [Column] holding a [SerializableModel]. The entity will be stored in the
@@ -85,6 +100,43 @@ class ColumnStructured<T> extends Column<T> {
     super.hasDefault,
     super.fieldName,
   });
+
+  /// Returns a [ColumnJsonField] that extracts the JSON property [key] from
+  /// this column in database queries.
+  @internal
+  ColumnJsonField<R> jsonKey<R>(String key, {String? fieldName}) {
+    return ColumnJsonField<R>(
+      key,
+      this,
+      fieldName: fieldName ?? '${this.fieldName}_$key',
+    );
+  }
+}
+
+/// A [Column] representing a specific JSON field/key extracted from a JSON column.
+@internal
+class ColumnJsonField<T> extends Column<T> {
+  /// The key inside the JSON object to extract.
+  final String jsonKey;
+
+  /// The base column that contains the JSON object.
+  final Column baseColumn;
+
+  /// Creates a new [ColumnJsonField].
+  ColumnJsonField(
+    this.jsonKey,
+    this.baseColumn, {
+    required super.fieldName,
+  }) : super(
+         baseColumn.columnName,
+         baseColumn.table,
+         hasDefault: false,
+       );
+
+  @override
+  String toString() {
+    return '"${table.queryPrefix}"."$columnName"->\'$jsonKey\'';
+  }
 }
 
 abstract class _ValueOperatorColumn<T> extends Column<T> {

@@ -76,9 +76,15 @@ abstract class Service
     };
   }
 
+  /// Builds a complete [ServiceInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ServiceInclude include() {
     return ServiceInclude._();
   }
+
+  /// Builds a complete [ServiceIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ServiceIncludeList includeList({
     _is.WhereExpressionBuilder<ServiceTable>? where,
@@ -89,12 +95,50 @@ abstract class Service
     ServiceInclude? include,
   }) {
     return ServiceIncludeList._(
-      where: where,
+      where: where?.call(Service.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Service.t),
       orderByList: orderByList?.call(Service.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ServiceJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ServiceJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ServiceTable>? select,
+  }) {
+    return _ServiceJsonInclude._(selectedColumns: select?.call(Service.t));
+  }
+
+  /// Builds a JSON-compatible [ServiceJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ServiceJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ServiceTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    ServiceJsonInclude? include,
+    _is.SelectColumnsBuilder<ServiceTable>? select,
+  }) {
+    return _ServiceJsonIncludeList._(
+      where: where?.call(Service.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Service.t),
+      orderByList: orderByList?.call(Service.t),
+      include: include,
+      selectedColumns: select?.call(Service.t),
     );
   }
 
@@ -175,7 +219,14 @@ class ServiceTable extends _is.Table<int?> {
   ];
 }
 
-class ServiceInclude extends _is.IncludeObject {
+abstract interface class ServiceJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ServiceJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ServiceInclude extends _is.IncludeObject
+    implements ServiceJsonInclude, _is.FullModelInclude {
   ServiceInclude._();
 
   @override
@@ -185,17 +236,52 @@ class ServiceInclude extends _is.IncludeObject {
   _is.Table<int?> get table => Service.t;
 }
 
-class ServiceIncludeList extends _is.IncludeList {
+final class ServiceIncludeList extends _is.IncludeList
+    implements ServiceJsonIncludeList, _is.FullModelInclude {
   ServiceIncludeList._({
-    _is.WhereExpressionBuilder<ServiceTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(Service.t);
-  }
+    ServiceInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => Service.t;
+}
+
+final class _ServiceJsonInclude extends _is.IncludeObject
+    implements ServiceJsonInclude {
+  _ServiceJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => Service.t;
+}
+
+final class _ServiceJsonIncludeList extends _is.IncludeList
+    implements ServiceJsonIncludeList {
+  _ServiceJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ServiceJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -301,6 +387,129 @@ class ServiceRepository {
     return session.db.findById<Service>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServiceTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServiceTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Service>(
+      where: where?.call(Service.t),
+      orderBy: orderBy?.call(Service.t),
+      orderByList: orderByList?.call(Service.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Service.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServiceTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServiceTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Service>(
+      where: where?.call(Service.t),
+      orderBy: orderBy?.call(Service.t),
+      orderByList: orderByList?.call(Service.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Service.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServiceTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Service>(
+      id,
+      transaction: transaction,
+      select: select?.call(Service.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

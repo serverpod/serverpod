@@ -35,7 +35,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    Include? include,
+    FullModelInclude? include,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -49,7 +49,36 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<Map<String, dynamic>>> findAsJson<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    JsonCompatibleInclude? include,
+    List<Column>? select,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<Map<String, dynamic>?> findFirstRowAsJson<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    JsonCompatibleInclude? include,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   });
@@ -59,7 +88,18 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     DatabaseSession session,
     Object id, {
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  });
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
+    DatabaseSession session,
+    Object id, {
+    Transaction? transaction,
+    JsonCompatibleInclude? include,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   });

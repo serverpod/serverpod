@@ -107,11 +107,17 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
     return {};
   }
 
+  /// Builds a complete [ChildWithInheritedIdInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ChildWithInheritedIdInclude include({
     _id412n1c.ChildWithInheritedIdInclude? parent,
   }) {
     return ChildWithInheritedIdInclude._(parent: parent);
   }
+
+  /// Builds a complete [ChildWithInheritedIdIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ChildWithInheritedIdIncludeList includeList({
     _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
@@ -122,12 +128,54 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
     ChildWithInheritedIdInclude? include,
   }) {
     return ChildWithInheritedIdIncludeList._(
-      where: where,
+      where: where?.call(ChildWithInheritedId.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ChildWithInheritedIdJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ChildWithInheritedIdJsonInclude includeJson({
+    _id412n1c.ChildWithInheritedIdJsonInclude? parent,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
+  }) {
+    return _ChildWithInheritedIdJsonInclude._(
+      parent: parent,
+      selectedColumns: select?.call(ChildWithInheritedId.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ChildWithInheritedIdJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ChildWithInheritedIdJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
+    _is.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
+    ChildWithInheritedIdJsonInclude? include,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
+  }) {
+    return _ChildWithInheritedIdJsonIncludeList._(
+      where: where?.call(ChildWithInheritedId.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChildWithInheritedId.t),
+      orderByList: orderByList?.call(ChildWithInheritedId.t),
+      include: include,
+      selectedColumns: select?.call(ChildWithInheritedId.t),
     );
   }
 
@@ -277,7 +325,14 @@ class ChildWithInheritedIdTable extends _is.Table<_is.UuidValue> {
   }
 }
 
-class ChildWithInheritedIdInclude extends _is.IncludeObject {
+abstract interface class ChildWithInheritedIdJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ChildWithInheritedIdJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ChildWithInheritedIdInclude extends _is.IncludeObject
+    implements ChildWithInheritedIdJsonInclude, _is.FullModelInclude {
   ChildWithInheritedIdInclude._({
     _id412n1c.ChildWithInheritedIdInclude? parent,
   }) {
@@ -293,17 +348,59 @@ class ChildWithInheritedIdInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue> get table => ChildWithInheritedId.t;
 }
 
-class ChildWithInheritedIdIncludeList extends _is.IncludeList {
+final class ChildWithInheritedIdIncludeList extends _is.IncludeList
+    implements ChildWithInheritedIdJsonIncludeList, _is.FullModelInclude {
   ChildWithInheritedIdIncludeList._({
-    _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ChildWithInheritedIdInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue> get table => ChildWithInheritedId.t;
+}
+
+final class _ChildWithInheritedIdJsonInclude extends _is.IncludeObject
+    implements ChildWithInheritedIdJsonInclude {
+  _ChildWithInheritedIdJsonInclude._({
+    _id412n1c.ChildWithInheritedIdJsonInclude? parent,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(ChildWithInheritedId.t);
+    _parent = parent;
   }
+
+  _id412n1c.ChildWithInheritedIdJsonInclude? _parent;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {'parent': _parent};
+
+  @override
+  _is.Table<_is.UuidValue> get table => ChildWithInheritedId.t;
+}
+
+final class _ChildWithInheritedIdJsonIncludeList extends _is.IncludeList
+    implements ChildWithInheritedIdJsonIncludeList {
+  _ChildWithInheritedIdJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ChildWithInheritedIdJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -419,6 +516,135 @@ class ChildWithInheritedIdRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
+    _is.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
+    _is.Transaction? transaction,
+    ChildWithInheritedIdJsonInclude? include,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ChildWithInheritedId>(
+      where: where?.call(ChildWithInheritedId.t),
+      orderBy: orderBy?.call(ChildWithInheritedId.t),
+      orderByList: orderByList?.call(ChildWithInheritedId.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChildWithInheritedId.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
+    _is.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
+    _is.Transaction? transaction,
+    ChildWithInheritedIdJsonInclude? include,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ChildWithInheritedId>(
+      where: where?.call(ChildWithInheritedId.t),
+      orderBy: orderBy?.call(ChildWithInheritedId.t),
+      orderByList: orderByList?.call(ChildWithInheritedId.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChildWithInheritedId.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ChildWithInheritedIdJsonInclude? include,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ChildWithInheritedId>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChildWithInheritedId.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

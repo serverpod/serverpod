@@ -79,9 +79,15 @@ abstract class UserNoteWithALongName
     };
   }
 
+  /// Builds a complete [UserNoteWithALongNameInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static UserNoteWithALongNameInclude include() {
     return UserNoteWithALongNameInclude._();
   }
+
+  /// Builds a complete [UserNoteWithALongNameIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UserNoteWithALongNameIncludeList includeList({
     _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
@@ -92,12 +98,52 @@ abstract class UserNoteWithALongName
     UserNoteWithALongNameInclude? include,
   }) {
     return UserNoteWithALongNameIncludeList._(
-      where: where,
+      where: where?.call(UserNoteWithALongName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UserNoteWithALongNameJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UserNoteWithALongNameJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+  }) {
+    return _UserNoteWithALongNameJsonInclude._(
+      selectedColumns: select?.call(UserNoteWithALongName.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UserNoteWithALongNameJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UserNoteWithALongNameJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
+    UserNoteWithALongNameJsonInclude? include,
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+  }) {
+    return _UserNoteWithALongNameJsonIncludeList._(
+      where: where?.call(UserNoteWithALongName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      include: include,
+      selectedColumns: select?.call(UserNoteWithALongName.t),
     );
   }
 
@@ -217,7 +263,14 @@ class UserNoteWithALongNameTable extends _is.Table<int?> {
   ];
 }
 
-class UserNoteWithALongNameInclude extends _is.IncludeObject {
+abstract interface class UserNoteWithALongNameJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UserNoteWithALongNameJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UserNoteWithALongNameInclude extends _is.IncludeObject
+    implements UserNoteWithALongNameJsonInclude, _is.FullModelInclude {
   UserNoteWithALongNameInclude._();
 
   @override
@@ -227,17 +280,52 @@ class UserNoteWithALongNameInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UserNoteWithALongName.t;
 }
 
-class UserNoteWithALongNameIncludeList extends _is.IncludeList {
+final class UserNoteWithALongNameIncludeList extends _is.IncludeList
+    implements UserNoteWithALongNameJsonIncludeList, _is.FullModelInclude {
   UserNoteWithALongNameIncludeList._({
-    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(UserNoteWithALongName.t);
-  }
+    UserNoteWithALongNameInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UserNoteWithALongName.t;
+}
+
+final class _UserNoteWithALongNameJsonInclude extends _is.IncludeObject
+    implements UserNoteWithALongNameJsonInclude {
+  _UserNoteWithALongNameJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UserNoteWithALongName.t;
+}
+
+final class _UserNoteWithALongNameJsonIncludeList extends _is.IncludeList
+    implements UserNoteWithALongNameJsonIncludeList {
+  _UserNoteWithALongNameJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UserNoteWithALongNameJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -343,6 +431,129 @@ class UserNoteWithALongNameRepository {
     return session.db.findById<UserNoteWithALongName>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UserNoteWithALongName>(
+      where: where?.call(UserNoteWithALongName.t),
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UserNoteWithALongName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UserNoteWithALongName>(
+      where: where?.call(UserNoteWithALongName.t),
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UserNoteWithALongName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UserNoteWithALongName>(
+      id,
+      transaction: transaction,
+      select: select?.call(UserNoteWithALongName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

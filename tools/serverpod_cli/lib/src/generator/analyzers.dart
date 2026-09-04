@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:analyzer/file_system/overlay_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/protocol_feature_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
     show FutureCallDefinition;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
@@ -180,7 +182,11 @@ class Analyzers {
     try {
       log.debug('Analyzing serializable models in the protocol directory.');
 
-      final models = _models.validateAll(reportIssuesForPaths: affectedPaths);
+      var models = _models.validateAll(
+        reportIssuesForPaths: affectedPaths,
+      );
+      models = _expandProjections(models);
+
       success &= !_models.hasSevereErrors;
 
       List<String> generatedModelFiles = [];
@@ -487,6 +493,177 @@ ProtocolAnalyticsSnapshot? _createProtocolAnalyticsSnapshot({
 }
 
 /// Generates temporary protocol.dart stubs for the server and client packages.
+List<SerializableModelDefinition> _expandProjections(
+  List<SerializableModelDefinition> models,
+) {
+  var expanded = <SerializableModelDefinition>[];
+  for (var model in models) {
+    expanded.add(model);
+    if (model is ModelClassDefinition) {
+      for (var projection in model.projections) {
+        var projectedFields = <SerializableModelFieldDefinition>[];
+        var idField = model.fields.where((f) => f.name == 'id').firstOrNull;
+
+        if (projection.isExclude) {
+          projectedFields.addAll(
+            model.fieldsIncludingInherited.where((f) {
+              if (f.name == 'id' &&
+                  !projection.fields.any((pf) => pf.name == 'id')) {
+                return true; // Keep ID by default unless excluded
+              }
+              return !projection.fields.any((pf) => pf.name == f.name);
+            }),
+          );
+        } else {
+          if (model.tableName != null &&
+              !projection.fields.any((f) => f.name == 'id')) {
+            if (idField != null) {
+              projectedFields.add(idField);
+            }
+          }
+
+          for (var pf in projection.fields) {
+            if (pf.name.contains('.')) {
+              var parts = pf.name.split('.');
+              var relationName = parts[0];
+              var forwardedName = parts.skip(1).join('.');
+
+              var relationField = model.fieldsIncludingInherited
+                  .where((f) => f.name == relationName)
+                  .firstOrNull;
+
+              if (relationField != null) {
+                var targetModelName = relationField.type.className;
+                var targetModel = models
+                    .whereType<ModelClassDefinition>()
+                    .where((m) => m.className == targetModelName)
+                    .firstOrNull;
+
+                if (targetModel != null) {
+                  var targetField = targetModel.fieldsIncludingInherited
+                      .where((f) => f.name == forwardedName)
+                      .firstOrNull;
+
+                  if (targetField != null) {
+                    var flatName =
+                        '$relationName${forwardedName.substring(0, 1).toUpperCase()}${forwardedName.substring(1)}';
+                    var isParentNullable =
+                        relationField.relation is ObjectRelationDefinition
+                        ? (relationField.relation as ObjectRelationDefinition)
+                              .nullableRelation
+                        : relationField.type.nullable;
+                    var fieldType =
+                        isParentNullable && !targetField.type.nullable
+                        ? targetField.type.asNullable
+                        : targetField.type;
+
+                    projectedFields.add(
+                      SerializableModelFieldDefinition(
+                        name: flatName,
+                        type: fieldType,
+                        scope: targetField.scope,
+                        shouldPersist: false,
+                        forwardedFrom: pf.name,
+                        forwardedRelationType: relationField.relation != null
+                            ? relationField.type
+                            : null,
+                      ),
+                    );
+                    continue;
+                  }
+                }
+              }
+            }
+
+            var f = model.fieldsIncludingInherited
+                .where((f) => pf.name == f.name)
+                .firstOrNull;
+
+            if (f != null) {
+              if (pf.projectedType != null) {
+                TypeDefinition newType;
+                if (f.type.isListType && f.type.generics.isNotEmpty) {
+                  newType = TypeDefinition(
+                    className: f.type.className,
+                    nullable: f.type.nullable,
+                    generics: [
+                      TypeDefinition(
+                        className: pf.projectedType!,
+                        nullable: f.type.generics.first.nullable,
+                        customClass: true,
+                      ),
+                    ],
+                    url: f.type.url,
+                    customClass: f.type.customClass,
+                  );
+                } else {
+                  newType = TypeDefinition(
+                    className: pf.projectedType!,
+                    nullable: f.type.nullable,
+                    url: f.type.url,
+                    customClass: true,
+                  );
+                }
+
+                projectedFields.add(
+                  SerializableModelFieldDefinition(
+                    name: f.name,
+                    type: newType,
+                    scope: f.scope,
+                    shouldPersist: f.shouldPersist,
+                    defaultModelValue: f.defaultModelValue,
+                    defaultPersistValue: f.defaultPersistValue,
+                    relation: f.relation,
+                    documentation: f.documentation,
+                    isRequired: f.isRequired,
+                    isTail: f.isTail,
+                    columnNameOverride: f.hasColumnNameOverride
+                        ? f.columnName
+                        : null,
+                    jsonKeyOverride: f.hasJsonKeyOverride ? f.jsonKey : null,
+                    uniquePerFieldNames: f.uniquePerFieldNames,
+                  ),
+                );
+              } else {
+                projectedFields.add(f);
+              }
+            }
+          }
+        }
+
+        expanded.add(
+          ModelClassDefinition(
+            fileName: ReCase(projection.name).snakeCase,
+            sourceFileName: model.sourceFileName,
+            className: projection.name,
+            fields: projectedFields,
+            serverOnly: model.serverOnly,
+            manageMigration: false, // Projections don't have tables
+            type: TypeDefinition(
+              className: projection.name,
+              nullable: false,
+              url: model.type.url,
+            ),
+            isSealed: false,
+            isImmutable: model.isImmutable,
+            database: model.database,
+            tableName: null, // Projections don't generate table code
+            baseClassName: model.className,
+            isProjection: true,
+            serializationDataType: model.serializationDataType,
+            subDirParts: model.subDirParts,
+            documentation: model.documentation,
+            sharedPackageName: model.sharedPackageName,
+          ),
+        );
+      }
+    }
+  }
+  return expanded;
+}
+
+/// Generates the content of a temporary protocol.dart that exports all model
+/// classes and a stub [Protocol] class.
 ///
 /// These stubs allow endpoint and future call imports to resolve before the
 /// full protocols are generated.

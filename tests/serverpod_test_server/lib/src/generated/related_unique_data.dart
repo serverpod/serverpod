@@ -91,11 +91,17 @@ abstract class RelatedUniqueData
     };
   }
 
+  /// Builds a complete [RelatedUniqueDataInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static RelatedUniqueDataInclude include({
     _iufhyrjh.UniqueDataInclude? uniqueData,
   }) {
     return RelatedUniqueDataInclude._(uniqueData: uniqueData);
   }
+
+  /// Builds a complete [RelatedUniqueDataIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static RelatedUniqueDataIncludeList includeList({
     _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -106,12 +112,54 @@ abstract class RelatedUniqueData
     RelatedUniqueDataInclude? include,
   }) {
     return RelatedUniqueDataIncludeList._(
-      where: where,
+      where: where?.call(RelatedUniqueData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [RelatedUniqueDataJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static RelatedUniqueDataJsonInclude includeJson({
+    _iufhyrjh.UniqueDataJsonInclude? uniqueData,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+  }) {
+    return _RelatedUniqueDataJsonInclude._(
+      uniqueData: uniqueData,
+      selectedColumns: select?.call(RelatedUniqueData.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [RelatedUniqueDataJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static RelatedUniqueDataJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    RelatedUniqueDataJsonInclude? include,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+  }) {
+    return _RelatedUniqueDataJsonIncludeList._(
+      where: where?.call(RelatedUniqueData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      include: include,
+      selectedColumns: select?.call(RelatedUniqueData.t),
     );
   }
 
@@ -223,7 +271,14 @@ class RelatedUniqueDataTable extends _is.Table<int?> {
   }
 }
 
-class RelatedUniqueDataInclude extends _is.IncludeObject {
+abstract interface class RelatedUniqueDataJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class RelatedUniqueDataJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class RelatedUniqueDataInclude extends _is.IncludeObject
+    implements RelatedUniqueDataJsonInclude, _is.FullModelInclude {
   RelatedUniqueDataInclude._({_iufhyrjh.UniqueDataInclude? uniqueData}) {
     _uniqueData = uniqueData;
   }
@@ -237,17 +292,59 @@ class RelatedUniqueDataInclude extends _is.IncludeObject {
   _is.Table<int?> get table => RelatedUniqueData.t;
 }
 
-class RelatedUniqueDataIncludeList extends _is.IncludeList {
+final class RelatedUniqueDataIncludeList extends _is.IncludeList
+    implements RelatedUniqueDataJsonIncludeList, _is.FullModelInclude {
   RelatedUniqueDataIncludeList._({
-    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    RelatedUniqueDataInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => RelatedUniqueData.t;
+}
+
+final class _RelatedUniqueDataJsonInclude extends _is.IncludeObject
+    implements RelatedUniqueDataJsonInclude {
+  _RelatedUniqueDataJsonInclude._({
+    _iufhyrjh.UniqueDataJsonInclude? uniqueData,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(RelatedUniqueData.t);
+    _uniqueData = uniqueData;
   }
+
+  _iufhyrjh.UniqueDataJsonInclude? _uniqueData;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {'uniqueData': _uniqueData};
+
+  @override
+  _is.Table<int?> get table => RelatedUniqueData.t;
+}
+
+final class _RelatedUniqueDataJsonIncludeList extends _is.IncludeList
+    implements RelatedUniqueDataJsonIncludeList {
+  _RelatedUniqueDataJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    RelatedUniqueDataJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -361,6 +458,135 @@ class RelatedUniqueDataRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.Transaction? transaction,
+    RelatedUniqueDataJsonInclude? include,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<RelatedUniqueData>(
+      where: where?.call(RelatedUniqueData.t),
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelatedUniqueData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    int? offset,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.Transaction? transaction,
+    RelatedUniqueDataJsonInclude? include,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<RelatedUniqueData>(
+      where: where?.call(RelatedUniqueData.t),
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelatedUniqueData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    RelatedUniqueDataJsonInclude? include,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<RelatedUniqueData>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelatedUniqueData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

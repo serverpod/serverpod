@@ -1,0 +1,15 @@
+class: ProjectedAddress
+table: projected_addresses
+fields:
+  street: String
+  state: String
+  country: String
+
+projections:
+  ProjectedAddressStreet:
+    select:
+      - street
+
+  ProjectedAddressCountry:
+    select:
+      - country

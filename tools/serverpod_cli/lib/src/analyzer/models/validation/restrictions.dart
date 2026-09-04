@@ -1993,6 +1993,66 @@ class Restrictions {
     return _validateIndexFieldNames(perFields, span);
   }
 
+  List<SourceSpanSeverityException> validateProjectionValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is YamlList) {
+      return validateProjectionFieldsValue(parentNodeName, content, span);
+    }
+    if (content is YamlMap) {
+      return [];
+    }
+    return [
+      SourceSpanSeverityException(
+        'The projection definition must be a list of fields or a map with "select" or "exclude".',
+        span,
+      ),
+    ];
+  }
+
+  List<SourceSpanSeverityException> validateProjectionFieldsValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is! YamlList) {
+      return [
+        SourceSpanSeverityException(
+          'The "fields" property must be a list of field names (e.g. - name).',
+          span,
+        ),
+      ];
+    }
+
+    for (var node in content.nodes) {
+      if (node.value is! String) {
+        if (node.value is YamlMap) {
+          var map = node.value as YamlMap;
+          if (map.nodes.length == 1) {
+            var entry = map.nodes.entries.first;
+            var keyNode = entry.key;
+            var valNode = entry.value;
+            var key = keyNode is YamlScalar ? keyNode.value : null;
+            var val = valNode is YamlScalar ? valNode.value : null;
+            if (key is String && val is String) {
+              continue;
+            }
+          }
+        }
+        return [
+          SourceSpanSeverityException(
+            'The "fields" property must be a list of string field names or mapping (e.g. - address: AddressStreet).',
+            node.span,
+          ),
+        ];
+      }
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateIndexFieldsValue(
     String parentNodeName,
     dynamic content,

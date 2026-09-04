@@ -1,0 +1,79 @@
+BEGIN;
+
+--
+-- ACTION DROP TABLE
+--
+DROP TABLE "course_with_projections" CASCADE;
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "projected_addresses" (
+    "id" bigserial PRIMARY KEY,
+    "street" text,
+    "state" text,
+    "country" text
+);
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "projected_user" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "addressId" bigint NOT NULL
+);
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "projected_user"
+    ADD CONSTRAINT "projected_user_fk_0"
+    FOREIGN KEY("addressId")
+    REFERENCES "projected_addresses"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+
+--
+-- MIGRATION VERSION FOR serverpod_test
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_test', '20260721200901545', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260721200901545', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod', '20260416151914983-insights-perf', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260416151914983-insights-perf', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth', '20260417182239578', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260417182239578', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_test_module
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_test_module', '20260417182416941', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260417182416941', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR _repair
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('_repair', '20260721201624687', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260721201624687', "timestamp" = now();
+
+
+COMMIT;

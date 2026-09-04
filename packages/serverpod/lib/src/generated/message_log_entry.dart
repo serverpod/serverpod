@@ -153,9 +153,15 @@ abstract class MessageLogEntry
     };
   }
 
+  /// Builds a complete [MessageLogEntryInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static MessageLogEntryInclude include() {
     return MessageLogEntryInclude._();
   }
+
+  /// Builds a complete [MessageLogEntryIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static MessageLogEntryIncludeList includeList({
     _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
@@ -166,12 +172,52 @@ abstract class MessageLogEntry
     MessageLogEntryInclude? include,
   }) {
     return MessageLogEntryIncludeList._(
-      where: where,
+      where: where?.call(MessageLogEntry.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [MessageLogEntryJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static MessageLogEntryJsonInclude includeJson({
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
+  }) {
+    return _MessageLogEntryJsonInclude._(
+      selectedColumns: select?.call(MessageLogEntry.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [MessageLogEntryJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static MessageLogEntryJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    MessageLogEntryJsonInclude? include,
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
+  }) {
+    return _MessageLogEntryJsonIncludeList._(
+      where: where?.call(MessageLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      include: include,
+      selectedColumns: select?.call(MessageLogEntry.t),
     );
   }
 
@@ -393,7 +439,14 @@ class MessageLogEntryTable extends _is.Table<int?> {
   ];
 }
 
-class MessageLogEntryInclude extends _is.IncludeObject {
+abstract interface class MessageLogEntryJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class MessageLogEntryJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class MessageLogEntryInclude extends _is.IncludeObject
+    implements MessageLogEntryJsonInclude, _is.FullModelInclude {
   MessageLogEntryInclude._();
 
   @override
@@ -403,17 +456,52 @@ class MessageLogEntryInclude extends _is.IncludeObject {
   _is.Table<int?> get table => MessageLogEntry.t;
 }
 
-class MessageLogEntryIncludeList extends _is.IncludeList {
+final class MessageLogEntryIncludeList extends _is.IncludeList
+    implements MessageLogEntryJsonIncludeList, _is.FullModelInclude {
   MessageLogEntryIncludeList._({
-    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(MessageLogEntry.t);
-  }
+    MessageLogEntryInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => MessageLogEntry.t;
+}
+
+final class _MessageLogEntryJsonInclude extends _is.IncludeObject
+    implements MessageLogEntryJsonInclude {
+  _MessageLogEntryJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => MessageLogEntry.t;
+}
+
+final class _MessageLogEntryJsonIncludeList extends _is.IncludeList
+    implements MessageLogEntryJsonIncludeList {
+  _MessageLogEntryJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    MessageLogEntryJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -519,6 +607,129 @@ class MessageLogEntryRepository {
     return session.db.findById<MessageLogEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<MessageLogEntry>(
+      where: where?.call(MessageLogEntry.t),
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MessageLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<MessageLogEntry>(
+      where: where?.call(MessageLogEntry.t),
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MessageLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<MessageLogEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(MessageLogEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

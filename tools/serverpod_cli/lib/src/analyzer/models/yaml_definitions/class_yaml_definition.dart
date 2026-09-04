@@ -273,6 +273,30 @@ class ClassYamlDefinition {
         },
       ),
       ValidateNode(
+        Keyword.projections,
+        isRequired: false,
+        nested: {
+          ValidateNode(
+            Keyword.any,
+            keyRestriction: restrictions.validateClassName,
+            valueRestriction: restrictions.validateProjectionValue,
+            mutuallyExclusiveKeys: {Keyword.select, Keyword.exclude},
+            nested: {
+              ValidateNode(
+                Keyword.select,
+                isRequired: false,
+                valueRestriction: restrictions.validateProjectionFieldsValue,
+              ),
+              ValidateNode(
+                Keyword.exclude,
+                isRequired: false,
+                valueRestriction: restrictions.validateProjectionFieldsValue,
+              ),
+            },
+          ),
+        },
+      ),
+      ValidateNode(
         Keyword.indexes,
         nested: {
           ValidateNode(

@@ -1,0 +1,58 @@
+class: ProjectedUser
+table: projected_user
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  name: String
+  address: ProjectedAddress?, relation
+  orders: List<ProjectedOrder>?, relation
+  jsonField: ProjectedJsonField?
+
+projections:
+  ProjectedUserJsonField:
+    - name
+    - jsonField.text
+
+  ProjectedUserJsonMultiField:
+    select:
+      - name
+      - jsonField.text
+      - jsonField.value
+      - jsonField.mapA
+      - jsonField.listA
+      - jsonField.dateValue
+
+  ProjectedUserSimpleJson:
+    select:
+      - name
+      - jsonField -> ProjectedJsonFieldSimple
+    
+  ProjectedUserStreetAddress:
+    select:
+      - name
+      - address -> ProjectedAddressStreet
+      
+  ProjectedUserCountryAddress:
+    select:
+      - name
+      - address -> ProjectedAddressCountry
+
+  ProjectedUserOrders:
+    select:
+      - name
+      - orders -> ProjectedOrderDescription
+
+  ProjectedUserOrderSummary:
+    select:
+      - name
+      - orders -> ProjectedOrderSummary
+
+  ProjectedUserAddressAndOrders:
+    select:
+      - name
+      - orders -> ProjectedOrderDescription
+      - address -> ProjectedAddressStreet
+
+  ProjectedUserAddressStreetOnly:
+    select:
+      - name
+      - address.street

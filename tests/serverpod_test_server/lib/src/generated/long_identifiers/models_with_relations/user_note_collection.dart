@@ -90,6 +90,9 @@ abstract class UserNoteCollection
     };
   }
 
+  /// Builds a complete [UserNoteCollectionInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static UserNoteCollectionInclude include({
     _ia9r0qbl.UserNoteIncludeList? userNotesPropertyName,
   }) {
@@ -97,6 +100,9 @@ abstract class UserNoteCollection
       userNotesPropertyName: userNotesPropertyName,
     );
   }
+
+  /// Builds a complete [UserNoteCollectionIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UserNoteCollectionIncludeList includeList({
     _is.WhereExpressionBuilder<UserNoteCollectionTable>? where,
@@ -107,12 +113,54 @@ abstract class UserNoteCollection
     UserNoteCollectionInclude? include,
   }) {
     return UserNoteCollectionIncludeList._(
-      where: where,
+      where: where?.call(UserNoteCollection.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UserNoteCollectionJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UserNoteCollectionJsonInclude includeJson({
+    _ia9r0qbl.UserNoteJsonIncludeList? userNotesPropertyName,
+    _is.SelectColumnsBuilder<UserNoteCollectionTable>? select,
+  }) {
+    return _UserNoteCollectionJsonInclude._(
+      userNotesPropertyName: userNotesPropertyName,
+      selectedColumns: select?.call(UserNoteCollection.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UserNoteCollectionJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UserNoteCollectionJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UserNoteCollectionTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserNoteCollectionTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
+    UserNoteCollectionJsonInclude? include,
+    _is.SelectColumnsBuilder<UserNoteCollectionTable>? select,
+  }) {
+    return _UserNoteCollectionJsonIncludeList._(
+      where: where?.call(UserNoteCollection.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteCollection.t),
+      orderByList: orderByList?.call(UserNoteCollection.t),
+      include: include,
+      selectedColumns: select?.call(UserNoteCollection.t),
     );
   }
 
@@ -235,7 +283,14 @@ class UserNoteCollectionTable extends _is.Table<int?> {
   }
 }
 
-class UserNoteCollectionInclude extends _is.IncludeObject {
+abstract interface class UserNoteCollectionJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UserNoteCollectionJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UserNoteCollectionInclude extends _is.IncludeObject
+    implements UserNoteCollectionJsonInclude, _is.FullModelInclude {
   UserNoteCollectionInclude._({
     _ia9r0qbl.UserNoteIncludeList? userNotesPropertyName,
   }) {
@@ -253,17 +308,61 @@ class UserNoteCollectionInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UserNoteCollection.t;
 }
 
-class UserNoteCollectionIncludeList extends _is.IncludeList {
+final class UserNoteCollectionIncludeList extends _is.IncludeList
+    implements UserNoteCollectionJsonIncludeList, _is.FullModelInclude {
   UserNoteCollectionIncludeList._({
-    _is.WhereExpressionBuilder<UserNoteCollectionTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UserNoteCollectionInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UserNoteCollection.t;
+}
+
+final class _UserNoteCollectionJsonInclude extends _is.IncludeObject
+    implements UserNoteCollectionJsonInclude {
+  _UserNoteCollectionJsonInclude._({
+    _ia9r0qbl.UserNoteJsonIncludeList? userNotesPropertyName,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(UserNoteCollection.t);
+    _userNotesPropertyName = userNotesPropertyName;
   }
+
+  _ia9r0qbl.UserNoteJsonIncludeList? _userNotesPropertyName;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'userNotesPropertyName': _userNotesPropertyName,
+  };
+
+  @override
+  _is.Table<int?> get table => UserNoteCollection.t;
+}
+
+final class _UserNoteCollectionJsonIncludeList extends _is.IncludeList
+    implements UserNoteCollectionJsonIncludeList {
+  _UserNoteCollectionJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UserNoteCollectionJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -383,6 +482,135 @@ class UserNoteCollectionRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteCollectionTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserNoteCollectionTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
+    _is.Transaction? transaction,
+    UserNoteCollectionJsonInclude? include,
+    _is.SelectColumnsBuilder<UserNoteCollectionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UserNoteCollection>(
+      where: where?.call(UserNoteCollection.t),
+      orderBy: orderBy?.call(UserNoteCollection.t),
+      orderByList: orderByList?.call(UserNoteCollection.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(UserNoteCollection.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteCollectionTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UserNoteCollectionTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
+    _is.Transaction? transaction,
+    UserNoteCollectionJsonInclude? include,
+    _is.SelectColumnsBuilder<UserNoteCollectionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UserNoteCollection>(
+      where: where?.call(UserNoteCollection.t),
+      orderBy: orderBy?.call(UserNoteCollection.t),
+      orderByList: orderByList?.call(UserNoteCollection.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(UserNoteCollection.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    UserNoteCollectionJsonInclude? include,
+    _is.SelectColumnsBuilder<UserNoteCollectionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UserNoteCollection>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(UserNoteCollection.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

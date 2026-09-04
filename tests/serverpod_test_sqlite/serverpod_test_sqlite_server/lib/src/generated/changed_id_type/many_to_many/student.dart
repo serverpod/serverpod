@@ -90,11 +90,17 @@ abstract class StudentUuid
     };
   }
 
+  /// Builds a complete [StudentUuidInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static StudentUuidInclude include({
     _ih6xbg05.EnrollmentIntIncludeList? enrollments,
   }) {
     return StudentUuidInclude._(enrollments: enrollments);
   }
+
+  /// Builds a complete [StudentUuidIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static StudentUuidIncludeList includeList({
     _is.WhereExpressionBuilder<StudentUuidTable>? where,
@@ -105,12 +111,54 @@ abstract class StudentUuid
     StudentUuidInclude? include,
   }) {
     return StudentUuidIncludeList._(
-      where: where,
+      where: where?.call(StudentUuid.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [StudentUuidJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static StudentUuidJsonInclude includeJson({
+    _ih6xbg05.EnrollmentIntJsonIncludeList? enrollments,
+    _is.SelectColumnsBuilder<StudentUuidTable>? select,
+  }) {
+    return _StudentUuidJsonInclude._(
+      enrollments: enrollments,
+      selectedColumns: select?.call(StudentUuid.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [StudentUuidJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static StudentUuidJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<StudentUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StudentUuidTable>? orderBy,
+    _is.OrderByListBuilder<StudentUuidTable>? orderByList,
+    StudentUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<StudentUuidTable>? select,
+  }) {
+    return _StudentUuidJsonIncludeList._(
+      where: where?.call(StudentUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StudentUuid.t),
+      orderByList: orderByList?.call(StudentUuid.t),
+      include: include,
+      selectedColumns: select?.call(StudentUuid.t),
     );
   }
 
@@ -225,7 +273,14 @@ class StudentUuidTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class StudentUuidInclude extends _is.IncludeObject {
+abstract interface class StudentUuidJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class StudentUuidJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class StudentUuidInclude extends _is.IncludeObject
+    implements StudentUuidJsonInclude, _is.FullModelInclude {
   StudentUuidInclude._({_ih6xbg05.EnrollmentIntIncludeList? enrollments}) {
     _enrollments = enrollments;
   }
@@ -239,17 +294,59 @@ class StudentUuidInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => StudentUuid.t;
 }
 
-class StudentUuidIncludeList extends _is.IncludeList {
+final class StudentUuidIncludeList extends _is.IncludeList
+    implements StudentUuidJsonIncludeList, _is.FullModelInclude {
   StudentUuidIncludeList._({
-    _is.WhereExpressionBuilder<StudentUuidTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    StudentUuidInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => StudentUuid.t;
+}
+
+final class _StudentUuidJsonInclude extends _is.IncludeObject
+    implements StudentUuidJsonInclude {
+  _StudentUuidJsonInclude._({
+    _ih6xbg05.EnrollmentIntJsonIncludeList? enrollments,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(StudentUuid.t);
+    _enrollments = enrollments;
   }
+
+  _ih6xbg05.EnrollmentIntJsonIncludeList? _enrollments;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {'enrollments': _enrollments};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => StudentUuid.t;
+}
+
+final class _StudentUuidJsonIncludeList extends _is.IncludeList
+    implements StudentUuidJsonIncludeList {
+  _StudentUuidJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    StudentUuidJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -365,6 +462,135 @@ class StudentUuidRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StudentUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StudentUuidTable>? orderBy,
+    _is.OrderByListBuilder<StudentUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    StudentUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<StudentUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<StudentUuid>(
+      where: where?.call(StudentUuid.t),
+      orderBy: orderBy?.call(StudentUuid.t),
+      orderByList: orderByList?.call(StudentUuid.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(StudentUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StudentUuidTable>? where,
+    int? offset,
+    _is.OrderByBuilder<StudentUuidTable>? orderBy,
+    _is.OrderByListBuilder<StudentUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    StudentUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<StudentUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<StudentUuid>(
+      where: where?.call(StudentUuid.t),
+      orderBy: orderBy?.call(StudentUuid.t),
+      orderByList: orderByList?.call(StudentUuid.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(StudentUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    StudentUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<StudentUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<StudentUuid>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(StudentUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -87,9 +87,15 @@ abstract class ModelWithRequiredField
     };
   }
 
+  /// Builds a complete [ModelWithRequiredFieldInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ModelWithRequiredFieldInclude include() {
     return ModelWithRequiredFieldInclude._();
   }
+
+  /// Builds a complete [ModelWithRequiredFieldIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ModelWithRequiredFieldIncludeList includeList({
     _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
@@ -100,12 +106,52 @@ abstract class ModelWithRequiredField
     ModelWithRequiredFieldInclude? include,
   }) {
     return ModelWithRequiredFieldIncludeList._(
-      where: where,
+      where: where?.call(ModelWithRequiredField.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ModelWithRequiredField.t),
       orderByList: orderByList?.call(ModelWithRequiredField.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ModelWithRequiredFieldJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ModelWithRequiredFieldJsonInclude includeJson({
+    _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
+  }) {
+    return _ModelWithRequiredFieldJsonInclude._(
+      selectedColumns: select?.call(ModelWithRequiredField.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ModelWithRequiredFieldJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ModelWithRequiredFieldJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _isd.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    ModelWithRequiredFieldJsonInclude? include,
+    _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
+  }) {
+    return _ModelWithRequiredFieldJsonIncludeList._(
+      where: where?.call(ModelWithRequiredField.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ModelWithRequiredField.t),
+      orderByList: orderByList?.call(ModelWithRequiredField.t),
+      include: include,
+      selectedColumns: select?.call(ModelWithRequiredField.t),
     );
   }
 
@@ -204,7 +250,14 @@ class ModelWithRequiredFieldTable extends _isd.Table<int?> {
   ];
 }
 
-class ModelWithRequiredFieldInclude extends _isd.IncludeObject {
+abstract interface class ModelWithRequiredFieldJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class ModelWithRequiredFieldJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class ModelWithRequiredFieldInclude extends _isd.IncludeObject
+    implements ModelWithRequiredFieldJsonInclude, _isd.FullModelInclude {
   ModelWithRequiredFieldInclude._();
 
   @override
@@ -214,17 +267,52 @@ class ModelWithRequiredFieldInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => ModelWithRequiredField.t;
 }
 
-class ModelWithRequiredFieldIncludeList extends _isd.IncludeList {
+final class ModelWithRequiredFieldIncludeList extends _isd.IncludeList
+    implements ModelWithRequiredFieldJsonIncludeList, _isd.FullModelInclude {
   ModelWithRequiredFieldIncludeList._({
-    _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(ModelWithRequiredField.t);
-  }
+    ModelWithRequiredFieldInclude? super.include,
+  });
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => ModelWithRequiredField.t;
+}
+
+final class _ModelWithRequiredFieldJsonInclude extends _isd.IncludeObject
+    implements ModelWithRequiredFieldJsonInclude {
+  _ModelWithRequiredFieldJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
+
+  @override
+  Map<String, _isd.Include?> get includes => {};
+
+  @override
+  _isd.Table<int?> get table => ModelWithRequiredField.t;
+}
+
+final class _ModelWithRequiredFieldJsonIncludeList extends _isd.IncludeList
+    implements ModelWithRequiredFieldJsonIncludeList {
+  _ModelWithRequiredFieldJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ModelWithRequiredFieldJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -330,6 +418,129 @@ class ModelWithRequiredFieldRepository {
     return session.db.findById<ModelWithRequiredField>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _isd.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ModelWithRequiredField>(
+      where: where?.call(ModelWithRequiredField.t),
+      orderBy: orderBy?.call(ModelWithRequiredField.t),
+      orderByList: orderByList?.call(ModelWithRequiredField.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ModelWithRequiredField.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _isd.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ModelWithRequiredField>(
+      where: where?.call(ModelWithRequiredField.t),
+      orderBy: orderBy?.call(ModelWithRequiredField.t),
+      orderByList: orderByList?.call(ModelWithRequiredField.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ModelWithRequiredField.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ModelWithRequiredField>(
+      id,
+      transaction: transaction,
+      select: select?.call(ModelWithRequiredField.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

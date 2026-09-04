@@ -14,6 +14,9 @@ class Keyword {
   static const String table = 'table';
   static const String managedMigration = 'managedMigration';
   static const String fields = 'fields';
+  static const String projections = 'projections';
+  static const String select = 'select';
+  static const String exclude = 'exclude';
   static const String indexes = 'indexes';
   static const String properties = 'properties';
   static const String values = 'values';

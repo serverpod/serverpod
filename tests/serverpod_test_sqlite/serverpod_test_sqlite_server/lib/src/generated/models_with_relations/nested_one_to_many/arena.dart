@@ -83,9 +83,15 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
+  /// Builds a complete [ArenaInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ArenaInclude include({_iaks25tn.TeamInclude? team}) {
     return ArenaInclude._(team: team);
   }
+
+  /// Builds a complete [ArenaIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ArenaIncludeList includeList({
     _is.WhereExpressionBuilder<ArenaTable>? where,
@@ -96,12 +102,54 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
     ArenaInclude? include,
   }) {
     return ArenaIncludeList._(
-      where: where,
+      where: where?.call(Arena.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ArenaJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ArenaJsonInclude includeJson({
+    _iaks25tn.TeamJsonInclude? team,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
+  }) {
+    return _ArenaJsonInclude._(
+      team: team,
+      selectedColumns: select?.call(Arena.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ArenaJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ArenaJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ArenaTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ArenaTable>? orderBy,
+    _is.OrderByListBuilder<ArenaTable>? orderByList,
+    ArenaJsonInclude? include,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
+  }) {
+    return _ArenaJsonIncludeList._(
+      where: where?.call(Arena.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      include: include,
+      selectedColumns: select?.call(Arena.t),
     );
   }
 
@@ -193,7 +241,14 @@ class ArenaTable extends _is.Table<int?> {
   }
 }
 
-class ArenaInclude extends _is.IncludeObject {
+abstract interface class ArenaJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ArenaJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ArenaInclude extends _is.IncludeObject
+    implements ArenaJsonInclude, _is.FullModelInclude {
   ArenaInclude._({_iaks25tn.TeamInclude? team}) {
     _team = team;
   }
@@ -207,17 +262,59 @@ class ArenaInclude extends _is.IncludeObject {
   _is.Table<int?> get table => Arena.t;
 }
 
-class ArenaIncludeList extends _is.IncludeList {
+final class ArenaIncludeList extends _is.IncludeList
+    implements ArenaJsonIncludeList, _is.FullModelInclude {
   ArenaIncludeList._({
-    _is.WhereExpressionBuilder<ArenaTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ArenaInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => Arena.t;
+}
+
+final class _ArenaJsonInclude extends _is.IncludeObject
+    implements ArenaJsonInclude {
+  _ArenaJsonInclude._({
+    _iaks25tn.TeamJsonInclude? team,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(Arena.t);
+    _team = team;
   }
+
+  _iaks25tn.TeamJsonInclude? _team;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {'team': _team};
+
+  @override
+  _is.Table<int?> get table => Arena.t;
+}
+
+final class _ArenaJsonIncludeList extends _is.IncludeList
+    implements ArenaJsonIncludeList {
+  _ArenaJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ArenaJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -333,6 +430,135 @@ class ArenaRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ArenaTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ArenaTable>? orderBy,
+    _is.OrderByListBuilder<ArenaTable>? orderByList,
+    _is.Transaction? transaction,
+    ArenaJsonInclude? include,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Arena>(
+      where: where?.call(Arena.t),
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Arena.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ArenaTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ArenaTable>? orderBy,
+    _is.OrderByListBuilder<ArenaTable>? orderByList,
+    _is.Transaction? transaction,
+    ArenaJsonInclude? include,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Arena>(
+      where: where?.call(Arena.t),
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Arena.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ArenaJsonInclude? include,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Arena>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Arena.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

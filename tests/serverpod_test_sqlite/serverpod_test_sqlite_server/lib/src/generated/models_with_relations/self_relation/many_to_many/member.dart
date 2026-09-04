@@ -102,6 +102,9 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
+  /// Builds a complete [MemberInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static MemberInclude include({
     _iv5rlvod.BlockingIncludeList? blocking,
     _iv5rlvod.BlockingIncludeList? blockedBy,
@@ -112,6 +115,9 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     );
   }
 
+  /// Builds a complete [MemberIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static MemberIncludeList includeList({
     _is.WhereExpressionBuilder<MemberTable>? where,
     int? limit,
@@ -121,12 +127,56 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     MemberInclude? include,
   }) {
     return MemberIncludeList._(
-      where: where,
+      where: where?.call(Member.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [MemberJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static MemberJsonInclude includeJson({
+    _iv5rlvod.BlockingJsonIncludeList? blocking,
+    _iv5rlvod.BlockingJsonIncludeList? blockedBy,
+    _is.SelectColumnsBuilder<MemberTable>? select,
+  }) {
+    return _MemberJsonInclude._(
+      blocking: blocking,
+      blockedBy: blockedBy,
+      selectedColumns: select?.call(Member.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [MemberJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static MemberJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<MemberTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MemberTable>? orderBy,
+    _is.OrderByListBuilder<MemberTable>? orderByList,
+    MemberJsonInclude? include,
+    _is.SelectColumnsBuilder<MemberTable>? select,
+  }) {
+    return _MemberJsonIncludeList._(
+      where: where?.call(Member.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Member.t),
+      orderByList: orderByList?.call(Member.t),
+      include: include,
+      selectedColumns: select?.call(Member.t),
     );
   }
 
@@ -286,7 +336,14 @@ class MemberTable extends _is.Table<int?> {
   }
 }
 
-class MemberInclude extends _is.IncludeObject {
+abstract interface class MemberJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class MemberJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class MemberInclude extends _is.IncludeObject
+    implements MemberJsonInclude, _is.FullModelInclude {
   MemberInclude._({
     _iv5rlvod.BlockingIncludeList? blocking,
     _iv5rlvod.BlockingIncludeList? blockedBy,
@@ -309,17 +366,66 @@ class MemberInclude extends _is.IncludeObject {
   _is.Table<int?> get table => Member.t;
 }
 
-class MemberIncludeList extends _is.IncludeList {
+final class MemberIncludeList extends _is.IncludeList
+    implements MemberJsonIncludeList, _is.FullModelInclude {
   MemberIncludeList._({
-    _is.WhereExpressionBuilder<MemberTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    MemberInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => Member.t;
+}
+
+final class _MemberJsonInclude extends _is.IncludeObject
+    implements MemberJsonInclude {
+  _MemberJsonInclude._({
+    _iv5rlvod.BlockingJsonIncludeList? blocking,
+    _iv5rlvod.BlockingJsonIncludeList? blockedBy,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(Member.t);
+    _blocking = blocking;
+    _blockedBy = blockedBy;
   }
+
+  _iv5rlvod.BlockingJsonIncludeList? _blocking;
+
+  _iv5rlvod.BlockingJsonIncludeList? _blockedBy;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'blocking': _blocking,
+    'blockedBy': _blockedBy,
+  };
+
+  @override
+  _is.Table<int?> get table => Member.t;
+}
+
+final class _MemberJsonIncludeList extends _is.IncludeList
+    implements MemberJsonIncludeList {
+  _MemberJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    MemberJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -435,6 +541,135 @@ class MemberRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MemberTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MemberTable>? orderBy,
+    _is.OrderByListBuilder<MemberTable>? orderByList,
+    _is.Transaction? transaction,
+    MemberJsonInclude? include,
+    _is.SelectColumnsBuilder<MemberTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Member>(
+      where: where?.call(Member.t),
+      orderBy: orderBy?.call(Member.t),
+      orderByList: orderByList?.call(Member.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Member.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MemberTable>? where,
+    int? offset,
+    _is.OrderByBuilder<MemberTable>? orderBy,
+    _is.OrderByListBuilder<MemberTable>? orderByList,
+    _is.Transaction? transaction,
+    MemberJsonInclude? include,
+    _is.SelectColumnsBuilder<MemberTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Member>(
+      where: where?.call(Member.t),
+      orderBy: orderBy?.call(Member.t),
+      orderByList: orderByList?.call(Member.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Member.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    MemberJsonInclude? include,
+    _is.SelectColumnsBuilder<MemberTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Member>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Member.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

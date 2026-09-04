@@ -103,9 +103,15 @@ abstract class DateTimeDefault
     };
   }
 
+  /// Builds a complete [DateTimeDefaultInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static DateTimeDefaultInclude include() {
     return DateTimeDefaultInclude._();
   }
+
+  /// Builds a complete [DateTimeDefaultIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DateTimeDefaultIncludeList includeList({
     _is.WhereExpressionBuilder<DateTimeDefaultTable>? where,
@@ -116,12 +122,52 @@ abstract class DateTimeDefault
     DateTimeDefaultInclude? include,
   }) {
     return DateTimeDefaultIncludeList._(
-      where: where,
+      where: where?.call(DateTimeDefault.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DateTimeDefaultJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DateTimeDefaultJsonInclude includeJson({
+    _is.SelectColumnsBuilder<DateTimeDefaultTable>? select,
+  }) {
+    return _DateTimeDefaultJsonInclude._(
+      selectedColumns: select?.call(DateTimeDefault.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DateTimeDefaultJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DateTimeDefaultJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DateTimeDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DateTimeDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
+    DateTimeDefaultJsonInclude? include,
+    _is.SelectColumnsBuilder<DateTimeDefaultTable>? select,
+  }) {
+    return _DateTimeDefaultJsonIncludeList._(
+      where: where?.call(DateTimeDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DateTimeDefault.t),
+      orderByList: orderByList?.call(DateTimeDefault.t),
+      include: include,
+      selectedColumns: select?.call(DateTimeDefault.t),
     );
   }
 
@@ -227,7 +273,14 @@ class DateTimeDefaultTable extends _is.Table<int?> {
   ];
 }
 
-class DateTimeDefaultInclude extends _is.IncludeObject {
+abstract interface class DateTimeDefaultJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DateTimeDefaultJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DateTimeDefaultInclude extends _is.IncludeObject
+    implements DateTimeDefaultJsonInclude, _is.FullModelInclude {
   DateTimeDefaultInclude._();
 
   @override
@@ -237,17 +290,52 @@ class DateTimeDefaultInclude extends _is.IncludeObject {
   _is.Table<int?> get table => DateTimeDefault.t;
 }
 
-class DateTimeDefaultIncludeList extends _is.IncludeList {
+final class DateTimeDefaultIncludeList extends _is.IncludeList
+    implements DateTimeDefaultJsonIncludeList, _is.FullModelInclude {
   DateTimeDefaultIncludeList._({
-    _is.WhereExpressionBuilder<DateTimeDefaultTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(DateTimeDefault.t);
-  }
+    DateTimeDefaultInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => DateTimeDefault.t;
+}
+
+final class _DateTimeDefaultJsonInclude extends _is.IncludeObject
+    implements DateTimeDefaultJsonInclude {
+  _DateTimeDefaultJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => DateTimeDefault.t;
+}
+
+final class _DateTimeDefaultJsonIncludeList extends _is.IncludeList
+    implements DateTimeDefaultJsonIncludeList {
+  _DateTimeDefaultJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DateTimeDefaultJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -353,6 +441,129 @@ class DateTimeDefaultRepository {
     return session.db.findById<DateTimeDefault>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DateTimeDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DateTimeDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DateTimeDefault>(
+      where: where?.call(DateTimeDefault.t),
+      orderBy: orderBy?.call(DateTimeDefault.t),
+      orderByList: orderByList?.call(DateTimeDefault.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DateTimeDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DateTimeDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DateTimeDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DateTimeDefault>(
+      where: where?.call(DateTimeDefault.t),
+      orderBy: orderBy?.call(DateTimeDefault.t),
+      orderByList: orderByList?.call(DateTimeDefault.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DateTimeDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DateTimeDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DateTimeDefault>(
+      id,
+      transaction: transaction,
+      select: select?.call(DateTimeDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );
