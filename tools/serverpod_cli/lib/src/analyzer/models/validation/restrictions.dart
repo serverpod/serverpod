@@ -14,6 +14,8 @@ import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_cli/src/util/type_validators.dart';
+import 'package:serverpod_database/serverpod_database.dart'
+    show parseQualifiedTableName;
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
@@ -383,7 +385,54 @@ class Restrictions {
       ];
     }
 
-    if (!StringValidators.isValidTableName(tableName)) {
+    var (:schema, :name) = parseQualifiedTableName(tableName);
+    var model = documentDefinition;
+
+    if (schema != null) {
+      if (!StringValidators.isValidTableName(schema)) {
+        return [
+          SourceSpanSeverityException(
+            'The schema in the "table" property must be a snake_case_string.',
+            span,
+          ),
+        ];
+      }
+
+      if (schema.length > DatabaseConstants.pgsqlMaxNameLimitation) {
+        return [
+          SourceSpanSeverityException(
+            'The schema name "$schema" exceeds the '
+            '${DatabaseConstants.pgsqlMaxNameLimitation} character '
+            'limitation.',
+            span,
+          ),
+        ];
+      }
+
+      if (config.databaseDialect == DatabaseDialect.sqlite) {
+        return [
+          SourceSpanSeverityException(
+            'Schema-qualified table names are not supported with the '
+            '"${DatabaseDialect.sqlite.name}" database dialect.',
+            span,
+          ),
+        ];
+      }
+
+      if (model is ModelClassDefinition &&
+          (model.database == ModelDatabaseDefinition.client ||
+              model.database == ModelDatabaseDefinition.sync)) {
+        return [
+          SourceSpanSeverityException(
+            'Schema-qualified table names are not supported for tables with '
+            '"database: ${model.database.name}".',
+            span,
+          ),
+        ];
+      }
+    }
+
+    if (!StringValidators.isValidTableName(name)) {
       return [
         SourceSpanSeverityException(
           'The "table" property must be a snake_case_string.',
@@ -392,30 +441,35 @@ class Restrictions {
       ];
     }
 
-    if (!parsedModels.isTableNameUnique(documentDefinition, tableName)) {
+    // The parsed model carries the name with the default schema applied.
+    var qualifiedName = model is ModelClassDefinition
+        ? model.tableName ?? tableName
+        : tableName;
+
+    if (!parsedModels.isTableNameUnique(documentDefinition, qualifiedName)) {
       var otherClass = parsedModels.findByTableName(
-        tableName,
+        qualifiedName,
         ignore: documentDefinition,
       );
 
       return [
         SourceSpanSeverityException(
-          'The table name "$tableName" is already in use by the class "${otherClass?.className}".',
+          'The table name "$qualifiedName" is already in use by the class "${otherClass?.className}".',
           span,
         ),
       ];
     }
 
-    if (tableName.length > _maxTableNameLength) {
+    if (name.length > _maxTableNameLength) {
       return [
         SourceSpanSeverityException(
-          'The table name "$tableName" exceeds the $_maxTableNameLength character table name limitation.',
+          'The table name "$name" exceeds the $_maxTableNameLength character table name limitation.',
           span,
         ),
       ];
     }
 
-    var currentModel = parsedModels.findByTableName(tableName);
+    var currentModel = parsedModels.findByTableName(qualifiedName);
 
     if (currentModel is ModelClassDefinition) {
       var ancestorWithTable = _findTableClassInParentClasses(currentModel);
@@ -714,7 +768,7 @@ class Restrictions {
 
     var definition = documentDefinition;
     if (definition is ModelClassDefinition && definition.tableName != null) {
-      if (indexName == definition.tableName) {
+      if (indexName == parseQualifiedTableName(definition.tableName!).name) {
         return [
           SourceSpanSeverityException(
             'The index name "$indexName" cannot be the same as the table name. Use a unique name for the index.',
