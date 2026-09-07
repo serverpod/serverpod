@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/table_name_utils.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
@@ -147,9 +148,14 @@ class SerializableModelLibraryGenerator {
   Library _generateModelClassLibrary(
     ModelClassDefinition classDefinition,
   ) {
-    String? tableName = classDefinition.shouldGenerateTableCode(serverCode)
-        ? classDefinition.tableName
-        : null;
+    String? tableName;
+    if (classDefinition.shouldGenerateTableCode(serverCode)) {
+      // Client-side tables stay unqualified, the schema only exists on the
+      // server.
+      tableName = serverCode
+          ? classDefinition.tableName
+          : unqualifiedTableName(classDefinition.tableName!);
+    }
     var className = classDefinition.className;
     var fields = classDefinition.fieldsIncludingInherited;
     var sealedTopNode = classDefinition.sealedTopNode;
