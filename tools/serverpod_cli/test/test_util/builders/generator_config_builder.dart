@@ -23,6 +23,7 @@ class GeneratorConfigBuilder {
   bool _serializeAsJsonbByDefault;
   List<ServerpodFeature> _enabledFeatures;
   DatabaseDialect _databaseDialect;
+  String? _defaultSchema;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
 
@@ -146,6 +147,11 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withDefaultSchema(String? defaultSchema) {
+    _defaultSchema = defaultSchema;
+    return this;
+  }
+
   GeneratorConfigBuilder withEnabledExperimentalFeatures(
     List<ExperimentalFeature> features,
   ) {
@@ -175,6 +181,7 @@ class GeneratorConfigBuilder {
       serializeAsJsonbByDefault: _serializeAsJsonbByDefault,
       enabledFeatures: _enabledFeatures,
       databaseDialect: _databaseDialect,
+      defaultSchema: _defaultSchema,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
     );
