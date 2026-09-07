@@ -102,7 +102,7 @@ class SelectQueryBuilder {
     var query = '';
     if (subQueries != null) query += 'WITH ${subQueries.buildQueries()} ';
     query += 'SELECT $select';
-    query += ' FROM "${_table.tableName}"';
+    query += ' FROM ${_table.aliasedTableName}';
     if (join != null) query += ' $join';
     if (where != null) query += ' WHERE $where';
     if (groupBy != null) query += ' GROUP BY $groupBy';
@@ -548,8 +548,8 @@ class InsertQueryBuilder {
         : ' RETURNING ${buildReturningClause(_table)}';
 
     return columnNames.isEmpty
-        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict$returning'
-        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict$returning';
+        ? 'INSERT INTO ${_table.aliasedTableName} DEFAULT VALUES$onConflict$returning'
+        : 'INSERT INTO ${_table.aliasedTableName} ($columnNames) VALUES $values$onConflict$returning';
   }
 
   String _buildOnConflictClause(Iterable<Column<dynamic>> selectedColumns) {
@@ -677,7 +677,7 @@ class CountQueryBuilder {
     if (subQueries != null) query += 'WITH ${subQueries.buildQueries()} ';
     query += 'SELECT COUNT($_field)';
     if (_alias != null) query += ' AS $_alias';
-    query += ' FROM "${_table.tableName}"';
+    query += ' FROM ${_table.aliasedTableName}';
     if (join != null) query += ' $join';
     if (where != null) query += ' WHERE $where';
     if (_limit != null) query += ' LIMIT $_limit';
@@ -774,7 +774,7 @@ class DeleteQueryBuilder {
     if (subQueries != null) subQuery += 'WITH ${subQueries.buildQueries()} ';
 
     var deleteQuery = '';
-    deleteQuery += 'DELETE FROM "${_table.tableName}"';
+    deleteQuery += 'DELETE FROM ${_table.aliasedTableName}';
     if (using != null) deleteQuery += ' USING ${using.using}';
     if (where != null) deleteQuery += ' WHERE $where';
     if (using != null) deleteQuery += ' AND ${using.where}';
@@ -1430,7 +1430,7 @@ String _buildSubQueryJoinStatement({
 }
 
 String _buildJoinStatement({required TableRelation tableRelation}) {
-  return 'LEFT JOIN "${tableRelation.foreignTableName}" AS '
+  return 'LEFT JOIN ${tableRelation.foreignTable.quotedTableName} AS '
       '"${tableRelation.relationQueryAlias}" ON '
       '${tableRelation.fieldNameWithJoins} = '
       '${tableRelation.foreignFieldNameWithJoins}';
@@ -1597,7 +1597,7 @@ _UsingQuery _usingQueryFromTableRelations(List<TableRelation> tableRelations) {
   List<String> whereStatements = [];
   for (var tableRelation in tableRelations) {
     usingStatements.add(
-      '"${tableRelation.foreignTableName}" AS "${tableRelation.relationQueryAlias}"',
+      '${tableRelation.foreignTable.quotedTableName} AS "${tableRelation.relationQueryAlias}"',
     );
     whereStatements.add(
       '${tableRelation.fieldNameWithJoins} = ${tableRelation.foreignFieldNameWithJoins}',
@@ -1718,6 +1718,22 @@ extension _ColumnHelpers on Column {
   /// Returns true if the column has the specified table as base table.
   bool hasBaseTable(String table) {
     // Regex matches 'tableName_' and 'tableName.'
-    return queryAlias.startsWith(RegExp(table + r'[_\.]'));
+    return queryAlias.startsWith(RegExp(RegExp.escape(table) + r'[_\.]'));
+  }
+}
+
+/// SQL identifiers for a [Table], schema-qualified when it has a schema.
+extension TableSqlIdentifiers on Table {
+  /// `"schema"."table"`, or `"table"` for an unqualified table.
+  String get quotedTableName {
+    var schema = this.schema;
+    if (schema == null) return '"$tableName"';
+    return '"$schema"."$unqualifiedTableName"';
+  }
+
+  /// [quotedTableName] aliased to [tableName] so column references resolve.
+  String get aliasedTableName {
+    if (schema == null) return quotedTableName;
+    return '$quotedTableName AS "$tableName"';
   }
 }

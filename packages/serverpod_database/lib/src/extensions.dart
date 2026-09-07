@@ -6,13 +6,20 @@ import 'migrations/table_comparison_warning.dart';
 /// Utility methods for [DatabaseDefinition].
 extension DatabaseDefinitionUtils on DatabaseDefinition {
   /// Returns true if the database contains a table with the given [tableName].
-  bool containsTableNamed(String tableName) {
-    return (findTableNamed(tableName) != null);
+  bool containsTableNamed(String tableName, {String? schema}) {
+    return (findTableNamed(tableName, schema: schema) != null);
   }
 
   /// Finds a table by its name, or returns null if no table with the given name.
-  TableDefinition? findTableNamed(String tableName) {
-    return tables.firstWhereOrNull((table) => table.name == tableName);
+  ///
+  /// A [schema] of `public` is the unspecified default and falls back to
+  /// matching on name alone.
+  TableDefinition? findTableNamed(String tableName, {String? schema}) {
+    var candidates = tables.where((table) => table.name == tableName);
+    if (schema == null) return candidates.firstOrNull;
+
+    return candidates.firstWhereOrNull((table) => table.schema == schema) ??
+        (schema == 'public' ? candidates.firstOrNull : null);
   }
 }
 

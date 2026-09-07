@@ -64,6 +64,11 @@ class TableRelation {
     return _tableRelationEntries.last.foreignField.table.tableName;
   }
 
+  /// Foreign table to be joined.
+  Table get foreignTable {
+    return _tableRelationEntries.last.foreignField.table;
+  }
+
   /// The field name that is joined on.
   String get fieldName {
     return _tableRelationEntries.last.field.columnName;
