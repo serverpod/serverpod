@@ -328,6 +328,58 @@ void main() {
     },
   );
 
+  test(
+    'Given a model with a schema-qualified table name and a unique field '
+    'when analyzing then the auto-generated index name uses the bare table '
+    'name.',
+    () {
+      var result = analyze([
+        ModelSourceBuilder().withYaml('''
+        class: User
+        table: auth.user
+        fields:
+          email: String, unique
+        ''').build(),
+      ]);
+
+      expect(result.collector.errors, isEmpty);
+      var model = result.models.first as ModelClassDefinition;
+      expect(model.indexes.single.name, 'user__email__unique_idx');
+    },
+  );
+
+  test(
+    'Given a model with a schema-qualified table name that inherits an index '
+    'when analyzing then the inherited index is prefixed with the bare table '
+    'name.',
+    () {
+      var result = analyze([
+        ModelSourceBuilder().withFileName('base').withYaml('''
+        class: Base
+        fields:
+          indexed: int
+        indexes:
+          base_index:
+            fields: indexed
+        ''').build(),
+        ModelSourceBuilder().withFileName('user').withYaml('''
+        class: User
+        extends: Base
+        table: auth.user
+        fields:
+          name: String
+        ''').build(),
+      ]);
+
+      expect(result.collector.errors, isEmpty);
+      var model = result.models.last as ModelClassDefinition;
+      expect(
+        model.indexesIncludingInherited.map((i) => i.name),
+        ['user_base_index'],
+      );
+    },
+  );
+
   group('Given a project config with a default schema', () {
     var schemaConfig = GeneratorConfigBuilder()
         .withDefaultSchema('app')
