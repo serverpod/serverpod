@@ -31,8 +31,13 @@ class ModelParser {
         documentContents.nodes[Keyword.managedMigration]?.value;
     var manageMigration = _parseBool(migrationValue) ?? true;
 
-    var tableName = _parseTableName(documentContents);
     var database = _parseDatabase(documentContents);
+    var tableName = _parseTableName(
+      documentContents,
+      protocolSource,
+      database,
+      config,
+    );
     var serializationDataType = _parseSerializationDataType(documentContents);
 
     return _initializeFromClassFields(
@@ -297,11 +302,28 @@ class ModelParser {
     );
   }
 
-  static String? _parseTableName(YamlMap documentContents) {
+  /// Parses the table name, applying the project's default schema to
+  /// unqualified names. Modules and tables that must stay unqualified for the
+  /// client are left as written.
+  static String? _parseTableName(
+    YamlMap documentContents,
+    ModelSource protocolSource,
+    ModelDatabaseDefinition database,
+    GeneratorConfig config,
+  ) {
     var tableName = documentContents.nodes[Keyword.table]?.value;
     if (tableName is! String) return null;
 
-    return tableName;
+    var defaultSchema = config.defaultSchema;
+    if (defaultSchema == null) return tableName;
+    if (protocolSource.moduleAlias != defaultModuleAlias) return tableName;
+    if (database == ModelDatabaseDefinition.client ||
+        database == ModelDatabaseDefinition.sync) {
+      return tableName;
+    }
+    if (parseQualifiedTableName(tableName).schema != null) return tableName;
+
+    return '$defaultSchema.$tableName';
   }
 
   static ModelDatabaseDefinition _parseDatabase(YamlMap documentContents) {
