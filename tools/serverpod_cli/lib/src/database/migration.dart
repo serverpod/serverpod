@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -17,35 +18,54 @@ DatabaseMigration generateDatabaseMigration({
   var targetTables = databaseTarget.tables
       .where((table) => table.isManaged)
       .toList();
-  var deleteTables = <String>{};
 
-  // Mark tables which do not exist in the target schema anymore for deletion
+  var moves = _findMovedTables(
+    sourceTables: sourceTables,
+    targetTables: targetTables,
+    databaseSource: databaseSource,
+    databaseTarget: databaseTarget,
+  );
+
+  // Mark tables which do not exist in the target schema anymore for deletion.
+  // Preserves insertion order so dependents are dropped before their parents.
+  var deleteTables = <String, TableDefinition>{};
   for (var srcTable in sourceTables) {
-    if (!databaseTarget.containsTableNamed(srcTable.name)) {
-      deleteTables.addAll([
-        srcTable.name,
-        // For any table we delete, we also need to delete any other existing table that has and retains a foreign key pointing into this table
-        ..._findDependentTables(
-          srcTable.name,
-          sourceTables: sourceTables,
-          targetTables: targetTables,
-        ),
-      ]);
+    if (moves.movedSources.contains(srcTable.qualifiedName)) continue;
+    if (!_containsTable(databaseTarget.tables, srcTable)) {
+      // For any table we delete, we also need to delete any other existing table that has and retains a foreign key pointing into this table
+      var dependents = _findDependentTables(
+        srcTable.qualifiedName,
+        sourceTables: sourceTables,
+        targetTables: targetTables,
+      );
+      deleteTables[srcTable.qualifiedName] = srcTable;
+      for (var dependent in dependents) {
+        deleteTables[dependent] = _findTableByQualifiedName(
+          sourceTables,
+          dependent,
+        )!;
+      }
     }
   }
 
-  for (var tableName in deleteTables.toList().reversed) {
+  for (var table in deleteTables.values.toList().reversed) {
+    var qualifiedName = table.qualifiedName;
     actions.add(
       DatabaseMigrationAction(
         type: DatabaseMigrationActionType.deleteTable,
-        deleteTable: tableName,
+        deleteTable: table.name,
+        deleteTableSchema: _schemaOrNull(table.schema),
       ),
     );
     warnings.add(
       DatabaseMigrationWarning(
         type: DatabaseMigrationWarningType.tableDropped,
-        message: 'Table "$tableName" will be dropped.',
-        table: tableName,
+        message: moves.ambiguous.contains(qualifiedName)
+            ? 'Table "$qualifiedName" will be dropped. Tables named '
+                  '"${table.name}" exist in several schemas, so it cannot be '
+                  'moved with SET SCHEMA.'
+            : 'Table "$qualifiedName" will be dropped.',
+        table: qualifiedName,
         destructive: true,
         columns: [],
       ),
@@ -54,18 +74,22 @@ DatabaseMigration generateDatabaseMigration({
 
   // Find added or modified tables
   for (var dstTable in targetTables) {
-    var srcTable = databaseSource.tables.cast<TableDefinition?>().firstWhere(
-      (table) => table?.name == dstTable.name,
-      orElse: () => null,
-    );
+    var srcTable =
+        moves.movedFrom[dstTable.qualifiedName] ??
+        _findTableByQualifiedName(
+          databaseSource.tables,
+          dstTable.qualifiedName,
+        );
 
     if (srcTable == null ||
         srcTable.managed == false ||
-        deleteTables.contains(srcTable.name)) {
+        deleteTables.containsKey(srcTable.qualifiedName)) {
       // Added table
       actions.add(
         DatabaseMigrationAction(
-          type: srcTable == null || deleteTables.contains(srcTable.name)
+          type:
+              srcTable == null ||
+                  deleteTables.containsKey(srcTable.qualifiedName)
               ? DatabaseMigrationActionType.createTable
               : DatabaseMigrationActionType.createTableIfNotExists,
           createTable: dstTable,
@@ -77,13 +101,15 @@ DatabaseMigration generateDatabaseMigration({
         srcTable,
         dstTable,
         warnings,
+        newSchema: srcTable.schema != dstTable.schema ? dstTable.schema : null,
       );
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.
         actions.add(
           DatabaseMigrationAction(
             type: DatabaseMigrationActionType.deleteTable,
-            deleteTable: dstTable.name,
+            deleteTable: srcTable.name,
+            deleteTableSchema: _schemaOrNull(srcTable.schema),
           ),
         );
         actions.add(
@@ -98,7 +124,7 @@ DatabaseMigration generateDatabaseMigration({
             type: DatabaseMigrationActionType.alterTable,
             alterTable: diff.copyWith(
               warnings: warnings
-                  .where((warning) => warning.table == dstTable.name)
+                  .where((warning) => warning.table == srcTable.qualifiedName)
                   .toList(),
             ),
           ),
@@ -114,7 +140,67 @@ DatabaseMigration generateDatabaseMigration({
   );
 }
 
-/// Returns the set of table names for all tables which have any relation into the table mentioned by [tableName]
+/// A table that only changes schema is moved instead of recreated. A move
+/// requires the bare name to be absent on the other side of both tables and
+/// exactly one candidate in each direction. [movedFrom] maps the target
+/// qualified name to the source table, [movedSources] holds the source
+/// qualified names, and [ambiguous] the source names that had several
+/// candidates.
+({
+  Map<String, TableDefinition> movedFrom,
+  Set<String> movedSources,
+  Set<String> ambiguous,
+})
+_findMovedTables({
+  required List<TableDefinition> sourceTables,
+  required List<TableDefinition> targetTables,
+  required DatabaseDefinition databaseSource,
+  required DatabaseDefinition databaseTarget,
+}) {
+  var missingInTarget = sourceTables
+      .where((table) => !_containsTable(databaseTarget.tables, table))
+      .toList();
+  var missingInSource = targetTables
+      .where((table) => !_containsTable(databaseSource.tables, table))
+      .toList();
+
+  var movedFrom = <String, TableDefinition>{};
+  var ambiguous = <String>{};
+  for (var srcTable in missingInTarget) {
+    var candidates = missingInSource.where((t) => t.name == srcTable.name);
+    if (candidates.isEmpty) continue;
+
+    var sources = missingInTarget.where((t) => t.name == srcTable.name);
+    if (candidates.length == 1 && sources.length == 1) {
+      movedFrom[candidates.single.qualifiedName] = srcTable;
+    } else {
+      ambiguous.add(srcTable.qualifiedName);
+    }
+  }
+
+  return (
+    movedFrom: movedFrom,
+    movedSources: {for (var table in movedFrom.values) table.qualifiedName},
+    ambiguous: ambiguous,
+  );
+}
+
+bool _containsTable(Iterable<TableDefinition> tables, TableDefinition table) {
+  return _findTableByQualifiedName(tables, table.qualifiedName) != null;
+}
+
+TableDefinition? _findTableByQualifiedName(
+  Iterable<TableDefinition> tables,
+  String qualifiedName,
+) {
+  return tables.firstWhereOrNull((t) => t.qualifiedName == qualifiedName);
+}
+
+/// The schema as stored on delete actions, where null means the default.
+String? _schemaOrNull(String schema) =>
+    schema == DatabaseConstants.defaultSchema ? null : schema;
+
+/// Returns the set of qualified table names for all tables which have any relation into the table mentioned by [tableName]
 Set<String> _findDependentTables(
   String tableName, {
   required List<TableDefinition> sourceTables,
@@ -127,12 +213,12 @@ Set<String> _findDependentTables(
   bool hasCurrentAndFutureRelationToTable(TableDefinition sourceTable) {
     return sourceTable.foreignKeys.any(
       (foreignKey) =>
-          foreignKey.referenceTable == tableName &&
+          foreignKey.qualifiedReferenceTable == tableName &&
           // Check whether the reference will also be upheld in the target table.
           // otherwise the target table will already be modified and does not need to have be fully dropped
           targetTables.any(
             (targetTable) =>
-                targetTable.name == sourceTable.name &&
+                targetTable.qualifiedName == sourceTable.qualifiedName &&
                 targetTable.foreignKeys.any(
                   (targetForeignKey) =>
                       targetForeignKey.constraintName ==
@@ -152,15 +238,15 @@ Set<String> _findDependentTables(
   }
 
   for (var sourceTable in sourceTables) {
-    if (dependentTables.contains(sourceTable.name)) {
+    if (dependentTables.contains(sourceTable.qualifiedName)) {
       continue;
     }
 
     if (hasCurrentAndFutureRelationToTable(sourceTable)) {
-      dependentTables.add(sourceTable.name);
+      dependentTables.add(sourceTable.qualifiedName);
 
       _findDependentTables(
-        sourceTable.name,
+        sourceTable.qualifiedName,
         sourceTables: sourceTables,
         targetTables: targetTables,
         dependentTables: dependentTables,
@@ -183,8 +269,9 @@ bool _sameColumns(List<String> columns1, List<String> columns2) {
 TableMigration? generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
-  List<DatabaseMigrationWarning> warnings,
-) {
+  List<DatabaseMigrationWarning> warnings, {
+  String? newSchema,
+}) {
   var dstByFieldId = <String, ColumnDefinition>{
     for (var c in dstTable.columns) c.effectiveFieldName: c,
   };
@@ -219,10 +306,10 @@ TableMigration? generateTableMigration(
       warnings.add(
         DatabaseMigrationWarning(
           type: DatabaseMigrationWarningType.columnDropped,
-          table: srcTable.name,
+          table: srcTable.qualifiedName,
           columns: [srcColumn.name],
           message:
-              'Column "${srcColumn.name}" of table "${srcTable.name}" '
+              'Column "${srcColumn.name}" of table "${srcTable.qualifiedName}" '
               'will be dropped.',
           destructive: true,
         ),
@@ -280,10 +367,10 @@ TableMigration? generateTableMigration(
           warnings.add(
             DatabaseMigrationWarning(
               type: DatabaseMigrationWarningType.notNullAdded,
-              table: srcTable.name,
+              table: srcTable.qualifiedName,
               columns: [dstColumn.name],
               message:
-                  'Column "${dstColumn.name}" of table "${srcTable.name}" is '
+                  'Column "${dstColumn.name}" of table "${srcTable.qualifiedName}" is '
                   'modified to be not null. If there are existing rows with '
                   'null values, this migration will fail.',
               destructive: false,
@@ -297,10 +384,10 @@ TableMigration? generateTableMigration(
         warnings.add(
           DatabaseMigrationWarning(
             type: DatabaseMigrationWarningType.columnDropped,
-            table: srcTable.name,
+            table: srcTable.qualifiedName,
             columns: [srcColumn.name],
             message:
-                'Column "${srcColumn.name}" of table "${srcTable.name}" is '
+                'Column "${srcColumn.name}" of table "${srcTable.qualifiedName}" is '
                 'modified in a way that it must be deleted and recreated.',
             destructive: true,
           ),
@@ -342,11 +429,11 @@ TableMigration? generateTableMigration(
       warnings.add(
         DatabaseMigrationWarning(
           type: DatabaseMigrationWarningType.uniqueIndexCreated,
-          table: srcTable.name,
+          table: srcTable.qualifiedName,
           columns: index.elements.map((e) => e.definition).toList(),
           message:
               'Unique index "${index.indexName}" is added to table '
-              '"${srcTable.name}". If there are existing rows with duplicate '
+              '"${srcTable.qualifiedName}". If there are existing rows with duplicate '
               'values, this migration will fail.',
           destructive: false,
         ),
@@ -389,10 +476,10 @@ TableMigration? generateTableMigration(
       warnings.add(
         DatabaseMigrationWarning(
           type: DatabaseMigrationWarningType.tableDropped,
-          table: srcTable.name,
+          table: srcTable.qualifiedName,
           columns: [column.name],
           message:
-              'One or more columns are added to table "${srcTable.name}" which '
+              'One or more columns are added to table "${srcTable.qualifiedName}" which '
               'cannot be added in a table migration. The complete table will '
               'be deleted and recreated.',
           destructive: true,
@@ -405,6 +492,7 @@ TableMigration? generateTableMigration(
   return TableMigration(
     name: srcTable.name,
     schema: srcTable.schema,
+    newSchema: newSchema,
     deleteColumns: deleteColumns,
     addColumns: addColumns,
     modifyColumns: modifyColumns,
