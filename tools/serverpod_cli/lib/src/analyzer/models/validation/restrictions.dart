@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/model_relation_utils.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/table_name_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
@@ -1362,7 +1363,9 @@ class Restrictions {
       ];
     }
 
-    if (!StringValidators.isValidTableIndexName(content)) {
+    var (:schema, :name) = parseQualifiedTableName(content);
+    if (!StringValidators.isValidTableIndexName(name) ||
+        (schema != null && !StringValidators.isValidTableName(schema))) {
       return [
         SourceSpanSeverityException(
           'The parent must reference a valid table name (e.g. parent=table_name). "$content" is not a valid parent name.',
@@ -1371,10 +1374,29 @@ class Restrictions {
       ];
     }
 
-    if (!parsedModels.tableNames.containsKey(content)) {
+    var matches = matchParentTable(
+      content,
+      defaultSchema: definition?.type.moduleAlias == defaultModuleAlias
+          ? config.defaultSchema
+          : null,
+      tableNames: parsedModels.tableNames.keys,
+    );
+
+    if (matches.isEmpty) {
       return [
         SourceSpanSeverityException(
           'The parent table "$content" was not found in any model.',
+          span,
+        ),
+      ];
+    }
+
+    if (matches.length > 1) {
+      return [
+        SourceSpanSeverityException(
+          'The parent table "$content" is ambiguous, it matches both '
+          '"${matches.first}" and "${matches.last}". Qualify the name with '
+          'its schema.',
           span,
         ),
       ];
