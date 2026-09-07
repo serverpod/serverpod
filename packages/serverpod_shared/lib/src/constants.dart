@@ -9,6 +9,9 @@ abstract class DatabaseConstants {
   /// The maximum length of a identifiers and key words in Postgres.
   /// Source: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   static const pgsqlMaxNameLimitation = 63;
+
+  /// The schema unqualified table names resolve to in Postgres.
+  static const defaultSchema = 'public';
 }
 
 /// Migration constants used by the serverpod framework.
