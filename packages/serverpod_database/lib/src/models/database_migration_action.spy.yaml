@@ -2,5 +2,7 @@ class: DatabaseMigrationAction
 fields:
   type: DatabaseMigrationActionType
   deleteTable: String?
+  ### The schema of [deleteTable]. Null means the default schema.
+  deleteTableSchema: String?
   alterTable: TableMigration?
   createTable: TableDefinition?
