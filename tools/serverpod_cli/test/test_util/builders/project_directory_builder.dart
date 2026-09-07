@@ -5,6 +5,7 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 class ProjectDirectoryBuilder {
   String _projectName = 'my_project';
   String _generatorYaml = 'type: server';
+  Map<String, String> _configFiles = {};
   List<d.Descriptor> _modelDirContents = [];
   final Map<String, List<d.Descriptor>> _modules = {};
 
@@ -15,6 +16,13 @@ class ProjectDirectoryBuilder {
 
   ProjectDirectoryBuilder withGeneratorYaml(String generatorYaml) {
     _generatorYaml = generatorYaml;
+    return this;
+  }
+
+  /// Additional files in the server package's config directory, such as
+  /// run-mode configs, keyed by file name.
+  ProjectDirectoryBuilder withConfigFiles(Map<String, String> configFiles) {
+    _configFiles = configFiles;
     return this;
   }
 
@@ -91,6 +99,7 @@ $_packageConfigEntries
       ]),
       d.dir('config', [
         d.file('generator.yaml', _generatorYaml),
+        for (var entry in _configFiles.entries) d.file(entry.key, entry.value),
       ]),
     ]);
 
