@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:dart_mcp/stdio.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/config/config.dart'
     show ServerpodProjectNotFoundException;
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
