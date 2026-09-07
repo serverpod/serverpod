@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_cli/src/util/yaml_util.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
@@ -87,6 +88,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.isDatabaseEnabled,
     required this.databaseDialect,
+    this.defaultSchema,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
@@ -323,6 +325,10 @@ class GeneratorConfig implements ModelLoadConfig {
   /// The dialect of the database, if enabled. Default is [DatabaseDialect.postgres].
   final DatabaseDialect databaseDialect;
 
+  /// The schema unqualified server table names are placed in, or null for the
+  /// database default. Only available in server projects.
+  final String? defaultSchema;
+
   final List<ExperimentalFeature> experimentalFeatures;
 
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
@@ -537,6 +543,8 @@ class GeneratorConfig implements ModelLoadConfig {
       databaseConfigsByFile,
     );
 
+    var defaultSchema = _loadDefaultSchema(generatorConfig, type);
+
     var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
       file,
       generatorConfig,
@@ -557,8 +565,50 @@ class GeneratorConfig implements ModelLoadConfig {
       extraClasses: extraClasses,
       isDatabaseEnabled: isDatabaseEnabled,
       databaseDialect: databaseDialect,
+      defaultSchema: defaultSchema,
       experimentalFeatures: enabledExperimentalFeatures,
     );
+  }
+
+  static String? _loadDefaultSchema(YamlMap generatorConfig, PackageType type) {
+    var databaseNode = generatorConfig.nodes['database'];
+    if (databaseNode == null) return null;
+
+    if (databaseNode is! YamlMap) {
+      throw SourceSpanFormatException(
+        'The "database" property must be a map.',
+        databaseNode.span,
+      );
+    }
+
+    var schemaNode = databaseNode.nodes['default_schema'];
+    if (schemaNode == null) return null;
+
+    if (type != PackageType.server) {
+      throw SourceSpanFormatException(
+        'The "default_schema" property is only allowed in server projects. '
+        'Modules must qualify their table names explicitly.',
+        schemaNode.span,
+      );
+    }
+
+    var schema = schemaNode.value;
+    if (schema is! String || !StringValidators.isValidTableName(schema)) {
+      throw SourceSpanFormatException(
+        'The "default_schema" property must be a snake_case_string.',
+        schemaNode.span,
+      );
+    }
+
+    if (schema == DatabaseConstants.defaultSchema) {
+      throw SourceSpanFormatException(
+        'The "default_schema" property cannot be "${DatabaseConstants.defaultSchema}", '
+        'which is already the default when no schema is set.',
+        schemaNode.span,
+      );
+    }
+
+    return schema;
   }
 
   static bool _loadSerializeAsJsonbByDefault(
