@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/table_name_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
@@ -21,9 +22,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           classDefinition.shouldGenerateTableCode(serverCode))
         TableDefinition(
           module: moduleName,
-          name: classDefinition.tableName!,
+          name: unqualifiedTableName(classDefinition.tableName!),
           dartName: classDefinition.className,
-          schema: 'public',
+          schema: _schemaOf(classDefinition.tableName!, serverCode),
           columns: [
             for (var column in classDefinition.fieldsIncludingInherited)
               if (column.shouldPersist)
@@ -43,7 +44,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   vectorDimension: column.type.vectorDimension,
                 ),
           ],
-          foreignKeys: _createForeignKeys(classDefinition),
+          foreignKeys: _createForeignKeys(classDefinition, serverCode),
           indexes: [
             for (var index in classDefinition.indexesIncludingInherited)
               IndexDefinition(
@@ -106,12 +107,21 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   );
 }
 
+/// The schema a table lives in. Client-side tables are always unqualified.
+String _schemaOf(String tableName, bool serverCode) {
+  if (!serverCode) return DatabaseConstants.defaultSchema;
+  return parseQualifiedTableName(tableName).schema ??
+      DatabaseConstants.defaultSchema;
+}
+
 List<ForeignKeyDefinition> _createForeignKeys(
   ModelClassDefinition classDefinition,
+  bool serverCode,
 ) {
   var fields = classDefinition.fields
       .where((field) => field.relation is ForeignRelationDefinition)
       .toList();
+  var tableName = unqualifiedTableName(classDefinition.tableName!);
 
   List<ForeignKeyDefinition> foreignKeys = [];
   for (var i = 0; i < fields.length; i++) {
@@ -119,10 +129,10 @@ List<ForeignKeyDefinition> _createForeignKeys(
     var relation = field.relation as ForeignRelationDefinition;
     foreignKeys.add(
       ForeignKeyDefinition(
-        constraintName: '${classDefinition.tableName!}_fk_$i',
+        constraintName: '${tableName}_fk_$i',
         columns: [field.columnName],
-        referenceTable: relation.parentTable,
-        referenceTableSchema: 'public',
+        referenceTable: unqualifiedTableName(relation.parentTable),
+        referenceTableSchema: _schemaOf(relation.parentTable, serverCode),
         referenceColumns: ['id'],
         onDelete: _onDeleteAction(classDefinition, relation.onDelete),
         onUpdate: relation.onUpdate,
@@ -205,6 +215,9 @@ dynamic _parseColumnDefault(SerializableModelFieldDefinition column) {
 }
 
 void _sortTableDefinitions(List<TableDefinition> tables) {
-  // Sort by name to make sure that we get consistent output
-  tables.sort((a, b) => a.name.compareTo(b.name));
+  // Sort by schema, then name to make sure that we get consistent output
+  tables.sort((a, b) {
+    var bySchema = a.schema.compareTo(b.schema);
+    return bySchema != 0 ? bySchema : a.name.compareTo(b.name);
+  });
 }
