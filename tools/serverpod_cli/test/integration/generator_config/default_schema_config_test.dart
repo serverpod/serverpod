@@ -164,6 +164,43 @@ database:
     );
   });
 
+  group('Given a server generator.yaml with a default schema and a sqlite '
+      'run-mode config', () {
+    setUpAll(() async {
+      await ProjectDirectoryBuilder()
+          .withGeneratorYaml('''
+type: server
+database:
+  default_schema: app
+''')
+          .withConfigFiles({
+            'development.yaml': '''
+database:
+  filePath: app.db
+''',
+          })
+          .build()
+          .create();
+    });
+
+    test(
+      'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
+      () async {
+        await expectLater(
+          loadConfig(),
+          throwsA(
+            isA<SourceSpanFormatException>().having(
+              (e) => e.message,
+              'message',
+              'The "default_schema" property is not supported with the '
+                  '"sqlite" database dialect.',
+            ),
+          ),
+        );
+      },
+    );
+  });
+
   group('Given a generator.yaml with the public default schema', () {
     setUpAll(() async {
       await ProjectDirectoryBuilder()
