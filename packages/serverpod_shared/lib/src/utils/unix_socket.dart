@@ -68,19 +68,27 @@ int maxUnixSocketPathBytes() {
   return 108;
 }
 
+/// Whether [path] (after shortening) fits within the platform's
+/// `sockaddr_un.sun_path`.
+bool unixSocketPathFits(String path) =>
+    _unixSocketPathBytes(path) <= maxUnixSocketPathBytes();
+
 /// Throws a [SocketException] if [path] (after shortening) does not fit within
 /// the platform's `sockaddr_un.sun_path`.
 void requireUnixSocketPathFits(String path) {
-  final shortened = shortestPath(path);
-  final bytes = utf8.encode(shortened).length + 1; // extra for NUL byte
-  final limit = maxUnixSocketPathBytes();
-  if (bytes <= limit) return;
+  if (unixSocketPathFits(path)) return;
   throw SocketException(
     'Unix socket path is too long for this platform '
-    '($bytes bytes; max $limit on ${Platform.operatingSystem}). '
-    'Path: $shortened',
+    '(${_unixSocketPathBytes(path)} bytes; max ${maxUnixSocketPathBytes()} '
+    'on ${Platform.operatingSystem}). '
+    'Path: ${shortestPath(path)}',
   );
 }
+
+/// The bytes [path] occupies in `sockaddr_un.sun_path` after shortening,
+/// terminating NUL included.
+int _unixSocketPathBytes(String path) =>
+    utf8.encode(shortestPath(path)).length + 1;
 
 /// Binds a [ServerSocket] to a Unix domain socket at [path].
 ///

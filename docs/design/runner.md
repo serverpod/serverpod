@@ -58,21 +58,23 @@ first.
 
 ## Overview
 
-Three commands join `start`, which keeps its name and meaning but becomes
-idempotent.
+A `runner` command group joins `start`, which keeps its name and meaning but
+becomes idempotent.
 
 ```shell
-serverpod start   # Ensure the runner is up, then attach a UI
-serverpod attach  # Attach to an already-running runner
-serverpod stop    # Shut the runner down
-serverpod status  # Print the runner's state and addresses
+serverpod start          # Ensure the runner is up, then attach a UI
+serverpod runner start   # Ensure the runner is up, then return
+serverpod runner attach  # Attach to an already-running runner
+serverpod runner stop    # Shut the runner down
+serverpod runner status  # Print the runner's state and addresses
+serverpod runner serve   # The runner itself; hidden, spawned by start
 ```
 
 `serverpod start` now spawns a runner if none is running (for the server package),
 and otherwise goes straight to the attach step. The stack is up when the command
 returns zero.
 
-The runner runs detached in a session of its own. It records its sockets,
+The runner runs detached in a session of its own. It records its project id,
 addresses, and effective configuration in `.dart_tool/serverpod/runner.json`,
 holds an exclusive lock on `.dart_tool/serverpod/runner.lock`, and writes its
 output to `.dart_tool/serverpod/runner.log`. Clients find it through the
@@ -106,31 +108,36 @@ not build, so no server runs - returns non-zero and says the runner is still
 there to recover from.
 
 `--tui` / `--no-tui` keeps its current meaning and selects the renderer. The
-terminal UI is used when `--tui` holds and `stdout.hasTerminal`, and a
-plain-text log stream in the foreground otherwise. `serverpod attach` takes the
-same pair.
+terminal UI is used when `--tui` holds and the terminal supports it, which is
+`stdout.hasTerminal` and a stdin whose modes can be set, and a plain-text log
+stream in the foreground otherwise. `serverpod runner attach` takes the same
+pair.
 
 | Invocation | Result |
 |------------|--------|
 | `serverpod start` | Runner up, terminal UI if a pty is available |
 | `serverpod start --no-tui` | Runner up, plain log stream in the foreground |
 | `serverpod start --no-attach` | Runner up, address printed, command returns |
-| `serverpod attach` | Terminal UI if a pty is available |
-| `serverpod attach --no-tui` | Plain log stream in the foreground |
+| `serverpod runner start` | Runner up, address printed, command returns |
+| `serverpod runner attach` | Terminal UI if a pty is available |
+| `serverpod runner attach --no-tui` | Plain log stream in the foreground |
 
 `--no-tui` remains what CI, piped output, and `docker logs`-style workflows use.
 Together with `--no-attach` it is ignored, since nothing renders.
 
 ### Lifetime
 
-Detaching a UI does not stop the runner, whoever started it. `serverpod stop`
-or `Shift+Q` in the UI stops the stack, next to the `Q` that only detaches.
+Detaching a UI does not stop the runner, whoever started it. `serverpod runner
+stop` or `Shift+Q` in the UI stops the stack, next to the `Q` that only
+detaches.
 
 The runner stopping ends the session for every attached UI. It announces the
 stop with the exit code it is leaving with, and a UI leaves with that code,
 printing the tail of the log once the alternate screen is gone. A connection
-that drops without the announcement is a crash or a kill, and the UI keeps
-reconnecting, so a runner restarted from another terminal is picked back up.
+that drops without the announcement is a crash or a kill. The UI reconnects for
+ten seconds, which picks a runner that was restarted at once back up, and then
+leaves with exit code 1, since nothing will announce a code. The log stream
+does the same.
 
 > [!NOTE]
 > The rejected alternative is to shut down on detach when the detaching invocation
@@ -145,10 +152,10 @@ same key then stops the server or does not, depending on how the session began.
 |----------|-----------|-------------|----------|
 | IDE | TCP | `vm-service-info.json` | VM service |
 | Agent | Unix socket | `serverpod mcp-server` | MCP over JSON-RPC 2.0 |
-| Human / UI | Unix socket | `serverpod attach` | Runner protocol (below) |
+| Human / UI | Unix socket | `serverpod runner attach` | Runner protocol (below) |
 | Pod clients | TCP | runner manifest | HTTP |
 
-`serverpod attach` follows `serverpod mcp-server`. It resolves the server
+`serverpod runner attach` follows `serverpod mcp-server`. It resolves the server
 directory, connects to a socket, renders what arrives, reconnects when the
 runner restarts, and holds no orchestration logic.
 
@@ -169,13 +176,9 @@ it.
   "cliVersion": "4.0.0",
   "pid": 48213,
   "stage": "running",
-  "sockets": {
-    "tui": ".dart_tool/serverpod/tui.sock",
-    "mcp": ".dart_tool/serverpod/mcp.sock"
-  },
+  "projectId": "2f1c6b3e-8d0a-5c4b-9e7f-0a1b2c3d4e5f",
   "vmService": {
-    "proxy": "http://127.0.0.1:51234/abc=/",
-    "pod": "http://127.0.0.1:51235/def=/"
+    "proxy": "http://127.0.0.1:51234/abc=/"
   },
   "servers": {
     "api": "http://localhost:8080",
@@ -199,12 +202,17 @@ The manifest is read by
 - pod clients, to find the addresses
 
 A crashed runner leaves the file behind, so a client decides liveness by
-connecting to the socket and replaces a manifest whose socket refuses the
-connection.
-`_detectExistingInstance` in `start.dart` already runs that probe with
-`connectUnixSocket` before any bind, documented in
-[`mcp_server.md`](mcp_server.md) under "One runner per project". It moves to the
-manifest resolution path.
+connecting to the sockets. A manifest whose sockets do not answer names a
+runner that is gone, or one between closing its sockets and releasing its
+lock, or one too busy to answer, and the lock tells the cases apart:
+`resolveRunner` reports whether the named process still holds it. `start`
+replaces a manifest whose lock is free and refuses while it is held, `stop`
+waits out a stopping runner and signals one that holds the lock without
+answering, and the registry prunes an entry only once its lock is free.
+`_checkExistingServer` in `start.dart` keeps its probe of the pod through
+`vm-service-info.json`, which covers a pod started by hand. `start` runs it
+before spawning, so the answer lands on the terminal, and the runner runs it
+again for itself.
 
 New here is an exclusive lock, taken on `.dart_tool/serverpod/runner.lock` in
 the server package. Probing is a check followed by a use. Two runners starting
@@ -225,16 +233,28 @@ client can meet an old runner. A client refuses to attach when `protocolVersion`
 differs and prints the stop-and-restart instruction. A differing `cliVersion` at
 equal `protocolVersion` is a warning.
 
-Socket paths stay in `.dart_tool/`. `bindUnixSocket` and `connectUnixSocket`
-enforce the `sockaddr_un.sun_path` limit through `requireUnixSocketPathFits`,
-and `shortestPath` picks the shorter of the relative and absolute forms. From
-inside the project the relative form is about 30 bytes, under the 104-byte macOS
-limit even in a nested worktree. A consumer whose working directory is far from
-the project gets no benefit from the relative form, and a nested worktree can
-push the absolute path past the limit. That applies to the MCP bridge, which the
-agent client launches with an arbitrary cwd and a `--server-dir` argument. Such
-consumers resolve the path with `shortestPathRelativeTo` against `serverDir`, as
-`serverpod_embedded_postgres` does for PostgreSQL's socket directory.
+The sockets are `tui.sock` and `mcp.sock` beside the manifest, and the
+manifest names no paths: a client derives them from where it found the file.
+`bindUnixSocket` and `connectUnixSocket` enforce the `sockaddr_un.sun_path`
+limit through `requireUnixSocketPathFits`, and `shortestPath` picks the shorter
+of the relative and absolute forms. The runner is spawned with the server
+package as its working directory, so it binds by the relative form, about 30
+bytes, under the 104-byte macOS limit even in a nested worktree. A client
+whose working directory is far from the project gets no benefit from the
+relative form, and a nested worktree can push the absolute path past the
+limit.
+
+The per-user registry covers that case as well as discovery from outside the
+package. Every runner registers itself under `~/.serverpod/runners/` when it
+publishes, as a directory link named by the `projectId`, a UUID v5 of the
+canonical server package path, pointing at the package's
+`.dart_tool/serverpod`. `SERVERPOD_RUNNER_REGISTRY_DIR` overrides the
+location. A client tries the socket beside the manifest first and the one
+through the link second, taking the first that fits the limit. Reading the
+registry resolves each entry through `resolveRunner` and prunes the ones whose
+runner is gone. Creating a link on Windows needs Developer Mode or elevation,
+the same requirement Flutter's tooling has, and a runner that cannot register
+runs without an entry.
 
 ### Runner API
 
@@ -314,7 +334,8 @@ abstract interface class RunnerApi {
     bool force,
     String? targetVersion,
   });
-  Future<MigrationResult> applyMigrations();
+  /// Reports its outcome to the log.
+  Future<void> applyMigrations();
 
   /// The configured Flutter apps, and whether launching one can do anything,
   /// which it cannot outside development.
@@ -326,18 +347,12 @@ abstract interface class RunnerApi {
 
   /// Forwards to `FlutterAppManager`, which is already id-keyed. Tab indices
   /// belong to the UI, not to the runner.
-  Future<void> launchFlutterApp(String appId);
+  Future<bool> launchFlutterApp(String appId);
   Future<void> stopFlutterApp(String appId);
   Future<void> restartFlutterApp(String appId);
 
   /// Relaunches every running app, or launches the first configured one.
   Future<void> restartFlutterApps();
-
-  /// Addresses and process state, as written to `runner.json`. The stream
-  /// replaces the ad-hoc `Stream<void>? vmServiceUriChanges` callback, since
-  /// the vm-service URI is not the only address that can change.
-  RunnerManifest get manifest;
-  Stream<RunnerManifest> get manifestChanges;
 }
 
 /// What only callers inside the runner process can use.
@@ -353,6 +368,9 @@ abstract interface class InProcessRunnerApi implements RunnerApi {
 Every command that needs the stack throws `RunnerStartingException` until the
 runner has one, which the sockets report as "still starting". `stop` is the
 exception, since it has to work on a start that is going nowhere.
+
+The manifest is owned by `RunnerManifestPublisher`, and a change to it reaches
+clients as a `ManifestChangedEvent` on [events].
 
 `MigrationResult` is `CreateMigrationMcpResult` renamed and moved out of
 `mcp_server.dart`, where it landed because MCP needed it first.
@@ -385,7 +403,9 @@ published in its own manifest. Candidate runners come from the per-user
 registry every runner registers itself in when it publishes, so a checkout
 anywhere on the machine counts, whether or not it sits in a repository. A live
 runner is only credited with the ports it claims. One bound elsewhere is not a
-reason to move aside. A port held by anything else is an error.
+reason to move aside. A port held by anything else is an error, unless a live
+runner has published no addresses yet: it could hold any of them, so the stack
+moves aside rather than fail on a race with that runner's startup.
 
 Two consequences elsewhere.
 
@@ -397,7 +417,7 @@ Two consequences elsewhere.
   stays: a deployment behind a proxy advertises a port it does not bind.
 - Flutter apps the runner launches receive the resolved URL through
   `--dart-define`. Apps started by hand, browser tabs, and `curl` read it from
-  the manifest, which `serverpod status` prints.
+  the manifest, which `serverpod runner status` prints.
 
 ### Attach protocol
 
@@ -458,15 +478,17 @@ that the operating system delivers SIGINT to parent and child alike, so a runner
 spawned in that process group would still die on Ctrl+C in the attached
 terminal.
 
-`start` therefore spawns the runner detached, in a session of its own, with
-standard output and error redirected to `.dart_tool/serverpod/runner.log`. The
-in-memory ring buffer is bounded and cannot record a run nobody watched. The
-runner caps and rotates the file, since it can stay up for days.
+`start` therefore spawns the runner detached, in a session of its own, and the
+runner writes its log to `.dart_tool/serverpod/runner.log`. The in-memory ring
+buffer is bounded and cannot record a run nobody watched. The runner caps and
+rotates the file, since it can stay up for days. The runner is spawned with the
+global options `start` ran with, so it generates with the same experimental
+features and logs at the same level.
 
 - In the runner, SIGINT and SIGTERM trigger a graceful shutdown, as the headless
   path does today.
 - In an attached client, SIGINT detaches and cannot reach the pod.
-- Ordinary shutdown goes over the protocol, from `serverpod stop`.
+- Ordinary shutdown goes over the protocol, from `serverpod runner stop`.
 
 ### Flutter apps
 
@@ -500,9 +522,9 @@ The manifest records the runner's effective configuration. On disagreement,
 running instance. Attaching anyway with a warning would leave a caller that
 reads only the exit status believing it got what it asked for.
 
-The check covers `--watch`, `--docker`, and the server arguments after `--`,
-which the runner cannot change after startup. Options describing the client
-rather than the stack, `--attach` and `--tui`, are excluded.
+The check covers `--watch`, `--flutter`, `--docker`, and the server arguments
+after `--`, which the runner cannot change after startup. Options describing
+the client rather than the stack, `--attach` and `--tui`, are excluded.
 
 ### Why the split is useful beyond multi-agent workflows
 
@@ -526,15 +548,17 @@ The split also makes the UI testable without a pty.
 
 - `StartCommand` loses the terminal UI and gains idempotency, manifest writing,
   the directory lock, and detached spawning.
-- New `AttachCommand`, `StopCommand`, and `StatusCommand`.
+- New `RunnerCommand` group with `RunnerStartCommand`, `AttachCommand`,
+  `StopCommand`, `StatusCommand`, and the hidden `RunnerServeCommand`.
 - New `--attach` / `--no-attach` flag on `StartCommand`. `--tui` / `--no-tui`
   keeps its current meaning and is accepted by `AttachCommand` too.
 - The callbacks passed to `McpSocketServer.connect(...)` become
   `RunnerApi`, shared by both socket servers, which drop their one-client
   restriction, plus `InProcessRunnerApi` for what only the MCP socket, inside
   the runner, can use.
-- `_detectExistingInstance` moves to the manifest resolution path and is joined
-  by an exclusive lock on `.dart_tool/serverpod/runner.lock`.
+- `resolveRunner` decides liveness from the manifest, the sockets and the
+  exclusive lock on `.dart_tool/serverpod/runner.lock`.
+- `RunnerRegistry` links every running runner under `~/.serverpod/runners/`.
 - `StartLogHistory` gains snapshot serialization.
 - A new socket server for attach, and the client that renders it.
 

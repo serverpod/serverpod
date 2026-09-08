@@ -384,10 +384,7 @@ void main() {
         );
         addTearDown(occupied.close);
         final sibling = await _prepareSibling(root.path, 'wt2', 'my_server');
-        await _writeManifest(
-          sibling,
-          p.join(serverpodToolDirPath(sibling), 'tui.sock'),
-        );
+        await _writeManifest(sibling);
         await registry.register(sibling);
         await holdLockFromAnotherProcess(sibling);
 
@@ -559,7 +556,7 @@ Future<ServerSocket> _startSiblingRunner(
   final socket = await bindUnixSocket(socketPath);
   socket.listen((client) => client.destroy());
 
-  await _writeManifest(dir, socketPath, apiPort: apiPort);
+  await _writeManifest(dir, apiPort: apiPort, protocolVersion: protocolVersion);
   await registry.register(dir);
   return socket;
 }
@@ -573,7 +570,7 @@ Future<void> _writeDeadSiblingManifest(
   String serverPackage,
 ) async {
   final dir = await _prepareSibling(root, worktree, serverPackage);
-  await _writeManifest(dir, p.join(serverpodToolDirPath(dir), 'tui.sock'));
+  await _writeManifest(dir);
   await registry.register(dir);
 }
 
@@ -588,12 +585,16 @@ Future<String> _prepareSibling(
   return dir;
 }
 
-Future<void> _writeManifest(String dir, String socketPath, {int? apiPort}) =>
-    RunnerManifest(
-      pid: 4242,
-      sockets: RunnerSockets(tui: socketPath, mcp: ''),
-      servers: apiPort == null
-          ? null
-          : ServerpodAddresses(api: 'http://localhost:$apiPort'),
-      config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
-    ).writeTo(dir);
+Future<void> _writeManifest(
+  String dir, {
+  int? apiPort,
+  int? protocolVersion,
+}) => RunnerManifest(
+  pid: 4242,
+  protocolVersion: protocolVersion ?? RunnerManifest.currentProtocolVersion,
+  projectId: RunnerRegistry.idFor(dir),
+  servers: apiPort == null
+      ? null
+      : ServerpodAddresses(api: 'http://localhost:$apiPort'),
+  config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
+).writeTo(dir);

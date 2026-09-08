@@ -10,8 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/analytics/session_metrics.dart';
-import 'package:serverpod_cli/src/commands/attach.dart'
-    show attachTo, requireAttachSocket;
+import 'package:serverpod_cli/src/commands/attach.dart' show attachTo;
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
@@ -45,6 +44,7 @@ import 'package:serverpod_cli/src/runner/runner_lock.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
+import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_cli/src/runner/runner_socket_server.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
@@ -190,9 +190,12 @@ class StartCommand extends ServerpodCommand<StartOption> {
       return;
     }
 
-    final socketPath = requireAttachSocket(manifest);
     final exitCode = await attachTo(
-      socketPath,
+      runnerSocketPath(
+        serverDir,
+        serverpodTuiSocketName,
+        projectId: manifest.projectId,
+      ),
       useTui: useTui,
       waitForRunner: const Duration(seconds: 5),
       onUnreachable: (e) => explainUnreachableRunner(serverDir, manifest, e),
@@ -1013,7 +1016,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     manifest: RunnerManifest(
       pid: pid,
       stage: RunnerStage.starting,
-      sockets: RunnerSockets(tui: attachSocket.socketPath, mcp: ''),
+      projectId: RunnerRegistry.idFor(serverDir),
       config: RunnerConfig(
         watch: watch,
         flutter: launchFlutterApp,
@@ -1524,10 +1527,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     await manifestPublisher.replace(
       manifestPublisher.manifest.copyWith(
         stage: runnerApi.stage,
-        sockets: RunnerSockets(
-          tui: attachSocket.socketPath,
-          mcp: mcpSocket?.socketPath ?? '',
-        ),
         vmService: RunnerVmServiceUris(proxy: proxy?.httpUri.toString()),
         docker: startDocker
             ? RunnerDocker(

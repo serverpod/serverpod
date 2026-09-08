@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
@@ -55,18 +55,18 @@ void main() {
 
     test(
       'when a server directory is registered, '
-      'then its entry names the canonical directory and nothing else',
+      'then its entry links its id to the canonical tool directory',
       () async {
         final serverDir = await _serverDir(tempDir, 'one');
 
         await registry.register('$serverDir/./');
 
-        final entries = await registry.dir.list().toList();
+        final entries = await registry.dir.list(followLinks: false).toList();
         expect(entries, hasLength(1));
-        final decoded = jsonDecode(
-          await (entries.single as File).readAsString(),
-        );
-        expect(decoded, {'serverDir': serverDir});
+        final link = entries.single;
+        expect(link, isA<Link>());
+        expect(link.path, registry.toolDirFor(RunnerRegistry.idFor(serverDir)));
+        expect(await (link as Link).target(), serverpodToolDirPath(serverDir));
       },
     );
 
@@ -99,7 +99,8 @@ void main() {
     setUp(() async {
       live = await _serverDir(tempDir, 'live');
       dead = await _serverDir(tempDir, 'dead');
-      await _writeManifest(live, mcp: await _listen(tempDir));
+      await _listen(live);
+      await _writeManifest(live);
       await _writeManifest(dead);
       await registry.register(live);
       await registry.register(dead);
@@ -142,12 +143,50 @@ void main() {
     );
 
     test(
-      'when an entry is not JSON, '
+      'when an entry is not a link, '
       'then it is skipped and the others are still read',
       () async {
         await File('${registry.dir.path}/garbage.json').writeAsString('{');
 
         expect(await registry.serverDirs(), containsAll([live, dead]));
+      },
+    );
+
+    test(
+      'when a registered package has been deleted, '
+      'then scanning prunes its dangling link',
+      () async {
+        final gone = await _serverDir(tempDir, 'gone');
+        await registry.register(gone);
+        await Directory(gone).delete(recursive: true);
+
+        await registry.scan();
+
+        expect(await registry.serverDirs(), [live]);
+      },
+    );
+  });
+
+  group('Given a registry at a path too long for a socket,', () {
+    late RunnerRegistry farRegistry;
+
+    setUp(() {
+      farRegistry = RunnerRegistry(
+        dir: Directory('${tempDir.path}/${'r' * 120}'),
+      );
+    });
+
+    test(
+      'when a registered package sits at such a path as well, '
+      'then scanning keeps its entry, since the runner is not known to be dead',
+      () async {
+        final far = await _serverDir(tempDir, 'f' * 120);
+        await _writeManifest(far);
+        await farRegistry.register(far);
+
+        await farRegistry.scan();
+
+        expect(await farRegistry.serverDirs(), [far]);
       },
     );
   });
@@ -204,27 +243,27 @@ void main() {
   });
 }
 
+/// Creates a server directory and returns it as the registry names it:
+/// symlinks resolved and, on Windows, case folded.
 Future<String> _serverDir(Directory tempDir, String name) async {
   final dir = await Directory('${tempDir.path}/$name').create();
-  return dir.resolveSymbolicLinksSync();
+  return p.canonicalize(dir.resolveSymbolicLinksSync());
 }
 
-Future<String> _listen(Directory dir) async {
-  final path = '${dir.path}/live.sock';
+/// Binds the attach socket of the server package at [serverDir].
+Future<void> _listen(String serverDir) async {
+  final path = serverpodTuiSocketPath(serverDir);
+  await File(path).parent.create(recursive: true);
   final server = await bindUnixSocket(path);
   addTearDown(server.close);
   server.listen((socket) => socket.destroy());
-  return path;
 }
 
-RunnerManifest _manifest(String serverDir, {String? mcp}) => RunnerManifest(
+RunnerManifest _manifest(String serverDir) => RunnerManifest(
   pid: 4242,
-  sockets: RunnerSockets(
-    tui: serverpodTuiSocketPath(serverDir),
-    mcp: mcp ?? '$serverDir/absent.sock',
-  ),
+  projectId: RunnerRegistry.idFor(serverDir),
   config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
 );
 
-Future<void> _writeManifest(String serverDir, {String? mcp}) =>
-    _manifest(serverDir, mcp: mcp).writeTo(serverDir);
+Future<void> _writeManifest(String serverDir) =>
+    _manifest(serverDir).writeTo(serverDir);

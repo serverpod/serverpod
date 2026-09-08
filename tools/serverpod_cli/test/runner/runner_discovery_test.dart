@@ -1,21 +1,82 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
+import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
     show FileEx, bindUnixSocket;
 import 'package:test/test.dart';
 
 import '../test_util/hold_lock.dart';
+import '../test_util/short_temp_dir.dart';
 
 void main() {
+  group('Given a server package at a path too long for a Unix socket,', () {
+    late Directory tempDir;
+    late String serverDir;
+    late RunnerRegistry registry;
+
+    setUp(() async {
+      // The registry link has to fit where the package does not.
+      tempDir = await createShortTempDir('rdt');
+      serverDir = '${tempDir.path}/${'p' * 120}';
+      await Directory(serverpodToolDirPath(serverDir)).create(recursive: true);
+      registry = RunnerRegistry(dir: Directory('${tempDir.path}/r'));
+      await _writeManifest(serverDir);
+    });
+
+    tearDown(() async {
+      await tempDir.deleteIfExists(recursive: true);
+    });
+
+    test(
+      'when its runner is registered and listening, '
+      'then it is resolved as live through the registry link',
+      () async {
+        await registry.register(serverDir);
+        final linked = p.join(
+          registry.toolDirFor(RunnerRegistry.idFor(serverDir)),
+          serverpodTuiSocketName,
+        );
+        await _listenAt(linked);
+
+        final resolution = await resolveRunner(serverDir, registry: registry);
+
+        expect(resolution, isA<LiveRunner>());
+        expect((resolution as LiveRunner).tuiSocket, linked);
+      },
+    );
+
+    test(
+      'when the registry sits at a path too long for a socket as well, '
+      'then resolving throws naming both paths, not reporting no runner',
+      () async {
+        final far = RunnerRegistry(
+          dir: Directory('${tempDir.path}/${'r' * 120}'),
+        );
+
+        await expectLater(
+          resolveRunner(serverDir, registry: far),
+          throwsA(
+            isA<SocketException>().having(
+              (e) => e.message,
+              'message',
+              allOf(contains(serverDir), contains(far.dir.path)),
+            ),
+          ),
+        );
+      },
+    );
+  });
+
   group('Given a server package directory,', () {
     late Directory tempDir;
 
     setUp(() async {
-      tempDir = await Directory.systemTemp.createTemp('rdt');
+      tempDir = await createShortTempDir('rdt');
     });
 
     tearDown(() async {
@@ -34,7 +95,7 @@ void main() {
     );
 
     test(
-      'when a manifest names a socket nothing listens on, '
+      'when nothing listens beside the manifest, '
       'then no runner is resolved and the manifest is reported as stale',
       () async {
         await _writeManifest(tempDir.path, pid: 9999);
@@ -47,16 +108,24 @@ void main() {
     );
 
     test(
-      'when a manifest names a socket that is listening, '
-      'then the runner is resolved as live',
+      'when the attach socket beside the manifest is listening, '
+      'then the runner is resolved as live at that socket, registry or not',
       () async {
         final socketPath = await _listen(tempDir);
-        await _writeManifest(tempDir.path, mcp: socketPath);
+        await _writeManifest(tempDir.path);
+        final registry = RunnerRegistry(
+          dir: Directory('${tempDir.path}/registry'),
+        );
+        await registry.register(tempDir.path);
 
-        final resolution = await resolveRunner(tempDir.path);
+        final resolution = await resolveRunner(
+          tempDir.path,
+          registry: registry,
+        );
 
         expect(resolution, isA<LiveRunner>());
         expect((resolution as LiveRunner).versionWarning, isNull);
+        expect(resolution.tuiSocket, socketPath);
       },
     );
 
@@ -64,10 +133,9 @@ void main() {
       'when the live runner speaks a different protocol version, '
       'then it is reported as incompatible with the way to replace it',
       () async {
-        final socketPath = await _listen(tempDir);
+        await _listen(tempDir);
         await _writeManifest(
           tempDir.path,
-          mcp: socketPath,
           protocolVersion: RunnerManifest.currentProtocolVersion + 1,
         );
 
@@ -82,12 +150,8 @@ void main() {
       'when the live runner came from a different CLI version, '
       'then it is still live but carries a version warning',
       () async {
-        final socketPath = await _listen(tempDir);
-        await _writeManifest(
-          tempDir.path,
-          mcp: socketPath,
-          cliVersion: '0.0.1-ancient',
-        );
+        await _listen(tempDir);
+        await _writeManifest(tempDir.path, cliVersion: '0.0.1-ancient');
 
         final resolution = await resolveRunner(tempDir.path);
 
@@ -100,11 +164,11 @@ void main() {
     );
 
     test(
-      'when the manifest names only an MCP socket, '
-      'then liveness falls back to it, so a runner predating attach is found',
+      'when only the MCP socket beside the manifest is listening, '
+      'then liveness falls back to it',
       () async {
-        final socketPath = await _listen(tempDir);
-        await _writeManifest(tempDir.path, tui: '', mcp: socketPath);
+        await _listen(tempDir, name: serverpodMcpSocketName);
+        await _writeManifest(tempDir.path);
 
         expect(await resolveRunner(tempDir.path), isA<LiveRunner>());
       },
@@ -115,7 +179,7 @@ void main() {
     late Directory tempDir;
 
     setUp(() async {
-      tempDir = await Directory.systemTemp.createTemp('rdl');
+      tempDir = await createShortTempDir('rdl');
       await _writeManifest(tempDir.path, pid: 424242);
     });
 
@@ -155,9 +219,19 @@ void main() {
   });
 }
 
-/// Binds a Unix socket under [dir] and returns its path.
-Future<String> _listen(Directory dir) async {
-  final path = '${dir.path}/live.sock';
+/// Binds the runner socket [name] beside the manifest of the server package
+/// at [dir] and returns its path.
+Future<String> _listen(
+  Directory dir, {
+  String name = serverpodTuiSocketName,
+}) async {
+  final path = p.join(serverpodToolDirPath(dir.path), name);
+  await File(path).parent.create(recursive: true);
+  return _listenAt(path);
+}
+
+/// Binds a Unix socket at [path] and returns it.
+Future<String> _listenAt(String path) async {
   final server = await bindUnixSocket(path);
   addTearDown(server.close);
   server.listen((socket) => socket.destroy());
@@ -167,17 +241,12 @@ Future<String> _listen(Directory dir) async {
 Future<void> _writeManifest(
   String serverDir, {
   int pid = 4242,
-  String? tui,
-  String? mcp,
   int protocolVersion = RunnerManifest.currentProtocolVersion,
   String cliVersion = templateVersion,
 }) => RunnerManifest(
   pid: pid,
   protocolVersion: protocolVersion,
   cliVersion: cliVersion,
-  sockets: RunnerSockets(
-    tui: tui ?? serverpodTuiSocketPath(serverDir),
-    mcp: mcp ?? '$serverDir/absent.sock',
-  ),
+  projectId: RunnerRegistry.idFor(serverDir),
   config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
 ).writeTo(serverDir);

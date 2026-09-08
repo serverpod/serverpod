@@ -5,14 +5,13 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:dart_mcp/stdio.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
-import 'package:serverpod_cli/src/config/config.dart'
-    show ServerpodProjectNotFoundException;
+import 'package:serverpod_cli/src/commands/status.dart'
+    show resolveServerDirectory;
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
-import 'package:serverpod_cli/src/mcp/socket_directory.dart';
-import 'package:serverpod_cli/src/util/server_directory_finder.dart';
+import 'package:serverpod_cli/src/runner/runner_discovery.dart';
+import 'package:serverpod_cli/src/runner/runner_paths.dart';
+import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-import 'package:serverpod_shared/serverpod_shared.dart'
-    show hasUnixSocketSupport;
 
 /// Options for the `mcp-server` command.
 enum McpOption<V> implements OptionDefinition<V> {
@@ -59,30 +58,22 @@ class McpCommand extends ServerpodCommand<McpOption> {
 
   @override
   Future<void> runWithConfig(Configuration<McpOption> commandConfig) async {
-    if (!hasUnixSocketSupport()) {
-      log.error(
-        'The serverpod MCP bridge requires Unix domain socket support, '
-        'which on Windows requires Dart 3.11+ '
-        '(current: ${Platform.version.split(' ').first}).',
-      );
-      throw ExitException.error();
-    }
+    final serverDir = await resolveServerDirectory(
+      commandConfig.optionalValue(McpOption.serverDir),
+      flag: '--server-dir',
+    );
 
-    final explicit = commandConfig.optionalValue(McpOption.serverDir);
-    final Directory serverDir;
+    final String socketPath;
     try {
-      serverDir = await ServerDirectoryFinder.findOrPrompt(
-        startDir: (explicit != null && explicit.isNotEmpty)
-            ? Directory(explicit)
-            : null,
-        interactive: false,
+      socketPath = runnerSocketPath(
+        serverDir.path,
+        serverpodMcpSocketName,
+        projectId: RunnerRegistry.idFor(serverDir.path),
       );
-    } on ServerpodProjectNotFoundException catch (e) {
-      log.error('${e.message}\nPass --server-dir <path> to point at one.');
+    } on SocketException catch (e) {
+      log.error(e.message);
       throw ExitException.error();
     }
-
-    final socketPath = serverpodMcpSocketPath(serverDir.path);
     final channel = stdioChannel(input: stdin, output: stdout);
     final server = BridgeMcpServer(channel, socketPath: socketPath);
     await server.done;

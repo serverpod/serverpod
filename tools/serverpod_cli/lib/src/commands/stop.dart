@@ -62,12 +62,8 @@ class StopCommand extends ServerpodCommand<StopOption> {
       case IncompatibleRunner(:final manifest):
         await _stopByPid(manifest.pid, serverDir.path);
 
-      case LiveRunner(:final manifest):
-        if (manifest.sockets.tui.isEmpty) {
-          await _stopByPid(manifest.pid, serverDir.path);
-          return;
-        }
-        await _stopOverSocket(manifest.sockets.tui, serverDir.path);
+      case LiveRunner(:final tuiSocket):
+        await _stopOverSocket(tuiSocket, serverDir.path);
     }
   }
 
