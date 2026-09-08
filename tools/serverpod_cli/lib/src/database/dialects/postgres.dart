@@ -7,7 +7,37 @@ import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_database/src/adapters/postgres/postgres_default_value.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart'
     show Geography;
+import 'package:serverpod_shared/serverpod_shared.dart';
+import '../extensions.dart'
+    show
+        ForeignKeyDefinitionExtension,
+        TableDefinitionExtension,
+        qualifiedTableName;
 import '../sql_generator.dart';
+
+/// A quoted identifier, schema-qualified outside the default schema.
+String _pgIdentifier(String name, String schema) =>
+    schema == DatabaseConstants.defaultSchema ? '"$name"' : '"$schema"."$name"';
+
+String _sqlCreateSchemas(Iterable<String> schemas) {
+  var names =
+      schemas
+          .where((s) => s != DatabaseConstants.defaultSchema)
+          .toSet()
+          .toList()
+        ..sort();
+  if (names.isEmpty) return '';
+
+  var out = '--\n';
+  out += '-- CREATE SCHEMA\n';
+  out += '--\n';
+  for (var name in names) {
+    out += 'CREATE SCHEMA IF NOT EXISTS "$name";\n';
+  }
+  out += '\n';
+
+  return out;
+}
 
 class PostgresSqlGenerator implements SqlGenerator {
   @override
@@ -46,14 +76,17 @@ extension PostgresDatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
 
     var tableCreation = '';
     var foreignRelations = '';
-    for (var table in tables.where((table) => table.managed != false)) {
+    var managedTables = tables.where((table) => table.managed != false);
+    for (var table in managedTables) {
       tableCreation += '--\n';
-      tableCreation += '-- Class ${table.dartName} as table ${table.name}\n';
+      tableCreation +=
+          '-- Class ${table.dartName} as table ${table.qualifiedName}\n';
       tableCreation += '--\n';
       tableCreation += table.tableCreationToPgsql();
       if (table.foreignKeys.isNotEmpty) {
         foreignRelations += '--\n';
-        foreignRelations += '-- Foreign relations for "${table.name}" table\n';
+        foreignRelations +=
+            '-- Foreign relations for "${table.qualifiedName}" table\n';
         foreignRelations += '--\n';
         foreignRelations += table.foreignRelationToPgsql();
       }
@@ -62,6 +95,8 @@ extension PostgresDatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     // Start transaction
     out += 'BEGIN;\n';
     out += '\n';
+
+    out += _sqlCreateSchemas(managedTables.map((table) => table.schema));
 
     // Must be declared before any table creation.
     if (tables.any((t) => t.columns.any((c) => c.isVectorColumn))) {
@@ -115,10 +150,11 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
     String out = '';
 
     // Table
+    var table = _pgIdentifier(name, schema);
     if (ifNotExists) {
-      out += 'CREATE TABLE IF NOT EXISTS "$name" (\n';
+      out += 'CREATE TABLE IF NOT EXISTS $table (\n';
     } else {
-      out += 'CREATE TABLE "$name" (\n';
+      out += 'CREATE TABLE $table (\n';
     }
 
     var columnsPgSql = <String>[];
@@ -143,7 +179,11 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
       out += '\n';
       out += '-- Indexes\n';
       for (var index in indexesExceptId) {
-        out += index.toPgSql(tableName: name, ifNotExists: ifNotExists);
+        out += index.toPgSql(
+          tableName: name,
+          schema: schema,
+          ifNotExists: ifNotExists,
+        );
       }
     }
 
@@ -159,7 +199,7 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
 
     // Foreign keys
     for (var key in foreignKeys) {
-      out += key.toPgSql(tableName: name);
+      out += key.toPgSql(tableName: name, schema: schema);
     }
 
     out += '\n';
@@ -278,10 +318,12 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
 extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
   String toPgSql({
     required String tableName,
+    String schema = DatabaseConstants.defaultSchema,
     bool ifNotExists = false,
   }) {
     var out = '';
 
+    var table = _pgIdentifier(tableName, schema);
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var nullsDistinctStr = switch (nullsDistinct) {
       true => ' NULLS DISTINCT',
@@ -311,7 +353,7 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
     }
 
     out +=
-        'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
+        'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON $table '
         'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$nullsDistinctStr$pgvectorParams;\n';
 
     return out;
@@ -327,15 +369,17 @@ extension GinIndexOperatorClass on GinOperatorClass {
 extension PostgresForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
   String toPgSql({
     required String tableName,
+    String schema = DatabaseConstants.defaultSchema,
   }) {
     var out = '';
 
     var refColumnsFmt = referenceColumns.map((e) => '"$e"');
+    var reference = _pgIdentifier(referenceTable, referenceTableSchema);
 
-    out += 'ALTER TABLE ONLY "$tableName"\n';
+    out += 'ALTER TABLE ONLY ${_pgIdentifier(tableName, schema)}\n';
     out += '    ADD CONSTRAINT "$constraintName"\n';
     out += '    FOREIGN KEY("${columns.join(', ')}")\n';
-    out += '    REFERENCES "$referenceTable"(${refColumnsFmt.join(', ')})';
+    out += '    REFERENCES $reference(${refColumnsFmt.join(', ')})';
 
     String? delete = onDelete?.toPgSqlAction();
     if (delete != null) {
@@ -399,6 +443,13 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
     // Start transaction
     out += 'BEGIN;\n';
     out += '\n';
+
+    out += _sqlCreateSchemas([
+      for (var action in actions) ...[
+        ?action.createTable?.schema,
+        ?action.alterTable?.newSchema,
+      ],
+    ]);
 
     // Must be declared before any table creation.
     if (actions.any(
@@ -493,7 +544,8 @@ extension PostgresMigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += '--\n';
         out += '-- ACTION DROP TABLE\n';
         out += '--\n';
-        out += 'DROP TABLE "$deleteTable" CASCADE;\n';
+        out +=
+            'DROP TABLE ${_pgIdentifier(deleteTable!, deleteTableSchema ?? DatabaseConstants.defaultSchema)} CASCADE;\n';
         out += '\n';
         break;
       case DatabaseMigrationActionType.createTable:
@@ -513,7 +565,12 @@ extension PostgresMigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += '-- ACTION ALTER TABLE\n';
         out += '--\n';
         out += alterTable!.toPgSql(
-          databaseDefinition.findTableNamed(alterTable!.name)!.columns,
+          databaseDefinition
+              .findTableNamed(
+                alterTable!.name,
+                schema: alterTable!.newSchema ?? alterTable!.schema,
+              )!
+              .columns,
         );
         break;
     }
@@ -542,23 +599,33 @@ extension PostgresMigrationActionPgSqlGeneration on DatabaseMigrationAction {
 }
 
 extension PostgresTableMigrationPgSqlGenerator on TableMigration {
+  /// The schema the table is in once this migration has run.
+  String get targetSchema => newSchema ?? schema;
+
   String toPgSql(List<ColumnDefinition> targetColumns) {
     var out = '';
 
+    // Move the table first, every statement below addresses the new name.
+    if (newSchema case var newSchema?) {
+      out +=
+          'ALTER TABLE ${_pgIdentifier(name, schema)} SET SCHEMA "$newSchema";\n';
+    }
+    var table = _pgIdentifier(name, targetSchema);
+
     // Drop indexes
     for (var deleteIndex in deleteIndexes) {
-      out += 'DROP INDEX "$deleteIndex";\n';
+      out += 'DROP INDEX ${_pgIdentifier(deleteIndex, targetSchema)};\n';
     }
 
     // Drop foreign keys. Uses IF EXISTS to avoid a hard failure for constraints
     // of dropped tables or columns.
     for (var deleteKey in deleteForeignKeys) {
-      out += 'ALTER TABLE "$name" DROP CONSTRAINT IF EXISTS "$deleteKey";\n';
+      out += 'ALTER TABLE $table DROP CONSTRAINT IF EXISTS "$deleteKey";\n';
     }
 
     // Drop columns
     for (var deleteColumn in deleteColumns) {
-      out += 'ALTER TABLE "$name" DROP COLUMN "$deleteColumn";\n';
+      out += 'ALTER TABLE $table DROP COLUMN "$deleteColumn";\n';
     }
 
     // Rename columns (must happen before add/modify to avoid naming conflicts)
@@ -566,19 +633,20 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
       var fromName = modifiedColumn.columnName;
       var toName = modifiedColumn.newColumnName;
       if (toName != null && toName != fromName) {
-        out += 'ALTER TABLE "$name" RENAME COLUMN "$fromName" TO "$toName";\n';
+        out += 'ALTER TABLE $table RENAME COLUMN "$fromName" TO "$toName";\n';
       }
     }
 
     // Add columns
     for (var addColumn in addColumns) {
-      out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment()};\n';
+      out += 'ALTER TABLE $table ADD COLUMN ${addColumn.toPgSqlFragment()};\n';
     }
 
     // Modify columns
     for (var alterColumn in modifyColumns) {
       out += alterColumn.toPgSql(
         tableName: name,
+        schema: targetSchema,
         columnDefinition: targetColumns.firstWhere(
           (c) => c.name == alterColumn.physicalName,
         ),
@@ -587,7 +655,7 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
 
     // Add indexes
     for (var addIndex in addIndexes) {
-      out += addIndex.toPgSql(tableName: name);
+      out += addIndex.toPgSql(tableName: name, schema: targetSchema);
     }
 
     return out;
@@ -599,7 +667,7 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
     if (addForeignKeys.isEmpty) return out;
 
     for (var addKey in addForeignKeys) {
-      out += addKey.toPgSql(tableName: name);
+      out += addKey.toPgSql(tableName: name, schema: targetSchema);
     }
 
     return out;
@@ -614,22 +682,24 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
 
   String toPgSql({
     required String tableName,
+    String schema = DatabaseConstants.defaultSchema,
     required ColumnDefinition columnDefinition,
   }) {
     var out = '';
+    var table = _pgIdentifier(tableName, schema);
     if (addNullable) {
       out +=
-          'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
+          'ALTER TABLE $table ALTER COLUMN "$physicalName"'
           ' DROP NOT NULL;\n';
     } else if (removeNullable) {
       out +=
-          'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
+          'ALTER TABLE $table ALTER COLUMN "$physicalName"'
           ' SET NOT NULL;\n';
     }
     if (changeDefault) {
       if (newDefault == null) {
         out +=
-            'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
+            'ALTER TABLE $table ALTER COLUMN "$physicalName"'
             ' DROP DEFAULT;\n';
         return out;
       } else if (newDefault == defaultIntSerial) {
@@ -645,7 +715,7 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
           newDefault,
         );
         out +=
-            'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
+            'ALTER TABLE $table ALTER COLUMN "$physicalName"'
             ' SET DEFAULT $newDefaultSql;\n';
       }
     }
@@ -653,7 +723,7 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
     if (newType != null) {
       var typeName = newType!.name;
       out +=
-          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          'ALTER TABLE $table ALTER COLUMN "$columnName"'
           ' SET DATA TYPE $typeName USING "$columnName"::$typeName;\n';
     }
 
@@ -678,10 +748,15 @@ String _sqlRestoreInboundForeignKeys(
 ) {
   var createdTables = <String>{
     for (var action in actions)
-      if (action.createTable case var table?) table.name,
+      if (action.createTable case var table?) table.qualifiedName,
   };
   var recreatedTables = <String>{
-    for (var action in actions) ?action.deleteTable,
+    for (var action in actions)
+      if (action.deleteTable case var name?)
+        qualifiedTableName(
+          name,
+          action.deleteTableSchema ?? DatabaseConstants.defaultSchema,
+        ),
   }.intersection(createdTables);
   if (recreatedTables.isEmpty) return '';
 
@@ -689,22 +764,24 @@ String _sqlRestoreInboundForeignKeys(
     for (var action in actions)
       if (action.alterTable case var table?)
         for (var key in table.addForeignKeys)
-          '${table.name}.${key.constraintName}',
+          '${qualifiedTableName(table.name, table.targetSchema)}.${key.constraintName}',
   };
 
   var out = '';
   for (var table in databaseDefinition.tables) {
     if (table.managed == false) continue;
     // Tables created by this migration already declare all their foreign keys.
-    if (createdTables.contains(table.name)) continue;
+    if (createdTables.contains(table.qualifiedName)) continue;
 
     for (var foreignKey in table.foreignKeys) {
-      if (!recreatedTables.contains(foreignKey.referenceTable)) continue;
+      if (!recreatedTables.contains(foreignKey.qualifiedReferenceTable)) {
+        continue;
+      }
       // The constraint is already re-added by an alter table action.
-      var key = '${table.name}.${foreignKey.constraintName}';
+      var key = '${table.qualifiedName}.${foreignKey.constraintName}';
       if (alteredForeignKeys.contains(key)) continue;
 
-      out += foreignKey.toPgSql(tableName: table.name);
+      out += foreignKey.toPgSql(tableName: table.name, schema: table.schema);
     }
   }
 
