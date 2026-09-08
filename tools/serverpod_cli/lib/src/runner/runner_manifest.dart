@@ -19,10 +19,14 @@ const _keep = Object();
 /// runner holds its lock and socket, rewritten as the stage or an address
 /// moves, and removed on a graceful shutdown.
 ///
+/// The sockets are not named here. They sit beside the file under fixed
+/// names, and a client derives their paths from where it found the manifest,
+/// so a mount that shows the project at another path still works.
+///
 /// A crash leaves the file behind, so its presence alone is not evidence of a
 /// live runner. `resolveRunner` decides that.
 class RunnerManifest {
-  /// The protocol spoken over [RunnerSockets.tui].
+  /// The protocol spoken over the attach socket.
   ///
   /// A detached runner survives `dart pub global activate serverpod_cli`, so a
   /// new client can meet an old runner. Bump this when a change to the attach
@@ -32,7 +36,7 @@ class RunnerManifest {
 
   const RunnerManifest({
     required this.pid,
-    required this.sockets,
+    required this.projectId,
     required this.config,
     this.protocolVersion = currentProtocolVersion,
     this.cliVersion = templateVersion,
@@ -52,7 +56,13 @@ class RunnerManifest {
   /// another pid namespace.
   final int pid;
 
-  final RunnerSockets sockets;
+  /// The registry's name for this server package, a stable hash of its
+  /// canonical path.
+  ///
+  /// Names the link the registry keeps to the directory this manifest is in,
+  /// for a client whose own path to the sockets beside it exceeds the socket
+  /// address limit.
+  final String projectId;
 
   /// The pod's VM service proxy, once it has booted.
   ///
@@ -97,7 +107,6 @@ class RunnerManifest {
   /// the stack, and take null to mean "no longer any". Omit them to keep what
   /// is there. A `??` default would leave `runner status` naming a dead server.
   RunnerManifest copyWith({
-    RunnerSockets? sockets,
     Object? vmService = _keep,
     Object? servers = _keep,
     Object? docker = _keep,
@@ -107,7 +116,7 @@ class RunnerManifest {
     protocolVersion: protocolVersion,
     cliVersion: cliVersion,
     pid: pid,
-    sockets: sockets ?? this.sockets,
+    projectId: projectId,
     config: config,
     vmService: identical(vmService, _keep)
         ? this.vmService
@@ -126,7 +135,7 @@ class RunnerManifest {
     'pid': pid,
     'stage': stage.name,
     if (exitCode != null) 'exitCode': exitCode,
-    'sockets': sockets.toJson(),
+    'projectId': projectId,
     if (vmService != null) 'vmService': vmService!.toJson(),
     if (servers != null) 'servers': servers!.toJson(),
     if (docker != null) 'docker': docker!.toJson(),
@@ -139,7 +148,7 @@ class RunnerManifest {
     pid: json['pid'] as int? ?? 0,
     stage: RunnerStage.byName(json['stage'] as String?),
     exitCode: json['exitCode'] as int?,
-    sockets: RunnerSockets.fromJson(_map(json['sockets']) ?? const {}),
+    projectId: json['projectId'] as String? ?? '',
     vmService: switch (_map(json['vmService'])) {
       final map? => RunnerVmServiceUris.fromJson(map),
       _ => null,
@@ -188,22 +197,6 @@ class RunnerManifest {
   /// Removes the manifest for the server project at [serverDir].
   static Future<void> deleteFrom(String serverDir) =>
       File(serverpodRunnerManifestPath(serverDir)).deleteIfExists();
-}
-
-/// The Unix sockets the runner listens on, as paths relative to the server
-/// directory or absolute, whichever is shorter.
-class RunnerSockets {
-  const RunnerSockets({required this.tui, required this.mcp});
-
-  final String tui;
-  final String mcp;
-
-  Map<String, Object?> toJson() => {'tui': tui, 'mcp': mcp};
-
-  static RunnerSockets fromJson(Map<String, Object?> json) => RunnerSockets(
-    tui: json['tui'] as String? ?? '',
-    mcp: json['mcp'] as String? ?? '',
-  );
 }
 
 /// The VM service URI clients should attach to.

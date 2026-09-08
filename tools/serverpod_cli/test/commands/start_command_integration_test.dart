@@ -17,7 +17,9 @@ import 'package:serverpod_cli/src/commands/runner.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart';
+import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
+import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -672,8 +674,13 @@ Future<bool> _awaitStage(
 
 /// Stops the runner serving [serverDir] over its attach socket.
 Future<void> _stopRunner(String serverDir) async {
-  final manifest = await RunnerManifest.readFrom(serverDir);
-  final client = RunnerClient(socketPath: manifest!.sockets.tui);
+  final client = RunnerClient(
+    socketPath: runnerSocketPath(
+      serverDir,
+      serverpodTuiSocketName,
+      projectId: RunnerRegistry.idFor(serverDir),
+    ),
+  );
   await client.connect();
   await client.stop();
   await client.close();

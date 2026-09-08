@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/stop.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
+import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:test/test.dart';
 
@@ -14,11 +15,11 @@ void main() {
 
     setUp(() async {
       tempDir = await Directory.systemTemp.createTemp('sct');
-      await const RunnerManifest(
+      await RunnerManifest(
         pid: 424242,
         stage: RunnerStage.stopping,
-        sockets: RunnerSockets(tui: '', mcp: ''),
-        config: RunnerConfig(watch: true, flutter: true, serverArgs: []),
+        projectId: RunnerRegistry.idFor(tempDir.path),
+        config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
       ).writeTo(tempDir.path);
     });
 

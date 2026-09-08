@@ -18,7 +18,6 @@ import 'package:serverpod_cli/src/commands/status.dart'
 import 'package:serverpod_cli/src/runner/runner_client.dart';
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
-import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/terminal_modes.dart';
@@ -82,9 +81,9 @@ class AttachCommand extends ServerpodCommand<AttachOption> {
       case IncompatibleRunner(:final message):
         log.error(message);
         throw ExitException.error();
-      case LiveRunner(:final manifest, :final versionWarning):
+      case LiveRunner(:final tuiSocket, :final versionWarning):
         if (versionWarning != null) log.warning(versionWarning);
-        socketPath = requireAttachSocket(manifest);
+        socketPath = tuiSocket;
     }
 
     final useTui = commandConfig.value(AttachOption.tui) && terminalSupportsTui;
@@ -115,22 +114,6 @@ Future<int> attachTo(
     log.error('$e');
     throw ExitException.error();
   }
-}
-
-/// The attach socket [manifest] names.
-///
-/// A runner aborts its start rather than run without one, so an empty path
-/// comes from another build of the CLI. Throws an [ExitException] saying how
-/// to replace such a runner.
-String requireAttachSocket(RunnerManifest manifest) {
-  if (manifest.sockets.tui.isEmpty) {
-    log.error(
-      'The running runner does not serve an attach socket. '
-      'Stop it with `serverpod runner stop` and start it again.',
-    );
-    throw ExitException.error();
-  }
-  return manifest.sockets.tui;
 }
 
 /// Renders the runner in the terminal UI, returning the exit code to leave

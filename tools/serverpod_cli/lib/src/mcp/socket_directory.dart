@@ -14,7 +14,7 @@ import 'package:stream_channel/stream_channel.dart';
 /// most one `serverpod start --watch` process per project; a stale socket
 /// file left behind by a crashed runner is unlinked before the next bind.
 String serverpodMcpSocketPath(String serverDir) =>
-    p.join(serverpodToolDirPath(serverDir), 'mcp.sock');
+    p.join(serverpodToolDirPath(serverDir), serverpodMcpSocketName);
 
 /// Wraps [socket] in a [StreamChannel<String>] using line-delimited messages.
 ///

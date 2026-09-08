@@ -19,10 +19,7 @@ RunnerManifest _manifest({
   RunnerConfig? config,
 }) => RunnerManifest(
   pid: pid,
-  sockets: const RunnerSockets(
-    tui: '.dart_tool/serverpod/tui.sock',
-    mcp: '.dart_tool/serverpod/mcp.sock',
-  ),
+  projectId: 'a3d3a8b2-4f6c-5d1e-9b7a-2c8f0e1d3a5b',
   vmService: vmService,
   servers: servers,
   docker: docker,
@@ -79,8 +76,7 @@ void main() {
         expect(decoded.protocolVersion, original.protocolVersion);
         expect(decoded.cliVersion, original.cliVersion);
         expect(decoded.pid, 4242);
-        expect(decoded.sockets.tui, original.sockets.tui);
-        expect(decoded.sockets.mcp, original.sockets.mcp);
+        expect(decoded.projectId, original.projectId);
         expect(decoded.vmService?.proxy, original.vmService?.proxy);
         expect(decoded.servers?.api, 'http://localhost:8080');
         expect(decoded.servers?.insights, 'http://localhost:8081');
@@ -146,7 +142,6 @@ void main() {
           RunnerManifest.fromJson({
             'pid': 4242,
             'stage': 'teleporting',
-            'sockets': <String, Object?>{'tui': '/tmp/tui.sock'},
             'config': <String, Object?>{},
           }).stage,
           RunnerStage.byName('teleporting'),

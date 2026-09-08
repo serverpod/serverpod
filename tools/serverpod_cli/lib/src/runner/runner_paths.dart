@@ -8,8 +8,8 @@ import 'package:path/path.dart' as p;
 String serverpodToolDirPath(String serverDir) =>
     p.join(serverDir, '.dart_tool', 'serverpod');
 
-/// Returns the file where the runner records its sockets, addresses and
-/// effective configuration.
+/// Returns the file where the runner records its addresses and effective
+/// configuration.
 ///
 /// Written when the runner starts and removed when it shuts down. A crashed
 /// runner leaves the file behind, so liveness is decided by connecting to the
@@ -25,12 +25,18 @@ String serverpodRunnerManifestPath(String serverDir) =>
 String serverpodRunnerLockPath(String serverDir) =>
     p.join(serverpodToolDirPath(serverDir), 'runner.lock');
 
-/// Returns the socket a UI attaches to.
+/// The file name of the socket a UI attaches to, beside the manifest.
 ///
 /// Separate from the MCP socket because MCP's request/response vocabulary of
 /// tools and resources does not fit the continuous event stream a UI consumes.
+const serverpodTuiSocketName = 'tui.sock';
+
+/// The file name of the socket MCP clients connect to, beside the manifest.
+const serverpodMcpSocketName = 'mcp.sock';
+
+/// Returns the socket a UI attaches to.
 String serverpodTuiSocketPath(String serverDir) =>
-    p.join(serverpodToolDirPath(serverDir), 'tui.sock');
+    p.join(serverpodToolDirPath(serverDir), serverpodTuiSocketName);
 
 /// Returns the file a detached runner writes its output to.
 ///

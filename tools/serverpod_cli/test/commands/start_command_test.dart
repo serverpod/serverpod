@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart' show ExitException;
@@ -9,8 +10,11 @@ import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/runner/runner_client.dart'
+    show RunnerUnreachableException;
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
+import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_socket_server.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -21,6 +25,7 @@ import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
 import '../test_util/hold_lock.dart';
+import '../test_util/short_temp_dir.dart';
 
 const _asked = RunnerConfig(watch: true, flutter: true, serverArgs: []);
 
@@ -66,13 +71,13 @@ void main() {
     late RunnerManifest starting;
 
     setUp(() async {
-      tempDir = await Directory.systemTemp.createTemp('rsu');
+      tempDir = await createShortTempDir('rsu');
       socket = RunnerSocketServer(serverDir: tempDir.path);
       await socket.start();
       starting = RunnerManifest(
         pid: 4242,
         stage: RunnerStage.starting,
-        sockets: RunnerSockets(tui: socket.socketPath, mcp: ''),
+        projectId: RunnerRegistry.idFor(tempDir.path),
         config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
       );
       await starting.writeTo(tempDir.path);
@@ -384,30 +389,26 @@ void main() {
   });
 
   group('Given a runner that has published that it is stopping,', () {
+    late Directory root;
     late String serverDir;
-    late Directory socketDir;
-    late ServerSocket socket;
+    late RunnerSocketServer socket;
     late GeneratorConfig config;
 
     setUp(() async {
-      await _mockProject().create();
-      serverDir = p.join(d.sandbox, 'project', 'my_project_server');
-
-      // Kept short: a Unix socket address is capped near 104 bytes.
-      socketDir = await Directory.systemTemp.createTemp('rst');
-      final socketPath = p.join(socketDir.path, 't.sock');
-      socket = await ServerSocket.bind(
-        InternetAddress(socketPath, type: InternetAddressType.unix),
-        0,
-      );
-      socket.listen((client) => client.destroy());
+      // Not the test sandbox: the socket sits beside the manifest, and a
+      // Unix socket address is capped near 104 bytes.
+      root = await createShortTempDir('rst');
+      await _mockProject().create(root.path);
+      serverDir = p.join(root.path, 'project', 'my_project_server');
+      socket = RunnerSocketServer(serverDir: serverDir);
+      await socket.start();
 
       await RunnerManifest(
         pid: 4242,
         cliVersion: templateVersion,
         stage: RunnerStage.stopping,
         exitCode: 3,
-        sockets: RunnerSockets(tui: socketPath, mcp: ''),
+        projectId: RunnerRegistry.idFor(serverDir),
         config: _asked,
       ).writeTo(serverDir);
 
@@ -423,7 +424,7 @@ void main() {
     tearDown(() async {
       await socket.close();
       try {
-        socketDir.deleteSync(recursive: true);
+        root.deleteSync(recursive: true);
       } catch (_) {}
     });
 
@@ -453,10 +454,7 @@ void main() {
           pid: 4242,
           cliVersion: templateVersion,
           stage: RunnerStage.stopping,
-          sockets: RunnerSockets(
-            tui: p.join(socketDir.path, 't.sock'),
-            mcp: '',
-          ),
+          projectId: RunnerRegistry.idFor(serverDir),
           config: _asked,
         ).writeTo(serverDir);
 
@@ -470,6 +468,140 @@ void main() {
           throwsA(isA<ExitException>()),
         );
         expect(await RunnerManifest.readFrom(serverDir), isNotNull);
+      },
+    );
+  });
+
+  group('Given a pod started by hand and no runner,', () {
+    late Directory root;
+    late String serverDir;
+    late HttpServer vmService;
+    late GeneratorConfig config;
+
+    setUp(() async {
+      root = await createShortTempDir('rsh');
+      await _mockProject().create(root.path);
+      serverDir = p.join(root.path, 'project', 'my_project_server');
+
+      // What a pod's VM service looks like to `_checkExistingServer`: a
+      // websocket that accepts the upgrade.
+      vmService = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      vmService.listen((request) async {
+        final socket = await WebSocketTransformer.upgrade(request);
+        socket.listen((_) {});
+      });
+      await File(userVmServiceInfoPath(serverDir)).create(recursive: true);
+      await File(userVmServiceInfoPath(serverDir)).writeAsString(
+        jsonEncode({'uri': 'http://127.0.0.1:${vmService.port}/'}),
+      );
+
+      CommandLineExperimentalFeatures.initialize([]);
+      config = await GeneratorConfig.load(
+        serverRootDir: serverDir,
+        interactive: false,
+      );
+      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
+      addTearDown(closeLogger);
+    });
+
+    tearDown(() async {
+      await vmService.close(force: true);
+      try {
+        root.deleteSync(recursive: true);
+      } catch (_) {}
+    });
+
+    test(
+      'when a caller asks for a runner, '
+      'then it leaves cleanly without spawning one, saying so on this terminal',
+      () async {
+        await expectLater(
+          ensureRunner(
+            config: config,
+            serverDir: serverDir,
+            asked: _asked,
+            useTui: true,
+          ),
+          throwsA(
+            isA<ExitException>().having((e) => e.exitCode, 'exitCode', 0),
+          ),
+        );
+        expect(await RunnerManifest.readFrom(serverDir), isNull);
+      },
+    );
+  });
+
+  group('Given a runner that stopped after it was resolved,', () {
+    late Directory tempDir;
+    late RunnerManifest resolved;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('rur');
+      resolved = RunnerManifest(
+        pid: 4242,
+        stage: RunnerStage.starting,
+        projectId: RunnerRegistry.idFor(tempDir.path),
+        config: _asked,
+      );
+      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
+      addTearDown(closeLogger);
+    });
+
+    tearDown(() {
+      try {
+        tempDir.deleteSync(recursive: true);
+      } catch (_) {}
+    });
+
+    test(
+      'when the attach fails and its manifest carries the exit code, '
+      'then the client leaves with that code, not saying no runner listens',
+      () async {
+        await resolved
+            .copyWith(stage: RunnerStage.stopping, exitCode: 0)
+            .writeTo(tempDir.path);
+
+        await expectLater(
+          explainUnreachableRunner(
+            tempDir.path,
+            resolved,
+            const RunnerUnreachableException('tui.sock'),
+          ),
+          throwsA(
+            isA<ExitException>().having((e) => e.exitCode, 'exitCode', 0),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when the attach fails and another runner has published since, '
+      'then the failure is reported as it is',
+      () async {
+        await resolved
+            .copyWith(stage: RunnerStage.stopping, exitCode: 0)
+            .writeTo(tempDir.path);
+        final other = RunnerManifest(
+          pid: 4243,
+          stage: RunnerStage.starting,
+          projectId: resolved.projectId,
+          config: _asked,
+        );
+
+        await expectLater(
+          explainUnreachableRunner(
+            tempDir.path,
+            other,
+            const RunnerUnreachableException('tui.sock'),
+          ),
+          throwsA(
+            isA<ExitException>().having(
+              (e) => e.exitCode,
+              'exitCode',
+              ExitException.codeError,
+            ),
+          ),
+        );
       },
     );
   });

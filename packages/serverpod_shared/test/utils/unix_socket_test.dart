@@ -92,6 +92,26 @@ void main() {
     }, skip: !Platform.isLinux);
   });
 
+  group('Given unixSocketPathFits,', () {
+    test('when the path fits the platform cap, then true is returned', () {
+      var tmp = Directory.systemTemp.createTempSync('uds_fits_');
+      try {
+        expect(unixSocketPathFits(p.join(tmp.path, 't.sock')), isTrue);
+      } finally {
+        tmp.deleteSync(recursive: true);
+      }
+    });
+
+    test('when the shortened path exceeds the cap, then false is returned', () {
+      var deep = '/tmp';
+      while (deep.length <= maxUnixSocketPathBytes() + 20) {
+        deep = '$deep/aaaaaaaaaaaaaaaaaa';
+      }
+
+      expect(unixSocketPathFits(deep), isFalse);
+    });
+  });
+
   group('Given requireUnixSocketPathFits', () {
     test(
       'when path fits the platform cap then it returns without throwing.',
