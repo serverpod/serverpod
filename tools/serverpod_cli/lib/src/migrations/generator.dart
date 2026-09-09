@@ -240,6 +240,11 @@ class MigrationGenerator {
       liveDatabase = normalizeDefinitionToV2(
         await client.insights.getLiveDatabaseDefinition(),
       );
+      // SQLite reports its single schema as `main`, which the definitions
+      // model as the default schema.
+      if (dialect == DatabaseDialect.sqlite) {
+        liveDatabase = liveDatabase.inDefaultSchema();
+      }
     } catch (e) {
       throw MigrationLiveDatabaseDefinitionException(
         exception: e.toString(),
