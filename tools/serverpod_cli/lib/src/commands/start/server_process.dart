@@ -48,6 +48,9 @@ class ServerProcess {
   StreamSubscription? _stdoutSub;
   StreamSubscription? _stderrSub;
 
+  /// Completes once the process's pipes have been read to their end.
+  Future<void> _outputDrained = Future.value();
+
   VmService? _vmService;
   String? _mainIsolateId;
 
@@ -159,8 +162,14 @@ class ServerProcess {
 
     // Forward process output without exclusively binding the sinks,
     // so that the CLI logger can still write to stdout/stderr.
-    _stdoutSub = process.stdout.listen(_stdout.add);
-    _stderrSub = process.stderr.listen(_stderr.add);
+    final stdoutSub = process.stdout.listen(_stdout.add);
+    final stderrSub = process.stderr.listen(_stderr.add);
+    _stdoutSub = stdoutSub;
+    _stderrSub = stderrSub;
+    _outputDrained = Future.wait<void>([
+      stdoutSub.asFuture<void>().catchError((_) {}),
+      stderrSub.asFuture<void>().catchError((_) {}),
+    ]).then((_) {});
 
     // Handle process exit asynchronously.
     unawaited(
@@ -351,12 +360,23 @@ class ServerProcess {
       await _vmService?.dispose();
       _vmService = null;
       _mainIsolateId = null;
+      // The process has exited, so its pipes end once what it wrote last is
+      // read: a crash's stack trace is what arrives last. A grandchild that
+      // inherited a pipe keeps it open, hence the bound.
+      await _outputDrained.timeout(
+        const Duration(seconds: 2),
+        onTimeout: () {},
+      );
       await _stdoutSub?.cancel();
       await _stderrSub?.cancel();
       await _sigtermSub?.cancel();
       _stdoutSub = null;
       _stderrSub = null;
       _sigtermSub = null;
+      // The sinks are shared with the next process. A line this one left
+      // unfinished is its own, not a prefix for the next one's first line.
+      await _stdout.flush();
+      await _stderr.flush();
 
       // Clean up the service info file so stale URIs are not picked up.
       if (_vmServiceInfoFile != null) {
