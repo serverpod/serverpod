@@ -9,6 +9,7 @@ import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/flush_analytics.dart';
 import 'package:serverpod_cli/src/analytics/session_metrics.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
@@ -1276,6 +1277,7 @@ Future<int> _runWithTui({
       shouldFlushLogs = true;
     }
 
+    await flushAnalytics();
     if (shouldFlushLogs) await log.flush();
   }
 

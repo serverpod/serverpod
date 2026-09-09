@@ -19,14 +19,44 @@ import 'session_metrics.dart';
 /// `BetterCommandRunner` has resolved `--no-analytics`. Every capture method is
 /// a no-op while disabled, so commands can call them unconditionally.
 class CliAnalytics {
-  CliAnalytics({required Analytics analytics}) : _analytics = analytics;
+  CliAnalytics({required Analytics analytics, Analytics? commandAnalytics})
+    : _analytics = analytics,
+      _commandAnalytics = commandAnalytics;
 
   /// A permanently disabled instance, used until [initializeCliAnalytics]
   /// installs the real one. Keeps `cliAnalytics` safe to call from code paths
   /// that run outside the CLI entry point (tests, MCP tools, embedders).
-  CliAnalytics.disabled() : _analytics = _NoopAnalytics();
+  CliAnalytics.disabled()
+    : _analytics = _NoopAnalytics(),
+      _commandAnalytics = null;
 
   final Analytics _analytics;
+  final Analytics? _commandAnalytics;
+  final _pendingOperations = <Future<void>>{};
+
+  /// Waits for metadata preparation and all pending event sends.
+  ///
+  /// Command events may use additional providers (such as Mixpanel), while
+  /// rich lifecycle events are sent only to [_analytics]. Both must finish
+  /// before the TUI or the CLI entry point exits the process.
+  Future<void> flush() async {
+    while (_pendingOperations.isNotEmpty) {
+      await Future.wait(_pendingOperations.toList());
+    }
+    await _analytics.flush();
+    await _commandAnalytics?.flush();
+  }
+
+  Future<void> _run(Future<void> Function() operation) {
+    if (!enabled) return Future.value();
+
+    late final Future<void> pending;
+    pending = Future.sync(operation)
+        .catchError((Object _) {})
+        .whenComplete(() => _pendingOperations.remove(pending));
+    _pendingOperations.add(pending);
+    return pending;
+  }
 
   /// Whether rich `cli.*` events are being sent. Set once by
   /// [ServerpodCommandRunner.runCommand] from the resolved `--no-analytics`
@@ -37,9 +67,7 @@ class CliAnalytics {
     required String event,
     required String serverDir,
     required Map<String, Object?> properties,
-  }) async {
-    if (!enabled) return;
-
+  }) => _run(() async {
     try {
       final metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
       // Durable id from the git remote and server path; falls back to the
@@ -56,7 +84,7 @@ class CliAnalytics {
     } catch (_) {
       // Analytics must never disrupt CLI execution.
     }
-  }
+  });
 
   /// Increments the per-command counter reported by `cli.session_start`.
   ///
@@ -66,8 +94,7 @@ class CliAnalytics {
   Future<void> recordCommandInvocation({
     required String serverDir,
     required String commandName,
-  }) async {
-    if (!enabled) return;
+  }) => _run(() async {
     if (!AnalyticsPayloadBuilder.commandNamePattern.hasMatch(commandName)) {
       return;
     }
@@ -80,7 +107,7 @@ class CliAnalytics {
     } catch (_) {
       // Ignore metadata write failures.
     }
-  }
+  });
 
   Future<void> captureProjectCreated({
     required String serverDir,
@@ -88,9 +115,7 @@ class CliAnalytics {
     required ServerpodTemplateType template,
     required TemplateContext context,
     required bool force,
-  }) async {
-    if (!enabled) return;
-
+  }) => _run(() async {
     try {
       await ProjectMetadataStore.initializeNewProject(
         serverDir,
@@ -109,7 +134,7 @@ class CliAnalytics {
         'force': force,
       },
     );
-  }
+  });
 
   /// Records `serverpod create .` run against an existing project, which
   /// upgrades it in place instead of scaffolding a new one.
@@ -122,9 +147,7 @@ class CliAnalytics {
     required ServerpodTemplateType template,
     required TemplateContext context,
     required bool createdDefaultMigration,
-  }) async {
-    if (!enabled) return;
-
+  }) => _run(() async {
     ProjectMetadata? metadata;
     try {
       metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
@@ -143,7 +166,7 @@ class CliAnalytics {
             : ProjectMetadataStore.projectAgeDays(metadata),
       },
     );
-  }
+  });
 
   Map<String, Object?> _templateProperties(
     ServerpodTemplateType template,
@@ -171,9 +194,7 @@ class CliAnalytics {
     int? oneshotDurationMs,
     int? incrementalRunCount,
     int? incrementalAvgDurationMs,
-  }) async {
-    if (!enabled) return;
-
+  }) => _run(() async {
     ProjectMetadata metadata;
     try {
       metadata = await ProjectMetadataStore.incrementGenerateCallCount(
@@ -200,14 +221,13 @@ class CliAnalytics {
         'incremental_run_count': incrementalRunCount,
       },
     );
-  }
+  });
 
   Future<void> captureMigrationCreated({
     required GeneratorConfig config,
     required MigrationCreatedFlags flags,
     required bool isRepairMigration,
-  }) async {
-    if (!enabled) return;
+  }) => _run(() async {
     if (!flags.serverMigrationCreated && !flags.clientMigrationCreated) return;
 
     try {
@@ -230,7 +250,7 @@ class CliAnalytics {
     } catch (_) {
       // Analytics must never disrupt CLI execution.
     }
-  }
+  });
 
   Future<void> captureSessionStart({
     required GeneratorConfig config,
@@ -239,9 +259,7 @@ class CliAnalytics {
     required bool flutterEnabled,
     required DockerStartMode dockerMode,
     required bool dockerComposePresent,
-  }) async {
-    if (!enabled) return;
-
+  }) => _run(() async {
     try {
       final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
       final metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
@@ -272,7 +290,7 @@ class CliAnalytics {
     } catch (_) {
       // Analytics must never disrupt CLI execution.
     }
-  }
+  });
 
   /// Records one companion Flutter app actually starting.
   ///
@@ -283,9 +301,7 @@ class CliAnalytics {
     required String serverDir,
     required String? device,
     required bool isRelaunch,
-  }) async {
-    if (!enabled) return;
-
+  }) => _run(() async {
     try {
       final buckets = categorizeFlutterDevice(device);
       await capture(
@@ -300,7 +316,7 @@ class CliAnalytics {
     } catch (_) {
       // Analytics must never disrupt launching an app.
     }
-  }
+  });
 }
 
 String _createDatabaseDialect(TemplateContext context) {
