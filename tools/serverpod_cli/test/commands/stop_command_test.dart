@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/commands/stop.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
+import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
 import 'package:test/test.dart';
 
 import '../test_util/hold_lock.dart';
@@ -23,11 +24,7 @@ void main() {
       ).writeTo(tempDir.path);
     });
 
-    tearDown(() {
-      try {
-        tempDir.deleteSync(recursive: true);
-      } catch (_) {}
-    });
+    tearDown(() => tempDir.deleteBestEffort(recursive: true));
 
     test(
       'when its process no longer holds the lock, '

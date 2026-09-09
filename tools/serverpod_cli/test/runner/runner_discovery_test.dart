@@ -29,7 +29,7 @@ void main() {
     });
 
     tearDown(() async {
-      await tempDir.deleteIfExists(recursive: true);
+      await tempDir.deleteBestEffort(recursive: true);
     });
 
     test(
@@ -80,7 +80,7 @@ void main() {
     });
 
     tearDown(() async {
-      await tempDir.deleteIfExists(recursive: true);
+      await tempDir.deleteBestEffort(recursive: true);
     });
 
     test(
@@ -184,7 +184,7 @@ void main() {
     });
 
     tearDown(() async {
-      await tempDir.deleteIfExists(recursive: true);
+      await tempDir.deleteBestEffort(recursive: true);
     });
 
     test(
