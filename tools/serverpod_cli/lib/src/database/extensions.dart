@@ -125,6 +125,26 @@ extension TableDefinitionExtension on TableDefinition {
   String get qualifiedName => qualifiedTableName(name, schema);
 }
 
+extension DatabaseDefinitionSchemaNormalization on DatabaseDefinition {
+  /// Places every table and reference in the default schema. Used for live
+  /// definitions of dialects without schemas, where the analyzer reports the
+  /// engine's own name for its single schema (e.g. `main` in SQLite).
+  DatabaseDefinition inDefaultSchema() => copyWith(
+    tables: [
+      for (var table in tables)
+        table.copyWith(
+          schema: DatabaseConstants.defaultSchema,
+          foreignKeys: [
+            for (var key in table.foreignKeys)
+              key.copyWith(
+                referenceTableSchema: DatabaseConstants.defaultSchema,
+              ),
+          ],
+        ),
+    ],
+  );
+}
+
 extension ForeignKeyDefinitionExtension on ForeignKeyDefinition {
   String get qualifiedReferenceTable =>
       qualifiedTableName(referenceTable, referenceTableSchema);
