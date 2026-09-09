@@ -410,45 +410,6 @@ fields:
       );
     });
 
-    group('when the runner throws before booting the pod,', () {
-      // A vm-service-info.json that is not a JSON object makes the check for
-      // an existing server throw a TypeError, which is not an Exception it
-      // catches. Past the manifest, before ports, Docker and the pod.
-      late File blocker;
-
-      setUp(() async {
-        blocker = File(
-          path.join(
-            sandboxDir,
-            serverDir,
-            '.dart_tool',
-            'serverpod',
-            'vm-service-info.json',
-          ),
-        );
-        await blocker.create(recursive: true);
-        await blocker.writeAsString('[]');
-      });
-
-      tearDown(() async {
-        if (await blocker.exists()) await blocker.delete();
-      });
-
-      test(
-        'then start reports the failure at once, with the runner log, and the manifest says the runner stopped',
-        () async {
-          var result = await runServerpod(
-            ['start', '--no-watch', '--no-attach', '--no-docker'],
-            workingDirectory: path.join(sandboxDir, serverDir),
-          );
-          expectRunnerStoppedDuringStartup(
-            result,
-            path.join(sandboxDir, serverDir),
-          );
-        },
-      );
-    });
-
     group("when running 'serverpod start'", () {
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(

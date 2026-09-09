@@ -531,6 +531,43 @@ void main() {
     );
   });
 
+  group('Given the vm service info file a pod leaves behind,', () {
+    test(
+      'when it records a URI, '
+      'then that is the existing server to attach to',
+      () {
+        expect(
+          vmServiceUriFrom('{"uri": "http://127.0.0.1:1234/"}'),
+          'http://127.0.0.1:1234/',
+        );
+      },
+    );
+
+    test(
+      'when it holds JSON that is not an object, '
+      'then it reads as no existing server rather than throwing',
+      () {
+        expect(vmServiceUriFrom('[]'), isNull);
+      },
+    );
+
+    test(
+      'when its uri is not a string, '
+      'then it reads as no existing server',
+      () {
+        expect(vmServiceUriFrom('{"uri": 7}'), isNull);
+      },
+    );
+
+    test(
+      'when it holds no JSON at all, '
+      'then it reads as no existing server',
+      () {
+        expect(vmServiceUriFrom('not json'), isNull);
+      },
+    );
+  });
+
   group('Given a runner that stopped after it was resolved,', () {
     late Directory tempDir;
     late RunnerManifest resolved;
