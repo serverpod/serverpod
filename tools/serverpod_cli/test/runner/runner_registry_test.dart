@@ -7,7 +7,8 @@ import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
-import 'package:serverpod_shared/serverpod_shared.dart' show bindUnixSocket;
+import 'package:serverpod_shared/serverpod_shared.dart'
+    show FileEx, bindUnixSocket;
 import 'package:test/test.dart';
 
 import '../test_util/hold_lock.dart';
@@ -22,13 +23,7 @@ void main() {
     registry = RunnerRegistry(dir: Directory('${tempDir.path}/registry'));
   });
 
-  tearDown(() async {
-    try {
-      tempDir.deleteSync(recursive: true);
-    } on FileSystemException {
-      // A test may have removed it already.
-    }
-  });
+  tearDown(() => tempDir.deleteBestEffort(recursive: true));
 
   group('Given a default registry directory set for tests,', () {
     test(
