@@ -25,11 +25,22 @@ final int Function(int pid, int sig) _libcKill = Platform.isWindows
 /// POSIX: `kill(pid, 0)` (non-delivering probe). EPERM (cross-user PID
 /// recycling) is reported as dead - a non-issue on a single-user dev box.
 ///
-/// Windows: `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, ...)` returns a
-/// handle iff the PID is assigned, with no ACL grant required.
+/// Windows: waits zero milliseconds on the process handle. A process object
+/// is signalled the moment the process exits, and outlives it for as long as
+/// anyone holds a handle to it - the parent that spawned it, most often - so
+/// opening a handle only says the PID is still assigned, not that anything is
+/// running behind it. The wait needs `PROCESS_SYNCHRONIZE`, which the owner
+/// is granted; a process of another user reads as dead, as EPERM does.
 bool isProcessAlive(int pid) {
   if (Platform.isWindows) {
-    return _withProcessHandle(pid, (_) => true) ?? false;
+    return _withProcessHandle(pid, (handle) {
+          final win32.Win32Result(value: signalled) = win32.WaitForSingleObject(
+            handle,
+            0,
+          );
+          return signalled == win32.WAIT_TIMEOUT;
+        }, access: win32.PROCESS_SYNCHRONIZE) ??
+        false;
   }
   return _libcKill(pid, 0) == 0;
 }
@@ -77,12 +88,16 @@ String? _readWindowsImagePath(int pid) {
   });
 }
 
-/// Opens a `PROCESS_QUERY_LIMITED_INFORMATION` handle to [pid], runs [body]
-/// with it, and closes the handle. Returns null when the PID is unassigned.
-/// Windows-only.
-T? _withProcessHandle<T>(int pid, T? Function(win32.HANDLE handle) body) {
+/// Opens a handle to [pid] carrying `PROCESS_QUERY_LIMITED_INFORMATION` and
+/// [access], runs [body] with it, and closes the handle. Returns null when the
+/// PID is unassigned. Windows-only.
+T? _withProcessHandle<T>(
+  int pid,
+  T? Function(win32.HANDLE handle) body, {
+  win32.PROCESS_ACCESS_RIGHTS access = const win32.PROCESS_ACCESS_RIGHTS(0),
+}) {
   final win32.Win32Result(value: handle) = win32.OpenProcess(
-    win32.PROCESS_QUERY_LIMITED_INFORMATION,
+    win32.PROCESS_QUERY_LIMITED_INFORMATION | access,
     false,
     pid,
   );
