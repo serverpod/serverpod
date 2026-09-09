@@ -1774,6 +1774,25 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
 String userVmServiceInfoPath(String serverDir) =>
     p.join(serverpodToolDirPath(serverDir), 'vm-service-info.json');
 
+/// The VM service URI [content] records, or null when it records none.
+///
+/// Anything a live pod did not write reads as none: the file is whatever was
+/// last left at the path, and a start that threw over it would say nothing
+/// about the server it was asked to bring up.
+@visibleForTesting
+String? vmServiceUriFrom(String content) {
+  final Object? json;
+  try {
+    json = jsonDecode(content);
+  } on FormatException {
+    return null;
+  }
+  return switch (json) {
+    {'uri': final String uri} => uri,
+    _ => null,
+  };
+}
+
 /// Checks if a server is already running by reading the VM service info file
 /// and attempting to connect. Returns the URI if reachable, `null` otherwise.
 /// Cleans up stale files.
@@ -1782,8 +1801,7 @@ Future<String?> _checkExistingServer(String infoPath) async {
   if (!file.existsSync()) return null;
 
   try {
-    final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
-    final uri = json['uri'] as String?;
+    final uri = vmServiceUriFrom(file.readAsStringSync());
     if (uri == null) {
       await file.deleteIfExists();
       return null;
