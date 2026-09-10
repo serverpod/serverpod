@@ -748,23 +748,40 @@ bool _resolveStartDocker({
       database.host == '127.0.0.1';
 }
 
-/// Decides which ports the pod should bind, as environment overrides.
+/// The ports the pod binds, as environment overrides, and the ones this
+/// runner claims in its manifest.
+typedef _ResolvedPorts = ({
+  Map<String, String> environment,
+  Map<String, int> claimed,
+});
+
+/// Decides which ports the pod should bind, as environment overrides, and
+/// which of the configured ones this runner claims.
 ///
-/// An empty map when the configured ports are free, the ephemeral overrides
-/// when another Serverpod runner holds them, and null when something else
-/// does. Null is an error, not a fallback. A listener configured with port
-/// zero gets the override either way, so the port it binds is pinned for
-/// every later spawn.
+/// An empty environment when the configured ports are free, the ephemeral
+/// overrides when another Serverpod runner holds or has claimed them, and null
+/// when something else does. Null is an error, not a fallback. A listener
+/// configured with port zero gets the override either way, so the port it
+/// binds is pinned for every later spawn.
+///
+/// The claim is what a sibling resolving its ports meanwhile reads: the
+/// configured ports when they are kept, none when the stack moves aside.
 ///
 /// Only development falls back. In production a taken port is a
-/// misconfiguration.
-Future<Map<String, String>?> _resolvePortEnvironment({
+/// misconfiguration, and the configured ports are the claim.
+Future<_ResolvedPorts?> _resolvePortEnvironment({
   required String serverDir,
   required String runMode,
   required ServerpodConfig? serverConfig,
 }) async {
-  if (runMode != 'development') return const {};
-  if (serverConfig == null) return const {};
+  // Nothing to claim. Left undecided, every sibling would move aside for this
+  // runner for as long as it runs.
+  if (serverConfig == null) {
+    return (
+      environment: const <String, String>{},
+      claimed: const <String, int>{},
+    );
+  }
 
   final ports = {
     'api': serverConfig.apiServer.port,
@@ -772,6 +789,10 @@ Future<Map<String, String>?> _resolvePortEnvironment({
       'insights': serverConfig.insightsServer!.port,
     if (serverConfig.webServer != null) 'web': serverConfig.webServer!.port,
   };
+
+  if (runMode != 'development') {
+    return (environment: const <String, String>{}, claimed: fixedPorts(ports));
+  }
 
   final resolution = await resolvePorts(serverDir: serverDir, ports: ports);
 
@@ -806,7 +827,10 @@ Future<Map<String, String>?> _resolvePortEnvironment({
       );
     }
   }
-  return ephemeralPortEnvironment(resolution.ephemeralListeners(ports));
+  return (
+    environment: ephemeralPortEnvironment(resolution.ephemeralListeners(ports)),
+    claimed: resolution.claimedPorts(ports),
+  );
 }
 
 /// Ensures Docker Compose services are running.
@@ -1054,7 +1078,12 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     // Read at every pod spawn. Pinned to what the first pod bound once it
     // reports, so a restart keeps the address the Flutter apps were built
     // against.
-    var portEnvironment = resolvedPorts;
+    var portEnvironment = resolvedPorts.environment;
+    // Claimed before Docker and the first compile, so a sibling resolving its
+    // ports meanwhile reads a decision rather than silence.
+    await manifestPublisher.replace(
+      manifestPublisher.manifest.copyWith(ports: resolvedPorts.claimed),
+    );
 
     var startedDocker = false;
     if (startDocker) {
