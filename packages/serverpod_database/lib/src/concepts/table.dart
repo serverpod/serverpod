@@ -53,10 +53,12 @@ class Table<T_ID> {
   final String tableName;
 
   /// Schema part of [tableName], or null when the name is unqualified.
-  String? get schema => parseQualifiedTableName(tableName).schema;
+  late final String? schema = parseQualifiedTableName(tableName).schema;
 
   /// [tableName] with the schema removed.
-  String get unqualifiedTableName => parseQualifiedTableName(tableName).name;
+  late final String unqualifiedTableName = parseQualifiedTableName(
+    tableName,
+  ).name;
 
   /// [tableName] quoted for the current dialect. Prefer it over [tableName] in
   /// raw SQL, since dialects quote schemas differently.
