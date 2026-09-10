@@ -198,7 +198,7 @@ class FlutterProcess {
 
     final root = _flutterSdkRoot;
     final invocation = root != null
-        ? invocationForSdkRoot(root)
+        ? _invocationForSdkRoot(root)
         : await resolveFlutterInvocation(_flutterExecutable);
 
     // A missing absolute executable is checked rather than left to the spawn:
@@ -219,7 +219,7 @@ class FlutterProcess {
         executable,
         [...invocation.baseArgs, ...args],
         workingDirectory: _flutterPackageDir,
-        runInShell: needsShell(executable),
+        runInShell: _needsShell(executable),
       );
     } on ProcessException catch (e) {
       throw FlutterNotInstalledException(
@@ -997,8 +997,7 @@ class FlutterProcess {
 
   /// Whether [executable] has to be launched through a shell.
   /// Only Windows batch wrappers do.
-  @visibleForTesting
-  static bool needsShell(String executable) {
+  static bool _needsShell(String executable) {
     if (!Platform.isWindows) return false;
     final lower = executable.toLowerCase();
     return lower.endsWith('.bat') || lower.endsWith('.cmd');
@@ -1021,8 +1020,7 @@ class FlutterProcess {
   /// Prefers `flutter_tools.dart` on the SDK's embedded Dart so `kill` reaches
   /// the daemon rather than a wrapper script. Falls back to the SDK's own
   /// `bin/flutter` when `bin/cache` is cold or partially populated.
-  @visibleForTesting
-  static FlutterInvocation invocationForSdkRoot(String root) {
+  static FlutterInvocation _invocationForSdkRoot(String root) {
     final cached = _cachedInvocationsByRoot[root];
     if (cached != null) return cached;
 
