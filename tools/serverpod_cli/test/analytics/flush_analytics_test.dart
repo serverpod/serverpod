@@ -129,19 +129,17 @@ void main() {
   );
 
   test(
-    'Given analytics is disabled, '
-    'when an event is captured and shutdown flushes analytics, '
+    'Given an event capture was requested with analytics disabled, '
+    'when shutdown flushes analytics, '
     'then no event or project metadata is created.',
     () async {
       final recording = RecordingAnalytics();
       initializeCliAnalytics(CliAnalytics(analytics: recording));
       final serverDir = p.join(d.sandbox, 'disabled_server');
-      unawaited(
-        cliAnalytics.capture(
-          event: 'cli.session_start',
-          serverDir: serverDir,
-          properties: {},
-        ),
+      await cliAnalytics.capture(
+        event: 'cli.session_start',
+        serverDir: serverDir,
+        properties: {},
       );
 
       await flushAnalytics();
