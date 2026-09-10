@@ -1327,7 +1327,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         vmServiceInfoFile: podInfoFile,
         stdoutSink: serverStdoutSink,
         stderrSink: serverStderrSink,
-        onDispose: logHistory.serverProcessGone,
+        onDispose: logHistory.discardActiveServerScopes,
         environment: portEnvironment.isEmpty ? null : portEnvironment,
       );
       await serverProcess.start(dillPath: dillPath);
