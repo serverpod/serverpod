@@ -38,40 +38,27 @@ final class WatchLoopAborted extends WatchLoopSetupResult {
 class WatchLoopContext {
   final WatchSession session;
 
-  /// The runner's capabilities over [session], for whichever surface renders
-  /// this context.
   final RunnerApi runnerApi;
 
-  /// Resolves the server VM-service proxy at call time.
-  ///
-  /// A function rather than a value, since a degraded start has no proxy until
-  /// the server first boots.
+  /// The server's VM service proxy, null until the server first boots.
   final VmServiceProxy? Function() proxy;
   final FlutterAppManager flutterManager;
   final McpSocketServer? mcpSocket;
 
-  /// The attach socket clients render from.
-  ///
-  /// Null only in tests. A runner that could not bind it aborts its start.
+  /// The attach socket, null only in tests.
   final RunnerSocketServer? attachSocket;
   final Future<void> Function() closeAnalyzers;
   final Future<void> Function()? stopDocker;
   final void Function() stopFileWatcher;
 
-  /// Announces that the stack is going away, with its exit code.
-  ///
-  /// Not part of [RunnerApi]. Carries the exit code, since a client renders
-  /// the stack rather than hosting it.
+  /// Announces the stack is stopping, which only its hosting process can do.
   final void Function(int exitCode)? announceStopping;
   final String vmServiceInfoFile;
 
-  /// Keeps `runner.json` current, and removes it on dispose.
-  ///
-  /// Null in tests that build a context without publishing one.
+  /// The manifest publisher, null in tests that publish no manifest.
   final RunnerManifestPublisher? manifestPublisher;
 
-  /// The one-runner-per-package lock, released last so nothing else can claim
-  /// the package while this one is still tearing down.
+  /// The runner lock, released last so no other runner starts mid-teardown.
   final RunnerLock? lock;
 
   bool _disposed = false;
@@ -119,10 +106,7 @@ class WatchLoopContext {
     await _step('releasing the lock', () async => lock?.release());
   }
 
-  /// Runs one teardown step, keeping its failure to itself.
-  ///
-  /// The manifest, the Docker services and the lock outlive this process, so
-  /// they go last. A socket dying mid-close must not skip them.
+  /// Runs one teardown step, logging a failure so later steps still run.
   Future<void> _step(String what, Future<void> Function() body) async {
     try {
       await body();

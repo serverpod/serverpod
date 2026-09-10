@@ -2,9 +2,7 @@ import 'package:test/test.dart';
 
 /// Polls [condition] until it holds, failing after [timeout].
 ///
-/// For state that crosses a real socket, where how many event-loop turns it
-/// takes is not something a test can assume. `pumpEventQueue` is not a
-/// barrier for pending I/O.
+/// For socket state, where `pumpEventQueue` does not wait for pending I/O.
 Future<void> waitFor(
   bool Function() condition, {
   Duration timeout = const Duration(seconds: 10),

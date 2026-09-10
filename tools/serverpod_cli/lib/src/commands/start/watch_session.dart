@@ -31,7 +31,7 @@ typedef FlutterAppsLoader = Future<void> Function();
 /// and returns it ready for use.
 ///
 /// [dillPath] is the compiled kernel file to boot from. Pass `null`
-/// when no Frontend Server is configured; the factory then starts the
+/// when no Frontend Server is configured. The factory then starts the
 /// server via `dart run` and the VM's own kernel service drives reloads.
 typedef ServerProcessFactory = Future<ServerProcess> Function(String? dillPath);
 
@@ -111,7 +111,7 @@ bool _alwaysServesWeb() => true;
 ///
 /// When [initialServer] is `null`, the session starts in a *degraded* state:
 /// the project failed to generate or compile at launch, so no server is
-/// running yet. The session keeps watching; the first file change that makes
+/// running yet. The session keeps watching. The first file change that makes
 /// generation and compilation succeed boots the server (in watch mode), and
 /// [retryStart] does the same on demand (used by `--no-watch`, which has no
 /// file watcher to recover automatically).
@@ -134,10 +134,7 @@ class WatchSession {
   final FlutterAppManager? _flutterManager;
   final FlutterAppsLoader? _flutterAppsLoader;
 
-  /// Whether the pod serves web pages, and so has a browser to refresh after
-  /// a reload.
-  ///
-  /// Resolved at call time, not fixed at construction.
+  /// Whether the pod serves web pages, read on each reload since it can change.
   final bool Function() _servesWeb;
 
   /// Whether a Flutter app process is currently running. Used e.g. to label
@@ -195,11 +192,7 @@ class WatchSession {
     });
   }
 
-  /// Runs [body] behind any in-flight reload, restart or migration.
-  ///
-  /// For work that touches what those touch, such as writing a migration while
-  /// another caller applies one. Throws a [StateError] if the session has been
-  /// disposed, before or while [body] waits its turn.
+  /// Runs [body] after any in-flight work, or throws [StateError] if disposed.
   Future<T> runSerialized<T>(Future<T> Function() body) {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
@@ -282,7 +275,7 @@ class WatchSession {
     // dev/test-only) dependency change rewrites package_config.json without
     // touching the server's closure - and must not reload the server. Always
     // call refreshClosure() when the file changed so the tracker's baseline
-    // advances even when we suppress; only a `none` result downgrades, and a
+    // advances even when we suppress. Only a `none` result downgrades, and a
     // pending invalidation from a prior failed compile still rides along
     // independently (see _pendingPackageConfig in _compileAndReload).
     var serverDepsChanged = event.packageConfigChanged;
@@ -512,7 +505,7 @@ class WatchSession {
     // 1. Run native build hooks (if configured). The hook runner caches on
     //    input hashes, so this is cheap when nothing changed. A manifest
     //    content change requires a fresh FES because `--native-assets` is
-    //    only read at startup; the apply step restarts in that case and
+    //    only read at startup. The apply step restarts in that case and
     //    reports back so we don't double-restart below.
     var compilerRestartedByHooks = false;
     final builder = _nativeAssetsBuilder;
@@ -590,7 +583,7 @@ class WatchSession {
     return _reloadOrRestart(result);
   }
 
-  /// Attempts hot reload; falls back to a server restart if reload fails.
+  /// Attempts hot reload, falling back to a server restart if reload fails.
   ///
   /// Returns `true` if the server is now running the new code (via a
   /// successful hot reload or restart), `false` otherwise.
@@ -642,7 +635,7 @@ class WatchSession {
     return _chain(() async {
       final bool reloaded;
       if (_compiler == null) {
-        // forceReload doesn't fall through to restart; the file-change
+        // forceReload doesn't fall through to restart. The file-change
         // path does (via _reloadOrRestart). Different intents.
         reloaded = await _reload(null);
       } else {
@@ -721,26 +714,18 @@ class WatchSession {
     }, whenDisposed: () {});
   }
 
-  /// Arms auto-launch and launches every app flagged `auto_launch` that is not
-  /// already running.
+  /// Queues [FlutterAppManager.launchAutoLaunchApps] behind in-flight work.
   ///
-  /// Serialized behind any in-flight reload, restart or migration, and a no-op
-  /// once disposed, so a UI attaching during shutdown cannot spawn a process
-  /// nothing will clean up.
+  /// A session disposed while this waits launches nothing.
   Future<void> launchAutoLaunchApps() {
     return _chainGuarded(() async {
       await _flutterManager?.launchAutoLaunchApps();
     }, whenDisposed: () {});
   }
 
-  /// Recovers from a degraded start: re-runs a full code generation and, on
-  /// success, compiles and boots the server.
+  /// Recovers from a degraded start by regenerating, compiling and booting.
   ///
-  /// This is the manual counterpart to the automatic recovery that the file
-  /// watcher drives in watch mode. It is the recovery path for `--no-watch`,
-  /// where no watcher exists. A no-op if a server is already running (use
-  /// [forceRestart] then). Throws a [StateError] if the session has been
-  /// disposed.
+  /// A no-op while a server runs. Throws a [StateError] after [dispose].
   Future<void> retryStart() {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
@@ -817,7 +802,7 @@ class WatchSession {
       _state = SessionState.applyingMigration;
       try {
         await _applyMigrationsAction();
-        // Migrations regen the client lib; refresh Flutter.
+        // Migrations regen the client lib, so refresh Flutter.
         await _reloadAllFlutterApps();
       } finally {
         if (_state == SessionState.applyingMigration) {
@@ -828,7 +813,7 @@ class WatchSession {
   }
 
   /// Hot-reloads via `vmService.reloadSources`. With a non-null [dillPath],
-  /// the VM loads the pre-compiled dill; with `null`, the VM's own kernel
+  /// the VM loads the pre-compiled dill. With `null`, the VM's own kernel
   /// service compiles changed sources. Logs success or failure.
   ///
   /// Returns `true` on success, `false` if the VM service is not connected

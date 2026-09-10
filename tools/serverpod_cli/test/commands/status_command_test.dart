@@ -20,8 +20,7 @@ void main() {
 
     setUp(() async {
       root = await Directory.systemTemp.createTemp('far');
-      // Deep enough that neither the package path nor a registry link under
-      // it fits a Unix socket address, wherever the temp directory is.
+      // Too deep for a socket address via the package or a registry link.
       serverDir = p.joinAll([root.path, ...List.filled(12, 'deeper_still')]);
       await Directory(serverDir).create(recursive: true);
       RunnerRegistry.defaultDir = Directory(p.join(serverDir, 'registry'));

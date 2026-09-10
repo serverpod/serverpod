@@ -8,26 +8,11 @@ import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
     show FileEx, FileWriteEx, ServerpodAddresses;
 
-/// What the runner publishes about itself: where to reach it, what it is
-/// serving, and the configuration it was started with.
+/// What a runner publishes about itself in `.dart_tool/serverpod/runner.json`.
 ///
-/// Lives at `<serverDir>/.dart_tool/serverpod/runner.json`, written once the
-/// runner holds its lock and socket, rewritten as the stage or an address
-/// moves, and removed on a graceful shutdown.
-///
-/// The sockets are not named here. They sit beside the file under fixed
-/// names, and a client derives their paths from where it found the manifest,
-/// so a mount that shows the project at another path still works.
-///
-/// A crash leaves the file behind, so its presence alone is not evidence of a
-/// live runner. `resolveRunner` decides that.
+/// A crashed runner leaves it behind, so only `resolveRunner` decides liveness.
 class RunnerManifest {
-  /// The protocol spoken over the attach socket.
-  ///
-  /// A detached runner survives `dart pub global activate serverpod_cli`, so a
-  /// new client can meet an old runner. Bump this when a change to the attach
-  /// protocol would leave an older client misreading a newer runner, or the
-  /// reverse.
+  /// The attach protocol version, bumped on any change old peers would misread.
   static const currentProtocolVersion = 1;
 
   const RunnerManifest({
@@ -47,68 +32,40 @@ class RunnerManifest {
   final int protocolVersion;
   final String cliVersion;
 
-  /// The runner process id, for diagnostics.
-  ///
-  /// Not used for liveness. A pid can be reused, and the runner may be in
-  /// another pid namespace.
+  /// The runner's pid, never proof of liveness since pids get reused.
   final int pid;
 
-  /// The registry's name for this server package, a stable hash of its
-  /// canonical path.
-  ///
-  /// Names the link the registry keeps to the directory this manifest is in,
-  /// for a client whose own path to the sockets beside it exceeds the socket
-  /// address limit.
+  /// The name of this package's registry link, from `RunnerRegistry.idFor`.
   final String projectId;
 
-  /// The pod's VM service proxy, once it has booted.
-  ///
-  /// Null until then. A degraded start never gets one.
+  /// The pod's VM service proxy, null until the runner has a stack.
   final RunnerVmServiceUris? vmService;
 
-  /// The addresses the pod's listeners resolved to.
-  ///
-  /// Null until the pod reports them.
+  /// The addresses the pod's listeners bound, null until the pod reports them.
   final ServerpodAddresses? servers;
 
-  /// The bind ports this runner will take, keyed by listener name (`api`,
-  /// `insights`, `web`), decided before Docker and the first compile.
+  /// The bind ports this runner claims, keyed by listener name.
   ///
-  /// Null until port resolution has run. Empty once it has and the stack is
-  /// moving aside to ephemeral ports, so it claims nothing. A peer resolving
-  /// its own ports reads this to tell a runner that will bind 8080 from one
-  /// that has not decided yet, minutes before [servers] can say what was
-  /// bound.
+  /// Null until port resolution runs, and empty when the stack moved aside.
   final Map<String, int>? ports;
 
-  /// The Docker Compose services this runner started or attached to.
-  ///
-  /// Null when it did not consider Docker.
+  /// The Docker Compose services, null before the stack or without Docker.
   final RunnerDocker? docker;
 
-  /// What the runner cannot change after startup.
+  /// The configuration the runner cannot change after startup.
   final RunnerConfig config;
 
-  /// How far the runner has got.
-  ///
-  /// Published as [RunnerStage.starting] before Docker, generation and the
-  /// first compile, then rewritten as the stage moves.
   final RunnerStage stage;
 
-  /// What the runner left with, on a start that aborted.
-  ///
-  /// Such a start leaves the manifest behind at [RunnerStage.stopping] rather
-  /// than removing it.
+  /// The code an aborted start exited with.
   final int? exitCode;
 
-  /// Whether a runner left this behind as the record of a stop that finished.
+  /// Whether this is the record of an aborted start.
   ///
-  /// An aborted start is the one shutdown that ends with the file still on
-  /// disk, and [exitCode] is what marks it. A runner on its way down
-  /// republishes the stage alone and removes the file when it is done.
+  /// A graceful shutdown publishes [RunnerStage.stopping] without an exit code.
   bool get isFinished => stage == RunnerStage.stopping && exitCode != null;
 
-  /// This manifest with the given fields replaced.
+  /// A copy with the given fields replaced, where null keeps the current value.
   RunnerManifest copyWith({
     RunnerVmServiceUris? vmService,
     ServerpodAddresses? servers,
@@ -167,8 +124,6 @@ class RunnerManifest {
     config: RunnerConfig.fromJson(_map(json['config']) ?? const {}),
   );
 
-  /// Writes this manifest for the server project at [serverDir], creating the
-  /// directory if needed.
   Future<void> writeTo(String serverDir) async {
     final file = File(serverpodRunnerManifestPath(serverDir));
     await file.parent.create(recursive: true);
@@ -177,11 +132,7 @@ class RunnerManifest {
     );
   }
 
-  /// Reads the manifest for the server project at [serverDir], or `null` when
-  /// there is none or it cannot be parsed.
-  ///
-  /// A corrupt manifest reads as absent, being a stale cache the next runner
-  /// overwrites.
+  /// Reads the manifest at [serverDir], or null when absent or unparseable.
   static Future<RunnerManifest?> readFrom(String serverDir) async {
     final file = File(serverpodRunnerManifestPath(serverDir));
     try {
@@ -197,15 +148,11 @@ class RunnerManifest {
     }
   }
 
-  /// Removes the manifest for the server project at [serverDir].
   static Future<void> deleteFrom(String serverDir) =>
       File(serverpodRunnerManifestPath(serverDir)).deleteIfExists();
 }
 
-/// The VM service URI clients should attach to.
-///
-/// The proxy, not the pod's own URI, which moves on every restart.
-/// `vm-service-info.pod.json` names the pod's.
+/// The VM service proxy's URI, which survives pod restarts.
 class RunnerVmServiceUris {
   const RunnerVmServiceUris({this.proxy});
 
@@ -217,11 +164,9 @@ class RunnerVmServiceUris {
       RunnerVmServiceUris(proxy: json['proxy'] as String?);
 }
 
-/// Whether this runner started the Docker Compose services, and under which
-/// project name.
+/// The Docker Compose project, and whether this runner started its services.
 ///
-/// Teardown is conditional on [startedByRunner]. A runner that attached to
-/// services someone else brought up must not stop them.
+/// A runner stops only the services it started.
 class RunnerDocker {
   const RunnerDocker({required this.startedByRunner, required this.project});
 
@@ -241,11 +186,7 @@ class RunnerDocker {
 
 const _serverArgsEqual = ListEquality<String>();
 
-/// The runner's effective configuration, limited to what it cannot change
-/// after startup.
-///
-/// Options describing the client rather than the stack, `--attach` and
-/// `--tui`, are deliberately absent.
+/// The runner options fixed at startup, leaving out client-only options.
 class RunnerConfig {
   const RunnerConfig({
     required this.watch,
@@ -258,17 +199,10 @@ class RunnerConfig {
   final bool flutter;
   final List<String> serverArgs;
 
-  /// Whether Docker Compose services are part of this stack.
-  ///
-  /// What the runner resolved. Null in a requested configuration that passed
-  /// neither `--docker` nor `--no-docker`, leaving the default to the project.
+  /// Whether the stack runs Docker Compose, null when a request left it open.
   final bool? docker;
 
-  /// The option names on which this configuration differs from [other], for an
-  /// error that names them rather than just refusing.
-  ///
-  /// [other] is what an invocation asked for. This is what the runner is
-  /// serving.
+  /// The option names on which this differs from the requested [other].
   List<String> differencesFrom(RunnerConfig other) => [
     if (watch != other.watch) '--watch',
     if (flutter != other.flutter) '--flutter',
@@ -278,10 +212,6 @@ class RunnerConfig {
   ];
 
   /// The `serverpod runner serve` arguments that reproduce this configuration.
-  ///
-  /// `serverpod start` spawns `runner serve` with these, then compares what
-  /// came back via [differencesFrom]. A null [docker] passes neither flag,
-  /// leaving the runner to take the default from the project.
   List<String> toServeArgs({required String directory}) {
     return [
       '--directory',
@@ -315,9 +245,7 @@ class RunnerConfig {
 Map<String, Object?>? _map(Object? value) =>
     value is Map<String, Object?> ? value : null;
 
-/// The port claims in [value], or null when there are none.
-///
-/// An empty map stays empty: it is a decision, not an absence.
+/// The port claims in [value], keeping an empty map distinct from null.
 Map<String, int>? _ports(Object? value) => switch (_map(value)) {
   final map? => {
     for (final entry in map.entries)

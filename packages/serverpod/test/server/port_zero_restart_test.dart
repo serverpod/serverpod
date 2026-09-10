@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 import 'test_helpers/empty_endpoints.dart';
 
 void main() {
-  // One per server: the pod records the port it bound in its config.
+  // One per server, since ServerpodConfig names each config it holds.
   ServerConfig portZeroConfig() => ServerConfig(
     port: 0,
     publicScheme: 'http',
@@ -67,9 +67,7 @@ void main() {
 
         await expectLater(
           pod.withPausedRequestHandling(() async {
-            // Shared, since Dart refuses a second plain bind in-process before
-            // asking the OS. The pod's own bind is not shared, so it fails
-            // the way it does against a foreign holder.
+            // Shared, as Dart rejects a second plain bind within one process.
             squatter = await ServerSocket.bind(
               InternetAddress.anyIPv6,
               apiPort,

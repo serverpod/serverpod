@@ -168,12 +168,9 @@ class StartCommand extends ServerpodCommand<StartOption> {
   }
 }
 
-/// Leaves for a runner that answered [ensureRunner] and then could not be
-/// attached to.
+/// Exits for a runner [ensureRunner] resolved and [attachTo] cannot reach.
 ///
-/// A runner that stopped in between has left its manifest behind with the
-/// exit code, and this leaves with that and the log tail, which is the only
-/// account of why. Anything else is reported as [e].
+/// Uses the exit code a runner that stopped meanwhile left in its manifest.
 @visibleForTesting
 Future<Never> explainUnreachableRunner(
   String serverDir,
@@ -192,11 +189,7 @@ Future<Never> explainUnreachableRunner(
   throw ExitException.error();
 }
 
-/// Loads the project configuration for a command that is about to bring a
-/// runner up.
-///
-/// Shared by `serverpod start` and `serverpod runner start`: they differ in
-/// what they do once a runner is up, not in how they find the project.
+/// Loads the project configuration, and exits when it cannot.
 Future<GeneratorConfig> loadRunnerProjectConfig({
   required String directory,
   required bool? interactive,
@@ -220,23 +213,10 @@ Future<GeneratorConfig> loadRunnerProjectConfig({
   return config;
 }
 
-/// Returns the manifest of a runner serving [serverDir], starting one if there
-/// is none.
+/// Returns the manifest of the runner serving [serverDir], spawning one.
 ///
-/// Fails rather than attaching when a live runner disagrees with what this
-/// invocation asked for. Attaching anyway with a warning would leave a caller
-/// that reads only the exit status believing it got what it asked for.
-///
-/// The runner returned may still be starting: it publishes before Docker,
-/// generation and the first compile, so a caller about to attach can watch
-/// them. A caller with nothing to render waits with [awaitStackUp].
-///
-/// A runner that has published [RunnerStage.stopping] is not one to attach to.
-/// It publishes that before closing its socket, so there is a window where it
-/// still answers, and a client that attached in it would wait forever for a
-/// stage change that has already been sent.
-///
-/// [useTui] is reported to analytics only. Nothing here renders.
+/// Exits for a runner with options other than [asked], or one stopping, whose
+/// stage change a client attaching now would never see.
 Future<RunnerManifest> ensureRunner({
   required GeneratorConfig config,
   required String serverDir,
@@ -275,9 +255,7 @@ Future<RunnerManifest> ensureRunner({
       return manifest;
 
     case NoRunner(:final staleManifest):
-      // Before spawning, so the answer reaches this terminal. The runner
-      // probes again for itself, but it says what it found only in its log,
-      // and stops with a clean code the attaching client would not explain.
+      // The runner would report this only in its log, and exit with zero.
       final existingUri = await _checkExistingServer(
         userVmServiceInfoPath(serverDir),
       );
@@ -287,12 +265,8 @@ Future<RunnerManifest> ensureRunner({
         throw ExitException(0);
       }
 
-      // The stale manifest names the socket path the new runner binds before
-      // it publishes. A probe in that gap would read the old pid and stage as
-      // live.
+      // A new runner binds before it publishes, so this would pass for it.
       if (staleManifest != null) await RunnerManifest.deleteFrom(serverDir);
-      // Null when another start won the lock meanwhile. Its runner is then
-      // the one to resolve, and gets the same checks as any found running.
       return await _spawnRunner(
             config: config,
             serverDir: serverDir,
@@ -310,23 +284,16 @@ Future<RunnerManifest> ensureRunner({
   }
 }
 
-/// Waits for the stack behind [manifest] to come up, for a caller that does
-/// not attach.
+/// Waits until the stack behind [manifest] leaves [RunnerStage.starting].
 ///
-/// The manifest is published before Docker, generation and the first compile,
-/// so a client can attach and watch them. A caller with nothing to render
-/// waits here instead, until the stage leaves [RunnerStage.starting]. There is
-/// no deadline, since a cold start takes minutes. The wait still ends the
-/// moment the runner goes away, which a start that aborts announces by leaving
-/// its manifest behind at [RunnerStage.stopping].
+/// Has no deadline, since a cold start takes minutes.
 Future<RunnerManifest> awaitStackUp(
   String serverDir,
   RunnerManifest manifest, {
   Duration addressTimeout = const Duration(seconds: 10),
 }) async {
   var current = manifest;
-  // The stage is running once the pod is up, before it has bound its ports.
-  // The addresses follow in a manifest of their own.
+  // A running stage can precede the manifest carrying the bound addresses.
   DateTime? addressDeadline;
   bool comingUp(RunnerManifest manifest) => switch (manifest.stage) {
     RunnerStage.starting => true,
@@ -368,15 +335,7 @@ Future<RunnerManifest> awaitStackUp(
   return current;
 }
 
-/// Reports a runner whose stack is up and how to reach it, or fails for one
-/// whose stack is not.
-///
-/// What `serverpod start --no-attach` and `serverpod runner start` both do
-/// once [awaitStackUp] returns. The two commands differ in the options they
-/// accept, not in what they say afterwards. Both promise that the stack is up
-/// when they return zero, so a degraded runner, up and serving its socket but
-/// with no server because the project does not build, is an error here even
-/// though it is left running for a client to recover.
+/// Reports how to reach a runner with its stack up, or exits when degraded.
 void reportRunnerReady(RunnerManifest manifest) {
   if (manifest.stage == RunnerStage.degraded) {
     log.error(
@@ -401,10 +360,7 @@ void reportRunnerReady(RunnerManifest manifest) {
   );
 }
 
-/// Reports a runner that stopped during startup and leaves with its code.
-///
-/// The code is the runner's own, zero included: a runner that found a server
-/// already running stops cleanly, and so does the command that spawned it.
+/// Reports a runner that stopped during startup and exits with its exit code.
 Future<Never> _leaveWithAbortedStart(
   String serverDir, {
   required int pid,
@@ -420,11 +376,9 @@ Future<Never> _leaveWithAbortedStart(
   throw ExitException(exitCode);
 }
 
-/// The global options a spawned runner runs with, as this command did.
+/// The global options of this command that a spawned runner runs with.
 ///
-/// The experimental features decide what generation accepts. Verbose and
-/// quiet set the runner's own log level. Analytics turned off stay off: the
-/// runner records its own command invocation.
+/// `--no-analytics` carries over, since the runner records its own invocation.
 List<String> runnerServeGlobalArgs(Configuration<GlobalOption> global) => [
   if (global.value(GlobalOption.verbose)) '--verbose',
   if (global.value(GlobalOption.quiet)) '--quiet',
@@ -435,14 +389,10 @@ List<String> runnerServeGlobalArgs(Configuration<GlobalOption> global) => [
   ],
 ];
 
-/// The size of the runner's log file when this command spawned its runner.
-///
-/// The file is appended to across runs. The tail printed for a failed start
-/// begins here, so it is this run's.
+/// The runner log's length at spawn, where this run's output starts.
 int _runnerLogFrom = 0;
 
-/// Prints the last [lines] of the runner's log file past byte [from], for a
-/// start that failed with nobody attached to see why. Returns them.
+/// Prints and returns the last [lines] of the runner's log past byte [from].
 @visibleForTesting
 Future<List<String>> printRunnerLogTail(
   String serverDir, {
@@ -451,7 +401,7 @@ Future<List<String>> printRunnerLogTail(
 }) async {
   final file = File(serverpodRunnerLogPath(serverDir));
   if (!file.existsSync()) return const [];
-  // Rotated since: the whole file is this run's.
+  // A file shorter than from was rotated, so all of it is this run's.
   if (from > file.lengthSync()) from = 0;
   final all = await file
       .openRead(from)
@@ -469,9 +419,7 @@ Future<List<String>> printRunnerLogTail(
 
 /// Spawns the runner detached and waits for it to publish its manifest.
 ///
-/// Detached, because the operating system delivers SIGINT to a whole process
-/// group: a runner spawned in this terminal's group would die on the next
-/// Ctrl+C in it. [ProcessStartMode.detached] puts it in a group of its own.
+/// Returns null when a runner spawned by another start took the lock.
 Future<RunnerManifest?> _spawnRunner({
   required GeneratorConfig config,
   required String serverDir,
@@ -501,8 +449,7 @@ Future<RunnerManifest?> _spawnRunner({
       '--detached',
       ...asked.toServeArgs(directory: serverDir),
     ],
-    // From the package itself, so the sockets bind by a relative path that
-    // fits the Unix socket address limit wherever the package sits.
+    // Sockets bind by relative path, which fits the socket address limit.
     workingDirectory: serverDir,
     mode: ProcessStartMode.detached,
   );
@@ -519,8 +466,7 @@ Future<RunnerManifest?> _spawnRunner({
         exitCode: exitCode,
       );
     case RunnerTimedOut():
-      // Left alone it would publish later and hold the project for a start
-      // this command has already reported as failed.
+      // Left alone, it could come up later and hold the project.
       process.kill();
       log.error(
         'The runner (pid ${process.pid}) did not come up in time and was '
@@ -531,14 +477,12 @@ Future<RunnerManifest?> _spawnRunner({
   }
 }
 
-/// [echo] bound to [appId], or null when there is none.
 void Function(String line)? _appLineEcho(
   void Function(String appId, String line)? echo,
   String appId,
 ) => echo == null ? null : (line) => echo(appId, line);
 
-/// Whether this process is the Dart VM running a script, rather than a
-/// compiled executable of the CLI itself.
+/// Whether this process is the Dart VM running a script, not a compiled CLI.
 bool get _runsOnDartVm =>
     p.basenameWithoutExtension(Platform.resolvedExecutable) == 'dart';
 
@@ -559,7 +503,7 @@ final class RunnerTaken extends RunnerStartOutcome {
   const RunnerTaken();
 }
 
-/// The runner stopped before or while publishing, leaving its exit code.
+/// The runner stopped early, with its manifest's exit code or 1 without one.
 final class RunnerAborted extends RunnerStartOutcome {
   const RunnerAborted(this.exitCode);
 
@@ -571,15 +515,9 @@ final class RunnerTimedOut extends RunnerStartOutcome {
   const RunnerTimedOut();
 }
 
-/// Waits for the runner spawned as [pid] to publish a manifest and answer on
-/// its socket, or to leave its manifest behind at [RunnerStage.stopping],
-/// or to die before either, or gives up.
+/// Waits until the runner spawned as [pid] answers, stops, dies or times out.
 ///
-/// [timeout] only needs to cover process startup and reading the project
-/// config. The runner publishes before generation, Docker and the first
-/// compile. A runner that dies before publishing, on a lock or a log file it
-/// could not open, is noticed by its pid: detached, it has no exit code to
-/// await.
+/// A detached runner has no exit code to await, so this watches its [pid].
 @visibleForTesting
 Future<RunnerStartOutcome> awaitRunnerManifest(
   String serverDir, {
@@ -609,9 +547,7 @@ Future<RunnerStartOutcome> awaitRunnerManifest(
   }
 }
 
-/// How long a freshly spawned runner is given to publish its manifest.
-///
-/// Not a cold start's budget. See [awaitRunnerManifest] for what it has to span.
+/// How long a runner gets to publish, which it does before the slow startup.
 const _runnerStartTimeout = Duration(seconds: 30);
 
 /// Constructs a [NativeAssetsBuilder] for the server at [serverDir]. The
@@ -695,11 +631,6 @@ File? _findComposeFile(String serverDir) {
 }
 
 /// Whether the stack serves web, and so whether a reload refreshes a browser.
-///
-/// [addresses] settles it once the pod has reported them. Before then the
-/// configuration answers. An unreadable configuration is no evidence of a
-/// missing web server, so that case keeps [WatchSession]'s default of a browser
-/// to refresh.
 bool stackServesWeb(ServerpodAddresses? addresses, ServerpodConfig? config) {
   if (addresses != null) return addresses.web != null;
   return config == null || config.webServer != null;
@@ -707,9 +638,7 @@ bool stackServesWeb(ServerpodAddresses? addresses, ServerpodConfig? config) {
 
 /// The server's resolved configuration, or null when it cannot be read.
 ///
-/// Null is not exceptional, a project being mid-setup with an incomplete
-/// config. Every caller here then decides nothing and lets the pod report
-/// what is wrong.
+/// Null is normal mid-setup, and callers fall back to their defaults.
 ServerpodConfig? _loadServerConfig({
   required String serverDir,
   required String runMode,
@@ -748,34 +677,21 @@ bool _resolveStartDocker({
       database.host == '127.0.0.1';
 }
 
-/// The ports the pod binds, as environment overrides, and the ones this
-/// runner claims in its manifest.
+/// The pod's port environment overrides, and the ports this runner claims.
 typedef _ResolvedPorts = ({
   Map<String, String> environment,
   Map<String, int> claimed,
 });
 
-/// Decides which ports the pod should bind, as environment overrides, and
-/// which of the configured ones this runner claims.
+/// The pod's port overrides and this runner's claim, or null on a conflict.
 ///
-/// An empty environment when the configured ports are free, the ephemeral
-/// overrides when another Serverpod runner holds or has claimed them, and null
-/// when something else does. Null is an error, not a fallback. A listener
-/// configured with port zero gets the override either way, so the port it
-/// binds is pinned for every later spawn.
-///
-/// The claim is what a sibling resolving its ports meanwhile reads: the
-/// configured ports when they are kept, none when the stack moves aside.
-///
-/// Only development falls back. In production a taken port is a
-/// misconfiguration, and the configured ports are the claim.
+/// Port-zero listeners always get an override, so later spawns can pin them.
 Future<_ResolvedPorts?> _resolvePortEnvironment({
   required String serverDir,
   required String runMode,
   required ServerpodConfig? serverConfig,
 }) async {
-  // Nothing to claim. Left undecided, every sibling would move aside for this
-  // runner for as long as it runs.
+  // Claim nothing rather than stay undecided, which moves siblings aside.
   if (serverConfig == null) {
     return (
       environment: const <String, String>{},
@@ -904,11 +820,6 @@ Future<void> _stopDockerServices(String serverDir) async {
 }
 
 /// Prepends `--apply-migrations` to [serverArgs] unless it is already present.
-///
-/// Used for the **first** pod process started by `serverpod start` so pending
-/// migrations run inside the server (without requiring the insights endpoint).
-/// Also used when the CLI migration runner defers to the pod (e.g. missing
-/// native database assets).
 List<String> _withApplyMigrations(List<String> serverArgs) {
   if (serverArgs.contains('--apply-migrations')) return serverArgs;
   return ['--apply-migrations', ...serverArgs];
@@ -916,7 +827,7 @@ List<String> _withApplyMigrations(List<String> serverArgs) {
 
 /// Watch-session [ApplyMigrationsAction] that applies pending and repair
 /// migrations by calling the running pod's `applyMigrations` endpoint. The
-/// pod itself runs the migration in-process; the CLI only triggers it.
+/// pod runs the migration in-process. The CLI only triggers it.
 Future<void> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
@@ -936,11 +847,6 @@ Future<void> _applyMigrationsForSession({
 }
 
 /// Brings the development stack up and returns the context that owns it.
-///
-/// Called only by the runner process. Nothing renders here, and what a client
-/// sees it gets from [RunnerApi]'s snapshot and events. Where raw output is
-/// echoed, a terminal in a foreground run or the log file when detached, is
-/// the one parameter that still differs between invocations.
 Future<WatchLoopSetupResult> setupWatchLoop({
   required GeneratorConfig config,
   required String serverDir,
@@ -1027,14 +933,11 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
   final serverpodToolDir = serverpodToolDirPath(serverDir);
   final vmServiceInfoFile = userVmServiceInfoPath(serverDir);
-  // The pod always writes its raw VM service URI to a separate file; the
-  // user-facing vm-service-info.json receives the proxy URI written by
-  // _mountOrRetargetProxy.
+  // The pod writes its raw VM service URI to a separate file. The user-facing
+  // vm-service-info.json gets the proxy URI from _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
-  // Bound before the manifest names it, and fatal when it cannot be. A runner
-  // whose manifest names no live socket is indistinguishable from one that
-  // never came up, so `serverpod start` would time out on a runner that is up.
+  // Fatal, since a manifest without a live socket looks like a failed start.
   try {
     await attachSocket.start();
     attachSocket.connect(runnerApi);
@@ -1048,16 +951,11 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
   await manifestPublisher.publish();
 
-  // Reassigned as the steps below add a resource, so the one exception path
-  // at the end releases whatever was held when a step threw.
+  // Grows with each resource below, so the final catch releases what is held.
   Future<void> Function({int exitCode}) rollback = ({exitCode = 1}) =>
       releaseRunnerHold(exitCode: exitCode);
 
   try {
-    // If a server is already running, abort so the IDE can attach to the
-    // existing instance via the unchanged info file. Cheap local check; runs
-    // before Docker Compose provisioning so we don't pay compose-up just to
-    // discard it.
     final existingUri = await _checkExistingServer(vmServiceInfoFile);
     if (existingUri != null) {
       log.info('Existing server found.');
@@ -1075,12 +973,9 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       await releaseRunnerHold(exitCode: 1);
       return const WatchLoopAborted(1);
     }
-    // Read at every pod spawn. Pinned to what the first pod bound once it
-    // reports, so a restart keeps the address the Flutter apps were built
-    // against.
+    // Read per spawn, and pinned once the first pod reports its ports.
     var portEnvironment = resolvedPorts.environment;
-    // Claimed before Docker and the first compile, so a sibling resolving its
-    // ports meanwhile reads a decision rather than silence.
+    // Claimed before Docker, so a sibling resolving ports sees the decision.
     await manifestPublisher.replace(
       manifestPublisher.manifest.copyWith(ports: resolvedPorts.claimed),
     );
@@ -1115,17 +1010,13 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       return const WatchLoopAborted(0);
     }
 
-    // Apply pending migrations from the CLI before booting the pod.
     serverArgs.value = _withApplyMigrations(serverArgs.value);
 
-    // prime: false - the single full prime happens inside generateIfStale; here
-    // we only spawn the isolate eagerly so it overlaps the staleness check.
+    // Unprimed, to overlap the staleness check. generateIfStale primes it.
     final analyzersFuture = IsolatedAnalyzers.create(config, prime: false);
     Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
-    // Tear down everything provisioned so far: the analyzer isolate and any
-    // Docker services. A failed/in-flight analyzer future must not prevent the
-    // Docker teardown, so closing it is guarded.
+    // A failed analyzer future must not skip the rest of the rollback.
     Future<void> rollbackStartup({int exitCode = 1}) async {
       try {
         await closeAnalyzers();
@@ -1135,8 +1026,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
     rollback = rollbackStartup;
 
-    // keepPrimedWhenFresh: the analyzers are needed by the watch session even when
-    // generation is up to date.
     final genResult = await generateIfStale(
       config: config,
       keepPrimedWhenFresh: true,
@@ -1150,9 +1039,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       },
     );
 
-    // Whether the project is currently buildable. A clean generation failure no
-    // longer aborts: in a recoverable session we keep watching with no server
-    // and boot it once the user fixes the errors.
+    // A failed generation leaves the runner degraded instead of aborting.
     var buildOk = genResult.success;
     if (!buildOk) {
       log.error('Code generation failed.');
@@ -1165,24 +1052,16 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       return const WatchLoopAborted(0);
     }
 
-    // FES setup (watch mode only).
     KernelCompiler? compiler;
     NativeAssetsBuilder? nativeAssetsBuilder;
     String? dartExecutable;
-    // The resolution's `.dart_tool` whose package_config.json the FES reads;
-    // watched below so a dependency change is picked up in place.
     String? serverDartToolDir;
-    // Scopes a shared (workspace) package_config.json change to the server's own
-    // dependency closure so the pod reloads only when its closure actually
-    // changed. Null disables the gate (always reload), matching prior behavior.
+    // Null reloads the pod on every package_config.json change.
     PackageDependencyTracker? serverDependencyTracker;
     if (watch) {
       final entryPoint = p.join(serverDir, 'bin', 'main.dart');
       final initialDill = p.join(serverpodToolDir, 'server.dill');
-      // Resolve the server's resolution root once and reuse it everywhere it is
-      // needed: the compiler's `--packages` (so the in-place invalidation targets
-      // the exact URI the CFE loaded, see KernelCompiler), the native-assets
-      // builder, and the watch set below. Single walk, single source of truth.
+      // One root for compiler, hooks and watcher. KernelCompiler says why.
       final projectRoot = await discoverProjectRootFrom(serverDir);
       serverDartToolDir = p.join(projectRoot, '.dart_tool');
       final packageConfigPath = p.join(
@@ -1217,20 +1096,11 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
       await localCompiler.start();
 
-      // Compile if the cached dill is stale. The FES starts in the background
-      // (KernelCompiler gates compile/reset calls internally until start
-      // completes), so if the dill is up to date we boot immediately.
-      //
-      // Skip the compile when generation already failed - the generated code is
-      // invalid, so the compile would only fail noisily. The FES stays in its
-      // fresh post-start state, ready for the watch session to compile from
-      // scratch once the project is fixed.
       if (buildOk) {
         if (!await localCompiler.compileIfNeeded(
           config.watchPaths(includeWeb: true, includeClientPackage: true),
         )) {
-          // Reject the failed compile so the FES returns to its last accepted
-          // (empty) state, leaving it ready for a clean full compile on recovery.
+          // Back to the empty state, so recovery does a full compile.
           await localCompiler.reject();
           log.error('Initial compilation failed.');
           buildOk = false;
@@ -1246,10 +1116,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       nativeAssetsBuilder = localBuilder;
       dartExecutable = localCompiler.dartExecutable;
 
-      // Seed the closure baseline now (before any file event) so the first
-      // package_config.json change computes a real delta. resolveDartToolDir
-      // validates the resolution lists the server package; a null disables the
-      // gate. Reads the same `.dart_tool` the FES resolves, so no extra watch.
+      // Built now, so the first package_config.json change has a baseline.
       final serverResolutionDartTool =
           PackageDependencyTracker.resolveDartToolDir(
             serverDir,
@@ -1263,8 +1130,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
             );
     }
 
-    // IDE-facing Flutter VM-service proxies. Bound now so info files exist at
-    // session start regardless of whether `--flutter` was passed.
+    // Initialized even without `--flutter`, for the apps' IDE info files.
     final serverPubspecFile = File(p.join(serverDir, 'pubspec.yaml'));
     final flutterManager = FlutterAppManager(
       runMode: runMode,
@@ -1307,8 +1173,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       return const WatchLoopAborted(0);
     }
 
-    // Server process factory. Invoked for the initial start and for each
-    // subsequent restart driven by the WatchSession
     late final WatchSession session;
     VmServiceProxy? proxy;
     Future<ServerProcess> serverProcessFactory(String? dillPath) async {
@@ -1343,8 +1207,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       return serverProcess;
     }
 
-    // Null in a degraded start: the project failed to build, so no server boots
-    // now. The watch session brings it up once the project is fixed.
     ServerProcess? initialServerProcess;
     if (buildOk) {
       initialServerProcess = await bootInitialServer(
@@ -1369,9 +1231,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       );
     }
 
-    // The last chance to honour a stop before the stack is announced as up.
-    // The attach socket has been answering since before Docker and
-    // generation, so a stop can land anywhere in the boot.
+    // A stop can arrive over the attach socket at any point in the boot.
     if (shutdown.isShutdown) {
       await rollback(exitCode: 0);
       return const WatchLoopAborted(0);
@@ -1379,8 +1239,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
     StreamSubscription<void>? fileChangeSub;
 
-    /// Sets up single watcher across server/shared/client/web/flutter.
-    /// Changes serialize through session.handleFileChange via WatchSession._chain.
+    /// Replaces the file watcher that feeds [WatchSession.handleFileChange].
     void setupFileWatcher() {
       fileChangeSub?.cancel();
       if (!watch) return;
@@ -1396,10 +1255,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
           serverDartToolDir: serverDartToolDir,
           flutterPackageGraphPaths: flutterPackageGraphPaths,
         ),
-        // Exact files so a change to one resolution's artifact never triggers the
-        // other's action (matters only in a non-workspace layout). The server has
-        // a single package_config.json; each Flutter app contributes its own
-        // package_graph.json (they collapse to one entry in a workspace layout).
+        // Exact files, so one resolution's change never runs another's action.
         packageConfigPath: serverDartToolDir == null
             ? null
             : p.join(serverDartToolDir, 'package_config.json'),
@@ -1412,7 +1268,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
           .listen((_) {});
     }
 
-    // Construct the watch session.
     session = WatchSession(
       compiler: compiler,
       nativeAssetsBuilder: nativeAssetsBuilder,
@@ -1425,8 +1280,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
           requirements: requirements,
         );
       },
-      // Full-project regeneration for on-demand recovery from a degraded start
-      // (retryStart), where there is no incremental change event to scope it.
       fullGenerate: () async {
         final allSources = await enumerateSourceFiles(config);
         return analyzeAndGenerate(
@@ -1455,12 +1308,9 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       servesWeb: () => stackServesWeb(lastServerAddresses, serverConfig),
     );
 
-    // Route IDE attach auto-launch through the session so it serializes with
-    // reload/restart cycles.
+    // Through the session, so an IDE-triggered launch waits behind any reload.
     flutterManager.launchOnWaitingClient = session.spawnFlutterApp;
 
-    // Forward server exit into the shutdown signal so the wait-for-exit
-    // point only ever has to await [shutdown.future]
     unawaited(session.done.then(shutdown.complete));
 
     runnerApi.bindStack(
@@ -1475,10 +1325,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     );
     runnerApi.recordFlutterApps(flutterManager.apps.toList());
 
-    // Auto-launch needs a UI attached and, under ephemeral ports, the address the
-    // pod bound, which is what the apps are built against. Whichever arrives last
-    // starts them, so a degraded start that is fixed later still launches them and
-    // a pod that never reports an address does not block on a future forever.
+    // Apps launch once a UI attaches and, on ephemeral ports, the pod reports.
     var clientAttached = false;
     var appsLaunched = false;
     var explainedTheWait = false;
@@ -1531,9 +1378,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     );
     onServerAddresses = (addresses) {
       final servers = addresses;
-      // Only a stack moved to ephemeral ports builds the apps against the
-      // reported address. On the configured ports the apps keep their own
-      // config, which may name an emulator or LAN host, not the pod's.
+      // Configured ports keep the apps' own config, which may name a LAN host.
       if (portEnvironment.isNotEmpty) {
         flutterManager.resolvedApiUrl = servers.api;
       }
@@ -1579,8 +1424,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       ),
     );
   } catch (error, stackTrace) {
-    // Logged here, so the runner's log carries it before the manifest says
-    // the runner stopped and the spawning `serverpod start` prints the tail.
+    // Logged first, so the log tail `serverpod start` prints includes it.
     printInternalError(error, stackTrace);
     await rollback();
     throw ExitException.error();
@@ -1590,18 +1434,8 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 /// Forwards [vmService]'s `Extension` events to [onEvent] for as long as the
 /// process is connected.
 ///
-/// This is where the structured logs of the server and of every Flutter app
-/// enter the session's [StartLogHistory]. A stream that cannot be subscribed
-/// to costs those logs, not the session, so it is warned about, not thrown.
-///
-/// The listener goes on before the stream is requested. DDS replays the
-/// Extension stream's history to a client that subscribes, and it does so
-/// before answering the request. The vm_service package drops an event that
-/// arrives with nobody listening, so listening afterwards loses what the
-/// process posted before this call. The resolved addresses go there, and the
-/// pod posts them once.
-///
-/// Returns whether [onEvent] is now hearing anything.
+/// Returns false when the subscription fails. It listens first, because DDS
+/// replays history before answering and vm_service drops unheard events.
 Future<bool> _recordExtensionEvents(
   VmService? vmService,
   void Function(Event event) onEvent,
@@ -1759,19 +1593,15 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
   return proxy;
 }
 
-/// The file an IDE reads the pod's VM service from, for the server package at
-/// [serverDir].
+/// The file an IDE reads the pod's VM service URI from.
 ///
-/// Holds the proxy URI when a runner serves the package, and the pod's own
-/// when it was started by hand.
+/// It names the runner's proxy, or the pod itself when started by hand.
 String userVmServiceInfoPath(String serverDir) =>
     p.join(serverpodToolDirPath(serverDir), 'vm-service-info.json');
 
-/// The VM service URI [content] records, or null when it records none.
+/// The `uri` string of the JSON object in [content], or null for anything else.
 ///
-/// Anything a live pod did not write reads as none: the file is whatever was
-/// last left at the path, and a start that threw over it would say nothing
-/// about the server it was asked to bring up.
+/// The file holds whatever was left at the path, so bad content is no error.
 @visibleForTesting
 String? vmServiceUriFrom(String content) {
   final Object? json;

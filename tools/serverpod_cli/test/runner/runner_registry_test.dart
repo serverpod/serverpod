@@ -238,8 +238,7 @@ void main() {
   });
 }
 
-/// Creates a server directory and returns it as the registry names it:
-/// symlinks resolved and, on Windows, case folded.
+/// Creates a server directory and returns its canonical, resolved path.
 Future<String> _serverDir(Directory tempDir, String name) async {
   final dir = await Directory('${tempDir.path}/$name').create();
   return p.canonicalize(dir.resolveSymbolicLinksSync());

@@ -11,7 +11,7 @@ const kAppsArea = 'apps';
 /// A view hosted in some area. Declares which area it is pinned to and owns
 /// its scroll position.
 abstract class PaneTab {
-  /// The area this tab is pinned to; routes the tab on insert.
+  /// The area this tab is pinned to, which routes the tab on insert.
   String get areaId;
 
   /// Tab label shown in the strip when an area has multiple tabs.
@@ -39,13 +39,12 @@ class ServerLogTab implements PaneTab {
 
 /// Where a Flutter app is in its lifecycle, as a tab renders it.
 enum AppRunState {
-  /// Spawned, not yet ready. Shows a spinner and its startup stage.
+  /// Spawned but not yet ready.
   launching,
 
-  /// Running. Serves a URL when the device is web.
   ready,
 
-  /// Not running: never launched, stopped by the user, or a failed launch.
+  /// Never launched, stopped, or failed to launch.
   stopped,
 }
 
@@ -75,7 +74,6 @@ class AppLogTab implements PaneTab {
   @override
   final String label;
 
-  /// Where the app is in its lifecycle.
   AppRunState runState;
 
   bool get ready => runState == AppRunState.ready;

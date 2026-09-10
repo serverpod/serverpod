@@ -179,10 +179,6 @@ void main() {
   });
 }
 
-/// Decodes an entry the way a `serverpod_cli` older than this codec does.
-///
-/// A globally activated CLI meets whatever `serverpod` the project pins, so
-/// the released spelling has to keep working.
 LogEntry _decodeAsOlderCli(Map<String, Object?> data) => LogEntry(
   time: DateTime.tryParse(data['timestamp'] as String? ?? '') ?? DateTime.now(),
   level: parseLogLevel(data['level'] as String?),

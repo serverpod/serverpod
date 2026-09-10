@@ -3,10 +3,6 @@ import 'dart:developer' as developer;
 import 'package:serverpod_shared/log.dart';
 
 /// Posts each log entry and scope transition as a [serverpodLogEvent].
-///
-/// [encodeLogEntry] and [decodeLogEntry] in `serverpod_shared` are the two
-/// ends of the encoding. Where the VM service is disabled [developer.postEvent]
-/// is a no-op.
 class VmServiceLogWriter extends LogWriter {
   @override
   Future<void> log(LogEntry entry) async => _postEvent(encodeLogEntry(entry));

@@ -1,25 +1,15 @@
 import 'package:serverpod_logging/serverpod_logging.dart';
 
-/// The VM service extension event the pod posts each log entry and scope
-/// transition on.
+/// The VM service extension event carrying the pod's log entries and scopes.
 ///
-/// A contract between two packages. The pod posts on it and the CLI subscribes
-/// to it. As a literal on each side, a rename would compile and silently stop
-/// the CLI seeing the pod's logs.
-///
-/// The payload carries no version, and one would not help, since a globally
-/// activated CLI meets whatever `serverpod` the project pins. Add keys rather
-/// than rename them, and keep reading the old spelling where one was renamed.
+/// The payload has no version, and a global CLI meets any pinned `serverpod`.
+/// Add keys, never rename them.
 const serverpodLogEvent = 'ext.serverpod.log';
 
 /// Encodes [entry] as the JSON the pod posts and the runner forwards.
 ///
-/// The scope goes whole rather than as an id. The label is what a renderer
-/// shows, and a consumer in another process cannot resolve an id it never saw
-/// opened.
-///
-/// `timestamp` is written beside `time` for one release, being the spelling a
-/// released CLI reads.
+/// The scope goes whole, since another process cannot resolve a bare id.
+/// `timestamp` duplicates `time` for CLIs that read only `timestamp`.
 Map<String, Object?> encodeLogEntry(LogEntry entry) => {
   'type': 'log',
   'time': entry.time.toUtc().toIso8601String(),
@@ -36,17 +26,10 @@ Map<String, Object?> encodeLogEntry(LogEntry entry) => {
   ...?_metadataField(entry.metadata),
 };
 
-/// Decodes what [encodeLogEntry] produced.
+/// Decodes what [encodeLogEntry], or a pod older than it, produced.
 ///
-/// Every field is optional on the way in. This decodes what another process
-/// sent, and a missing field costs that field, not the entry. A field of the
-/// wrong type still throws, since every read is a cast.
-///
-/// `timestamp` is read as [LogEntry.time] when `time` is absent, which is what
-/// a pod older than this codec sends. See [serverpodLogEvent].
-///
-/// [fallbackScopeLabel] names the scope when the payload carries none, absent
-/// or empty. The pod's session writer sends an empty label on purpose.
+/// A missing field costs only that field. A mistyped one can throw.
+/// [fallbackScopeLabel] names a scope that arrives without a label.
 LogEntry decodeLogEntry(
   Map<String, Object?> json, {
   String fallbackScopeLabel = '',
@@ -78,10 +61,7 @@ LogEntry decodeLogEntry(
   );
 }
 
-/// The [LogLevel] [name] denotes, defaulting to [LogLevel.info].
-///
-/// `warn` counts as `warning`. Several logging front-ends emit it, and an
-/// unrecognized level demotes to info.
+/// The [LogLevel] that [name] denotes, or [LogLevel.info] if none does.
 LogLevel parseLogLevel(String? name) => switch (name) {
   'debug' => LogLevel.debug,
   'warning' || 'warn' => LogLevel.warning,
@@ -90,14 +70,7 @@ LogLevel parseLogLevel(String? name) => switch (name) {
   _ => LogLevel.info,
 };
 
-/// Returns `{'metadata': ...}` with every value reduced to something
-/// `jsonEncode` accepts, or null when nothing survives.
-///
-/// Metadata is an open map: the CLI logger stashes a `LogType` in it, and the
-/// pod and Flutter apps put their own objects there. One non-encodable value
-/// would otherwise throw out of the JSON layer and take the whole connection
-/// down, so anything unrecognized is carried as its `toString()` rather than
-/// dropping the entry or the connection.
+/// Carries non-JSON values as `toString()`, which `jsonEncode` would reject.
 Map<String, Object?>? _metadataField(Map<String, Object?>? metadata) {
   if (metadata == null || metadata.isEmpty) return null;
   return {

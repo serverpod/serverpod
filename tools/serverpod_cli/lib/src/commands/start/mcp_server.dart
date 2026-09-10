@@ -40,14 +40,7 @@ base class ServerpodMcpServer extends MCPServer
     addResource(vmServiceResource, _readVmService);
   }
 
-  /// The runner this server exposes, or `null` before the watch session has
-  /// attached.
-  ///
-  /// Every tool reports an error until it is set.
-  ///
-  /// Setting it also subscribes to [RunnerApi.vmServiceUriChanges], so a
-  /// restart or crash recovery raises a resource-updated notification for
-  /// `serverpod://vm-service`.
+  /// The runner this server exposes, without which every tool reports an error.
   set runner(InProcessRunnerApi? runner) {
     _runner = runner;
     _vmServiceUriSub?.cancel();
@@ -356,8 +349,7 @@ List<String> _flutterAppIds(InProcessRunnerApi runner) => [
   for (final app in runner.flutterApps) app.id,
 ];
 
-/// Returns [result]'s message with the MCP wording of the retry and
-/// follow-up hints appended.
+/// [result]'s message with MCP wording for the retry and follow-up hints.
 String _migrationMessage(MigrationResult result) {
   final buffer = StringBuffer(result.message);
   if (result.abortedForWarnings) {
@@ -369,21 +361,18 @@ String _migrationMessage(MigrationResult result) {
   return buffer.toString();
 }
 
-/// Returns the standard error response for tools whose runner is unset because
-/// the watch session has not yet attached.
 CallToolResult _notConnectedError() => CallToolResult(
   content: [TextContent(text: 'Watch session not connected.')],
   isError: true,
 );
 
-/// Reads a string argument; treats missing, non-string, and empty values as
-/// `null`.
+/// Reads a string argument, or null when missing, empty or not a string.
 String? _stringArg(CallToolRequest request, String name) {
   final v = request.arguments?[name];
   return v is String && v.isNotEmpty ? v : null;
 }
 
-/// Reads a bool argument; treats missing or non-bool values as [defaultValue].
+/// Reads a bool argument, or [defaultValue] when missing or not a bool.
 bool _boolArg(
   CallToolRequest request,
   String name, {

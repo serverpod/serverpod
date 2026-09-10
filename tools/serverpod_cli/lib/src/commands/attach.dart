@@ -42,14 +42,7 @@ enum AttachOption<V> implements OptionDefinition<V> {
   final ConfigOptionBase<V> option;
 }
 
-/// Attaches a UI to a runner that is already up.
-///
-/// Resolves the server directory, connects to the runner's socket, renders
-/// what arrives, and reconnects when the runner restarts.
-///
-/// Detaching never stops the runner. Only `serverpod runner stop` and Shift+Q
-/// in the UI do, so the same keystroke never means "stop the server" in one
-/// session and "leave it running" in another.
+/// The `serverpod runner attach` command. Detaching leaves the runner running.
 class AttachCommand extends ServerpodCommand<AttachOption> {
   @override
   final name = 'attach';
@@ -92,13 +85,10 @@ class AttachCommand extends ServerpodCommand<AttachOption> {
   }
 }
 
-/// Renders the runner at [socketPath], returning the exit code to leave with.
+/// Renders the runner at [socketPath] and returns the exit code to leave with.
 ///
-/// [useTui] picks the terminal UI over the plain log stream. [waitForRunner]
-/// bounds how long a refused connection is retried, for a caller that just
-/// brought the runner up and knows the socket is coming. [onUnreachable]
-/// leaves for a runner that was there and is not any more, and a caller that
-/// resolved one passes it, since it can say what became of it.
+/// [waitForRunner] bounds retries after a spawn. Without [onUnreachable], an
+/// unreachable runner is logged and the command exits.
 Future<int> attachTo(
   String socketPath, {
   required bool useTui,
@@ -116,10 +106,7 @@ Future<int> attachTo(
   }
 }
 
-/// Renders the runner in the terminal UI, returning the exit code to leave
-/// with.
-///
-/// Shared with `serverpod start`, which attaches after bringing the runner up.
+/// Renders the runner in the terminal UI and returns the exit code.
 Future<int> attachWithTui(String socketPath, {Duration? waitForRunner}) async {
   final holder = StartAppStateHolder(ServerWatchState());
   final client = RunnerClient(
@@ -129,10 +116,7 @@ Future<int> attachWithTui(String socketPath, {Duration? waitForRunner}) async {
   );
   await client.attach(waitFor: waitForRunner);
 
-  // Whether the runner had a stack while this client watched. One that stops
-  // before it does, an existing server found or a port refused, has said why
-  // only in its log, and the tail is shown for it whatever code it leaves
-  // with.
+  // A runner stopping before its stack exists explains only in its log.
   var hadStack = _hasStack(client.stage);
   final stageSub = client.events.listen((event) {
     if (event case StageChangedEvent(:final stage) when _hasStack(stage)) {
@@ -156,13 +140,10 @@ Future<int> attachWithTui(String socketPath, {Duration? waitForRunner}) async {
     onStopRequested: requestExit,
     onRunnerStopped: requestExit,
   );
-  // Bound once the app is up: a runner already stopping, or one that went
-  // away, requests an exit as soon as it is seen.
+  // Bound once mounted, since an exit requested before then crashes.
   holder.onAttached = () {
     holder.onAttached = null;
     binding.bind();
-    // A runner that stops answering for longer than the deadline was killed
-    // or crashed rather than stopped, so nothing will announce an exit code.
     unawaited(client.gone.then((_) => requestExit(1)));
   };
 
@@ -197,13 +178,9 @@ Future<int> attachWithTui(String socketPath, {Duration? waitForRunner}) async {
 bool _hasStack(RunnerStage stage) =>
     stage == RunnerStage.running || stage == RunnerStage.degraded;
 
-/// Prints the last [lines] of the pod's output from [history], once the
-/// alternate screen is gone and has taken the error with it.
+/// Prints the last [lines] of the pod's output in [history] to [out].
 ///
-/// The raw lines, not the structured entries: a pod that failed to compile
-/// or crashed before its VM service was up said why on stderr only, and that
-/// is what the reader needs. The entries are the fallback for a runner that
-/// never got as far as a pod.
+/// Prefers raw lines, the only place an early crash or compile error shows.
 @visibleForTesting
 void printLogTail(StartLogHistory history, IOSink out, {int lines = 20}) {
   final raw = history.serverLines.toList();

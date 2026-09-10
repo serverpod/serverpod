@@ -76,8 +76,7 @@ void main() {
       'when the file cannot be written, '
       'then neither writing across a rotation nor closing throws or leaks',
       () async {
-        // A directory at the path fails every write the way a full disk does:
-        // lazily, on the sink, after the open succeeded.
+        // A directory at the path fails later writes, as a full disk does.
         await Directory(logPath).create();
         final file = RunnerLogFile(path: logPath, maxBytes: 20);
         await file.open();

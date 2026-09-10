@@ -7,8 +7,7 @@ import 'package:serverpod_cli/src/util/strip_ansi.dart';
 const _newline = 0x0a;
 const _carriageReturn = 0x0d;
 
-/// An [IOSink] that splits everything written to it into ANSI-free lines for
-/// [_onLine], optionally forwarding the raw writes to another sink unchanged.
+/// An [IOSink] that hands ANSI-free lines to [_onLine], forwarding raw writes.
 class LineSink implements IOSink {
   LineSink(this._onLine, [this._forwardTo]);
 
@@ -16,13 +15,7 @@ class LineSink implements IOSink {
   final IOSink? _forwardTo;
   final StringBuffer _lineBuffer = StringBuffer();
 
-  /// Decodes the byte chunks a piped process hands over.
-  ///
-  /// Chunked and lenient. A pipe splits wherever its buffer did, so a
-  /// multi-byte character can straddle two chunks, and a strict decode would
-  /// throw a [FormatException] out of the stream listener.
-  ///
-  /// [encoding] exists for the [IOSink] contract. A process writes UTF-8.
+  /// Chunked and lenient, since a pipe can split a multi-byte character.
   late final ByteConversionSink _bytes = const Utf8Decoder(
     allowMalformed: true,
   ).startChunkedConversion(_CallbackSink(_record));
@@ -33,8 +26,7 @@ class LineSink implements IOSink {
     _bytes.add(data);
   }
 
-  /// Forwards text as text, not bytes, so the terminal encodes it exactly
-  /// as it would without this sink.
+  /// Forwards text as text, so the terminal encodes it as usual.
   @override
   void write(Object? object) {
     _forwardTo?.write(object);
@@ -61,21 +53,14 @@ class LineSink implements IOSink {
   @override
   Future<void> addStream(Stream<List<int>> stream) => stream.forEach(add);
 
-  /// Records whatever was written without a trailing newline, and stays
-  /// open for the next writer.
-  ///
-  /// One sink outlives the pod processes it records, so a process that died
-  /// mid-line must not leave its half for the next process's first line.
+  /// Ends a partial line, so one pod's leftover never prefixes the next's.
   @override
   Future<void> flush() async {
     if (_lineBuffer.isNotEmpty) _emitLine();
     await _forwardTo?.flush();
   }
 
-  /// Records whatever was written without a trailing newline.
-  ///
-  /// Never closes [_forwardTo], which outside the TUI is the process's own
-  /// stdout or stderr.
+  /// Ends a partial line, leaving [_forwardTo] open as it may be stdout.
   @override
   Future<void> close() async {
     _bytes.close();
@@ -91,8 +76,7 @@ class LineSink implements IOSink {
   @override
   Future<void> get done => Future.value();
 
-  /// Splits [text] on newlines, holding back a trailing partial line until the
-  /// rest of it arrives.
+  /// Splits [text] into lines, holding back a trailing partial line.
   void _record(String text) {
     var start = 0;
     for (var i = 0; i < text.length; i++) {
@@ -111,10 +95,7 @@ class LineSink implements IOSink {
   }
 }
 
-/// Hands each decoded chunk to a callback as it arrives.
-///
-/// The `dart:convert` callback sinks buffer everything until close, which a
-/// log read while the runner runs cannot wait for.
+/// Hands each chunk on at once, unlike `dart:convert`'s buffering sinks.
 class _CallbackSink implements Sink<String> {
   _CallbackSink(this._onData);
 

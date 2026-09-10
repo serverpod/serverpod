@@ -29,12 +29,10 @@ class ServerProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Called at most once as a started process is discarded, whether stopped
-  /// normally or exited unexpectedly.
+  /// Called at most once as a started process is discarded.
   ///
-  /// Fires before teardown, while the process's last output is still arriving
-  /// on the sinks this is about to cancel. Told afterwards, a listener would
-  /// read that output as coming from a process it still believes alive.
+  /// Fires before teardown. Told later, a listener would read the last output
+  /// as coming from a live process.
   final void Function()? _onDispose;
 
   /// Path to write the VM service info JSON file to. When set, passed
@@ -48,7 +46,6 @@ class ServerProcess {
   StreamSubscription? _stdoutSub;
   StreamSubscription? _stderrSub;
 
-  /// Completes once the process's pipes have been read to their end.
   Future<void> _outputDrained = Future.value();
 
   VmService? _vmService;
@@ -333,7 +330,7 @@ class ServerProcess {
           final uri = json['uri'] as String?;
           if (uri != null) return uri;
         } on FormatException {
-          // File may be partially written; retry.
+          // File may be partially written, so retry.
         }
       }
       await Future<void>.delayed(delay);
@@ -360,9 +357,7 @@ class ServerProcess {
       await _vmService?.dispose();
       _vmService = null;
       _mainIsolateId = null;
-      // The process has exited, so its pipes end once what it wrote last is
-      // read: a crash's stack trace is what arrives last. A grandchild that
-      // inherited a pipe keeps it open, hence the bound.
+      // Bounded, since a grandchild that inherited a pipe keeps it open.
       await _outputDrained.timeout(
         const Duration(seconds: 2),
         onTimeout: () {},
@@ -373,8 +368,7 @@ class ServerProcess {
       _stdoutSub = null;
       _stderrSub = null;
       _sigtermSub = null;
-      // The sinks are shared with the next process. A line this one left
-      // unfinished is its own, not a prefix for the next one's first line.
+      // The sinks outlive this process, so end its unfinished line here.
       await _stdout.flush();
       await _stderr.flush();
 

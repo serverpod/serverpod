@@ -80,10 +80,7 @@ Future<void> waitForServerRunning(KeywordSearchInStream streamSearch) async {
 
 /// Stops the runner serving [serverDirPath], if one is still up.
 ///
-/// Killing the `serverpod start` process is not enough. It is only a client of
-/// a detached runner, and SIGINT detaches the client rather than stopping the
-/// stack. A runner left behind holds the project, and refuses the next test
-/// that starts one with different options.
+/// Killing `serverpod start` only detaches it, leaving the runner behind.
 Future<void> stopRunner(String serverDirPath) async {
   var result = await runServerpod(
     ['runner', 'stop'],
@@ -114,8 +111,7 @@ Future<void> waitForGeneratedOutput(
   }
 }
 
-/// What `serverpod start` says, and what it leaves on disk, once the runner it
-/// spawned throws after publishing its manifest.
+/// Expects a start whose runner threw after publishing to say so at once.
 void expectRunnerStoppedDuringStartup(
   ProcessResult result,
   String serverDirPath,
@@ -132,8 +128,7 @@ void expectRunnerStoppedDuringStartup(
   );
   expect(output, contains('stopped during startup'), reason: output);
   expect(output, contains('runner.log'), reason: output);
-  // Left behind on purpose, so the spawner reads how the runner stopped. What
-  // must not remain is a manifest still at `starting`.
+  // The runner leaves its manifest behind on purpose, but not at `starting`.
   var manifest = File(
     path.join(serverDirPath, '.dart_tool', 'serverpod', 'runner.json'),
   );
@@ -371,11 +366,8 @@ fields:
     );
 
     group('when the runner throws after publishing its manifest,', () {
-      // Once the pod publishes its VM service URI, the runner writes the
-      // proxy's URI to vm-service-info.json. A directory in its place makes
-      // that write throw, past the point where the runner has published its
-      // manifest, generated code and booted the pod. The one way from outside
-      // to make the runner throw rather than fail cleanly.
+      // A directory at vm-service-info.json makes the runner throw after boot,
+      // the only way a test can make it throw from outside.
       late Directory blocker;
 
       setUp(() async {

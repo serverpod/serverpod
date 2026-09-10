@@ -182,8 +182,6 @@ void main() {
       'when the runner was already stopping when the UI attached, '
       'then the UI is asked to leave with the code the stopping runner named',
       () async {
-        // The snapshot is the only place a stage set before this client
-        // subscribed can come from: the event stream does not replay.
         final stoppingRunner = FakeRunnerApi()
           ..stage = RunnerStage.stopping
           ..isRunning = false
@@ -469,20 +467,14 @@ void main() {
   });
 }
 
-/// A holder that keeps the migration binding reachable.
-///
-/// The production holder only takes callbacks, and the UI is what calls them.
-/// A test that exercises one has to hold on to it as it is bound.
+/// Records the binding's callbacks, which the production holder hides.
 class _CapturingHolder extends StartAppStateHolder {
   _CapturingHolder(super.state);
 
-  /// What the binding wired the Migrate key to.
   void Function({bool force})? createMigration;
 
-  /// What the binding wired the Stop App key to.
   void Function(int index)? stopApp;
 
-  /// What the binding wired the Stop Stack key to.
   void Function()? stopStack;
 
   @override

@@ -155,8 +155,7 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
   }
 }
 
-/// The options every command accepts, passed to [ServerpodCommandRunner] as
-/// its `globalOptions`.
+/// The options every command accepts.
 enum GlobalOption<V> implements OptionDefinition<V> {
   quiet(BetterCommandRunnerFlags.quietOption),
   verbose(BetterCommandRunnerFlags.verboseOption),

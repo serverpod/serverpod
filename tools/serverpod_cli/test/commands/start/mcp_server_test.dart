@@ -9,8 +9,7 @@ import 'package:test/test.dart';
 
 import '../../test_util/fake_runner_api.dart';
 
-/// Creates a connected server and client connection for testing, with a
-/// [FakeRunnerApi] already attached for the test to configure.
+/// Creates a connected MCP server and client over a [FakeRunnerApi].
 Future<
   ({
     ServerpodMcpServer server,

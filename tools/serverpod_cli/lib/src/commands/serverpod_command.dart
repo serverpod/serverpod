@@ -7,10 +7,9 @@ import 'serverpod_command_runner.dart';
 
 abstract class ServerpodCommand<O extends OptionDefinition>
     extends BetterCommand<O, void> {
-  /// Shell convention for a command found but not executable.
+  /// The shell exit code for a command that was found but cannot execute.
   static const int commandInvokedCannotExecute = 126;
 
-  /// The [ServerpodCommandRunner] running this command.
   ServerpodCommandRunner get serverpodRunner =>
       runner as ServerpodCommandRunner;
 
@@ -20,10 +19,7 @@ abstract class ServerpodCommand<O extends OptionDefinition>
          wrapTextColumn: log.wrapTextColumn,
        );
 
-  /// This command's usage text, with the runner's global options appended.
-  ///
-  /// `args` lists only a command's own options, so a command's `--help` would
-  /// otherwise omit globals like `--no-interactive`.
+  /// This command's usage text with the runner's global options appended.
   @override
   String get usage {
     final baseUsage = super.usage;

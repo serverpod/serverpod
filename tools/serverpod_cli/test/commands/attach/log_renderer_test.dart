@@ -440,7 +440,6 @@ void main() {
   });
 }
 
-/// An [IOSink] that records the lines written to it.
 class _RecordingSink implements IOSink {
   final List<String> lines = [];
 

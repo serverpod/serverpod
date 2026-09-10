@@ -22,15 +22,8 @@ final int Function(int pid, int sig) _libcKill = Platform.isWindows
 /// [Process] instance and awaiting [Process.exitCode] - no PID-recycling
 /// race, reactive on exit.
 ///
-/// POSIX: `kill(pid, 0)` (non-delivering probe). EPERM (cross-user PID
-/// recycling) is reported as dead - a non-issue on a single-user dev box.
-///
-/// Windows: waits zero milliseconds on the process handle. A process object
-/// is signalled the moment the process exits, and outlives it for as long as
-/// anyone holds a handle to it - the parent that spawned it, most often - so
-/// opening a handle only says the PID is still assigned, not that anything is
-/// running behind it. The wait needs `PROCESS_SYNCHRONIZE`, which the owner
-/// is granted; a process of another user reads as dead, as EPERM does.
+/// POSIX uses `kill(pid, 0)`. Windows waits zero ms on the process handle,
+/// since a handle outlives its process. Another user's process reads dead.
 bool isProcessAlive(int pid) {
   if (Platform.isWindows) {
     return _withProcessHandle(pid, (handle) {
@@ -88,9 +81,7 @@ String? _readWindowsImagePath(int pid) {
   });
 }
 
-/// Opens a handle to [pid] carrying `PROCESS_QUERY_LIMITED_INFORMATION` and
-/// [access], runs [body] with it, and closes the handle. Returns null when the
-/// PID is unassigned. Windows-only.
+/// Runs [body] on a handle to [pid], or returns null if it cannot open one.
 T? _withProcessHandle<T>(
   int pid,
   T? Function(win32.HANDLE handle) body, {

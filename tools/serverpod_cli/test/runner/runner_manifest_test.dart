@@ -29,8 +29,7 @@ RunnerManifest _manifest({
       config ?? const RunnerConfig(watch: true, flutter: true, serverArgs: []),
 );
 
-/// Reads the manifest at [serverDir] until [ready] holds, since a republish
-/// writes it in the background.
+/// Polls the manifest until [ready] or about a second, returning its proxy.
 Future<String?> _readUntil(
   String serverDir,
   bool Function(RunnerManifest manifest) ready,
@@ -326,8 +325,7 @@ void main() {
       'when a manifest is rewritten while another process reads it, '
       'then no read sees anything but a complete manifest',
       () async {
-        // A registry scan that reads the manifest between the truncate and
-        // the write resolves the live runner as gone and unregisters it.
+        // A read between truncate and write would unregister a live runner.
         await _manifest().writeTo(tempDir.path);
 
         for (var i = 0; i < 200; i++) {
