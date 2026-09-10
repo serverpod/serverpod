@@ -71,6 +71,91 @@ void main() {
     mockSession = MockSession();
   });
 
+  group('Given public storage with object ACLs disabled,', () {
+    late NativeGoogleCloudStorage storage;
+    late MockObjectsResource objects;
+
+    setUp(() {
+      final api = MockStorageApi();
+      objects = MockObjectsResource();
+      when(() => api.objects).thenReturn(objects);
+      storage = NativeGoogleCloudStorage.withSigningCredentials(
+        storageId: 'public',
+        bucket: 'test-bucket',
+        public: true,
+        useObjectAcl: false,
+        storageApi: api,
+        credentials: gcs.ServiceAccountCredentials.fromJson(
+          _testServiceAccountJson,
+        ),
+      );
+    });
+
+    test('when storing a file, then no object ACL is sent', () async {
+      when(
+        () => objects.insert(
+          any(),
+          'test-bucket',
+          uploadMedia: any(named: 'uploadMedia'),
+          predefinedAcl: any(named: 'predefinedAcl'),
+          ifGenerationMatch: any(named: 'ifGenerationMatch'),
+        ),
+      ).thenAnswer((_) async => gcs.Object());
+
+      await storage.storeFile(
+        session: mockSession,
+        path: 'file.txt',
+        byteData: ByteData(5),
+      );
+
+      verify(
+        () => objects.insert(
+          any(),
+          'test-bucket',
+          uploadMedia: any(named: 'uploadMedia'),
+          predefinedAcl: null,
+          ifGenerationMatch: null,
+        ),
+      ).called(1);
+    });
+
+    test('when creating an upload description, '
+        'then the ACL header is neither required nor signed', () async {
+      final description =
+          await storage.createUploadDescription(
+                session: mockSession,
+                path: 'file.txt',
+              )
+              as BinaryUploadDescription;
+
+      expect(description.headers, isNot(contains('x-goog-acl')));
+      expect(
+        description.url.queryParameters['X-Goog-SignedHeaders']!.split(';'),
+        isNot(contains('x-goog-acl')),
+      );
+    });
+
+    test('when requesting a public download URL, '
+        'then it still returns the public URL', () async {
+      when(
+        () => objects.get(
+          'test-bucket',
+          'file.txt',
+          downloadOptions: any(named: 'downloadOptions'),
+        ),
+      ).thenAnswer((_) async => gcs.Object()..size = '5');
+      final url = await storage.publicDownloadUrl(
+        session: mockSession,
+        path: 'file.txt',
+      );
+
+      expect(
+        url.toString(),
+        'https://storage.googleapis.com/test-bucket/file.txt',
+      );
+    });
+  });
+
   group('Given a NativeGoogleCloudStorage with public bucket', () {
     late NativeGoogleCloudStorage storage;
     late MockStorageApi mockStorageApi;

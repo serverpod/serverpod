@@ -109,6 +109,7 @@ Future<CloudStorage> _createNativeStorage({
   storageId: storageId,
   bucket: bucket,
   public: public,
+  useObjectAcl: false,
   serviceAccountJson: serviceAccountJson,
   publicHost: publicHost,
 );
