@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/analytics/session_metrics.dart';
 import 'package:serverpod_cli/src/commands/attach.dart' show attachTo;
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
+import 'package:serverpod_cli/src/commands/runner_options.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
@@ -63,37 +64,9 @@ import 'package:vm_service/vm_service_io.dart';
 
 /// Options for the `start` command.
 enum StartOption<V> implements OptionDefinition<V> {
-  watch(
-    FlagOption(
-      argName: 'watch',
-      argAbbrev: 'w',
-      defaultsTo: true,
-      negatable: true,
-      helpText:
-          'Watch files and use the Frontend Server for fast incremental compilation. '
-          'With --no-watch, the server is started via `dart run`.',
-    ),
-  ),
-  directory(
-    StringOption(
-      argName: 'directory',
-      argAbbrev: 'd',
-      defaultsTo: '',
-      helpText:
-          'The server directory (defaults to auto-detect from current directory).',
-    ),
-  ),
-  docker(
-    FlagOption(
-      argName: 'docker',
-      helpText:
-          'Start Docker Compose services if a Docker Compose file exists. '
-          'Defaults to on if the project has a Docker Compose file and the '
-          'database is configured to PostgreSQL on localhost without a '
-          'dataPath. Otherwise, defaults to off. Pass --docker or '
-          '--no-docker to override the default behavior.',
-    ),
-  ),
+  watch<bool>(runnerWatchOption),
+  directory<String>(runnerDirectoryOption),
+  docker<bool>(runnerDockerOption),
   attach(
     FlagOption(
       argName: 'attach',
@@ -112,16 +85,7 @@ enum StartOption<V> implements OptionDefinition<V> {
           '--no-attach, since nothing renders.',
     ),
   ),
-  flutter(
-    FlagOption(
-      argName: 'flutter',
-      defaultsTo: true,
-      helpText:
-          'Auto-launch the companion Flutter apps as configured on the server '
-          'pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable '
-          'auto-launch. Apps can still be started on demand from the TUI.',
-    ),
-  ),
+  flutter<bool>(runnerFlutterOption),
   ;
 
   const StartOption(this.option);
