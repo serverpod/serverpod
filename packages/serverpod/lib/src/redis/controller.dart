@@ -469,9 +469,12 @@ class RedisController {
     var pending = _pendingSubscribes[channel];
     if (pending == null || pending.isEmpty) return;
 
+    // A pending subscription is registered before connecting. Bound the
+    // publisher's wait independently, since reconnecting (including AUTH) can
+    // stall before the subscription confirmation timeout even starts.
     await Future.wait([
       for (var confirmation in List.of(pending)) confirmation.confirmed,
-    ]);
+    ]).timeout(_subscriptionConfirmationTimeout, onTimeout: () => <bool>[]);
   }
 
   /// Returns the underlying Redis [Command] connection.

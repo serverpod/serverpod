@@ -25,6 +25,49 @@ void main() {
   });
 
   test(
+    'Given a pub/sub reconnect stalled on AUTH and a healthy command connection, '
+    'when publishing to the channel waiting to subscribe, '
+    'then the publish is released within the subscription wait limit.',
+    () async {
+      await controller.stop();
+      controller = RedisController(
+        host: '127.0.0.1',
+        port: redis.port,
+        requireSsl: false,
+        password: 'password',
+      );
+      await controller.start();
+      redis.holdConfirmations = true;
+      var interrupted = controller.subscribe('before-drop', (_, _) {});
+      await redis.nextCommand('SUBSCRIBE');
+      await redis.dropPubSubConnections();
+      await interrupted;
+      redis.holdConfirmations = false;
+      redis.holdAuthentications = true;
+
+      var authenticating = redis.nextCommand('AUTH');
+      var subscribing = controller.subscribe('channel', (_, _) {});
+      await authenticating;
+      // The command socket is still usable while AUTH is withheld on pub/sub.
+      expect(await controller.ping(), isTrue);
+
+      await expectLater(
+        controller
+            .publish('channel', 'during stalled auth')
+            .timeout(const Duration(seconds: 12)),
+        completion(isTrue),
+      );
+      expect(
+        redis.receivedCommands,
+        contains(equals(['PUBLISH', 'channel', 'during stalled auth'])),
+      );
+
+      redis.releaseHeldAuthentications();
+      await expectLater(subscribing, completion(isTrue));
+    },
+  );
+
+  test(
     'Given a Redis server that leaves a subscribe unconfirmed, '
     'when the confirmation times out, '
     'then keep-alive reconnects and restores message delivery.',

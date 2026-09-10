@@ -12,6 +12,8 @@ class FakeRedisServer {
   final ServerSocket _socketServer;
   final List<Socket> _connections = [];
   final List<_HeldConfirmation> _held = [];
+  final List<Socket> _heldAuthentications = [];
+  final Set<Socket> _pubSubConnections = {};
   final Map<String, Set<Socket>> _subscribers = {};
 
   /// Every command received so far, in arrival order.
@@ -22,6 +24,9 @@ class FakeRedisServer {
   /// When true, `SUBSCRIBE` and `UNSUBSCRIBE` are received and acknowledged in
   /// the test's own time via [releaseHeldConfirmations], rather than at once.
   bool holdConfirmations = false;
+
+  /// Withholds replies to AUTH until [releaseHeldAuthentications] is called.
+  bool holdAuthentications = false;
 
   FakeRedisServer._(this._socketServer) {
     _socketServer.listen(_handleConnection);
@@ -54,6 +59,21 @@ class FakeRedisServer {
     _held.clear();
   }
 
+  void releaseHeldAuthentications() {
+    for (var socket in _heldAuthentications) {
+      socket.add(utf8.encode('+OK\r\n'));
+    }
+    _heldAuthentications.clear();
+  }
+
+  /// Drops pub/sub sockets while leaving the command connection healthy.
+  Future<void> dropPubSubConnections() async {
+    for (var socket in List.of(_pubSubConnections)) {
+      _removeConnection(socket);
+      await socket.close();
+    }
+  }
+
   /// Pushes a message to everyone subscribed to [channel], the way a real
   /// server does when another client publishes.
   void deliverMessage(String channel, String data) {
@@ -75,6 +95,8 @@ class FakeRedisServer {
     var connections = List.of(_connections);
     _connections.clear();
     _held.clear();
+    _heldAuthentications.clear();
+    _pubSubConnections.clear();
     _subscribers.clear();
     for (var connection in connections) {
       await connection.close();
@@ -111,6 +133,8 @@ class FakeRedisServer {
 
   void _removeConnection(Socket socket) {
     _connections.remove(socket);
+    _pubSubConnections.remove(socket);
+    _heldAuthentications.remove(socket);
     _held.removeWhere((confirmation) => confirmation.socket == socket);
     for (var subscribers in _subscribers.values) {
       subscribers.remove(socket);
@@ -123,8 +147,15 @@ class FakeRedisServer {
 
     var name = command.first.toUpperCase();
     switch (name) {
+      case 'AUTH':
+        if (holdAuthentications) {
+          _heldAuthentications.add(socket);
+        } else {
+          socket.add(utf8.encode('+OK\r\n'));
+        }
       case 'SUBSCRIBE':
       case 'UNSUBSCRIBE':
+        _pubSubConnections.add(socket);
         var kind = name.toLowerCase();
         var channel = command[1];
         if (name == 'SUBSCRIBE') {
