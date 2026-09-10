@@ -86,6 +86,10 @@ class LocalRunnerApi implements InProcessRunnerApi {
   /// is the only thing telling an attached client why the runner is leaving,
   /// and a stage that was already published would otherwise swallow it.
   void setStage(RunnerStage stage, {int? exitCode}) {
+    assert(
+      exitCode == null || stage == RunnerStage.stopping,
+      'Only a stopping runner has an exit code.',
+    );
     if (_stage == stage && exitCode == null) return;
     _stage = stage;
     if (exitCode != null) _exitCode = exitCode;
