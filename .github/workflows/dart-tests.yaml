@@ -556,7 +556,7 @@ jobs:
       # output in a deterministic log for the outer step to print.
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install pstools --no-progress -y --limit-output --checksum "4F49964CC9CBAC2B5D87BDC8F9526012E9C4B243D8B7D0C0BB51F254A721CA2E"
+        run: choco install pstools --no-progress -y --limit-output --checksum "2B10B3D9DAE0403B06D90B13BFB53E723A8B14A788F78CDFD43A445D8991415E"
       - name: Prep run script (Windows)
         if: matrix.os == 'windows-latest'
         env:
@@ -605,7 +605,7 @@ jobs:
           working_directory: packages/serverpod_embedded_postgres
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install pstools --no-progress -y --limit-output --checksum "4F49964CC9CBAC2B5D87BDC8F9526012E9C4B243D8B7D0C0BB51F254A721CA2E"
+        run: choco install pstools --no-progress -y --limit-output --checksum "2B10B3D9DAE0403B06D90B13BFB53E723A8B14A788F78CDFD43A445D8991415E"
       - name: Prep run script (Windows)
         # Postgres refuses to run with an Administrators-group token.
         if: matrix.os == 'windows-latest'
@@ -1047,7 +1047,7 @@ jobs:
           working_directory: tests/bootstrap_project
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install pstools --no-progress -y --limit-output --checksum "4F49964CC9CBAC2B5D87BDC8F9526012E9C4B243D8B7D0C0BB51F254A721CA2E"
+        run: choco install pstools --no-progress -y --limit-output --checksum "2B10B3D9DAE0403B06D90B13BFB53E723A8B14A788F78CDFD43A445D8991415E"
       - name: Prep run script (Windows)
         if: matrix.os == 'windows-latest'
         env:
