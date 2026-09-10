@@ -103,10 +103,18 @@ class FakeRedisServer {
           _handleCommand(socket, command);
         }
       },
-      onDone: () => _connections.remove(socket),
-      onError: (_) => _connections.remove(socket),
+      onDone: () => _removeConnection(socket),
+      onError: (_) => _removeConnection(socket),
       cancelOnError: true,
     );
+  }
+
+  void _removeConnection(Socket socket) {
+    _connections.remove(socket);
+    _held.removeWhere((confirmation) => confirmation.socket == socket);
+    for (var subscribers in _subscribers.values) {
+      subscribers.remove(socket);
+    }
   }
 
   void _handleCommand(Socket socket, List<String> command) {

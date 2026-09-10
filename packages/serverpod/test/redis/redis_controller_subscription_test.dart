@@ -24,6 +24,59 @@ void main() {
     await redis.close();
   });
 
+  test(
+    'Given a Redis server that leaves a subscribe unconfirmed, '
+    'when the confirmation times out, '
+    'then keep-alive reconnects and restores message delivery.',
+    () async {
+      redis.holdConfirmations = true;
+      var received = Completer<String>();
+      var subscribing = controller.subscribe('channel', (_, message) {
+        received.complete(message);
+      });
+      await redis.nextCommand('SUBSCRIBE');
+      // Only the original socket is hung; a replacement can confirm normally.
+      redis.holdConfirmations = false;
+      var resubscribed = redis.nextCommand('SUBSCRIBE');
+
+      expect(await subscribing, isFalse);
+      await resubscribed.timeout(const Duration(seconds: 7));
+      redis.deliverMessage('channel', 'after reconnect');
+
+      await expectLater(
+        received.future.timeout(const Duration(seconds: 2)),
+        completion('after reconnect'),
+      );
+    },
+  );
+
+  test(
+    'Given a Redis server that leaves an unsubscribe unconfirmed, '
+    'when the confirmation times out, '
+    'then keep-alive restores the remaining subscription.',
+    () async {
+      var received = Completer<String>();
+      await controller.subscribe('remaining', (_, message) {
+        received.complete(message);
+      });
+      await controller.subscribe('removed', (_, _) {});
+      redis.holdConfirmations = true;
+      var unsubscribing = controller.unsubscribe('removed');
+      await redis.nextCommand('UNSUBSCRIBE');
+      redis.holdConfirmations = false;
+      var resubscribed = redis.nextCommand('SUBSCRIBE');
+
+      expect(await unsubscribing, isFalse);
+      await resubscribed.timeout(const Duration(seconds: 7));
+      redis.deliverMessage('remaining', 'after reconnect');
+
+      await expectLater(
+        received.future.timeout(const Duration(seconds: 2)),
+        completion('after reconnect'),
+      );
+    },
+  );
+
   group('Given a Redis server that has not confirmed a subscription', () {
     test('when subscribing '
         'then the returned future does not complete', () async {

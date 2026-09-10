@@ -220,7 +220,7 @@ class RedisController {
     );
 
     var stream = _pubSub!.getStream();
-    unawaited(_listenToSubscriptions(stream));
+    unawaited(_listenToSubscriptions(stream, _pubSub!));
 
     if (_subscriptions.keys.isNotEmpty) {
       _pubSub!.subscribe(_subscriptions.keys.toList());
@@ -230,7 +230,7 @@ class RedisController {
     return true;
   }
 
-  Future<void> _listenToSubscriptions(Stream stream) async {
+  Future<void> _listenToSubscriptions(Stream stream, PubSub pubSub) async {
     try {
       await for (var message in stream) {
         if (message is! List || message.length != 3) continue;
@@ -256,10 +256,10 @@ class RedisController {
         }
       }
     } catch (e) {
-      _invalidatePubSub();
+      if (identical(_pubSub, pubSub)) _invalidatePubSub();
       return;
     }
-    _invalidatePubSub();
+    if (identical(_pubSub, pubSub)) _invalidatePubSub();
   }
 
   /// Resolves every command outstanding for [channel]. One confirmation
@@ -393,7 +393,10 @@ class RedisController {
 
       return await pending.confirmed.timeout(
         _subscriptionConfirmationTimeout,
-        onTimeout: () => pending.complete(false),
+        onTimeout: () {
+          _invalidatePubSub();
+          return pending.complete(false);
+        },
       );
     } catch (e) {
       _invalidatePubSub();
@@ -418,7 +421,10 @@ class RedisController {
 
       return await pending.confirmed.timeout(
         _subscriptionConfirmationTimeout,
-        onTimeout: () => pending.complete(false),
+        onTimeout: () {
+          _invalidatePubSub();
+          return pending.complete(false);
+        },
       );
     } catch (e) {
       _invalidatePubSub();
