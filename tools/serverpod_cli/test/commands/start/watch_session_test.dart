@@ -229,7 +229,7 @@ serverpod:
   final process = flutter ?? _FakeFlutter();
   final manager = FlutterAppManager(
     projectName: 'project',
-    launchFlutterApp: false,
+    autoLaunchArmed: false,
     serverPubspecFile: serverPubspecFile,
     serverPackageDirectoryPathParts: p.split(serverDir.path),
     serverpodToolDir: p.join(tempDir.path, '.serverpod'),
@@ -288,7 +288,7 @@ serverpod:
   final processB = _FakeFlutter();
   final manager = FlutterAppManager(
     projectName: 'project',
-    launchFlutterApp: false,
+    autoLaunchArmed: false,
     runMode: 'development',
     serverPubspecFile: serverPubspecFile,
     serverpodToolDir: p.join(tempDir.path, '.serverpod'),
