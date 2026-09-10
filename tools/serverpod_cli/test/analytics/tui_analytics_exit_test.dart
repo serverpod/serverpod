@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
+
+import '../test_util/endpoint_validation_helpers.dart';
 
 void main() {
   test(
@@ -30,13 +31,16 @@ void main() {
         requests.add(request);
         if (requests.length == 3) allReceived.complete();
       });
-      final driver = File.fromUri(
-        (await Isolate.resolvePackageUri(
-          Uri.parse('package:serverpod_cli/analyzer.dart'),
-        ))!.resolve('../test/test_util/analytics_exit_driver.dart'),
+      final driver = p.join(
+        await resolveServerpodRoot(),
+        'tools',
+        'serverpod_cli',
+        'test',
+        'test_util',
+        'analytics_exit_driver.dart',
       );
       final process = await Process.start(Platform.resolvedExecutable, [
-        driver.path,
+        driver,
         'http://127.0.0.1:${server.port}',
         p.join(d.sandbox, 'myapp_server'),
         '7',
