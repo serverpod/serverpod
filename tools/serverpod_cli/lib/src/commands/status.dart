@@ -95,7 +95,7 @@ class StatusCommand extends ServerpodCommand<StatusOption> {
 
     final servers = manifest.servers;
     if (servers == null) {
-      log.info('  Servers:    not yet published');
+      log.info('  Servers:    ${_unpublishedServers(manifest.ports)}');
     } else {
       printServerUris(servers);
     }
@@ -176,3 +176,14 @@ void _printIfSet(String label, String? value) {
   if (value == null) return;
   log.info('$label $value');
 }
+
+/// What to say about the servers before the pod has reported them: the ports
+/// the runner has claimed, if it has decided.
+String _unpublishedServers(Map<String, int>? claimed) => switch (claimed) {
+  null => 'not yet published',
+  final ports when ports.isEmpty =>
+    'not yet published, binding ephemeral ports',
+  final ports =>
+    'not yet published, claiming '
+        '${ports.entries.map((e) => '${e.key} ${e.value}').join(', ')}',
+};
