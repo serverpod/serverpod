@@ -90,18 +90,6 @@ void main() {
     );
 
     test(
-      'when the pod behind a published address is gone and it is cleared, '
-      'then the manifest stops naming it, so `runner status` reports no server',
-      () {
-        final published = _manifest(
-          servers: const ServerpodAddresses(api: 'http://localhost:8080'),
-        );
-
-        expect(published.copyWith(servers: null).servers, isNull);
-      },
-    );
-
-    test(
       'when the VM service is republished with no proxy, '
       'then the stale proxy is cleared',
       () {

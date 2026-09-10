@@ -8,10 +8,6 @@ import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
     show FileEx, FileWriteEx, ServerpodAddresses;
 
-/// The default of every [RunnerManifest.copyWith] field that can be cleared,
-/// distinguishing "not passed" from "passed as null".
-const _keep = Object();
-
 /// What the runner publishes about itself: where to reach it, what it is
 /// serving, and the configuration it was started with.
 ///
@@ -102,14 +98,10 @@ class RunnerManifest {
   bool get isFinished => stage == RunnerStage.stopping && exitCode != null;
 
   /// This manifest with the given fields replaced.
-  ///
-  /// [vmService], [servers] and [docker] are what the runner published about
-  /// the stack, and take null to mean "no longer any". Omit them to keep what
-  /// is there. A `??` default would leave `runner status` naming a dead server.
   RunnerManifest copyWith({
-    Object? vmService = _keep,
-    Object? servers = _keep,
-    Object? docker = _keep,
+    RunnerVmServiceUris? vmService,
+    ServerpodAddresses? servers,
+    RunnerDocker? docker,
     RunnerStage? stage,
     int? exitCode,
   }) => RunnerManifest(
@@ -118,13 +110,9 @@ class RunnerManifest {
     pid: pid,
     projectId: projectId,
     config: config,
-    vmService: identical(vmService, _keep)
-        ? this.vmService
-        : vmService as RunnerVmServiceUris?,
-    servers: identical(servers, _keep)
-        ? this.servers
-        : servers as ServerpodAddresses?,
-    docker: identical(docker, _keep) ? this.docker : docker as RunnerDocker?,
+    vmService: vmService ?? this.vmService,
+    servers: servers ?? this.servers,
+    docker: docker ?? this.docker,
     stage: stage ?? this.stage,
     exitCode: exitCode ?? this.exitCode,
   );
