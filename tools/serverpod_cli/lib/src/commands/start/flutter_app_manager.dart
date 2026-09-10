@@ -46,7 +46,6 @@ class FlutterAppManager {
     required this.onStop,
     required this.onLaunchFailed,
     this.onLaunching,
-    this.onEnsureAppTab,
     required this.onLog,
     required this.stdoutSinkFor,
     required this.stderrSinkFor,
@@ -121,12 +120,6 @@ class FlutterAppManager {
   /// The start of a launch, where [onReady], [onStop] and [onLaunchFailed]
   /// report its end.
   final void Function(FlutterAppConfig app)? onLaunching;
-
-  /// Asks a presentation layer to make sure [app] has somewhere to render.
-  ///
-  /// Null in the runner: an attached client opens its own tabs from the app
-  /// list the snapshot and [FlutterAppsChangedEvent] carry.
-  final void Function(FlutterAppConfig app)? onEnsureAppTab;
   final void Function(FlutterAppConfig app, FlutterLogEvent event) onLog;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
   final IOSink Function(FlutterAppConfig app) stderrSinkFor;
@@ -302,8 +295,6 @@ class FlutterAppManager {
     final isRelaunch = runtime.relaunchInProgress;
     runtime.relaunchInProgress = false;
 
-    onEnsureAppTab?.call(runtime.app);
-
     final device =
         runtime.app.device ?? ideDevice() ?? flutterDeviceWebServerWithBrowser;
 
@@ -391,8 +382,8 @@ class FlutterAppManager {
     if (runtime == null) return;
 
     runtime.relaunchInProgress = runtime.process != null;
-    // The relaunch resets the tab via [onEnsureAppTab]; a stop signal in
-    // between would only flash a stopped state.
+    // The relaunch reports its launching state right away, so a stop signal
+    // in between would only flash a stopped state.
     runtime.stopSignaled = true;
     await runtime.process?.stop();
     runtime.process = null;
