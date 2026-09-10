@@ -130,9 +130,6 @@ class StartLogHistory {
     onChanged?.call();
   }
 
-  /// Records that the pod process is gone, taking its open scopes with it.
-  void serverProcessGone() => discardActiveServerScopes();
-
   /// Appends [line] to the pod's raw output.
   void addServerLine(String line) {
     serverLines.add(line);
