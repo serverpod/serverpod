@@ -822,25 +822,25 @@ Future<Map<String, String>?> _resolvePortEnvironment({
     return null;
   }
 
-  if (!resolution.useEphemeral) {
-    // Nothing to say.
-  } else if (resolution.unattributed.isEmpty) {
-    log.info(
-      'Another Serverpod runner holds the configured ports, or is starting '
-      'and may take them. Binding ephemeral ports instead. '
-      '`serverpod runner status` prints them.',
-    );
-  } else {
-    final held = resolution.unattributed.entries
-        .map((port) => '${port.key} (${port.value})')
-        .join(', ');
-    log.warning(
-      'Another Serverpod runner is starting and has not said which ports it '
-      'took, so $held could be its or something else\'s. Binding ephemeral '
-      'ports instead. `serverpod runner status` prints them. If no other '
-      'runner is meant to hold them, free them or change the ports in '
-      'config/$runMode.yaml.',
-    );
+  if (resolution.useEphemeral) {
+    if (resolution.unattributed.isEmpty) {
+      log.info(
+        'Another Serverpod runner holds the configured ports, or is starting '
+        'and may take them. Binding ephemeral ports instead. '
+        '`serverpod runner status` prints them.',
+      );
+    } else {
+      final held = resolution.unattributed.entries
+          .map((port) => '${port.key} (${port.value})')
+          .join(', ');
+      log.warning(
+        'Another Serverpod runner is starting and has not said which ports it '
+        'took, so $held could be its or something else\'s. Binding ephemeral '
+        'ports instead. `serverpod runner status` prints them. If no other '
+        'runner is meant to hold them, free them or change the ports in '
+        'config/$runMode.yaml.',
+      );
+    }
   }
   return ephemeralPortEnvironment(resolution.ephemeralListeners(ports));
 }
