@@ -12,11 +12,18 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// ephemeral ports. Anything else holding a port, a stray pod or an unrelated
 /// service, is a conflict to report rather than hide.
 class PortResolution {
-  const PortResolution({
+  PortResolution({
     required this.useEphemeral,
     required this.conflicts,
     this.unattributed = const {},
-  });
+  }) : assert(
+         conflicts.isEmpty || !useEphemeral,
+         'A stack with conflicts does not start, so it moves no ports.',
+       ),
+       assert(
+         unattributed.isEmpty || useEphemeral,
+         'Unattributed ports move the stack aside.',
+       );
 
   /// Whether the pod binds ephemeral ports instead of the configured ones.
   ///
@@ -91,7 +98,7 @@ Future<PortResolution> resolvePorts({
   };
 
   if (conflicts.isEmpty) {
-    return const PortResolution(useEphemeral: true, conflicts: {});
+    return PortResolution(useEphemeral: true, conflicts: const {});
   }
 
   // The silent runner could hold any of these, and blaming it would fail the

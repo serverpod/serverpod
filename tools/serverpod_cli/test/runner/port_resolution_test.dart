@@ -454,7 +454,10 @@ void main() {
       'when the stack moved aside, '
       'then every listener binds an ephemeral port',
       () {
-        const resolution = PortResolution(useEphemeral: true, conflicts: {});
+        final resolution = PortResolution(
+          useEphemeral: true,
+          conflicts: const {},
+        );
 
         expect(resolution.ephemeralListeners(ports), [
           'api',
@@ -468,7 +471,10 @@ void main() {
       'when the stack keeps its ports, '
       'then listeners configured with port zero still bind ephemeral ports',
       () {
-        const resolution = PortResolution(useEphemeral: false, conflicts: {});
+        final resolution = PortResolution(
+          useEphemeral: false,
+          conflicts: const {},
+        );
 
         expect(resolution.ephemeralListeners(ports), ['api', 'web']);
       },
