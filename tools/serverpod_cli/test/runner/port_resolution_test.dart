@@ -326,7 +326,7 @@ void main() {
     );
 
     test(
-      'when the ports are free but a sibling runner has published nothing yet, '
+      'when the ports are free but a sibling runner has not decided its ports, '
       'then the stack moves aside before the two race for the same ports',
       () async {
         addTearDown(
@@ -346,6 +346,112 @@ void main() {
 
         expect(resolution.useEphemeral, isTrue);
         expect(resolution.hasConflicts, isFalse);
+      },
+    );
+
+    test(
+      'when the ports are free but a starting sibling has claimed one, '
+      'then the stack moves aside before the two race for it',
+      () async {
+        final port = await _freePort();
+        addTearDown(
+          (await _startSiblingRunner(
+            registry,
+            root.path,
+            'wt2',
+            'my_server',
+            claimedPorts: {'api': port},
+          )).close,
+        );
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': port, 'web': await _freePort()},
+        );
+
+        expect(resolution.useEphemeral, isTrue);
+        expect(resolution.hasConflicts, isFalse);
+      },
+    );
+
+    test(
+      'when the ports are free and a starting sibling claims other ports, '
+      'then the configured ports are kept',
+      () async {
+        addTearDown(
+          (await _startSiblingRunner(
+            registry,
+            root.path,
+            'wt2',
+            'my_server',
+            claimedPorts: {'api': await _freePort()},
+          )).close,
+        );
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': await _freePort()},
+        );
+
+        expect(resolution.useEphemeral, isFalse);
+        expect(resolution.hasConflicts, isFalse);
+      },
+    );
+
+    test(
+      'when the ports are free and a sibling has moved aside, claiming none, '
+      'then the configured ports are kept',
+      () async {
+        addTearDown(
+          (await _startSiblingRunner(
+            registry,
+            root.path,
+            'wt2',
+            'my_server',
+            claimedPorts: const {},
+          )).close,
+        );
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': await _freePort()},
+        );
+
+        expect(resolution.useEphemeral, isFalse);
+        expect(resolution.hasConflicts, isFalse);
+      },
+    );
+
+    test(
+      'when a port is held and the only sibling has claimed other ports, '
+      'then the port is a conflict rather than a reason to move aside',
+      () async {
+        final occupied = await ServerSocket.bind(
+          InternetAddress.loopbackIPv4,
+          0,
+        );
+        addTearDown(occupied.close);
+        addTearDown(
+          (await _startSiblingRunner(
+            registry,
+            root.path,
+            'wt2',
+            'my_server',
+            claimedPorts: {'api': await _freePort()},
+          )).close,
+        );
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': occupied.port},
+        );
+
+        expect(resolution.useEphemeral, isFalse);
+        expect(resolution.conflicts, {'api': occupied.port});
       },
     );
 
@@ -479,6 +585,32 @@ void main() {
         expect(resolution.ephemeralListeners(ports), ['api', 'web']);
       },
     );
+
+    test(
+      'when the stack moved aside, '
+      'then it claims no port',
+      () {
+        final resolution = PortResolution(
+          useEphemeral: true,
+          conflicts: const {},
+        );
+
+        expect(resolution.claimedPorts(ports), isEmpty);
+      },
+    );
+
+    test(
+      'when the stack keeps its ports, '
+      'then it claims the ones configured with a fixed port',
+      () {
+        final resolution = PortResolution(
+          useEphemeral: false,
+          conflicts: const {},
+        );
+
+        expect(resolution.claimedPorts(ports), {'insights': 8081});
+      },
+    );
   });
 
   group('Given the ephemeral port overrides,', () {
@@ -555,6 +687,7 @@ Future<ServerSocket> _startSiblingRunner(
   String worktree,
   String serverPackage, {
   int? apiPort,
+  Map<String, int>? claimedPorts,
   int? protocolVersion,
 }) async {
   final dir = await _prepareSibling(root, worktree, serverPackage);
@@ -562,7 +695,12 @@ Future<ServerSocket> _startSiblingRunner(
   final socket = await bindUnixSocket(socketPath);
   socket.listen((client) => client.destroy());
 
-  await _writeManifest(dir, apiPort: apiPort, protocolVersion: protocolVersion);
+  await _writeManifest(
+    dir,
+    apiPort: apiPort,
+    claimedPorts: claimedPorts,
+    protocolVersion: protocolVersion,
+  );
   await registry.register(dir);
   return socket;
 }
@@ -594,6 +732,7 @@ Future<String> _prepareSibling(
 Future<void> _writeManifest(
   String dir, {
   int? apiPort,
+  Map<String, int>? claimedPorts,
   int? protocolVersion,
 }) => RunnerManifest(
   pid: 4242,
@@ -602,5 +741,6 @@ Future<void> _writeManifest(
   servers: apiPort == null
       ? null
       : ServerpodAddresses(api: 'http://localhost:$apiPort'),
+  ports: claimedPorts,
   config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
 ).writeTo(dir);
