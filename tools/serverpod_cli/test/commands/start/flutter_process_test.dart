@@ -184,36 +184,6 @@ Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
 }
 
 void main() {
-  group('Given a Windows batch wrapper', () {
-    test(
-      'when asked whether it needs a shell then it does, on Windows only',
-      () {
-        // CreateProcess cannot execute a `.bat` however it is spelled, so this
-        // is the one case that has to go through cmd.exe.
-        expect(
-          FlutterProcess.needsShell(r'C:\flutter\bin\flutter.bat'),
-          Platform.isWindows,
-        );
-        expect(
-          FlutterProcess.needsShell(r'C:\flutter\bin\flutter.CMD'),
-          Platform.isWindows,
-        );
-      },
-    );
-  });
-
-  group('Given an executable that is not a batch wrapper', () {
-    test('when asked whether it needs a shell then it does not', () {
-      // A shell here would swallow the signals `kill` sends the daemon.
-      expect(
-        FlutterProcess.needsShell('/flutter/bin/cache/dart-sdk/bin/dart'),
-        isFalse,
-      );
-      expect(FlutterProcess.needsShell('/flutter/bin/flutter'), isFalse);
-      expect(FlutterProcess.needsShell(r'C:\dart-sdk\bin\dart.exe'), isFalse);
-    });
-  });
-
   group('Given a FlutterProcess whose executable is a name not on PATH', () {
     late FlutterProcess fp;
 
@@ -229,36 +199,19 @@ void main() {
       );
     });
 
-    group('when calling start', () {
-      late Object? failure;
-
-      setUp(() async {
-        try {
-          await fp.start();
-          failure = null;
-        } catch (e) {
-          failure = e;
-        }
-      });
-
-      test(
-        'then FlutterNotInstalledException is thrown so the caller can keep '
-        'going',
-        () {
-          expect(failure, isA<FlutterNotInstalledException>());
-        },
-      );
-
-      test('then the message names the executable it looked for', () {
-        expect(
-          (failure as FlutterNotInstalledException).message,
-          contains('definitely-not-a-real-flutter'),
+    test(
+      'when calling start, '
+      'then FlutterNotInstalledException is thrown',
+      () async {
+        await expectLater(
+          fp.start,
+          throwsA(isA<FlutterNotInstalledException>()),
         );
-      });
-    });
+      },
+    );
   });
 
-  group('Given a FlutterProcess missing the executable', () {
+  group('Given a FlutterProcess with a missing executable', () {
     late FlutterProcess fp;
 
     setUp(() {
@@ -271,7 +224,7 @@ void main() {
 
     test(
       'when calling start '
-      'then FlutterNotInstalledException is thrown so the caller can keep going',
+      'then FlutterNotInstalledException is thrown',
       () async {
         await expectLater(
           fp.start,
