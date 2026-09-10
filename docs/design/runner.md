@@ -163,8 +163,8 @@ runner restarts, and holds no orchestration logic.
 
 The runner consolidates discovery artifacts into
 `<serverDir>/.dart_tool/serverpod/runner.json`. It writes the file as soon as it
-holds its lock and socket, rewrites it as its `stage` moves and its addresses
-change, and removes it when it shuts down. A start that aborts leaves the file
+holds its lock and socket, rewrites it as its `stage` moves, its ports are
+claimed and its addresses change, and removes it when it shuts down. A start that aborts leaves the file
 behind at stage `stopping` with an `exitCode` instead. The caller that spawned
 the runner polls for the manifest, and a runner that came and went between two
 polls would otherwise read as one that never came up. The next runner replaces
@@ -185,6 +185,7 @@ it.
     "insights": "http://localhost:8081",
     "web": "http://localhost:8082"
   },
+  "ports": { "api": 8080, "insights": 8081, "web": 8082 },
   "docker": { "startedByRunner": true, "project": "myproject" },
   "config": {
     "watch": true,
@@ -397,15 +398,20 @@ manifest. Unconditional ephemeral ports would also avoid collisions, at the cost
 of an address that changes on every restart. The three listeners fall back as a
 block rather than independently.
 
-Fallback applies when another Serverpod runner holds the port, which the runner
-recognizes by that port appearing among the `servers` addresses a live runner
-published in its own manifest. Candidate runners come from the per-user
+Fallback applies when another Serverpod runner holds or has claimed the port.
+A runner claims its ports in its manifest as soon as it has resolved them,
+before Docker and the first compile, and the `servers` addresses its pod
+reports later name what it bound. Candidate runners come from the per-user
 registry every runner registers itself in when it publishes, so a checkout
 anywhere on the machine counts, whether or not it sits in a repository. A live
-runner is only credited with the ports it claims. One bound elsewhere is not a
-reason to move aside. A port held by anything else is an error, unless a live
-runner has published no addresses yet: it could hold any of them, so the stack
-moves aside rather than fail on a race with that runner's startup.
+runner is only credited with the ports it claimed or bound. One bound elsewhere
+is not a reason to move aside, and a runner that moved aside itself claims
+nothing. A port held by anything else is an error, unless a live runner has
+not decided its ports yet: it could claim any of them, so the stack moves
+aside rather than fail on a race with that runner's startup. That window
+closes seconds after the runner publishes, so a runner that never reports
+addresses, degraded or on an older `serverpod`, does not keep every other
+stack on ephemeral ports.
 
 Two consequences elsewhere.
 
