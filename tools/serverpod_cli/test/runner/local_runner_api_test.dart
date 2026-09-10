@@ -372,7 +372,7 @@ void main() {
         );
       manager = FlutterAppManager(
         projectName: 'project',
-        launchFlutterApp: false,
+        autoLaunchArmed: false,
         serverPubspecFile: serverPubspecFile,
         serverPackageDirectoryPathParts: p.split(serverDir.path),
         serverpodToolDir: p.join(tempDir.path, '.serverpod'),

@@ -185,7 +185,7 @@ void main() {
       serverPubspecFile.writeAsStringSync('name: server');
       flutterManager = FlutterAppManager(
         projectName: 'project',
-        launchFlutterApp: false,
+        autoLaunchArmed: false,
         serverpodToolDir: tempDir.path,
         serverPubspecFile: serverPubspecFile,
         serverPackageDirectoryPathParts: p.split(serverDir.path),

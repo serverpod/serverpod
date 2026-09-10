@@ -1276,7 +1276,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     final flutterManager = FlutterAppManager(
       runMode: runMode,
       projectName: config.name,
-      launchFlutterApp: false,
+      autoLaunchArmed: false,
       serverpodToolDir: serverpodToolDir,
       serverPubspecFile: serverPubspecFile,
       serverPackageDirectoryPathParts: config.serverPackageDirectoryPathParts,

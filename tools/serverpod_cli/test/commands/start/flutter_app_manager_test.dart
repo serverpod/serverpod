@@ -146,7 +146,7 @@ $appEntries''');
 
     final manager = FlutterAppManager(
       projectName: 'project',
-      launchFlutterApp: false,
+      autoLaunchArmed: false,
       environmentOverrideForTesting: environment,
       serverPubspecFile: serverPubspecFile,
       serverPackageDirectoryPathParts: p.split(serverDir.path),

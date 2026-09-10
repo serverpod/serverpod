@@ -52,7 +52,7 @@ class FlutterAppManager {
     required this.serverPubspecFile,
     required this.serverPackageDirectoryPathParts,
     required this.projectName,
-    required this.launchFlutterApp,
+    required this.autoLaunchArmed,
     this.environmentOverrideForTesting,
     this.flutterExecutableForTesting,
     this.argsOverrideForTesting,
@@ -141,7 +141,7 @@ class FlutterAppManager {
   ///
   /// Starts false in the runner and is armed by [launchAutoLaunchApps] when
   /// a UI first attaches.
-  bool launchFlutterApp;
+  bool autoLaunchArmed;
 
   String? _cachedFlutterAppsFingerprint;
 
@@ -455,7 +455,7 @@ class FlutterAppManager {
       }
 
       _setupDependencyTracker(app.id);
-      if (launchFlutterApp && app.autoLaunch) {
+      if (autoLaunchArmed && app.autoLaunch) {
         await launch(app.id);
       }
     }
@@ -475,8 +475,8 @@ class FlutterAppManager {
   ///
   /// Idempotent. A second call launches nothing new.
   Future<void> launchAutoLaunchApps() async {
-    if (launchFlutterApp) return;
-    launchFlutterApp = true;
+    if (autoLaunchArmed) return;
+    autoLaunchArmed = true;
     for (final app in _apps) {
       if (!app.autoLaunch || isRunning(app.id)) continue;
       await launch(app.id);
