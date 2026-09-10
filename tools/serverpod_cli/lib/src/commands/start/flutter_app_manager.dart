@@ -295,19 +295,7 @@ class FlutterAppManager {
     String? sdkRoot;
     if (flutterExecutableForTesting == null) {
       final appResolver = SdkResolver(baseDirectory: Directory(appDir));
-      final resolved = await appResolver.flutterSdk;
-      if (resolved == null) {
-        log.warning(
-          'No Flutter SDK found for ${runtime.app.name}; skipping launch. '
-          'Make sure `flutter` is on your PATH.',
-        );
-        // onEnsureAppTab above already put the tab into its launching
-        // state, so bailing out silently would leave it neither ready nor
-        // stopped.
-        _abandonLaunch(runtime);
-        return;
-      }
-      sdkRoot = resolved.root;
+      sdkRoot = (await appResolver.flutterSdk)?.root;
     }
 
     late final FlutterProcess process;
