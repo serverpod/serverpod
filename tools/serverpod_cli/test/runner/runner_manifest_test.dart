@@ -15,6 +15,7 @@ RunnerManifest _manifest({
   int pid = 4242,
   RunnerVmServiceUris? vmService,
   ServerpodAddresses? servers,
+  Map<String, int>? ports,
   RunnerDocker? docker,
   RunnerConfig? config,
 }) => RunnerManifest(
@@ -22,6 +23,7 @@ RunnerManifest _manifest({
   projectId: 'a3d3a8b2-4f6c-5d1e-9b7a-2c8f0e1d3a5b',
   vmService: vmService,
   servers: servers,
+  ports: ports,
   docker: docker,
   config:
       config ?? const RunnerConfig(watch: true, flutter: true, serverArgs: []),
@@ -56,6 +58,7 @@ void main() {
             insights: 'http://localhost:8081',
             web: 'http://localhost:8082',
           ),
+          ports: const {'api': 8080, 'insights': 8081, 'web': 8082},
           docker: const RunnerDocker(
             startedByRunner: true,
             project: 'myproject',
@@ -81,6 +84,7 @@ void main() {
         expect(decoded.servers?.api, 'http://localhost:8080');
         expect(decoded.servers?.insights, 'http://localhost:8081');
         expect(decoded.servers?.web, 'http://localhost:8082');
+        expect(decoded.ports, {'api': 8080, 'insights': 8081, 'web': 8082});
         expect(decoded.docker?.startedByRunner, isTrue);
         expect(decoded.docker?.project, 'myproject');
         expect(decoded.config.watch, isFalse);
@@ -147,7 +151,39 @@ void main() {
 
         expect(decoded.vmService, isNull);
         expect(decoded.servers, isNull);
+        expect(decoded.ports, isNull);
         expect(decoded.docker, isNull);
+      },
+    );
+
+    test(
+      'when the runner claims no port, '
+      'then the empty claim survives as a decision rather than reading as undecided',
+      () {
+        final decoded = RunnerManifest.fromJson(
+          jsonDecode(jsonEncode(_manifest(ports: const {}).toJson()))
+              as Map<String, Object?>,
+        );
+
+        expect(decoded.ports, isNotNull);
+        expect(decoded.ports, isEmpty);
+      },
+    );
+
+    test(
+      'when the pod reports its addresses, '
+      'then the ports claimed before it booted are carried along',
+      () {
+        final claimed = _manifest(ports: const {'api': 8080});
+
+        expect(
+          claimed
+              .copyWith(
+                servers: const ServerpodAddresses(api: 'http://localhost:8080'),
+              )
+              .ports,
+          {'api': 8080},
+        );
       },
     );
   });

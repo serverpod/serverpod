@@ -38,6 +38,7 @@ class RunnerManifest {
     this.cliVersion = templateVersion,
     this.vmService,
     this.servers,
+    this.ports,
     this.docker,
     this.stage = RunnerStage.running,
     this.exitCode,
@@ -70,6 +71,16 @@ class RunnerManifest {
   /// Null until the pod reports them.
   final ServerpodAddresses? servers;
 
+  /// The bind ports this runner will take, keyed by listener name (`api`,
+  /// `insights`, `web`), decided before Docker and the first compile.
+  ///
+  /// Null until port resolution has run. Empty once it has and the stack is
+  /// moving aside to ephemeral ports, so it claims nothing. A peer resolving
+  /// its own ports reads this to tell a runner that will bind 8080 from one
+  /// that has not decided yet, minutes before [servers] can say what was
+  /// bound.
+  final Map<String, int>? ports;
+
   /// The Docker Compose services this runner started or attached to.
   ///
   /// Null when it did not consider Docker.
@@ -101,6 +112,7 @@ class RunnerManifest {
   RunnerManifest copyWith({
     RunnerVmServiceUris? vmService,
     ServerpodAddresses? servers,
+    Map<String, int>? ports,
     RunnerDocker? docker,
     RunnerStage? stage,
     int? exitCode,
@@ -112,6 +124,7 @@ class RunnerManifest {
     config: config,
     vmService: vmService ?? this.vmService,
     servers: servers ?? this.servers,
+    ports: ports ?? this.ports,
     docker: docker ?? this.docker,
     stage: stage ?? this.stage,
     exitCode: exitCode ?? this.exitCode,
@@ -126,6 +139,7 @@ class RunnerManifest {
     'projectId': projectId,
     if (vmService != null) 'vmService': vmService!.toJson(),
     if (servers != null) 'servers': servers!.toJson(),
+    if (ports != null) 'ports': ports,
     if (docker != null) 'docker': docker!.toJson(),
     'config': config.toJson(),
   };
@@ -145,6 +159,7 @@ class RunnerManifest {
       final map? => ServerpodAddresses.fromJson(map),
       _ => null,
     },
+    ports: _ports(json['ports']),
     docker: switch (_map(json['docker'])) {
       final map? => RunnerDocker.fromJson(map),
       _ => null,
@@ -299,3 +314,14 @@ class RunnerConfig {
 
 Map<String, Object?>? _map(Object? value) =>
     value is Map<String, Object?> ? value : null;
+
+/// The port claims in [value], or null when there are none.
+///
+/// An empty map stays empty: it is a decision, not an absence.
+Map<String, int>? _ports(Object? value) => switch (_map(value)) {
+  final map? => {
+    for (final entry in map.entries)
+      if (entry.value case final int port) entry.key: port,
+  },
+  _ => null,
+};
