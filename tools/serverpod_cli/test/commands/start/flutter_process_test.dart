@@ -24,6 +24,24 @@ String _dartExecutable() {
   return Platform.resolvedExecutable;
 }
 
+/// [cachePopulated] controls whether `bin/cache/dart-sdk` is present, which is
+/// what distinguishes a warm SDK from a cold `bin/cache`.
+String _fakeFlutterSdkRoot({required bool cachePopulated}) {
+  final dir = Directory.systemTemp.createTempSync('serverpod_fake_flutter');
+  addTearDown(() => dir.deleteSync(recursive: true));
+
+  final root = p.join(dir.path, 'sdk');
+  for (final relative in [
+    ['packages', 'flutter_tools', '.dart_tool', 'package_config.json'],
+    ['packages', 'flutter_tools', 'bin', 'flutter_tools.dart'],
+    if (cachePopulated) ['bin', 'cache', 'dart-sdk', 'bin', 'dart'],
+  ]) {
+    File(p.joinAll([root, ...relative])).createSync(recursive: true);
+  }
+
+  return root;
+}
+
 /// Minimal WebSocket server that accepts a connect and ignores any RPC.
 /// Enough to populate `vmServiceUri`; do not use for getVM-style calls.
 Future<({HttpServer server, String wsUri})> _startFakeVmService() async {
@@ -150,6 +168,80 @@ Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
 }
 
 void main() {
+  group('Given a Windows batch wrapper', () {
+    test(
+      'when asked whether it needs a shell then it does, on Windows only',
+      () {
+        // CreateProcess cannot execute a `.bat` however it is spelled, so this
+        // is the one case that has to go through cmd.exe.
+        expect(
+          FlutterProcess.needsShell(r'C:\flutter\bin\flutter.bat'),
+          Platform.isWindows,
+        );
+        expect(
+          FlutterProcess.needsShell(r'C:\flutter\bin\flutter.CMD'),
+          Platform.isWindows,
+        );
+      },
+    );
+  });
+
+  group('Given an executable that is not a batch wrapper', () {
+    test('when asked whether it needs a shell then it does not', () {
+      // A shell here would swallow the signals `kill` sends the daemon.
+      expect(
+        FlutterProcess.needsShell('/flutter/bin/cache/dart-sdk/bin/dart'),
+        isFalse,
+      );
+      expect(FlutterProcess.needsShell('/flutter/bin/flutter'), isFalse);
+      expect(FlutterProcess.needsShell(r'C:\dart-sdk\bin\dart.exe'), isFalse);
+    });
+  });
+
+  group('Given a FlutterProcess whose executable is a name not on PATH', () {
+    late FlutterProcess fp;
+
+    setUp(() {
+      fp = FlutterProcess(
+        flutterPackageDir: Directory.systemTemp.path,
+        device: 'web-server',
+        // A bare name rather than a path, so the spawn is what fails.
+        // Deliberately not `flutter`: the probe runs against the ambient
+        // environment, so a real install would resolve and this would never
+        // reach the fallback.
+        flutterExecutable: 'definitely-not-a-real-flutter',
+      );
+    });
+
+    group('when calling start', () {
+      late Object? failure;
+
+      setUp(() async {
+        try {
+          await fp.start();
+          failure = null;
+        } catch (e) {
+          failure = e;
+        }
+      });
+
+      test(
+        'then FlutterNotInstalledException is thrown so the caller can keep '
+        'going',
+        () {
+          expect(failure, isA<FlutterNotInstalledException>());
+        },
+      );
+
+      test('then the message names the executable it looked for', () {
+        expect(
+          (failure as FlutterNotInstalledException).message,
+          contains('definitely-not-a-real-flutter'),
+        );
+      });
+    });
+  });
+
   group('Given a FlutterProcess missing the executable', () {
     late FlutterProcess fp;
 
@@ -171,6 +263,112 @@ void main() {
         );
       },
     );
+  });
+
+  group(
+    'Given a probe that answers with plain text instead of machine JSON',
+    () {
+      group('when the flutter invocation is resolved', () {
+        late FlutterInvocation invocation;
+
+        setUp(() async {
+          invocation = await FlutterProcess.resolveFlutterInvocation(
+            _dartExecutable(),
+            probeArgsPrefixForTesting: [
+              _shimPath('emits_no_machine_json.dart'),
+            ],
+          );
+        });
+
+        test('then it falls back to running the executable verbatim', () {
+          expect(invocation.executable, _dartExecutable());
+        });
+
+        test('then it passes no leading arguments', () {
+          expect(invocation.baseArgs, isEmpty);
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a probe reporting a flutterRoot whose bin/cache is incomplete',
+    () {
+      late String root;
+
+      setUp(() {
+        root = _fakeFlutterSdkRoot(cachePopulated: false);
+      });
+
+      group('when the flutter invocation is resolved', () {
+        late FlutterInvocation invocation;
+
+        setUp(() async {
+          invocation = await FlutterProcess.resolveFlutterInvocation(
+            _dartExecutable(),
+            probeArgsPrefixForTesting: [
+              _shimPath('reports_flutter_root.dart'),
+              '--root=$root',
+            ],
+          );
+        });
+
+        test(
+          'then it falls back instead of launching a dart that is not there',
+          () {
+            expect(invocation.executable, _dartExecutable());
+          },
+        );
+
+        test('then it passes no leading arguments', () {
+          expect(invocation.baseArgs, isEmpty);
+        });
+      });
+    },
+  );
+
+  group('Given a probe reporting a complete flutterRoot', () {
+    late String root;
+
+    setUp(() {
+      root = _fakeFlutterSdkRoot(cachePopulated: true);
+    });
+
+    group('when the flutter invocation is resolved', () {
+      late FlutterInvocation invocation;
+
+      setUp(() async {
+        invocation = await FlutterProcess.resolveFlutterInvocation(
+          _dartExecutable(),
+          probeArgsPrefixForTesting: [
+            _shimPath('reports_flutter_root.dart'),
+            '--root=$root',
+          ],
+        );
+      });
+
+      test("then it runs on the SDK's embedded dart", () {
+        expect(
+          invocation.executable,
+          p.join(root, 'bin', 'cache', 'dart-sdk', 'bin', 'dart'),
+        );
+      });
+
+      test('then it passes the flutter_tools entrypoint', () {
+        expect(
+          invocation.baseArgs,
+          contains(
+            p.join(
+              root,
+              'packages',
+              'flutter_tools',
+              'bin',
+              'flutter_tools.dart',
+            ),
+          ),
+        );
+      });
+    });
   });
 
   group('Given a FlutterProcess running', () {

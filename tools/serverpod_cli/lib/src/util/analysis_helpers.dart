@@ -24,13 +24,18 @@ Future<void> refreshAnalysisContext(
 /// Pass [resourceProvider] to back the collection with something other than
 /// the physical file system (e.g. an overlay provider that shadows files
 /// with in-memory content).
+///
+/// Pass [sdkPath] to analyse against a specific Dart SDK; defaults to the SDK
+/// running this CLI. Callers that also compile the project must pass the
+/// resolved SDK so analysis and compilation agree.
 AnalysisContextCollection createAnalysisContextCollection(
   Directory directory, {
   ResourceProvider? resourceProvider,
+  String? sdkPath,
 }) {
   return AnalysisContextCollection(
     includedPaths: [directory.absolute.path],
     resourceProvider: resourceProvider ?? PhysicalResourceProvider.INSTANCE,
-    sdkPath: getSdkPath(),
+    sdkPath: sdkPath ?? getSdkPath(),
   );
 }

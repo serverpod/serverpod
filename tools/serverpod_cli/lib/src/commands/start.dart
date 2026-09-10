@@ -52,6 +52,7 @@ import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_cli/src/runner/runner_socket_server.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/legacy_model_files.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/shutdown_signal.dart';
 import 'package:serverpod_cli/src/util/terminal_modes.dart';
@@ -1070,8 +1071,14 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
     serverArgs.value = _withApplyMigrations(serverArgs.value);
 
+    final resolvedDartSdk = await sdkResolver.dartSdk;
+
     // Unprimed, to overlap the staleness check. generateIfStale primes it.
-    final analyzersFuture = IsolatedAnalyzers.create(config, prime: false);
+    final analyzersFuture = IsolatedAnalyzers.create(
+      config,
+      prime: false,
+      dartSdkPath: resolvedDartSdk.root,
+    );
     Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
     // A failed analyzer future must not skip the rest of the rollback.
@@ -1112,7 +1119,9 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
     KernelCompiler? compiler;
     NativeAssetsBuilder? nativeAssetsBuilder;
-    String? dartExecutable;
+    // Seeded for `--no-watch`; watch mode takes the compiler's, from the same
+    // SDK root.
+    String? dartExecutable = dartExecutableIn(resolvedDartSdk.root);
     String? serverDartToolDir;
     // Null reloads the pod on every package_config.json change.
     PackageDependencyTracker? serverDependencyTracker;
@@ -1130,6 +1139,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         entryPoint: entryPoint,
         outputDill: initialDill,
         packagesPath: packageConfigPath,
+        sdkRoot: resolvedDartSdk.root,
       );
       rollback = ({int exitCode = 1}) async {
         await localCompiler.dispose();
