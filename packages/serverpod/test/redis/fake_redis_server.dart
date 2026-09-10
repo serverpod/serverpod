@@ -157,16 +157,17 @@ class FakeRedisServer {
       case 'UNSUBSCRIBE':
         _pubSubConnections.add(socket);
         var kind = name.toLowerCase();
-        var channel = command[1];
-        if (name == 'SUBSCRIBE') {
-          _subscribers.putIfAbsent(channel, () => {}).add(socket);
-        } else {
-          _subscribers[channel]?.remove(socket);
-        }
-        if (holdConfirmations) {
-          _held.add(_HeldConfirmation(socket, kind, channel));
-        } else {
-          _writeConfirmation(socket, kind, channel);
+        for (var channel in command.skip(1)) {
+          if (name == 'SUBSCRIBE') {
+            _subscribers.putIfAbsent(channel, () => {}).add(socket);
+          } else {
+            _subscribers[channel]?.remove(socket);
+          }
+          if (holdConfirmations) {
+            _held.add(_HeldConfirmation(socket, kind, channel));
+          } else {
+            _writeConfirmation(socket, kind, channel);
+          }
         }
       case 'PING':
         socket.add(utf8.encode('+PONG\r\n'));

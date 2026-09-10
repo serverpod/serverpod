@@ -24,6 +24,93 @@ void main() {
     await redis.close();
   });
 
+  group(
+    'Given two listeners added during a pub/sub reconnect with confirmations withheld,',
+    () {
+      late Future<bool> firstSubscription;
+      late Future<bool> secondSubscription;
+      late Completer<String> secondMessage;
+
+      setUp(() async {
+        await controller.stop();
+        controller = RedisController(
+          host: '127.0.0.1',
+          port: redis.port,
+          requireSsl: false,
+          password: 'password',
+        );
+        await controller.start();
+        redis.holdConfirmations = true;
+        var interrupted = controller.subscribe('before-drop', (_, _) {});
+        await redis.nextCommand('SUBSCRIBE');
+        await redis.dropPubSubConnections();
+        await interrupted;
+        redis.holdAuthentications = true;
+
+        var authenticating = redis.nextCommand('AUTH');
+        firstSubscription = controller.subscribe('first', (_, _) {});
+        await authenticating;
+        secondMessage = Completer<String>();
+        secondSubscription = controller.subscribe('second', (_, message) {
+          secondMessage.complete(message);
+        });
+
+        var resubscribing = redis.nextCommand('SUBSCRIBE');
+        redis.releaseHeldAuthentications();
+        await resubscribing;
+      });
+
+      test(
+        'when Redis confirms the subscriptions, '
+        'then both subscriptions report success.',
+        () async {
+          redis.releaseHeldConfirmations();
+
+          expect(
+            await Future.wait([firstSubscription, secondSubscription]),
+            [true, true],
+          );
+        },
+      );
+
+      test(
+        'when a message arrives on the second channel, '
+        'then the second listener receives it.',
+        () async {
+          redis.releaseHeldConfirmations();
+          await Future.wait([firstSubscription, secondSubscription]);
+
+          redis.deliverMessage('second', 'after reconnect');
+
+          await expectLater(
+            secondMessage.future.timeout(const Duration(seconds: 2)),
+            completion('after reconnect'),
+          );
+        },
+      );
+
+      test(
+        'when publishing to the second channel, '
+        'then publishing waits for its subscription confirmation.',
+        () async {
+          var published = false;
+          var publishing = controller.publish('second', 'after reconnect');
+          unawaited(publishing.then((_) => published = true));
+          await pumpEventQueue();
+
+          expect(published, isFalse);
+          expect(
+            redis.receivedCommands.map((command) => command.first),
+            isNot(contains('PUBLISH')),
+          );
+
+          redis.releaseHeldConfirmations();
+          await expectLater(publishing, completion(isTrue));
+        },
+      );
+    },
+  );
+
   test(
     'Given a pub/sub reconnect stalled on AUTH and a healthy command connection, '
     'when publishing to the channel waiting to subscribe, '

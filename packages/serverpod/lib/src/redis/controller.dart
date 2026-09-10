@@ -59,7 +59,7 @@ class RedisController {
   bool _connecting = false;
 
   Command? _pubSubCommand;
-  bool _connectingPubSub = false;
+  Future<bool>? _connectingPubSub;
   PubSub? _pubSub;
 
   bool _running = true;
@@ -187,20 +187,25 @@ class RedisController {
     }
   }
 
-  Future<bool> _connectPubSub([Duration? connectTimeoutOverride]) async {
+  Future<bool> _connectPubSub([Duration? connectTimeoutOverride]) {
     if (_pubSub != null) {
-      return true;
+      return Future.value(true);
     }
-    if (_connectingPubSub || !_running) {
-      return false;
+    if (!_running) {
+      return Future.value(false);
     }
-    _connectingPubSub = true;
+    // Concurrent subscribers must await the same reconnect, so they remain
+    // pending until the batch resubscribe can confirm their channels.
+    return _connectingPubSub ??= _openPubSub(
+      connectTimeoutOverride,
+    ).whenComplete(() => _connectingPubSub = null);
+  }
 
+  Future<bool> _openPubSub(Duration? connectTimeoutOverride) async {
     _pubSubCommand = await _createAndAuthCommand(
       connectTimeoutOverride: connectTimeoutOverride,
     );
     if (_pubSubCommand == null) {
-      _connectingPubSub = false;
       return false;
     }
 
@@ -226,7 +231,6 @@ class RedisController {
       _pubSub!.subscribe(_subscriptions.keys.toList());
     }
 
-    _connectingPubSub = false;
     return true;
   }
 
@@ -379,6 +383,11 @@ class RedisController {
     String channel,
     RedisSubscriptionCallback listener,
   ) async {
+    // Reconnecting resubscribes this map. Store listeners before yielding so
+    // subscriptions added during the same reconnect are included in its batch.
+    _subscriptions[channel] = listener;
+    var alreadyConnected = _pubSub != null;
+
     // Registered before the first await, so a publish issued immediately after
     // this call already observes the subscription as in flight.
     var pending = _PendingConfirmation(_pendingSubscribes, channel);
@@ -386,10 +395,8 @@ class RedisController {
     try {
       if (!await _connectPubSub()) return pending.complete(false);
 
-      // In place before the command is sent, so the listener is ready by the
-      // time the server starts delivering messages for the channel.
-      _subscriptions[channel] = listener;
-      _pubSub!.subscribe([channel]);
+      // A newly opened connection has already sent the batch resubscribe.
+      if (alreadyConnected) _pubSub!.subscribe([channel]);
 
       return await pending.confirmed.timeout(
         _subscriptionConfirmationTimeout,
