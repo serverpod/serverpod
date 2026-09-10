@@ -108,7 +108,6 @@ class _ManagerFixture {
     void Function(FlutterAppConfig app, String? url)? onReady,
     void Function(FlutterAppConfig app)? onStop,
     void Function(FlutterAppConfig app)? onLaunchFailed,
-    void Function(FlutterAppConfig app)? onEnsureAppTab,
     void Function(FlutterAppConfig app, FlutterLogEvent event)? onLog,
     IOSink Function(FlutterAppConfig app)? stdoutSinkFor,
     IOSink Function(FlutterAppConfig app)? stderrSinkFor,
@@ -158,7 +157,6 @@ $appEntries''');
       onStart: (_, _) async {},
       onStop: onStop ?? (_) {},
       onLaunchFailed: onLaunchFailed ?? (_) {},
-      onEnsureAppTab: onEnsureAppTab ?? (_) {},
       onLog: onLog ?? (_, _) {},
       stdoutSinkFor: stdoutSinkFor ?? (_) => stdout,
       stderrSinkFor: stderrSinkFor ?? (_) => stderr,
@@ -235,15 +233,12 @@ dependencies:
 void main() {
   group('Given a FlutterAppManager with two configured apps', () {
     late _ManagerFixture f;
-    late String launchedAppId;
 
     setUp(() async {
-      launchedAppId = '';
       f = await _ManagerFixture.create(
         apps: const [_AppSpec('app-a'), _AppSpec('app-b')],
         shim: 'never_publishes_uri.dart',
         initialize: false,
-        onEnsureAppTab: (app) => launchedAppId = app.id,
       );
     });
 
@@ -293,15 +288,6 @@ void main() {
           expect(f.manager.isRunning('app-a'), isTrue);
           expect(f.manager.isRunning('app-b'), isTrue);
           expect(f.manager.runningAppIds, containsAll(['app-a', 'app-b']));
-        },
-      );
-
-      test(
-        'when launch is called then onEnsureAppTab is invoked',
-        () async {
-          await f.manager.launch('app-a');
-
-          expect(launchedAppId, 'app-a');
         },
       );
 
