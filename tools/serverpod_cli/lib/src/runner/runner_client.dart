@@ -24,14 +24,7 @@ class RunnerUnreachableException implements Exception {
       'Start one with `serverpod start`.';
 }
 
-/// A [RunnerApi] backed by a runner in another process.
-///
-/// Materializes the snapshot into a local [StartLogHistory] and keeps it
-/// current from the event stream, so a renderer reads the same buffers either
-/// way. Commands are forwarded over JSON-RPC.
-///
-/// Reconnects when the runner restarts, a detached runner outliving any one
-/// client.
+/// A [RunnerApi] for a runner in another process, mirrored into [history].
 class RunnerClient implements RunnerApi {
   RunnerClient({
     required this.socketPath,
@@ -42,21 +35,14 @@ class RunnerClient implements RunnerApi {
        _reconnectDelay = reconnectDelay,
        _reconnectDeadline = reconnectDeadline;
 
-  /// The runner's attach socket.
   final String socketPath;
 
   final Duration _reconnectDelay;
 
-  /// How long to keep reconnecting before declaring the runner [gone].
-  ///
-  /// Null keeps trying forever, which suits a UI a user can detach at will. A
-  /// caller with nobody watching, such as a CI log stream, passes a bound.
+  /// How long to reconnect before the runner is [gone], or forever if null.
   final Duration? _reconnectDeadline;
 
-  /// The buffers a renderer reads.
-  ///
-  /// Filled from the snapshot, then kept current from events. A renderer that
-  /// already owns a history passes it in.
+  /// The buffers a renderer reads, kept current from the snapshot and events.
   final StartLogHistory history;
 
   final StreamController<RunnerEvent> _events =
@@ -67,15 +53,10 @@ class RunnerClient implements RunnerApi {
   json_rpc.Peer? _peer;
   Socket? _socket;
 
-  /// Whether this client is a UI rather than a one-shot command.
-  ///
-  /// Set by [attach]. Gates both the snapshot request and the reconnect loop.
+  /// Whether this client takes snapshots and reconnects, until [gone].
   bool _attached = false;
 
-  /// Events received while a snapshot request is in flight, replayed once
-  /// applied.
-  ///
-  /// Null when none is outstanding.
+  /// Events held while a snapshot request is in flight, then applied.
   List<RunnerEvent>? _heldEvents;
   bool _closed = false;
   final Completer<void> _gone = Completer<void>();
@@ -90,44 +71,29 @@ class RunnerClient implements RunnerApi {
   Set<String> _launchingApps = {};
   final Map<String, String?> _appUrls = {};
 
-  /// A future that completes once the runner has stopped answering for longer
-  /// than the reconnect deadline this client was given.
+  /// Completes once the runner stays unreachable past the reconnect deadline.
   ///
-  /// Never completes without a deadline. The runner is not coming back, either
-  /// killed outright or aborted before it could announce it was stopping.
+  /// A runner that stops normally announces it, so this means a kill or abort.
   Future<void> get gone => _gone.future;
 
-  /// The connection state, `true` on attach and `false` on losing the runner.
+  /// `true` after each connect's snapshot, `false` on losing the runner.
   ///
-  /// A `true` follows the snapshot the connection opened with, which moves
-  /// every scalar at once with no per-field event. A renderer deriving values
-  /// from the scalars recomputes them here, or a reconnect leaves it reading
-  /// the previous runner's state.
+  /// A snapshot moves every scalar with no event, so recompute derived values.
   Stream<bool> get connectionChanges => _connectionChanges.stream;
 
-  /// The Flutter app URLs seen so far, keyed by app id.
+  /// The last known URL of each Flutter app by id, or null for a stopped app.
   Map<String, String?> get flutterAppUrls => Map.unmodifiable(_appUrls);
 
-  /// Opens a connection to issue commands on, nothing more.
+  /// Connects for commands only, with no snapshot and no reconnect.
   ///
-  /// No snapshot, no reconnect. Asking for the snapshot marks a client as a
-  /// UI and arms the Flutter auto-launch.
-  ///
-  /// Throws [RunnerUnreachableException] when nothing is listening.
+  /// Requesting a snapshot would arm the runner's Flutter auto-launch.
   Future<void> connect() async {
     if (!await _connectOnce()) throw RunnerUnreachableException(socketPath);
   }
 
-  /// Connects, loads the first snapshot, and keeps reconnecting for as long as
-  /// this client lives.
+  /// Connects, loads the snapshot, and reconnects until [close] or [gone].
   ///
-  /// What a renderer calls. The snapshot request tells the runner a UI has
-  /// arrived, and the reconnect loop lets this client outlive a runner
-  /// restart.
-  ///
-  /// [waitFor] bounds how long to retry the first connection, for a caller
-  /// that just spawned a runner and knows the socket is coming. Without it a
-  /// missing runner is reported at once.
+  /// [waitFor] retries the first connection, which otherwise fails at once.
   Future<void> attach({Duration? waitFor}) async {
     _attached = true;
     if (waitFor == null) {
@@ -144,10 +110,7 @@ class RunnerClient implements RunnerApi {
     }
   }
 
-  /// Detaches.
-  ///
-  /// Never stops the runner. That is `serverpod runner stop`, or Shift+Q in
-  /// the UI.
+  /// Detaches without stopping the runner.
   @override
   Future<void> close() async {
     _closed = true;
@@ -227,16 +190,10 @@ class RunnerClient implements RunnerApi {
     return true;
   }
 
-  /// Runs [peer] until the runner goes away, then starts reconnecting.
+  /// Runs [peer] and reports its disconnect if it is still the current [_peer].
   ///
-  /// A runner shutting down mid-message ends the peer with an error, the
-  /// ordinary way a `serverpod runner stop` reaches an attached client.
-  ///
-  /// Only the peer this client is on reports a disconnect. Listening starts
-  /// before the snapshot request, since `sendRequest` needs it to pump the
-  /// response, so a peer whose handshake failed ends here too. Reporting that
-  /// as a lost connection would start a reconnect loop beside the caller's own
-  /// retry.
+  /// Listening precedes the snapshot request, so a failed handshake ends here
+  /// too, and reporting it would race the caller's own retry.
   Future<void> _listenUntilClosed(json_rpc.Peer peer) async {
     try {
       await peer.listen();
@@ -270,11 +227,7 @@ class RunnerClient implements RunnerApi {
     }
   }
 
-  /// Takes over the scalars and the history of the snapshot a connection
-  /// opened with.
-  ///
-  /// The history is replaced, not merged. After a reconnect it is the account
-  /// of whichever runner now serves the socket.
+  /// Replaces scalars and history, since a reconnect may reach a new runner.
   void _applySnapshot(RunnerSnapshot snapshot) {
     _stage = snapshot.stage;
     _exitCode = snapshot.exitCode;
@@ -362,8 +315,7 @@ class RunnerClient implements RunnerApi {
         } else {
           _launchingApps.remove(appId);
         }
-        // A running app reporting no URL is reporting no news: a progress
-        // update carries none. One that stopped has none to keep.
+        // A running app's progress update has no URL, so keep the last.
         _appUrls[appId] = url ?? (running ? _appUrls[appId] : null);
 
       case OperationsDiscardedEvent(:final ids):
@@ -380,11 +332,10 @@ class RunnerClient implements RunnerApi {
     _markChanged();
   }
 
-  /// Tells the renderer to repaint through [StartLogHistory.onChanged], the
-  /// same channel the in-process runner fires.
+  /// Calls [StartLogHistory.onChanged], which direct buffer writes skip.
   void _markChanged() => history.onChanged?.call();
 
-  /// Sends [method] to the runner, or throws when detached.
+  /// Sends [method], or throws [RunnerUnreachableException] when detached.
   Future<Object?> _send(String method, [Map<String, Object?>? params]) async {
     final peer = _peer;
     if (peer == null) throw RunnerUnreachableException(socketPath);
@@ -394,8 +345,7 @@ class RunnerClient implements RunnerApi {
   @override
   RunnerStage get stage => _stage;
 
-  /// The exit code the runner named on reaching [RunnerStage.stopping], from
-  /// the announcement or from the snapshot of a runner already stopping.
+  /// The exit code the runner named on reaching [RunnerStage.stopping].
   int? get exitCode => _exitCode;
 
   @override
@@ -460,11 +410,6 @@ class RunnerClient implements RunnerApi {
   @override
   bool get canLaunchFlutterApps => _canLaunchFlutterApps;
 
-  /// Whether the runner was started in watch mode.
-  ///
-  /// Exposed alongside [stage] and [isRunning] so a renderer can read the
-  /// scalars without building a whole [snapshot], which copies every retained
-  /// log line.
   bool get watchModeEnabled => _watchModeEnabled;
 
   @override

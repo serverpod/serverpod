@@ -52,9 +52,6 @@ class MainScreen extends StatelessComponent {
   final VoidCallback? onQuit;
 
   /// Stops the whole stack, as opposed to [onQuit], which only leaves the UI.
-  ///
-  /// A detached runner outlives the session that started it, so the two need to
-  /// be different keystrokes.
   final VoidCallback? onStopStack;
 
   /// Copies the pinned alert's segment (also bound to the `C` key).

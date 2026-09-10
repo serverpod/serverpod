@@ -95,15 +95,9 @@ class FlutterAppManager {
   bool get canLaunchApps => canLaunchAppsIn(runMode);
 
   /// Whether [launch] can do anything in [runMode].
-  ///
-  /// Apps are configured and listed in every run mode, but only development
-  /// launches them.
   static bool canLaunchAppsIn(String runMode) => runMode == 'development';
 
-  /// Launch progress for a presentation layer that shows stages of its own.
-  ///
-  /// Null in the runner, which reports progress as log lines an attached client
-  /// renders like any other.
+  /// Called with each stage the toolchain reports while an app launches.
   final void Function(FlutterAppConfig app, String stage)? onProgress;
 
   /// Fires once per launch when the app is up: on the published web URL
@@ -115,10 +109,7 @@ class FlutterAppManager {
   final void Function(FlutterAppConfig app) onStop;
   final void Function(FlutterAppConfig app) onLaunchFailed;
 
-  /// Invoked when a spawn goes in flight, before the app is ready.
-  ///
-  /// The start of a launch, where [onReady], [onStop] and [onLaunchFailed]
-  /// report its end.
+  /// Invoked when a spawn starts, before the callback that reports its end.
   final void Function(FlutterAppConfig app)? onLaunching;
   final void Function(FlutterAppConfig app, FlutterLogEvent event) onLog;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
@@ -130,17 +121,10 @@ class FlutterAppManager {
   final List<String> serverPackageDirectoryPathParts;
   final String projectName;
 
-  /// The API server's resolved URL, once the pod has reported it.
-  ///
-  /// Null before the first boot, and when the pod bound the configured port
-  /// after all.
+  /// The pod's API URL, null on the configured ports so apps keep their own.
   String? resolvedApiUrl;
 
-  /// Whether an app flagged `auto_launch` is launched when the configuration
-  /// is loaded.
-  ///
-  /// Starts false in the runner and is armed by [launchAutoLaunchApps] when
-  /// a UI first attaches.
+  /// Whether [loadApps] launches the apps flagged `auto_launch`.
   bool autoLaunchArmed;
 
   String? _cachedFlutterAppsFingerprint;
@@ -169,9 +153,7 @@ class FlutterAppManager {
     for (final appId in runningAppIds) appId: processFor(appId)?.dtdUri,
   };
 
-  /// URLs of running apps, keyed by app id, in the manner of [dtdUris].
-  ///
-  /// A web app with no URL yet, and every non-web device, maps to null.
+  /// The URLs of running apps by id, null for a non-web or unready app.
   Map<String, String?> get appUrls => {
     for (final appId in runningAppIds) appId: processFor(appId)?.flutterAppUrl,
   };
@@ -382,8 +364,7 @@ class FlutterAppManager {
     if (runtime == null) return;
 
     runtime.relaunchInProgress = runtime.process != null;
-    // The relaunch reports its launching state right away, so a stop signal
-    // in between would only flash a stopped state.
+    // The relaunch reports launching, so a stop signal would only flash.
     runtime.stopSignaled = true;
     await runtime.process?.stop();
     runtime.process = null;
@@ -463,17 +444,13 @@ class FlutterAppManager {
 
   /// The `--dart-define` assignments telling an app where the pod is.
   ///
-  /// `SERVER_URL` is the env var `getServerUrl` in `serverpod_flutter` reads
-  /// ahead of `assets/config.json`. Empty until the pod reports an address.
+  /// `SERVER_URL` overrides `assets/config.json` in `serverpod_flutter`.
   List<String> serverUrlDefines() {
     final url = resolvedApiUrl;
     return url == null ? const [] : ['SERVER_URL=$url'];
   }
 
-  /// Arms auto-launch and launches every configured app flagged
-  /// `auto_launch` that is not already running.
-  ///
-  /// Idempotent. A second call launches nothing new.
+  /// Arms auto-launch once, launching the `auto_launch` apps not yet running.
   Future<void> launchAutoLaunchApps() async {
     if (autoLaunchArmed) return;
     autoLaunchArmed = true;
@@ -486,7 +463,7 @@ class FlutterAppManager {
   /// Stops every running app and removes per-app VM-service info files.
   Future<void> stopAll() async {
     await _runtimes.values.map((runtime) async {
-      // Session shutdown; don't churn [onStop] consumers per app.
+      // Session shutdown. Don't churn [onStop] consumers per app.
       runtime.stopSignaled = true;
       await runtime.process?.stop();
       runtime.process = null;
@@ -496,7 +473,7 @@ class FlutterAppManager {
 
   /// Closes every proxy and deletes info files.
   ///
-  /// Only an IDE launch removes the device info; a plain terminal run leaves
+  /// Only an IDE launch removes the device info. A plain terminal run leaves
   /// it alone, since it may belong to a pending IDE launch.
   Future<void> dispose() async {
     await stopAll();

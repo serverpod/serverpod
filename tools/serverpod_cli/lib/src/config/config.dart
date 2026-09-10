@@ -349,13 +349,8 @@ class GeneratorConfig implements ModelLoadConfig {
 
   /// The absolute server package directory [serverRootDir] names.
   ///
-  /// An empty value, what `--directory` defaults to, means "find it": the
-  /// search starts at [startDir], or the current directory when that is null.
-  /// Separate from [load] because the runner needs the directory before it has
-  /// a config, to open its log file where every other runner artifact lives.
-  ///
-  /// [interactive] controls whether the search may prompt when it finds more
-  /// than one project. Defaults to true unless running in a CI environment.
+  /// An empty value searches from [startDir] or the current directory, which
+  /// may prompt unless [interactive] is false, or null in CI.
   static Future<String> resolveServerRootDir(
     String serverRootDir, {
     required bool? interactive,
@@ -379,14 +374,7 @@ class GeneratorConfig implements ModelLoadConfig {
     return p.normalize(p.absolute(serverRootDir));
   }
 
-  /// Create a new [GeneratorConfig] by loading the configuration in the [serverRootDir].
-  ///
-  /// If [serverRootDir] is empty, the server directory will be automatically
-  /// detected by searching the current directory and nearby locations.
-  ///
-  /// The [interactive] parameter controls whether interactive prompts are enabled.
-  /// Defaults to true unless running in a CI environment (detected via ci package).
-  /// Explicit flag value overrides CI detection.
+  /// Loads the config at [serverRootDir], resolved by [resolveServerRootDir].
   static Future<GeneratorConfig> load({
     String serverRootDir = '',
     required bool? interactive,

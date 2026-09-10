@@ -124,8 +124,7 @@ void main() {
       'when a probe fails while the runner still holds its lock, '
       'then the caller keeps waiting, and leaves once the lock is released',
       () async {
-        // Held from another process: Dart's file locks are per process, so
-        // a lock taken here would not stand in for the runner's.
+        // A POSIX process can retake its own lock, so another process holds it.
         final holder = await holdLockFromAnotherProcess(tempDir.path);
         await socket.close();
         final up = awaitStackUp(tempDir.path, starting);
@@ -395,8 +394,7 @@ void main() {
     late GeneratorConfig config;
 
     setUp(() async {
-      // Not the test sandbox: the socket sits beside the manifest, and a
-      // Unix socket address is capped near 104 bytes.
+      // The test sandbox can be too deep for a Unix socket address.
       root = await createShortTempDir('rst');
       await _mockProject().create(root.path);
       serverDir = p.join(root.path, 'project', 'my_project_server');
@@ -483,8 +481,7 @@ void main() {
       await _mockProject().create(root.path);
       serverDir = p.join(root.path, 'project', 'my_project_server');
 
-      // What a pod's VM service looks like to `_checkExistingServer`: a
-      // websocket that accepts the upgrade.
+      // A websocket that accepts the upgrade passes for a live VM service.
       vmService = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       vmService.listen((request) async {
         final socket = await WebSocketTransformer.upgrade(request);

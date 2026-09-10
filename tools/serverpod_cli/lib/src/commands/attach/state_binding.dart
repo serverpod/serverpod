@@ -13,11 +13,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Drives a [ServerWatchState] from an attached [RunnerClient].
 ///
-/// The terminal UI renders the same state object either way. In-process the
-/// watch loop's callbacks mutate it, here the runner's events do.
-///
-/// Scroll position, tab selection and expanded operations stay local, so two
-/// attached clients scroll independently.
+/// See `docs/design/runner.md#division-of-state`.
 class RunnerStateBinding {
   RunnerStateBinding({
     required this.client,
@@ -29,27 +25,17 @@ class RunnerStateBinding {
   final RunnerClient client;
   final StartAppStateHolder holder;
 
-  /// Called when this client leaves on its own: the detach key, or a stop
-  /// the runner refused.
-  ///
-  /// The runner keeps running. Stopping it goes through [onRunnerStopped].
+  /// Called when this client detaches, or its stop request is refused.
   final void Function() onStopRequested;
 
-  /// Called with the exit code the runner named when it announces it is
-  /// stopping, whoever asked for the stop.
-  ///
-  /// This client's own stop key ends here too, so it leaves with the code the
-  /// runner names rather than with zero the moment the request is accepted.
-  /// A connection that drops without an announcement is a crash or a kill,
-  /// which the client rides out by reconnecting instead.
+  /// Called with the exit code the runner announces, not on a lost connection.
   final void Function(int exitCode)? onRunnerStopped;
 
   final List<StreamSubscription<void>> _subs = [];
 
   ServerWatchState get _state => holder.state;
 
-  /// Points the state at the client's buffers, wires the UI's actions to the
-  /// runner, and starts following events.
+  /// Wires the UI to the client's history, actions and events.
   void bind() {
     client.history.attachHolder(holder);
 
@@ -79,8 +65,7 @@ class RunnerStateBinding {
     holder.onQuit = onStopRequested;
     holder.onStopStack = () => unawaited(
       client.stop().catchError((Object e) {
-        // A stop the runner refused announces nothing, so nothing else will
-        // end this session.
+        // A refused stop announces nothing, so nothing else ends this session.
         log.error('Stopping the runner failed: $e');
         onStopRequested();
       }),
@@ -143,8 +128,7 @@ class RunnerStateBinding {
     };
   }
 
-  /// Runs a migration command and reports it the way the in-process UI does:
-  /// log the outcome, throw on failure so the tracked operation turns red.
+  /// Creates and applies a migration, throwing if creating it fails.
   Future<void> _createMigration(
     Future<MigrationResult> Function() create, {
     required String forceHint,
@@ -169,11 +153,7 @@ class RunnerStateBinding {
     return apps[index];
   }
 
-  /// Redraws from what the client currently believes, on first bind and after
-  /// every reconnect.
-  ///
-  /// Reads the client's scalars rather than `client.snapshot()`, which copies
-  /// every retained buffer to carry the handful of values used here.
+  /// Applies the client's state to the UI on bind and after each reconnect.
   void _applyRunnerState() {
     final isRunning = client.isRunning;
     final stage = client.stage;
@@ -181,8 +161,7 @@ class RunnerStateBinding {
     _state.serverReady = isRunning;
     _state.serverStartable = !isRunning && stage == RunnerStage.degraded;
     _state.showSplash = stage == RunnerStage.starting;
-    // A runner that announced it was stopping before this binding listened,
-    // or in the snapshot this client attached to, is leaving all the same.
+    // The runner may have announced stopping before this binding existed.
     if (stage == RunnerStage.stopping) {
       onRunnerStopped?.call(client.exitCode ?? 0);
     }
@@ -255,9 +234,6 @@ class RunnerStateBinding {
   }
 
   /// Opens or updates the log tab for [appId].
-  ///
-  /// The tab renders the client's line buffer, so one opened after the app
-  /// started shows everything it has produced.
   void _markAppTab(
     String appId, {
     required bool running,
@@ -270,7 +246,6 @@ class RunnerStateBinding {
       appId: appId,
       label: app?.name ?? appId,
     );
-    // Launched from the panel: show the tab the launch is landing in.
     if (launching &&
         tab.runState != AppRunState.launching &&
         _state.showLaunchPanel) {

@@ -148,9 +148,7 @@ class WebServer {
     }
 
     try {
-      // The port first bound rather than the configured one: a configured
-      // port of zero resolved to an ephemeral port then, and clients were
-      // built against that one.
+      // A restart keeps the port of the first start, ephemeral or not.
       final server = await _app.serve(
         address: InternetAddress.anyIPv6,
         port: _actualPort ?? _config.port,

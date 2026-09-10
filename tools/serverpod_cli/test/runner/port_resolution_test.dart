@@ -677,10 +677,7 @@ Future<int> _freePort() async {
   return port;
 }
 
-/// Stands up a registered runner in another checkout that actually answers.
-///
-/// A listening socket rather than a stray file. Liveness is a real probe, so a
-/// manifest alone would not count.
+/// Starts a registered sibling runner whose socket answers liveness probes.
 Future<ServerSocket> _startSiblingRunner(
   RunnerRegistry registry,
   String root,
@@ -705,8 +702,7 @@ Future<ServerSocket> _startSiblingRunner(
   return socket;
 }
 
-/// Leaves behind the manifest and registry entry of a runner that is no
-/// longer listening.
+/// Writes the manifest and registry entry of a runner that is not listening.
 Future<void> _writeDeadSiblingManifest(
   RunnerRegistry registry,
   String root,

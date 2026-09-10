@@ -1,11 +1,7 @@
 import 'package:config/config.dart';
 
-/// The options that shape the stack a runner brings up.
-///
-/// Shared by `runner start` and the hidden `runner serve`, which spawn the
-/// same stack and must agree on every default: `serverpod start` brings a
-/// runner up by re-emitting these flags to `runner serve`, so a default that
-/// drifts between the two changes behaviour on only one of the paths.
+// Shared by `runner start` and `runner serve`, so passed flags parse alike.
+
 const runnerWatchOption = FlagOption(
   argName: 'watch',
   argAbbrev: 'w',
@@ -35,9 +31,7 @@ const runnerFlutterOption = FlagOption(
 
 /// The server directory for a command that talks to a runner already up.
 ///
-/// Unlike [runnerDirectoryOption] this has no default: `attach`, `status` and
-/// `stop` auto-detect the project from the current directory rather than
-/// falling back to the package root.
+/// Unset, the project is found from the current directory without a prompt.
 const clientDirectoryOption = StringOption(
   argName: 'directory',
   argAbbrev: 'd',

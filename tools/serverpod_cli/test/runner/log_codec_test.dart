@@ -4,8 +4,7 @@ import 'package:serverpod_cli/src/runner/log_codec.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:test/test.dart';
 
-/// Stands in for the `LogType` the CLI logger stashes in every entry's
-/// metadata, which `jsonEncode` has no idea what to do with.
+/// Stands in for the CLI's `LogType` metadata, which `jsonEncode` rejects.
 class _Opaque {
   @override
   String toString() => 'opaque';

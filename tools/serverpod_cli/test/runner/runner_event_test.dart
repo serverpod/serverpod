@@ -7,8 +7,7 @@ import 'package:serverpod_tui/serverpod_tui.dart'
     show CompletedOperation, TrackedOperation;
 import 'package:test/test.dart';
 
-/// Encodes [event], puts it through JSON, and decodes it again, so a test
-/// exercises the same path a socket does.
+/// Round-trips [event] through JSON, as the socket does.
 RunnerEvent? _roundTrip(RunnerEvent event) => RunnerEvent.fromJson(
   jsonDecode(jsonEncode(event.toJson())) as Map<String, Object?>,
 );

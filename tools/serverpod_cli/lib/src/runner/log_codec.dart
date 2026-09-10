@@ -1,20 +1,13 @@
-/// JSON for the entries a runner's log history holds, so a client in another
-/// process can render the same buffers.
-///
-/// `LogEntry` in `serverpod_logging` carries no codec of its own. This one is
-/// symmetric, so the MCP `tail_server_logs` tool and attach share it.
+/// JSON for a runner's log history, shared by attach and `tail_server_logs`.
 library;
 
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart'
     show CompletedOperation, TrackedOperation;
 
-/// One log entry as a plain-text line: `<iso8601> [LEVEL] <message>`, with the
-/// error and stack trace on lines of their own.
+/// [entry] as `<local iso8601> [LEVEL] <message>`, then error and stack trace.
 ///
-/// The runner's log file and `serverpod runner attach --no-tui` are meant to be
-/// greppable the same way, so the format is stated once rather than in each.
-/// The time is local, whichever zone the entry came in.
+/// The runner's log file and `serverpod runner attach --no-tui` share it.
 String formatLogEntryLine(LogEntry entry) {
   final buffer = StringBuffer()
     ..write(entry.time.toLocal().toIso8601String())
@@ -27,8 +20,7 @@ String formatLogEntryLine(LogEntry entry) {
   return buffer.toString();
 }
 
-/// Encodes one entry of the runner's server history, which holds [LogEntry]
-/// and [CompletedOperation] and nothing else.
+/// Encodes a [LogEntry] or [CompletedOperation] from the server history.
 Map<String, Object?> encodeLogHistoryItem(Object item) => switch (item) {
   LogEntry() => encodeLogEntry(item),
   CompletedOperation() => {
@@ -41,8 +33,7 @@ Map<String, Object?> encodeLogHistoryItem(Object item) => switch (item) {
   _ => throw ArgumentError.value(item, 'item', 'Not a log history item'),
 };
 
-/// Decodes what [encodeLogHistoryItem] produced, or `null` for an entry this
-/// client does not understand.
+/// Decodes what [encodeLogHistoryItem] produced, or null for an unknown type.
 Object? decodeLogHistoryItem(Map<String, Object?> json) =>
     switch (json['type']) {
       'log' => decodeLogEntry(json),
@@ -55,11 +46,7 @@ Object? decodeLogHistoryItem(Map<String, Object?> json) =>
       _ => null,
     };
 
-/// Encodes an operation that is still running.
-///
-/// [TrackedOperation] measures elapsed time with a [Stopwatch] it starts on
-/// construction, which cannot travel. [startedAt] is what a client needs to
-/// show how long an operation it did not witness the start of has been going.
+/// Encodes a running operation with [startedAt], since its stopwatch cannot.
 Map<String, Object?> encodeTrackedOperation(
   TrackedOperation operation, {
   required DateTime startedAt,
@@ -69,12 +56,8 @@ Map<String, Object?> encodeTrackedOperation(
   'startedAt': startedAt.toIso8601String(),
 };
 
-/// Decodes a tracked operation.
-///
-/// The reconstructed [TrackedOperation] starts a fresh stopwatch, which is
-/// harmless: no widget renders elapsed time for an operation that is still
-/// running, and the completed entry the runner emits carries the duration it
-/// measured.
+/// Decodes a tracked operation. Its fresh stopwatch is harmless, as nothing
+/// renders it and the completed entry carries the measured duration.
 ({TrackedOperation operation, DateTime startedAt}) decodeTrackedOperation(
   Map<String, Object?> json,
 ) => (

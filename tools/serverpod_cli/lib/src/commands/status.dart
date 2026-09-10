@@ -26,11 +26,7 @@ enum StatusOption<V> implements OptionDefinition<V> {
   final ConfigOptionBase<V> option;
 }
 
-/// Prints the state and addresses of the runner for one server project.
-///
-/// Reads `.dart_tool/serverpod/runner.json` and probes the socket it names, so
-/// a manifest left behind by a crashed runner is reported as not running
-/// rather than as a live stack.
+/// The `serverpod runner status` command, which prints the runner's state.
 class StatusCommand extends ServerpodCommand<StatusOption> {
   @override
   final name = 'status';
@@ -129,11 +125,9 @@ class StatusCommand extends ServerpodCommand<StatusOption> {
   String _onOff(bool value) => value ? 'on' : 'off';
 }
 
-/// Resolves the server directory for a runner client command.
+/// Resolves the server directory for a runner command, or exits with a hint.
 ///
-/// [explicit] is the value of the [flag] naming it, when given. Prompting is
-/// off: these commands are the ones an agent runs, and a blocked prompt in a
-/// non-interactive session reads as a hang.
+/// Never prompts, since an agent's blocked prompt looks like a hang.
 Future<Directory> resolveServerDirectory(
   String? explicit, {
   String flag = '--directory',
@@ -151,11 +145,9 @@ Future<Directory> resolveServerDirectory(
   }
 }
 
-/// Resolves the runner for [serverDir], or exits with the reason it cannot
-/// be reached.
+/// Resolves the runner for [serverDir], or exits with why it is unreachable.
 ///
-/// A runner whose sockets no path fits is a configuration to report, not an
-/// internal error: the exception names both paths tried.
+/// An overlong socket path is a setup problem, not an internal error.
 Future<RunnerResolution> resolveRunnerOrExit(String serverDir) async {
   try {
     return await resolveRunner(serverDir);
@@ -177,8 +169,6 @@ void _printIfSet(String label, String? value) {
   log.info('$label $value');
 }
 
-/// What to say about the servers before the pod has reported them: the ports
-/// the runner has claimed, if it has decided.
 String _unpublishedServers(Map<String, int>? claimed) => switch (claimed) {
   null => 'not yet published',
   final ports when ports.isEmpty =>

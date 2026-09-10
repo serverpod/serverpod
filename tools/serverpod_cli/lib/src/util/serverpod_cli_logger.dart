@@ -14,7 +14,6 @@ import 'package:serverpod_shared/log_io.dart';
 /// Singleton instance of logger.
 cli.Logger? _logger;
 
-/// Whether [_logger] is the default one [initializeLogger] installs.
 bool _loggerIsDefault = false;
 
 /// Replacements for emojis that are not supported on Windows.
@@ -39,21 +38,12 @@ void initializeLogger() {
   _attachGlobalLogBridge();
 }
 
-/// Whether the logger singleton is absent or the default one [initializeLogger]
-/// installs.
+/// Whether no logger or the one [initializeLogger] installs is in place.
 ///
-/// A command that wants its output somewhere else too asks this before
-/// replacing the singleton. Composing over the CLI's own logger redirects only
-/// what this entry point set up. Composing over an installed one, a test's or
-/// an embedder's, takes away what that installer is there to see.
+/// A command may replace only this default, not a test's or embedder's logger.
 bool get loggerIsDefault => _logger == null || _loggerIsDefault;
 
-/// The writer [initializeLogger] installs, putting the CLI's own output on
-/// stdout.
-///
-/// Exposed for a command that writes elsewhere too. The runner records its
-/// output in the history it serves attached clients, and composes this in for
-/// the terminal half.
+/// A new stdout writer of the kind [initializeLogger] installs.
 shared.LogWriter stdOutLogWriter() => IsolatedLogWriter(
   () => StdOutLogWriter(
     replacements: Platform.isWindows ? _windowsLoggerReplacements : null,

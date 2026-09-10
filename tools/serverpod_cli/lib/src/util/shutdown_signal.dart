@@ -24,10 +24,6 @@ Future<T> runWithShutdownSignals<T>(
 
 /// The single point every termination trigger funnels through.
 ///
-/// In the runner, SIGINT and SIGTERM mean a graceful shutdown. In an attached
-/// client, SIGINT only detaches. It cannot reach the runner, which is in a
-/// process group of its own.
-///
 /// When [listenForSignals] is true (the default), SIGINT and SIGTERM complete
 /// [future] with 0. A caller that already owns the signal subscriptions passes
 /// `false` and forwards them itself. Either way, callers can [complete] the
@@ -50,9 +46,7 @@ class ShutdownSignal {
 
   void _completeFromSignal(ProcessSignal _) => complete(0);
 
-  /// Completes [future] with [code] if it isn't completed yet; no-op
-  /// otherwise. Safe to call from multiple paths (signal handlers, the
-  /// Quit button, server-exit forwarders).
+  /// Completes [future] with [code] unless it has completed already.
   void complete([int code = 0]) {
     if (!_completer.isCompleted) _completer.complete(code);
   }

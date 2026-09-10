@@ -99,12 +99,7 @@ void main() {
   });
 }
 
-/// Starts a separate process holding [serverDir]'s runner lock, and returns
-/// once it reports that it has it.
-///
-/// A separate process rather than a second [RunnerLock] in this one: POSIX
-/// advisory locks are held per process, so the contention the lock actually
-/// guards against only exists across processes.
+/// Locks [serverDir] from another process, since POSIX locks are per process.
 Future<Process> _spawnLockHolder(String serverDir) async {
   final lockPath = serverpodRunnerLockPath(serverDir);
   await File(lockPath).parent.create(recursive: true);

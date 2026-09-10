@@ -7,10 +7,7 @@ import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_tui/serverpod_tui.dart' show TrackedOperation;
 
-/// A [RunnerApi] whose every member is a settable field, so a test overrides
-/// only the capability it exercises.
-///
-/// Defaults are inert: commands succeed and do nothing, collections are empty.
+/// An [InProcessRunnerApi] of settable fields whose commands do nothing.
 class FakeRunnerApi implements InProcessRunnerApi {
   @override
   bool isRunning = true;
@@ -18,7 +15,7 @@ class FakeRunnerApi implements InProcessRunnerApi {
   @override
   RunnerStage stage = RunnerStage.running;
 
-  /// What the snapshot names as the exit code of a stopping runner.
+  /// The exit code the snapshot reports for a stopping runner.
   int? exitCode;
 
   bool watchModeEnabled = true;
@@ -46,8 +43,7 @@ class FakeRunnerApi implements InProcessRunnerApi {
     return _snapshot();
   }
 
-  /// How many times a client has asked for the snapshot, which is what marks
-  /// one as a UI rather than a one-shot command.
+  /// How many snapshot requests arrived, each marking a client as a UI.
   int snapshotCalls = 0;
 
   RunnerSnapshot _snapshot() => RunnerSnapshot(
@@ -94,8 +90,7 @@ class FakeRunnerApi implements InProcessRunnerApi {
   @override
   List<FlutterAppConfig> flutterApps = const [];
 
-  /// Sets [flutterApps] to stub configs with these ids, for tests that care
-  /// about app resolution rather than app configuration.
+  /// Fills [flutterApps] with stub configs for these ids.
   set flutterAppIds(List<String> ids) => flutterApps = [
     for (final id in ids)
       FlutterAppConfig(

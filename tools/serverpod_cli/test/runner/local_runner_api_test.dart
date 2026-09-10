@@ -453,7 +453,7 @@ class _SpawnedFlutter extends Fake implements FlutterProcess {
   Future<int> stop({Duration timeout = const Duration(seconds: 5)}) async => 0;
 }
 
-/// Bound only to satisfy [LocalRunnerApi.bindStack]; nothing here reaches it.
+/// A [WatchSession] for [LocalRunnerApi.bindStack] that these tests never use.
 class _UnusedSession extends Fake implements WatchSession {
   @override
   bool get isRunning => false;

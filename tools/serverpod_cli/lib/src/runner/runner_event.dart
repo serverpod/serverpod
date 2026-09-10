@@ -6,21 +6,13 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart'
     show CompletedOperation, TrackedOperation;
 
-/// Everything that happens after the snapshot.
-///
-/// The same entries the runner feeds its own history, forwarded. It receives
-/// framework and session events over `ext.serverpod.log` and combines them
-/// with the CLI's own log calls.
-///
-/// Clients compute elapsed durations from start timestamps.
+/// Everything after the snapshot. See `docs/design/runner.md#attach-protocol`.
 sealed class RunnerEvent {
   const RunnerEvent();
 
   Map<String, Object?> toJson();
 
-  /// Decodes an event, or null for a kind this client does not know.
-  ///
-  /// A newer runner may emit events an older client has never heard of.
+  /// Decodes an event, or null for a kind only a newer runner knows.
   static RunnerEvent? fromJson(Map<String, Object?> json) =>
       switch (json['event']) {
         'log' => ServerLogEvent(
@@ -76,11 +68,7 @@ final class ServerLogEvent extends RunnerEvent {
 
   final LogEntry entry;
 
-  /// Whether a [ServerLineEvent] carries this entry as well.
-  ///
-  /// The pod writes every entry to its stdout and posts it over its VM
-  /// service, so an entry from the pod always has a line. An entry the
-  /// runner records on its own behalf has none.
+  /// Whether a [ServerLineEvent] carries this entry too, as the pod prints it.
   final bool duplicatesLine;
 
   @override
@@ -91,8 +79,7 @@ final class ServerLogEvent extends RunnerEvent {
   };
 }
 
-/// An operation, such as a hot reload, a migration, or a server scope, has
-/// begun.
+/// An operation, such as a compile or a server scope, has begun.
 final class OperationStartedEvent extends RunnerEvent {
   const OperationStartedEvent(this.operation, {required this.startedAt});
 
@@ -112,10 +99,7 @@ final class OperationCompletedEvent extends RunnerEvent {
 
   final CompletedOperation operation;
 
-  /// The id [OperationStartedEvent] opened this operation under.
-  ///
-  /// [CompletedOperation] carries only a label, and labels are not unique. Two
-  /// apps compiling report the same one.
+  /// The [OperationStartedEvent] id, since labels are not unique.
   final String id;
 
   @override
@@ -126,11 +110,7 @@ final class OperationCompletedEvent extends RunnerEvent {
   };
 }
 
-/// A raw output line the pod printed.
-///
-/// The lines are the pod's whole output: every entry it logs, plus `print`,
-/// crashes, and whatever it wrote before the runner subscribed to its
-/// structured log. A renderer that shows the lines misses nothing.
+/// A raw output line the pod printed, including crashes before its VM service.
 final class ServerLineEvent extends RunnerEvent {
   const ServerLineEvent(this.line);
 
@@ -166,14 +146,9 @@ final class FlutterLogEntryEvent extends RunnerEvent {
   final String appId;
   final LogEntry entry;
 
-  /// Whether the runner also appended this entry's text to the app's raw line
-  /// buffer, which a client must also do to hold the same buffer.
+  /// Whether the runner appended the text to the app's lines, so a mirror must.
   ///
-  /// True for an entry that reached the runner over the VM service, which the
-  /// app does not also print, so the runner flattens it into the lines itself.
-  /// False for one decoded from output the app did print.
-  ///
-  /// Only the runner can decide this. A client sees the same event either way.
+  /// True for a VM service event such as `Flutter.Error`, which never printed.
   final bool appendedToLines;
 
   @override
@@ -185,20 +160,15 @@ final class FlutterLogEntryEvent extends RunnerEvent {
   };
 }
 
-/// The runner moved between startup stages.
+/// The runner entered a [RunnerStage].
 final class StageChangedEvent extends RunnerEvent {
   const StageChangedEvent(this.stage, {this.exitCode});
 
   final RunnerStage stage;
 
-  /// Whether the pod is up, which only [RunnerStage.running] means.
   bool get isRunning => stage == RunnerStage.running;
 
-  /// What the runner is about to exit with, on [RunnerStage.stopping].
-  ///
-  /// The pod's exit code, which only the runner sees. Null on every other
-  /// stage, and from a runner that omits it, where a client assumes a clean
-  /// stop.
+  /// The exit code on [RunnerStage.stopping]. A client reads null as clean.
   final int? exitCode;
 
   @override
@@ -209,8 +179,7 @@ final class StageChangedEvent extends RunnerEvent {
   };
 }
 
-/// The set of configured Flutter apps changed, e.g. after the server pubspec
-/// was edited.
+/// The configured Flutter apps changed.
 final class FlutterAppsChangedEvent extends RunnerEvent {
   const FlutterAppsChangedEvent(this.apps);
 
@@ -223,8 +192,7 @@ final class FlutterAppsChangedEvent extends RunnerEvent {
   };
 }
 
-/// One Flutter app started, became ready, stopped, or reached a new stage of
-/// its launch.
+/// A Flutter app started, became ready, stopped, or moved on in its launch.
 final class FlutterAppStateEvent extends RunnerEvent {
   const FlutterAppStateEvent({
     required this.appId,
@@ -238,21 +206,12 @@ final class FlutterAppStateEvent extends RunnerEvent {
   final bool running;
 
   /// Whether the app is between its spawn and its ready signal.
-  ///
-  /// Distinct from [running]. A launching app has no URL and cannot be hot
-  /// reloaded, though it can be stopped. A UI shows it as busy, not absent.
   final bool launching;
 
-  /// The app's URL once it is serving one, and null on non-web devices and
-  /// while still starting.
+  /// The app's URL, null on non-web devices and while it starts.
   final String? url;
 
-  /// What the toolchain is doing right now, such as resolving dependencies or
-  /// compiling, while the app launches.
-  ///
-  /// Null on every other transition, and from a runner that reports none. A
-  /// cold Flutter build takes a minute, and this fills the app's status line
-  /// meanwhile.
+  /// The toolchain step of a launching app, such as compiling, or null.
   final String? launchStage;
 
   @override
@@ -266,14 +225,10 @@ final class FlutterAppStateEvent extends RunnerEvent {
   };
 }
 
-/// Operations the runner dropped without completing.
-///
-/// The pod's open request scopes die with it on a restart, and nothing reports
-/// their end. Without this a client keeps them in flight indefinitely.
+/// Operations that will never complete, such as a dead pod's open scopes.
 final class OperationsDiscardedEvent extends RunnerEvent {
   const OperationsDiscardedEvent(this.ids);
 
-  /// The ids [OperationStartedEvent] opened the operations under.
   final List<String> ids;
 
   @override
@@ -283,10 +238,7 @@ final class OperationsDiscardedEvent extends RunnerEvent {
   };
 }
 
-/// A published address changed, so the manifest was rewritten.
-///
-/// The VM service URI is not the only address that can change, so the whole
-/// manifest travels.
+/// A published address changed, and the runner rewrote its manifest.
 final class ManifestChangedEvent extends RunnerEvent {
   const ManifestChangedEvent(this.manifest);
 
@@ -299,7 +251,6 @@ final class ManifestChangedEvent extends RunnerEvent {
   };
 }
 
-/// Rebuilds an [OperationStartedEvent] from the operation codec's record.
 OperationStartedEvent _operationStarted(Map<String, Object?> json) {
   final decoded = decodeTrackedOperation(json);
   return OperationStartedEvent(decoded.operation, startedAt: decoded.startedAt);

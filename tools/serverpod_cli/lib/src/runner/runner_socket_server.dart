@@ -7,39 +7,23 @@ import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-/// The JSON-RPC method a client calls to get the snapshot.
 const runnerSnapshotMethod = 'snapshot';
 
-/// The JSON-RPC notification the runner pushes events on.
 const runnerEventNotification = 'event';
 
-/// Serves the attach protocol on `<serverDir>/.dart_tool/serverpod/tui.sock`.
+/// Serves the attach protocol. See `docs/design/runner.md#attach-protocol`.
 ///
-/// JSON-RPC 2.0, line-delimited, over the framing [socketChannel] gives the MCP
-/// socket.
-///
-/// Several clients may attach at once, and each gets the snapshot on request
-/// followed by every subsequent event. A connection that never asks for one is
-/// sent nothing. A dropped client disturbs neither the others nor the runner.
-///
-/// Commands take their parameters by name, and callers pass an object even
-/// when every field is optional. `json_rpc_2` rejects a positional or absent
-/// parameter list for a handler that reads named ones.
+/// Callers pass an object even with no parameters, as `json_rpc_2` rejects an
+/// absent list for handlers that read named ones.
 class RunnerSocketServer {
   RunnerSocketServer({required String serverDir})
     : socketPath = serverpodTuiSocketPath(serverDir);
 
-  /// Absolute path to this runner's attach socket.
   final String socketPath;
 
-  /// Invoked the first time a client asks for the snapshot, and never again for
-  /// this runner.
+  /// Runs once, on the first snapshot request, or at once if one has arrived.
   ///
-  /// Auto-launching Flutter apps hangs off this, so they appear when a UI
-  /// first arrives rather than when the stack came up. A connection alone does
-  /// not identify a UI, which is why the snapshot request is the trigger.
-  ///
-  /// Assigning this after a client has already arrived runs it immediately.
+  /// Liveness probes never request a snapshot, so they do not trigger it.
   void Function()? get onFirstClientAttached => _onFirstClientAttached;
 
   set onFirstClientAttached(void Function()? callback) {
@@ -57,21 +41,12 @@ class RunnerSocketServer {
   final Set<Socket> _sockets = {};
   bool _closing = false;
 
-  /// Binds the socket.
-  ///
-  /// [bindUnixSocket] unlinks a stale file left by a crashed previous run
-  /// before binding.
   Future<void> start() async {
     File(socketPath).parent.createSync(recursive: true);
     _serverSocket = await bindUnixSocket(socketPath);
     _serverSocket!.listen(_handleConnection);
   }
 
-  /// Wires the runner whose state is served, and starts forwarding its events
-  /// to every attached client.
-  ///
-  /// A client that attached earlier keeps the snapshot it attached with, and
-  /// receives only the events of [runner] from here on.
   void connect(RunnerApi runner) {
     _runner = runner;
     _eventSub?.cancel();
@@ -80,10 +55,7 @@ class RunnerSocketServer {
     );
   }
 
-  /// Sends [method] to every attached client.
-  ///
-  /// [payload] is built only when there is someone to send it to. Under
-  /// `--no-attach` there is never a peer, and the runner stays up for days.
+  /// Sends [method] to every attached client, building [payload] only if any.
   void _broadcast(String method, Map<String, Object?> Function() payload) {
     if (_peers.isEmpty) return;
     final params = payload();
@@ -96,7 +68,6 @@ class RunnerSocketServer {
     }
   }
 
-  /// Closes the socket and every attached client.
   Future<void> close() async {
     _closing = true;
     await _eventSub?.cancel();
@@ -124,10 +95,7 @@ class RunnerSocketServer {
 
     _sockets.add(socket);
 
-    // Most connections are liveness probes: `resolveRunner` connects and hangs
-    // up without a byte, four times a second from a start waiting on a cold
-    // build. A peer, with its dozen handlers, is built for a client that
-    // speaks.
+    // Most connections are silent liveness probes, so peers are built lazily.
     json_rpc.Peer? peer;
     final input = StreamController<List<int>>();
     unawaited(socket.done.catchError((_) {}));
@@ -155,11 +123,7 @@ class RunnerSocketServer {
     );
   }
 
-  /// Serves [peer] until it goes away, then forgets it.
-  ///
-  /// A client that drops mid-message ends its peer with an error. That is a
-  /// disconnect, not a runner fault, so it must not escape and take the
-  /// runner's event forwarding with it.
+  /// Serves [peer] until it goes away, swallowing a dropped client's error.
   Future<void> _serve(json_rpc.Peer peer, Socket socket) async {
     try {
       await peer.listen();
@@ -248,15 +212,13 @@ class RunnerSocketServer {
     );
   }
 
-  /// Runs [body] against the attached runner, reporting a JSON-RPC error when
-  /// none is attached yet rather than pretending the command ran.
+  /// Runs [body] against the runner, or throws before [connect] provides one.
   T _withRunner<T>(T Function(RunnerApi runner) body) {
     final runner = _runner;
     if (runner == null) throw _notReady();
     return body(runner);
   }
 
-  /// Runs a command that reports nothing but success or failure.
   Future<Map<String, Object?>> _run(
     Future<void> Function(RunnerApi runner) body,
   ) async {
@@ -270,6 +232,5 @@ class RunnerSocketServer {
   );
 }
 
-/// A parameter the caller may omit, as `null` rather than a rejected request.
 String? _optionalString(json_rpc.Parameter parameter) =>
     parameter.exists ? parameter.asString : null;

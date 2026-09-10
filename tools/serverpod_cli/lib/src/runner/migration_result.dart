@@ -1,7 +1,6 @@
 /// The outcome of one of the runner's migration commands.
 ///
-/// Carries no retry instruction. [abortedForWarnings] flags only the missing
-/// confirmation, and each surface phrases the retry in its own terms.
+/// [message] carries no retry hint, which each caller phrases itself.
 class MigrationResult {
   const MigrationResult({
     required this.message,
@@ -10,20 +9,14 @@ class MigrationResult {
     this.created = false,
   });
 
-  /// Human-readable description of what happened.
   final String message;
 
-  /// Whether the command failed.
   final bool isError;
 
-  /// Whether the command's only failure was unconfirmed warnings.
-  ///
-  /// The runner never prompts. A caller that wants to proceed anyway asks its
-  /// own user and retries with `force: true`.
+  /// Whether the command stopped at warnings that `force: true` overrides.
   final bool abortedForWarnings;
 
-  /// Whether a server migration was written to disk, so a caller can suggest
-  /// applying it.
+  /// Whether the command wrote a server migration to disk.
   final bool created;
 
   Map<String, Object?> toJson() => {

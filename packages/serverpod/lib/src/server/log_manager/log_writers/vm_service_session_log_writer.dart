@@ -15,10 +15,10 @@ import '../session_log.dart';
 /// - [open] -> `{type: 'scope_start', id, label, timestamp, session: {...}}`
 /// - [record] for log/query entries -> [encodeLogEntry]'s shape plus
 ///   `session: {kind, order, ...}`
-/// - [close] -> `{type: 'scope_end', id, success, duration, timestamp, session: {...}}`
+/// - [close] -> `{type: 'scope_end', id, success, duration, timestamp,
+///   error, stackTrace, session: {...}}`
 ///
-/// In production where the VM service is disabled, [developer.postEvent]
-/// is a no-op.
+/// Without a VM service, as in production, [developer.postEvent] is a no-op.
 class VmServiceSessionLogWriter extends SessionLogWriter {
   @override
   Future<void> open(SessionOpen event) async {
@@ -99,12 +99,7 @@ class VmServiceSessionLogWriter extends SessionLogWriter {
     });
   }
 
-  /// The scope a session's entries belong to.
-  ///
-  /// The id is the session id, which ties the entry to the [SessionOpen] that
-  /// named it and the [SessionClose] that ends it. The open event carried the
-  /// label, so entries send none. `startTime` is the entry's own time, not the
-  /// session's, since the writer no longer has it.
+  /// [SessionOpen] carried the label. An entry has no session start time.
   static LogScope _sessionScope(String sessionId, DateTime time) =>
       LogScope(id: sessionId, label: '', startTime: time);
 

@@ -6,10 +6,7 @@ import 'package:serverpod_tui/serverpod_tui.dart' show TrackedOperation;
 
 export 'package:serverpod_cli/src/runner/runner_stage.dart';
 
-/// Everything a client needs to render the runner the moment it connects.
-///
-/// Sent once, on connect. It serializes what the runner already retains rather
-/// than a second buffer, so its bounds are the log history's.
+/// Everything a client needs to render the runner when it attaches.
 class RunnerSnapshot {
   const RunnerSnapshot({
     required this.stage,
@@ -28,9 +25,6 @@ class RunnerSnapshot {
   });
 
   /// The snapshot of a runner whose buffers live in [history].
-  ///
-  /// The one place deciding which buffers are copied and how a start time
-  /// missing from [StartLogHistory.operationStartTimes] is filled.
   factory RunnerSnapshot.from({
     required StartLogHistory history,
     required RunnerStage stage,
@@ -72,47 +66,30 @@ class RunnerSnapshot {
   final bool isRunning;
   final bool watchModeEnabled;
 
-  /// Whether launching a Flutter app can do anything, which it cannot outside
-  /// development.
-  ///
-  /// Only the runner knows the run mode the stack started with. A client that
-  /// guessed would offer a key that silently does nothing.
+  /// Whether launching an app can do anything, which the run mode decides.
   final bool canLaunchFlutterApps;
 
-  /// The retained server history, oldest first: log entries and completed
-  /// operations, as [encodeLogHistoryItem] writes them.
+  /// The log entries and completed operations, oldest first.
   final List<Object> serverEntries;
 
-  /// The pod's retained raw output lines, oldest first.
   final List<String> serverLines;
 
-  /// Operations that have started and not finished, with the time each began
-  /// so a client can show how long one it did not witness has been running.
+  /// The operations in flight, with the time each began.
   final List<({TrackedOperation operation, DateTime startedAt})>
   activeOperations;
 
-  /// Retained raw output lines per Flutter app id.
   final Map<String, List<String>> flutterLines;
 
-  /// The configured companion apps.
   final List<FlutterAppConfig> flutterApps;
 
-  /// Which of [flutterApps] are running.
   final Set<String> runningFlutterApps;
 
-  /// Which of [flutterApps] are between their spawn and their ready signal.
   final Set<String> launchingFlutterApps;
 
-  /// Where each running app is serving, keyed by app id.
-  ///
-  /// Carried rather than left to the events. A URL publishes once, when the
-  /// app comes up.
+  /// App URLs by id, carried here since an app publishes its URL only once.
   final Map<String, String?> flutterAppUrls;
 
-  /// What the runner leaves with, once its stage is [RunnerStage.stopping].
-  ///
-  /// A client attaching after the announcement has no other way to learn it:
-  /// the event stream does not replay.
+  /// The exit code once stopping, carried here since events do not replay.
   final int? exitCode;
 
   Map<String, Object?> toJson() => {
@@ -182,10 +159,7 @@ class RunnerSnapshot {
   );
 }
 
-/// Encodes the configuration of one companion Flutter app.
-///
-/// Only what a client renders or addresses the app by. The paths and run
-/// arguments stay in the runner, the only process that launches it.
+/// Encodes what a client shows of [app], leaving paths and run args behind.
 Map<String, Object?> encodeFlutterApp(FlutterAppConfig app) => {
   'id': app.id,
   'name': app.name,
@@ -193,10 +167,7 @@ Map<String, Object?> encodeFlutterApp(FlutterAppConfig app) => {
   if (app.device != null) 'device': app.device,
 };
 
-/// Decodes what [encodeFlutterApp] produced.
-///
-/// Path parts come back empty, since a client never launches an app itself. It
-/// asks the runner to.
+/// Decodes what [encodeFlutterApp] produced, with empty path parts.
 FlutterAppConfig decodeFlutterApp(Map<String, Object?> json) =>
     FlutterAppConfig(
       id: json['id'] as String? ?? '',

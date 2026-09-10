@@ -19,8 +19,7 @@ import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
     show MigrationAbortedException;
 
-/// [InProcessRunnerApi] over the in-process watch session and its
-/// collaborators, for callers running inside the runner.
+/// The [InProcessRunnerApi] over the watch session, inside the runner.
 class LocalRunnerApi implements InProcessRunnerApi {
   LocalRunnerApi({
     required StartLogHistory logHistory,
@@ -37,13 +36,10 @@ class LocalRunnerApi implements InProcessRunnerApi {
   final bool _watchModeEnabled;
   final String _runMode;
 
-  /// The stack, null until [bindStack] provides one.
+  /// The stack, null until [bindStack].
   _Stack? _stack;
 
-  /// Wires the stack this serves.
-  ///
-  /// Everything that needs one reports [RunnerStartingException] until this
-  /// is called. [stop] works throughout.
+  /// Binds the stack, before which every command other than [stop] fails.
   void bindStack({
     required WatchSession session,
     required FlutterAppManager flutterManager,
@@ -58,15 +54,14 @@ class LocalRunnerApi implements InProcessRunnerApi {
     );
   }
 
-  /// The stack, or [RunnerStartingException] naming what could not run.
+  /// The bound stack, or throws [RunnerStartingException] naming [command].
   _Stack _require(String command) {
     final stack = _stack;
     if (stack == null) throw RunnerStartingException(command);
     return stack;
   }
 
-  /// Stage transitions and Flutter app state, merged with the log history's
-  /// events in [_eventGroup].
+  /// The events this API raises itself.
   final StreamController<RunnerEvent> _own =
       StreamController<RunnerEvent>.broadcast();
 
@@ -78,13 +73,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
 
   /// Records that the runner reached [stage] and tells every attached client.
   ///
-  /// [exitCode] carries what the runner leaves with on
-  /// [RunnerStage.stopping]. The emitted event's running flag follows
-  /// [stage], not [isRunning].
-  ///
-  /// An unchanged stage is announced anyway when it carries an exit code: that
-  /// is the only thing telling an attached client why the runner is leaving,
-  /// and a stage that was already published would otherwise swallow it.
+  /// A repeated stage is resent with an [exitCode], its only route to clients.
   void setStage(RunnerStage stage, {int? exitCode}) {
     assert(
       exitCode == null || stage == RunnerStage.stopping,
@@ -101,14 +90,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
     );
   }
 
-  /// Records that [appId] changed state.
-  ///
-  /// Reads `running`, `launching` and the URL from the Flutter manager rather
-  /// than taking them as arguments. [launchStage] names what the toolchain is
-  /// doing, for the progress a launching app reports.
-  ///
-  /// [url] is what the caller has just learned, falling back to the manager's.
-  /// An omitted URL means the caller is reporting none, not that there is none.
+  /// Records [appId]'s state from the Flutter manager, preferring [url].
   void recordFlutterAppState(
     String appId, {
     String? url,
@@ -127,7 +109,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
   void recordFlutterApps(List<FlutterAppConfig> apps) =>
       _emit(FlutterAppsChangedEvent(apps));
 
-  /// Records that a published address changed.
+  /// Records that the published manifest changed.
   void recordManifest(RunnerManifest manifest) =>
       _emit(ManifestChangedEvent(manifest));
 
@@ -135,10 +117,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
     if (!_own.isClosed) _own.add(event);
   }
 
-  /// Everything this runner raises, for every surface that renders it.
-  ///
-  /// One group, built once and broadcast, merging [_logHistory]'s events
-  /// and [_own].
+  /// Every event this runner raises, from [_logHistory] and [_own].
   late final StreamGroup<RunnerEvent> _eventGroup = StreamGroup.broadcast()
     ..add(_logHistory.events)
     ..add(_own.stream);
@@ -167,9 +146,6 @@ class LocalRunnerApi implements InProcessRunnerApi {
     flutterAppUrls: _stack?.flutterManager.appUrls ?? const {},
   );
 
-  /// Stops emitting events.
-  ///
-  /// The buffers stay readable for a final snapshot.
   @override
   Future<void> close() async {
     await _own.close();
@@ -277,8 +253,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
   bool isFlutterAppLaunching(String appId) =>
       _stack?.flutterManager.isLaunching(appId) ?? false;
 
-  // The run mode alone decides it, so it is known before the stack is, and the
-  // snapshot a client attaches with already carries the final value.
+  // Clients read this only from snapshots, which can predate _stack.
   @override
   bool get canLaunchFlutterApps => FlutterAppManager.canLaunchAppsIn(_runMode);
 
@@ -321,7 +296,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
       _stack?.session.vmServiceUriChanges ?? const Stream.empty();
 }
 
-/// The collaborators that only exist once the stack is up.
+/// The collaborators that exist only once the watch session is built.
 class _Stack {
   _Stack({
     required this.session,
@@ -334,12 +309,10 @@ class _Stack {
   final FlutterAppManager flutterManager;
   final GeneratorConfig config;
 
-  /// The VM service proxy's URI, resolved at call time. A degraded start has
-  /// no proxy until the server boots.
+  /// The VM service proxy's URI, null until the server first boots.
   final String? Function() vmServiceUri;
 }
 
-/// Returns [outcome] as a [MigrationResult].
 MigrationResult migrationResultFor(CreateMigrationOutcome outcome) {
   final described = _describe(outcome);
   return MigrationResult(
@@ -350,9 +323,7 @@ MigrationResult migrationResultFor(CreateMigrationOutcome outcome) {
   );
 }
 
-/// Whether [outcome] wrote a server migration to disk.
-///
-/// The client half does not count.
+/// Whether [outcome] wrote a server migration, ignoring the client half.
 bool _isCreated(CreateMigrationOutcome outcome) => switch (outcome) {
   CreateMigrationCreated() => true,
   CreateMigrationServerClientCreated(:final serverResult) => _isCreated(
@@ -361,7 +332,7 @@ bool _isCreated(CreateMigrationOutcome outcome) => switch (outcome) {
   _ => false,
 };
 
-/// Whether [outcome] failed only for want of `force`.
+/// Whether [outcome], or either half, aborted on warnings `force` overrides.
 bool _isAborted(CreateMigrationOutcome outcome) => switch (outcome) {
   CreateMigrationAborted() => true,
   CreateMigrationServerClientCreated(
@@ -372,7 +343,6 @@ bool _isAborted(CreateMigrationOutcome outcome) => switch (outcome) {
   _ => false,
 };
 
-/// Maps [outcome] to a `(message, isError)` pair.
 ({String message, bool isError}) _describe(
   CreateMigrationOutcome outcome, {
   bool isServer = true,

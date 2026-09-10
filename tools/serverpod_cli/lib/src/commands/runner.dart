@@ -23,11 +23,7 @@ import 'package:serverpod_cli/src/util/shutdown_signal.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
 import 'package:serverpod_shared/log.dart' show MultiLogWriter;
 
-/// The commands that act on the development stack: the runner itself, and the
-/// clients that drive one.
-///
-/// A group rather than a command. `runner` names the thing acted on, and each
-/// verb under it is an action on that runner.
+/// The `runner` command group.
 class RunnerCommand extends ServerpodCommand<OptionDefinition> {
   RunnerCommand() : super(options: const []) {
     addSubcommand(RunnerStartCommand());
@@ -47,10 +43,7 @@ class RunnerCommand extends ServerpodCommand<OptionDefinition> {
   void runWithConfig(Configuration<OptionDefinition> commandConfig) {}
 }
 
-/// Options for `serverpod runner start`.
-///
-/// The stack-shaping half of `start` and nothing else. The command brings a
-/// runner up and returns, so UI options have nothing to act on.
+/// The options of `serverpod start` that shape the stack.
 enum RunnerStartOption<V> implements OptionDefinition<V> {
   watch<bool>(runnerWatchOption),
   directory<String>(runnerDirectoryOption),
@@ -64,12 +57,7 @@ enum RunnerStartOption<V> implements OptionDefinition<V> {
   final ConfigOptionBase<V> option;
 }
 
-/// Brings a runner up for this project and returns, leaving it running.
-///
-/// The same work `serverpod start` does before attaching, and idempotent the
-/// same way. A runner already serving this project is reported, not replaced.
-/// Attaching is `serverpod runner attach`, or `serverpod start`, which does
-/// both.
+/// Brings a runner up and returns once its stack is up, leaving it running.
 class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
   @override
   final name = 'start';
@@ -125,10 +113,7 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
   }
 }
 
-/// Options for the hidden `runner serve` command.
-///
-/// Mirrors the stack-shaping half of `start`. Client options have no meaning
-/// here.
+/// The options of `serverpod runner start`, plus `--detached`.
 enum RunnerServeOption<V> implements OptionDefinition<V> {
   watch<bool>(runnerWatchOption),
   directory<String>(runnerDirectoryOption),
@@ -154,14 +139,7 @@ enum RunnerServeOption<V> implements OptionDefinition<V> {
 
 /// The long-lived development stack, with no UI attached.
 ///
-/// Spawned by `serverpod runner start`, detached and in a session of its own.
-/// Hidden, since typing it only takes over a terminal without rendering
-/// anything.
-///
-/// Everything a client needs to find it goes into
-/// `.dart_tool/serverpod/runner.json`, and everything it says into
-/// `.dart_tool/serverpod/runner.log`, a detached process having no stdio to
-/// inherit.
+/// Hidden. `serverpod start` spawns it, and by hand it renders nothing.
 class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
   @override
   final name = 'serve';
@@ -197,10 +175,7 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
     final directory = commandConfig.value(RunnerServeOption.directory);
     final detached = commandConfig.value(RunnerServeOption.detached);
 
-    // Resolved before the log is opened. `--directory` defaults to empty, and
-    // the raw value would put the log where no reader looks. One that cannot be
-    // resolved keeps it, and GeneratorConfig below reports why through this
-    // logger.
+    // Resolved before the log opens. GeneratorConfig.load reports a failure.
     var serverRootDir = directory;
     try {
       serverRootDir = await GeneratorConfig.resolveServerRootDir(
@@ -209,9 +184,7 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
       );
     } catch (_) {}
 
-    // Closed by [closeLogger] at exit rather than here. The writer below is
-    // still the logger's, and a detached runner's last words, the exit-path
-    // error, come after this command returns.
+    // closeLogger closes it at exit, after the exit-path error is logged.
     final logFile = RunnerLogFile.forServer(serverRootDir);
     final logHistory = StartLogHistory();
     if (detached) await logFile.open();

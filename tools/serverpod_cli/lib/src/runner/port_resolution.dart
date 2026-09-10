@@ -8,9 +8,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// What the runner decided about the configured ports.
 ///
-/// Another live Serverpod runner means a second worktree, which moves aside to
-/// ephemeral ports. Anything else holding a port, a stray pod or an unrelated
-/// service, is a conflict to report rather than hide.
+/// See `docs/design/runner.md#address-publication`.
 class PortResolution {
   PortResolution({
     required this.useEphemeral,
@@ -25,30 +23,18 @@ class PortResolution {
          'Unattributed ports move the stack aside.',
        );
 
-  /// Whether the pod binds ephemeral ports instead of the configured ones.
-  ///
-  /// Decided for the three listeners as a block. An api server on 8080 beside
-  /// a web server on a moved port is harder to reason about than a stack
-  /// wholly where the manifest says.
+  /// Whether all listeners move to ephemeral ports together.
   final bool useEphemeral;
 
-  /// The ports held by something that is not a Serverpod runner.
-  ///
-  /// Non-empty means the runner must not start.
+  /// The ports held by something other than a runner, which block the start.
   final Map<String, int> conflicts;
 
-  /// The ports held by something no runner accounted for, while a runner that
-  /// has not decided its ports yet could still be the holder.
-  ///
-  /// Not [conflicts]. The stack moves aside rather than refuse to start, and
-  /// names these so a developer can tell that from an unrelated process.
+  /// Held ports a silent runner may own. They move the stack aside and warn.
   final Map<String, int> unattributed;
 
   bool get hasConflicts => conflicts.isNotEmpty;
 
-  /// The listeners in [ports] the pod binds ephemeral ports for: all of them
-  /// when the stack moved aside, else the ones configured with port zero,
-  /// whose bound port needs pinning across respawns just the same.
+  /// All listeners in [ports] when moved aside, else those configured with 0.
   Iterable<String> ephemeralListeners(Map<String, int> ports) => useEphemeral
       ? ports.keys
       : [
@@ -56,30 +42,20 @@ class PortResolution {
             if (entry.value == 0) entry.key,
         ];
 
-  /// The ports in [ports] this runner will bind as configured, for its
-  /// manifest: none when the stack moved aside, else every listener not
-  /// configured with port zero.
-  ///
-  /// A peer resolving its ports meanwhile reads this as a claim, so it moves
-  /// aside for a port this runner will bind and keeps one it will not.
+  /// The ports in [ports] this runner claims, none when it moved aside.
   Map<String, int> claimedPorts(Map<String, int> ports) =>
       useEphemeral ? const {} : fixedPorts(ports);
 }
 
-/// The listeners in [ports] configured with a fixed port, the ones a runner
-/// binding as configured will take.
+/// The listeners in [ports] configured with a non-zero port.
 Map<String, int> fixedPorts(Map<String, int> ports) => {
   for (final entry in ports.entries)
     if (entry.value != 0) entry.key: entry.value,
 };
 
-/// Decides whether the stack for [serverDir] can use [ports], or has to fall
-/// back to ephemeral ones.
+/// Decides whether the stack for [serverDir] keeps [ports] or moves aside.
 ///
-/// [ports] is keyed by listener name (`api`, `insights`, `web`) so a conflict
-/// can be reported against the listener a developer configured. Other runners
-/// are found through [registry], where every runner on this machine registers
-/// itself when it publishes.
+/// [ports] is keyed by listener name (`api`, `insights`, `web`).
 Future<PortResolution> resolvePorts({
   required String serverDir,
   required Map<String, int> ports,
@@ -107,10 +83,7 @@ Future<PortResolution> resolvePorts({
   };
 
   if (conflicts.isEmpty) {
-    // A port a sibling has claimed but not bound yet is as taken as one it
-    // holds: two stacks racing for one port fails whichever binds second, so
-    // this one moves aside while the port is still free. A sibling that has
-    // not decided yet could claim any of them.
+    // A claimed port counts as taken, and a silent runner may claim any.
     final claimed = ports.values.any(held.ports.contains);
     return PortResolution(
       useEphemeral: claimed || held.silentRunner,
@@ -118,8 +91,7 @@ Future<PortResolution> resolvePorts({
     );
   }
 
-  // The silent runner could hold any of these, and blaming it would fail the
-  // second worktree on a race with the first one's startup.
+  // A silent runner may hold these, so move aside instead of failing.
   if (held.silentRunner) {
     return PortResolution(
       useEphemeral: true,
@@ -133,8 +105,7 @@ Future<PortResolution> resolvePorts({
 
 /// Whether anything answers on [port] on either loopback address.
 ///
-/// The pod binds `anyIPv6`, which takes IPv4 only on a dual-stack socket. Where
-/// the host gives it none, an IPv4-only probe reads a held port as free.
+/// An IPv4-only probe misses a pod on `anyIPv6` without a dual-stack socket.
 Future<bool> _isListening(int port, Duration timeout) async {
   final probes = [
     for (final address in [
@@ -160,15 +131,9 @@ Future<bool> _connects(
   }
 }
 
-/// The ports other Serverpod runners have claimed or bound, and whether any is
-/// up without having decided.
+/// The ports other runners claimed or bound, and whether any is silent.
 ///
-/// A port is attributed to a runner by the claim its manifest makes before
-/// Docker and the first compile, and by the addresses its pod reported,
-/// whichever protocol version it speaks. `silentRunner` covers a runner with
-/// neither: one between publishing and resolving its ports, and one that
-/// holds its lock but did not answer its socket in time, which is a busy
-/// runner as often as a dying one.
+/// A silent runner has named no ports yet, or holds its lock without answering.
 Future<({Set<int> ports, bool silentRunner})> _portsHeldByOtherRunners(
   String serverDir,
   RunnerRegistry registry,
@@ -196,7 +161,6 @@ Future<({Set<int> ports, bool silentRunner})> _portsHeldByOtherRunners(
   return (ports: ports, silentRunner: silentRunner);
 }
 
-/// The ports named by a manifest's published server addresses.
 Iterable<int> _publishedPorts(RunnerManifest manifest) sync* {
   final servers = manifest.servers;
   if (servers == null) return;
@@ -207,16 +171,9 @@ Iterable<int> _publishedPorts(RunnerManifest manifest) sync* {
   }
 }
 
-/// The environment overrides that make the pod bind ephemeral ports for
-/// [listeners], named the way [resolvePorts] names them.
+/// The environment that binds [listeners], public ports included, to port 0.
 ///
-/// The public port goes to zero with the bind port, so the pod advertises the
-/// port it bound rather than the one configured.
-///
-/// Pass only listeners the project configured. The config merges the
-/// environment over the yaml, and a port variable alone brings a listener into
-/// existence, so an insights port set for a project with no `insightsServer:`
-/// section would start an insights server nobody asked for.
+/// Pass only configured listeners, since a port variable alone creates one.
 Map<String, String> ephemeralPortEnvironment(Iterable<String> listeners) => {
   for (final listener in listeners) ...{
     ?portEnvironmentVariables[listener]: '0',
@@ -224,12 +181,9 @@ Map<String, String> ephemeralPortEnvironment(Iterable<String> listeners) => {
   },
 };
 
-/// [environment] with each port-zero override replaced by the port the pod
-/// bound, read from [addresses].
+/// [environment] with each port 0 replaced by the port [addresses] reports.
 ///
-/// A pod spawned with port zero binds a different port every time, and the
-/// Flutter apps launched against the first one would lose the second. Once
-/// the pod has reported what it bound, every later spawn asks for that.
+/// Later spawns then keep the port the Flutter apps were built against.
 Map<String, String> pinResolvedPorts(
   Map<String, String> environment,
   ServerpodAddresses addresses,
@@ -262,15 +216,13 @@ final portEnvironmentVariables = {
   'web': ServerpodEnv.webPort.envVariable,
 };
 
-/// The environment variable that sets each listener's public port, by
-/// listener name.
+/// The environment variable that sets each listener's public port.
 final publicPortEnvironmentVariables = {
   'api': ServerpodEnv.apiPublicPort.envVariable,
   'insights': ServerpodEnv.insightsPublicPort.envVariable,
   'web': ServerpodEnv.webPublicPort.envVariable,
 };
 
-/// The listener each port variable, bind or public, belongs to.
 final _listenerByPortVariable = {
   for (final entry in portEnvironmentVariables.entries) entry.value: entry.key,
   for (final entry in publicPortEnvironmentVariables.entries)

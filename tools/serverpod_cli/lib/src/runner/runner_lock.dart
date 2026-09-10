@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/runner/runner_paths.dart';
 class RunnerLockedException implements Exception {
   const RunnerLockedException(this.lockPath);
 
-  /// The lock file whose lock could not be taken.
   final String lockPath;
 
   @override
@@ -17,48 +16,18 @@ class RunnerLockedException implements Exception {
 
 /// The exclusive advisory lock that admits one runner per server package.
 ///
-/// Probing a socket is a check followed by a use. Two runners starting at the
-/// same moment can both probe, find nothing, and bind, and `bindUnixSocket`
-/// unlinks the stale socket file, so the second silently displaces the first.
-/// That matters because the resident Frontend Server writes a shared
-/// `server.dill` and Docker Compose teardown is conditional on this runner
-/// having started the services, so one runner per package has to be enforced
-/// rather than left to a fixed socket path.
-///
-/// The lock lives on an open file descriptor, so the kernel releases it when
-/// the process dies. Unlike the manifest and the socket files, a crashed runner
-/// leaves nothing here to clean up.
-///
-/// POSIX advisory locks are held per process, so [acquire] succeeding is not a
-/// mutex within one process. A second call in the same process takes the lock
-/// again, and so can another isolate. Windows is stricter. Its locks are
-/// mandatory and bound to the handle that took them, so the second call throws
-/// there. Two runners are two processes, which both platforms reject, so the
-/// divergence is left alone rather than papered over.
-///
-/// Before opening [lockPath] from anywhere else, know that on Linux and macOS,
-/// closing *any* descriptor for a file drops every lock this process holds on
-/// it. Code that opens the lock file to look at it, then closes it, silently
-/// unlocks the runner. Nothing else opens this path today, and nothing else
-/// should.
-///
-/// [release] unlocks the whole file, matching the whole-file [acquire], because
-/// Windows fails an unlock whose region does not match the lock's.
+/// On Linux and macOS, closing any descriptor for the file drops the lock, so
+/// the runner process must never call [isHeld].
 class RunnerLock {
   RunnerLock._(this._file, this.lockPath);
 
   final RandomAccessFile _file;
 
-  /// The locked file's path.
   final String lockPath;
 
   bool _released = false;
 
-  /// Takes the lock for the server package at [serverDir].
-  ///
-  /// Throws [RunnerLockedException] when another runner holds it. Never waits,
-  /// since a caller that wanted to wait would be queuing behind a runner that
-  /// is expected to stay up for days.
+  /// Takes the lock for [serverDir], or throws [RunnerLockedException] at once.
   static Future<RunnerLock> acquire(String serverDir) async {
     final lockPath = serverpodRunnerLockPath(serverDir);
     final file = File(lockPath);
@@ -74,11 +43,7 @@ class RunnerLock {
     return RunnerLock._(handle, lockPath);
   }
 
-  /// Whether a runner holds the lock for the server package at [serverDir].
-  ///
-  /// Takes and releases the lock when it is free, which is safe: a runner
-  /// holds its lock from before it publishes until after everything else is
-  /// released, so a free lock is a runner that is gone.
+  /// Whether a runner holds the lock, taking and releasing it when free.
   static Future<bool> isHeld(String serverDir) async {
     final RunnerLock probe;
     try {
@@ -90,19 +55,14 @@ class RunnerLock {
     return false;
   }
 
-  /// Releases the lock and closes the file.
-  ///
-  /// Idempotent.
-  ///
-  /// Only needed for a graceful shutdown, and in tests, where the process
-  /// outlives the lock.
+  /// Releases the lock and closes the file, idempotently.
   Future<void> release() async {
     if (_released) return;
     _released = true;
     try {
       await _file.unlock();
     } on FileSystemException {
-      // Already unlocked or the file is gone. Nothing left to release.
+      // Already unlocked, or the file is gone.
     }
     await _file.close();
   }

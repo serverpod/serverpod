@@ -20,7 +20,7 @@ void main() {
     late RunnerRegistry registry;
 
     setUp(() async {
-      // The registry link has to fit where the package does not.
+      // Short enough for the registry link, too long for the package path.
       tempDir = await createShortTempDir('rdt');
       serverDir = '${tempDir.path}/${'p' * 120}';
       await Directory(serverpodToolDirPath(serverDir)).create(recursive: true);
@@ -219,8 +219,7 @@ void main() {
   });
 }
 
-/// Binds the runner socket [name] beside the manifest of the server package
-/// at [dir] and returns its path.
+/// Binds socket [name] beside [dir]'s manifest and returns its path.
 Future<String> _listen(
   Directory dir, {
   String name = serverpodTuiSocketName,
@@ -230,7 +229,7 @@ Future<String> _listen(
   return _listenAt(path);
 }
 
-/// Binds a Unix socket at [path] and returns it.
+/// Binds a Unix socket at [path] until teardown and returns [path].
 Future<String> _listenAt(String path) async {
   final server = await bindUnixSocket(path);
   addTearDown(server.close);

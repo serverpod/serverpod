@@ -534,12 +534,9 @@ class ServerConfig {
     );
   }
 
-  /// This configuration with [resolvedPort] as the bind port.
+  /// A copy of this configuration with [resolvedPort] as the bind port.
   ///
-  /// A [publicPort] of 0 follows it: the real port is only known after
-  /// binding, and it is also what clients have to reach. Any other
-  /// [publicPort] stays: a deployment behind a proxy advertises a port it
-  /// deliberately does not bind.
+  /// A [publicPort] of 0 follows it. A proxy's non-zero [publicPort] stays.
   ServerConfig withResolvedPort(int resolvedPort) => ServerConfig(
     port: resolvedPort,
     publicScheme: publicScheme,

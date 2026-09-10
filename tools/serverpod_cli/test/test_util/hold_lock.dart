@@ -7,10 +7,8 @@ import 'package:test/test.dart';
 
 /// Starts a process that holds the runner lock for [serverDir] until killed.
 ///
-/// Another process, since a POSIX lock is per process: the test's own would
-/// not be seen as held from within. Killed at teardown, and waited for, since
-/// Windows refuses to delete a directory while the process holds a file open
-/// under it.
+/// POSIX locks are per process. Teardown awaits the exit, as Windows cannot
+/// delete a directory while the process holds a file in it.
 Future<Process> holdLockFromAnotherProcess(String serverDir) async {
   final script = File(p.join(serverDir, 'hold_lock.dart'));
   await script.writeAsString('''

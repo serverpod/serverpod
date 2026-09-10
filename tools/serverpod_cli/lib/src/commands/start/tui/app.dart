@@ -33,10 +33,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   VoidCallback? _onQuit;
   VoidCallback? _onStopStack;
 
-  /// Called once the app has mounted and can be shut down.
-  ///
-  /// Wire anything that may end the app here. A shutdown requested before
-  /// the terminal binding exists has nothing to shut down and crashes.
+  /// Called once the app has mounted, since an earlier shutdown would crash.
   VoidCallback? onAttached;
 
   @override
@@ -224,7 +221,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   /// for a long trace. Collapsing does the reverse and can drop the entry
   /// below the viewport when scrolled up. Runs after the toggle's frame so the
   /// re-laid-out geometry is measured, then scrolls just enough to keep the
-  /// entry on screen; an entry taller than the viewport is pinned with its
+  /// entry on screen. An entry taller than the viewport is pinned with its
   /// message and affordance line at the top and the trace filling the rest.
   void _keepToggledEntryInView(LogEntry entry) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -395,7 +392,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
         return false;
       }
-      // Route navigation keys to the help overlay's controller; absorb the
+      // Route navigation keys to the help overlay's controller, and absorb the
       // rest so they don't fall through to tab/scroll handling underneath.
       _handleScrollKey(helpScrollController, event);
       return true;
@@ -533,7 +530,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // Repair migration (Shift for force). Not shown in the bottom bar; it is
+    // Repair migration (Shift for force). Not shown in the bottom bar. It is
     // documented on the help screen instead.
     if (event.logicalKey == LogicalKey.keyP &&
         !event.isControlPressed &&

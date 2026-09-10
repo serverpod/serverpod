@@ -9,11 +9,7 @@ import 'mcp_server.dart';
 
 /// Manages a Unix socket that accepts MCP client connections.
 ///
-/// One per server project, at `<serverDir>/.dart_tool/serverpod/mcp.sock`.
-/// Clients speak JSON-RPC and drive the running dev environment.
-///
-/// Several may be attached at once, and [RunnerApi] serializes conflicting
-/// commands between them.
+/// Several clients can connect, and [RunnerApi] serializes their commands.
 class McpSocketServer {
   /// Absolute path to this server's socket file.
   final String socketPath;
@@ -36,10 +32,7 @@ class McpSocketServer {
     _serverSocket!.listen(_handleConnection);
   }
 
-  /// Wires the MCP servers to [runner].
-  ///
-  /// Callable before or after clients connect. Already-connected ones are
-  /// updated in place.
+  /// Wires the MCP servers to [runner], including those already connected.
   void connect(InProcessRunnerApi runner) {
     _runner = runner;
     for (final server in _mcpServers) {

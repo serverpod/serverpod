@@ -109,7 +109,7 @@ class ServerWatchState extends TuiState {
   /// Whether stack traces attached to log entries are shown inline.
   ///
   /// When false, an error entry that carries a trace shows a compact
-  /// affordance instead; toggled with `e` on the structured log tab.
+  /// affordance instead. `e` toggles it on the structured log tab.
   /// Individual entries can deviate from this via [toggleStackTrace].
   bool expandStackTraces = false;
 
@@ -190,8 +190,6 @@ class ServerWatchState extends TuiState {
     if (existing != null) return existing;
 
     createAppsTabAreaIfNeeded();
-    // Opens on what the app has printed so far, so a tab opened after the
-    // app started, or by a client that attached later, is not blank.
     final lines = history.flutterLinesFor(appId);
     final tab = AppLogTab(
       appId: appId,

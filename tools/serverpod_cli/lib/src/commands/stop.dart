@@ -26,10 +26,7 @@ enum StopOption<V> implements OptionDefinition<V> {
   final ConfigOptionBase<V> option;
 }
 
-/// Shuts the runner down.
-///
-/// This and Shift+Q in the UI are the only things that stop the stack.
-/// Detaching never does.
+/// The `serverpod runner stop` command, which asks over the socket or signals.
 class StopCommand extends ServerpodCommand<StopOption> {
   @override
   final name = 'stop';
@@ -94,11 +91,7 @@ class StopCommand extends ServerpodCommand<StopOption> {
     }
   }
 
-  /// Signals the runner directly, for a runner this CLI cannot ask to stop.
-  ///
-  /// The pid comes from the manifest and names the process as the runner saw
-  /// itself, which in a container may be a namespace this machine does not
-  /// share.
+  /// Signals [pid], for a runner this CLI cannot ask to stop.
   Future<void> _stopByPid(int pid, String serverDir) async {
     if (pid <= 0) {
       log.error(
@@ -130,11 +123,9 @@ class StopCommand extends ServerpodCommand<StopOption> {
   }
 }
 
-/// Polls until the runner serving [serverDir] is down, or [timeout] passes.
+/// Whether the runner serving [serverDir] goes down within [timeout].
 ///
-/// Down is a manifest that is gone or that carries an exit code. A manifest
-/// whose runner no longer holds the lock is one a kill left behind: it is
-/// removed here, and counts as down.
+/// Deletes a manifest a killed runner left behind, and counts that as down.
 @visibleForTesting
 Future<bool> awaitRunnerShutdown(
   String serverDir, {

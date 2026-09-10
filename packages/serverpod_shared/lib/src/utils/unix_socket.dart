@@ -68,8 +68,7 @@ int maxUnixSocketPathBytes() {
   return 108;
 }
 
-/// Whether [path] (after shortening) fits within the platform's
-/// `sockaddr_un.sun_path`.
+/// Whether [shortestPath] of [path] fits the platform's `sun_path` limit.
 bool unixSocketPathFits(String path) =>
     _unixSocketPathBytes(path) <= maxUnixSocketPathBytes();
 
@@ -85,8 +84,7 @@ void requireUnixSocketPathFits(String path) {
   );
 }
 
-/// The bytes [path] occupies in `sockaddr_un.sun_path` after shortening,
-/// terminating NUL included.
+/// The bytes [shortestPath] of [path] takes in `sun_path`, NUL included.
 int _unixSocketPathBytes(String path) =>
     utf8.encode(shortestPath(path)).length + 1;
 

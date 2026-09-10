@@ -35,13 +35,9 @@ class Server implements RouterInjectable {
 
   int? _actualPort;
 
-  /// Port the server is listening on.
-  /// Returns the actual port from the running server if available,
-  /// otherwise returns the configured port.
+  /// The bound port once the server has started, else the configured port.
   ///
-  /// A restart binds this port again rather than the configured one: a
-  /// configured port of zero resolved to an ephemeral port on the first bind,
-  /// and clients were built against that one.
+  /// A restart binds this port again, so an ephemeral port survives it.
   int get port => _actualPort ?? _port;
 
   /// The [ServerpodRunMode] the server is running in.

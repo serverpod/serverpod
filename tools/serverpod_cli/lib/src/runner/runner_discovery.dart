@@ -15,24 +15,13 @@ sealed class RunnerResolution {
 }
 
 /// No runner is answering for this server package.
-///
-/// Either there was no manifest, or the one there named a socket that did not
-/// answer.
 final class NoRunner extends RunnerResolution {
   const NoRunner({this.staleManifest, this.lockHeld = false});
 
-  /// The manifest left behind by a runner that is no longer answering, when
-  /// there was one.
-  ///
-  /// A caller starting a runner overwrites it once [lockHeld] is false.
+  /// The manifest whose sockets did not answer, safe to delete once unlocked.
   final RunnerManifest? staleManifest;
 
-  /// Whether the runner named by [staleManifest] still holds the project
-  /// lock.
-  ///
-  /// A runner closes its sockets first and releases the lock last, after
-  /// Docker. Held means a runner on its way out, or one too busy to answer
-  /// the probe. Free means it is gone.
+  /// Whether the lock is held by a runner stopping or too busy to answer.
   final bool lockHeld;
 }
 
@@ -46,28 +35,19 @@ final class LiveRunner extends RunnerResolution {
 
   final RunnerManifest manifest;
 
-  /// The path this client reaches the attach socket by.
+  /// The path by which this client reaches the attach socket.
   final String tuiSocket;
 
-  /// Set when the runner was built from a different CLI version at the same
-  /// protocol version.
-  ///
-  /// Attaching is fine. The caller says this once.
+  /// A warning when a different CLI version started the runner.
   final String? versionWarning;
 }
 
-/// A runner is listening but speaks a protocol this client does not
-/// understand.
-///
-/// A detached runner survives `dart pub global activate serverpod_cli`, so
-/// this is expected rather than exceptional. There is no negotiation. The
-/// client refuses and says how to replace the runner.
+/// A runner is listening but speaks another protocol, so the client refuses.
 final class IncompatibleRunner extends RunnerResolution {
   const IncompatibleRunner(this.manifest);
 
   final RunnerManifest manifest;
 
-  /// What to tell the user, naming both versions and the way out.
   String get message =>
       'A serverpod runner is already running for this project, but it speaks '
       'attach protocol version ${manifest.protocolVersion} while this CLI '
@@ -78,10 +58,8 @@ final class IncompatibleRunner extends RunnerResolution {
 
 /// Resolves the runner serving the server package at [serverDir].
 ///
-/// Liveness is decided by connecting to the runner's socket, not by the
-/// manifest existing. [probeTimeout] bounds that connect, so a socket file
-/// whose owner is wedged does not hang the caller. Throws a [SocketException]
-/// when the sockets are beyond reach, see [runnerSocketPath].
+/// A socket connection decides liveness, since a crash leaves the manifest.
+/// Throws a [SocketException] when no socket path fits the address limit.
 Future<RunnerResolution> resolveRunner(
   String serverDir, {
   Duration probeTimeout = const Duration(seconds: 1),
@@ -109,8 +87,7 @@ Future<RunnerResolution> resolveRunner(
   if (!listening) {
     return NoRunner(
       staleManifest: manifest,
-      // Not from inside the runner: on POSIX its own lock is re-entrant, and
-      // the probe would release it.
+      // In the runner itself, the probe would drop its own POSIX lock.
       lockHeld: manifest.pid != pid && await RunnerLock.isHeld(serverDir),
     );
   }
@@ -130,15 +107,10 @@ Future<RunnerResolution> resolveRunner(
   );
 }
 
-/// The path a client reaches the runner's socket [name] for [serverDir] by.
+/// The path by which a client reaches the runner socket [name].
 ///
-/// The runner binds its sockets beside the manifest and the manifest does not
-/// name them, so the path is derived from where the manifest was found. The
-/// package's own path comes first: a client that shares the project mount but
-/// not the home directory, such as a sandboxed agent, has nothing else. When
-/// it does not fit the platform's socket address limit, the registry's link
-/// for [projectId] is used instead. Throws a [SocketException] naming both
-/// when neither fits.
+/// Prefers the package path, which a sandboxed client without home can use,
+/// over the registry link. Throws a [SocketException] when neither fits.
 String runnerSocketPath(
   String serverDir,
   String name, {
@@ -160,11 +132,7 @@ String runnerSocketPath(
   );
 }
 
-/// Whether something accepts a connection on the Unix socket at [path].
-///
-/// Says nothing before disconnecting. The runner counts a client as attached
-/// only once it asks for the snapshot, so a silent probe is not a UI
-/// arriving.
+/// Whether [path] accepts a connection, probed silently so no UI attaches.
 Future<bool> _isListening(String path, Duration timeout) async {
   try {
     final probe = await connectUnixSocket(path, timeout: timeout);

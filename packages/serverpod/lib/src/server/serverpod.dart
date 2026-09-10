@@ -1276,12 +1276,7 @@ class Serverpod {
     return ok;
   }
 
-  /// Folds the ports the listeners actually bound back into [config], then
-  /// announces the resulting addresses over the VM service.
-  ///
-  /// A configured port of 0 asks for an ephemeral one, so the real port is
-  /// known only now. Advertising the configured port would send clients
-  /// somewhere nothing listens.
+  /// Folds the bound ports into [config] and posts the resulting addresses.
   void _publishResolvedAddresses() {
     final api = config.apiServer.withResolvedPort(server.port);
     final insights = _insightsServer == null

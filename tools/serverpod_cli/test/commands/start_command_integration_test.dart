@@ -523,8 +523,7 @@ database:
             '--no-docker',
           ],
           workingDirectory: Directory.current.path,
-          // The static above isolates this isolate only. The child reads the
-          // environment, so it registers in the test directory as well.
+          // RunnerRegistry.defaultDir does not reach the child process.
           environment: {
             ...Platform.environment,
             'SERVERPOD_RUNNER_REGISTRY_DIR': registryDirectory.path,
@@ -596,15 +595,9 @@ database:
   );
 }
 
-/// Runs the headless stack the way `serverpod start` spawns it.
+/// Runs `serverpod runner serve` in this isolate, and stops it once degraded.
 ///
-/// The stack, Docker provisioning included, lives in the runner, so driving
-/// the runner directly exercises it without a detached process to hunt down
-/// afterward.
-///
-/// Startup either aborts with exit code 1 at the Docker step, or settles into
-/// the degraded stage on the intentionally invalid model. This stops it over
-/// its socket, the way `serverpod runner stop` does.
+/// Startup either aborts at the Docker step or degrades on the invalid model.
 Future<void> _runStart({
   required Directory serverDirectory,
   String? dockerArgument,
@@ -997,11 +990,8 @@ Future<void> _deleteProjectRoot(Directory projectRoot) async {
 
 /// Shuts down a `serverpod runner` [process] together with the pod it spawned.
 ///
-/// On POSIX, SIGINT reaches the CLI's own shutdown path, which stops the pod
-/// for us. Windows has no such signal - `Process.kill` terminates the CLI
-/// outright, leaving the pod running with its working directory inside the
-/// test project, which then cannot be deleted (see the Job Object TODO in
-/// `ServerProcess.start`). `taskkill /T` takes down the whole tree instead.
+/// On Windows `Process.kill` would orphan the pod, whose working directory
+/// then blocks deleting the project, so `taskkill /T` ends the whole tree.
 Future<void> _terminateRunnerProcessTree(Process process) async {
   if (Platform.isWindows) {
     await Process.run('taskkill', ['/T', '/F', '/PID', '${process.pid}']);

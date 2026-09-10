@@ -9,13 +9,9 @@ import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_shared/log.dart' show LogEntry, LogScope, LogWriter;
 import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
 
-/// The runner's own log file.
+/// The runner's log file, size-capped and rotated.
 ///
-/// [ProcessStartMode.detached] leaves the child no streams, so a detached
-/// runner writes its output here instead.
-///
-/// Size-capped and rotated. A client's in-memory history dies with the
-/// process, leaving this the only record of a run nobody attached to.
+/// A detached runner has no stdio, so this is its only record.
 class RunnerLogFile {
   RunnerLogFile({
     required this.path,
@@ -29,9 +25,7 @@ class RunnerLogFile {
         maxBytes: maxBytes ?? defaultMaxBytes,
       );
 
-  /// The size past which the file is rotated.
-  ///
-  /// One previous generation is kept, as `runner.log.1`.
+  /// The size past which the file rotates to `runner.log.1`.
   static const defaultMaxBytes = 8 * 1024 * 1024;
 
   final String path;
@@ -41,41 +35,24 @@ class RunnerLogFile {
   int _written = 0;
   bool _rotating = false;
 
-  /// The size at which the next rotation is attempted.
-  ///
-  /// [maxBytes], except after a rotation that could not rename the file. The
-  /// next attempt then waits for another [maxBytes] of output.
+  /// The next rotation size, moved [maxBytes] further when a rename fails.
   int _rotateAt = 0;
 
-  /// The rotation in flight, so [close] can wait for it rather than racing it
-  /// to the sink.
+  /// The rotation in flight, which [close] waits for.
   Future<void>? _rotation;
 
-  /// Lines with nowhere to go yet, flushed once the file is open again.
-  ///
-  /// Rotation is asynchronous while [writeLine] is not, so without this every
-  /// line written across a rotation is lost, including the one that triggered
-  /// it.
+  /// Lines written during a rotation, held since [writeLine] cannot wait.
   final List<String> _pending = [];
 
-  /// Whether [close] has run.
-  ///
-  /// Writes keep arriving after it, the exit-path error among them, and holding
-  /// those for a flush that will never come loses what a failed run is read for.
+  /// Whether [close] has run, after which [_write] appends synchronously.
   bool _closed = false;
 
-  /// Whether a write to the file has failed.
+  /// Whether a write failed, after which [_write] drops lines.
   ///
-  /// The file is then given up on and every later line dropped. A full disk
-  /// is the usual cause, and a detached runner has nowhere else to report it:
-  /// this file is where its output goes. What must not happen is the failure
-  /// surfacing as an unhandled error, which would take the runner down with
-  /// its Docker services still up.
+  /// Throwing would take the runner down with its Docker services still up.
   bool _broken = false;
 
-  /// How many lines to hold across a rotation before dropping the oldest.
-  ///
-  /// A bound only a wedged rotation reaches. This runs for days.
+  /// The most lines [_pending] holds, a bound only a wedged rotation reaches.
   static const _maxPendingLines = 4096;
 
   /// The path of the single retained previous generation.
@@ -100,9 +77,7 @@ class RunnerLogFile {
     _pending.clear();
   }
 
-  /// Appends [line], rotating first when the file has grown past [maxBytes].
-  ///
-  /// ANSI styling is stripped, since nothing renders this file as a terminal.
+  /// Appends [line] without ANSI styling, rotating the file past [maxBytes].
   void writeLine(String line) {
     _write('${stripAnsi(line)}\n');
   }
@@ -128,16 +103,12 @@ class RunnerLogFile {
     sink.add(bytes);
   }
 
-  /// Appends [text] to a file this has already closed.
-  ///
-  /// Synchronous and unrotated: there is no sink left, nothing after this to
-  /// flush one, and a process on its way out is past caring about the cap.
-  /// Shares nothing with the sink, so it is tried whatever became of that.
+  /// Appends [text] after [close], synchronously and bypassing the sink.
   void _appendSync(String text) {
     try {
       File(path).writeAsStringSync(text, mode: FileMode.append, flush: true);
     } on FileSystemException {
-      // Nowhere left to report it: this is the reporting path.
+      // Nowhere left to report it. This is the reporting path.
     }
   }
 
@@ -222,9 +193,6 @@ class RunnerLogFile {
 }
 
 /// A [LogWriter] that appends the CLI's own log to the runner's log file.
-///
-/// Paired with the file sinks the pod and the Flutter apps write to, this is
-/// what makes a detached runner's output survive the process.
 class RunnerLogFileWriter extends LogWriter {
   RunnerLogFileWriter(this._file);
 
@@ -250,7 +218,6 @@ class RunnerLogFileWriter extends LogWriter {
     Object? error,
     StackTrace? stackTrace,
   }) async {
-    // Stamped like every other line: the file is sliced by leading timestamp.
     final completedAt = scope.startTime.add(duration).toIso8601String();
     _file.writeLine(
       '$completedAt [SCOPE] ${scope.label} '

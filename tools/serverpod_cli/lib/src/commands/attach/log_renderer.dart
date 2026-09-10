@@ -8,19 +8,10 @@ import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart' show CompletedOperation;
 
-/// Streams a runner's output as plain text, for `--no-tui`.
+/// Streams the runner at [socketPath] as plain text, and returns the exit code.
 ///
-/// No alternate screen and no cursor control, one line per entry, so `grep`
-/// and a scrollback buffer both work. Carries the same account as the terminal
-/// UI, the CLI's own entries and the pod's structured log, in order.
-///
-/// The exit code is the runner's own when it announces it is stopping, 1 for a
-/// stack that cannot be rebuilt or a runner that stopped answering, and 0 on
-/// Ctrl+C, which detaches and leaves the runner running.
-///
-/// [reconnectDeadline] bounds how long a lost runner is waited for. Nobody is
-/// watching this, and a runner killed outright announces nothing, so waiting
-/// forever would hang the job that ran it.
+/// The runner's own code when it stops, 1 when nothing will rebuild it or it
+/// goes silent past [reconnectDeadline], and 0 on Ctrl+C, which only detaches.
 Future<int> attachWithLogStream(
   String socketPath, {
   IOSink? out,
@@ -63,8 +54,7 @@ Future<int> attachWithLogStream(
   }
 
   leaveIfUnrecoverable(client.stage);
-  // A runner that announced it was stopping before this session attached is
-  // leaving all the same.
+  // A runner stopping before this client attached sends no stage change.
   if (client.stage == RunnerStage.stopping) done.complete(client.exitCode ?? 0);
 
   unawaited(
@@ -121,9 +111,9 @@ String? _formatEvent(RunnerEvent event) => switch (event) {
     duplicatesLine ? null : formatLogEntryLine(entry),
   ServerLineEvent(:final line) => line,
   FlutterLineEvent(:final appId, :final line) => '[$appId] $line',
-  // The app printed the others itself, and those arrive as lines.
   FlutterLogEntryEvent(:final appId, :final entry, appendedToLines: true) =>
     '[$appId] ${formatLogEntryLine(entry)}',
+  // The app printed this entry itself, and it arrives as a FlutterLineEvent.
   FlutterLogEntryEvent() => null,
   OperationStartedEvent(:final operation) => '... ${operation.label}',
   OperationCompletedEvent(:final operation) => _completedOperationLine(
@@ -137,21 +127,16 @@ String? _formatEvent(RunnerEvent event) => switch (event) {
   OperationsDiscardedEvent() => null,
 };
 
-/// One retained history entry as a line, rendered the way the live event for
-/// it is.
+/// The line for a retained history [entry], as its live event prints it.
 ///
-/// [CompletedOperation] has to be named. Its `toString` is the default, so a
-/// replayed backlog would print `Instance of 'CompletedOperation'`.
+/// [CompletedOperation] needs a case, since it does not override `toString`.
 String formatHistoryEntry(Object entry) => switch (entry) {
   LogEntry() => formatLogEntryLine(entry),
   CompletedOperation() => _completedOperationLine(entry),
   _ => entry.toString(),
 };
 
-/// Where a Flutter app is, as one line.
-///
-/// A launching app is neither running nor stopped. Rendered as stopped, a
-/// cold build reads as a failed launch that then recovered.
+/// A Flutter app's state as one line, showing a cold build as launching.
 String _appStateLine(FlutterAppStateEvent state) {
   if (state.running) {
     final url = state.url;
