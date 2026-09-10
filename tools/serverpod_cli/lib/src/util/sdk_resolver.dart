@@ -211,6 +211,21 @@ class SdkResolver {
     }
   }
 
+  /// Whether `flutter` is installed.
+  Future<bool> get isFlutterInstalled async {
+    if (await flutterSdk != null) return true;
+    try {
+      final result = await Process.run(
+        'flutter',
+        ['--version'],
+        runInShell: Platform.isWindows,
+      );
+      return result.exitCode == 0;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// Asks the `flutter` on `$PATH` for its own root.
   static Future<String?> _probeFlutterRootOnPath() async {
     try {
