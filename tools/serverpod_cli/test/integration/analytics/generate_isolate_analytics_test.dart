@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
+import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/analytics_helpers.dart';
@@ -14,7 +15,10 @@ void main() {
 
       setUpAll(() async {
         fixture = await GenerateAnalyticsFixture.create();
-        analyzers = await IsolatedAnalyzers.create(fixture.config);
+        analyzers = await IsolatedAnalyzers.create(
+          fixture.config,
+          dartSdkPath: getSdkPath(),
+        );
         result = await analyzers.performGenerate(config: fixture.config);
       });
 
