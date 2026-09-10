@@ -6,6 +6,7 @@ import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/flush_analytics.dart';
 import 'package:serverpod_cli/src/analytics/generate_analytics.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
@@ -20,6 +21,7 @@ import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/pubspec_lock_parser.dart';
 import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 enum GenerateOption<V> implements OptionDefinition<V> {
   watch(
@@ -320,75 +322,107 @@ Future<GenerateResult> analyzeAndGenerate({
 }
 
 /// Watch-mode code generation with persistent analyzers and file watching.
+///
+/// SIGINT (and SIGTERM on POSIX) stops new runs, lets the active run finish,
+/// and drains analytics before returning to the CLI entry point.
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
   bool force = false,
 }) async {
-  // keepPrimedWhenFresh: the incremental loop only updates changed files, so
-  // the analyzer must be primed up front even when nothing needs regenerating.
-  // In-process is fine here; only start's TUI needs the isolate offload.
-  final analyzers = await Analyzers.create(config);
-  final initialResult = await generateIfStale(
-    config: config,
-    createAnalyzers: () async => analyzers,
-    keepPrimedWhenFresh: true,
-    force: force,
-  );
-  if (!initialResult.success) {
-    await analyzers.close();
-    return false;
-  }
-  if (initialResult.upToDate) {
-    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
+  final shutdown = Completer<void>();
+  void requestShutdown(ProcessSignal _) {
+    if (!shutdown.isCompleted) shutdown.complete();
   }
 
-  // Set up file watcher for source directories only (no web or client).
-  final watcher = FileWatcher(
-    watchPaths: {
-      path.absolute(path.joinAll(config.libSourcePathParts)),
-      ...config.sharedModelsLibSourcePaths.map(path.absolute),
-    },
-  );
+  // Own signals before generation starts, and keep handling repeated signals
+  // until the active run and analytics have finished shutting down.
+  final sigint = ProcessSignal.sigint.watch().listen(requestShutdown);
+  final sigterm = Platform.isWindows
+      ? null
+      : ProcessSignal.sigterm.watch().listen(requestShutdown);
+  Analyzers? analyzers;
+  try {
+    // keepPrimedWhenFresh: the incremental loop only updates changed files, so
+    // the analyzer must be primed up front even when nothing needs regenerating.
+    // In-process is fine here; only start's TUI needs the isolate offload.
+    final activeAnalyzers = await Analyzers.create(config);
+    analyzers = activeAnalyzers;
+    final initialResult = await generateIfStale(
+      config: config,
+      createAnalyzers: () async => activeAnalyzers,
+      keepPrimedWhenFresh: true,
+      force: force,
+    );
+    if (!initialResult.success) {
+      return false;
+    }
+    if (initialResult.upToDate) {
+      log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
+    }
 
-  // Announce "Listening for changes" only once the OS watcher is actually
-  // initialized: events that occur before that (the initial directory scan
-  // can take seconds, notably on Windows) are silently dropped. The `ready`
-  // future only starts completing once the stream below has a subscriber.
-  unawaited(
-    watcher.ready.then((_) => log.debug(initialCodeGenerationComplete)),
-  );
+    if (shutdown.isCompleted) return true;
 
-  // The generated dirs live inside the watched lib/ dirs, so generation
-  // output shows up as watcher events. Feeding those back into generation
-  // would make every run trigger the next one.
-  final generatedDirPaths = config.generatedDirPaths;
-  bool isGenerated(String filePath) => generatedDirPaths.any(
-    (dir) => path.isWithin(dir, path.absolute(filePath)),
-  );
+    // Set up file watcher for source directories only (no web or client).
+    final watcher = FileWatcher(
+      watchPaths: {
+        path.absolute(path.joinAll(config.libSourcePathParts)),
+        ...config.sharedModelsLibSourcePaths.map(path.absolute),
+      },
+    );
 
-  // Process file change events.
-  await for (final event in watcher.onFilesChanged) {
-    final affectedPaths = {
-      ...event.dartFiles,
-      ...event.modelFiles,
-    }.where((f) => !isGenerated(f)).toSet();
+    // Announce "Listening for changes" only once the OS watcher is actually
+    // initialized: events that occur before that (the initial directory scan
+    // can take seconds, notably on Windows) are silently dropped. The `ready`
+    // future only starts completing once the stream below has a subscriber.
+    unawaited(
+      watcher.ready.then((_) => log.debug(initialCodeGenerationComplete)),
+    );
 
-    if (affectedPaths.isEmpty) continue;
+    // The generated dirs live inside the watched lib/ dirs, so generation
+    // output shows up as watcher events. Feeding those back into generation
+    // would make every run trigger the next one.
+    final generatedDirPaths = config.generatedDirPaths;
+    bool isGenerated(String filePath) => generatedDirPaths.any(
+      (dir) => path.isWithin(dir, path.absolute(filePath)),
+    );
 
+    // Process file change events.
+    await for (final event in watcher.onFilesChanged.takeUntil(
+      shutdown.future,
+    )) {
+      if (shutdown.isCompleted) break;
+      final affectedPaths = {
+        ...event.dartFiles,
+        ...event.modelFiles,
+      }.where((f) => !isGenerated(f)).toSet();
+
+      if (affectedPaths.isEmpty) continue;
+
+      try {
+        await analyzeAndGenerate(
+          config: config,
+          analyzers: activeAnalyzers,
+          affectedPaths: affectedPaths,
+          incremental: true,
+        );
+      } catch (e, stackTrace) {
+        log.error(e.toString(), stackTrace: stackTrace);
+      }
+    }
+
+    return true;
+  } finally {
     try {
-      await analyzeAndGenerate(
-        config: config,
-        analyzers: analyzers,
-        affectedPaths: affectedPaths,
-        incremental: true,
-      );
-    } catch (e, stackTrace) {
-      log.error(e.toString(), stackTrace: stackTrace);
+      try {
+        await analyzers?.close();
+      } finally {
+        await flushAnalytics();
+      }
+    } finally {
+      await sigint.cancel();
+      await sigterm?.cancel();
     }
   }
-
-  // The await-for loop above runs indefinitely; this is unreachable.
-  return true;
 }
 
 /// Specifies which parts of the code generation pipeline need to run.
