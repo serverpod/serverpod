@@ -166,17 +166,17 @@ commands:
 
   - name: start
     flags:
-      -w, --watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
-      --no-watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
-      -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
-      --docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL on localhost without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
-      --no-docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL on localhost without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
+      -w, --watch: "Watch files and use the Frontend Server."
+      --no-watch: "Watch files and use the Frontend Server."
+      -d, --directory=: "The server directory."
+      --docker: "Start Docker Compose services if a compose file exists."
+      --no-docker: "Start Docker Compose services if a compose file exists."
       --attach: "Attach a UI once the stack is up. With --no-attach the runner is brought up, its address is printed, and the command returns."
       --no-attach: "Attach a UI once the stack is up. With --no-attach the runner is brought up, its address is printed, and the command returns."
       --tui: "Show the interactive terminal UI when attaching. Ignored with --no-attach, since nothing renders."
       --no-tui: "Show the interactive terminal UI when attaching. Ignored with --no-attach, since nothing renders."
-      --flutter: "Auto-launch the companion Flutter apps as configured on the server pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable auto-launch. Apps can still be started on demand from the TUI."
-      --no-flutter: "Auto-launch the companion Flutter apps as configured on the server pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable auto-launch. Apps can still be started on demand from the TUI."
+      --flutter: "Auto-launch companion Flutter apps on the first UI attach."
+      --no-flutter: "Auto-launch companion Flutter apps on the first UI attach."
     exclusiveFlags:
       - [watch, no-watch]
       - [docker, no-docker]
