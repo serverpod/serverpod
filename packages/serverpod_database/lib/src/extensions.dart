@@ -18,7 +18,7 @@ extension DatabaseDefinitionUtils on DatabaseDefinition {
     var candidates = tables.where((table) => table.name == tableName);
     if (schema == null) return candidates.firstOrNull;
 
-    return candidates.firstWhereOrNull((table) => table.schema == schema) ??
+    return candidates.singleWhereOrNull((table) => table.schema == schema) ??
         (schema == 'public' ? candidates.firstOrNull : null);
   }
 }
