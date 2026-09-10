@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_shared/log.dart' show LogLevel;
 import 'package:test/test.dart';
@@ -31,12 +32,27 @@ String _fakeFlutterSdkRoot({required bool cachePopulated}) {
   addTearDown(() => dir.deleteSync(recursive: true));
 
   final root = p.join(dir.path, 'sdk');
-  for (final relative in [
-    ['packages', 'flutter_tools', '.dart_tool', 'package_config.json'],
-    ['packages', 'flutter_tools', 'bin', 'flutter_tools.dart'],
-    if (cachePopulated) ['bin', 'cache', 'dart-sdk', 'bin', 'dart'],
+  for (final path in [
+    p.joinAll([
+      root,
+      'packages',
+      'flutter_tools',
+      '.dart_tool',
+      'package_config.json',
+    ]),
+    p.joinAll([
+      root,
+      'packages',
+      'flutter_tools',
+      'bin',
+      'flutter_tools.dart',
+    ]),
+    // Named through the shared helper rather than spelled out: the embedded
+    // binary is `dart.exe` on Windows, and hardcoding `dart` here made the
+    // fast-path guard miss and silently fall back.
+    if (cachePopulated) dartExecutableIn(embeddedDartSdkIn(root)),
   ]) {
-    File(p.joinAll([root, ...relative])).createSync(recursive: true);
+    File(path).createSync(recursive: true);
   }
 
   return root;
@@ -350,7 +366,7 @@ void main() {
       test("then it runs on the SDK's embedded dart", () {
         expect(
           invocation.executable,
-          p.join(root, 'bin', 'cache', 'dart-sdk', 'bin', 'dart'),
+          dartExecutableIn(embeddedDartSdkIn(root)),
         );
       });
 

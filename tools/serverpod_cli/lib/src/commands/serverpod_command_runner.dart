@@ -27,7 +27,7 @@ Future<void> _preCommandEnvironmentChecks() async {
     );
     throw ExitException.error();
   }
-  if (!ci.isCI && await sdkResolver.flutterSdk == null) {
+  if (!ci.isCI && !await sdkResolver.isFlutterInstalled) {
     log.error(
       'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
     );
