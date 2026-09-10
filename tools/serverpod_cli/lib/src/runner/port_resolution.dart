@@ -38,7 +38,7 @@ class PortResolution {
   final Map<String, int> conflicts;
 
   /// The ports held by something no runner accounted for, while a runner that
-  /// has published no addresses yet could still be the holder.
+  /// has not decided its ports yet could still be the holder.
   ///
   /// Not [conflicts]. The stack moves aside rather than refuse to start, and
   /// names these so a developer can tell that from an unrelated process.
@@ -55,7 +55,23 @@ class PortResolution {
           for (final entry in ports.entries)
             if (entry.value == 0) entry.key,
         ];
+
+  /// The ports in [ports] this runner will bind as configured, for its
+  /// manifest: none when the stack moved aside, else every listener not
+  /// configured with port zero.
+  ///
+  /// A peer resolving its ports meanwhile reads this as a claim, so it moves
+  /// aside for a port this runner will bind and keeps one it will not.
+  Map<String, int> claimedPorts(Map<String, int> ports) =>
+      useEphemeral ? const {} : fixedPorts(ports);
 }
+
+/// The listeners in [ports] configured with a fixed port, the ones a runner
+/// binding as configured will take.
+Map<String, int> fixedPorts(Map<String, int> ports) => {
+  for (final entry in ports.entries)
+    if (entry.value != 0) entry.key: entry.value,
+};
 
 /// Decides whether the stack for [serverDir] can use [ports], or has to fall
 /// back to ephemeral ones.
@@ -85,20 +101,21 @@ Future<PortResolution> resolvePorts({
     probeTimeout,
   );
 
-  if (occupied.isEmpty) {
-    // A sibling that has named no ports yet may be about to bind these. Two
-    // stacks racing for one port fails whichever binds second, so this one
-    // moves aside while the ports are still free.
-    return PortResolution(useEphemeral: held.silentRunner, conflicts: const {});
-  }
-
   final conflicts = {
     for (final entry in occupied.entries)
       if (!held.ports.contains(entry.value)) entry.key: entry.value,
   };
 
   if (conflicts.isEmpty) {
-    return PortResolution(useEphemeral: true, conflicts: const {});
+    // A port a sibling has claimed but not bound yet is as taken as one it
+    // holds: two stacks racing for one port fails whichever binds second, so
+    // this one moves aside while the port is still free. A sibling that has
+    // not decided yet could claim any of them.
+    final claimed = ports.values.any(held.ports.contains);
+    return PortResolution(
+      useEphemeral: claimed || held.silentRunner,
+      conflicts: const {},
+    );
   }
 
   // The silent runner could hold any of these, and blaming it would fail the
@@ -143,14 +160,15 @@ Future<bool> _connects(
   }
 }
 
-/// The ports other Serverpod runners have published as theirs, and whether
-/// any is up without having named its ports.
+/// The ports other Serverpod runners have claimed or bound, and whether any is
+/// up without having decided.
 ///
-/// A port is attributed to a runner by the addresses its manifest names,
-/// whichever protocol version it speaks. `silentRunner` covers a runner that
-/// has named nothing: one still starting, and one that holds its lock but did
-/// not answer its socket in time, which is a busy runner as often as a dying
-/// one.
+/// A port is attributed to a runner by the claim its manifest makes before
+/// Docker and the first compile, and by the addresses its pod reported,
+/// whichever protocol version it speaks. `silentRunner` covers a runner with
+/// neither: one between publishing and resolving its ports, and one that
+/// holds its lock but did not answer its socket in time, which is a busy
+/// runner as often as a dying one.
 Future<({Set<int> ports, bool silentRunner})> _portsHeldByOtherRunners(
   String serverDir,
   RunnerRegistry registry,
@@ -168,9 +186,12 @@ Future<({Set<int> ports, bool silentRunner})> _portsHeldByOtherRunners(
       NoRunner() => null,
     };
     if (manifest == null) continue;
+    final claimed = manifest.ports;
     final published = _publishedPorts(manifest).toSet();
-    if (published.isEmpty) silentRunner = true;
-    ports.addAll(published);
+    if (claimed == null && published.isEmpty) silentRunner = true;
+    ports
+      ..addAll(claimed?.values ?? const [])
+      ..addAll(published);
   }
   return (ports: ports, silentRunner: silentRunner);
 }
