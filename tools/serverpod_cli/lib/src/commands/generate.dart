@@ -20,6 +20,7 @@ import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_pac
 import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/pubspec_lock_parser.dart';
 import 'package:serverpod_cli/src/util/pubspec_plus.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/shutdown_signal.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -94,6 +95,12 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
+
+    // GeneratorConfig has now resolved `--directory` or any interactive
+    // selection to the actual server package.
+    rescopeSdkResolver(
+      Directory(path.joinAll(config.serverPackageDirectoryPathParts)),
+    );
 
     if (await LegacyModelFiles.report(config)) {
       throw ExitException.error();
@@ -227,7 +234,10 @@ Future<bool> performOneShotGenerate({
 }) async {
   final result = await generateIfStale(
     config: config,
-    createAnalyzers: () => Analyzers.create(config),
+    createAnalyzers: () async => Analyzers.create(
+      config,
+      dartSdkPath: (await sdkResolver.dartSdk).root,
+    ),
     force: force,
   );
   if (result.upToDate) {
@@ -336,7 +346,10 @@ Future<bool> _performGenerateWatch({
       // keepPrimedWhenFresh: the incremental loop only updates changed files, so
       // the analyzer must be primed up front even when nothing needs regenerating.
       // In-process is fine here; only start's TUI needs the isolate offload.
-      final activeAnalyzers = await Analyzers.create(config);
+      final activeAnalyzers = await Analyzers.create(
+        config,
+        dartSdkPath: (await sdkResolver.dartSdk).root,
+      );
       analyzers = activeAnalyzers;
       final initialResult = await generateIfStale(
         config: config,

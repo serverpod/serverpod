@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class CommandLineTools {
@@ -23,25 +24,24 @@ class CommandLineTools {
     _errorBuffer.clear();
   }
 
-  static bool? _flutterAvailable;
-
-  /// Resolves [dir] with `flutter pub get` whenever Flutter is available,
-  /// falling back to `dart pub get`. Generated workspaces can require the
-  /// Flutter SDK even without a Flutter app (development-mode
+  /// Resolves [dir] with `flutter pub get` whenever a Flutter SDK is
+  /// available, falling back to `dart pub get`. Generated workspaces can
+  /// require the Flutter SDK even without a Flutter app (development-mode
   /// dependency_overrides pull in serverpod_flutter), and plain `dart pub`
   /// only finds the SDK when dart itself is the Flutter-embedded binary -
   /// not the case with a standalone Dart install or version managers like
   /// puro.
   static Future<bool> pubGet(Directory dir) async {
-    _flutterAvailable ??= await existsCommand('flutter', ['--version']);
-    return _flutterAvailable! ? flutterPubGet(dir) : dartPubGet(dir);
+    final flutter = await sdkResolver.flutterSdk;
+    return flutter != null ? flutterPubGet(dir) : dartPubGet(dir);
   }
 
   static Future<bool> dartPubGet(Directory dir) async {
     log.debug('Running `dart pub get` in ${dir.path}', newParagraph: true);
 
+    final dart = await sdkResolver.dartSdk;
     var exitCode = await _runProcessWithDefaultLogger(
-      executable: 'dart',
+      executable: dartExecutableIn(dart.root),
       arguments: ['pub', 'get'],
       workingDirectory: dir.path,
     );
@@ -57,8 +57,11 @@ class CommandLineTools {
   static Future<bool> flutterPubGet(Directory dir) async {
     log.debug('Running `flutter pub get` in ${dir.path}', newParagraph: true);
 
+    final executable = await _flutterExecutableOrReport('pub get');
+    if (executable == null) return false;
+
     var exitCode = await _runProcessWithDefaultLogger(
-      executable: 'flutter',
+      executable: executable,
       arguments: ['pub', 'get'],
       workingDirectory: dir.path,
     );
@@ -74,8 +77,11 @@ class CommandLineTools {
   static Future<bool> flutterCreate(Directory dir) async {
     log.debug('Running `flutter create .` in ${dir.path}', newParagraph: true);
 
+    final executable = await _flutterExecutableOrReport('create');
+    if (executable == null) return false;
+
     var exitCode = await _runProcessWithDefaultLogger(
-      executable: 'flutter',
+      executable: executable,
       arguments: ['create', '.'],
       workingDirectory: dir.path,
     );
@@ -88,15 +94,16 @@ class CommandLineTools {
     return true;
   }
 
-  static Future<bool> existsCommand(
-    String command, [
-    List<String> arguments = const [],
-  ]) async {
-    var exitCode = await _runProcessWithDefaultLogger(
-      executable: command,
-      arguments: arguments,
+  /// The resolved `flutter` executable, or `null` after reporting that no
+  /// Flutter SDK could be found.
+  static Future<String?> _flutterExecutableOrReport(String step) async {
+    final flutter = await sdkResolver.flutterSdk;
+    if (flutter != null) return flutterExecutableIn(flutter.root);
+
+    _logError(
+      'Cannot run `flutter $step`: no Flutter SDK found.',
     );
-    return exitCode == 0;
+    return null;
   }
 }
 

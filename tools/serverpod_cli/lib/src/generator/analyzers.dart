@@ -56,7 +56,12 @@ class Analyzers {
   Future<void> close() async {}
 
   /// Creates the analyzers needed for code generation from [config].
-  static Future<Analyzers> create(GeneratorConfig config) async {
+  ///
+  /// [dartSdkPath] is the resolved Dart SDK to analyse against.
+  static Future<Analyzers> create(
+    GeneratorConfig config, {
+    String? dartSdkPath,
+  }) async {
     final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
     // Overlay-backed so generation can shadow protocol.dart with a temporary
     // stub in memory instead of writing it to disk (see [performGenerate]).
@@ -64,6 +69,7 @@ class Analyzers {
     final collection = createAnalysisContextCollection(
       libDirectory,
       resourceProvider: overlay,
+      sdkPath: dartSdkPath,
     );
     final endpointsAnalyzer = EndpointsAnalyzer(
       libDirectory,
@@ -91,9 +97,10 @@ class Analyzers {
 
   /// Creates and primes the analyzers for code generation.
   static Future<Analyzers> createAndUpdate(
-    GeneratorConfig config,
-  ) async {
-    final analyzers = await Analyzers.create(config);
+    GeneratorConfig config, {
+    String? dartSdkPath,
+  }) async {
+    final analyzers = await Analyzers.create(config, dartSdkPath: dartSdkPath);
     await analyzers.update(
       config: config,
       affectedPaths: (await enumerateSourceFiles(config)).keys.toSet(),

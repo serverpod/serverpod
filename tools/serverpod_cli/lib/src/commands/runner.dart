@@ -17,6 +17,7 @@ import 'package:serverpod_cli/src/commands/status.dart';
 import 'package:serverpod_cli/src/commands/stop.dart';
 import 'package:serverpod_cli/src/runner/runner_log_file.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/shutdown_signal.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
@@ -202,6 +203,9 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
         interactive: false,
       );
       final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+      // The project pin is a property of the server directory, not of the
+      // directory the runner was launched from.
+      rescopeSdkResolver(Directory(serverDir));
 
       final result = await setupWatchLoop(
         config: config,
