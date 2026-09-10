@@ -1722,18 +1722,12 @@ extension _ColumnHelpers on Column {
   }
 }
 
-/// SQL identifiers for a [Table], schema-qualified when it has a schema.
-extension TableSqlIdentifiers on Table {
-  /// `"schema"."table"`, or `"table"` for an unqualified table.
-  String get quotedTableName {
-    var schema = this.schema;
-    if (schema == null) return '"$tableName"';
-    return '"$schema"."$unqualifiedTableName"';
-  }
-
-  /// [quotedTableName] aliased to [tableName] so column references resolve.
+extension _TableSqlIdentifiers on Table {
+  /// [quotedTableName] aliased to [tableName] when the two differ, so column
+  /// references keep resolving.
   String get aliasedTableName {
-    if (schema == null) return quotedTableName;
-    return '$quotedTableName AS "$tableName"';
+    var quoted = quotedTableName;
+    if (quoted == '"$tableName"') return quoted;
+    return '$quoted AS "$tableName"';
   }
 }

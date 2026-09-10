@@ -58,6 +58,10 @@ class Table<T_ID> {
   /// [tableName] with the schema removed.
   String get unqualifiedTableName => parseQualifiedTableName(tableName).name;
 
+  /// [tableName] quoted for the current dialect. Prefer it over [tableName] in
+  /// raw SQL, since dialects quote schemas differently.
+  String get quotedTableName => ValueEncoder.instance.quoteTableName(tableName);
+
   /// The database id.
   late final ColumnComparable<T_ID> id;
 

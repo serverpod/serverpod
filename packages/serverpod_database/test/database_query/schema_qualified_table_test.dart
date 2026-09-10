@@ -33,8 +33,32 @@ class _Citizen implements TableRow<int?> {
 void main() {
   ValueEncoder.set(const PostgresValueEncoder());
 
+  group('Given a table with an unqualified name', () {
+    var citizenTable = Table<int?>(tableName: 'citizen');
+
+    test(
+      'when reading the quoted table name then the name is quoted as one identifier.',
+      () {
+        expect(citizenTable.quotedTableName, '"citizen"');
+      },
+    );
+
+    test('when building a select query then the table is not aliased.', () {
+      var query = SelectQueryBuilder(table: citizenTable).build();
+
+      expect(query, 'SELECT "citizen"."id" AS "citizen.id" FROM "citizen"');
+    });
+  });
+
   group('Given a table with a schema qualified name', () {
     var citizenTable = _CitizenTable();
+
+    test(
+      'when reading the quoted table name then the schema and table are quoted separately.',
+      () {
+        expect(citizenTable.quotedTableName, '"auth"."citizen"');
+      },
+    );
 
     test(
       'when building a select query then the table is qualified and aliased to its full name.',
