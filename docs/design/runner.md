@@ -132,8 +132,9 @@ stop` or `Shift+Q` in the UI stops the stack, next to the `Q` that only
 detaches.
 
 The runner stopping ends the session for every attached UI. It announces the
-stop with the exit code it is leaving with, and a UI leaves with that code,
-printing the tail of the log once the alternate screen is gone. A connection
+stop with the exit code it is leaving with, and a UI leaves with that code.
+Once the alternate screen is gone, the UI prints the tail of the log when that
+code is non-zero, or when the runner stopped before it had a stack. A connection
 that drops without the announcement is a crash or a kill. The UI reconnects for
 ten seconds, which picks a runner that was restarted at once back up, and then
 leaves with exit code 1, since nothing will announce a code. The log stream
