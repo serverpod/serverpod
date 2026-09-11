@@ -239,19 +239,7 @@ class RunnerClient implements RunnerApi {
       ..clear()
       ..addAll(snapshot.flutterAppUrls);
 
-    history.serverEntries
-      ..clear()
-      ..addAll(snapshot.serverEntries);
-    history.serverLines
-      ..clear()
-      ..addAll(snapshot.serverLines);
-    history.activeOperations.clear();
-    history.operationStartTimes.clear();
-    for (final active in snapshot.activeOperations) {
-      history.activeOperations[active.operation.id] = active.operation;
-      history.operationStartTimes[active.operation.id] = active.startedAt;
-    }
-    history.replaceFlutterLines(snapshot.flutterLines);
+    history.applySnapshot(snapshot);
     _markChanged();
   }
 
@@ -261,34 +249,8 @@ class RunnerClient implements RunnerApi {
       held.add(event);
       return;
     }
+    history.applyEvent(event);
     switch (event) {
-      case ServerLogEvent(:final entry):
-        history.serverEntries.add(entry);
-        history.onServerEntry?.call(entry);
-
-      case OperationStartedEvent(:final operation, :final startedAt):
-        history.activeOperations[operation.id] = operation;
-        history.operationStartTimes[operation.id] = startedAt;
-
-      case OperationCompletedEvent(:final operation, :final id):
-        history.activeOperations.remove(id);
-        history.operationStartTimes.remove(id);
-        history.serverEntries.add(operation);
-
-      case ServerLineEvent(:final line):
-        history.serverLines.add(line);
-
-      case FlutterLineEvent(:final appId, :final line):
-        history.flutterLinesFor(appId).add(line);
-
-      case FlutterLogEntryEvent(
-        :final appId,
-        :final entry,
-        :final appendedToLines,
-      ):
-        if (appendedToLines) history.addFlutterEntryLines(appId, entry);
-        history.onFlutterEntry?.call(appId, entry);
-
       case StageChangedEvent(:final stage, :final exitCode):
         _stage = stage;
         if (exitCode != null) _exitCode = exitCode;
@@ -316,13 +278,14 @@ class RunnerClient implements RunnerApi {
         // A running app's progress update has no URL, so keep the last.
         _appUrls[appId] = url ?? (running ? _appUrls[appId] : null);
 
-      case OperationsDiscardedEvent(:final ids):
-        for (final id in ids) {
-          history.activeOperations.remove(id);
-          history.operationStartTimes.remove(id);
-        }
-
-      case ManifestChangedEvent():
+      case ServerLogEvent() ||
+          OperationStartedEvent() ||
+          OperationCompletedEvent() ||
+          OperationsDiscardedEvent() ||
+          ServerLineEvent() ||
+          FlutterLineEvent() ||
+          FlutterLogEntryEvent() ||
+          ManifestChangedEvent():
         break;
     }
 
@@ -330,7 +293,7 @@ class RunnerClient implements RunnerApi {
     _markChanged();
   }
 
-  /// Calls [StartLogHistory.onChanged], which direct buffer writes skip.
+  /// Calls [StartLogHistory.onChanged], which applying to the history skips.
   void _markChanged() => history.onChanged?.call();
 
   /// Sends [method], or throws [RunnerUnreachableException] when detached.
