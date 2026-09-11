@@ -125,7 +125,7 @@ class StopCommand extends ServerpodCommand<StopOption> {
 
 /// Whether the runner serving [serverDir] goes down within [timeout].
 ///
-/// A free lock counts as down. Its manifest is left for the next runner.
+/// Down means the lock is free, so a start right after does not find it held.
 @visibleForTesting
 Future<bool> awaitRunnerShutdown(
   String serverDir, {
@@ -134,8 +134,7 @@ Future<bool> awaitRunnerShutdown(
   final deadline = DateTime.now().add(timeout);
   while (DateTime.now().isBefore(deadline)) {
     final manifest = await RunnerManifest.readFrom(serverDir);
-    if (manifest == null || manifest.isFinished) return true;
-    if (!await RunnerLock.isHeld(serverDir)) return true;
+    if (manifest == null || !await RunnerLock.isHeld(serverDir)) return true;
     await Future<void>.delayed(const Duration(milliseconds: 100));
   }
   return false;

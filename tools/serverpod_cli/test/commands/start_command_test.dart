@@ -492,8 +492,8 @@ void main() {
     });
 
     test(
-      'when a caller asks for a runner to attach to, '
-      'then it is refused rather than handed the one on its way out',
+      'when it is still stopping once the wait runs out, '
+      'then a caller is refused rather than handed the one on its way out',
       () async {
         await expectLater(
           ensureRunner(
@@ -501,6 +501,7 @@ void main() {
             serverDir: serverDir,
             asked: _asked,
             useTui: true,
+            lockWait: const Duration(milliseconds: 300),
           ),
           throwsA(isA<ExitException>()),
         );
@@ -508,7 +509,7 @@ void main() {
     );
 
     test(
-      'when its socket is already closed but it still holds the lock, '
+      'when its socket is closed and it holds the lock past the wait, '
       'then a caller is refused rather than spawning one that dies on the lock',
       () async {
         await socket.close();
@@ -527,10 +528,111 @@ void main() {
             serverDir: serverDir,
             asked: _asked,
             useTui: true,
+            lockWait: const Duration(milliseconds: 300),
           ),
           throwsA(isA<ExitException>()),
         );
         expect(await RunnerManifest.readFrom(serverDir), isNotNull);
+      },
+    );
+  });
+
+  group('Given a runner that holds the lock but has not bound its socket,', () {
+    late Directory root;
+    late String serverDir;
+    late GeneratorConfig config;
+    late Process holder;
+
+    setUp(() async {
+      root = await createShortTempDir('rsw');
+      await _mockProject().create(root.path);
+      serverDir = p.join(root.path, 'project', 'my_project_server');
+      await RunnerManifest(
+        pid: 4242,
+        cliVersion: templateVersion,
+        stage: RunnerStage.starting,
+        projectId: RunnerRegistry.idFor(serverDir),
+        config: _asked,
+      ).writeTo(serverDir);
+      holder = await holdLockFromAnotherProcess(serverDir);
+
+      CommandLineExperimentalFeatures.initialize([]);
+      config = await GeneratorConfig.load(
+        serverRootDir: serverDir,
+        interactive: false,
+      );
+      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
+      addTearDown(closeLogger);
+    });
+
+    tearDown(() {
+      try {
+        root.deleteSync(recursive: true);
+      } catch (_) {}
+    });
+
+    test(
+      'when its socket starts answering during the wait, '
+      'then a caller gets that runner',
+      () async {
+        final ensured = ensureRunner(
+          config: config,
+          serverDir: serverDir,
+          asked: _asked,
+          useTui: true,
+          lockWait: const Duration(seconds: 20),
+        );
+        var settled = false;
+        ensured.whenComplete(() => settled = true).ignore();
+
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        expect(settled, isFalse);
+
+        final socket = RunnerSocketServer(serverDir: serverDir);
+        await socket.start();
+        addTearDown(socket.close);
+        expect((await ensured).pid, 4242);
+      },
+    );
+
+    test(
+      'when it releases the lock during the wait, '
+      'then a caller moves on to starting one',
+      () async {
+        // A pod started by hand makes the caller leave rather than spawn.
+        final vmService = await HttpServer.bind(
+          InternetAddress.loopbackIPv4,
+          0,
+        );
+        addTearDown(() => vmService.close(force: true));
+        vmService.listen((request) async {
+          (await WebSocketTransformer.upgrade(request)).listen((_) {});
+        });
+        await File(userVmServiceInfoPath(serverDir)).create(recursive: true);
+        await File(userVmServiceInfoPath(serverDir)).writeAsString(
+          jsonEncode({'uri': 'http://127.0.0.1:${vmService.port}/'}),
+        );
+
+        final ensured = ensureRunner(
+          config: config,
+          serverDir: serverDir,
+          asked: _asked,
+          useTui: true,
+          lockWait: const Duration(seconds: 20),
+        );
+        var settled = false;
+        ensured.whenComplete(() => settled = true).ignore();
+
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        expect(settled, isFalse);
+
+        holder.kill();
+        await expectLater(
+          ensured,
+          throwsA(
+            isA<ExitException>().having((e) => e.exitCode, 'exitCode', 0),
+          ),
+        );
       },
     );
   });

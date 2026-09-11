@@ -59,14 +59,14 @@ class StatusCommand extends ServerpodCommand<StatusOption> {
         log.info('Not running.');
         if (staleManifest case RunnerManifest(:final pid, :final exitCode?)) {
           log.info(
-            'The last runner (pid $pid) stopped during startup with exit '
-            'code $exitCode. Its output is in '
+            'The last runner (pid $pid) stopped with exit code $exitCode. '
+            'Its output is in '
             '${serverpodRunnerLogPath(serverDir.absolute.path)}.',
           );
         } else if (staleManifest != null) {
           log.info(
-            'A manifest from a previous run is still present '
-            '(pid ${staleManifest.pid}). `serverpod start` replaces it.',
+            'The last runner (pid ${staleManifest.pid}) exited without '
+            'shutting down.',
           );
         }
         log.info('Start it with `serverpod start`.');

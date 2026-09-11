@@ -94,7 +94,7 @@ compile. The client then resolves the runner, attaches, and renders that work
 as it happens instead of leaving the terminal blank for the minutes a cold
 start takes. A startup that fails is then watched rather than reported after a
 timeout: the runner announces the stop with the code it is leaving with, and
-takes the manifest back down. Published any later, a start that aborts on a
+records that code in its manifest. Published any later, a start that aborts on a
 held port or a Docker refusal has nothing to attach to, and the
 caller learns only that no runner came up in time, with the reason in the
 runner's log file. Until there is a stack, the socket serves the log
@@ -163,17 +163,17 @@ runner restarts, and holds no orchestration logic.
 
 The runner consolidates discovery artifacts into
 `<serverDir>/.dart_tool/serverpod/runner.json`. It writes the file as soon as it
-holds its lock, before binding its sockets, rewrites it as its `stage` moves,
-its ports are claimed and its addresses change, and removes it when it shuts
-down. A start that aborts leaves the file behind at stage `stopping` with an
-`exitCode` instead. The caller that spawned the runner polls for the manifest,
-and a runner that came and went between two polls would otherwise read as one
-that never came up.
+holds its lock, before binding its sockets, and rewrites it as its `stage`
+moves, its ports are claimed and its addresses change. When it shuts down it
+writes the file a last time, at stage `stopping` with its `exitCode`, and
+leaves it. A caller that polls for the manifest can then tell a runner that
+came and went between two polls from one that never came up.
 
-Only the lock holder writes or removes the manifest. A new runner replaces a
-stale one in a single rename before it binds, so a stale manifest never sits
-beside a live socket. A spawned runner that dies while another holds the lock
-has lost the race, and its caller keeps polling until the winner publishes.
+Only the lock holder writes the manifest, and nothing deletes it. A new runner
+replaces the previous one in a single rename before it binds, so an old
+manifest never sits beside a live socket. A spawned runner that dies while
+another holds the lock has lost the race, and its caller keeps polling until
+the winner publishes.
 
 ```json
 {
@@ -207,14 +207,16 @@ The manifest is read by
 - `attach` and `start`, to decide whether a runner exists
 - pod clients, to find the addresses
 
-A crashed runner leaves the file behind, so a client decides liveness by
-connecting to the sockets. A manifest whose sockets do not answer names a
+The file outlives its runner, so a client decides liveness by connecting to
+the sockets. A manifest whose sockets do not answer names a
 runner that is gone, or one between closing its sockets and releasing its
 lock, or one too busy to answer, and the lock tells the cases apart:
 `resolveRunner` reports whether the named process still holds it. `start`
-spawns a runner when the lock is free and refuses while it is held, `stop`
-waits out a stopping runner and signals one that holds the lock without
-answering, and the registry prunes an entry only once its lock is free.
+spawns a runner when the lock is free. While the lock is held without an
+answer, or the runner is stopping, `start` waits up to 10 seconds behind a
+spinner for it to answer or let go, and refuses after that. `stop` waits out
+a stopping runner and signals one that holds the lock without answering, and
+the registry prunes an entry only once its lock is free.
 `_checkExistingServer` in `start.dart` keeps its probe of the pod through
 `vm-service-info.json`, which covers a pod started by hand. `start` runs it
 before spawning, so the answer lands on the terminal, and the runner runs it

@@ -53,5 +53,33 @@ void main() {
         expect(await down, isTrue);
       },
     );
+
+    test(
+      'when it has finished but still holds the lock, '
+      'then the wait goes on until the lock is released',
+      () async {
+        await RunnerManifest(
+          pid: 424242,
+          stage: RunnerStage.stopping,
+          exitCode: 0,
+          projectId: RunnerRegistry.idFor(tempDir.path),
+          config: const RunnerConfig(
+            watch: true,
+            flutter: true,
+            serverArgs: [],
+          ),
+        ).writeTo(tempDir.path);
+        final holder = await holdLockFromAnotherProcess(tempDir.path);
+        final down = awaitRunnerShutdown(tempDir.path);
+        var settled = false;
+        unawaited(down.whenComplete(() => settled = true));
+
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        expect(settled, isFalse);
+
+        holder.kill();
+        expect(await down, isTrue);
+      },
+    );
   });
 }

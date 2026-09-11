@@ -370,7 +370,7 @@ void main() {
     );
 
     test(
-      'when a publisher leaves a final manifest behind, '
+      'when a publisher finishes, '
       'then the file stays, marked with how the runner stopped',
       () async {
         final publisher = RunnerManifestPublisher(
@@ -379,12 +379,7 @@ void main() {
         );
         await publisher.publish();
 
-        await publisher.leaveBehind(
-          publisher.manifest.copyWith(
-            stage: RunnerStage.stopping,
-            exitCode: 3,
-          ),
-        );
+        await publisher.finish(exitCode: 3);
 
         final left = await RunnerManifest.readFrom(tempDir.path);
         expect(left?.stage, RunnerStage.stopping);
@@ -414,38 +409,23 @@ void main() {
     );
 
     test(
-      'when a published manifest is disposed, '
-      'then the file is removed so no stale manifest is left behind',
+      'when a manifest is replaced after the publisher finished, '
+      'then the final manifest stays as it was',
       () async {
         final publisher = RunnerManifestPublisher(
           serverDir: tempDir.path,
           manifest: _manifest(),
         );
         await publisher.publish();
-        expect(await RunnerManifest.readFrom(tempDir.path), isNotNull);
-
-        await publisher.dispose();
-
-        expect(await RunnerManifest.readFrom(tempDir.path), isNull);
-      },
-    );
-
-    test(
-      'when a manifest is replaced after the publisher was disposed, '
-      'then the file stays gone',
-      () async {
-        final publisher = RunnerManifestPublisher(
-          serverDir: tempDir.path,
-          manifest: _manifest(),
-        );
-        await publisher.publish();
-        await publisher.dispose();
+        await publisher.finish(exitCode: 0);
 
         await publisher.replace(
-          publisher.manifest.copyWith(stage: RunnerStage.stopping),
+          publisher.manifest.copyWith(stage: RunnerStage.running),
         );
 
-        expect(await RunnerManifest.readFrom(tempDir.path), isNull);
+        final left = await RunnerManifest.readFrom(tempDir.path);
+        expect(left?.isFinished, isTrue);
+        expect(left?.exitCode, 0);
       },
     );
 
@@ -458,7 +438,7 @@ void main() {
           serverDir: tempDir.path,
           manifest: _manifest(),
         );
-        addTearDown(publisher.dispose);
+        addTearDown(() => publisher.finish(exitCode: 0));
         addTearDown(changes.close);
 
         await publisher.publish();
@@ -480,7 +460,7 @@ void main() {
 
     test(
       'when a write fails, '
-      'then later writes still land and disposing still completes',
+      'then later writes still land and finishing still completes',
       () async {
         final blocker = File(
           File(serverpodRunnerManifestPath(tempDir.path)).parent.path,
@@ -499,7 +479,7 @@ void main() {
         await publisher.publish();
 
         expect((await RunnerManifest.readFrom(tempDir.path))?.pid, 4242);
-        await expectLater(publisher.dispose(), completes);
+        await expectLater(publisher.finish(exitCode: 0), completes);
       },
     );
   });
