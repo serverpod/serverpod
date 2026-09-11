@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
@@ -14,15 +15,15 @@ import '../email_idp_server_exceptions.dart';
 /// {@endtemplate}
 class EmailIdpAuthenticationUtil {
   final Argon2HashUtil _hashUtil;
-  final DatabaseRateLimitedRequestAttemptUtil<String> _rateLimitUtil;
+  final DatabaseRateLimiter _rateLimitUtil;
 
   /// Creates a new instance of [EmailIdpAuthenticationUtil].
   EmailIdpAuthenticationUtil({
     required final Argon2HashUtil hashUtil,
     required final RateLimit failedLoginRateLimit,
   }) : _hashUtil = hashUtil,
-       _rateLimitUtil = DatabaseRateLimitedRequestAttemptUtil(
-         RateLimitedRequestAttemptConfig(
+       _rateLimitUtil = DatabaseRateLimiter(
+         RateLimiterConfig(
            domain: 'email',
            source: 'failed_login',
            maxAttempts: failedLoginRateLimit.maxAttempts,
@@ -56,7 +57,7 @@ class EmailIdpAuthenticationUtil {
     // the Argon2 verification inside the window, so requests sent together all
     // read the same pre-attempt count and the budget bounded a batch rather
     // than a time window.
-    if (await _rateLimitUtil.hasTooManyAttempts(session, nonce: email)) {
+    if (!await _rateLimitUtil.tryRecordAttempt(session, key: email)) {
       throw EmailAuthenticationTooManyAttemptsException();
     }
 
@@ -82,8 +83,7 @@ class EmailIdpAuthenticationUtil {
     // few times and then gets it right is not left locked out.
     await _rateLimitUtil.deleteAttempts(
       session,
-      nonce: email,
-      olderThan: Duration.zero,
+      key: email,
     );
 
     return account.authUserId;
@@ -106,8 +106,10 @@ class EmailIdpAuthenticationUtil {
   }) async {
     await _rateLimitUtil.deleteAttempts(
       session,
-      olderThan: olderThan,
-      nonce: email,
+      before: clock.now().subtract(
+        olderThan ?? _rateLimitUtil.config.timeframe ?? Duration.zero,
+      ),
+      key: email,
       transaction: transaction,
     );
   }

@@ -6,7 +6,7 @@ import 'anonymous_idp_config.dart';
 
 /// Anonymous account management functions.
 class AnonymousIdpUtils {
-  final DatabaseRateLimitedRequestAttemptUtil<String>? _rateLimitUtil;
+  final DatabaseRateLimiter? _rateLimitUtil;
 
   /// {@macro anonymous_idp_config}
   final AnonymousIdpConfig config;
@@ -20,13 +20,13 @@ class AnonymousIdpUtils {
     final AuthUsers authUsers = const AuthUsers(),
   }) : _authUsers = authUsers,
        _rateLimitUtil = config.perIpAddressRateLimit != null
-           ? DatabaseRateLimitedRequestAttemptUtil(
-               RateLimitedRequestAttemptConfig(
+           ? DatabaseRateLimiter(
+               RateLimiterConfig(
                  domain: 'anonymous',
                  source: 'account_creation',
-                 maxAttempts: config.perIpAddressRateLimit?.maxAttempts,
+                 maxAttempts: config.perIpAddressRateLimit!.maxAttempts,
                  timeframe: config.perIpAddressRateLimit?.timeframe,
-                 onRateLimitExceeded: (final session, final nonce) {
+                 onRateLimitExceeded: (final session, final key) {
                    throw AnonymousAccountBlockedException(
                      reason:
                          AnonymousAccountBlockedExceptionReason.tooManyAttempts,
@@ -44,9 +44,9 @@ class AnonymousIdpUtils {
     final Transaction? transaction,
   }) async {
     // Check rate limit and either throw or proceed.
-    await _rateLimitUtil?.hasTooManyAttempts(
+    await _rateLimitUtil?.tryRecordAttempt(
       session,
-      nonce: session.remoteIpAddress.toString(),
+      key: session.remoteIpAddress.toString(),
     );
 
     final newUser = await _authUsers.create(

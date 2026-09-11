@@ -1,5 +1,5 @@
 ### Database table for tracking rate limited request attempts.
-### A new entry will be created whenever the request is attempted.
+### An entry is created for each admitted attempt.
 class: RateLimitedRequestAttempt
 serverOnly: true
 table: serverpod_auth_idp_rate_limited_request_attempt
@@ -15,9 +15,9 @@ fields:
   ### Example: "password_reset", "login_attempt", etc.
   source: String
 
-  ### The unique identifier for the request.
+  ### The caller-provided string key identifying the rate limit bucket.
   ### Can be a request ID, a token, an email address, etc.
-  nonce: String
+  key: String
 
   ### The IP address calling the request, in case it is relevant.
   ### Should only be used for logging and auditing purposes.
@@ -31,4 +31,4 @@ fields:
 
 indexes:
   serverpod_auth_idp_rate_limited_request_attempt_composite:
-    fields: domain, source, nonce, attemptedAt
+    fields: domain, source, key, attemptedAt
