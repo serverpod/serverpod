@@ -87,9 +87,9 @@ void main() {
     });
 
     test(
-      'when foreignTableName is called then last foreign table is returned.',
+      'when foreignTable is called then last foreign table is returned.',
       () {
-        expect(tableRelation.foreignTableName, 'citizen');
+        expect(tableRelation.foreignTable.tableName, 'citizen');
       },
     );
 
@@ -227,9 +227,9 @@ void main() {
       );
     });
     test(
-      'when foreignTableName is called then last foreign table name is returned.',
+      'when foreignTable is called then last foreign table is returned.',
       () {
-        expect(tableRelation.foreignTableName, 'restaurant');
+        expect(tableRelation.foreignTable.tableName, 'restaurant');
       },
     );
 

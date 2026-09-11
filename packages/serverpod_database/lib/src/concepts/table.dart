@@ -36,10 +36,33 @@ extension TableRowDatabaseJsonExtension on TableRow {
   }
 }
 
+/// Splits a `schema.table` name. The schema is null for unqualified names.
+({String? schema, String name}) parseQualifiedTableName(String tableName) {
+  var separator = tableName.indexOf('.');
+  if (separator == -1) return (schema: null, name: tableName);
+  return (
+    schema: tableName.substring(0, separator),
+    name: tableName.substring(separator + 1),
+  );
+}
+
 /// Represents a database table.
 class Table<T_ID> {
-  /// Name of the table as used in the database.
+  /// Name of the table as used in the database, optionally qualified as
+  /// `schema.table`.
   final String tableName;
+
+  /// Schema part of [tableName], or null when the name is unqualified.
+  late final String? schema = parseQualifiedTableName(tableName).schema;
+
+  /// [tableName] with the schema removed.
+  late final String unqualifiedTableName = parseQualifiedTableName(
+    tableName,
+  ).name;
+
+  /// [tableName] quoted for the current dialect. Prefer it over [tableName] in
+  /// raw SQL, since dialects quote schemas differently.
+  String get quotedTableName => ValueEncoder.instance.quoteTableName(tableName);
 
   /// The database id.
   late final ColumnComparable<T_ID> id;

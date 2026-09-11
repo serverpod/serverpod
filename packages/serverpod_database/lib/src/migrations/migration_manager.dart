@@ -345,7 +345,10 @@ class MigrationManager {
     var targetTables = session.db.analyzer.getTargetTableDefinitions();
 
     for (var table in targetTables) {
-      var liveTable = liveDatabase.findTableNamed(table.name);
+      var liveTable = liveDatabase.findTableNamed(
+        table.name,
+        schema: table.schema,
+      );
       if (liveTable == null) {
         warnings.add('Table "${table.name}" is missing.');
         continue;
