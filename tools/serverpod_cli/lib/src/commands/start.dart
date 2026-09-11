@@ -326,27 +326,35 @@ Future<RunnerManifest> awaitStackUp(
       (addressWait..start()).elapsed < addressTimeout,
     _ => false,
   };
-  while (comingUp(current)) {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    switch (await resolveRunner(serverDir)) {
-      case LiveRunner(:final manifest):
-        current = manifest;
-      case NoRunner(:final staleManifest, lockHeld: true)
-          when staleManifest?.pid == current.pid:
-        // A probe can fail while the runner lives on.
-        continue;
-      case NoRunner(:final staleManifest):
-        await _leaveWithAbortedStart(
-          serverDir,
-          pid: current.pid,
-          exitCode: staleManifest?.pid == current.pid
-              ? staleManifest?.exitCode ?? 1
-              : 1,
-        );
-      case IncompatibleRunner(:final message):
-        log.error(message);
-        throw ExitException.error();
-    }
+  if (comingUp(current)) {
+    await log.progress(
+      'Waiting for the runner (pid ${current.pid}) to start',
+      () async {
+        while (comingUp(current)) {
+          await Future<void>.delayed(const Duration(milliseconds: 250));
+          switch (await resolveRunner(serverDir)) {
+            case LiveRunner(:final manifest):
+              current = manifest;
+            case NoRunner(:final staleManifest, lockHeld: true)
+                when staleManifest?.pid == current.pid:
+              // A probe can fail while the runner lives on.
+              continue;
+            case NoRunner(:final staleManifest):
+              await _leaveWithAbortedStart(
+                serverDir,
+                pid: current.pid,
+                exitCode: staleManifest?.pid == current.pid
+                    ? staleManifest?.exitCode ?? 1
+                    : 1,
+              );
+            case IncompatibleRunner(:final message):
+              log.error(message);
+              throw ExitException.error();
+          }
+        }
+        return current.stage == RunnerStage.running;
+      },
+    );
   }
   if (current.stage == RunnerStage.stopping) {
     await _leaveWithAbortedStart(
