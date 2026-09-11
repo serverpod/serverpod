@@ -42,6 +42,7 @@ import 'package:serverpod_cli/src/runner/runner_client.dart'
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/runner/runner_lock.dart';
+import 'package:serverpod_cli/src/runner/runner_log_file.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
@@ -394,7 +395,7 @@ Future<Never> _leaveWithAbortedStart(
   } else {
     log.error('$what with exit code $exitCode.');
   }
-  await printRunnerLogTail(serverDir, from: _runnerLogFrom);
+  await printRunnerLogTail(serverDir, pid: pid);
   throw ExitException(exitCode);
 }
 
@@ -411,26 +412,23 @@ List<String> runnerServeGlobalArgs(Configuration<GlobalOption> global) => [
   ],
 ];
 
-/// The runner log's length at spawn, where this run's output starts.
-int _runnerLogFrom = 0;
-
-/// Prints and returns the last [lines] of the runner's log past byte [from].
+/// Prints and returns the last [lines] the runner with [pid] logged.
 @visibleForTesting
 Future<List<String>> printRunnerLogTail(
   String serverDir, {
-  int from = 0,
+  required int pid,
   int lines = 20,
 }) async {
   final file = File(serverpodRunnerLogPath(serverDir));
   if (!file.existsSync()) return const [];
-  // A file shorter than from was rotated, so all of it is this run's.
-  if (from > file.lengthSync()) from = 0;
   final all = await file
-      .openRead(from)
+      .openRead()
       .transform(utf8.decoder)
       .transform(const LineSplitter())
       .toList();
-  final tail = all.length > lines ? all.sublist(all.length - lines) : all;
+  // Without its start line the file rotated since, so all of it is this run's.
+  final run = all.sublist(all.lastIndexOf(runnerLogStartLine(pid)) + 1);
+  final tail = run.length > lines ? run.sublist(run.length - lines) : run;
   if (tail.isEmpty) return tail;
   log.info('The last of ${file.path}:');
   for (final line in tail) {
@@ -459,8 +457,6 @@ Future<RunnerManifest?> _spawnRunner({
     ),
   );
 
-  final logFile = File(serverpodRunnerLogPath(serverDir));
-  _runnerLogFrom = logFile.existsSync() ? logFile.lengthSync() : 0;
   final process = await Process.start(
     Platform.resolvedExecutable,
     [
@@ -494,7 +490,7 @@ Future<RunnerManifest?> _spawnRunner({
         'The runner (pid ${process.pid}) did not come up in time and was '
         'stopped. Its output is in ${serverpodRunnerLogPath(serverDir)}.',
       );
-      await printRunnerLogTail(serverDir, from: _runnerLogFrom);
+      await printRunnerLogTail(serverDir, pid: process.pid);
       throw ExitException.error();
   }
 }

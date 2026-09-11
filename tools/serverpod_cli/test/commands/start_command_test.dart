@@ -12,6 +12,7 @@ import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart'
     show RunnerUnreachableException;
+import 'package:serverpod_cli/src/runner/runner_log_file.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
@@ -422,17 +423,15 @@ void main() {
     });
 
     test(
-      'when the tail is printed from where the file stood at the spawn, '
-      'then only the lines of this run are in it',
+      'when the tail is printed for a runner that logged its start line, '
+      'then only the lines of that run are in it',
       () async {
-        await logFile.writeAsString('previous run\n');
-        final from = logFile.lengthSync();
         await logFile.writeAsString(
-          'this run\nfailed\n',
-          mode: FileMode.append,
+          '${runnerLogStartLine(7)}\nearlier run\n'
+          '${runnerLogStartLine(8)}\nthis run\nfailed\n',
         );
 
-        expect(await printRunnerLogTail(tempDir.path, from: from), [
+        expect(await printRunnerLogTail(tempDir.path, pid: 8), [
           'this run',
           'failed',
         ]);
@@ -440,12 +439,12 @@ void main() {
     );
 
     test(
-      'when the file was rotated since the spawn, '
+      'when the file rotated past the runner\'s start line, '
       'then the whole file is the tail',
       () async {
         await logFile.writeAsString('after rotation\n');
 
-        expect(await printRunnerLogTail(tempDir.path, from: 4096), [
+        expect(await printRunnerLogTail(tempDir.path, pid: 8), [
           'after rotation',
         ]);
       },
