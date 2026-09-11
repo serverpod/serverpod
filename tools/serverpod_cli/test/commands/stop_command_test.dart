@@ -28,11 +28,11 @@ void main() {
 
     test(
       'when its process no longer holds the lock, '
-      'then the wait for its shutdown ends at once and removes the manifest',
+      'then the wait for its shutdown ends at once and leaves the manifest',
       () async {
         expect(await awaitRunnerShutdown(tempDir.path), isTrue);
 
-        expect(await RunnerManifest.readFrom(tempDir.path), isNull);
+        expect(await RunnerManifest.readFrom(tempDir.path), isNotNull);
       },
     );
 
@@ -51,7 +51,6 @@ void main() {
 
         holder.kill();
         expect(await down, isTrue);
-        expect(await RunnerManifest.readFrom(tempDir.path), isNull);
       },
     );
   });

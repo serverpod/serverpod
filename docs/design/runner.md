@@ -67,7 +67,7 @@ serverpod runner start   # Ensure the runner is up, then return
 serverpod runner attach  # Attach to an already-running runner
 serverpod runner stop    # Shut the runner down
 serverpod runner status  # Print the runner's state and addresses
-serverpod runner serve   # The runner itself; hidden, spawned by start
+serverpod runner serve   # The runner itself, hidden, spawned by start
 ```
 
 `serverpod start` now spawns a runner if none is running (for the server package),
@@ -87,8 +87,8 @@ the runner.
 its address, and returns, which is the path an agent takes.
 
 An invocation that spawns the runner attaches to it immediately rather than
-waiting for it to come up. The runner binds its attach socket as soon as it
-holds the lock and publishes its manifest there and then, before the
+waiting for it to come up. The runner publishes its manifest and binds its
+attach socket as soon as it holds the lock, before the
 existing-server check, port resolution, Docker, generation and the first
 compile. The client then resolves the runner, attaches, and renders that work
 as it happens instead of leaving the terminal blank for the minutes a cold
@@ -102,10 +102,10 @@ history alone: commands answer that the runner is still starting, except
 `stop`, which has to work on a start that is going nowhere. `--no-attach` still
 waits, since it has nothing to render: the manifest carries the runner's
 `stage`, and the command returns once it leaves `starting`. A runner whose
-stack is up returns zero; one that aborted returns the runner's own exit code
-with the tail of its log, and one that is up but degraded - the project does
-not build, so no server runs - returns non-zero and says the runner is still
-there to recover from.
+stack is up returns zero. One that aborted returns the runner's own exit code
+with the tail of its log. One that is up but degraded, because the project
+does not build, returns non-zero and says the runner is still there to recover
+from.
 
 `--tui` / `--no-tui` keeps its current meaning and selects the renderer. The
 terminal UI is used when `--tui` holds and the terminal supports it, which is
@@ -163,12 +163,17 @@ runner restarts, and holds no orchestration logic.
 
 The runner consolidates discovery artifacts into
 `<serverDir>/.dart_tool/serverpod/runner.json`. It writes the file as soon as it
-holds its lock and socket, rewrites it as its `stage` moves, its ports are
-claimed and its addresses change, and removes it when it shuts down. A start that aborts leaves the file
-behind at stage `stopping` with an `exitCode` instead. The caller that spawned
-the runner polls for the manifest, and a runner that came and went between two
-polls would otherwise read as one that never came up. The next runner replaces
-it.
+holds its lock, before binding its sockets, rewrites it as its `stage` moves,
+its ports are claimed and its addresses change, and removes it when it shuts
+down. A start that aborts leaves the file behind at stage `stopping` with an
+`exitCode` instead. The caller that spawned the runner polls for the manifest,
+and a runner that came and went between two polls would otherwise read as one
+that never came up.
+
+Only the lock holder writes or removes the manifest. A new runner replaces a
+stale one in a single rename before it binds, so a stale manifest never sits
+beside a live socket. A spawned runner that dies while another holds the lock
+has lost the race, and its caller keeps polling until the winner publishes.
 
 ```json
 {
@@ -207,7 +212,7 @@ connecting to the sockets. A manifest whose sockets do not answer names a
 runner that is gone, or one between closing its sockets and releasing its
 lock, or one too busy to answer, and the lock tells the cases apart:
 `resolveRunner` reports whether the named process still holds it. `start`
-replaces a manifest whose lock is free and refuses while it is held, `stop`
+spawns a runner when the lock is free and refuses while it is held, `stop`
 waits out a stopping runner and signals one that holds the lock without
 answering, and the registry prunes an entry only once its lock is free.
 `_checkExistingServer` in `start.dart` keeps its probe of the pod through
@@ -291,7 +296,7 @@ The callbacks become a type, implemented once over the watch session and
 projected by both socket servers. What only makes sense inside the runner
 process, the VM service proxy URI, the Flutter DTD URIs and the raw log
 history, is a second interface, `InProcessRunnerApi`, that extends the first.
-The attach socket projects `RunnerApi`; the MCP socket, which always runs in
+The attach socket projects `RunnerApi`. The MCP socket, which always runs in
 the runner, gets the wider one. A new capability goes on `RunnerApi` unless it
 reads state the attach protocol cannot carry.
 

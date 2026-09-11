@@ -270,12 +270,14 @@ void main() {
     late int deadPid;
 
     setUp(() async {
-      tempDir = await Directory.systemTemp.createTemp('rsd');
+      tempDir = await createShortTempDir('rsd');
       final gone = await Process.start(Platform.resolvedExecutable, [
         '--version',
       ]);
       await gone.exitCode;
       deadPid = gone.pid;
+      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
+      addTearDown(closeLogger);
     });
 
     tearDown(() {
@@ -283,6 +285,26 @@ void main() {
         tempDir.deleteSync(recursive: true);
       } catch (_) {}
     });
+
+    /// Expects [outcome] to still be pending after half a second.
+    Future<void> expectStillWaiting(Future<RunnerStartOutcome> outcome) async {
+      var settled = false;
+      unawaited(outcome.whenComplete(() => settled = true));
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      expect(settled, isFalse);
+    }
+
+    /// Publishes a runner that answers on its socket, as the winner would.
+    Future<void> publishWinner() async {
+      final socket = RunnerSocketServer(serverDir: tempDir.path);
+      addTearDown(socket.close);
+      await RunnerManifest(
+        pid: 4242,
+        projectId: RunnerRegistry.idFor(tempDir.path),
+        config: _asked,
+      ).writeTo(tempDir.path);
+      await socket.start();
+    }
 
     test(
       'when it is awaited, '
@@ -298,6 +320,49 @@ void main() {
 
         expect(outcome, isA<RunnerAborted>());
         expect(watch.elapsed, lessThan(const Duration(seconds: 5)));
+      },
+    );
+
+    test(
+      'when another runner holds the lock and no manifest exists, '
+      'then the wait goes on until that runner publishes, which took it',
+      () async {
+        await holdLockFromAnotherProcess(tempDir.path);
+
+        final outcome = awaitRunnerManifest(
+          tempDir.path,
+          pid: deadPid,
+          timeout: const Duration(seconds: 10),
+        );
+        await expectStillWaiting(outcome);
+        await publishWinner();
+
+        expect(await outcome, isA<RunnerTaken>());
+      },
+    );
+
+    test(
+      'when another runner holds the lock and an earlier manifest is left, '
+      'then the wait goes on until that runner replaces it, which took it',
+      () async {
+        await RunnerManifest(
+          pid: 4141,
+          stage: RunnerStage.stopping,
+          exitCode: 1,
+          projectId: RunnerRegistry.idFor(tempDir.path),
+          config: _asked,
+        ).writeTo(tempDir.path);
+        await holdLockFromAnotherProcess(tempDir.path);
+
+        final outcome = awaitRunnerManifest(
+          tempDir.path,
+          pid: deadPid,
+          timeout: const Duration(seconds: 10),
+        );
+        await expectStillWaiting(outcome);
+        await publishWinner();
+
+        expect(await outcome, isA<RunnerTaken>());
       },
     );
   });

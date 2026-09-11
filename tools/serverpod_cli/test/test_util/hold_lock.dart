@@ -10,6 +10,7 @@ import 'package:test/test.dart';
 /// POSIX locks are per process. Teardown awaits the exit, as Windows cannot
 /// delete a directory while the process holds a file in it.
 Future<Process> holdLockFromAnotherProcess(String serverDir) async {
+  await File(serverpodRunnerLockPath(serverDir)).parent.create(recursive: true);
   final script = File(p.join(serverDir, 'hold_lock.dart'));
   await script.writeAsString('''
 import 'dart:io';
