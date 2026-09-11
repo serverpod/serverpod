@@ -254,7 +254,7 @@ Future<RunnerManifest> ensureRunner({
       }
       return manifest;
 
-    case NoRunner(:final staleManifest):
+    case NoRunner():
       // The runner would report this only in its log, and exit with zero.
       final existingUri = await _checkExistingServer(
         userVmServiceInfoPath(serverDir),
@@ -265,8 +265,6 @@ Future<RunnerManifest> ensureRunner({
         throw ExitException(0);
       }
 
-      // A new runner binds before it publishes, so this would pass for it.
-      if (staleManifest != null) await RunnerManifest.deleteFrom(serverDir);
       return await _spawnRunner(
             config: config,
             serverDir: serverDir,
@@ -518,6 +516,7 @@ final class RunnerTimedOut extends RunnerStartOutcome {
 /// Waits until the runner spawned as [pid] answers, stops, dies or times out.
 ///
 /// A detached runner has no exit code to await, so this watches its [pid].
+/// A dead [pid] while the lock is held lost the race, so the wait goes on.
 @visibleForTesting
 Future<RunnerStartOutcome> awaitRunnerManifest(
   String serverDir, {
@@ -541,7 +540,9 @@ Future<RunnerStartOutcome> awaitRunnerManifest(
       case NoRunner() || IncompatibleRunner():
         break;
     }
-    if (!isProcessAlive(pid)) return const RunnerAborted(1);
+    if (!isProcessAlive(pid) && !await RunnerLock.isHeld(serverDir)) {
+      return const RunnerAborted(1);
+    }
     if (DateTime.now().isAfter(deadline)) return const RunnerTimedOut();
     await Future<void>.delayed(const Duration(milliseconds: 100));
   }
@@ -937,7 +938,9 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   // vm-service-info.json gets the proxy URI from _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
-  // Fatal, since a manifest without a live socket looks like a failed start.
+  // Replaces any stale manifest before the socket binds, so the two never pair.
+  await manifestPublisher.publish();
+
   try {
     await attachSocket.start();
     attachSocket.connect(runnerApi);
@@ -948,8 +951,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     await releaseRunnerHold(exitCode: 1);
     return const WatchLoopAborted(1);
   }
-
-  await manifestPublisher.publish();
 
   // Grows with each resource below, so the final catch releases what is held.
   Future<void> Function({int exitCode}) rollback = ({exitCode = 1}) =>
