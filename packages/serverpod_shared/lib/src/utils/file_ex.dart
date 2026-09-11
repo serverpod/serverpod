@@ -19,12 +19,12 @@ extension FileEx on FileSystemEntity {
     bool recursive = false,
     Duration timeout = const Duration(seconds: 5),
   }) async {
-    final deadline = DateTime.now().add(timeout);
+    final waited = Stopwatch()..start();
     while (true) {
       try {
         return await deleteIfExists(recursive: recursive);
       } on FileSystemException {
-        if (DateTime.now().isAfter(deadline)) return;
+        if (waited.elapsed > timeout) return;
         await Future<void>.delayed(const Duration(milliseconds: 50));
       }
     }

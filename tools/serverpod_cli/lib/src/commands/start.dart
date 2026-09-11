@@ -318,13 +318,11 @@ Future<RunnerManifest> awaitStackUp(
 }) async {
   var current = manifest;
   // A running stage can precede the manifest carrying the bound addresses.
-  DateTime? addressDeadline;
+  final addressWait = Stopwatch();
   bool comingUp(RunnerManifest manifest) => switch (manifest.stage) {
     RunnerStage.starting => true,
     RunnerStage.running when manifest.servers == null =>
-      DateTime.now().isBefore(
-        addressDeadline ??= DateTime.now().add(addressTimeout),
-      ),
+      (addressWait..start()).elapsed < addressTimeout,
     _ => false,
   };
   while (comingUp(current)) {
@@ -549,7 +547,7 @@ Future<RunnerStartOutcome> awaitRunnerManifest(
   required int pid,
   Duration timeout = _runnerStartTimeout,
 }) async {
-  final deadline = DateTime.now().add(timeout);
+  final waited = Stopwatch()..start();
   while (true) {
     switch (await resolveRunner(serverDir)) {
       case LiveRunner(:final manifest) when manifest.pid != pid:
@@ -569,7 +567,7 @@ Future<RunnerStartOutcome> awaitRunnerManifest(
     if (!isProcessAlive(pid) && !await RunnerLock.isHeld(serverDir)) {
       return const RunnerAborted(1);
     }
-    if (DateTime.now().isAfter(deadline)) return const RunnerTimedOut();
+    if (waited.elapsed > timeout) return const RunnerTimedOut();
     await Future<void>.delayed(const Duration(milliseconds: 100));
   }
 }

@@ -7,9 +7,9 @@ Future<void> waitFor(
   bool Function() condition, {
   Duration timeout = const Duration(seconds: 10),
 }) async {
-  final deadline = DateTime.now().add(timeout);
+  final waited = Stopwatch()..start();
   while (!condition()) {
-    if (DateTime.now().isAfter(deadline)) {
+    if (waited.elapsed > timeout) {
       fail('Condition was not met within $timeout.');
     }
     await Future<void>.delayed(const Duration(milliseconds: 10));
