@@ -370,6 +370,26 @@ void main() {
     );
 
     test(
+      'when a publisher publishes over a previous runner\'s manifest, '
+      'then it returns that manifest, so its ports can be suggested',
+      () async {
+        await _manifest(
+          pid: 4141,
+        ).copyWith(ports: const {'api': 52001}).writeTo(tempDir.path);
+        final publisher = RunnerManifestPublisher(
+          serverDir: tempDir.path,
+          manifest: _manifest(),
+        );
+
+        final previous = await publisher.publish();
+
+        expect(previous?.pid, 4141);
+        expect(previous?.ports, {'api': 52001});
+        expect((await RunnerManifest.readFrom(tempDir.path))?.pid, 4242);
+      },
+    );
+
+    test(
       'when a publisher finishes, '
       'then the file stays, marked with how the runner stopped',
       () async {

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
-import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -14,6 +13,7 @@ class PortResolution {
     required this.useEphemeral,
     required this.conflicts,
     this.unattributed = const {},
+    this.overrides = const {},
   }) : assert(
          conflicts.isEmpty || !useEphemeral,
          'A stack with conflicts does not start, so it moves no ports.',
@@ -32,19 +32,10 @@ class PortResolution {
   /// Held ports a silent runner may own. They move the stack aside and warn.
   final Map<String, int> unattributed;
 
+  /// The port each listener binds instead of its configured one, 0 for any.
+  final Map<String, int> overrides;
+
   bool get hasConflicts => conflicts.isNotEmpty;
-
-  /// All listeners in [ports] when moved aside, else those configured with 0.
-  Iterable<String> ephemeralListeners(Map<String, int> ports) => useEphemeral
-      ? ports.keys
-      : [
-          for (final entry in ports.entries)
-            if (entry.value == 0) entry.key,
-        ];
-
-  /// The ports in [ports] this runner claims, none when it moved aside.
-  Map<String, int> claimedPorts(Map<String, int> ports) =>
-      useEphemeral ? const {} : fixedPorts(ports);
 }
 
 /// The listeners in [ports] configured with a non-zero port.
@@ -53,12 +44,20 @@ Map<String, int> fixedPorts(Map<String, int> ports) => {
     if (entry.value != 0) entry.key: entry.value,
 };
 
+/// The ports a runner claims, [configured] with its [overrides] applied.
+Map<String, int> claimedPorts(
+  Map<String, int> configured,
+  Map<String, int> overrides,
+) => fixedPorts({...configured, ...overrides});
+
 /// Decides whether the stack for [serverDir] keeps [ports] or moves aside.
 ///
-/// [ports] is keyed by listener name (`api`, `insights`, `web`).
+/// [ports] and [suggested], the ports to try off the configured ones, are keyed
+/// by listener name (`api`, `insights`, `web`).
 Future<PortResolution> resolvePorts({
   required String serverDir,
   required Map<String, int> ports,
+  Map<String, int> suggested = const {},
   RunnerRegistry? registry,
   Duration probeTimeout = const Duration(milliseconds: 300),
 }) async {
@@ -82,25 +81,40 @@ Future<PortResolution> resolvePorts({
       if (!held.ports.contains(entry.value)) entry.key: entry.value,
   };
 
+  final bool useEphemeral;
+  var unattributed = const <String, int>{};
   if (conflicts.isEmpty) {
     // A claimed port counts as taken, and a silent runner may claim any.
-    final claimed = ports.values.any(held.ports.contains);
-    return PortResolution(
-      useEphemeral: claimed || held.silentRunner,
-      conflicts: const {},
-    );
+    useEphemeral = ports.values.any(held.ports.contains) || held.silentRunner;
+  } else if (held.silentRunner) {
+    // A silent runner may hold these, so move aside instead of failing.
+    useEphemeral = true;
+    unattributed = conflicts;
+  } else {
+    return PortResolution(useEphemeral: false, conflicts: conflicts);
   }
 
-  // A silent runner may hold these, so move aside instead of failing.
-  if (held.silentRunner) {
-    return PortResolution(
-      useEphemeral: true,
-      conflicts: const {},
-      unattributed: conflicts,
-    );
-  }
-
-  return PortResolution(useEphemeral: false, conflicts: conflicts);
+  final overrides = {
+    for (final MapEntry(key: listener, value: port) in ports.entries)
+      if (useEphemeral || port == 0) listener: 0,
+  };
+  // A configured port would leave a moved-aside stack half moved.
+  await Future.wait([
+    for (final listener in overrides.keys)
+      if (suggested[listener] case final port?
+          when port != 0 &&
+              !held.ports.contains(port) &&
+              !ports.containsValue(port))
+        _isListening(port, probeTimeout).then((listening) {
+          if (!listening) overrides[listener] = port;
+        }),
+  ]);
+  return PortResolution(
+    useEphemeral: useEphemeral,
+    conflicts: const {},
+    unattributed: unattributed,
+    overrides: overrides,
+  );
 }
 
 /// Whether anything answers on [port] on either loopback address.
@@ -152,7 +166,7 @@ Future<({Set<int> ports, bool silentRunner})> _portsHeldByOtherRunners(
     };
     if (manifest == null) continue;
     final claimed = manifest.ports;
-    final published = _publishedPorts(manifest).toSet();
+    final published = _listenerPorts(manifest.servers).values.toSet();
     if (claimed == null && published.isEmpty) silentRunner = true;
     ports
       ..addAll(claimed?.values ?? const [])
@@ -161,52 +175,40 @@ Future<({Set<int> ports, bool silentRunner})> _portsHeldByOtherRunners(
   return (ports: ports, silentRunner: silentRunner);
 }
 
-Iterable<int> _publishedPorts(RunnerManifest manifest) sync* {
-  final servers = manifest.servers;
-  if (servers == null) return;
-  for (final url in [servers.api, servers.insights, servers.web]) {
-    if (url == null) continue;
-    final port = Uri.tryParse(url)?.port;
-    if (port != null && port != 0) yield port;
-  }
-}
+/// The non-zero ports in [addresses], keyed by listener name.
+Map<String, int> _listenerPorts(ServerpodAddresses? addresses) => {
+  for (final (listener, url) in [
+    ('api', addresses?.api),
+    ('insights', addresses?.insights),
+    ('web', addresses?.web),
+  ])
+    if (url != null)
+      if (Uri.tryParse(url)?.port case final port? when port != 0)
+        listener: port,
+};
 
-/// The environment that binds [listeners], public ports included, to port 0.
+/// The environment binding each listener in [overrides], and its public port.
 ///
 /// Pass only configured listeners, since a port variable alone creates one.
-Map<String, String> ephemeralPortEnvironment(Iterable<String> listeners) => {
-  for (final listener in listeners) ...{
-    ?portEnvironmentVariables[listener]: '0',
-    ?publicPortEnvironmentVariables[listener]: '0',
+Map<String, String> portOverrideEnvironment(Map<String, int> overrides) => {
+  for (final MapEntry(key: listener, value: port) in overrides.entries) ...{
+    ?portEnvironmentVariables[listener]: '$port',
+    ?publicPortEnvironmentVariables[listener]: '$port',
   },
 };
 
-/// [environment] with each port 0 replaced by the port [addresses] reports.
+/// [overrides] with each 0 replaced by the port [addresses] reports.
 ///
 /// Later spawns then keep the port the Flutter apps were built against.
-Map<String, String> pinResolvedPorts(
-  Map<String, String> environment,
+Map<String, int> pinResolvedPorts(
+  Map<String, int> overrides,
   ServerpodAddresses addresses,
 ) {
-  final bound = {
-    'api': addresses.api,
-    'insights': addresses.insights,
-    'web': addresses.web,
-  };
+  final bound = _listenerPorts(addresses);
   return {
-    for (final entry in environment.entries)
-      entry.key: switch (_boundPort(entry.key, bound)) {
-        final port? when entry.value == '0' => '$port',
-        _ => entry.value,
-      },
+    for (final MapEntry(key: listener, value: port) in overrides.entries)
+      listener: port == 0 ? bound[listener] ?? 0 : port,
   };
-}
-
-int? _boundPort(String variable, Map<String, String?> bound) {
-  final address = bound[_listenerByPortVariable[variable]];
-  if (address == null) return null;
-  final port = Uri.tryParse(address)?.port;
-  return port == null || port == 0 ? null : port;
 }
 
 /// The environment variable that sets each listener's port, by listener name.
@@ -221,10 +223,4 @@ final publicPortEnvironmentVariables = {
   'api': ServerpodEnv.apiPublicPort.envVariable,
   'insights': ServerpodEnv.insightsPublicPort.envVariable,
   'web': ServerpodEnv.webPublicPort.envVariable,
-};
-
-final _listenerByPortVariable = {
-  for (final entry in portEnvironmentVariables.entries) entry.value: entry.key,
-  for (final entry in publicPortEnvironmentVariables.entries)
-    entry.value: entry.key,
 };

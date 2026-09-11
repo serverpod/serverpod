@@ -27,12 +27,15 @@ class RunnerManifestPublisher {
 
   RunnerManifest get manifest => _manifest;
 
-  /// Writes the first manifest and registers the runner in the registry.
-  Future<void> publish() async {
+  /// Writes the first manifest, registers the runner, and returns the manifest
+  /// it replaced.
+  Future<RunnerManifest?> publish() async {
+    final previous = await RunnerManifest.readFrom(_serverDir);
     await _write();
     await _registry.register(_serverDir).catchError((Object e) {
       log.warning('Failed to register the runner: $e');
     });
+    return previous;
   }
 
   /// Rewrites the manifest with [resolve] whenever [changes] fires.

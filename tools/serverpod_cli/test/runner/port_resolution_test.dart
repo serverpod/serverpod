@@ -31,16 +31,20 @@ void main() {
 
     test(
       'when the configured ports are free, '
-      'then the configured ports are kept',
+      'then the configured ports are kept and claimed',
       () async {
+        final ports = {'api': await _freePort(), 'web': await _freePort()};
+
         final resolution = await resolvePorts(
           serverDir: serverDir,
           registry: registry,
-          ports: {'api': await _freePort(), 'web': await _freePort()},
+          ports: ports,
         );
 
         expect(resolution.useEphemeral, isFalse);
         expect(resolution.hasConflicts, isFalse);
+        expect(resolution.overrides, isEmpty);
+        expect(claimedPorts(ports, resolution.overrides), ports);
       },
     );
 
@@ -190,10 +194,7 @@ void main() {
         );
 
         expect(resolution.useEphemeral, isTrue);
-        expect(
-          ephemeralPortEnvironment(const ['api', 'insights', 'web']).keys,
-          containsAll(portEnvironmentVariables.values),
-        );
+        expect(resolution.overrides, {'api': 0, 'insights': 0, 'web': 0});
       },
     );
 
@@ -538,6 +539,145 @@ void main() {
     );
 
     test(
+      'when the stack moves aside and the last runner here bound a free port, '
+      'then that listener gets the port back and claims it',
+      () async {
+        final occupied = await ServerSocket.bind(
+          InternetAddress.loopbackIPv4,
+          0,
+        );
+        addTearDown(occupied.close);
+        addTearDown(
+          (await _startSiblingRunner(
+            registry,
+            root.path,
+            'wt2',
+            'my_server',
+            apiPort: occupied.port,
+          )).close,
+        );
+        final previous = await _freePort();
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': occupied.port},
+          suggested: {'api': previous},
+        );
+
+        expect(resolution.useEphemeral, isTrue);
+        expect(resolution.overrides, {'api': previous});
+        expect(
+          claimedPorts({'api': occupied.port}, resolution.overrides),
+          {'api': previous},
+        );
+      },
+    );
+
+    test(
+      'when the port the last runner here bound is now in use, '
+      'then the listener binds a new ephemeral port instead',
+      () async {
+        final previous = await ServerSocket.bind(
+          InternetAddress.loopbackIPv4,
+          0,
+        );
+        addTearDown(previous.close);
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': 0},
+          suggested: {'api': previous.port},
+        );
+
+        expect(resolution.overrides, {'api': 0});
+      },
+    );
+
+    test(
+      'when a sibling runner has claimed the port the last runner here bound, '
+      'then the listener does not take it back',
+      () async {
+        final previous = await _freePort();
+        addTearDown(
+          (await _startSiblingRunner(
+            registry,
+            root.path,
+            'wt2',
+            'my_server',
+            claimedPorts: {'api': previous},
+          )).close,
+        );
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': 0},
+          suggested: {'api': previous},
+        );
+
+        expect(resolution.overrides, {'api': 0});
+      },
+    );
+
+    test(
+      'when the configured ports are kept, '
+      'then only a listener configured with port zero gets its last port back',
+      () async {
+        final api = await _freePort();
+        final previousApi = await _freePort();
+        final previousWeb = await _freePort();
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': api, 'web': 0},
+          suggested: {'api': previousApi, 'web': previousWeb},
+        );
+
+        expect(resolution.useEphemeral, isFalse);
+        expect(resolution.overrides, {'web': previousWeb});
+        expect(
+          claimedPorts({'api': api, 'web': 0}, resolution.overrides),
+          {'api': api, 'web': previousWeb},
+        );
+      },
+    );
+
+    test(
+      'when the stack moves aside and a suggested port is a configured one, '
+      'then that listener binds a new ephemeral port, keeping the block moved',
+      () async {
+        final occupied = await ServerSocket.bind(
+          InternetAddress.loopbackIPv4,
+          0,
+        );
+        addTearDown(occupied.close);
+        addTearDown(
+          (await _startSiblingRunner(
+            registry,
+            root.path,
+            'wt2',
+            'my_server',
+            apiPort: occupied.port,
+          )).close,
+        );
+        final web = await _freePort();
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': occupied.port, 'web': web},
+          suggested: {'web': web},
+        );
+
+        expect(resolution.useEphemeral, isTrue);
+        expect(resolution.overrides, {'api': 0, 'web': 0});
+      },
+    );
+
+    test(
       'when a port is zero, '
       'then it is already ephemeral and needs no probe',
       () async {
@@ -549,83 +689,44 @@ void main() {
 
         expect(resolution.useEphemeral, isFalse);
         expect(resolution.hasConflicts, isFalse);
+        expect(resolution.overrides, {'api': 0});
+        expect(claimedPorts({'api': 0}, resolution.overrides), isEmpty);
       },
     );
   });
 
-  group('Given a port resolution,', () {
-    const ports = {'api': 0, 'insights': 8081, 'web': 0};
-
-    test(
-      'when the stack moved aside, '
-      'then every listener binds an ephemeral port',
-      () {
-        final resolution = PortResolution(
-          useEphemeral: true,
-          conflicts: const {},
-        );
-
-        expect(resolution.ephemeralListeners(ports), [
-          'api',
-          'insights',
-          'web',
-        ]);
-      },
-    );
-
-    test(
-      'when the stack keeps its ports, '
-      'then listeners configured with port zero still bind ephemeral ports',
-      () {
-        final resolution = PortResolution(
-          useEphemeral: false,
-          conflicts: const {},
-        );
-
-        expect(resolution.ephemeralListeners(ports), ['api', 'web']);
-      },
-    );
-
-    test(
-      'when the stack moved aside, '
-      'then it claims no port',
-      () {
-        final resolution = PortResolution(
-          useEphemeral: true,
-          conflicts: const {},
-        );
-
-        expect(resolution.claimedPorts(ports), isEmpty);
-      },
-    );
-
-    test(
-      'when the stack keeps its ports, '
-      'then it claims the ones configured with a fixed port',
-      () {
-        final resolution = PortResolution(
-          useEphemeral: false,
-          conflicts: const {},
-        );
-
-        expect(resolution.claimedPorts(ports), {'insights': 8081});
-      },
-    );
-  });
-
-  group('Given the ephemeral port overrides,', () {
+  group('Given the port overrides,', () {
     test(
       'when they are applied, '
       'then every configured listener is asked for zero, public port included',
       () {
-        expect(ephemeralPortEnvironment(const ['api', 'insights', 'web']), {
-          'SERVERPOD_API_SERVER_PORT': '0',
-          'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
-          'SERVERPOD_INSIGHTS_SERVER_PORT': '0',
-          'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT': '0',
-          'SERVERPOD_WEB_SERVER_PORT': '0',
-          'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '0',
-        });
+        expect(
+          portOverrideEnvironment(const {'api': 0, 'insights': 0, 'web': 0}),
+          {
+            'SERVERPOD_API_SERVER_PORT': '0',
+            'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
+            'SERVERPOD_INSIGHTS_SERVER_PORT': '0',
+            'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT': '0',
+            'SERVERPOD_WEB_SERVER_PORT': '0',
+            'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '0',
+          },
+        );
+      },
+    );
+
+    test(
+      'when a listener reuses a port, '
+      'then it and its public port are asked for that port, the rest for zero',
+      () {
+        expect(
+          portOverrideEnvironment(const {'api': 0, 'web': 54321}),
+          {
+            'SERVERPOD_API_SERVER_PORT': '0',
+            'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
+            'SERVERPOD_WEB_SERVER_PORT': '54321',
+            'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '54321',
+          },
+        );
       },
     );
 
@@ -635,23 +736,13 @@ void main() {
       () {
         expect(
           pinResolvedPorts(
-            const {
-              'SERVERPOD_API_SERVER_PORT': '0',
-              'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
-              'SERVERPOD_WEB_SERVER_PORT': '0',
-              'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '0',
-            },
+            const {'api': 0, 'web': 0, 'insights': 52003},
             const ServerpodAddresses(
               api: 'http://localhost:52001',
               insights: 'http://localhost:52002',
             ),
           ),
-          {
-            'SERVERPOD_API_SERVER_PORT': '52001',
-            'SERVERPOD_API_SERVER_PUBLIC_PORT': '52001',
-            'SERVERPOD_WEB_SERVER_PORT': '0',
-            'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '0',
-          },
+          {'api': 52001, 'web': 0, 'insights': 52003},
         );
       },
     );
@@ -660,7 +751,7 @@ void main() {
       'when the project configures no insights or web server, '
       'then neither is given a port, which would start one',
       () {
-        expect(ephemeralPortEnvironment(const ['api']), {
+        expect(portOverrideEnvironment(const {'api': 0}), {
           'SERVERPOD_API_SERVER_PORT': '0',
           'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
         });
