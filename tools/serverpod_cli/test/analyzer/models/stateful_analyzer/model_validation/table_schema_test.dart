@@ -157,7 +157,7 @@ void main() {
 
   test(
     'Given a model with a schema-qualified table name and the sqlite dialect '
-    'when analyzing then an error is generated.',
+    'when analyzing then no error is generated.',
     () {
       var result = analyze(
         [
@@ -173,18 +173,13 @@ void main() {
             .build(),
       );
 
-      expect(result.collector.errors, hasLength(1));
-      expect(
-        result.collector.errors.first.message,
-        'Schema-qualified table names are not supported with the "sqlite" '
-        'database dialect.',
-      );
+      expect(result.collector.errors, isEmpty);
     },
   );
 
   test(
     'Given a model with a schema-qualified table name and "database: client" '
-    'when analyzing then an error is generated.',
+    'when analyzing then no error is generated.',
     () {
       var result = analyze([
         ModelSourceBuilder().withYaml('''
@@ -196,18 +191,13 @@ void main() {
         ''').build(),
       ]);
 
-      expect(result.collector.errors, hasLength(1));
-      expect(
-        result.collector.errors.first.message,
-        'Schema-qualified table names are not supported for tables with '
-        '"database: client".',
-      );
+      expect(result.collector.errors, isEmpty);
     },
   );
 
   test(
     'Given a model with a schema-qualified table name and "database: sync" '
-    'when analyzing then an error is generated.',
+    'when analyzing then no error is generated.',
     () {
       var result = analyze(
         [
@@ -224,29 +214,6 @@ void main() {
           ExperimentalFeature.databaseSync,
         ]).build(),
       );
-
-      expect(result.collector.errors, hasLength(1));
-      expect(
-        result.collector.errors.first.message,
-        'Schema-qualified table names are not supported for tables with '
-        '"database: sync".',
-      );
-    },
-  );
-
-  test(
-    'Given a model with a schema-qualified table name and "database: all" '
-    'when analyzing then no error is generated.',
-    () {
-      var result = analyze([
-        ModelSourceBuilder().withYaml('''
-        class: User
-        table: auth.user
-        database: all
-        fields:
-          name: String
-        ''').build(),
-      ]);
 
       expect(result.collector.errors, isEmpty);
     },
@@ -454,8 +421,8 @@ void main() {
     );
 
     test(
-      'when analyzing a model with "database: client" then the table name '
-      'stays unqualified.',
+      'when analyzing a model with "database: client" then the default '
+      'schema is applied.',
       () {
         var result = analyze(
           [
@@ -472,13 +439,13 @@ void main() {
 
         expect(result.collector.errors, isEmpty);
         var model = result.models.first as ModelClassDefinition;
-        expect(model.tableName, 'user');
+        expect(model.tableName, 'app.user');
       },
     );
 
     test(
-      'when analyzing a model with "database: sync" then the table name '
-      'stays unqualified.',
+      'when analyzing a model with "database: sync" then the default schema '
+      'is applied.',
       () {
         var result = analyze(
           [
@@ -496,7 +463,7 @@ void main() {
 
         expect(result.collector.errors, isEmpty);
         var model = result.models.last as ModelClassDefinition;
-        expect(model.tableName, 'user');
+        expect(model.tableName, 'app.user');
       },
     );
 
