@@ -44,9 +44,9 @@ class RunnerManifest {
   /// The addresses the pod's listeners bound, null until the pod reports them.
   final ServerpodAddresses? servers;
 
-  /// The bind ports this runner claims, keyed by listener name.
+  /// The ports this runner binds by listener name, claimed before it binds.
   ///
-  /// Null until port resolution runs, and empty when the stack moved aside.
+  /// Null until port resolution runs. A pinned ephemeral port joins on report.
   final Map<String, int>? ports;
 
   /// The Docker Compose services, null before the stack or without Docker.

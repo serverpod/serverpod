@@ -702,25 +702,26 @@ bool _resolveStartDocker({
       database.host == '127.0.0.1';
 }
 
-/// The pod's port environment overrides, and the ports this runner claims.
+/// The configured ports, and the ports the pod binds instead of them.
 typedef _ResolvedPorts = ({
-  Map<String, String> environment,
-  Map<String, int> claimed,
+  Map<String, int> configured,
+  Map<String, int> overrides,
 });
 
-/// The pod's port overrides and this runner's claim, or null on a conflict.
+/// The configured ports and the pod's overrides, or null on a conflict.
 ///
 /// Port-zero listeners always get an override, so later spawns can pin them.
-Future<_ResolvedPorts?> _resolvePortEnvironment({
+Future<_ResolvedPorts?> _resolvePorts({
   required String serverDir,
   required String runMode,
   required ServerpodConfig? serverConfig,
+  required Map<String, int> suggested,
 }) async {
   // Claim nothing rather than stay undecided, which moves siblings aside.
   if (serverConfig == null) {
     return (
-      environment: const <String, String>{},
-      claimed: const <String, int>{},
+      configured: const <String, int>{},
+      overrides: const <String, int>{},
     );
   }
 
@@ -732,10 +733,14 @@ Future<_ResolvedPorts?> _resolvePortEnvironment({
   };
 
   if (runMode != 'development') {
-    return (environment: const <String, String>{}, claimed: fixedPorts(ports));
+    return (configured: ports, overrides: const <String, int>{});
   }
 
-  final resolution = await resolvePorts(serverDir: serverDir, ports: ports);
+  final resolution = await resolvePorts(
+    serverDir: serverDir,
+    ports: ports,
+    suggested: suggested,
+  );
 
   if (resolution.hasConflicts) {
     for (final conflict in resolution.conflicts.entries) {
@@ -768,10 +773,12 @@ Future<_ResolvedPorts?> _resolvePortEnvironment({
       );
     }
   }
-  return (
-    environment: ephemeralPortEnvironment(resolution.ephemeralListeners(ports)),
-    claimed: resolution.claimedPorts(ports),
-  );
+  final reused = fixedPorts(resolution.overrides);
+  if (reused.isNotEmpty) {
+    final named = reused.entries.map((e) => '${e.key} (${e.value})').join(', ');
+    log.info('Binding the ports the last runner here bound: $named.');
+  }
+  return (configured: ports, overrides: resolution.overrides);
 }
 
 /// Ensures Docker Compose services are running.
@@ -958,7 +965,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
   // Replaces any stale manifest before the socket binds, so the two never pair.
-  await manifestPublisher.publish();
+  final previous = await manifestPublisher.publish();
 
   try {
     await attachSocket.start();
@@ -984,20 +991,23 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       return const WatchLoopAborted(0);
     }
 
-    final resolvedPorts = await _resolvePortEnvironment(
+    final resolvedPorts = await _resolvePorts(
       serverDir: serverDir,
       runMode: runMode,
       serverConfig: serverConfig,
+      suggested: previous?.ports ?? const {},
     );
     if (resolvedPorts == null) {
       await releaseRunnerHold(exitCode: 1);
       return const WatchLoopAborted(1);
     }
     // Read per spawn, and pinned once the first pod reports its ports.
-    var portEnvironment = resolvedPorts.environment;
+    var portOverrides = resolvedPorts.overrides;
     // Claimed before Docker, so a sibling resolving ports sees the decision.
     await manifestPublisher.replace(
-      manifestPublisher.manifest.copyWith(ports: resolvedPorts.claimed),
+      manifestPublisher.manifest.copyWith(
+        ports: claimedPorts(resolvedPorts.configured, portOverrides),
+      ),
     );
 
     var startedDocker = false;
@@ -1205,7 +1215,9 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         stdoutSink: serverStdoutSink,
         stderrSink: serverStderrSink,
         onDispose: logHistory.discardActiveServerScopes,
-        environment: portEnvironment.isEmpty ? null : portEnvironment,
+        environment: portOverrides.isEmpty
+            ? null
+            : portOverrideEnvironment(portOverrides),
       );
       await serverProcess.start(dillPath: dillPath);
       await serverProcess.connectToVmService();
@@ -1351,7 +1363,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     var explainedTheWait = false;
     void launchAppsIfReady() {
       if (appsLaunched || !clientAttached) return;
-      if (portEnvironment.isNotEmpty && flutterManager.resolvedApiUrl == null) {
+      if (portOverrides.isNotEmpty && flutterManager.resolvedApiUrl == null) {
         if (explainedTheWait) return;
         explainedTheWait = true;
         log.info(
@@ -1399,11 +1411,14 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     onServerAddresses = (addresses) {
       final servers = addresses;
       // Configured ports keep the apps' own config, which may name a LAN host.
-      if (portEnvironment.isNotEmpty) {
+      if (portOverrides.isNotEmpty) {
         flutterManager.resolvedApiUrl = servers.api;
       }
-      portEnvironment = pinResolvedPorts(portEnvironment, addresses);
-      final updated = manifestPublisher.manifest.copyWith(servers: servers);
+      portOverrides = pinResolvedPorts(portOverrides, addresses);
+      final updated = manifestPublisher.manifest.copyWith(
+        servers: servers,
+        ports: claimedPorts(resolvedPorts.configured, portOverrides),
+      );
       runnerApi.recordManifest(updated);
       unawaited(manifestPublisher.replace(updated));
       launchAppsIfReady();

@@ -412,13 +412,20 @@ reports later name what it bound. Candidate runners come from the per-user
 registry every runner registers itself in when it publishes, so a checkout
 anywhere on the machine counts, whether or not it sits in a repository. A live
 runner is only credited with the ports it claimed or bound. One bound elsewhere
-is not a reason to move aside, and a runner that moved aside itself claims
-nothing. A port held by anything else is an error, unless a live runner has
+is not a reason to move aside, and a runner that moved aside claims only the
+ports it asks for by number. A port held by anything else is an error, unless a live runner has
 not decided its ports yet: it could claim any of them, so the stack moves
 aside rather than fail on a race with that runner's startup. That window
 closes seconds after the runner publishes, so a runner that never reports
 addresses, degraded or on an older `serverpod`, does not keep every other
 stack on ephemeral ports.
+
+The manifest's `ports` names every port the runner binds. An ephemeral port
+joins it once the pod reports what it bound. A restart reads the `ports` the
+previous runner in the package left as suggestions: a listener that would bind
+an ephemeral port takes its suggested port when nothing listens on it, no other
+runner claims it, and it is not one of the configured ports. The stack then
+keeps the address Flutter apps and browsers already use.
 
 Two consequences elsewhere.
 
