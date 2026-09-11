@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
+import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
@@ -32,6 +34,107 @@ void main() {
 
   setUp(() {
     history = StartLogHistory();
+  });
+
+  group('Given a client history mirroring a runner history,', () {
+    late StartLogHistory client;
+
+    setUp(() async {
+      client = StartLogHistory();
+      history.events.listen(client.applyEvent);
+
+      history.addServerLine('booting');
+      history.recordServerLogEvent(
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'Server started',
+          'time': '2026-04-10T12:00:00.000Z',
+        }),
+      );
+      for (final id in ['done', 'dropped']) {
+        history.recordServerLogEvent(
+          _logEvent({'type': 'scope_start', 'id': id, 'label': 'GET /$id'}),
+        );
+      }
+      history.recordServerLogEvent(
+        _logEvent({'type': 'scope_end', 'id': 'done', 'duration': 0.1}),
+      );
+      history.discardActiveServerScopes();
+      history.startCliOperation('failed', 'Generating code');
+      history.completeCliOperation(
+        'failed',
+        success: false,
+        duration: const Duration(seconds: 1),
+        error: 'boom',
+      );
+      history.startCliOperation('open', 'Hot reload');
+      history.addFlutterLine('app', 'flutter: hello');
+      history.recordFlutterExtensionEvent(
+        'app',
+        _flutterErrorEvent({'renderedErrorText': 'overflow'}),
+      );
+      history.recordFlutterLogEvent(
+        'app',
+        FlutterLogEvent(
+          time: DateTime.utc(2026, 4, 10),
+          level: LogLevel.info,
+          message: 'already printed',
+          source: FlutterLogSource.appLog,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+    });
+
+    void expectMirrored(StartLogHistory mirror) {
+      expect(mirror.serverLines, history.serverLines);
+      expect(mirror.serverEntries, history.serverEntries);
+      expect(mirror.activeOperations, history.activeOperations);
+      expect(mirror.operationStartTimes, history.operationStartTimes);
+      expect(mirror.flutterLines, history.flutterLines);
+    }
+
+    test(
+      'when the client applies every event the runner emitted, '
+      'then its buffers match the runner\'s',
+      () {
+        expect(history.activeOperations.keys, ['open']);
+        expectMirrored(client);
+      },
+    );
+
+    test(
+      'when a stale client applies the runner\'s snapshot, '
+      'then its buffers match the runner\'s and nothing stale is left',
+      () {
+        final stale = StartLogHistory()
+          ..addServerLine('stale')
+          ..addFlutterLine('gone', 'stale')
+          ..startCliOperation('stale', 'Stale');
+
+        stale.applySnapshot(
+          RunnerSnapshot.from(
+            history: history,
+            stage: RunnerStage.running,
+            isRunning: true,
+            watchModeEnabled: true,
+            canLaunchFlutterApps: true,
+            flutterApps: const [
+              FlutterAppConfig(
+                id: 'app',
+                name: 'app',
+                relativePathParts: [],
+                serverPackageDirectoryPathParts: [],
+              ),
+            ],
+            runningFlutterApps: const {},
+            launchingFlutterApps: const {},
+          ),
+        );
+
+        expectMirrored(stale);
+      },
+    );
   });
 
   group('Given a pod that prints what it logs,', () {

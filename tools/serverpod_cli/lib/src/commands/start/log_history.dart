@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/runner/line_sink.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
+import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart'
@@ -95,15 +96,78 @@ class StartLogHistory {
         () => BoundedQueueList<String>(maxFlutterLines),
       );
 
-  /// Replaces every app's retained output with [lines], dropping the rest.
-  void replaceFlutterLines(Map<String, List<String>> lines) {
-    _flutterLines.removeWhere((appId, _) => !lines.containsKey(appId));
-    for (final entry in lines.entries) {
-      flutterLinesFor(entry.key)
-        ..clear()
-        ..addAll(entry.value);
+  /// Replaces every buffer with the one in [snapshot], dropping the rest.
+  ///
+  /// Emits nothing and leaves [onChanged] to the caller, a client mirroring
+  /// its runner.
+  void applySnapshot(RunnerSnapshot snapshot) {
+    serverEntries
+      ..clear()
+      ..addAll(snapshot.serverEntries);
+    serverLines
+      ..clear()
+      ..addAll(snapshot.serverLines);
+    activeOperations.clear();
+    operationStartTimes.clear();
+    for (final (:operation, :startedAt) in snapshot.activeOperations) {
+      activeOperations[operation.id] = operation;
+      operationStartTimes[operation.id] = startedAt;
     }
-    onChanged?.call();
+    _flutterLines.removeWhere(
+      (appId, _) => !snapshot.flutterLines.containsKey(appId),
+    );
+    for (final MapEntry(key: appId, value: lines)
+        in snapshot.flutterLines.entries) {
+      flutterLinesFor(appId)
+        ..clear()
+        ..addAll(lines);
+    }
+  }
+
+  /// Applies [event] the runner's history emitted, ignoring runner state.
+  ///
+  /// Emits nothing and leaves [onChanged] to the caller, as [applySnapshot].
+  void applyEvent(RunnerEvent event) {
+    switch (event) {
+      case ServerLogEvent(:final entry):
+        serverEntries.add(entry);
+        onServerEntry?.call(entry);
+
+      case OperationStartedEvent(:final operation, :final startedAt):
+        activeOperations[operation.id] = operation;
+        operationStartTimes[operation.id] = startedAt;
+
+      case OperationCompletedEvent(:final operation, :final id):
+        activeOperations.remove(id);
+        operationStartTimes.remove(id);
+        serverEntries.add(operation);
+
+      case OperationsDiscardedEvent(:final ids):
+        for (final id in ids) {
+          activeOperations.remove(id);
+          operationStartTimes.remove(id);
+        }
+
+      case ServerLineEvent(:final line):
+        serverLines.add(line);
+
+      case FlutterLineEvent(:final appId, :final line):
+        flutterLinesFor(appId).add(line);
+
+      case FlutterLogEntryEvent(
+        :final appId,
+        :final entry,
+        :final appendedToLines,
+      ):
+        if (appendedToLines) addFlutterEntryLines(appId, entry);
+        onFlutterEntry?.call(appId, entry);
+
+      case StageChangedEvent() ||
+          FlutterAppsChangedEvent() ||
+          FlutterAppStateEvent() ||
+          ManifestChangedEvent():
+        break;
+    }
   }
 
   /// Appends [line] to the raw output of the Flutter app [appId].
