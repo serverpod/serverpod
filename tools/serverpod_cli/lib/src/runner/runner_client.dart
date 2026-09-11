@@ -152,6 +152,13 @@ class RunnerClient implements RunnerApi {
     unawaited(_listenUntilClosed(peer));
 
     if (_attached) {
+      Future<bool> abandon() async {
+        await peer.close();
+        if (identical(_socket, socket)) _socket = null;
+        socket.destroy();
+        return false;
+      }
+
       final held = <RunnerEvent>[];
       _heldEvents = held;
       try {
@@ -168,18 +175,10 @@ class RunnerClient implements RunnerApi {
         );
       } catch (_) {
         _heldEvents = null;
-        await peer.close();
-        if (identical(_socket, socket)) _socket = null;
-        socket.destroy();
-        return false;
+        return abandon();
       }
       _heldEvents = null;
-      if (_closed) {
-        await peer.close();
-        if (identical(_socket, socket)) _socket = null;
-        socket.destroy();
-        return false;
-      }
+      if (_closed) return abandon();
       for (final event in held) {
         _apply(event);
       }
