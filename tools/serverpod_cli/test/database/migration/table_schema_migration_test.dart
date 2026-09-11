@@ -66,6 +66,20 @@ void main() {
     },
   );
 
+  test(
+    'Given a source in the sqlite default schema and a target in the postgres '
+    'default schema, when generating the migration, then no action is '
+    'generated.',
+    () {
+      var migration = generateDatabaseMigration(
+        databaseSource: database([userTable(schema: 'main')]),
+        databaseTarget: database([userTable()]),
+      );
+
+      expect(migration.actions, isEmpty);
+    },
+  );
+
   group(
     'Given a table that only changes schema, when generating the migration',
     () {
@@ -94,9 +108,10 @@ void main() {
     },
   );
 
-  group(
+  test(
     'Given a table that changes schema and gains a nullable column, when '
-    'generating the migration',
+    'generating the migration, then a single alter action moves the table '
+    'and adds the column.',
     () {
       var migration = generateDatabaseMigration(
         databaseSource: database([userTable(schema: 'auth')]),
@@ -115,15 +130,10 @@ void main() {
         ]),
       );
 
-      test(
-        'then a single alter action moves the table and adds the column.',
-        () {
-          var alterTable = migration.actions.single.alterTable!;
-          expect(alterTable.schema, 'auth');
-          expect(alterTable.newSchema, 'core');
-          expect(alterTable.addColumns.map((c) => c.name), ['email']);
-        },
-      );
+      var alterTable = migration.actions.single.alterTable!;
+      expect(alterTable.schema, 'auth');
+      expect(alterTable.newSchema, 'core');
+      expect(alterTable.addColumns.map((c) => c.name), ['email']);
     },
   );
 
@@ -232,9 +242,10 @@ void main() {
     },
   );
 
-  group(
+  test(
     'Given a dependent table referencing one of two same-named tables and '
-    'the other one is removed, when generating the migration',
+    'the other one is removed, when generating the migration, then only the '
+    'removed table is dropped.',
     () {
       var migration = generateDatabaseMigration(
         databaseSource: database([
@@ -248,12 +259,9 @@ void main() {
         ]),
       );
 
-      test('then only the removed table is dropped.', () {
-        expect(migration.actions, hasLength(1));
-        var deleteAction = migration.actions.single;
-        expect(deleteAction.deleteTable, 'user');
-        expect(deleteAction.deleteTableSchema, 'auth');
-      });
+      var deleteAction = migration.actions.single;
+      expect(deleteAction.deleteTable, 'user');
+      expect(deleteAction.deleteTableSchema, 'auth');
     },
   );
 
@@ -287,9 +295,10 @@ void main() {
     },
   );
 
-  group(
+  test(
     'Given a table that moves to another schema and a dependent table whose '
-    'reference follows it, when generating the migration',
+    'reference follows it, when generating the migration, then only the '
+    'moved table is altered.',
     () {
       var migration = generateDatabaseMigration(
         databaseSource: database([
@@ -302,12 +311,9 @@ void main() {
         ]),
       );
 
-      test('then only the moved table is altered.', () {
-        expect(migration.actions, hasLength(1));
-        var alterTable = migration.actions.single.alterTable!;
-        expect(alterTable.name, 'user');
-        expect(alterTable.newSchema, 'auth');
-      });
+      var alterTable = migration.actions.single.alterTable!;
+      expect(alterTable.name, 'user');
+      expect(alterTable.newSchema, 'auth');
     },
   );
 

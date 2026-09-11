@@ -91,11 +91,16 @@ class MigrationGenerator {
         (context ?? await MigrationGenerationContext.load(config))
             .modelDefinitions;
 
+    final dialect = serverCode
+        ? config.databaseDialect
+        : DatabaseDialect.sqlite;
+
     var databaseDefinitionProject = createDatabaseDefinitionFromModels(
       modelDefinitions,
       config.name,
       config.modulesAll,
       serverCode: serverCode,
+      dialect: dialect,
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
@@ -122,10 +127,6 @@ class MigrationGenerator {
 
     var warnings = migration.warnings;
     _logWarnings(warnings);
-
-    final dialect = serverCode
-        ? config.databaseDialect
-        : DatabaseDialect.sqlite;
 
     var sqlGenerator = SqlGenerator.forDialect(dialect);
 
@@ -240,11 +241,6 @@ class MigrationGenerator {
       liveDatabase = normalizeDefinitionToV2(
         await client.insights.getLiveDatabaseDefinition(),
       );
-      // SQLite reports its single schema as `main`, which the definitions
-      // model as the default schema.
-      if (dialect == DatabaseDialect.sqlite) {
-        liveDatabase = liveDatabase.inDefaultSchema();
-      }
     } catch (e) {
       throw MigrationLiveDatabaseDefinitionException(
         exception: e.toString(),

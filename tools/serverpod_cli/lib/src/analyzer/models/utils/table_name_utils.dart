@@ -4,11 +4,9 @@ import 'package:serverpod_database/serverpod_database.dart';
 String unqualifiedTableName(String tableName) =>
     parseQualifiedTableName(tableName).name;
 
-/// Resolves a `parent=` reference against the known [tableNames].
-///
-/// The name is matched as written first, then prefixed with [defaultSchema]
-/// when it is unqualified. Returns every match, so an empty list means the
-/// table was not found and two entries mean the reference is ambiguous.
+/// The tables a `parent=` reference matches: as written, and prefixed with
+/// [defaultSchema] when unqualified. Two matches mean the reference is
+/// ambiguous.
 List<String> matchParentTable(
   String parentTable, {
   required String? defaultSchema,
