@@ -227,7 +227,7 @@ unlinks the stale socket file, so the second displaces the first. The resident
 Frontend Server writes `.dart_tool/serverpod/server.dill`, and Docker Compose
 teardown is conditional on the runner having started the services, so one runner
 per server package has to be enforced rather than left to a fixed socket path.
-The runner fails immediately if it cannot take the lock.
+The runner gives up on the lock after 50ms, which outlasts any probe.
 
 The lock is an advisory lock on an open file descriptor, through
 `RandomAccessFile.lock`. The kernel releases it when the process dies, so a

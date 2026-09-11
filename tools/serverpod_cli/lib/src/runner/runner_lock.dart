@@ -27,27 +27,38 @@ class RunnerLock {
 
   bool _released = false;
 
-  /// Takes the lock for [serverDir], or throws [RunnerLockedException] at once.
-  static Future<RunnerLock> acquire(String serverDir) async {
+  /// Takes the lock for [serverDir], or throws [RunnerLockedException].
+  ///
+  /// Retries for [patience], which outlasts an [isHeld] probe holding the lock.
+  static Future<RunnerLock> acquire(
+    String serverDir, {
+    Duration patience = const Duration(milliseconds: 50),
+  }) async {
     final lockPath = serverpodRunnerLockPath(serverDir);
     final file = File(lockPath);
     await file.parent.create(recursive: true);
 
     final handle = await file.open(mode: FileMode.writeOnlyAppend);
-    try {
-      await handle.lock(FileLock.exclusive);
-    } on FileSystemException {
-      await handle.close();
-      throw RunnerLockedException(lockPath);
+    final waited = Stopwatch()..start();
+    while (true) {
+      try {
+        await handle.lock(FileLock.exclusive);
+        return RunnerLock._(handle, lockPath);
+      } on FileSystemException {
+        if (waited.elapsed >= patience) {
+          await handle.close();
+          throw RunnerLockedException(lockPath);
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
     }
-    return RunnerLock._(handle, lockPath);
   }
 
   /// Whether a runner holds the lock, taking and releasing it when free.
   static Future<bool> isHeld(String serverDir) async {
     final RunnerLock probe;
     try {
-      probe = await acquire(serverDir);
+      probe = await acquire(serverDir, patience: Duration.zero);
     } on RunnerLockedException {
       return true;
     }
