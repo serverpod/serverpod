@@ -100,10 +100,10 @@ class RunnerClient implements RunnerApi {
       await connect();
       return;
     }
-    final deadline = DateTime.now().add(waitFor);
+    final waited = Stopwatch()..start();
     while (!await _connectOnce()) {
       if (_closed) return;
-      if (DateTime.now().isAfter(deadline)) {
+      if (waited.elapsed > waitFor) {
         throw RunnerUnreachableException(socketPath);
       }
       await Future<void>.delayed(_reconnectDelay);
@@ -212,14 +212,13 @@ class RunnerClient implements RunnerApi {
   }
 
   Future<void> _reconnect() async {
-    final deadline = _reconnectDeadline == null
-        ? null
-        : DateTime.now().add(_reconnectDeadline);
+    final deadline = _reconnectDeadline;
+    final lost = Stopwatch()..start();
     while (!_closed && _peer == null) {
       await Future<void>.delayed(_reconnectDelay);
       if (_closed) return;
       if (await _connectOnce()) return;
-      if (deadline != null && DateTime.now().isAfter(deadline)) {
+      if (deadline != null && lost.elapsed > deadline) {
         _attached = false;
         if (!_gone.isCompleted) _gone.complete();
         return;

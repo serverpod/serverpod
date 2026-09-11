@@ -131,8 +131,8 @@ Future<bool> awaitRunnerShutdown(
   String serverDir, {
   Duration timeout = const Duration(seconds: 30),
 }) async {
-  final deadline = DateTime.now().add(timeout);
-  while (DateTime.now().isBefore(deadline)) {
+  final waited = Stopwatch()..start();
+  while (waited.elapsed < timeout) {
     final manifest = await RunnerManifest.readFrom(serverDir);
     if (manifest == null || !await RunnerLock.isHeld(serverDir)) return true;
     await Future<void>.delayed(const Duration(milliseconds: 100));
