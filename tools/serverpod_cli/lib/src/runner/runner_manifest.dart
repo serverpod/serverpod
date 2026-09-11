@@ -6,11 +6,11 @@ import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
-    show FileEx, FileWriteEx, ServerpodAddresses;
+    show FileWriteEx, ServerpodAddresses;
 
 /// What a runner publishes about itself in `.dart_tool/serverpod/runner.json`.
 ///
-/// A crashed runner leaves it behind, so only `resolveRunner` decides liveness.
+/// It outlives the runner, so only `resolveRunner` decides liveness.
 class RunnerManifest {
   /// The attach protocol version, bumped on any change old peers would misread.
   static const currentProtocolVersion = 1;
@@ -57,12 +57,12 @@ class RunnerManifest {
 
   final RunnerStage stage;
 
-  /// The code an aborted start exited with.
+  /// The code the runner exited with, once it has finished.
   final int? exitCode;
 
-  /// Whether this is the record of an aborted start.
+  /// Whether the runner that wrote this has finished.
   ///
-  /// A graceful shutdown publishes [RunnerStage.stopping] without an exit code.
+  /// A runner still tearing down publishes [RunnerStage.stopping] alone.
   bool get isFinished => stage == RunnerStage.stopping && exitCode != null;
 
   /// A copy with the given fields replaced, where null keeps the current value.
@@ -147,9 +147,6 @@ class RunnerManifest {
       return null;
     }
   }
-
-  static Future<void> deleteFrom(String serverDir) =>
-      File(serverpodRunnerManifestPath(serverDir)).deleteIfExists();
 }
 
 /// The VM service proxy's URI, which survives pod restarts.

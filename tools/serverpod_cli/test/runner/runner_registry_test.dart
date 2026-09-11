@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
-import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
     show FileEx, bindUnixSocket;
 import 'package:test/test.dart';
@@ -210,26 +209,12 @@ void main() {
     );
 
     test(
-      'when the publisher is disposed, '
-      'then the runner is unregistered',
-      () async {
-        await publisher.publish();
-
-        await publisher.dispose();
-
-        expect(await registry.serverDirs(), isEmpty);
-      },
-    );
-
-    test(
-      'when a manifest is left behind for an aborted start, '
+      'when the publisher finishes, '
       'then the manifest stays but the runner is unregistered',
       () async {
         await publisher.publish();
 
-        await publisher.leaveBehind(
-          publisher.manifest.copyWith(stage: RunnerStage.stopping, exitCode: 1),
-        );
+        await publisher.finish(exitCode: 1);
 
         expect(await registry.serverDirs(), isEmpty);
         expect((await RunnerManifest.readFrom(serverDir))?.exitCode, 1);

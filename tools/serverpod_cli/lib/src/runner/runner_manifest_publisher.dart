@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
+import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Keeps `runner.json` in step with the runner it describes.
@@ -19,7 +20,7 @@ class RunnerManifestPublisher {
   final RunnerRegistry _registry;
   RunnerManifest _manifest;
   final List<StreamSubscription<void>> _subscriptions = [];
-  bool _disposed = false;
+  bool _finished = false;
 
   /// The last queued write, which the next one chains onto.
   Future<void> _pending = Future.value();
@@ -47,28 +48,22 @@ class RunnerManifestPublisher {
     );
   }
 
-  /// Stops republishing and leaves [last] on disk as the final manifest.
-  ///
-  /// For an aborted start, so the spawning command can read how it ended.
-  Future<void> leaveBehind(RunnerManifest last) async {
-    await _stopRepublishing();
-    _manifest = last;
-    await _write();
-    _disposed = true;
-    await _unregister();
-  }
-
   Future<void> replace(RunnerManifest manifest) {
     _manifest = manifest;
     return _write();
   }
 
-  /// Stops republishing, removes the manifest, and unregisters the runner.
-  Future<void> dispose() async {
+  /// Writes the final manifest with [exitCode] and unregisters the runner.
+  ///
+  /// The file stays, so a caller that polled too late still reads the outcome.
+  Future<void> finish({required int exitCode}) async {
     await _stopRepublishing();
-    await _pending;
-    _disposed = true;
-    await RunnerManifest.deleteFrom(_serverDir);
+    _manifest = _manifest.copyWith(
+      stage: RunnerStage.stopping,
+      exitCode: exitCode,
+    );
+    await _write();
+    _finished = true;
     await _unregister();
   }
 
@@ -89,7 +84,7 @@ class RunnerManifestPublisher {
   ///
   /// A failure left in [_pending] would skip every later write.
   Future<void> _write() {
-    if (_disposed) return _pending;
+    if (_finished) return _pending;
     return _pending = _pending
         .then((_) => _manifest.writeTo(_serverDir))
         .catchError((Object e) {

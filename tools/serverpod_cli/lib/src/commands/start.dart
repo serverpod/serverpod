@@ -215,29 +215,44 @@ Future<GeneratorConfig> loadRunnerProjectConfig({
 
 /// Returns the manifest of the runner serving [serverDir], spawning one.
 ///
-/// Exits for a runner with options other than [asked], or one stopping, whose
-/// stage change a client attaching now would never see.
+/// Waits up to [lockWait] for a runner that holds the lock to answer or stop.
+/// Exits for a runner with options other than [asked], or one still stopping.
 Future<RunnerManifest> ensureRunner({
   required GeneratorConfig config,
   required String serverDir,
   required RunnerConfig asked,
   required bool useTui,
   List<String> globalArgs = const [],
+  Duration lockWait = const Duration(seconds: 10),
 }) async {
-  switch (await resolveRunnerOrExit(serverDir)) {
-    case IncompatibleRunner(:final message):
-      log.error(message);
-      throw ExitException.error();
-
-    // A replacement would die on the lock the runner still holds.
-    case LiveRunner(:final manifest)
-        when manifest.stage == RunnerStage.stopping:
-    case NoRunner(staleManifest: final manifest?, lockHeld: true):
+  var resolution = await resolveRunnerOrExit(serverDir);
+  if (_lockHolderInTransit(resolution) case final holder?) {
+    final waited = Stopwatch()..start();
+    final settled = await log.progress(
+      'Waiting for the runner (pid ${holder.pid}) to finish starting or '
+      'stopping',
+      () async {
+        while (waited.elapsed < lockWait) {
+          await Future<void>.delayed(const Duration(milliseconds: 250));
+          resolution = await resolveRunnerOrExit(serverDir);
+          if (_lockHolderInTransit(resolution) == null) return true;
+        }
+        return false;
+      },
+    );
+    if (!settled) {
       log.error(
-        'A serverpod runner for "${config.name}" (pid ${manifest.pid}) is '
+        'A serverpod runner for "${config.name}" (pid ${holder.pid}) is '
         'shutting down or not answering. Run this again once it has '
         'stopped, or stop it with `serverpod runner stop`.',
       );
+      throw ExitException.error();
+    }
+  }
+
+  switch (resolution) {
+    case IncompatibleRunner(:final message):
+      log.error(message);
       throw ExitException.error();
 
     case LiveRunner(:final manifest, :final versionWarning):
@@ -278,9 +293,20 @@ Future<RunnerManifest> ensureRunner({
             asked: asked,
             useTui: useTui,
             globalArgs: globalArgs,
+            lockWait: lockWait,
           );
   }
 }
+
+/// The runner that holds the lock but cannot take a client, starting or
+/// stopping. A replacement would die on the lock it holds.
+RunnerManifest? _lockHolderInTransit(RunnerResolution resolution) =>
+    switch (resolution) {
+      LiveRunner(:final manifest) when manifest.stage == RunnerStage.stopping =>
+        manifest,
+      NoRunner(staleManifest: final manifest?, lockHeld: true) => manifest,
+      _ => null,
+    };
 
 /// Waits until the stack behind [manifest] leaves [RunnerStage.starting].
 ///
@@ -922,12 +948,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   );
   Future<void> releaseRunnerHold({required int exitCode}) async {
     runnerApi.setStage(RunnerStage.stopping, exitCode: exitCode);
-    await manifestPublisher.leaveBehind(
-      manifestPublisher.manifest.copyWith(
-        stage: RunnerStage.stopping,
-        exitCode: exitCode,
-      ),
-    );
+    await manifestPublisher.finish(exitCode: exitCode);
     await attachSocket.close();
     await lock.release();
   }

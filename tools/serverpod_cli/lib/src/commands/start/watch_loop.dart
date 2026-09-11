@@ -100,8 +100,8 @@ class WatchLoopContext {
     );
     await _step('stopping the Docker services', () async => stopDocker?.call());
     await _step(
-      'removing the manifest',
-      () async => manifestPublisher?.dispose(),
+      'finishing the manifest',
+      () async => manifestPublisher?.finish(exitCode: exitCode),
     );
     await _step('releasing the lock', () async => lock?.release());
   }
