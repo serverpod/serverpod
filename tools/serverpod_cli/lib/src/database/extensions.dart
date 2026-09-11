@@ -114,35 +114,19 @@ extension TableDiffComparisons on TableMigration {
       deleteForeignKeys.isEmpty;
 }
 
-/// The name that identifies a table across schemas. Tables in the default
+/// Whether [schema] is a dialect's default schema, where unqualified names live.
+bool isDefaultSchema(String schema) =>
+    DatabaseDialect.values.any((dialect) => dialect.defaultSchema == schema);
+
+/// The name that identifies a table across schemas. Tables in a default
 /// schema keep the bare name.
 String qualifiedTableName(String name, String schema) =>
-    schema == DatabaseConstants.defaultSchema ? name : '$schema.$name';
+    isDefaultSchema(schema) ? name : '$schema.$name';
 
 extension TableDefinitionExtension on TableDefinition {
   bool get isManaged => managed != false;
 
   String get qualifiedName => qualifiedTableName(name, schema);
-}
-
-extension DatabaseDefinitionSchemaNormalization on DatabaseDefinition {
-  /// Places every table and reference in the default schema. Used for live
-  /// definitions of dialects without schemas, where the analyzer reports the
-  /// engine's own name for its single schema (e.g. `main` in SQLite).
-  DatabaseDefinition inDefaultSchema() => copyWith(
-    tables: [
-      for (var table in tables)
-        table.copyWith(
-          schema: DatabaseConstants.defaultSchema,
-          foreignKeys: [
-            for (var key in table.foreignKeys)
-              key.copyWith(
-                referenceTableSchema: DatabaseConstants.defaultSchema,
-              ),
-          ],
-        ),
-    ],
-  );
 }
 
 extension ForeignKeyDefinitionExtension on ForeignKeyDefinition {

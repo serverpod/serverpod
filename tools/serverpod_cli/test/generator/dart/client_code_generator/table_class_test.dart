@@ -99,7 +99,7 @@ void main() {
 
   test(
     'Given a class with a schema-qualified table on both sides when '
-    'generating client code then the table class uses the unqualified name.',
+    'generating client code then the table class keeps the qualified name.',
     () {
       var models = [
         ModelClassDefinitionBuilder()
@@ -115,10 +115,9 @@ void main() {
         config: config,
       );
 
-      expect(codeMap[expectedFilePath], contains("tableName: '$tableName'"));
       expect(
         codeMap[expectedFilePath],
-        isNot(contains("tableName: 'auth.$tableName'")),
+        contains("tableName: 'auth.$tableName'"),
       );
     },
   );

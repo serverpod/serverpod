@@ -219,9 +219,10 @@ void main() {
     },
   );
 
-  group(
+  test(
     'Given a migration recreating a table in another schema that another '
-    'table references, when generating the migration sql',
+    'table references, when generating the migration sql, then the inbound '
+    'foreign key is restored on the qualified table.',
     () {
       var sql = migrationSql(
         database([
@@ -244,14 +245,9 @@ void main() {
         ]),
       );
 
-      test(
-        'then the inbound foreign key is restored on the qualified table.',
-        () {
-          expect(sql, contains('-- ACTION RESTORE FOREIGN KEY'));
-          expect(sql, contains('ALTER TABLE ONLY "blog"."post"'));
-          expect(sql, contains('REFERENCES "auth"."user"("id")'));
-        },
-      );
+      expect(sql, contains('-- ACTION RESTORE FOREIGN KEY'));
+      expect(sql, contains('ALTER TABLE ONLY "blog"."post"'));
+      expect(sql, contains('REFERENCES "auth"."user"("id")'));
     },
   );
 }
