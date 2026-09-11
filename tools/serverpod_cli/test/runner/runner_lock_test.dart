@@ -31,7 +31,7 @@ void main() {
 
     test(
       'when a second runner process tries to take it, '
-      'then it fails immediately rather than queueing behind the first',
+      'then it fails rather than queueing behind the first',
       () async {
         final holder = await _spawnLockHolder(tempDir.path);
         addTearDown(() async {
@@ -43,6 +43,30 @@ void main() {
           RunnerLock.acquire(tempDir.path).timeout(const Duration(seconds: 5)),
           throwsA(isA<RunnerLockedException>()),
         );
+      },
+      timeout: const Timeout(Duration(minutes: 2)),
+    );
+
+    test(
+      'when another process holds the lock only briefly, '
+      'then acquiring waits it out instead of failing',
+      () async {
+        final holder = await _spawnLockHolder(tempDir.path);
+        addTearDown(() async {
+          holder.kill(ProcessSignal.sigkill);
+          await holder.exitCode;
+        });
+
+        final acquired = RunnerLock.acquire(
+          tempDir.path,
+          patience: const Duration(seconds: 5),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        holder.kill(ProcessSignal.sigkill);
+
+        final lock = await acquired;
+        addTearDown(lock.release);
+        expect(lock.lockPath, serverpodRunnerLockPath(tempDir.path));
       },
       timeout: const Timeout(Duration(minutes: 2)),
     );
