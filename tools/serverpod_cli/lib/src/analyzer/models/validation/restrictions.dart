@@ -409,28 +409,6 @@ class Restrictions {
           ),
         ];
       }
-
-      if (config.databaseDialect == DatabaseDialect.sqlite) {
-        return [
-          SourceSpanSeverityException(
-            'Schema-qualified table names are not supported with the '
-            '"${DatabaseDialect.sqlite.name}" database dialect.',
-            span,
-          ),
-        ];
-      }
-
-      if (model is ModelClassDefinition &&
-          (model.database == ModelDatabaseDefinition.client ||
-              model.database == ModelDatabaseDefinition.sync)) {
-        return [
-          SourceSpanSeverityException(
-            'Schema-qualified table names are not supported for tables with '
-            '"database: ${model.database.name}".',
-            span,
-          ),
-        ];
-      }
     }
 
     if (!StringValidators.isValidTableName(name)) {
