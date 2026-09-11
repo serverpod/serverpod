@@ -53,18 +53,22 @@ class StopCommand extends ServerpodCommand<StopOption> {
       case NoRunner(staleManifest: final manifest?, lockHeld: true)
           when manifest.stage == RunnerStage.stopping:
         log.info('The runner (pid ${manifest.pid}) is already stopping.');
-        await _reportShutdown(serverDir.path);
+        await _reportShutdown(serverDir.path, pid: manifest.pid);
 
       case NoRunner(staleManifest: final manifest?, lockHeld: true):
       case IncompatibleRunner(:final manifest):
         await _stopByPid(manifest.pid, serverDir.path);
 
-      case LiveRunner(:final tuiSocket):
-        await _stopOverSocket(tuiSocket, serverDir.path);
+      case LiveRunner(:final manifest, :final tuiSocket):
+        await _stopOverSocket(tuiSocket, serverDir.path, pid: manifest.pid);
     }
   }
 
-  Future<void> _stopOverSocket(String socketPath, String serverDir) async {
+  Future<void> _stopOverSocket(
+    String socketPath,
+    String serverDir, {
+    required int pid,
+  }) async {
     final client = RunnerClient(socketPath: socketPath);
     try {
       await client.connect();
@@ -77,11 +81,11 @@ class StopCommand extends ServerpodCommand<StopOption> {
       await client.stop();
     } catch (_) {}
     await client.close();
-    await _reportShutdown(serverDir);
+    await _reportShutdown(serverDir, pid: pid);
   }
 
-  Future<void> _reportShutdown(String serverDir) async {
-    if (await awaitRunnerShutdown(serverDir)) {
+  Future<void> _reportShutdown(String serverDir, {required int pid}) async {
+    if (await _awaitShutdown(serverDir, pid: pid)) {
       log.info('Server stopped.');
     } else {
       log.warning(
@@ -100,7 +104,6 @@ class StopCommand extends ServerpodCommand<StopOption> {
       );
       throw ExitException.error();
     }
-    log.info('Stopping the runner (pid $pid).');
     if (!Process.killPid(pid, ProcessSignal.sigterm)) {
       log.error(
         'Could not signal pid $pid. It may already be gone; '
@@ -109,7 +112,7 @@ class StopCommand extends ServerpodCommand<StopOption> {
       throw ExitException.error();
     }
 
-    if (await awaitRunnerShutdown(serverDir)) {
+    if (await _awaitShutdown(serverDir, pid: pid)) {
       log.info('Server stopped.');
       return;
     }
@@ -122,6 +125,12 @@ class StopCommand extends ServerpodCommand<StopOption> {
     throw ExitException.error();
   }
 }
+
+Future<bool> _awaitShutdown(String serverDir, {required int pid}) =>
+    log.progress(
+      'Waiting for the runner (pid $pid) to stop',
+      () => awaitRunnerShutdown(serverDir),
+    );
 
 /// Whether the runner serving [serverDir] goes down within [timeout].
 ///
