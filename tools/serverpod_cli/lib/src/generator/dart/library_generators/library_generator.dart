@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_g
 import 'package:serverpod_cli/src/generator/dart/protocol_definition_extension.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 part 'future_calls_library_generator.dart';
 part 'serverpod_library_generator.dart';
@@ -336,6 +337,9 @@ class LibraryGenerator {
                   config.name,
                   config.modulesAll,
                   serverCode: serverCode,
+                  dialect: serverCode
+                      ? config.databaseDialect
+                      : DatabaseDialect.sqlite,
                 ).toCode(
                   config: config,
                   serverCode: serverCode,

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
 
+import 'config.dart';
+
 /// Database constants used by the serverpod framework.
 abstract class DatabaseConstants {
   /// Current version of the migration api.
@@ -12,6 +14,16 @@ abstract class DatabaseConstants {
 
   /// The schema unqualified table names resolve to in Postgres.
   static const defaultSchema = 'public';
+}
+
+/// Schema information per database dialect.
+extension DatabaseDialectSchema on DatabaseDialect {
+  /// The schema unqualified table names live in. SQLite has a single schema
+  /// and reports it as `main`.
+  String get defaultSchema => switch (this) {
+    DatabaseDialect.postgres => DatabaseConstants.defaultSchema,
+    DatabaseDialect.sqlite => 'main',
+  };
 }
 
 /// Migration constants used by the serverpod framework.

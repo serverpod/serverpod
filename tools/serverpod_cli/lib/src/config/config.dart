@@ -543,11 +543,7 @@ class GeneratorConfig implements ModelLoadConfig {
       databaseConfigsByFile,
     );
 
-    var defaultSchema = _loadDefaultSchema(
-      generatorConfig,
-      type,
-      databaseDialect,
-    );
+    var defaultSchema = _loadDefaultSchema(generatorConfig, type);
 
     var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
       file,
@@ -574,11 +570,7 @@ class GeneratorConfig implements ModelLoadConfig {
     );
   }
 
-  static String? _loadDefaultSchema(
-    YamlMap generatorConfig,
-    PackageType type,
-    DatabaseDialect dialect,
-  ) {
+  static String? _loadDefaultSchema(YamlMap generatorConfig, PackageType type) {
     var databaseNode = generatorConfig.nodes['database'];
     if (databaseNode == null) return null;
 
@@ -596,14 +588,6 @@ class GeneratorConfig implements ModelLoadConfig {
       throw SourceSpanFormatException(
         'The "default_schema" property is only allowed in server projects. '
         'Modules must qualify their table names explicitly.',
-        schemaNode.span,
-      );
-    }
-
-    if (dialect == DatabaseDialect.sqlite) {
-      throw SourceSpanFormatException(
-        'The "default_schema" property is not supported with the '
-        '"${DatabaseDialect.sqlite.name}" database dialect.',
         schemaNode.span,
       );
     }

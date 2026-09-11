@@ -26,8 +26,7 @@ DatabaseMigration generateDatabaseMigration({
     databaseTarget: databaseTarget,
   );
 
-  // Mark tables which do not exist in the target schema anymore for deletion.
-  // Preserves insertion order so dependents are dropped before their parents.
+  // Mark tables which do not exist in the target schema anymore for deletion
   var deleteTables = <String, TableDefinition>{};
   for (var srcTable in sourceTables) {
     if (moves.movedSources.contains(srcTable.qualifiedName)) continue;
@@ -101,7 +100,9 @@ DatabaseMigration generateDatabaseMigration({
         srcTable,
         dstTable,
         warnings,
-        newSchema: srcTable.schema != dstTable.schema ? dstTable.schema : null,
+        newSchema: moves.movedFrom.containsKey(dstTable.qualifiedName)
+            ? dstTable.schema
+            : null,
       );
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.
@@ -140,12 +141,10 @@ DatabaseMigration generateDatabaseMigration({
   );
 }
 
-/// A table that only changes schema is moved instead of recreated. A move
-/// requires the bare name to be absent on the other side of both tables and
-/// exactly one candidate in each direction. [movedFrom] maps the target
-/// qualified name to the source table, [movedSources] holds the source
-/// qualified names, and [ambiguous] the source names that had several
-/// candidates.
+/// A table that only changes schema is moved instead of recreated, provided
+/// its bare name is absent on the other side of both tables and has exactly
+/// one candidate in each direction. Sources with several candidates are
+/// [ambiguous]. [movedFrom] is keyed by target qualified name.
 ({
   Map<String, TableDefinition> movedFrom,
   Set<String> movedSources,
@@ -197,8 +196,7 @@ TableDefinition? _findTableByQualifiedName(
 }
 
 /// The schema as stored on delete actions, where null means the default.
-String? _schemaOrNull(String schema) =>
-    schema == DatabaseConstants.defaultSchema ? null : schema;
+String? _schemaOrNull(String schema) => isDefaultSchema(schema) ? null : schema;
 
 /// Returns the set of qualified table names for all tables which have any relation into the table mentioned by [tableName]
 Set<String> _findDependentTables(

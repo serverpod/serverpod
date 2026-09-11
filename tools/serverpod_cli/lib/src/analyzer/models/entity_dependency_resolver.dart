@@ -70,8 +70,7 @@ class ModelDependencyResolver {
     });
   }
 
-  /// Replaces a `parent=` reference with the table it resolves to. The
-  /// default schema only applies to project models; ambiguous or unknown
+  /// Rewrites a `parent=` reference to its single match. Ambiguous or unknown
   /// references are left as written for validation to report.
   static void _resolveParentTable(
     ModelClassDefinition classDefinition,

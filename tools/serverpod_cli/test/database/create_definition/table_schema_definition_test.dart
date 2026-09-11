@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/model_class_definition_builder.dart';
@@ -75,12 +76,39 @@ void main() {
         serverCode: false,
       ).tables.single;
 
-      test('then the table name is the bare name.', () {
-        expect(table.name, 'user');
+      test('then the table name is kept whole.', () {
+        expect(table.name, 'auth.user');
       });
 
-      test('then the schema is public.', () {
-        expect(table.schema, 'public');
+      test('then the schema is the sqlite default.', () {
+        expect(table.schema, 'main');
+      });
+    },
+  );
+
+  group(
+    'Given a model with a schema-qualified table name when creating the '
+    'database definition for a sqlite server',
+    () {
+      var model = ModelClassDefinitionBuilder()
+          .withClassName('User')
+          .withTableName('auth.user')
+          .withSimpleField('name', 'String')
+          .build();
+
+      var table = createDatabaseDefinitionFromModels(
+        [model],
+        'example',
+        [],
+        dialect: DatabaseDialect.sqlite,
+      ).tables.single;
+
+      test('then the table name is kept whole.', () {
+        expect(table.name, 'auth.user');
+      });
+
+      test('then the schema is the sqlite default.', () {
+        expect(table.schema, 'main');
       });
     },
   );
@@ -120,9 +148,9 @@ void main() {
     },
   );
 
-  group(
+  test(
     'Given a model with a relation to an unqualified table when creating '
-    'the database definition',
+    'the database definition then the reference table schema is public.',
     () {
       var user = ModelClassDefinitionBuilder()
           .withClassName('User')
@@ -141,9 +169,7 @@ void main() {
         [],
       ).tables.singleWhere((t) => t.name == 'post').foreignKeys.single;
 
-      test('then the reference table schema is public.', () {
-        expect(foreignKey.referenceTableSchema, 'public');
-      });
+      expect(foreignKey.referenceTableSchema, 'public');
     },
   );
 
@@ -169,14 +195,18 @@ void main() {
         'example',
         [],
         serverCode: false,
-      ).tables.singleWhere((t) => t.name == 'post').foreignKeys.single;
+      ).tables.singleWhere((t) => t.name == 'app.post').foreignKeys.single;
 
-      test('then the reference table is the bare name.', () {
-        expect(foreignKey.referenceTable, 'user');
+      test('then the constraint name uses the bare table name.', () {
+        expect(foreignKey.constraintName, 'post_fk_0');
       });
 
-      test('then the reference table schema is public.', () {
-        expect(foreignKey.referenceTableSchema, 'public');
+      test('then the reference table is kept whole.', () {
+        expect(foreignKey.referenceTable, 'auth.user');
+      });
+
+      test('then the reference table schema is the sqlite default.', () {
+        expect(foreignKey.referenceTableSchema, 'main');
       });
     },
   );

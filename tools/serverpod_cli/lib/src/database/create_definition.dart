@@ -15,16 +15,19 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   String moduleName,
   List<ModuleConfig> allModules, {
   bool serverCode = true,
+  DatabaseDialect? dialect,
 }) {
+  dialect ??= serverCode ? DatabaseDialect.postgres : DatabaseDialect.sqlite;
+
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
       if (classDefinition is ModelClassDefinition &&
           classDefinition.shouldGenerateTableCode(serverCode))
         TableDefinition(
           module: moduleName,
-          name: unqualifiedTableName(classDefinition.tableName!),
+          name: _splitTableName(classDefinition.tableName!, dialect).name,
           dartName: classDefinition.className,
-          schema: _schemaOf(classDefinition.tableName!, serverCode),
+          schema: _splitTableName(classDefinition.tableName!, dialect).schema,
           columns: [
             for (var column in classDefinition.fieldsIncludingInherited)
               if (column.shouldPersist)
@@ -44,7 +47,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   vectorDimension: column.type.vectorDimension,
                 ),
           ],
-          foreignKeys: _createForeignKeys(classDefinition, serverCode),
+          foreignKeys: _createForeignKeys(classDefinition, dialect),
           indexes: [
             for (var index in classDefinition.indexesIncludingInherited)
               IndexDefinition(
@@ -107,16 +110,22 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   );
 }
 
-/// The schema a table lives in. Client-side tables are always unqualified.
-String _schemaOf(String tableName, bool serverCode) {
-  if (!serverCode) return DatabaseConstants.defaultSchema;
-  return parseQualifiedTableName(tableName).schema ??
-      DatabaseConstants.defaultSchema;
+/// Splits `schema.table` for Postgres. Other dialects have a single schema
+/// and treat the whole name as one identifier.
+({String name, String schema}) _splitTableName(
+  String tableName,
+  DatabaseDialect dialect,
+) {
+  if (dialect != DatabaseDialect.postgres) {
+    return (name: tableName, schema: dialect.defaultSchema);
+  }
+  var (:schema, :name) = parseQualifiedTableName(tableName);
+  return (name: name, schema: schema ?? dialect.defaultSchema);
 }
 
 List<ForeignKeyDefinition> _createForeignKeys(
   ModelClassDefinition classDefinition,
-  bool serverCode,
+  DatabaseDialect dialect,
 ) {
   var fields = classDefinition.fields
       .where((field) => field.relation is ForeignRelationDefinition)
@@ -127,12 +136,13 @@ List<ForeignKeyDefinition> _createForeignKeys(
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
     var relation = field.relation as ForeignRelationDefinition;
+    var reference = _splitTableName(relation.parentTable, dialect);
     foreignKeys.add(
       ForeignKeyDefinition(
         constraintName: '${tableName}_fk_$i',
         columns: [field.columnName],
-        referenceTable: unqualifiedTableName(relation.parentTable),
-        referenceTableSchema: _schemaOf(relation.parentTable, serverCode),
+        referenceTable: reference.name,
+        referenceTableSchema: reference.schema,
         referenceColumns: ['id'],
         onDelete: _onDeleteAction(classDefinition, relation.onDelete),
         onUpdate: relation.onUpdate,
