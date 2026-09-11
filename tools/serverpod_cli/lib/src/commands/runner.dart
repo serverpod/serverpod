@@ -187,7 +187,10 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
     // closeLogger closes it at exit, after the exit-path error is logged.
     final logFile = RunnerLogFile.forServer(serverRootDir);
     final logHistory = StartLogHistory();
-    if (detached) await logFile.open();
+    if (detached) {
+      await logFile.open();
+      logFile.writeLine(runnerLogStartLine(pid));
+    }
     if (detached || loggerIsDefault) {
       final level = log.logLevel;
       await closeLogger();

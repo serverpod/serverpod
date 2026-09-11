@@ -9,6 +9,9 @@ import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_shared/log.dart' show LogEntry, LogScope, LogWriter;
 import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
 
+/// The line a runner with [pid] writes as it opens its log file.
+String runnerLogStartLine(int pid) => '--- serverpod runner $pid started ---';
+
 /// The runner's log file, size-capped and rotated.
 ///
 /// A detached runner has no stdio, so this is its only record.
