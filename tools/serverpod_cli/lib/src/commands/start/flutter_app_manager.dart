@@ -121,7 +121,7 @@ class FlutterAppManager {
   final List<String> serverPackageDirectoryPathParts;
   final String projectName;
 
-  /// The pod's API URL, null on the configured ports so apps keep their own.
+  /// The pod's API URL, null while the API server keeps its configured port.
   String? resolvedApiUrl;
 
   /// Whether [loadApps] launches the apps flagged `auto_launch`.

@@ -1357,19 +1357,19 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     );
     runnerApi.recordFlutterApps(flutterManager.apps.toList());
 
-    // Apps launch once a UI attaches and, on ephemeral ports, the pod reports.
+    // Apps launch once a UI attaches and any overridden API port is reported.
     var clientAttached = false;
     var appsLaunched = false;
     var explainedTheWait = false;
     void launchAppsIfReady() {
       if (appsLaunched || !clientAttached) return;
-      if (portOverrides.isNotEmpty && flutterManager.resolvedApiUrl == null) {
+      if (portOverrides.containsKey('api') &&
+          flutterManager.resolvedApiUrl == null) {
         if (explainedTheWait) return;
         explainedTheWait = true;
         log.info(
-          'The Flutter apps start once the server reports the port it bound: '
-          'the configured ports were taken, so they are built against the '
-          'ephemeral one rather than another project\'s server.',
+          'The Flutter apps start once the server reports its API port, since '
+          'they are built against that port rather than the configured one.',
         );
         return;
       }
@@ -1410,8 +1410,8 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     );
     onServerAddresses = (addresses) {
       final servers = addresses;
-      // Configured ports keep the apps' own config, which may name a LAN host.
-      if (portOverrides.isNotEmpty) {
+      // An API server on its configured port keeps the apps' own server config.
+      if (portOverrides.containsKey('api')) {
         flutterManager.resolvedApiUrl = servers.api;
       }
       portOverrides = pinResolvedPorts(portOverrides, addresses);
