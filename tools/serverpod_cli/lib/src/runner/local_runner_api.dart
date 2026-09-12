@@ -45,12 +45,14 @@ class LocalRunnerApi implements InProcessRunnerApi {
     required FlutterAppManager flutterManager,
     required GeneratorConfig config,
     required String? Function() vmServiceUri,
+    required String Function(String command) insightsAddress,
   }) {
     _stack = _Stack(
       session: session,
       flutterManager: flutterManager,
       config: config,
       vmServiceUri: vmServiceUri,
+      insightsAddress: insightsAddress,
     );
   }
 
@@ -204,7 +206,9 @@ class LocalRunnerApi implements InProcessRunnerApi {
   }) async {
     final File? file;
     try {
-      final stack = _require('creating a repair migration');
+      const command = 'creating a repair migration';
+      final stack = _require(command);
+      final insightsAddress = stack.insightsAddress(command);
       file = await stack.session.runSerialized(
         () => createRepairMigrationAction(
           config: stack.config,
@@ -212,6 +216,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
           tag: tag,
           force: force,
           targetMigrationVersion: targetVersion,
+          insightsAddress: insightsAddress,
         ),
       );
     } on MigrationAbortedException {
@@ -303,6 +308,7 @@ class _Stack {
     required this.flutterManager,
     required this.config,
     required this.vmServiceUri,
+    required this.insightsAddress,
   });
 
   final WatchSession session;
@@ -311,6 +317,10 @@ class _Stack {
 
   /// The VM service proxy's URI, null until the server first boots.
   final String? Function() vmServiceUri;
+
+  /// The insights address the pod reported, or throws
+  /// [RunnerStartingException] naming the command until it reports one.
+  final String Function(String command) insightsAddress;
 }
 
 MigrationResult migrationResultFor(CreateMigrationOutcome outcome) {

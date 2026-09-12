@@ -351,6 +351,45 @@ void main() {
     );
   });
 
+  group(
+    'Given a runner handed a stack whose pod has not reported its addresses,',
+    () {
+      late LocalRunnerApi api;
+
+      setUp(() {
+        api = LocalRunnerApi(
+          logHistory: StartLogHistory(),
+          requestShutdown: () {},
+          watchModeEnabled: true,
+          runMode: 'development',
+        );
+        api.bindStack(
+          session: _UnusedSession(),
+          flutterManager: _UnusedFlutterManager(),
+          config: GeneratorConfigBuilder().build(),
+          vmServiceUri: () => null,
+          insightsAddress: (command) => throw RunnerStartingException(command),
+        );
+        addTearDown(api.close);
+      });
+
+      test(
+        'when a repair migration is asked for, '
+        'then it reports that the runner is still starting',
+        () async {
+          final result = await api.createRepairMigration();
+
+          expect(result.isError, isTrue);
+          expect(
+            result.message,
+            'The runner is still starting, '
+            'so creating a repair migration is not available yet.',
+          );
+        },
+      );
+    },
+  );
+
   group('Given a runner whose Flutter app is between spawn and ready,', () {
     late Directory tempDir;
     late FlutterAppManager manager;
@@ -399,6 +438,7 @@ void main() {
         flutterManager: manager,
         config: GeneratorConfigBuilder().build(),
         vmServiceUri: () => null,
+        insightsAddress: (command) => throw RunnerStartingException(command),
       );
     });
 
@@ -453,7 +493,8 @@ class _SpawnedFlutter extends Fake implements FlutterProcess {
   Future<int> stop({Duration timeout = const Duration(seconds: 5)}) async => 0;
 }
 
-/// A [WatchSession] for [LocalRunnerApi.bindStack] that these tests never use.
+class _UnusedFlutterManager extends Fake implements FlutterAppManager {}
+
 class _UnusedSession extends Fake implements WatchSession {
   @override
   bool get isRunning => false;

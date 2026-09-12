@@ -37,6 +37,7 @@ import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/runner/local_runner_api.dart';
 import 'package:serverpod_cli/src/runner/port_resolution.dart';
+import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart'
     show RunnerUnreachableException;
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
@@ -867,11 +868,12 @@ List<String> _withApplyMigrations(List<String> serverArgs) {
 Future<void> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
+  required String insightsAddress,
 }) async {
   final client = ConfigInfo(
     runMode,
     serverDir: serverDir,
-  ).createServiceClient();
+  ).createServiceClientFor(insightsAddress);
   try {
     await client.insights.applyMigrations(
       applyRepairMigration: true,
@@ -906,6 +908,13 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   void reportServerAddresses(ServerpodAddresses addresses) {
     lastServerAddresses = addresses;
     onServerAddresses?.call(addresses);
+  }
+
+  /// The insights address the pod reported, or throws naming [command].
+  String reportedInsights(String command) {
+    final insights = lastServerAddresses?.insights;
+    if (insights == null) throw RunnerStartingException(command);
+    return insights;
   }
 
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
@@ -1340,6 +1349,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       applyMigrationsAction: () => _applyMigrationsForSession(
         serverDir: serverDir,
         runMode: runMode,
+        insightsAddress: reportedInsights('applying migrations'),
       ),
       servesWeb: () => stackServesWeb(lastServerAddresses, serverConfig),
     );
@@ -1354,6 +1364,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       flutterManager: flutterManager,
       config: config,
       vmServiceUri: () => proxy?.httpUri.toString(),
+      insightsAddress: reportedInsights,
     );
 
     runnerApi.setStage(

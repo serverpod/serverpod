@@ -2,16 +2,19 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
-    show FileEx, bindUnixSocket;
+    show FileEx, ServerpodAddresses, bindUnixSocket;
 import 'package:test/test.dart';
 
 import '../test_util/hold_lock.dart';
 import '../test_util/short_temp_dir.dart';
+
+const _command = 'creating a repair migration';
 
 void main() {
   group('Given a server package at a path too long for a Unix socket,', () {
@@ -104,6 +107,82 @@ void main() {
 
         expect(resolution, isA<NoRunner>());
         expect((resolution as NoRunner).staleManifest?.pid, 9999);
+      },
+    );
+
+    test(
+      'when a live runner has published its addresses, '
+      'then the insights address it published is reported',
+      () async {
+        await _writeManifest(
+          tempDir.path,
+          servers: const ServerpodAddresses(insights: 'http://localhost:43111'),
+        );
+        await _listen(tempDir);
+
+        expect(
+          await reportedInsightsAddress(tempDir.path, command: _command),
+          'http://localhost:43111',
+        );
+      },
+    );
+
+    test(
+      'when a live runner has not published its addresses yet, '
+      'then looking up its insights address reports that it is still starting',
+      () async {
+        await _writeManifest(tempDir.path);
+        await _listen(tempDir);
+
+        await expectLater(
+          reportedInsightsAddress(tempDir.path, command: _command),
+          throwsA(isA<RunnerStartingException>()),
+        );
+      },
+    );
+
+    test(
+      'when a live runner speaking another protocol has published addresses, '
+      'then looking up its insights address refuses rather than trusting them',
+      () async {
+        await _writeManifest(
+          tempDir.path,
+          protocolVersion: RunnerManifest.currentProtocolVersion + 1,
+          servers: const ServerpodAddresses(insights: 'http://localhost:43111'),
+        );
+        await _listen(tempDir);
+
+        await expectLater(
+          reportedInsightsAddress(tempDir.path, command: _command),
+          throwsA(isA<IncompatibleRunnerException>()),
+        );
+      },
+    );
+
+    test(
+      'when no runner has ever served it, '
+      'then no insights address is reported',
+      () async {
+        expect(
+          await reportedInsightsAddress(tempDir.path, command: _command),
+          isNull,
+        );
+      },
+    );
+
+    test(
+      'when only the manifest of a crashed runner names an insights address, '
+      'then no insights address is reported',
+      () async {
+        await _writeManifest(
+          tempDir.path,
+          servers: const ServerpodAddresses(insights: 'http://localhost:43111'),
+        );
+
+        expect(
+          await reportedInsightsAddress(tempDir.path, command: _command),
+          isNull,
+        );
       },
     );
 
@@ -217,6 +296,47 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given two worktrees whose runners each published an insights address,',
+    () {
+      late Directory root;
+      late String first;
+      late String second;
+
+      setUp(() async {
+        root = await createShortTempDir('rdw');
+        first = p.join(root.path, 'wt1', 'my_server');
+        second = p.join(root.path, 'wt2', 'my_server');
+        for (final (dir, port) in [(first, 43111), (second, 43222)]) {
+          await _writeManifest(
+            dir,
+            servers: ServerpodAddresses(insights: 'http://localhost:$port'),
+          );
+          await _listen(Directory(dir));
+        }
+      });
+
+      tearDown(() async {
+        await root.deleteBestEffort(recursive: true);
+      });
+
+      test(
+        'when each worktree is asked for its insights address, '
+        'then each answers with the address its own runner published',
+        () async {
+          expect(
+            await reportedInsightsAddress(first, command: _command),
+            'http://localhost:43111',
+          );
+          expect(
+            await reportedInsightsAddress(second, command: _command),
+            'http://localhost:43222',
+          );
+        },
+      );
+    },
+  );
 }
 
 /// Binds socket [name] beside [dir]'s manifest and returns its path.
@@ -242,10 +362,12 @@ Future<void> _writeManifest(
   int pid = 4242,
   int protocolVersion = RunnerManifest.currentProtocolVersion,
   String cliVersion = templateVersion,
+  ServerpodAddresses? servers,
 }) => RunnerManifest(
   pid: pid,
   protocolVersion: protocolVersion,
   cliVersion: cliVersion,
   projectId: RunnerRegistry.idFor(serverDir),
   config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
+  servers: servers,
 ).writeTo(serverDir);
