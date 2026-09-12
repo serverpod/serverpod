@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_cli/src/runner/runner_lock.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
@@ -105,6 +106,37 @@ Future<RunnerResolution> resolveRunner(
               '${manifest.cliVersion}, but this is $templateVersion. '
               'Restart it with `serverpod runner stop` to pick up this version.',
   );
+}
+
+/// The insights address the runner serving [serverDir] published, or null when
+/// no runner serves it, as for a pod started by hand.
+///
+/// Throws [RunnerStartingException] naming [command] before the runner
+/// publishes its addresses, [IncompatibleRunnerException] when it speaks
+/// another protocol, and [SocketException] when no socket path fits the
+/// address limit.
+Future<String?> reportedInsightsAddress(
+  String serverDir, {
+  required String command,
+}) async {
+  return switch (await resolveRunner(serverDir)) {
+    NoRunner() => null,
+    IncompatibleRunner(:final message) => throw IncompatibleRunnerException(
+      message,
+    ),
+    LiveRunner(manifest: RunnerManifest(:final servers?)) => servers.insights,
+    LiveRunner() => throw RunnerStartingException(command),
+  };
+}
+
+/// Thrown when the runner serving a package speaks another protocol.
+class IncompatibleRunnerException implements Exception {
+  const IncompatibleRunnerException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
 }
 
 /// The path by which a client reaches the runner socket [name].
