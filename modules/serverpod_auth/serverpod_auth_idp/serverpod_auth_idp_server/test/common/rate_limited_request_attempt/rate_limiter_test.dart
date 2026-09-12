@@ -14,14 +14,10 @@ void main() {
   late Session Function() buildSession;
   late Session session;
 
-  setUp(() async {
+  setUpAll(() {
     session = buildSession();
-    await _deleteTestAttempts(session);
   });
 
-  tearDown(() async {
-    await _deleteTestAttempts(session);
-  });
   withServerpod(
     '[DatabaseRateLimiter]',
     rollbackDatabase: RollbackDatabase.disabled,
@@ -59,19 +55,20 @@ void main() {
 
       group('Given a rate limiter that allows two attempts, ', () {
         late DatabaseRateLimiter rateLimitUtil;
-
-        setUp(() {
+        setUpAll(() async {
           rateLimitExceededKeys = [];
           rateLimitUtil = buildRateLimitUtil(
             maxAttempts: 2,
             onRateLimitExceeded: recordRateLimitExceeded,
           );
         });
-
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
         group('when checking the rate limit three times for one request, ', () {
           late List<bool> admitted;
-
-          setUp(() async {
+          late int attemptCount;
+          setUpAll(() async {
             admitted = [
               for (var attempt = 0; attempt < 3; attempt++)
                 await rateLimitUtil.tryRecordAttempt(
@@ -79,35 +76,47 @@ void main() {
                   key: 'request',
                 ),
             ];
-          });
-
-          test(
-            'then it allows the first two checks and rate limits the third.',
-            () {
-              expect(admitted, [true, true, false]);
-            },
-          );
-
-          test('then it only records the two allowed attempts.', () async {
-            final attemptCount = await rateLimitUtil.countAttempts(
+            attemptCount = await rateLimitUtil.countAttempts(
               session,
               key: 'request',
             );
-
+          });
+          test(
+            'then it allows the first two checks and rate limits the third.',
+            () async {
+              expect(admitted, [true, true, false]);
+            },
+          );
+          test('then it only records the two allowed attempts.', () async {
             expect(attemptCount, 2);
           });
-
-          test('then it reports the request to the rate limit callback.', () {
-            expect(rateLimitExceededKeys, ['request']);
-          });
+          test(
+            'then it reports the request to the rate limit callback.',
+            () async {
+              expect(rateLimitExceededKeys, ['request']);
+            },
+          );
         });
+      });
 
+      group('Given a rate limiter that allows two attempts, ', () {
+        late DatabaseRateLimiter rateLimitUtil;
+        setUpAll(() async {
+          rateLimitExceededKeys = [];
+          rateLimitUtil = buildRateLimitUtil(
+            maxAttempts: 2,
+            onRateLimitExceeded: recordRateLimitExceeded,
+          );
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
         group(
           'when six concurrent sessions check the rate limit for one request, ',
           () {
             late List<bool> admitted;
-
-            setUp(() async {
+            late int attemptCount;
+            setUpAll(() async {
               admitted = await Future.wait([
                 for (var attempt = 0; attempt < 6; attempt++)
                   rateLimitUtil.tryRecordAttempt(
@@ -115,21 +124,15 @@ void main() {
                     key: 'request',
                   ),
               ]);
-            });
-
-            test('then it allows exactly two of the checks.', () {
-              expect(
-                admitted.where((final limited) => limited),
-                hasLength(2),
-              );
-            });
-
-            test('then it records exactly two attempts.', () async {
-              final attemptCount = await rateLimitUtil.countAttempts(
+              attemptCount = await rateLimitUtil.countAttempts(
                 session,
                 key: 'request',
               );
-
+            });
+            test('then it allows exactly two of the checks.', () async {
+              expect(admitted.where((final limited) => limited), hasLength(2));
+            });
+            test('then it records exactly two attempts.', () async {
               expect(attemptCount, 2);
             });
           },
@@ -140,8 +143,7 @@ void main() {
         'Given a rate limit check happened inside a rolled-back caller transaction, ',
         () {
           late DatabaseRateLimiter rateLimitUtil;
-
-          setUp(() async {
+          setUpAll(() async {
             rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
 
             try {
@@ -157,36 +159,50 @@ void main() {
               // Expected test setup rollback.
             }
           });
-
-          test(
-            'when counting attempts for the request, '
-            'then the recorded attempt remains counted.',
-            () async {
-              final attemptCount = await rateLimitUtil.countAttempts(
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group('when counting attempts for the request, ', () {
+            late int attemptCount;
+            setUpAll(() async {
+              attemptCount = await rateLimitUtil.countAttempts(
                 session,
                 key: 'request',
               );
-
+            });
+            test('then the recorded attempt remains counted.', () async {
               expect(attemptCount, 1);
-            },
-          );
+            });
+          });
         },
       );
 
-      test(
-        'Given a rate limiter that allows one attempt and has no rate limit callback, '
-        'when checking the rate limit twice for one request, '
-        'then the second check reports the request as rate limited.',
-        () async {
-          final rateLimitUtil = buildRateLimitUtil(maxAttempts: 1);
-
-          await rateLimitUtil.tryRecordAttempt(session, key: 'request');
-          final admitted = await rateLimitUtil.tryRecordAttempt(
-            session,
-            key: 'request',
-          );
-
-          expect(admitted, isFalse);
+      group(
+        'Given a rate limiter that allows one attempt and has no rate limit callback, ',
+        () {
+          late DatabaseRateLimiter rateLimitUtil;
+          setUpAll(() async {
+            rateLimitUtil = buildRateLimitUtil(maxAttempts: 1);
+          });
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group('when checking the rate limit twice for one request, ', () {
+            late bool admitted;
+            setUpAll(() async {
+              await rateLimitUtil.tryRecordAttempt(session, key: 'request');
+              admitted = await rateLimitUtil.tryRecordAttempt(
+                session,
+                key: 'request',
+              );
+            });
+            test(
+              'then the second check reports the request as rate limited.',
+              () async {
+                expect(admitted, isFalse);
+              },
+            );
+          });
         },
       );
 
@@ -194,8 +210,7 @@ void main() {
         'Given a rate limiter with default extra data for every attempt, ',
         () {
           late DatabaseRateLimiter rateLimitUtil;
-
-          setUp(() {
+          setUpAll(() async {
             rateLimitUtil = buildRateLimitUtil(
               maxAttempts: 2,
               defaultExtraData: const {
@@ -204,12 +219,12 @@ void main() {
               },
             );
           });
-
-          test(
-            'when recording an attempt with request extra data, '
-            'then it stores the attempt with the request data merged over the '
-            'default data.',
-            () async {
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group('when recording an attempt with request extra data, ', () {
+            late List<RateLimitedRequestAttempt> attempts;
+            setUpAll(() async {
               await rateLimitUtil.tryRecordAttempt(
                 session,
                 key: 'request',
@@ -218,44 +233,51 @@ void main() {
                   'shared': 'request',
                 },
               );
-
-              final attempts = await _findAttempts(session, key: 'request');
-
-              expect(attempts, hasLength(1));
-              expect(attempts.single.domain, _testDomain);
-              expect(attempts.single.source, _testSource);
-              expect(attempts.single.key, 'request');
-              expect(attempts.single.extraData, {
-                'client': 'mobile',
-                'shared': 'request',
-                'requestId': '123',
-              });
-            },
-          );
+              attempts = await _findAttempts(session, key: 'request');
+            });
+            test(
+              'then it stores the attempt with the request data merged over the default data.',
+              () async {
+                expect(attempts, hasLength(1));
+                expect(attempts.single.domain, _testDomain);
+                expect(attempts.single.source, _testSource);
+                expect(attempts.single.key, 'request');
+                expect(attempts.single.extraData, {
+                  'client': 'mobile',
+                  'shared': 'request',
+                  'requestId': '123',
+                });
+              },
+            );
+          });
         },
       );
 
-      test(
-        'Given a rate limiter without default extra data, '
-        'when recording an attempt without extra data, '
-        'then it stores the attempt with no extra data.',
-        () async {
-          final rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
-
-          await rateLimitUtil.tryRecordAttempt(session, key: 'request');
-
-          final attempts = await _findAttempts(session, key: 'request');
-
-          expect(attempts, hasLength(1));
-          expect(attempts.single.extraData, isNull);
-        },
-      );
+      group('Given a rate limiter without default extra data, ', () {
+        late DatabaseRateLimiter rateLimitUtil;
+        setUpAll(() async {
+          rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when recording an attempt without extra data, ', () {
+          late List<RateLimitedRequestAttempt> attempts;
+          setUpAll(() async {
+            await rateLimitUtil.tryRecordAttempt(session, key: 'request');
+            attempts = await _findAttempts(session, key: 'request');
+          });
+          test('then it stores the attempt with no extra data.', () async {
+            expect(attempts, hasLength(1));
+            expect(attempts.single.extraData, isNull);
+          });
+        });
+      });
 
       group('Given a rate limiter for UUID request identifiers, ', () {
         late UuidValue requestId;
         late DatabaseRateLimiter rateLimitUtil;
-
-        setUp(() {
+        setUpAll(() async {
           requestId = const Uuid().v4obj();
           rateLimitUtil = DatabaseRateLimiter(
             RateLimiterConfig(
@@ -265,44 +287,62 @@ void main() {
             ),
           );
         });
-
-        test(
-          'when recording an attempt, '
-          'then it stores the identifier as the caller-provided string key.',
-          () async {
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when recording an attempt, ', () {
+          late List<RateLimitedRequestAttempt> attempts;
+          setUpAll(() async {
             await rateLimitUtil.tryRecordAttempt(session, key: requestId.uuid);
+            attempts = await _findAttempts(session);
+          });
+          test(
+            'then it stores the identifier as the caller-provided string key.',
+            () async {
+              expect(attempts, hasLength(1));
+              expect(attempts.single.key, requestId.uuid);
+            },
+          );
+        });
+      });
 
-            final attempts = await _findAttempts(session);
-
-            expect(attempts, hasLength(1));
-            expect(attempts.single.key, requestId.uuid);
-          },
-        );
-
-        test(
-          'when counting attempts after recording one, '
-          'then it counts the attempt by its string key.',
-          () async {
+      group('Given a rate limiter for UUID request identifiers, ', () {
+        late UuidValue requestId;
+        late DatabaseRateLimiter rateLimitUtil;
+        setUpAll(() async {
+          requestId = const Uuid().v4obj();
+          rateLimitUtil = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 2,
+            ),
+          );
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when counting attempts after recording one, ', () {
+          late int attemptCount;
+          setUpAll(() async {
             await rateLimitUtil.tryRecordAttempt(session, key: requestId.uuid);
-
-            final attemptCount = await rateLimitUtil.countAttempts(
+            attemptCount = await rateLimitUtil.countAttempts(
               session,
               key: requestId.uuid,
             );
-
+          });
+          test('then it counts the attempt by its string key.', () async {
             expect(attemptCount, 1);
-          },
-        );
+          });
+        });
       });
 
       group(
-        'Given a rate limiter with a one-hour timeframe, '
-        'and a request with an attempt two hours ago and an attempt now, ',
+        'Given a rate limiter with a one-hour timeframe, and a request with an attempt two hours ago and an attempt now, ',
         () {
           late DateTime now;
           late DatabaseRateLimiter rateLimitUtil;
-
-          setUp(() async {
+          setUpAll(() async {
             now = DateTime.utc(2026, 1, 1, 12);
             rateLimitUtil = buildRateLimitUtil(
               maxAttempts: 2,
@@ -318,52 +358,86 @@ void main() {
               () => rateLimitUtil.tryRecordAttempt(session, key: 'request'),
             );
           });
-
-          test(
-            'when counting attempts for the request, '
-            'then it only counts the attempt inside the timeframe.',
-            () async {
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group('when counting attempts for the request, ', () {
+            late int attemptCount;
+            setUpAll(() async {
               await withClock(Clock.fixed(now), () async {
-                final attemptCount = await rateLimitUtil.countAttempts(
+                attemptCount = await rateLimitUtil.countAttempts(
                   session,
                   key: 'request',
                 );
-
+              });
+            });
+            test(
+              'then it only counts the attempt inside the timeframe.',
+              () async {
                 expect(attemptCount, 1);
+              },
+            );
+          });
+        },
+      );
+
+      group(
+        'Given a rate limiter with a one-hour timeframe, and a request with an attempt two hours ago and an attempt now, ',
+        () {
+          late DateTime now;
+          late DatabaseRateLimiter rateLimitUtil;
+          setUpAll(() async {
+            now = DateTime.utc(2026, 1, 1, 12);
+            rateLimitUtil = buildRateLimitUtil(
+              maxAttempts: 2,
+              timeframe: const Duration(hours: 1),
+            );
+
+            await withClock(
+              Clock.fixed(now.subtract(const Duration(hours: 2))),
+              () => rateLimitUtil.tryRecordAttempt(session, key: 'request'),
+            );
+            await withClock(
+              Clock.fixed(now),
+              () => rateLimitUtil.tryRecordAttempt(session, key: 'request'),
+            );
+          });
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group(
+            'when deleting attempts for the request before the window, ',
+            () {
+              late int deletedAttempts;
+              late List<RateLimitedRequestAttempt> attempts;
+              setUpAll(() async {
+                await withClock(Clock.fixed(now), () async {
+                  deletedAttempts = await rateLimitUtil.deleteAttempts(
+                    session,
+                    key: 'request',
+                    before: now.subtract(const Duration(hours: 1)),
+                  );
+                });
+                attempts = await _findAttempts(session, key: 'request');
               });
-            },
-          );
-
-          test(
-            'when deleting attempts for the request before the window, '
-            'then it only deletes the attempt older than the timeframe.',
-            () async {
-              await withClock(Clock.fixed(now), () async {
-                final deletedAttempts = await rateLimitUtil.deleteAttempts(
-                  session,
-                  key: 'request',
-                  before: now.subtract(const Duration(hours: 1)),
-                );
-
-                expect(deletedAttempts, 1);
-              });
-
-              final attempts = await _findAttempts(session, key: 'request');
-
-              expect(attempts, hasLength(1));
+              test(
+                'then it only deletes the attempt older than the timeframe.',
+                () async {
+                  expect(deletedAttempts, 1);
+                  expect(attempts, hasLength(1));
+                },
+              );
             },
           );
         },
       );
 
       group(
-        'Given a request with an attempt two hours ago and an attempt now, '
-        'and another request with an attempt two hours ago, ',
+        'Given a request with an attempt two hours ago and an attempt now, and another request with an attempt two hours ago, ',
         () {
           late DateTime now;
           late DatabaseRateLimiter rateLimitUtil;
-
-          setUp(() async {
+          setUpAll(() async {
             now = DateTime.utc(2026, 1, 1, 12);
             rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
 
@@ -382,62 +456,102 @@ void main() {
               () => rateLimitUtil.tryRecordAttempt(session, key: 'request'),
             );
           });
-
-          test(
-            'when deleting attempts for the request older than one hour, '
-            'then it keeps the newer attempt and the other request attempt.',
-            () async {
-              await withClock(Clock.fixed(now), () async {
-                final deletedAttempts = await rateLimitUtil.deleteAttempts(
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group(
+            'when deleting attempts for the request older than one hour, ',
+            () {
+              late int deletedAttempts;
+              late List<RateLimitedRequestAttempt> attempts;
+              late List<RateLimitedRequestAttempt> otherAttempts;
+              setUpAll(() async {
+                await withClock(Clock.fixed(now), () async {
+                  deletedAttempts = await rateLimitUtil.deleteAttempts(
+                    session,
+                    key: 'request',
+                    before: now.subtract(const Duration(hours: 1)),
+                  );
+                });
+                attempts = await _findAttempts(session, key: 'request');
+                otherAttempts = await _findAttempts(
                   session,
-                  key: 'request',
-                  before: now.subtract(const Duration(hours: 1)),
+                  key: 'other-request',
                 );
-
-                expect(deletedAttempts, 1);
               });
-
-              final attempts = await _findAttempts(session, key: 'request');
-              final otherAttempts = await _findAttempts(
-                session,
-                key: 'other-request',
+              test(
+                'then it keeps the newer attempt and the other request attempt.',
+                () async {
+                  expect(deletedAttempts, 1);
+                  expect(attempts, hasLength(1));
+                  expect(otherAttempts, hasLength(1));
+                },
               );
-
-              expect(attempts, hasLength(1));
-              expect(otherAttempts, hasLength(1));
-            },
-          );
-
-          test(
-            'when deleting attempts older than one hour without a key, '
-            'then it deletes the old attempt of every request.',
-            () async {
-              await withClock(Clock.fixed(now), () async {
-                final deletedAttempts = await rateLimitUtil.deleteAttempts(
-                  session,
-                  before: now.subtract(const Duration(hours: 1)),
-                );
-
-                expect(deletedAttempts, 2);
-              });
-
-              final attempts = await _findAttempts(session);
-
-              expect(attempts, hasLength(1));
-              expect(attempts.single.key, 'request');
             },
           );
         },
       );
 
       group(
-        'Given a rate limiter that allows two attempts within one hour, '
-        'and a request that used both attempts two hours ago, ',
+        'Given a request with an attempt two hours ago and an attempt now, and another request with an attempt two hours ago, ',
         () {
           late DateTime now;
           late DatabaseRateLimiter rateLimitUtil;
+          setUpAll(() async {
+            now = DateTime.utc(2026, 1, 1, 12);
+            rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
 
-          setUp(() async {
+            await withClock(
+              Clock.fixed(now.subtract(const Duration(hours: 2))),
+              () async {
+                await rateLimitUtil.tryRecordAttempt(session, key: 'request');
+                await rateLimitUtil.tryRecordAttempt(
+                  session,
+                  key: 'other-request',
+                );
+              },
+            );
+            await withClock(
+              Clock.fixed(now),
+              () => rateLimitUtil.tryRecordAttempt(session, key: 'request'),
+            );
+          });
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group(
+            'when deleting attempts older than one hour without a key, ',
+            () {
+              late int deletedAttempts;
+              late List<RateLimitedRequestAttempt> attempts;
+              setUpAll(() async {
+                await withClock(Clock.fixed(now), () async {
+                  deletedAttempts = await rateLimitUtil.deleteAttempts(
+                    session,
+                    before: now.subtract(const Duration(hours: 1)),
+                  );
+                });
+                attempts = await _findAttempts(session);
+              });
+              test(
+                'then it deletes the old attempt of every request.',
+                () async {
+                  expect(deletedAttempts, 2);
+                  expect(attempts, hasLength(1));
+                  expect(attempts.single.key, 'request');
+                },
+              );
+            },
+          );
+        },
+      );
+
+      group(
+        'Given a rate limiter that allows two attempts within one hour, and a request that used both attempts two hours ago, ',
+        () {
+          late DateTime now;
+          late DatabaseRateLimiter rateLimitUtil;
+          setUpAll(() async {
             now = DateTime.utc(2026, 1, 1, 12);
             rateLimitExceededKeys = [];
             rateLimitUtil = buildRateLimitUtil(
@@ -454,30 +568,31 @@ void main() {
               },
             );
           });
-
-          test(
-            'when checking the rate limit now, '
-            'then it allows the attempt.',
-            () async {
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group('when checking the rate limit now, ', () {
+            late bool admitted;
+            setUpAll(() async {
               await withClock(Clock.fixed(now), () async {
-                final admitted = await rateLimitUtil.tryRecordAttempt(
+                admitted = await rateLimitUtil.tryRecordAttempt(
                   session,
                   key: 'request',
                 );
-
-                expect(admitted, isTrue);
-                expect(rateLimitExceededKeys, isEmpty);
               });
-            },
-          );
+            });
+            test('then it allows the attempt.', () async {
+              expect(admitted, isTrue);
+              expect(rateLimitExceededKeys, isEmpty);
+            });
+          });
         },
       );
 
       group('Given a request with an attempt under two sources, ', () {
         late DateTime now;
         late DatabaseRateLimiter rateLimitUtil;
-
-        setUp(() async {
+        setUpAll(() async {
           now = DateTime.utc(2026, 1, 1, 12);
           rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
           final otherSourceUtil = buildRateLimitUtil(
@@ -493,51 +608,78 @@ void main() {
             },
           );
         });
-
-        test(
-          'when counting attempts for the request, '
-          'then it does not count the attempt from the other source.',
-          () async {
-            final attemptCount = await rateLimitUtil.countAttempts(
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when counting attempts for the request, ', () {
+          late int attemptCount;
+          setUpAll(() async {
+            attemptCount = await rateLimitUtil.countAttempts(
               session,
               key: 'request',
             );
+          });
+          test(
+            'then it does not count the attempt from the other source.',
+            () async {
+              expect(attemptCount, 1);
+            },
+          );
+        });
+      });
 
-            expect(attemptCount, 1);
-          },
-        );
+      group('Given a request with an attempt under two sources, ', () {
+        late DateTime now;
+        late DatabaseRateLimiter rateLimitUtil;
+        setUpAll(() async {
+          now = DateTime.utc(2026, 1, 1, 12);
+          rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
+          final otherSourceUtil = buildRateLimitUtil(
+            source: _otherSource,
+            maxAttempts: 2,
+          );
 
-        test(
-          'when deleting attempts for the request, '
-          'then it keeps the attempt from the other source.',
-          () async {
+          await withClock(
+            Clock.fixed(now.subtract(const Duration(minutes: 1))),
+            () async {
+              await rateLimitUtil.tryRecordAttempt(session, key: 'request');
+              await otherSourceUtil.tryRecordAttempt(session, key: 'request');
+            },
+          );
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when deleting attempts for the request, ', () {
+          late int deletedAttempts;
+          late List<RateLimitedRequestAttempt> attempts;
+          late List<RateLimitedRequestAttempt> otherSourceAttempts;
+          setUpAll(() async {
             await withClock(Clock.fixed(now), () async {
-              final deletedAttempts = await rateLimitUtil.deleteAttempts(
+              deletedAttempts = await rateLimitUtil.deleteAttempts(
                 session,
                 key: 'request',
               );
-
-              expect(deletedAttempts, 1);
             });
-
-            final attempts = await _findAttempts(session, key: 'request');
-            final otherSourceAttempts = await _findAttempts(
+            attempts = await _findAttempts(session, key: 'request');
+            otherSourceAttempts = await _findAttempts(
               session,
               source: _otherSource,
               key: 'request',
             );
-
+          });
+          test('then it keeps the attempt from the other source.', () async {
+            expect(deletedAttempts, 1);
             expect(attempts, isEmpty);
             expect(otherSourceAttempts, hasLength(1));
-          },
-        );
+          });
+        });
       });
 
       group('Given a request with an attempt under two domains, ', () {
         late DateTime now;
         late DatabaseRateLimiter rateLimitUtil;
-
-        setUp(() async {
+        setUpAll(() async {
           now = DateTime.utc(2026, 1, 1, 12);
           rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
           final otherDomainUtil = buildRateLimitUtil(
@@ -553,130 +695,219 @@ void main() {
             },
           );
         });
-
-        test(
-          'when counting attempts for the request, '
-          'then it does not count the attempt from the other domain.',
-          () async {
-            final attemptCount = await rateLimitUtil.countAttempts(
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when counting attempts for the request, ', () {
+          late int attemptCount;
+          setUpAll(() async {
+            attemptCount = await rateLimitUtil.countAttempts(
               session,
               key: 'request',
             );
+          });
+          test(
+            'then it does not count the attempt from the other domain.',
+            () async {
+              expect(attemptCount, 1);
+            },
+          );
+        });
+      });
 
-            expect(attemptCount, 1);
-          },
-        );
+      group('Given a request with an attempt under two domains, ', () {
+        late DateTime now;
+        late DatabaseRateLimiter rateLimitUtil;
+        setUpAll(() async {
+          now = DateTime.utc(2026, 1, 1, 12);
+          rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
+          final otherDomainUtil = buildRateLimitUtil(
+            domain: _otherDomain,
+            maxAttempts: 2,
+          );
 
-        test(
-          'when deleting attempts for the request, '
-          'then it keeps the attempt from the other domain.',
-          () async {
+          await withClock(
+            Clock.fixed(now.subtract(const Duration(minutes: 1))),
+            () async {
+              await rateLimitUtil.tryRecordAttempt(session, key: 'request');
+              await otherDomainUtil.tryRecordAttempt(session, key: 'request');
+            },
+          );
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when deleting attempts for the request, ', () {
+          late int deletedAttempts;
+          late List<RateLimitedRequestAttempt> attempts;
+          late List<RateLimitedRequestAttempt> otherDomainAttempts;
+          setUpAll(() async {
             await withClock(Clock.fixed(now), () async {
-              final deletedAttempts = await rateLimitUtil.deleteAttempts(
+              deletedAttempts = await rateLimitUtil.deleteAttempts(
                 session,
                 key: 'request',
               );
-
-              expect(deletedAttempts, 1);
             });
-
-            final attempts = await _findAttempts(session, key: 'request');
-            final otherDomainAttempts = await _findAttempts(
+            attempts = await _findAttempts(session, key: 'request');
+            otherDomainAttempts = await _findAttempts(
               session,
               domain: _otherDomain,
               key: 'request',
             );
-
+          });
+          test('then it keeps the attempt from the other domain.', () async {
+            expect(deletedAttempts, 1);
             expect(attempts, isEmpty);
             expect(otherDomainAttempts, hasLength(1));
-          },
-        );
+          });
+        });
       });
 
-      test(
-        'Given a key with quotes, separators, whitespace, and Unicode, '
-        'when admitting an attempt, '
-        'then it persists the exact caller-provided key.',
-        () async {
+      group(
+        'Given a key with quotes, separators, whitespace, and Unicode, ',
+        () {
           const key = ' "request:ação/雪" ';
-          final limiter = buildRateLimitUtil(maxAttempts: 1);
-          await limiter.tryRecordAttempt(session, key: key);
-          final attempts = await _findAttempts(session);
-          expect(attempts.single.key, key);
-        },
-      );
-
-      test(
-        'Given an empty string key, '
-        'when admitting two attempts with a budget of one, '
-        'then the empty key identifies one shared bucket.',
-        () async {
-          final limiter = buildRateLimitUtil(maxAttempts: 1);
-          final first = await limiter.tryRecordAttempt(session, key: '');
-          final second = await limiter.tryRecordAttempt(session, key: '');
-          expect([first, second], [true, false]);
-        },
-      );
-
-      test(
-        'Given an exhausted key and an unused key, '
-        'when admitting an attempt for the unused key, '
-        'then it has its own attempt budget.',
-        () async {
-          final limiter = buildRateLimitUtil(maxAttempts: 1);
-          await limiter.tryRecordAttempt(session, key: 'exhausted');
-          final admitted = await limiter.tryRecordAttempt(
-            session,
-            key: 'unused',
-          );
-          expect(admitted, isTrue);
-        },
-      );
-
-      test(
-        'Given an exhausted limiter whose rejection callback throws, '
-        'when admitting another attempt, '
-        'then the callback exception propagates without consuming an attempt.',
-        () async {
-          final limiter = buildRateLimitUtil(
-            maxAttempts: 1,
-            onRateLimitExceeded: (final session, final key) async {
-              throw _ExpectedRollbackException();
-            },
-          );
-          await limiter.tryRecordAttempt(session, key: 'request');
-          await expectLater(
-            limiter.tryRecordAttempt(session, key: 'request'),
-            throwsA(isA<_ExpectedRollbackException>()),
-          );
-          expect(await limiter.countAttempts(session, key: 'request'), 1);
-        },
-      );
-
-      test(
-        'Given an exhausted limiter whose rejection callback clears the bucket, '
-        'when rejecting an attempt inside a caller transaction that rolls back, '
-        'then callback cleanup persists and the bucket can be used again.',
-        () async {
           late DatabaseRateLimiter limiter;
+          setUpAll(() async {
+            limiter = buildRateLimitUtil(maxAttempts: 1);
+          });
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group('when admitting an attempt, ', () {
+            late List<RateLimitedRequestAttempt> attempts;
+            setUpAll(() async {
+              await limiter.tryRecordAttempt(session, key: key);
+              attempts = await _findAttempts(session);
+            });
+            test('then it persists the exact caller-provided key.', () async {
+              expect(attempts.single.key, key);
+            });
+          });
+        },
+      );
+
+      group('Given an empty string key and a budget of one, ', () {
+        late DatabaseRateLimiter limiter;
+        setUpAll(() async {
+          limiter = buildRateLimitUtil(maxAttempts: 1);
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when admitting two attempts, ', () {
+          late bool first;
+          late bool second;
+          setUpAll(() async {
+            first = await limiter.tryRecordAttempt(session, key: '');
+            second = await limiter.tryRecordAttempt(session, key: '');
+          });
+          test('then the empty key identifies one shared bucket.', () async {
+            expect([first, second], [true, false]);
+          });
+        });
+      });
+
+      group('Given an exhausted key and an unused key, ', () {
+        late DatabaseRateLimiter limiter;
+        setUpAll(() async {
+          limiter = buildRateLimitUtil(maxAttempts: 1);
+          await limiter.tryRecordAttempt(session, key: 'exhausted');
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when admitting an attempt for the unused key, ', () {
+          late bool admitted;
+          setUpAll(() async {
+            admitted = await limiter.tryRecordAttempt(
+              session,
+              key: 'unused',
+            );
+          });
+          test('then it has its own attempt budget.', () async {
+            expect(admitted, isTrue);
+          });
+        });
+      });
+
+      group('Given an exhausted limiter whose rejection callback throws, ', () {
+        late DatabaseRateLimiter limiter;
+        setUpAll(() async {
           limiter = buildRateLimitUtil(
             maxAttempts: 1,
             onRateLimitExceeded: (final session, final key) async {
-              await limiter.deleteAttempts(session, key: key);
               throw _ExpectedRollbackException();
             },
           );
           await limiter.tryRecordAttempt(session, key: 'request');
-          await expectLater(
-            session.db.transaction(
-              (final transaction) =>
-                  limiter.tryRecordAttempt(session, key: 'request'),
-            ),
-            throwsA(isA<_ExpectedRollbackException>()),
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when admitting another attempt, ', () {
+          Object? error;
+          setUpAll(() async {
+            try {
+              await limiter.tryRecordAttempt(session, key: 'request');
+            } catch (caughtError) {
+              error = caughtError;
+            }
+          });
+          test(
+            'then the callback exception propagates without consuming an attempt.',
+            () async {
+              expect(error, isA<_ExpectedRollbackException>());
+              expect(await limiter.countAttempts(session, key: 'request'), 1);
+            },
           );
-          expect(
-            await limiter.tryRecordAttempt(session, key: 'request'),
-            isTrue,
+        });
+      });
+
+      group(
+        'Given an exhausted limiter whose rejection callback clears the bucket, ',
+        () {
+          late DatabaseRateLimiter limiter;
+          setUpAll(() async {
+            limiter = buildRateLimitUtil(
+              maxAttempts: 1,
+              onRateLimitExceeded: (final session, final key) async {
+                await limiter.deleteAttempts(session, key: key);
+                throw _ExpectedRollbackException();
+              },
+            );
+            await limiter.tryRecordAttempt(session, key: 'request');
+          });
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group(
+            'when rejecting an attempt in a rolled-back caller transaction and retrying, ',
+            () {
+              Object? error;
+              late bool admitted;
+              setUpAll(() async {
+                try {
+                  await session.db.transaction(
+                    (final transaction) =>
+                        limiter.tryRecordAttempt(session, key: 'request'),
+                  );
+                } catch (caughtError) {
+                  error = caughtError;
+                }
+                admitted = await limiter.tryRecordAttempt(
+                  session,
+                  key: 'request',
+                );
+              });
+              test(
+                'then callback cleanup persists and the bucket can be used again.',
+                () async {
+                  expect(error, isA<_ExpectedRollbackException>());
+                  expect(admitted, isTrue);
+                },
+              );
+            },
           );
         },
       );
@@ -686,7 +917,7 @@ void main() {
         () {
           late DatabaseRateLimiter limiter;
           late DateTime now;
-          setUp(() async {
+          setUpAll(() async {
             now = DateTime.utc(2026, 1, 1, 12);
             limiter = buildRateLimitUtil(
               maxAttempts: 3,
@@ -707,57 +938,137 @@ void main() {
               () => limiter.tryRecordAttempt(session, key: 'request'),
             );
           });
-          test(
-            'when counting attempts now, '
-            'then only the attempt strictly inside the window counts.',
-            () async {
-              final count = await withClock(
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group('when counting attempts now, ', () {
+            late int count;
+            setUpAll(() async {
+              count = await withClock(
                 Clock.fixed(now),
                 () => limiter.countAttempts(session, key: 'request'),
               );
-              expect(count, 1);
-            },
-          );
-          test(
-            'when deleting attempts before the cutoff, '
-            'then the attempt at the cutoff and the newer attempt remain.',
-            () async {
-              final deleted = await limiter.deleteAttempts(
+            });
+            test(
+              'then only the attempt strictly inside the window counts.',
+              () async {
+                expect(count, 1);
+              },
+            );
+          });
+        },
+      );
+
+      group(
+        'Given a one-hour window with attempts before, at, and after its cutoff, ',
+        () {
+          late DatabaseRateLimiter limiter;
+          late DateTime now;
+          setUpAll(() async {
+            now = DateTime.utc(2026, 1, 1, 12);
+            limiter = buildRateLimitUtil(
+              maxAttempts: 3,
+              timeframe: const Duration(hours: 1),
+            );
+            await withClock(
+              Clock.fixed(
+                now.subtract(const Duration(hours: 1, microseconds: 1)),
+              ),
+              () => limiter.tryRecordAttempt(session, key: 'request'),
+            );
+            await withClock(
+              Clock.fixed(now.subtract(const Duration(hours: 1))),
+              () => limiter.tryRecordAttempt(session, key: 'request'),
+            );
+            await withClock(
+              Clock.fixed(now.subtract(const Duration(minutes: 59))),
+              () => limiter.tryRecordAttempt(session, key: 'request'),
+            );
+          });
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group('when deleting attempts before the cutoff, ', () {
+            late int deleted;
+            late List<RateLimitedRequestAttempt> remaining;
+            setUpAll(() async {
+              deleted = await limiter.deleteAttempts(
                 session,
                 key: 'request',
                 before: now.subtract(const Duration(hours: 1)),
               );
-              final remaining = await _findAttempts(session);
-              expect(deleted, 1);
-              expect(remaining.map((final attempt) => attempt.attemptedAt), [
-                now.subtract(const Duration(hours: 1)),
-                now.subtract(const Duration(minutes: 59)),
-              ]);
-            },
-          );
-          test(
-            'when deleting the key without a cutoff, '
-            'then all its attempts are removed regardless of the configured window.',
-            () async {
-              final RateLimiter publicLimiter = limiter;
-              final deleted = await publicLimiter.deleteAttempts(
-                session,
-                key: 'request',
-              );
-              expect(deleted, 3);
-              expect(await _findAttempts(session), isEmpty);
-            },
-          );
+              remaining = await _findAttempts(session);
+            });
+            test(
+              'then the attempt at the cutoff and the newer attempt remain.',
+              () async {
+                expect(deleted, 1);
+                expect(remaining.map((final attempt) => attempt.attemptedAt), [
+                  now.subtract(const Duration(hours: 1)),
+                  now.subtract(const Duration(minutes: 59)),
+                ]);
+              },
+            );
+          });
         },
       );
 
-      test(
-        'Given a one-attempt window exhausted exactly one hour ago, '
-        'when admitting an attempt at the window boundary, '
-        'then the expired attempt no longer consumes the budget.',
-        () async {
-          final now = DateTime.utc(2026, 1, 1, 12);
-          final limiter = buildRateLimitUtil(
+      group(
+        'Given a one-hour window with attempts before, at, and after its cutoff, ',
+        () {
+          late DatabaseRateLimiter limiter;
+          late DateTime now;
+          setUpAll(() async {
+            now = DateTime.utc(2026, 1, 1, 12);
+            limiter = buildRateLimitUtil(
+              maxAttempts: 3,
+              timeframe: const Duration(hours: 1),
+            );
+            await withClock(
+              Clock.fixed(
+                now.subtract(const Duration(hours: 1, microseconds: 1)),
+              ),
+              () => limiter.tryRecordAttempt(session, key: 'request'),
+            );
+            await withClock(
+              Clock.fixed(now.subtract(const Duration(hours: 1))),
+              () => limiter.tryRecordAttempt(session, key: 'request'),
+            );
+            await withClock(
+              Clock.fixed(now.subtract(const Duration(minutes: 59))),
+              () => limiter.tryRecordAttempt(session, key: 'request'),
+            );
+          });
+          tearDownAll(() async {
+            await _deleteTestAttempts(session);
+          });
+          group('when deleting the key without a cutoff, ', () {
+            late RateLimiter publicLimiter;
+            late int deleted;
+            setUpAll(() async {
+              publicLimiter = limiter;
+              deleted = await publicLimiter.deleteAttempts(
+                session,
+                key: 'request',
+              );
+            });
+            test(
+              'then all its attempts are removed regardless of the configured window.',
+              () async {
+                expect(deleted, 3);
+                expect(await _findAttempts(session), isEmpty);
+              },
+            );
+          });
+        },
+      );
+
+      group('Given a one-attempt window exhausted exactly one hour ago, ', () {
+        late DateTime now;
+        late DatabaseRateLimiter limiter;
+        setUpAll(() async {
+          now = DateTime.utc(2026, 1, 1, 12);
+          limiter = buildRateLimitUtil(
             maxAttempts: 1,
             timeframe: const Duration(hours: 1),
           );
@@ -765,70 +1076,120 @@ void main() {
             Clock.fixed(now.subtract(const Duration(hours: 1))),
             () => limiter.tryRecordAttempt(session, key: 'request'),
           );
-          final admitted = await withClock(
-            Clock.fixed(now),
-            () => limiter.tryRecordAttempt(session, key: 'request'),
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when admitting an attempt at the window boundary, ', () {
+          late bool admitted;
+          setUpAll(() async {
+            admitted = await withClock(
+              Clock.fixed(now),
+              () => limiter.tryRecordAttempt(session, key: 'request'),
+            );
+          });
+          test(
+            'then the expired attempt no longer consumes the budget.',
+            () async {
+              expect(admitted, isTrue);
+            },
           );
-          expect(admitted, isTrue);
-        },
-      );
+        });
+      });
 
-      test(
-        'Given a one-attempt lifetime limit used a year ago, '
-        'when admitting another attempt, '
-        'then the old attempt still exhausts the budget.',
-        () async {
-          final now = DateTime.utc(2026, 1, 1);
-          final limiter = buildRateLimitUtil(maxAttempts: 1);
+      group('Given a one-attempt lifetime limit used a year ago, ', () {
+        late DateTime now;
+        late DatabaseRateLimiter limiter;
+        setUpAll(() async {
+          now = DateTime.utc(2026, 1, 1);
+          limiter = buildRateLimitUtil(maxAttempts: 1);
           await withClock(
             Clock.fixed(now.subtract(const Duration(days: 365))),
             () => limiter.tryRecordAttempt(session, key: 'request'),
           );
-          final admitted = await withClock(
-            Clock.fixed(now),
-            () => limiter.tryRecordAttempt(session, key: 'request'),
-          );
-          expect(admitted, isFalse);
-        },
-      );
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when admitting another attempt, ', () {
+          late bool admitted;
+          setUpAll(() async {
+            admitted = await withClock(
+              Clock.fixed(now),
+              () => limiter.tryRecordAttempt(session, key: 'request'),
+            );
+          });
+          test('then the old attempt still exhausts the budget.', () async {
+            expect(admitted, isFalse);
+          });
+        });
+      });
 
-      test(
-        'Given attempts for two keys at the current timestamp, '
-        'when deleting without a key or cutoff, '
-        'then both keys are cleared and the deletion count is returned.',
-        () async {
-          final now = DateTime.utc(2026, 1, 1);
-          final RateLimiter limiter = buildRateLimitUtil(maxAttempts: 1);
+      group('Given attempts for two keys at the current timestamp, ', () {
+        late DateTime now;
+        late RateLimiter limiter;
+        setUpAll(() async {
+          now = DateTime.utc(2026, 1, 1);
+          limiter = buildRateLimitUtil(maxAttempts: 1);
           await withClock(Clock.fixed(now), () async {
             await limiter.tryRecordAttempt(session, key: 'first');
             await limiter.tryRecordAttempt(session, key: 'second');
-            expect(await limiter.deleteAttempts(session), 2);
           });
-          expect(await _findAttempts(session), isEmpty);
-        },
-      );
-
-      test(
-        'Given a key with one recorded attempt, '
-        'when deleting it in a transaction that rolls back, '
-        'then the deletion is rolled back with that transaction.',
-        () async {
-          final RateLimiter limiter = buildRateLimitUtil(maxAttempts: 1);
-          await limiter.tryRecordAttempt(session, key: 'request');
-          await expectLater(
-            session.db.transaction((final transaction) async {
-              await limiter.deleteAttempts(
-                session,
-                key: 'request',
-                transaction: transaction,
-              );
-              throw _ExpectedRollbackException();
-            }),
-            throwsA(isA<_ExpectedRollbackException>()),
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when deleting without a key or cutoff, ', () {
+          late int deletedAttempts;
+          setUpAll(() async {
+            await withClock(Clock.fixed(now), () async {
+              deletedAttempts = await limiter.deleteAttempts(session);
+            });
+          });
+          test(
+            'then both keys are cleared and the deletion count is returned.',
+            () async {
+              expect(deletedAttempts, 2);
+              expect(await _findAttempts(session), isEmpty);
+            },
           );
-          expect(await limiter.countAttempts(session, key: 'request'), 1);
-        },
-      );
+        });
+      });
+
+      group('Given a key with one recorded attempt, ', () {
+        late RateLimiter limiter;
+        setUpAll(() async {
+          limiter = buildRateLimitUtil(maxAttempts: 1);
+          await limiter.tryRecordAttempt(session, key: 'request');
+        });
+        tearDownAll(() async {
+          await _deleteTestAttempts(session);
+        });
+        group('when deleting it in a transaction that rolls back, ', () {
+          Object? error;
+          setUpAll(() async {
+            try {
+              await session.db.transaction((final transaction) async {
+                await limiter.deleteAttempts(
+                  session,
+                  key: 'request',
+                  transaction: transaction,
+                );
+                throw _ExpectedRollbackException();
+              });
+            } catch (caughtError) {
+              error = caughtError;
+            }
+          });
+          test(
+            'then the deletion is rolled back with that transaction.',
+            () async {
+              expect(error, isA<_ExpectedRollbackException>());
+              expect(await limiter.countAttempts(session, key: 'request'), 1);
+            },
+          );
+        });
+      });
     },
   );
 }
