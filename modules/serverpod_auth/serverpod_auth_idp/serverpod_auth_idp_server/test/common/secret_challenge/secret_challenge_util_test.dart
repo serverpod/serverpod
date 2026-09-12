@@ -1363,6 +1363,159 @@ void main() {
       );
 
       test(
+        'Given a valid request with separate one-attempt verification and completion budgets, '
+        'when verifying its code and completing it with the returned token, '
+        'then both phases succeed and each consumes only its own budget.',
+        () async {
+          final verificationLimiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: 'secret_challenge_util_test',
+              source: 'verification',
+              maxAttempts: 1,
+            ),
+          );
+          final completionLimiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: 'secret_challenge_util_test',
+              source: 'completion',
+              maxAttempts: 1,
+            ),
+          );
+          arrangeChallengeUtil(
+            verificationRateLimiter: verificationLimiter,
+            completionRateLimiter: completionLimiter,
+          );
+          final request = await createRequest(
+            verificationCode: _verificationCode,
+            lifetime: const Duration(hours: 1),
+            isAlreadyUsed: false,
+          );
+
+          final token = await session.db.transaction(
+            (final transaction) => challengeUtil.verifyChallenge(
+              session,
+              requestId: request.id,
+              verificationCode: _verificationCode,
+              transaction: transaction,
+            ),
+          );
+          final result = await session.db.transaction(
+            (final transaction) => challengeUtil.completeChallenge(
+              session,
+              completionToken: token,
+              transaction: transaction,
+            ),
+          );
+
+          expect(result, same(request));
+          expect(
+            await verificationLimiter.countAttempts(
+              session,
+              key: request.id.uuid,
+            ),
+            1,
+          );
+          expect(
+            await completionLimiter.countAttempts(
+              session,
+              key: request.id.uuid,
+            ),
+            1,
+          );
+        },
+      );
+
+      test(
+        'Given an unknown request with a one-attempt verification budget, '
+        'when a not-found verification rolls back and verification is retried, '
+        'then the first failure still exhausts the verification budget.',
+        () async {
+          final limiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: 'secret_challenge_util_test',
+              source: 'verification',
+              maxAttempts: 1,
+            ),
+          );
+          arrangeChallengeUtil(
+            verificationRateLimiter: limiter,
+            completionRateLimiter: null,
+          );
+          final requestId = const Uuid().v4obj();
+
+          await expectLater(
+            session.db.transaction(
+              (final transaction) => challengeUtil.verifyChallenge(
+                session,
+                requestId: requestId,
+                verificationCode: _verificationCode,
+                transaction: transaction,
+              ),
+            ),
+            throwsA(isA<ChallengeRequestNotFoundException>()),
+          );
+          await expectLater(
+            session.db.transaction(
+              (final transaction) => challengeUtil.verifyChallenge(
+                session,
+                requestId: requestId,
+                verificationCode: _verificationCode,
+                transaction: transaction,
+              ),
+            ),
+            throwsA(isA<ChallengeRateLimitExceededException>()),
+          );
+          expect(await limiter.countAttempts(session, key: requestId.uuid), 1);
+        },
+      );
+
+      test(
+        'Given a well-formed token for an unknown request with a one-attempt completion budget, '
+        'when a not-found completion rolls back and completion is retried, '
+        'then the first failure still exhausts the completion budget.',
+        () async {
+          final limiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: 'secret_challenge_util_test',
+              source: 'completion',
+              maxAttempts: 1,
+            ),
+          );
+          arrangeChallengeUtil(
+            verificationRateLimiter: null,
+            completionRateLimiter: limiter,
+          );
+          final requestId = const Uuid().v4obj();
+          final token = _completionTokenFor(
+            requestId,
+            verificationCode: 'any-code',
+          );
+
+          await expectLater(
+            session.db.transaction(
+              (final transaction) => challengeUtil.completeChallenge(
+                session,
+                completionToken: token,
+                transaction: transaction,
+              ),
+            ),
+            throwsA(isA<ChallengeRequestNotFoundException>()),
+          );
+          await expectLater(
+            session.db.transaction(
+              (final transaction) => challengeUtil.completeChallenge(
+                session,
+                completionToken: token,
+                transaction: transaction,
+              ),
+            ),
+            throwsA(isA<ChallengeRateLimitExceededException>()),
+          );
+          expect(await limiter.countAttempts(session, key: requestId.uuid), 1);
+        },
+      );
+
+      test(
         'Given a missing request whose verification budget is exhausted, '
         'when verifying it, '
         'then rate limiting takes precedence over request lookup.',
