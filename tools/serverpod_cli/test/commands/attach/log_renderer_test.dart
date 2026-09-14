@@ -61,21 +61,30 @@ void main() {
             'admin': ['flutter line'],
           };
 
+        final printed = expectLater(
+          sink.printed,
+          emitsInOrder([
+            contains('Earlier line.'),
+            '[admin] flutter line',
+            '--- server running ---',
+            'Later line.',
+            emitsDone,
+          ]),
+        );
+
         final session = attachWithLogStream(
           server.socketPath,
           out: sink,
           interrupts: interrupts.stream,
         );
-        await waitFor(
-          () => sink.lines.any((l) => l.contains('Earlier line.')),
-        );
-
-        expect(sink.lines, contains(contains('Earlier line.')));
-        expect(sink.lines, contains('[admin] flutter line'));
-        expect(sink.lines, contains('--- server running ---'));
+        await waitFor(() => sink.lines.contains('--- server running ---'));
+        runner.emit(const ServerLineEvent('Later line.'));
+        await waitFor(() => sink.lines.contains('Later line.'));
 
         interrupts.add(ProcessSignal.sigint);
         expect(await session, 0);
+        await sink.close();
+        await printed;
       },
     );
 
@@ -441,18 +450,27 @@ void main() {
 
 class _RecordingSink implements IOSink {
   final List<String> lines = [];
+  final _printed = StreamController<String>();
+
+  /// Every line written, in order, done once the sink is closed.
+  Stream<String> get printed => _printed.stream;
+
+  void _record(String line) {
+    lines.add(line);
+    _printed.add(line);
+  }
 
   @override
-  void writeln([Object? object = '']) => lines.add('$object');
+  void writeln([Object? object = '']) => _record('$object');
 
   @override
-  void write(Object? object) => lines.add('$object');
+  void write(Object? object) => _record('$object');
 
   @override
   Encoding encoding = utf8;
 
   @override
-  void add(List<int> data) => lines.add(utf8.decode(data));
+  void add(List<int> data) => _record(utf8.decode(data));
 
   @override
   void addError(Object error, [StackTrace? stackTrace]) {}
@@ -461,7 +479,7 @@ class _RecordingSink implements IOSink {
   Future<void> addStream(Stream<List<int>> stream) async {}
 
   @override
-  Future<void> close() async {}
+  Future<void> close() => _printed.close();
 
   @override
   Future<void> get done => Future.value();
@@ -471,8 +489,8 @@ class _RecordingSink implements IOSink {
 
   @override
   void writeAll(Iterable<Object?> objects, [String separator = '']) =>
-      lines.add(objects.join(separator));
+      _record(objects.join(separator));
 
   @override
-  void writeCharCode(int charCode) => lines.add(String.fromCharCode(charCode));
+  void writeCharCode(int charCode) => _record(String.fromCharCode(charCode));
 }
