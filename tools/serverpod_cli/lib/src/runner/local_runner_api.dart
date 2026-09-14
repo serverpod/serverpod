@@ -63,6 +63,40 @@ class LocalRunnerApi implements InProcessRunnerApi {
     return stack;
   }
 
+  int _operations = 0;
+
+  /// Runs [action] as an operation every attached client sees start and end,
+  /// with its failure recorded as an error entry.
+  ///
+  /// [failure] reads the error off a result that reports its own, as migration
+  /// results do. A thrown error fails the operation and reaches the caller.
+  Future<T> _track<T>(
+    String label,
+    Future<T> Function() action, {
+    Object? Function(T result)? failure,
+  }) async {
+    final id = 'runner_${++_operations}';
+    _logHistory.startCliOperation(id, label);
+    final T result;
+    try {
+      result = await action();
+    } catch (e, s) {
+      _logHistory.completeCliOperation(
+        id,
+        success: false,
+        error: e,
+        stackTrace: s,
+      );
+      rethrow;
+    }
+    final error = failure?.call(result);
+    _logHistory.completeCliOperation(id, success: error == null, error: error);
+    return result;
+  }
+
+  String _appName(String appId) =>
+      flutterApps.where((app) => app.id == appId).firstOrNull?.name ?? appId;
+
   /// The events this API raises itself.
   final StreamController<RunnerEvent> _own =
       StreamController<RunnerEvent>.broadcast();
@@ -159,14 +193,20 @@ class LocalRunnerApi implements InProcessRunnerApi {
   bool get isRunning => _stack?.session.isRunning ?? false;
 
   @override
-  Future<void> hotReload() => _require('hot reload').session.forceReload();
+  Future<void> hotReload() =>
+      _track('Hot reload', () => _require('hot reload').session.forceReload());
 
   @override
-  Future<void> hotRestart() => _require('hot restart').session.forceRestart();
+  Future<void> hotRestart() => _track(
+    'Hot restart',
+    () => _require('hot restart').session.forceRestart(),
+  );
 
   @override
-  Future<void> retryStart() =>
-      _require('retrying the start').session.retryStart();
+  Future<void> retryStart() => _track(
+    'Rebuild & start',
+    () => _require('retrying the start').session.retryStart(),
+  );
 
   @override
   Future<void> stop() async => _requestShutdown();
@@ -175,6 +215,33 @@ class LocalRunnerApi implements InProcessRunnerApi {
   Future<MigrationResult> createMigration({
     String? tag,
     bool force = false,
+  }) => _track(
+    '${force ? 'Force-creating' : 'Creating'} migration',
+    () => _createMigration(tag: tag, force: force),
+    failure: _migrationFailure,
+  );
+
+  @override
+  Future<MigrationResult> createRepairMigration({
+    String? tag,
+    bool force = false,
+    String? targetVersion,
+  }) => _track(
+    '${force ? 'Force-creating' : 'Creating'} repair migration',
+    () => _createRepairMigration(
+      tag: tag,
+      force: force,
+      targetVersion: targetVersion,
+    ),
+    failure: _migrationFailure,
+  );
+
+  static String? _migrationFailure(MigrationResult result) =>
+      result.isError ? result.message : null;
+
+  Future<MigrationResult> _createMigration({
+    required String? tag,
+    required bool force,
   }) async {
     try {
       final stack = _require('creating a migration');
@@ -198,11 +265,10 @@ class LocalRunnerApi implements InProcessRunnerApi {
     }
   }
 
-  @override
-  Future<MigrationResult> createRepairMigration({
-    String? tag,
-    bool force = false,
-    String? targetVersion,
+  Future<MigrationResult> _createRepairMigration({
+    required String? tag,
+    required bool force,
+    required String? targetVersion,
   }) async {
     final File? file;
     try {
@@ -243,8 +309,10 @@ class LocalRunnerApi implements InProcessRunnerApi {
   }
 
   @override
-  Future<void> applyMigrations() =>
-      _require('applying migrations').session.applyMigration();
+  Future<void> applyMigrations() => _track(
+    'Applying migrations',
+    () => _require('applying migrations').session.applyMigration(),
+  );
 
   @override
   List<FlutterAppConfig> get flutterApps =>
@@ -267,20 +335,28 @@ class LocalRunnerApi implements InProcessRunnerApi {
       _stack?.session.isFlutterAppRunning ?? false;
 
   @override
-  Future<bool> launchFlutterApp(String appId) =>
-      _require('launching an app').session.spawnFlutterApp(appId);
+  Future<bool> launchFlutterApp(String appId) => _track(
+    'Launch ${_appName(appId)}',
+    () => _require('launching an app').session.spawnFlutterApp(appId),
+  );
 
   @override
-  Future<void> restartFlutterApp(String appId) =>
-      _require('restarting an app').session.relaunchFlutterApp(appId);
+  Future<void> restartFlutterApp(String appId) => _track(
+    '${isFlutterAppRunning(appId) ? 'Relaunch' : 'Launch'} ${_appName(appId)}',
+    () => _require('restarting an app').session.relaunchFlutterApp(appId),
+  );
 
   @override
-  Future<void> stopFlutterApp(String appId) =>
-      _require('stopping an app').session.stopFlutterApp(appId);
+  Future<void> stopFlutterApp(String appId) => _track(
+    'Stop ${_appName(appId)}',
+    () => _require('stopping an app').session.stopFlutterApp(appId),
+  );
 
   @override
-  Future<void> restartFlutterApps() =>
-      _require('restarting the apps').session.restartFlutterApp();
+  Future<void> restartFlutterApps() => _track(
+    isAnyFlutterAppRunning ? 'Restart Flutter app' : 'Start Flutter app',
+    () => _require('restarting the apps').session.restartFlutterApp(),
+  );
 
   @override
   Map<String, String?> get flutterDtdUris =>
