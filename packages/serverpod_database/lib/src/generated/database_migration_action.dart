@@ -18,6 +18,7 @@ abstract class DatabaseMigrationAction
   DatabaseMigrationAction._({
     required this.type,
     this.deleteTable,
+    this.deleteTableSchema,
     this.alterTable,
     this.createTable,
   });
@@ -25,6 +26,7 @@ abstract class DatabaseMigrationAction
   factory DatabaseMigrationAction({
     required _isd.DatabaseMigrationActionType type,
     String? deleteTable,
+    String? deleteTableSchema,
     _isd.TableMigration? alterTable,
     _isd.TableDefinition? createTable,
   }) = _DatabaseMigrationActionImpl;
@@ -37,6 +39,7 @@ abstract class DatabaseMigrationAction
         (jsonSerialization['type'] as String),
       ),
       deleteTable: jsonSerialization['deleteTable'] as String?,
+      deleteTableSchema: jsonSerialization['deleteTableSchema'] as String?,
       alterTable: jsonSerialization['alterTable'] == null
           ? null
           : _isd.Protocol().deserialize<_isd.TableMigration>(
@@ -54,6 +57,9 @@ abstract class DatabaseMigrationAction
 
   String? deleteTable;
 
+  /// The schema of [deleteTable]. Null means the default schema.
+  String? deleteTableSchema;
+
   _isd.TableMigration? alterTable;
 
   _isd.TableDefinition? createTable;
@@ -64,6 +70,7 @@ abstract class DatabaseMigrationAction
   DatabaseMigrationAction copyWith({
     _isd.DatabaseMigrationActionType? type,
     String? deleteTable,
+    String? deleteTableSchema,
     _isd.TableMigration? alterTable,
     _isd.TableDefinition? createTable,
   });
@@ -73,6 +80,7 @@ abstract class DatabaseMigrationAction
       '__className__': 'serverpod.DatabaseMigrationAction',
       'type': type.toJson(),
       if (deleteTable != null) 'deleteTable': deleteTable,
+      if (deleteTableSchema != null) 'deleteTableSchema': deleteTableSchema,
       if (alterTable != null) 'alterTable': alterTable?.toJson(),
       if (createTable != null) 'createTable': createTable?.toJson(),
     };
@@ -84,6 +92,7 @@ abstract class DatabaseMigrationAction
       '__className__': 'serverpod.DatabaseMigrationAction',
       'type': type.toJson(),
       if (deleteTable != null) 'deleteTable': deleteTable,
+      if (deleteTableSchema != null) 'deleteTableSchema': deleteTableSchema,
       if (alterTable != null) 'alterTable': alterTable?.toJsonForProtocol(),
       if (createTable != null) 'createTable': createTable?.toJsonForProtocol(),
     };
@@ -101,11 +110,13 @@ class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
   _DatabaseMigrationActionImpl({
     required _isd.DatabaseMigrationActionType type,
     String? deleteTable,
+    String? deleteTableSchema,
     _isd.TableMigration? alterTable,
     _isd.TableDefinition? createTable,
   }) : super._(
          type: type,
          deleteTable: deleteTable,
+         deleteTableSchema: deleteTableSchema,
          alterTable: alterTable,
          createTable: createTable,
        );
@@ -117,12 +128,16 @@ class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
   DatabaseMigrationAction copyWith({
     _isd.DatabaseMigrationActionType? type,
     Object? deleteTable = _Undefined,
+    Object? deleteTableSchema = _Undefined,
     Object? alterTable = _Undefined,
     Object? createTable = _Undefined,
   }) {
     return DatabaseMigrationAction(
       type: type ?? this.type,
       deleteTable: deleteTable is String? ? deleteTable : this.deleteTable,
+      deleteTableSchema: deleteTableSchema is String?
+          ? deleteTableSchema
+          : this.deleteTableSchema,
       alterTable: alterTable is _isd.TableMigration?
           ? alterTable
           : this.alterTable?.copyWith(),

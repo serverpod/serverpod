@@ -4,6 +4,8 @@ fields:
   dartName: String?
   module: String?
   schema: String
+  ### The schema the table is moved to, if it changes.
+  newSchema: String?
 
   addColumns: List<ColumnDefinition>
   deleteColumns: List<String>

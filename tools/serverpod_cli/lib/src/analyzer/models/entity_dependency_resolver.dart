@@ -2,16 +2,24 @@ import 'dart:math';
 
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/table_name_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ModelDependencyResolver {
   /// Resolves dependencies between models, this method mutates the input.
   static void resolveModelDependencies(
-    List<SerializableModelDefinition> modelDefinitions,
-  ) {
+    List<SerializableModelDefinition> modelDefinitions, {
+    String? defaultSchema,
+  }) {
+    var tableNames = {
+      for (var model in modelDefinitions.whereType<ModelClassDefinition>())
+        ?model.tableName,
+    };
+
     // First resolve inheritance to allow evaluating inherited id fields.
     modelDefinitions.whereType<ClassDefinition>().forEach((
       classDefinition,
@@ -35,6 +43,12 @@ class ModelDependencyResolver {
         if (classDefinition is! ModelClassDefinition) continue;
 
         _resolveFieldIndexes(fieldDefinition, classDefinition);
+        _resolveParentTable(
+          classDefinition,
+          fieldDefinition,
+          tableNames,
+          defaultSchema,
+        );
         _resolveObjectRelationReference(
           classDefinition,
           fieldDefinition,
@@ -54,6 +68,27 @@ class ModelDependencyResolver {
     ) {
       _resolveSyncScopeIdField(classDefinition, modelDefinitions);
     });
+  }
+
+  /// Rewrites a `parent=` reference to its single match. Ambiguous or unknown
+  /// references are left as written for validation to report.
+  static void _resolveParentTable(
+    ModelClassDefinition classDefinition,
+    SerializableModelFieldDefinition fieldDefinition,
+    Set<String> tableNames,
+    String? defaultSchema,
+  ) {
+    var relation = fieldDefinition.relation;
+    if (relation is! ForeignRelationDefinition) return;
+
+    var matches = matchParentTable(
+      relation.parentTable,
+      defaultSchema: classDefinition.type.moduleAlias == defaultModuleAlias
+          ? defaultSchema
+          : null,
+      tableNames: tableNames,
+    );
+    if (matches.length == 1) relation.parentTable = matches.single;
   }
 
   /// Injects the `scopeId` field on tables with `database: sync` that do not
