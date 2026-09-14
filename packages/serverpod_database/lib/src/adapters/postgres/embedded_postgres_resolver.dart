@@ -14,15 +14,21 @@ class ResolvedEmbeddedPostgres {
   /// statements such as `CREATE DATABASE` / `DROP DATABASE`.
   final PostgresDatabaseConfig connectivity;
 
-  /// Stops the postmaster this call launched, or `null` when it attached to one
-  /// another supervisor already owns. Only invoke it for a non-null value.
-  final Future<void> Function()? stop;
+  /// The postmaster handle, whether launched by this call or attached to.
+  final EmbeddedPostgres handle;
+
+  /// Whether this call launched the postmaster, and so owns [stop].
+  final bool launched;
 
   /// Creates a [ResolvedEmbeddedPostgres].
   const ResolvedEmbeddedPostgres({
     required this.connectivity,
-    required this.stop,
+    required this.handle,
+    required this.launched,
   });
+
+  /// Stops the postmaster when this call launched it, otherwise `null`.
+  Future<void> Function()? get stop => launched ? handle.stop : null;
 }
 
 /// Launches or attaches to the embedded PostgreSQL postmaster backing
@@ -49,11 +55,7 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
         dataDir: dataDir,
         databaseName: config.name,
         username: config.user,
-        transport: hasUnixSocketSupport()
-            ? const UnixTransport()
-            : TcpTransport(
-                password: config.password.isEmpty ? null : config.password,
-              ),
+        transport: embeddedTransportFor(config),
         detach: false,
         repairStaleLocks: true,
       ),
@@ -70,9 +72,20 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
 
   return ResolvedEmbeddedPostgres(
     connectivity: config._connectivityFrom(result.handle.endpoint),
-    stop: result.launched ? () => result.handle.stop() : null,
+    handle: result.handle,
+    launched: result.launched,
   );
 }
+
+/// How the embedded postmaster for [config] listens.
+///
+/// Always the Unix socket, plus loopback TCP on [config]'s port when a password
+/// is configured. Every process derives the same answer, so start order does
+/// not matter.
+Transport embeddedTransportFor(PostgresDatabaseConfig config) =>
+    config.password.isEmpty
+    ? const UnixTransport()
+    : DualTransport(port: config.port, password: config.password);
 
 extension on PostgresDatabaseConfig {
   /// The effective PGDATA [Directory] for the embedded PostgreSQL, or `null`
