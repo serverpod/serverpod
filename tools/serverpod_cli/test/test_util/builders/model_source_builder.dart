@@ -64,13 +64,13 @@ class ModelSourceBuilder {
     return this;
   }
 
-  ModelSourceBuilder withCrdtScopeModel() {
+  ModelSourceBuilder withOfflineSyncSpaceModel() {
     return withIsSharedModel(true)
         .withModuleAlias('serverpod_offline_sync')
-        .withFileName('crdt_scope')
+        .withFileName('offline_sync_space')
         .withYaml('''
-class: CrdtScope
-table: crdt_scopes
+class: OfflineSyncSpace
+table: offline_sync_spaces
 database: all
 fields:
   name: String

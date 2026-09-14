@@ -23,7 +23,7 @@ void main() {
 
       setUp(() {
         var models = [
-          ModelSourceBuilder().withCrdtScopeModel().build(),
+          ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
           ModelSourceBuilder().withFileName('person').withYaml(
             '''
 class: Person
@@ -58,31 +58,31 @@ database: sync
         },
       );
 
-      test('then the scopeId field is present with the correct relation.', () {
+      test('then the spaceId field is present with the correct relation.', () {
         var definition = definitions.last as ModelClassDefinition;
         var relation =
-            definition.findField(syncScopeIdFieldName)!.relation
+            definition.findField(syncSpaceIdFieldName)!.relation
                 as ForeignRelationDefinition;
-        expect(relation.parentTable, syncScopesTableName);
+        expect(relation.parentTable, syncSpacesTableName);
         expect(relation.onDelete, ForeignKeyAction.cascade);
       });
     },
   );
 
   test(
-    'Given a model with "database: sync" with an implicit primary key '
-    'when validating '
+    'Given a model with "database: sync" with an implicit primary key, '
+    'when validating, '
     'then it is of type UuidValue? with defaultPersist=random_v7.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
 table: person
 database: sync
 fields:
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
 ''',
         ).build(),
       ];
@@ -104,12 +104,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" without a scopeId field '
-    'when analyzing '
-    'then no error is generated and the scopeId field is injected below the id field.',
+    'Given a model with "database: sync" without a spaceId field, '
+    'when analyzing, '
+    'then no error is generated and the spaceId field is injected below the id field.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -117,7 +117,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  name: String, unique(per=scopeId)
+  name: String, unique(per=spaceId)
 ''',
         ).build(),
       ];
@@ -133,17 +133,17 @@ fields:
       );
 
       expect(collector.errors, isEmpty);
-      expect(person.fields.map((f) => f.name), ['id', 'scopeId', 'name']);
+      expect(person.fields.map((f) => f.name), ['id', 'spaceId', 'name']);
     },
   );
 
   test(
-    'Given a model with "database: sync" without a scopeId field '
-    'when analyzing '
-    'then the injected scopeId field is a persisted nullable int with scope all.',
+    'Given a model with "database: sync" without a spaceId field, '
+    'when analyzing, '
+    'then the injected spaceId field is a persisted nullable int with scope all.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -151,7 +151,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  name: String, unique(per=scopeId)
+  name: String, unique(per=spaceId)
 ''',
         ).build(),
       ];
@@ -166,22 +166,22 @@ fields:
         (model) => model.className == 'Person',
       );
 
-      var scopeId = person.findField('scopeId')!;
-      expect(scopeId.type.className, 'int');
-      expect(scopeId.type.nullable, isTrue);
-      expect(scopeId.scope, ModelFieldScopeDefinition.all);
-      expect(scopeId.shouldPersist, isTrue);
-      expect(scopeId.documentation, isNotEmpty);
+      var spaceId = person.findField('spaceId')!;
+      expect(spaceId.type.className, 'int');
+      expect(spaceId.type.nullable, isTrue);
+      expect(spaceId.scope, ModelFieldScopeDefinition.all);
+      expect(spaceId.shouldPersist, isTrue);
+      expect(spaceId.documentation, isNotEmpty);
     },
   );
 
   test(
-    'Given a model with "database: sync" without a scopeId field '
-    'when analyzing '
-    'then the injected scopeId field cascades from crdt_scopes.',
+    'Given a model with "database: sync" without a spaceId field, '
+    'when analyzing, '
+    'then the injected spaceId field cascades from offline_sync_spaces.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -189,7 +189,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  name: String, unique(per=scopeId)
+  name: String, unique(per=spaceId)
 ''',
         ).build(),
       ];
@@ -205,8 +205,8 @@ fields:
       );
 
       var relation =
-          person.findField('scopeId')!.relation as ForeignRelationDefinition;
-      expect(relation.parentTable, 'crdt_scopes');
+          person.findField('spaceId')!.relation as ForeignRelationDefinition;
+      expect(relation.parentTable, 'offline_sync_spaces');
       expect(relation.foreignFieldName, 'id');
       expect(relation.onDelete, ForeignKeyAction.cascade);
       expect(relation.deferrable, isNull);
@@ -214,12 +214,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" without a scopeId field '
-    'when analyzing '
-    'then the indexes referencing scopeId are resolved on the injected field.',
+    'Given a model with "database: sync" without a spaceId field, '
+    'when analyzing, '
+    'then the indexes referencing spaceId are resolved on the injected field.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -227,7 +227,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  name: String, unique(per=scopeId)
+  name: String, unique(per=spaceId)
 ''',
         ).build(),
       ];
@@ -242,20 +242,20 @@ fields:
         (model) => model.className == 'Person',
       );
 
-      var scopeId = person.findField('scopeId')!;
-      expect(scopeId.indexes.map((i) => i.name), [
-        'person__scopeId__name__unique_idx',
+      var spaceId = person.findField('spaceId')!;
+      expect(spaceId.indexes.map((i) => i.name), [
+        'person__spaceId__name__unique_idx',
       ]);
     },
   );
 
   test(
-    'Given a model with "database: sync" with a CrdtScope relation '
-    'when analyzing '
-    'then no error is generated and the implicit scopeId field is used.',
+    'Given a model with "database: sync" with an OfflineSyncSpace relation, '
+    'when analyzing, '
+    'then no error is generated and the implicit spaceId field is used.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -263,7 +263,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scope: CrdtScope?, relation(onDelete=Cascade)
+  space: OfflineSyncSpace?, relation(onDelete=Cascade)
 ''',
         ).build(),
       ];
@@ -279,19 +279,19 @@ fields:
       );
 
       expect(collector.errors, isEmpty);
-      var scopeId = person.findField('scopeId');
-      expect(scopeId?.relation, isA<ForeignRelationDefinition>());
-      expect(person.fields.where((f) => f.name == 'scopeId'), hasLength(1));
+      var spaceId = person.findField('spaceId');
+      expect(spaceId?.relation, isA<ForeignRelationDefinition>());
+      expect(person.fields.where((f) => f.name == 'spaceId'), hasLength(1));
     },
   );
 
   test(
-    'Given a model with "database: sync" with an int primary key '
-    'when validating '
+    'Given a model with "database: sync" with an int primary key, '
+    'when validating, '
     'then an error is generated on the id type.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -299,7 +299,7 @@ table: person
 database: sync
 fields:
   id: int?, defaultPersist=serial
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
 ''',
         ).build(),
       ];
@@ -325,8 +325,8 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" and no crdt_scopes table '
-    'when validating '
+    'Given a model with "database: sync" and no offline_sync_spaces table, '
+    'when validating, '
     'then an error is generated on the database key.',
     () {
       var models = [
@@ -337,7 +337,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
 ''',
         ).build(),
@@ -364,19 +364,19 @@ fields:
       var error1 = collector.errors[1];
       expect(
         error1.message,
-        'The parent table "crdt_scopes" was not found in any model.',
+        'The parent table "offline_sync_spaces" was not found in any model.',
       );
-      expect(error1.span?.text, 'crdt_scopes');
+      expect(error1.span?.text, 'offline_sync_spaces');
     },
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field with a deferred relation '
-    'when validating '
+    'Given a model with "database: sync" with a spaceId field with a deferred relation, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -384,7 +384,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade, deferred)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade, deferred)
 ''',
         ).build(),
       ];
@@ -401,12 +401,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field without a relation '
-    'when validating '
-    'then an error is generated on the scopeId key.',
+    'Given a model with "database: sync" with a spaceId field without a relation, '
+    'when validating, '
+    'then an error is generated on the spaceId key.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -414,7 +414,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?
+  spaceId: int?
 ''',
         ).build(),
       ];
@@ -431,21 +431,21 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "scopeId" field must declare the relation '
-        '"relation(parent=crdt_scopes, onDelete=Cascade)" on tables with '
+        'The "spaceId" field must declare the relation '
+        '"relation(parent=offline_sync_spaces, onDelete=Cascade)" on tables with '
         '"database: sync".',
       );
-      expect(error.span?.text, 'scopeId');
+      expect(error.span?.text, 'spaceId');
     },
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field that is not nullable '
-    'when validating '
-    'then an error is generated on the scopeId type.',
+    'Given a model with "database: sync" with a spaceId field that is not nullable, '
+    'when validating, '
+    'then an error is generated on the spaceId type.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -453,7 +453,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int, relation(parent=offline_sync_spaces, onDelete=Cascade)
 ''',
         ).build(),
       ];
@@ -470,7 +470,7 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "scopeId" field must be of type "int?" on tables with '
+        'The "spaceId" field must be of type "int?" on tables with '
         '"database: sync".',
       );
       expect(error.span?.text, 'int');
@@ -478,12 +478,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field referencing another table '
-    'when validating '
+    'Given a model with "database: sync" with a spaceId field referencing another table, '
+    'when validating, '
     'then an error is generated on the parent name.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -491,7 +491,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=person, onDelete=Cascade)
+  spaceId: int?, relation(parent=person, onDelete=Cascade)
 ''',
         ).build(),
       ];
@@ -508,7 +508,7 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "scopeId" field must reference the "crdt_scopes" table on '
+        'The "spaceId" field must reference the "offline_sync_spaces" table on '
         'tables with "database: sync".',
       );
       expect(error.span?.text, 'person');
@@ -516,12 +516,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field overriding the column name '
-    'when validating '
+    'Given a model with "database: sync" with a spaceId field overriding the column name, '
+    'when validating, '
     'then an error is generated on the column name.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -529,7 +529,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade), column=scope_id
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade), column=space_id
 ''',
         ).build(),
       ];
@@ -546,20 +546,20 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "scopeId" field must not override its column name on tables '
+        'The "spaceId" field must not override its column name on tables '
         'with "database: sync".',
       );
-      expect(error.span?.text, 'scope_id');
+      expect(error.span?.text, 'space_id');
     },
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field with a relation without an onDelete action '
-    'when validating '
+    'Given a model with "database: sync" with a spaceId field with a relation without an onDelete action, '
+    'when validating, '
     'then an error is generated on the relation.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -567,7 +567,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes)
+  spaceId: int?, relation(parent=offline_sync_spaces)
 ''',
         ).build(),
       ];
@@ -584,19 +584,19 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "scopeId" relation must use "onDelete=Cascade".',
+        'The "spaceId" relation must use "onDelete=Cascade".',
       );
-      expect(error.span?.text, 'parent=crdt_scopes');
+      expect(error.span?.text, 'parent=offline_sync_spaces');
     },
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field with a relation that does not cascade on delete '
-    'when validating '
+    'Given a model with "database: sync" with a spaceId field with a relation that does not cascade on delete, '
+    'when validating, '
     'then an error is generated on the onDelete value.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -604,7 +604,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=NoAction)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=NoAction)
 ''',
         ).build(),
       ];
@@ -621,19 +621,19 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "scopeId" relation must use "onDelete=Cascade".',
+        'The "spaceId" relation must use "onDelete=Cascade".',
       );
       expect(error.span?.text, 'NoAction');
     },
   );
 
   test(
-    'Given a model with "database: sync" with a relation that is optional and not deferred '
-    'when validating '
+    'Given a model with "database: sync" with a relation that is optional and not deferred, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -641,7 +641,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   parent: Person?, relation(optional)
 ''',
@@ -660,12 +660,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a relation that is required and not deferred '
-    'when validating '
+    'Given a model with "database: sync" with a relation that is required and not deferred, '
+    'when validating, '
     'then an error is generated on the relation.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -673,7 +673,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   parent: Person?, relation(onDelete=Cascade)
 ''',
@@ -700,12 +700,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a relation that is required and deferred with a false value '
-    'when validating '
+    'Given a model with "database: sync" with a relation that is required and deferred with a false value, '
+    'when validating, '
     'then an error is generated on the deferred value.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -713,7 +713,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   parent: Person?, relation(deferred=false)
 ''',
@@ -740,12 +740,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a relation that is required and only deferrable '
-    'when validating '
+    'Given a model with "database: sync" with a relation that is required and only deferrable, '
+    'when validating, '
     'then an error is generated on the deferrable key.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -753,7 +753,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   parent: Person?, relation(deferrable)
 ''',
@@ -780,12 +780,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a relation declared on a nullable id field that is not deferred '
-    'when validating '
+    'Given a model with "database: sync" with a relation declared on a nullable id field that is not deferred, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -793,7 +793,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   parentId: UuidValue?, relation(parent=person)
 ''',
@@ -812,12 +812,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a relation declared on an id field that is deferred '
-    'when validating '
+    'Given a model with "database: sync" with a relation declared on an id field that is deferred, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -825,7 +825,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   parentId: UuidValue?, relation(parent=person, deferred)
 ''',
@@ -844,12 +844,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a relation declared on a required id field that is not deferred '
-    'when validating '
+    'Given a model with "database: sync" with a relation declared on a required id field that is not deferred, '
+    'when validating, '
     'then an error is generated on the relation.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -857,7 +857,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   parentId: UuidValue, relation(parent=person)
 ''',
@@ -884,12 +884,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a relation to a table without "database: sync" '
-    'when validating '
+    'Given a model with "database: sync" with a relation to a table without "database: sync", '
+    'when validating, '
     'then an error is generated on the field type.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('company').withYaml(
           '''
 class: Company
@@ -906,7 +906,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   company: Company?, relation(optional, deferred)
 ''',
@@ -934,12 +934,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a relation declared on an id field to a table without "database: sync" '
-    'when validating '
+    'Given a model with "database: sync" with a relation declared on an id field to a table without "database: sync", '
+    'when validating, '
     'then an error is generated on the parent name.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('company').withYaml(
           '''
 class: Company
@@ -956,7 +956,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   companyId: int?, relation(parent=company, deferred)
 ''',
@@ -984,12 +984,12 @@ fields:
   );
 
   test(
-    'Given a model without "database: sync" with a relation to a sync table '
-    'when validating '
+    'Given a model without "database: sync" with a relation to a sync table, '
+    'when validating, '
     'then an error is generated on the field type.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -997,7 +997,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
 ''',
         ).build(),
@@ -1034,12 +1034,12 @@ fields:
   );
 
   test(
-    'Given a model without "database: sync" with a relation declared on an id field to a sync table '
-    'when validating '
+    'Given a model without "database: sync" with a relation declared on an id field to a sync table, '
+    'when validating, '
     'then an error is generated on the parent name.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1047,7 +1047,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
 ''',
         ).build(),
@@ -1084,12 +1084,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a unique index declared inline on a field per scopeId '
-    'when validating '
+    'Given a model with "database: sync" with a unique index declared inline on a field per spaceId, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1097,9 +1097,9 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
-  email: String, unique(per=scopeId)
+  email: String, unique(per=spaceId)
 ''',
         ).build(),
       ];
@@ -1116,12 +1116,12 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a unique index composed only of an optional relation to a sync table '
-    'when validating '
+    'Given a model with "database: sync" with a unique index composed only of an optional relation to a sync table, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1129,7 +1129,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   spouse: Person?, relation(optional, onDelete=SetNull, deferred)
 indexes:
@@ -1152,12 +1152,12 @@ indexes:
   );
 
   test(
-    'Given a model with "database: sync" that satisfies all sync restrictions '
-    'when validating '
+    'Given a model with "database: sync" that satisfies all sync restrictions, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1165,12 +1165,12 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   parent: Person?, relation(optional, onDelete=Cascade, deferred)
 indexes:
   person_name_idx:
-    fields: scopeId, name
+    fields: spaceId, name
     unique: true
 ''',
         ).build(),
@@ -1188,12 +1188,12 @@ indexes:
   );
 
   test(
-    'Given a model with "database: sync" with a unique index that does not include scopeId '
-    'when validating '
+    'Given a model with "database: sync" with a unique index that does not include spaceId, '
+    'when validating, '
     'then an error is generated on the unique key.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1201,7 +1201,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
 indexes:
   person_name_idx:
@@ -1223,7 +1223,7 @@ indexes:
       var error = collector.errors.first;
       expect(
         error.message,
-        'The unique index "person_name_idx" must include the "scopeId" '
+        'The unique index "person_name_idx" must include the "spaceId" '
         'field on tables with "database: sync". Only unique indexes '
         'composed exclusively of relations to other tables with '
         '"database: sync" can be global.',
@@ -1233,12 +1233,12 @@ indexes:
   );
 
   test(
-    'Given a model with "database: sync" with a unique index that includes scopeId but no releasable field '
-    'when validating '
+    'Given a model with "database: sync" with a unique index that includes spaceId but no releasable field, '
+    'when validating, '
     'then an error is generated on the unique key.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1246,12 +1246,12 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   age: int
 indexes:
   person_age_idx:
-    fields: scopeId, age
+    fields: spaceId, age
     unique: true
 ''',
         ).build(),
@@ -1270,7 +1270,7 @@ indexes:
       expect(
         error.message,
         'The unique index "person_age_idx" must include at least one field '
-        'besides "scopeId" that is nullable, a String, or a UuidValue '
+        'besides "spaceId" that is nullable, a String, or a UuidValue '
         'without a relation, so the sync engine can resolve conflicts.',
       );
       expect(error.span?.text, 'unique');
@@ -1278,12 +1278,12 @@ indexes:
   );
 
   test(
-    'Given a model with "database: sync" with a unique index composed only of a required relation to a sync table '
-    'when validating '
+    'Given a model with "database: sync" with a unique index composed only of a required relation to a sync table, '
+    'when validating, '
     'then an error is generated on the unique key.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1291,7 +1291,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   spouse: Person?, relation(deferred)
 indexes:
@@ -1323,12 +1323,12 @@ indexes:
   );
 
   test(
-    'Given a model with "database: sync" with a unique index declared inline on a field without scopeId '
-    'when validating '
+    'Given a model with "database: sync" with a unique index declared inline on a field without spaceId, '
+    'when validating, '
     'then an error is generated on the unique modifier.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1336,7 +1336,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
   email: String, unique
 ''',
@@ -1355,7 +1355,7 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'The unique index "person__email__unique_idx" must include the "scopeId" '
+        'The unique index "person__email__unique_idx" must include the "spaceId" '
         'field on tables with "database: sync". Only unique indexes '
         'composed exclusively of relations to other tables with '
         '"database: sync" can be global.',
@@ -1365,12 +1365,12 @@ fields:
   );
 
   test(
-    'Given a child model with "database: sync" inheriting a unique index without scopeId '
-    'when validating '
+    'Given a child model with "database: sync" inheriting a unique index without spaceId, '
+    'when validating, '
     'then an error is generated on the table key.',
     () {
       var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder().withFileName('base').withYaml(
           '''
 class: Base
@@ -1390,7 +1390,7 @@ table: child
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
 ''',
         ).build(),
       ];
@@ -1407,7 +1407,7 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'The unique index "child_code_idx" must include the "scopeId" '
+        'The unique index "child_code_idx" must include the "spaceId" '
         'field on tables with "database: sync". Only unique indexes '
         'composed exclusively of relations to other tables with '
         '"database: sync" can be global.',
