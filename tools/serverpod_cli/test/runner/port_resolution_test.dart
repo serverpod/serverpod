@@ -13,24 +13,51 @@ import '../test_util/hold_lock.dart';
 import '../test_util/short_temp_dir.dart';
 
 void main() {
-  group('Given configured ports and a server package,', () {
-    late Directory root;
-    late String serverDir;
-    late RunnerRegistry registry;
+  late Directory root;
+  late String serverDir;
+  late RunnerRegistry registry;
 
-    setUp(() async {
-      root = await createShortTempDir('prt');
-      serverDir = p.join(root.path, 'main', 'my_server');
-      await Directory(serverDir).create(recursive: true);
-      registry = RunnerRegistry(dir: Directory(p.join(root.path, 'registry')));
-    });
+  setUp(() async {
+    root = await createShortTempDir('prt');
+    serverDir = p.join(root.path, 'main', 'my_server');
+    await Directory(serverDir).create(recursive: true);
+    registry = RunnerRegistry(dir: Directory(p.join(root.path, 'registry')));
+  });
 
-    tearDown(() async {
-      await root.deleteIfExists(recursive: true);
-    });
+  tearDown(() async {
+    await root.deleteIfExists(recursive: true);
+  });
 
+  Future<ServerSocket> holdPort([InternetAddress? address]) async {
+    final socket = await ServerSocket.bind(
+      address ?? InternetAddress.loopbackIPv4,
+      0,
+    );
+    addTearDown(socket.close);
+    return socket;
+  }
+
+  Future<void> startSibling({
+    String worktree = 'wt2',
+    int? apiPort,
+    Map<String, int>? claimedPorts,
+    int? protocolVersion,
+  }) async {
+    final socket = await _startSiblingRunner(
+      registry,
+      root.path,
+      worktree,
+      'my_server',
+      apiPort: apiPort,
+      claimedPorts: claimedPorts,
+      protocolVersion: protocolVersion,
+    );
+    addTearDown(socket.close);
+  }
+
+  group('Given free ports,', () {
     test(
-      'when the configured ports are free, '
+      'when the project resolves its ports, '
       'then the configured ports are kept and claimed',
       () async {
         final ports = {'api': await _freePort(), 'web': await _freePort()};
@@ -49,580 +76,7 @@ void main() {
     );
 
     test(
-      'when a port is held by something that is not a runner, '
-      'then it is a conflict rather than a reason to move aside',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.hasConflicts, isTrue);
-        expect(resolution.conflicts['api'], occupied.port);
-        expect(resolution.useEphemeral, isFalse);
-      },
-    );
-
-    test(
-      'when a port is held on the IPv6 loopback only, '
-      'then it is still a conflict, the pod\'s socket need not answer on IPv4',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv6,
-          0,
-        );
-        addTearDown(occupied.close);
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.conflicts['api'], occupied.port);
-      },
-    );
-
-    test(
-      'when a port is held the way the pod holds one, bound on anyIPv6, '
-      'then it is a conflict',
-      () async {
-        final occupied = await ServerSocket.bind(InternetAddress.anyIPv6, 0);
-        addTearDown(occupied.close);
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.conflicts['api'], occupied.port);
-      },
-    );
-
-    test(
-      'when a sibling worktree has a live runner publishing the held port, '
-      'then the stack falls back to ephemeral ports',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            apiPort: occupied.port,
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.hasConflicts, isFalse);
-      },
-    );
-
-    test(
-      'when a sibling worktree left a manifest but no live runner, '
-      'then the held port is a conflict, not a reason to move aside',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        await _writeDeadSiblingManifest(
-          registry,
-          root.path,
-          'wt2',
-          'my_server',
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.hasConflicts, isTrue);
-        expect(resolution.useEphemeral, isFalse);
-      },
-    );
-
-    test(
-      'when one of several ports is held by another runner, '
-      'then all three fall back together rather than splitting the stack',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            apiPort: occupied.port,
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {
-            'api': occupied.port,
-            'insights': await _freePort(),
-            'web': await _freePort(),
-          },
-        );
-
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.overrides, {'api': 0, 'insights': 0, 'web': 0});
-      },
-    );
-
-    test(
-      'when a live sibling runner holds entirely different ports, '
-      'then the occupied port is a conflict rather than a reason to move',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            apiPort: await _freePort(),
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.useEphemeral, isFalse);
-        expect(resolution.conflicts, {'api': occupied.port});
-      },
-    );
-
-    test(
-      'when a live sibling runner has published no addresses at all, '
-      'then the stack moves aside rather than blaming the port it cannot name',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.hasConflicts, isFalse);
-      },
-    );
-
-    test(
-      'when a live sibling runner has published no addresses at all, '
-      'then the port it could not account for is still named',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.unattributed, {'api': occupied.port});
-      },
-    );
-
-    test(
-      'when a sibling runner is silent and another holds the published port, '
-      'then only the port neither accounts for is named',
-      () async {
-        final held = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
-        final unknown = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(held.close);
-        addTearDown(unknown.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            apiPort: held.port,
-          )).close,
-        );
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt3',
-            'my_server',
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': held.port, 'web': unknown.port},
-        );
-
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.hasConflicts, isFalse);
-        expect(resolution.unattributed, {'web': unknown.port});
-      },
-    );
-
-    test(
-      'when the ports are free but a sibling runner has not decided its ports, '
-      'then the stack moves aside before the two race for the same ports',
-      () async {
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': await _freePort()},
-        );
-
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.hasConflicts, isFalse);
-      },
-    );
-
-    test(
-      'when the ports are free but a starting sibling has claimed one, '
-      'then the stack moves aside before the two race for it',
-      () async {
-        final port = await _freePort();
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            claimedPorts: {'api': port},
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': port, 'web': await _freePort()},
-        );
-
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.hasConflicts, isFalse);
-      },
-    );
-
-    test(
-      'when the ports are free and a starting sibling claims other ports, '
-      'then the configured ports are kept',
-      () async {
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            claimedPorts: {'api': await _freePort()},
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': await _freePort()},
-        );
-
-        expect(resolution.useEphemeral, isFalse);
-        expect(resolution.hasConflicts, isFalse);
-      },
-    );
-
-    test(
-      'when the ports are free and a sibling has moved aside, claiming none, '
-      'then the configured ports are kept',
-      () async {
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            claimedPorts: const {},
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': await _freePort()},
-        );
-
-        expect(resolution.useEphemeral, isFalse);
-        expect(resolution.hasConflicts, isFalse);
-      },
-    );
-
-    test(
-      'when a port is held and the only sibling has claimed other ports, '
-      'then the port is a conflict rather than a reason to move aside',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            claimedPorts: {'api': await _freePort()},
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.useEphemeral, isFalse);
-        expect(resolution.conflicts, {'api': occupied.port});
-      },
-    );
-
-    test(
-      'when the ports are free and a sibling runner published other ports, '
-      'then the configured ports are kept',
-      () async {
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            apiPort: await _freePort(),
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': await _freePort()},
-        );
-
-        expect(resolution.useEphemeral, isFalse);
-        expect(resolution.hasConflicts, isFalse);
-      },
-    );
-
-    test(
-      'when a port is held and a sibling runner holds its lock but is silent, '
-      'then the stack moves aside rather than blaming the port',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        final sibling = await _prepareSibling(root.path, 'wt2', 'my_server');
-        await _writeManifest(sibling);
-        await registry.register(sibling);
-        await holdLockFromAnotherProcess(sibling);
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.hasConflicts, isFalse);
-        expect(resolution.unattributed, {'api': occupied.port});
-      },
-    );
-
-    test(
-      'when a sibling runner of another protocol publishes the held port, '
-      'then the stack moves aside as it would for one speaking this version',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            apiPort: occupied.port,
-            protocolVersion: RunnerManifest.currentProtocolVersion + 1,
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-        );
-
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.hasConflicts, isFalse);
-      },
-    );
-
-    test(
-      'when the stack moves aside and the last runner here bound a free port, '
-      'then that listener gets the port back and claims it',
-      () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            apiPort: occupied.port,
-          )).close,
-        );
-        final previous = await _freePort();
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': occupied.port},
-          suggested: {'api': previous},
-        );
-
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.overrides, {'api': previous});
-        expect(
-          claimedPorts({'api': occupied.port}, resolution.overrides),
-          {'api': previous},
-        );
-      },
-    );
-
-    test(
-      'when the port the last runner here bound is now in use, '
-      'then the listener binds a new ephemeral port instead',
-      () async {
-        final previous = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(previous.close);
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': 0},
-          suggested: {'api': previous.port},
-        );
-
-        expect(resolution.overrides, {'api': 0});
-      },
-    );
-
-    test(
-      'when a sibling runner has claimed the port the last runner here bound, '
-      'then the listener does not take it back',
-      () async {
-        final previous = await _freePort();
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            claimedPorts: {'api': previous},
-          )).close,
-        );
-
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': 0},
-          suggested: {'api': previous},
-        );
-
-        expect(resolution.overrides, {'api': 0});
-      },
-    );
-
-    test(
-      'when the configured ports are kept, '
+      'when the project resolves its ports, suggesting the ports the last runner here bound, '
       'then only a listener configured with port zero gets its last port back',
       () async {
         final api = await _freePort();
@@ -644,56 +98,593 @@ void main() {
         );
       },
     );
+  });
+
+  group(
+    'Given free ports and a live sibling runner that has not decided its ports,',
+    () {
+      setUp(() async {
+        await startSibling();
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the stack moves aside before the two race for the same ports',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': await _freePort()},
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.hasConflicts, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given free ports and a starting sibling runner that has claimed one of them,',
+    () {
+      late int port;
+
+      setUp(() async {
+        port = await _freePort();
+        await startSibling(claimedPorts: {'api': port});
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the stack moves aside before the two race for it',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': port, 'web': await _freePort()},
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.hasConflicts, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given free ports and a starting sibling runner claiming other ports,',
+    () {
+      setUp(() async {
+        await startSibling(claimedPorts: {'api': await _freePort()});
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the configured ports are kept',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': await _freePort()},
+          );
+
+          expect(resolution.useEphemeral, isFalse);
+          expect(resolution.hasConflicts, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given free ports and a sibling runner that has moved aside, claiming none,',
+    () {
+      setUp(() async {
+        await startSibling(claimedPorts: const {});
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the configured ports are kept',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': await _freePort()},
+          );
+
+          expect(resolution.useEphemeral, isFalse);
+          expect(resolution.hasConflicts, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given free ports and a live sibling runner that published other ports,',
+    () {
+      setUp(() async {
+        await startSibling(apiPort: await _freePort());
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the configured ports are kept',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': await _freePort()},
+          );
+
+          expect(resolution.useEphemeral, isFalse);
+          expect(resolution.hasConflicts, isFalse);
+        },
+      );
+    },
+  );
+
+  group('Given a held port,', () {
+    late ServerSocket occupied;
+
+    setUp(() async {
+      occupied = await holdPort();
+    });
 
     test(
-      'when the stack moves aside and a suggested port is a configured one, '
-      'then that listener binds a new ephemeral port, keeping the block moved',
+      'when the project resolves its ports, '
+      'then it is a conflict rather than a reason to move aside',
       () async {
-        final occupied = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        addTearDown(occupied.close);
-        addTearDown(
-          (await _startSiblingRunner(
-            registry,
-            root.path,
-            'wt2',
-            'my_server',
-            apiPort: occupied.port,
-          )).close,
-        );
-        final web = await _freePort();
-
         final resolution = await resolvePorts(
           serverDir: serverDir,
           registry: registry,
-          ports: {'api': occupied.port, 'web': web},
-          suggested: {'web': web},
+          ports: {'api': occupied.port},
         );
 
-        expect(resolution.useEphemeral, isTrue);
-        expect(resolution.overrides, {'api': 0, 'web': 0});
-      },
-    );
-
-    test(
-      'when a port is zero, '
-      'then it is already ephemeral and needs no probe',
-      () async {
-        final resolution = await resolvePorts(
-          serverDir: serverDir,
-          registry: registry,
-          ports: {'api': 0},
-        );
-
+        expect(resolution.hasConflicts, isTrue);
+        expect(resolution.conflicts['api'], occupied.port);
         expect(resolution.useEphemeral, isFalse);
-        expect(resolution.hasConflicts, isFalse);
-        expect(resolution.overrides, {'api': 0});
-        expect(claimedPorts({'api': 0}, resolution.overrides), isEmpty);
       },
     );
   });
+
+  group(
+    'Given a held port and a live sibling runner publishing it,',
+    () {
+      late ServerSocket occupied;
+
+      setUp(() async {
+        occupied = await holdPort();
+        await startSibling(apiPort: occupied.port);
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the stack falls back to ephemeral ports',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.hasConflicts, isFalse);
+        },
+      );
+
+      test(
+        'when the project resolves it alongside insights and web ports, '
+        'then all three fall back together rather than splitting the stack',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {
+              'api': occupied.port,
+              'insights': await _freePort(),
+              'web': await _freePort(),
+            },
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.overrides, {'api': 0, 'insights': 0, 'web': 0});
+        },
+      );
+
+      test(
+        'when the project resolves its ports, suggesting a configured port as the one the last runner here bound, '
+        'then that listener binds a new ephemeral port, keeping the block moved',
+        () async {
+          final web = await _freePort();
+
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port, 'web': web},
+            suggested: {'web': web},
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.overrides, {'api': 0, 'web': 0});
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a held port, a live sibling runner publishing it and a free port the last runner here bound,',
+    () {
+      late ServerSocket occupied;
+      late int previous;
+
+      setUp(() async {
+        occupied = await holdPort();
+        await startSibling(apiPort: occupied.port);
+        previous = await _freePort();
+      });
+
+      test(
+        'when the project resolves its ports, suggesting that port, '
+        'then that listener gets the port back and claims it',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+            suggested: {'api': previous},
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.overrides, {'api': previous});
+          expect(
+            claimedPorts({'api': occupied.port}, resolution.overrides),
+            {'api': previous},
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a held port and a live sibling runner of another protocol publishing it,',
+    () {
+      late ServerSocket occupied;
+
+      setUp(() async {
+        occupied = await holdPort();
+        await startSibling(
+          apiPort: occupied.port,
+          protocolVersion: RunnerManifest.currentProtocolVersion + 1,
+        );
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the stack moves aside as it would for one speaking this version',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.hasConflicts, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a held port and a sibling worktree that left a manifest but no live runner,',
+    () {
+      late ServerSocket occupied;
+
+      setUp(() async {
+        occupied = await holdPort();
+        await _writeDeadSiblingManifest(
+          registry,
+          root.path,
+          'wt2',
+          'my_server',
+        );
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the held port is a conflict, not a reason to move aside',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.hasConflicts, isTrue);
+          expect(resolution.useEphemeral, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a held port and a live sibling runner holding entirely different ports,',
+    () {
+      late ServerSocket occupied;
+
+      setUp(() async {
+        occupied = await holdPort();
+        await startSibling(apiPort: await _freePort());
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the occupied port is a conflict rather than a reason to move',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.useEphemeral, isFalse);
+          expect(resolution.conflicts, {'api': occupied.port});
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a held port and an only sibling runner that has claimed other ports,',
+    () {
+      late ServerSocket occupied;
+
+      setUp(() async {
+        occupied = await holdPort();
+        await startSibling(claimedPorts: {'api': await _freePort()});
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the port is a conflict rather than a reason to move aside',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.useEphemeral, isFalse);
+          expect(resolution.conflicts, {'api': occupied.port});
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a held port and a live sibling runner that has published no addresses at all,',
+    () {
+      late ServerSocket occupied;
+
+      setUp(() async {
+        occupied = await holdPort();
+        await startSibling();
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the stack moves aside rather than blaming the port it cannot name',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.hasConflicts, isFalse);
+        },
+      );
+
+      test(
+        'when the project resolves its ports, '
+        'then the port it could not account for is still named',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.unattributed, {'api': occupied.port});
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a held port and a sibling runner that holds its lock but is silent,',
+    () {
+      late ServerSocket occupied;
+
+      setUp(() async {
+        occupied = await holdPort();
+        final sibling = await _prepareSibling(root.path, 'wt2', 'my_server');
+        await _writeManifest(sibling);
+        await registry.register(sibling);
+        await holdLockFromAnotherProcess(sibling);
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then the stack moves aside rather than blaming the port',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.hasConflicts, isFalse);
+          expect(resolution.unattributed, {'api': occupied.port});
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a port held on the IPv6 loopback only,',
+    () {
+      late ServerSocket occupied;
+
+      setUp(() async {
+        occupied = await holdPort(InternetAddress.loopbackIPv6);
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then it is still a conflict, '
+        "the pod's socket need not answer on IPv4.",
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.conflicts['api'], occupied.port);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a port held the way the pod holds one, bound on anyIPv6,',
+    () {
+      late ServerSocket occupied;
+
+      setUp(() async {
+        occupied = await holdPort(InternetAddress.anyIPv6);
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then it is a conflict',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': occupied.port},
+          );
+
+          expect(resolution.conflicts['api'], occupied.port);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given two held ports, one published by a live sibling runner while another sibling runner is silent,',
+    () {
+      late ServerSocket held;
+      late ServerSocket unknown;
+
+      setUp(() async {
+        held = await holdPort();
+        unknown = await holdPort();
+        await startSibling(apiPort: held.port);
+        await startSibling(worktree: 'wt3');
+      });
+
+      test(
+        'when the project resolves its ports, '
+        'then only the port neither accounts for is named',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': held.port, 'web': unknown.port},
+          );
+
+          expect(resolution.useEphemeral, isTrue);
+          expect(resolution.hasConflicts, isFalse);
+          expect(resolution.unattributed, {'web': unknown.port});
+        },
+      );
+    },
+  );
+
+  group(
+    'Given the port the last runner here bound held by another process,',
+    () {
+      late ServerSocket previous;
+
+      setUp(() async {
+        previous = await holdPort();
+      });
+
+      test(
+        'when the project resolves a port configured as zero, suggesting that port, '
+        'then the listener binds a new ephemeral port instead',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': 0},
+            suggested: {'api': previous.port},
+          );
+
+          expect(resolution.overrides, {'api': 0});
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a sibling runner that has claimed the port the last runner here bound,',
+    () {
+      late int previous;
+
+      setUp(() async {
+        previous = await _freePort();
+        await startSibling(claimedPorts: {'api': previous});
+      });
+
+      test(
+        'when the project resolves a port configured as zero, suggesting that port, '
+        'then the listener does not take it back',
+        () async {
+          final resolution = await resolvePorts(
+            serverDir: serverDir,
+            registry: registry,
+            ports: {'api': 0},
+            suggested: {'api': previous},
+          );
+
+          expect(resolution.overrides, {'api': 0});
+        },
+      );
+    },
+  );
+
+  test(
+    'Given a port configured as zero, '
+    'when the project resolves its ports, '
+    'then it is already ephemeral and needs no probe',
+    () async {
+      final resolution = await resolvePorts(
+        serverDir: serverDir,
+        registry: registry,
+        ports: {'api': 0},
+      );
+
+      expect(resolution.useEphemeral, isFalse);
+      expect(resolution.hasConflicts, isFalse);
+      expect(resolution.overrides, {'api': 0});
+      expect(claimedPorts({'api': 0}, resolution.overrides), isEmpty);
+    },
+  );
 
   group('Given the port overrides,', () {
     test(

@@ -66,6 +66,11 @@ dependencies:
 ]);
 
 void main() {
+  setUp(() {
+    initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
+    addTearDown(closeLogger);
+  });
+
   group('Given a runner that has published but is still starting,', () {
     late Directory tempDir;
     late RunnerSocketServer socket;
@@ -82,8 +87,6 @@ void main() {
         config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
       );
       await starting.writeTo(tempDir.path);
-      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
-      addTearDown(closeLogger);
     });
 
     tearDown(() async {
@@ -277,8 +280,6 @@ void main() {
       ]);
       await gone.exitCode;
       deadPid = gone.pid;
-      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
-      addTearDown(closeLogger);
     });
 
     tearDown(() {
@@ -412,8 +413,6 @@ void main() {
       tempDir = await Directory.systemTemp.createTemp('rlt');
       logFile = File(serverpodRunnerLogPath(tempDir.path));
       await logFile.create(recursive: true);
-      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
-      addTearDown(closeLogger);
     });
 
     tearDown(() {
@@ -479,8 +478,6 @@ void main() {
         serverRootDir: serverDir,
         interactive: false,
       );
-      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
-      addTearDown(closeLogger);
     });
 
     tearDown(() async {
@@ -560,8 +557,6 @@ void main() {
         serverRootDir: serverDir,
         interactive: false,
       );
-      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
-      addTearDown(closeLogger);
     });
 
     tearDown(() {
@@ -663,8 +658,6 @@ void main() {
         serverRootDir: serverDir,
         interactive: false,
       );
-      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
-      addTearDown(closeLogger);
     });
 
     tearDown(() async {
@@ -743,8 +736,6 @@ void main() {
         projectId: RunnerRegistry.idFor(tempDir.path),
         config: _asked,
       );
-      initializeLoggerWith(ServerpodCliLogger(TestLogWriter()));
-      addTearDown(closeLogger);
     });
 
     tearDown(() {
