@@ -78,23 +78,6 @@ Future<void> waitForServerRunning(KeywordSearchInStream streamSearch) async {
   await Future.delayed(const Duration(seconds: 1));
 }
 
-/// Stops the runner serving [serverDirPath], if one is still up.
-///
-/// Killing `serverpod start` only detaches it, leaving the runner behind.
-Future<void> stopRunner(String serverDirPath) async {
-  var result = await runServerpod(
-    ['runner', 'stop'],
-    workingDirectory: serverDirPath,
-  );
-  expect(
-    result.exitCode,
-    0,
-    reason:
-        'Could not stop the runner for $serverDirPath, so it would outlive '
-        'this test:\n${result.stdout}\n${result.stderr}',
-  );
-}
-
 Future<void> waitForGeneratedOutput(
   bool Function() isReady, {
   Duration timeout = const Duration(seconds: 30),
