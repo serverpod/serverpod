@@ -127,32 +127,22 @@ class StartCommand extends ServerpodCommand<StartOption> {
   Future<void> runWithConfig(
     Configuration<StartOption> commandConfig,
   ) async {
-    final config = await loadRunnerProjectConfig(
-      directory: commandConfig.value(StartOption.directory),
-      interactive: serverpodRunner.globalConfiguration.optionalValue(
-        GlobalOption.interactive,
-      ),
-    );
-    final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-    final asked = RunnerConfig(
-      watch: commandConfig.value(StartOption.watch),
-      flutter: commandConfig.value(StartOption.flutter),
-      docker: commandConfig.optionalValue(StartOption.docker),
-      serverArgs: argResults?.rest ?? const [],
-    );
-
     final attaching = commandConfig.value(StartOption.attach);
     final useTui = commandConfig.value(StartOption.tui) && terminalSupportsTui;
-    final manifest = await ensureRunner(
-      config: config,
-      serverDir: serverDir,
-      asked: asked,
+    final (:serverDir, :manifest) = await bringUpRunner(
+      directory: commandConfig.value(StartOption.directory),
+      asked: RunnerConfig(
+        watch: commandConfig.value(StartOption.watch),
+        flutter: commandConfig.value(StartOption.flutter),
+        docker: commandConfig.optionalValue(StartOption.docker),
+        serverArgs: argResults?.rest ?? const [],
+      ),
       useTui: useTui,
-      globalArgs: runnerServeGlobalArgs(serverpodRunner.globalConfiguration),
+      global: serverpodRunner.globalConfiguration,
     );
 
     if (!attaching) {
-      reportRunnerReady(await awaitStackUp(serverDir, manifest));
+      await reportStackUp(serverDir, manifest);
       return;
     }
 
@@ -214,6 +204,33 @@ Future<GeneratorConfig> loadRunnerProjectConfig({
 
   return config;
 }
+
+/// Loads the project under [directory] and brings its runner up per [asked],
+/// forwarding what [global] says about verbosity and interactivity.
+Future<({String serverDir, RunnerManifest manifest})> bringUpRunner({
+  required String directory,
+  required RunnerConfig asked,
+  required bool useTui,
+  required Configuration<GlobalOption> global,
+}) async {
+  final config = await loadRunnerProjectConfig(
+    directory: directory,
+    interactive: global.optionalValue(GlobalOption.interactive),
+  );
+  final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+  final manifest = await ensureRunner(
+    config: config,
+    serverDir: serverDir,
+    asked: asked,
+    useTui: useTui,
+    globalArgs: runnerServeGlobalArgs(global),
+  );
+  return (serverDir: serverDir, manifest: manifest);
+}
+
+/// Waits for the stack behind [manifest] and prints how to reach it.
+Future<void> reportStackUp(String serverDir, RunnerManifest manifest) async =>
+    reportRunnerReady(await awaitStackUp(serverDir, manifest));
 
 /// Returns the manifest of the runner serving [serverDir], spawning one.
 ///
