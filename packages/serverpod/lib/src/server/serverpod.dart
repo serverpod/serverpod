@@ -502,8 +502,10 @@ class Serverpod {
     }
   }
 
-  /// Drains the framework log chain and flushes the OS-level stdio
-  /// buffers (not drained by [exit] on non-terminal pipes), then exits.
+  /// Drains the framework log chain, stops the database pool and flushes
+  /// stdio (not drained by [exit] on non-terminal pipes), then exits.
+  ///
+  /// Stopping the pool frees the port of an embedded database it launched.
   void _exitAfterFlush(int code, {String? message}) {
     () async {
       if (message != null && message.isNotEmpty) {
@@ -511,6 +513,11 @@ class Serverpod {
       }
       try {
         await _drainLogging();
+      } catch (_) {}
+      try {
+        await _databasePoolManager?.stop();
+      } catch (_) {}
+      try {
         await (stdout.flush(), stderr.flush()).wait;
       } catch (_) {}
       exit(code);
