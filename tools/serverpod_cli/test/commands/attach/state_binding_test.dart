@@ -312,6 +312,54 @@ void main() {
     );
   });
 
+  group('Given a UI whose runner has gone away,', () {
+    late _CapturingHolder holder;
+    late TestLogWriter writer;
+
+    setUp(() async {
+      final runner = FakeRunnerApi()..stage = RunnerStage.running;
+      addTearDown(runner.eventController.close);
+      server.connect(runner);
+      writer = TestLogWriter();
+      initializeLoggerWith(ServerpodCliLogger(writer));
+      addTearDown(closeLogger);
+
+      holder = _CapturingHolder(ServerWatchState());
+      final client = RunnerClient(
+        socketPath: server.socketPath,
+        history: holder.state.history,
+        reconnectDelay: const Duration(seconds: 30),
+      );
+      await client.attach();
+      addTearDown(client.close);
+      final binding = RunnerStateBinding(
+        client: client,
+        holder: holder,
+        onStopRequested: () {},
+      )..bind();
+      addTearDown(binding.dispose);
+
+      final lost = client.connectionChanges.firstWhere((up) => !up);
+      await server.close();
+      await lost;
+    });
+
+    test(
+      'when the UI asks for a hot reload, '
+      'then it is told the runner is unreachable, nothing else recording it',
+      () async {
+        holder.hotReload!();
+
+        await waitFor(() => writer.entries.isNotEmpty);
+        expect(
+          writer.entries.single.message,
+          startsWith('No serverpod runner is listening at '),
+        );
+        expect(holder.state.actionBusy, isFalse);
+      },
+    );
+  });
+
   group('Given a runner that is already stopping with exit code 3,', () {
     late FakeRunnerApi stoppingRunner;
 
@@ -517,6 +565,14 @@ class _CapturingHolder extends StartAppStateHolder {
   void Function(int index)? stopApp;
 
   void Function()? stopStack;
+
+  void Function()? hotReload;
+
+  @override
+  set onHotReload(void Function()? cb) {
+    hotReload = cb;
+    super.onHotReload = cb;
+  }
 
   @override
   set onStopStack(void Function()? cb) {
