@@ -78,6 +78,43 @@ void main() async {
     );
   });
 
+  test(
+    'Given a created project with an embedded database, '
+    'when the server applies migrations with the maintenance role and exits, '
+    'then the database port is free again',
+    () async {
+      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+      final createProcess = await startServerpodCli(
+        ['create', projectName, '-v', '--no-analytics', '--no-interactive'],
+        rootPath: rootPath,
+        workingDirectory: tempPath,
+        environment: {'SERVERPOD_HOME': rootPath},
+      );
+      addTearDown(createProcess.kill);
+      expect(await createProcess.exitCode, 0);
+      final databasePort = await freeLoopbackPort();
+
+      final maintenanceProcess = await startProcess(
+        'dart',
+        ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
+        workingDirectory: commandRoot,
+        environment: {
+          ServerpodEnv.databasePort.envVariable: '$databasePort',
+        },
+      );
+      addTearDown(maintenanceProcess.kill);
+      expect(await maintenanceProcess.exitCode, 0);
+
+      await expectLater(
+        ServerSocket.bind(
+          InternetAddress.loopbackIPv4,
+          databasePort,
+        ).then((socket) => socket.close()),
+        completes,
+      );
+    },
+  );
+
   group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
