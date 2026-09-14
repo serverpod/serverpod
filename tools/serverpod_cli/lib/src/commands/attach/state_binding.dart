@@ -70,29 +70,21 @@ class RunnerStateBinding {
         onStopRequested();
       }),
     );
-    holder.onHotReload = () =>
-        runTrackedAction(holder, 'Hot reload', client.hotReload);
+    holder.onHotReload = () => runTrackedAction(holder, client.hotReload);
     holder.onHotRestart = () {
       final running = client.isRunning;
       runTrackedAction(
         holder,
-        running ? 'Hot restart' : 'Rebuild & start',
         running ? client.hotRestart : client.retryStart,
         allowWhenStartable: !running,
       );
     };
-    holder.onRestartFlutterApp = () => runTrackedAction(
-      holder,
-      client.isAnyFlutterAppRunning
-          ? 'Restart Flutter app'
-          : 'Start Flutter app',
-      client.restartFlutterApps,
-    );
+    holder.onRestartFlutterApp = () =>
+        runTrackedAction(holder, client.restartFlutterApps);
     holder.onApplyMigration = () =>
-        runTrackedAction(holder, 'Applying migrations', client.applyMigrations);
+        runTrackedAction(holder, client.applyMigrations);
     holder.onCreateMigration = ({bool force = false}) => runTrackedAction(
       holder,
-      force ? 'Force-creating migration' : 'Creating migration',
       () => _createMigration(
         () => client.createMigration(force: force),
         forceHint: 'Use ⇧+M to force-create it anyway.',
@@ -100,7 +92,6 @@ class RunnerStateBinding {
     );
     holder.onCreateRepairMigration = ({bool force = false}) => runTrackedAction(
       holder,
-      force ? 'Force-creating repair migration' : 'Creating repair migration',
       () => _createMigration(
         () => client.createRepairMigration(force: force),
         forceHint: 'Use ⇧+P to force-create it anyway.',
@@ -110,39 +101,30 @@ class RunnerStateBinding {
     holder.onLaunchApp = (index) {
       final app = _appAt(index);
       if (app == null) return;
-      final running = client.isFlutterAppRunning(app.id);
-      runTrackedAction(
-        holder,
-        running ? 'Relaunch ${app.name}' : 'Launch ${app.name}',
-        () => client.restartFlutterApp(app.id),
-      );
+      runTrackedAction(holder, () => client.restartFlutterApp(app.id));
     };
     holder.onStopApp = (index) {
       final app = _appAt(index);
       if (app == null) return;
-      runTrackedAction(
-        holder,
-        'Stop ${app.name}',
-        () => client.stopFlutterApp(app.id),
-      );
+      runTrackedAction(holder, () => client.stopFlutterApp(app.id));
     };
   }
 
-  /// Creates and applies a migration, throwing if creating it fails.
+  /// Creates and applies a migration. The runner records each step's
+  /// outcome, so only the hints a keyboard user needs are printed here.
   Future<void> _createMigration(
     Future<MigrationResult> Function() create, {
     required String forceHint,
   }) async {
     final result = await create();
     if (result.isError) {
-      final hint = result.abortedForWarnings ? ' $forceHint' : '';
-      throw Exception('${result.message}$hint');
+      if (result.abortedForWarnings) log.info(forceHint);
+      return;
     }
     log.info(result.message);
     try {
       await client.applyMigrations();
-    } catch (e) {
-      log.error('The migration was created but not applied: $e');
+    } catch (_) {
       log.info('Press A to apply it once the database is reachable.');
     }
   }

@@ -8,7 +8,6 @@ import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
 import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
 import 'package:serverpod_shared/log.dart';
-import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
 import 'package:vm_service/vm_service.dart';
 
@@ -341,49 +340,61 @@ void main() {
     );
   });
 
-  group('Given runTrackedAction with server ready', () {
+  test(
+    'Given a stack that is not ready, '
+    'when an action is run, '
+    'then it is ignored',
+    () {
+      state.serverReady = false;
+      var called = false;
+
+      runTrackedAction(holder, () async {
+        called = true;
+      });
+
+      expect(called, isFalse);
+      expect(state.actionBusy, isFalse);
+    },
+  );
+
+  group('Given a ready stack,', () {
     setUp(() {
       state.serverReady = true;
     });
 
-    test('when server not ready then ignores action', () {
-      state.serverReady = false;
-      var called = false;
+    test(
+      'when an action is run while another is in flight, '
+      'then it is ignored',
+      () {
+        state.actionBusy = true;
+        var called = false;
 
-      runTrackedAction(holder, 'Test', () async {
-        called = true;
-      });
+        runTrackedAction(holder, () async {
+          called = true;
+        });
 
-      expect(called, isFalse);
-      expect(state.activeOperations, isEmpty);
-    });
-
-    test('when already busy then ignores action', () {
-      state.actionBusy = true;
-      var called = false;
-
-      runTrackedAction(holder, 'Test', () async {
-        called = true;
-      });
-
-      expect(called, isFalse);
-    });
-
-    test('when action starts then sets busy and creates operation', () {
-      final completer = Completer<void>();
-
-      runTrackedAction(holder, 'Reload', () => completer.future);
-
-      expect(state.actionBusy, isTrue);
-      expect(state.activeOperations, hasLength(1));
-      expect(state.activeOperations.values.first.label, 'Reload');
-
-      completer.complete();
-    });
+        expect(called, isFalse);
+      },
+    );
 
     test(
-      'when active server scopes are discarded during an action '
-      'then only the server scopes are removed',
+      'when an action starts, '
+      'then the UI is busy and records no operation of its own',
+      () {
+        final completer = Completer<void>();
+
+        runTrackedAction(holder, () => completer.future);
+
+        expect(state.actionBusy, isTrue);
+        expect(state.activeOperations, isEmpty);
+
+        completer.complete();
+      },
+    );
+
+    test(
+      'when the runner discards its server scopes during an action, '
+      'then the UI stays busy until the action ends',
       () async {
         history.recordServerLogEvent(
           _logEvent({
@@ -393,46 +404,41 @@ void main() {
           }),
         );
         final completer = Completer<void>();
-        runTrackedAction(holder, 'Restarting server', () => completer.future);
-
-        expect(state.activeOperations, hasLength(2));
+        runTrackedAction(holder, () => completer.future);
 
         history.discardActiveServerScopes();
 
-        expect(state.activeOperations, hasLength(1));
-        expect(state.activeOperations.values.single.label, 'Restarting server');
+        expect(state.activeOperations, isEmpty);
         expect(state.actionBusy, isTrue);
 
         completer.complete();
       },
     );
 
-    test('when action succeeds then clears busy and adds completed', () async {
-      runTrackedAction(holder, 'Reload', () async {});
+    test(
+      'when the action completes, '
+      'then the UI is free again and adds nothing to the log',
+      () async {
+        runTrackedAction(holder, () async {});
 
-      await Future<void>.delayed(Duration.zero);
+        await pumpEventQueue();
 
-      expect(state.actionBusy, isFalse);
-      expect(state.activeOperations, isEmpty);
-      expect(state.logHistory, hasLength(1));
-      final op = state.logHistory.first as CompletedOperation;
-      expect(op.label, 'Reload');
-      expect(op.success, isTrue);
-    });
+        expect(state.actionBusy, isFalse);
+        expect(state.logHistory, isEmpty);
+      },
+    );
 
-    test('when action fails then clears busy and marks failed', () async {
-      runTrackedAction(
-        holder,
-        'Migrate',
-        () async => throw StateError('fail'),
-      );
+    test(
+      'when the action throws, '
+      'then the UI is free again, the runner having recorded the failure',
+      () async {
+        runTrackedAction(holder, () async => throw StateError('fail'));
 
-      await Future<void>.delayed(Duration.zero);
+        await pumpEventQueue();
 
-      expect(state.actionBusy, isFalse);
-      final op = state.logHistory.first as CompletedOperation;
-      expect(op.label, 'Migrate');
-      expect(op.success, isFalse);
-    });
+        expect(state.actionBusy, isFalse);
+        expect(state.logHistory, isEmpty);
+      },
+    );
   });
 }

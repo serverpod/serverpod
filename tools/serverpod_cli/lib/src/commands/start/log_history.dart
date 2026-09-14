@@ -353,10 +353,12 @@ class StartLogHistory {
   }
 
   /// Records the end of the CLI operation [id], with [error] as its own entry.
+  ///
+  /// [duration] defaults to the time since the operation started.
   void completeCliOperation(
     String id, {
     required bool success,
-    required Duration duration,
+    Duration? duration,
     Object? error,
     StackTrace? stackTrace,
   }) {
@@ -367,7 +369,7 @@ class StartLogHistory {
     final completed = CompletedOperation(
       label: operation.label,
       success: success,
-      duration: duration,
+      duration: duration ?? operation.stopwatch.elapsed,
     );
     serverEntries.add(completed);
     _emit(OperationCompletedEvent(completed, id: id));

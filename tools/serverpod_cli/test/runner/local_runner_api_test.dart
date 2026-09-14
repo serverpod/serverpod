@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -5,6 +6,7 @@ import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/runner/local_runner_api.dart';
 import 'package:serverpod_cli/src/runner/runner_api.dart';
@@ -385,6 +387,104 @@ void main() {
     );
   });
 
+  group('Given a runner handed a stack,', () {
+    late _ScriptedSession session;
+    late LocalRunnerApi api;
+    late List<RunnerEvent> events;
+
+    setUp(() {
+      session = _ScriptedSession();
+      api = LocalRunnerApi(
+        logHistory: StartLogHistory(),
+        requestShutdown: () {},
+        watchModeEnabled: true,
+        runMode: 'development',
+      );
+      api.bindStack(
+        session: session,
+        flutterManager: _NoAppsFlutterManager(),
+        config: GeneratorConfigBuilder().build(),
+        vmServiceUri: () => null,
+        insightsAddress: (command) => throw RunnerStartingException(command),
+      );
+      addTearDown(api.close);
+      events = [];
+      final sub = api.events.listen(events.add);
+      addTearDown(sub.cancel);
+    });
+
+    test(
+      'when a hot reload is requested, '
+      'then every client sees the operation start and complete',
+      () async {
+        await api.hotReload();
+        await pumpEventQueue();
+
+        final started = events.whereType<OperationStartedEvent>().single;
+        final completed = events.whereType<OperationCompletedEvent>().single;
+        expect(started.operation.label, 'Hot reload');
+        expect(completed.id, started.operation.id);
+        expect(completed.operation.label, 'Hot reload');
+        expect(completed.operation.success, isTrue);
+      },
+    );
+
+    test(
+      'when a hot reload is in flight, '
+      'then a client attaching sees it in the snapshot',
+      () async {
+        final reloading = Completer<void>();
+        session.onForceReload = () => reloading.future;
+
+        final reload = api.hotReload();
+        await pumpEventQueue();
+
+        expect(
+          api.snapshot().activeOperations.single.operation.label,
+          'Hot reload',
+        );
+        reloading.complete();
+        await reload;
+      },
+    );
+
+    test(
+      'when the hot reload throws, '
+      'then the operation completes as failed and the error reaches the caller',
+      () async {
+        session.onForceReload = () async => throw StateError('no compiler');
+
+        await expectLater(api.hotReload(), throwsStateError);
+        await pumpEventQueue();
+
+        final completed = events.whereType<OperationCompletedEvent>().single;
+        expect(completed.operation.success, isFalse);
+        expect(
+          events.whereType<ServerLogEvent>().single.entry.error,
+          'Bad state: no compiler',
+        );
+      },
+    );
+
+    test(
+      'when a repair migration fails, '
+      'then the operation completes as failed while the result says why',
+      () async {
+        final result = await api.createRepairMigration();
+        await pumpEventQueue();
+
+        expect(result.isError, isTrue);
+        final completed = events.whereType<OperationCompletedEvent>().single;
+        expect(completed.operation.label, 'Creating repair migration');
+        expect(completed.operation.success, isFalse);
+        expect(
+          events.whereType<ServerLogEvent>().single.entry.error,
+          result.message,
+        );
+      },
+    );
+  });
+
   group(
     'Given a runner handed a stack whose pod has not reported its addresses,',
     () {
@@ -399,7 +499,7 @@ void main() {
         );
         api.bindStack(
           session: _UnusedSession(),
-          flutterManager: _UnusedFlutterManager(),
+          flutterManager: _NoAppsFlutterManager(),
           config: GeneratorConfigBuilder().build(),
           vmServiceUri: () => null,
           insightsAddress: (command) => throw RunnerStartingException(command),
@@ -527,7 +627,40 @@ class _SpawnedFlutter extends Fake implements FlutterProcess {
   Future<int> stop({Duration timeout = const Duration(seconds: 5)}) async => 0;
 }
 
-class _UnusedFlutterManager extends Fake implements FlutterAppManager {}
+/// A [FlutterAppManager] with no apps configured.
+class _NoAppsFlutterManager extends Fake implements FlutterAppManager {
+  @override
+  Iterable<FlutterAppConfig> get apps => const [];
+
+  @override
+  Map<String, String?> get appUrls => const {};
+
+  @override
+  bool isRunning(String appId) => false;
+
+  @override
+  bool isLaunching(String appId) => false;
+}
+
+/// A [WatchSession] whose hot reload does what the test says.
+class _ScriptedSession extends Fake implements WatchSession {
+  Future<void> Function() onForceReload = () async {};
+
+  @override
+  bool get isRunning => true;
+
+  @override
+  bool get isFlutterAppRunning => false;
+
+  @override
+  Stream<void> get vmServiceUriChanges => const Stream.empty();
+
+  @override
+  Future<void> forceReload() => onForceReload();
+
+  @override
+  Future<T> runSerialized<T>(Future<T> Function() body) => body();
+}
 
 class _UnusedSession extends Fake implements WatchSession {
   @override
