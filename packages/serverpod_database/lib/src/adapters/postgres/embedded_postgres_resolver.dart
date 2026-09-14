@@ -4,7 +4,9 @@ import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../../interface/database_pool_manager.dart';
 import 'embedded_postgres_user_facing_error.dart';
+import 'postgres_pool_manager.dart';
 
 /// Outcome of [startOrAttachEmbeddedPostgres].
 class ResolvedEmbeddedPostgres {
@@ -76,6 +78,12 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
     launched: result.launched,
   );
 }
+
+/// Stops [poolManager] without waiting for queries still running.
+Future<void> forceStopDatabasePool(DatabasePoolManager poolManager) =>
+    poolManager is PostgresPoolManager
+    ? poolManager.stop(force: true)
+    : poolManager.stop();
 
 /// How the embedded postmaster for [config] listens.
 ///
