@@ -48,9 +48,10 @@ abstract class RateLimiter {
   });
 }
 
-/// This rate limiting implementation uses the [RateLimitedRequestAttempt] model
-/// to track attempts. Each attempt is logged in a separate transaction that is
-/// never rolled back, ensuring rate limiting is always enforced.
+/// Tracks attempts using the [RateLimitedRequestAttempt] model.
+///
+/// Admitted attempts are committed independently of the caller's transaction.
+/// Rejected attempts are rolled back before the rate limit callback runs.
 class DatabaseRateLimiter extends RateLimiter {
   /// Creates a new [DatabaseRateLimiter] instance.
   DatabaseRateLimiter(super.config);
