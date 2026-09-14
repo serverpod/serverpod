@@ -11,7 +11,8 @@ void main() async {
     'Given read committed transaction isolation level and single row in database',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -78,7 +79,8 @@ void main() async {
     'Given repeatable read transaction isolation level',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -203,7 +205,8 @@ void main() async {
     'Given serializable transaction isolation level',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(

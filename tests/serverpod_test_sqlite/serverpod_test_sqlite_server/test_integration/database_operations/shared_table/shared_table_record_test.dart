@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_sqlite_shared/serverpod_test_sqlite_shared.dart';
 import 'package:test/test.dart';
 
@@ -7,7 +8,8 @@ void main() {
   withServerpod(
     'Given an empty database,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       test(
         'when inserting a shared table record, '
@@ -73,10 +75,11 @@ void main() {
     sessionBuilder,
     endpoints,
   ) {
-    var session = sessionBuilder.build();
+    late Session session;
     late SharedTableRecord inserted;
 
     setUp(() async {
+      session = sessionBuilder.build();
       inserted = await SharedTableRecord.db.insertRow(
         session,
         SharedTableRecord(

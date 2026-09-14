@@ -10,9 +10,9 @@ void main() {
   withServerpod(
     'Given database entries with basic matching criteria',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
-
+      late Session session;
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insert(
           session,
           [
@@ -186,9 +186,9 @@ void main() {
   withServerpod(
     'Given database entries for transaction testing',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
-
+      late Session session;
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insert(
           session,
           [
@@ -238,9 +238,9 @@ void main() {
   withServerpod(
     'Given no matching database entries',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
-
+      late Session session;
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insert(
           session,
           [
@@ -267,9 +267,9 @@ void main() {
   withServerpod(
     'Given database entries with null values',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
-
+      late Session session;
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insertRow(
           session,
           Types(
@@ -320,7 +320,8 @@ void main() {
   withServerpod(
     'Given database entries with non-null values',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       const originalInt = 1;
       const originalString = 'value';
@@ -388,7 +389,8 @@ void main() {
   withServerpod(
     'Given database entries for pagination operations',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       const matchingInt = 100;
 
@@ -575,9 +577,9 @@ void main() {
   withServerpod(
     'Given database entries with all supported data types',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
-
+      late Session session;
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insert(
           session,
           [
@@ -887,9 +889,9 @@ void main() {
   withServerpod(
     'Given an inserted entry,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
-
+      late Session session;
       setUp(() async {
+        session = sessionBuilder.build();
         await UniqueData.db.insert(session, [
           UniqueData(number: 1, email: 'a@serverpod.dev'),
         ]);
