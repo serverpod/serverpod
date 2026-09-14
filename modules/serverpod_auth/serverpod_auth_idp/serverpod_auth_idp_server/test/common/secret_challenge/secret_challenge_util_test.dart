@@ -11,6 +11,7 @@ const _verificationCode = '123456';
 void main() {
   late Session Function() buildSession;
   late Session session;
+
   final hashUtil = _createTestHashUtil();
 
   setUpAll(() {
@@ -22,6 +23,7 @@ void main() {
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       buildSession = sessionBuilder.build;
+
       late SecretChallengeUtil<_TestChallengeRequest> challengeUtil;
       late Map<String, _TestChallengeRequest> requests;
       late List<UuidValue> expiredRequestIds;
@@ -94,6 +96,7 @@ void main() {
       }) {
         requests = {};
         expiredRequestIds = [];
+
         challengeUtil = buildChallengeUtil(
           verificationRateLimiter: verificationRateLimiter,
           completionRateLimiter: completionRateLimiter,
@@ -112,6 +115,7 @@ void main() {
             transaction: transaction,
           ),
         );
+
         final request = _TestChallengeRequest(
           id: const Uuid().v4obj(),
           verificationChallenge: verificationChallenge,
@@ -131,13 +135,16 @@ void main() {
             completionRateLimiter: null,
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when creating a challenge, ', () {
           late SecretChallenge challenge;
           late SecretChallenge? persisted;
           late bool verificationCodeMatchesHash;
+
           setUpAll(() async {
             challenge = await session.db.transaction(
               (final transaction) => challengeUtil.createChallenge(
@@ -146,19 +153,23 @@ void main() {
                 transaction: transaction,
               ),
             );
+
             persisted = await SecretChallenge.db.findById(
               session,
               challenge.id!,
             );
+
             verificationCodeMatchesHash = await hashUtil.validateHashFromString(
               secret: _verificationCode,
               hashString: persisted!.challengeCodeHash,
             );
           });
+
           test(
             'then it stores a hash that validates the verification code.',
             () async {
               expect(persisted!.challengeCodeHash, isNot(_verificationCode));
+
               expect(verificationCodeMatchesHash, isTrue);
             },
           );
@@ -167,20 +178,24 @@ void main() {
 
       group('Given a valid challenge request, ', () {
         late _TestChallengeRequest request;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
             isAlreadyUsed: false,
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when verifying the request, ', () {
           setUpAll(() async {
             await session.db.transaction(
@@ -192,6 +207,7 @@ void main() {
               ),
             );
           });
+
           test(
             'then it links a completion challenge to the request.',
             () async {
@@ -203,26 +219,31 @@ void main() {
 
       group('Given a valid challenge request, ', () {
         late _TestChallengeRequest request;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
             isAlreadyUsed: false,
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group(
           'when verifying the request and completing it with the returned token, ',
           () {
             late String completionToken;
             late Future<_TestChallengeRequest> result;
             late _TestChallengeRequest completedRequest;
+
             setUpAll(() async {
               completionToken = await session.db.transaction(
                 (final transaction) => challengeUtil.verifyChallenge(
@@ -232,6 +253,7 @@ void main() {
                   transaction: transaction,
                 ),
               );
+
               result = session.db.transaction(
                 (final transaction) => challengeUtil.completeChallenge(
                   session,
@@ -241,6 +263,7 @@ void main() {
               );
               completedRequest = await result;
             });
+
             test('then it returns the request.', () async {
               expect(completedRequest, same(request));
             });
@@ -250,26 +273,31 @@ void main() {
 
       group('Given a valid challenge request, ', () {
         late _TestChallengeRequest request;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
             isAlreadyUsed: false,
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group(
           'when verifying the request and completing it twice with the same token, ',
           () {
             late String completionToken;
             late _TestChallengeRequest completedRequest;
             late _TestChallengeRequest completedRequest2;
+
             setUpAll(() async {
               completionToken = await session.db.transaction(
                 (final transaction) => challengeUtil.verifyChallenge(
@@ -279,6 +307,7 @@ void main() {
                   transaction: transaction,
                 ),
               );
+
               Future<_TestChallengeRequest> complete() =>
                   session.db.transaction(
                     (final transaction) => challengeUtil.completeChallenge(
@@ -287,11 +316,15 @@ void main() {
                       transaction: transaction,
                     ),
                   );
+
               completedRequest = await complete();
+
               completedRequest2 = await complete();
             });
+
             test('then it returns the request both times.', () async {
               expect(completedRequest, same(request));
+
               expect(completedRequest2, same(request));
             });
           },
@@ -301,24 +334,30 @@ void main() {
       group('Given a challenge request and an invalid verification code, ', () {
         late _TestChallengeRequest request;
         late String invalidVerificationCode;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
             isAlreadyUsed: false,
           );
+
           invalidVerificationCode = 'invalid-code';
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when verifying the request, ', () {
           late Future<String> result;
           Object? error;
+
           setUpAll(() async {
             result = session.db.transaction(
               (final transaction) => challengeUtil.verifyChallenge(
@@ -334,10 +373,12 @@ void main() {
               error = caughtError;
             }
           });
+
           test(
             'then it throws an invalid verification code exception.',
             () async {
               expect(error, isA<ChallengeInvalidVerificationCodeException>());
+
               expect(request.completionChallenge, isNull);
             },
           );
@@ -349,24 +390,30 @@ void main() {
         () {
           late _TestChallengeRequest request;
           late String validVerificationCode;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             validVerificationCode = _verificationCode;
+
             request = await createRequest(
               verificationCode: _verificationCode,
               isAlreadyUsed: false,
               lifetime: const Duration(minutes: -1),
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when verifying the request, ', () {
             late Future<String> result;
             Object? error;
+
             setUpAll(() async {
               result = session.db.transaction(
                 (final transaction) => challengeUtil.verifyChallenge(
@@ -382,11 +429,14 @@ void main() {
                 error = caughtError;
               }
             });
+
             test(
               'then it records the expiration and throws an expired exception.',
               () async {
                 expect(error, isA<ChallengeExpiredException>());
+
                 expect(expiredRequestIds, [request.id]);
+
                 expect(request.completionChallenge, isNull);
               },
             );
@@ -396,23 +446,28 @@ void main() {
 
       group('Given an already used challenge request, ', () {
         late _TestChallengeRequest request;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
             isAlreadyUsed: true,
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when verifying the request, ', () {
           late Future<String> result;
           Object? error;
+
           setUpAll(() async {
             result = session.db.transaction(
               (final transaction) => challengeUtil.verifyChallenge(
@@ -428,6 +483,7 @@ void main() {
               error = caughtError;
             }
           });
+
           test('then it throws an already used exception.', () async {
             expect(error, isA<ChallengeAlreadyUsedException>());
           });
@@ -436,19 +492,24 @@ void main() {
 
       group('Given no matching challenge request, ', () {
         late UuidValue unknownRequestId;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           unknownRequestId = const Uuid().v4obj();
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when verifying the request, ', () {
           late Future<String> result;
           Object? error;
+
           setUpAll(() async {
             result = session.db.transaction(
               (final transaction) => challengeUtil.verifyChallenge(
@@ -464,6 +525,7 @@ void main() {
               error = caughtError;
             }
           });
+
           test('then it throws a request not found exception.', () async {
             expect(error, isA<ChallengeRequestNotFoundException>());
           });
@@ -474,16 +536,19 @@ void main() {
         'Given a challenge request after the verification rate limit is exceeded, ',
         () {
           late _TestChallengeRequest request;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
               isAlreadyUsed: false,
             );
+
             verificationRateLimiter = DatabaseRateLimiter(
               RateLimiterConfig(
                 domain: 'secret_challenge_util_test',
@@ -491,20 +556,25 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             challengeUtil = buildChallengeUtil(
               verificationRateLimiter: verificationRateLimiter,
             );
+
             await verificationRateLimiter.tryRecordAttempt(
               session,
               key: request.id.uuid,
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when verifying the request, ', () {
             late Future<String> result;
             Object? error;
+
             setUpAll(() async {
               result = session.db.transaction(
                 (final transaction) => challengeUtil.verifyChallenge(
@@ -520,8 +590,10 @@ void main() {
                 error = caughtError;
               }
             });
+
             test('then it throws a rate limit exception.', () async {
               expect(error, isA<ChallengeRateLimitExceededException>());
+
               expect(
                 await verificationRateLimiter.countAttempts(
                   session,
@@ -536,19 +608,24 @@ void main() {
 
       group('Given an invalid completion token, ', () {
         late String invalidCompletionToken;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           invalidCompletionToken = 'not-base64';
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when completing a challenge, ', () {
           late Future<_TestChallengeRequest> result;
           Object? error;
+
           setUpAll(() async {
             result = session.db.transaction(
               (final transaction) => challengeUtil.completeChallenge(
@@ -563,6 +640,7 @@ void main() {
               error = caughtError;
             }
           });
+
           test(
             'then it throws an invalid completion token exception.',
             () async {
@@ -577,27 +655,33 @@ void main() {
         () {
           late _TestChallengeRequest request;
           late String completionToken;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
               isAlreadyUsed: false,
             );
+
             completionToken = _completionTokenFor(
               request.id,
               verificationCode: 'unlinked-token',
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when completing the request, ', () {
             late Future<_TestChallengeRequest> result;
             Object? error;
+
             setUpAll(() async {
               result = session.db.transaction(
                 (final transaction) => challengeUtil.completeChallenge(
@@ -612,6 +696,7 @@ void main() {
                 error = caughtError;
               }
             });
+
             test('then it throws a not verified exception.', () async {
               expect(error, isA<ChallengeNotVerifiedException>());
             });
@@ -624,11 +709,13 @@ void main() {
         () {
           late _TestChallengeRequest request;
           late String differentCompletionToken;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
@@ -649,12 +736,15 @@ void main() {
               verificationCode: 'different-token',
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when completing the request, ', () {
             late Future<_TestChallengeRequest> result;
             Object? error;
+
             setUpAll(() async {
               result = session.db.transaction(
                 (final transaction) => challengeUtil.completeChallenge(
@@ -669,6 +759,7 @@ void main() {
                 error = caughtError;
               }
             });
+
             test(
               'then it throws an invalid verification code exception.',
               () async {
@@ -682,11 +773,13 @@ void main() {
       group('Given an expired verified challenge request, ', () {
         late _TestChallengeRequest request;
         late String completionToken;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
@@ -701,16 +794,20 @@ void main() {
               transaction: transaction,
             ),
           );
+
           request.expiresAt = DateTime.now().subtract(
             const Duration(minutes: 1),
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when completing the request, ', () {
           late Future<_TestChallengeRequest> result;
           Object? error;
+
           setUpAll(() async {
             result = session.db.transaction(
               (final transaction) => challengeUtil.completeChallenge(
@@ -725,10 +822,12 @@ void main() {
               error = caughtError;
             }
           });
+
           test(
             'then it records the expiration and throws an expired exception.',
             () async {
               expect(error, isA<ChallengeExpiredException>());
+
               expect(expiredRequestIds, [request.id]);
             },
           );
@@ -740,11 +839,13 @@ void main() {
         () {
           late _TestChallengeRequest request;
           late String completionToken;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
@@ -759,6 +860,7 @@ void main() {
                 transaction: transaction,
               ),
             );
+
             completionRateLimiter = DatabaseRateLimiter(
               RateLimiterConfig(
                 domain: 'secret_challenge_util_test',
@@ -766,20 +868,25 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             challengeUtil = buildChallengeUtil(
               completionRateLimiter: completionRateLimiter,
             );
+
             await completionRateLimiter.tryRecordAttempt(
               session,
               key: request.id.uuid,
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when completing the request, ', () {
             late Future<_TestChallengeRequest> result;
             Object? error;
+
             setUpAll(() async {
               result = session.db.transaction(
                 (final transaction) => challengeUtil.completeChallenge(
@@ -794,8 +901,10 @@ void main() {
                 error = caughtError;
               }
             });
+
             test('then it throws a rate limit exception.', () async {
               expect(error, isA<ChallengeRateLimitExceededException>());
+
               expect(
                 await completionRateLimiter.countAttempts(
                   session,
@@ -810,27 +919,33 @@ void main() {
 
       group('Given a challenge util without rate limiters, ', () {
         late _TestChallengeRequest request;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           challengeUtil = buildChallengeUtil();
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
             isAlreadyUsed: false,
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group(
           'when verifying the request and completing it with the returned token, ',
           () {
             late String completionToken;
             late Future<_TestChallengeRequest> result;
             late _TestChallengeRequest completedRequest;
+
             setUpAll(() async {
               completionToken = await session.db.transaction(
                 (final transaction) => challengeUtil.verifyChallenge(
@@ -840,6 +955,7 @@ void main() {
                   transaction: transaction,
                 ),
               );
+
               result = session.db.transaction(
                 (final transaction) => challengeUtil.completeChallenge(
                   session,
@@ -849,6 +965,7 @@ void main() {
               );
               completedRequest = await result;
             });
+
             test('then the request is returned.', () async {
               expect(completedRequest, same(request));
             });
@@ -860,23 +977,28 @@ void main() {
         'Given an expired challenge request and an invalid verification code, ',
         () {
           late _TestChallengeRequest request;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               isAlreadyUsed: false,
               lifetime: const Duration(minutes: -1),
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when verifying the request, ', () {
             late Future<String> result;
             Object? error;
+
             setUpAll(() async {
               result = session.db.transaction(
                 (final transaction) => challengeUtil.verifyChallenge(
@@ -892,10 +1014,12 @@ void main() {
                 error = caughtError;
               }
             });
+
             test(
               'then it throws an invalid verification code exception without recording the expiration.',
               () async {
                 expect(error, isA<ChallengeInvalidVerificationCodeException>());
+
                 expect(expiredRequestIds, isEmpty);
               },
             );
@@ -908,11 +1032,13 @@ void main() {
         () {
           late _TestChallengeRequest request;
           late String differentCompletionToken;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
@@ -931,17 +1057,21 @@ void main() {
             request.expiresAt = DateTime.now().subtract(
               const Duration(minutes: 1),
             );
+
             differentCompletionToken = _completionTokenFor(
               request.id,
               verificationCode: 'different-token',
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when completing the request, ', () {
             late Future<_TestChallengeRequest> result;
             Object? error;
+
             setUpAll(() async {
               result = session.db.transaction(
                 (final transaction) => challengeUtil.completeChallenge(
@@ -956,10 +1086,12 @@ void main() {
                 error = caughtError;
               }
             });
+
             test(
               'then it throws an invalid verification code exception without recording the expiration.',
               () async {
                 expect(error, isA<ChallengeInvalidVerificationCodeException>());
+
                 expect(expiredRequestIds, isEmpty);
               },
             );
@@ -969,19 +1101,24 @@ void main() {
 
       group('Given a completion token without a code separator, ', () {
         late String completionToken;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           completionToken = base64Encode(utf8.encode('missing-separator'));
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when completing a challenge, ', () {
           late Future<_TestChallengeRequest> result;
           Object? error;
+
           setUpAll(() async {
             result = session.db.transaction(
               (final transaction) => challengeUtil.completeChallenge(
@@ -996,6 +1133,7 @@ void main() {
               error = caughtError;
             }
           });
+
           test(
             'then it throws an invalid completion token exception.',
             () async {
@@ -1009,21 +1147,26 @@ void main() {
         'Given a completion token with an invalid request identifier, ',
         () {
           late String completionToken;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             completionToken = base64Encode(
               utf8.encode('not-a-uuid:some-code'),
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when completing a challenge, ', () {
             late Future<_TestChallengeRequest> result;
             Object? error;
+
             setUpAll(() async {
               result = session.db.transaction(
                 (final transaction) => challengeUtil.completeChallenge(
@@ -1038,6 +1181,7 @@ void main() {
                 error = caughtError;
               }
             });
+
             test(
               'then it throws an invalid completion token exception.',
               () async {
@@ -1050,22 +1194,27 @@ void main() {
 
       group('Given a completion token for an unknown challenge request, ', () {
         late String completionToken;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           completionToken = _completionTokenFor(
             const Uuid().v4obj(),
             verificationCode: 'some-code',
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when completing a challenge, ', () {
           late Future<_TestChallengeRequest> result;
           Object? error;
+
           setUpAll(() async {
             result = session.db.transaction(
               (final transaction) => challengeUtil.completeChallenge(
@@ -1080,6 +1229,7 @@ void main() {
               error = caughtError;
             }
           });
+
           test('then it throws a request not found exception.', () async {
             expect(error, isA<ChallengeRequestNotFoundException>());
           });
@@ -1088,21 +1238,26 @@ void main() {
 
       group('Given a completion token with more than one code separator, ', () {
         late String completionToken;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           completionToken = base64Encode(
             utf8.encode('${const Uuid().v4obj()}:some:code'),
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when completing a challenge, ', () {
           late Future<_TestChallengeRequest> result;
           Object? error;
+
           setUpAll(() async {
             result = session.db.transaction(
               (final transaction) => challengeUtil.completeChallenge(
@@ -1117,6 +1272,7 @@ void main() {
               error = caughtError;
             }
           });
+
           test(
             'then it throws an invalid completion token exception.',
             () async {
@@ -1130,11 +1286,13 @@ void main() {
         'Given a request whose completion-link callback rejects concurrent use, ',
         () {
           late _TestChallengeRequest request;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             challengeUtil = buildChallengeUtil(
               linkCompletionToken:
                   (
@@ -1146,18 +1304,22 @@ void main() {
                     throw ChallengeAlreadyUsedException();
                   },
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
               isAlreadyUsed: false,
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when verifying the request, ', () {
             late Future<String> result;
             Object? error;
+
             setUpAll(() async {
               result = session.db.transaction(
                 (final transaction) => challengeUtil.verifyChallenge(
@@ -1173,6 +1335,7 @@ void main() {
                 error = caughtError;
               }
             });
+
             test('then it throws an already used exception.', () async {
               expect(error, isA<ChallengeAlreadyUsedException>());
             });
@@ -1189,11 +1352,14 @@ void main() {
               completionRateLimiter: null,
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when creating a challenge in that transaction, ', () {
             Object? error;
+
             setUpAll(() async {
               try {
                 await session.db.transaction((final transaction) async {
@@ -1202,14 +1368,17 @@ void main() {
                     verificationCode: _verificationCode,
                     transaction: transaction,
                   );
+
                   throw _ExpectedRollbackException();
                 });
               } catch (caughtError) {
                 error = caughtError;
               }
             });
+
             test('then no challenge is persisted.', () async {
               expect(error, isA<_ExpectedRollbackException>());
+
               expect(await SecretChallenge.db.count(session), 0);
             });
           });
@@ -1221,6 +1390,7 @@ void main() {
         () {
           late DatabaseRateLimiter limiter;
           late _TestChallengeRequest request;
+
           setUpAll(() async {
             limiter = DatabaseRateLimiter(
               RateLimiterConfig(
@@ -1229,21 +1399,26 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             arrangeChallengeUtil(
               verificationRateLimiter: limiter,
               completionRateLimiter: null,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
               isAlreadyUsed: false,
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when verifying its code, ', () {
             late List<RateLimitedRequestAttempt> attempts;
+
             setUpAll(() async {
               await session.db.transaction(
                 (final transaction) => challengeUtil.verifyChallenge(
@@ -1253,12 +1428,14 @@ void main() {
                   transaction: transaction,
                 ),
               );
+
               attempts = await RateLimitedRequestAttempt.db.find(
                 session,
                 where: (final t) =>
                     t.domain.equals('secret_challenge_util_test'),
               );
             });
+
             test(
               'then the persisted attempt uses the plain UUID string.',
               () async {
@@ -1275,6 +1452,7 @@ void main() {
           late DatabaseRateLimiter limiter;
           late _TestChallengeRequest request;
           late String token;
+
           setUpAll(() async {
             limiter = DatabaseRateLimiter(
               RateLimiterConfig(
@@ -1283,15 +1461,18 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: limiter,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
               isAlreadyUsed: false,
             );
+
             token = await session.db.transaction(
               (final transaction) => challengeUtil.verifyChallenge(
                 session,
@@ -1301,11 +1482,14 @@ void main() {
               ),
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when completing it with the correct token, ', () {
             late List<RateLimitedRequestAttempt> attempts;
+
             setUpAll(() async {
               await session.db.transaction(
                 (final transaction) => challengeUtil.completeChallenge(
@@ -1314,12 +1498,14 @@ void main() {
                   transaction: transaction,
                 ),
               );
+
               attempts = await RateLimitedRequestAttempt.db.find(
                 session,
                 where: (final t) =>
                     t.domain.equals('secret_challenge_util_test'),
               );
             });
+
             test(
               'then the persisted attempt uses the plain UUID string.',
               () async {
@@ -1333,6 +1519,7 @@ void main() {
       group('Given a valid request allowing one verification attempt, ', () {
         late DatabaseRateLimiter limiter;
         late _TestChallengeRequest request;
+
         setUpAll(() async {
           limiter = DatabaseRateLimiter(
             RateLimiterConfig(
@@ -1341,24 +1528,29 @@ void main() {
               maxAttempts: 1,
             ),
           );
+
           arrangeChallengeUtil(
             verificationRateLimiter: limiter,
             completionRateLimiter: null,
           );
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
             isAlreadyUsed: false,
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group(
           'when an incorrect code rolls back and the correct code is submitted, ',
           () {
             Object? error;
             Object? error2;
+
             setUpAll(() async {
               try {
                 await session.db.transaction(
@@ -1372,6 +1564,7 @@ void main() {
               } catch (caughtError) {
                 error = caughtError;
               }
+
               try {
                 await session.db.transaction(
                   (final transaction) => challengeUtil.verifyChallenge(
@@ -1385,10 +1578,12 @@ void main() {
                 error2 = caughtError;
               }
             });
+
             test(
               'then the failed attempt still exhausts the verification budget.',
               () async {
                 expect(error, isA<ChallengeInvalidVerificationCodeException>());
+
                 expect(error2, isA<ChallengeRateLimitExceededException>());
               },
             );
@@ -1401,6 +1596,7 @@ void main() {
         late _TestChallengeRequest request;
         late String token;
         late String wrongToken;
+
         setUpAll(() async {
           limiter = DatabaseRateLimiter(
             RateLimiterConfig(
@@ -1409,15 +1605,18 @@ void main() {
               maxAttempts: 1,
             ),
           );
+
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: limiter,
           );
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
             isAlreadyUsed: false,
           );
+
           token = await session.db.transaction(
             (final transaction) => challengeUtil.verifyChallenge(
               session,
@@ -1426,19 +1625,23 @@ void main() {
               transaction: transaction,
             ),
           );
+
           wrongToken = _completionTokenFor(
             request.id,
             verificationCode: 'wrong',
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group(
           'when an incorrect token rolls back and the correct token is submitted, ',
           () {
             Object? error;
             Object? error2;
+
             setUpAll(() async {
               try {
                 await session.db.transaction(
@@ -1451,6 +1654,7 @@ void main() {
               } catch (caughtError) {
                 error = caughtError;
               }
+
               try {
                 await session.db.transaction(
                   (final transaction) => challengeUtil.completeChallenge(
@@ -1463,10 +1667,12 @@ void main() {
                 error2 = caughtError;
               }
             });
+
             test(
               'then the failed attempt still exhausts the completion budget.',
               () async {
                 expect(error, isA<ChallengeInvalidVerificationCodeException>());
+
                 expect(error2, isA<ChallengeRateLimitExceededException>());
               },
             );
@@ -1476,24 +1682,29 @@ void main() {
 
       group('Given a valid challenge request, ', () {
         late _TestChallengeRequest request;
+
         setUpAll(() async {
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: null,
           );
+
           request = await createRequest(
             verificationCode: _verificationCode,
             lifetime: const Duration(hours: 1),
             isAlreadyUsed: false,
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when verifying its code, ', () {
           late String token;
           late List<String> parts;
           late SecretChallenge? persisted;
+
           setUpAll(() async {
             token = await session.db.transaction(
               (final transaction) => challengeUtil.verifyChallenge(
@@ -1503,17 +1714,21 @@ void main() {
                 transaction: transaction,
               ),
             );
+
             parts = utf8.decode(base64Decode(token)).split(':');
+
             persisted = await SecretChallenge.db.findById(
               session,
               request.completionChallenge!.id!,
             );
           });
+
           test(
             'then the returned token identifies the request and validates against the persisted completion hash.',
             () async {
               expect(parts, hasLength(2));
               expect(parts.first, request.id.uuid);
+
               expect(
                 await hashUtil.validateHashFromString(
                   secret: parts.last,
@@ -1530,11 +1745,13 @@ void main() {
         'Given a valid request whose completion-link callback rejects concurrent use, ',
         () {
           late _TestChallengeRequest request;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             challengeUtil = buildChallengeUtil(
               linkCompletionToken:
                   (
@@ -1546,18 +1763,22 @@ void main() {
                     throw ChallengeAlreadyUsedException();
                   },
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
               isAlreadyUsed: false,
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when verifying the code, ', () {
             Object? error;
             late List<SecretChallenge> challenges;
+
             setUpAll(() async {
               try {
                 await session.db.transaction(
@@ -1571,12 +1792,15 @@ void main() {
               } catch (caughtError) {
                 error = caughtError;
               }
+
               challenges = await SecretChallenge.db.find(session);
             });
+
             test(
               'then the newly created completion challenge rolls back.',
               () async {
                 expect(error, isA<ChallengeAlreadyUsedException>());
+
                 expect(challenges.map((final challenge) => challenge.id), [
                   request.verificationChallenge.id,
                 ]);
@@ -1592,6 +1816,7 @@ void main() {
           late DatabaseRateLimiter verificationLimiter;
           late DatabaseRateLimiter completionLimiter;
           late _TestChallengeRequest request;
+
           setUpAll(() async {
             verificationLimiter = DatabaseRateLimiter(
               RateLimiterConfig(
@@ -1600,6 +1825,7 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             completionLimiter = DatabaseRateLimiter(
               RateLimiterConfig(
                 domain: 'secret_challenge_util_test',
@@ -1607,24 +1833,29 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             arrangeChallengeUtil(
               verificationRateLimiter: verificationLimiter,
               completionRateLimiter: completionLimiter,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
               isAlreadyUsed: false,
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group(
             'when verifying its code and completing it with the returned token, ',
             () {
               late String token;
               late _TestChallengeRequest result;
+
               setUpAll(() async {
                 token = await session.db.transaction(
                   (final transaction) => challengeUtil.verifyChallenge(
@@ -1634,6 +1865,7 @@ void main() {
                     transaction: transaction,
                   ),
                 );
+
                 result = await session.db.transaction(
                   (final transaction) => challengeUtil.completeChallenge(
                     session,
@@ -1642,10 +1874,12 @@ void main() {
                   ),
                 );
               });
+
               test(
                 'then both phases succeed and each consumes only its own budget.',
                 () async {
                   expect(result, same(request));
+
                   expect(
                     await verificationLimiter.countAttempts(
                       session,
@@ -1672,6 +1906,7 @@ void main() {
         () {
           late DatabaseRateLimiter limiter;
           late UuidValue requestId;
+
           setUpAll(() async {
             limiter = DatabaseRateLimiter(
               RateLimiterConfig(
@@ -1680,20 +1915,25 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             arrangeChallengeUtil(
               verificationRateLimiter: limiter,
               completionRateLimiter: null,
             );
+
             requestId = const Uuid().v4obj();
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group(
             'when a not-found verification rolls back and verification is retried, ',
             () {
               Object? error;
               Object? error2;
+
               setUpAll(() async {
                 try {
                   await session.db.transaction(
@@ -1707,6 +1947,7 @@ void main() {
                 } catch (caughtError) {
                   error = caughtError;
                 }
+
                 try {
                   await session.db.transaction(
                     (final transaction) => challengeUtil.verifyChallenge(
@@ -1720,11 +1961,14 @@ void main() {
                   error2 = caughtError;
                 }
               });
+
               test(
                 'then the first failure still exhausts the verification budget.',
                 () async {
                   expect(error, isA<ChallengeRequestNotFoundException>());
+
                   expect(error2, isA<ChallengeRateLimitExceededException>());
+
                   expect(
                     await limiter.countAttempts(session, key: requestId.uuid),
                     1,
@@ -1742,6 +1986,7 @@ void main() {
           late DatabaseRateLimiter limiter;
           late UuidValue requestId;
           late String token;
+
           setUpAll(() async {
             limiter = DatabaseRateLimiter(
               RateLimiterConfig(
@@ -1750,24 +1995,30 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: limiter,
             );
+
             requestId = const Uuid().v4obj();
+
             token = _completionTokenFor(
               requestId,
               verificationCode: 'any-code',
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group(
             'when a not-found completion rolls back and completion is retried, ',
             () {
               Object? error;
               Object? error2;
+
               setUpAll(() async {
                 try {
                   await session.db.transaction(
@@ -1780,6 +2031,7 @@ void main() {
                 } catch (caughtError) {
                   error = caughtError;
                 }
+
                 try {
                   await session.db.transaction(
                     (final transaction) => challengeUtil.completeChallenge(
@@ -1792,11 +2044,14 @@ void main() {
                   error2 = caughtError;
                 }
               });
+
               test(
                 'then the first failure still exhausts the completion budget.',
                 () async {
                   expect(error, isA<ChallengeRequestNotFoundException>());
+
                   expect(error2, isA<ChallengeRateLimitExceededException>());
+
                   expect(
                     await limiter.countAttempts(session, key: requestId.uuid),
                     1,
@@ -1813,6 +2068,7 @@ void main() {
         () {
           late DatabaseRateLimiter limiter;
           late UuidValue id;
+
           setUpAll(() async {
             limiter = DatabaseRateLimiter(
               RateLimiterConfig(
@@ -1821,18 +2077,24 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             arrangeChallengeUtil(
               verificationRateLimiter: limiter,
               completionRateLimiter: null,
             );
+
             id = const Uuid().v4obj();
+
             await limiter.tryRecordAttempt(session, key: id.uuid);
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when verifying it, ', () {
             Object? error;
+
             setUpAll(() async {
               try {
                 await session.db.transaction(
@@ -1847,6 +2109,7 @@ void main() {
                 error = caughtError;
               }
             });
+
             test(
               'then rate limiting takes precedence over request lookup.',
               () async {
@@ -1863,6 +2126,7 @@ void main() {
           late DatabaseRateLimiter limiter;
           late UuidValue id;
           late String token;
+
           setUpAll(() async {
             limiter = DatabaseRateLimiter(
               RateLimiterConfig(
@@ -1871,19 +2135,26 @@ void main() {
                 maxAttempts: 1,
               ),
             );
+
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: limiter,
             );
+
             id = const Uuid().v4obj();
+
             await limiter.tryRecordAttempt(session, key: id.uuid);
+
             token = _completionTokenFor(id, verificationCode: 'any-code');
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when completing it with a well-formed token, ', () {
             Object? error;
+
             setUpAll(() async {
               try {
                 await session.db.transaction(
@@ -1897,6 +2168,7 @@ void main() {
                 error = caughtError;
               }
             });
+
             test(
               'then rate limiting takes precedence over request lookup.',
               () async {
@@ -1911,22 +2183,27 @@ void main() {
         'Given an already used request with an incorrect verification code, ',
         () {
           late _TestChallengeRequest request;
+
           setUpAll(() async {
             arrangeChallengeUtil(
               verificationRateLimiter: null,
               completionRateLimiter: null,
             );
+
             request = await createRequest(
               verificationCode: _verificationCode,
               lifetime: const Duration(hours: 1),
               isAlreadyUsed: true,
             );
           });
+
           tearDownAll(() async {
             await _deleteTestData(session);
           });
+
           group('when verifying it, ', () {
             Object? error;
+
             setUpAll(() async {
               try {
                 await session.db.transaction(
@@ -1941,6 +2218,7 @@ void main() {
                 error = caughtError;
               }
             });
+
             test(
               'then the already used error takes precedence over code validation.',
               () async {
@@ -1954,6 +2232,7 @@ void main() {
       group('Given a base64 token containing invalid UTF-8, ', () {
         late DatabaseRateLimiter limiter;
         late String token;
+
         setUpAll(() async {
           limiter = DatabaseRateLimiter(
             RateLimiterConfig(
@@ -1962,17 +2241,22 @@ void main() {
               maxAttempts: 1,
             ),
           );
+
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: limiter,
           );
+
           token = base64Encode([0xff, 0xfe]);
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when completing a challenge, ', () {
           Object? error;
+
           setUpAll(() async {
             try {
               await session.db.transaction(
@@ -1986,10 +2270,12 @@ void main() {
               error = caughtError;
             }
           });
+
           test(
             'then it rejects the token before consuming a rate limit attempt.',
             () async {
               expect(error, isA<ChallengeInvalidCompletionTokenException>());
+
               expect(
                 await RateLimitedRequestAttempt.db.count(
                   session,
@@ -2006,6 +2292,7 @@ void main() {
       group('Given an empty completion token, ', () {
         late DatabaseRateLimiter limiter;
         const token = '';
+
         setUpAll(() async {
           limiter = DatabaseRateLimiter(
             RateLimiterConfig(
@@ -2014,16 +2301,20 @@ void main() {
               maxAttempts: 1,
             ),
           );
+
           arrangeChallengeUtil(
             verificationRateLimiter: null,
             completionRateLimiter: limiter,
           );
         });
+
         tearDownAll(() async {
           await _deleteTestData(session);
         });
+
         group('when completing a challenge, ', () {
           Object? error;
+
           setUpAll(() async {
             try {
               await session.db.transaction(
@@ -2037,10 +2328,12 @@ void main() {
               error = caughtError;
             }
           });
+
           test(
             'then it rejects the token before consuming a rate limit attempt.',
             () async {
               expect(error, isA<ChallengeInvalidCompletionTokenException>());
+
               expect(
                 await RateLimitedRequestAttempt.db.count(
                   session,
@@ -2075,6 +2368,7 @@ Future<void> _deleteTestData(final Session session) async {
     session,
     where: (final _) => Constant.bool(true),
   );
+
   await RateLimitedRequestAttempt.db.deleteWhere(
     session,
     where: (final t) => t.domain.equals('secret_challenge_util_test'),

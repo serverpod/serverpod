@@ -28,6 +28,7 @@ void main() {
         () {
           const verificationCode = '12345678';
           late UuidValue requestId;
+
           setUpAll(() async {
             fixture = EmailIdpTestFixture(
               config: EmailIdpConfig(
@@ -36,6 +37,7 @@ void main() {
                 registrationVerificationCodeAllowedAttempts: 2,
               ),
             );
+
             requestId = await session.db.transaction(
               (final transaction) =>
                   fixture.accountCreationUtil.startRegistration(
@@ -45,15 +47,18 @@ void main() {
                   ),
             );
           });
+
           tearDownAll(() async {
             await fixture.tearDown(session);
           });
+
           group('when two sessions concurrently verify the correct code, ', () {
             late List<Object> results;
             late EmailAccountRequest request;
             late List<SecretChallenge> challenges;
             late SecretChallenge completionChallenge;
             late List<String> tokenParts;
+
             setUpAll(() async {
               results = await Future.wait<Object>([
                 for (final attemptSession in [buildSession(), buildSession()])
@@ -73,19 +78,24 @@ void main() {
                     }
                   }(),
               ]);
+
               request = (await EmailAccountRequest.db.findById(
                 session,
                 requestId,
               ))!;
+
               challenges = await SecretChallenge.db.find(session);
+
               completionChallenge = challenges.singleWhere(
                 (final challenge) =>
                     challenge.id == request.createAccountChallengeId,
               );
+
               tokenParts = utf8
                   .decode(base64Decode(results.whereType<String>().single))
                   .split(':');
             });
+
             test(
               'then only the winning completion challenge is issued and persisted.',
               () async {
@@ -98,6 +108,7 @@ void main() {
                     >(),
                   ]),
                 );
+
                 expect(
                   challenges.map((final challenge) => challenge.id),
                   unorderedEquals([
@@ -105,7 +116,9 @@ void main() {
                     request.createAccountChallengeId,
                   ]),
                 );
+
                 expect(tokenParts.first, requestId.uuid);
+
                 expect(
                   await fixture.passwordHashUtil.validateHashFromString(
                     secret: tokenParts.last,
@@ -126,6 +139,7 @@ void main() {
           const email = 'password-reset-race@serverpod.dev';
           late AuthUserModel authUser;
           late UuidValue requestId;
+
           setUpAll(() async {
             fixture = EmailIdpTestFixture(
               config: EmailIdpConfig(
@@ -134,13 +148,16 @@ void main() {
                 passwordResetVerificationCodeAllowedAttempts: 2,
               ),
             );
+
             authUser = await fixture.authUsers.create(session);
+
             await fixture.createEmailAccount(
               session,
               authUserId: authUser.id,
               email: email,
               password: EmailAccountPassword.fromString('Foobar123!'),
             );
+
             requestId = await session.db.transaction(
               (final transaction) =>
                   fixture.passwordResetUtil.startPasswordReset(
@@ -150,15 +167,18 @@ void main() {
                   ),
             );
           });
+
           tearDownAll(() async {
             await fixture.tearDown(session);
           });
+
           group('when two sessions concurrently verify the correct code, ', () {
             late List<Object> results;
             late EmailAccountPasswordResetRequest request;
             late List<SecretChallenge> challenges;
             late SecretChallenge completionChallenge;
             late List<String> tokenParts;
+
             setUpAll(() async {
               results = await Future.wait<Object>([
                 for (final attemptSession in [buildSession(), buildSession()])
@@ -178,19 +198,24 @@ void main() {
                     }
                   }(),
               ]);
+
               request = (await EmailAccountPasswordResetRequest.db.findById(
                 session,
                 requestId,
               ))!;
+
               challenges = await SecretChallenge.db.find(session);
+
               completionChallenge = challenges.singleWhere(
                 (final challenge) =>
                     challenge.id == request.setPasswordChallengeId,
               );
+
               tokenParts = utf8
                   .decode(base64Decode(results.whereType<String>().single))
                   .split(':');
             });
+
             test(
               'then only the winning completion challenge is issued and persisted.',
               () async {
@@ -203,6 +228,7 @@ void main() {
                     >(),
                   ]),
                 );
+
                 expect(
                   challenges.map((final challenge) => challenge.id),
                   unorderedEquals([
@@ -210,7 +236,9 @@ void main() {
                     request.setPasswordChallengeId,
                   ]),
                 );
+
                 expect(tokenParts.first, requestId.uuid);
+
                 expect(
                   await fixture.passwordHashUtil.validateHashFromString(
                     secret: tokenParts.last,
