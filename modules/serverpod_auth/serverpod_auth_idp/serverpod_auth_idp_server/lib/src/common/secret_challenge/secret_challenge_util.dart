@@ -81,9 +81,9 @@ class SecretChallengeUtil<T> {
   }) async {
     final config = _verificationConfig;
 
-    if (await config.hasTooManyAttempts(
+    if (!await config.tryRecordAttempt(
       session,
-      nonce: requestId,
+      requestId: requestId,
     )) {
       throw ChallengeRateLimitExceededException();
     }
@@ -157,9 +157,9 @@ class SecretChallengeUtil<T> {
 
     final credentials = _decodeCompletionToken(completionToken);
 
-    if (await config.hasTooManyAttempts(
+    if (!await config.tryRecordAttempt(
       session,
-      nonce: credentials.requestId,
+      requestId: credentials.requestId,
     )) {
       throw ChallengeRateLimitExceededException();
     }
