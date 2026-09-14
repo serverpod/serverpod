@@ -26,43 +26,21 @@ void main() {
 
       late List<String> rateLimitExceededKeys;
 
-      Future<void> recordRateLimitExceeded(
-        final Session session,
-        final String key,
-      ) async {
-        rateLimitExceededKeys.add(key);
-      }
-
-      DatabaseRateLimiter buildRateLimitUtil({
-        final String domain = _testDomain,
-        final String source = _testSource,
-        final Map<String, String>? defaultExtraData,
-        required final int maxAttempts,
-        final Duration? timeframe,
-        final Future<void> Function(Session session, String key)?
-        onRateLimitExceeded,
-      }) {
-        return DatabaseRateLimiter(
-          RateLimiterConfig(
-            domain: domain,
-            source: source,
-            defaultExtraData: defaultExtraData,
-            maxAttempts: maxAttempts,
-            timeframe: timeframe,
-            onRateLimitExceeded: onRateLimitExceeded,
-          ),
-        );
-      }
-
       group('Given a rate limiter that allows two attempts, ', () {
         late DatabaseRateLimiter rateLimitUtil;
 
         setUpAll(() async {
           rateLimitExceededKeys = [];
 
-          rateLimitUtil = buildRateLimitUtil(
-            maxAttempts: 2,
-            onRateLimitExceeded: recordRateLimitExceeded,
+          rateLimitUtil = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 2,
+              onRateLimitExceeded: (final session, final key) async {
+                rateLimitExceededKeys.add(key);
+              },
+            ),
           );
         });
 
@@ -113,11 +91,12 @@ void main() {
         late DatabaseRateLimiter rateLimitUtil;
 
         setUpAll(() async {
-          rateLimitExceededKeys = [];
-
-          rateLimitUtil = buildRateLimitUtil(
-            maxAttempts: 2,
-            onRateLimitExceeded: recordRateLimitExceeded,
+          rateLimitUtil = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 2,
+            ),
           );
         });
 
@@ -163,7 +142,13 @@ void main() {
           late DatabaseRateLimiter rateLimitUtil;
 
           setUpAll(() async {
-            rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
+            rateLimitUtil = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 2,
+              ),
+            );
 
             try {
               await session.db.transaction((final transaction) async {
@@ -206,7 +191,13 @@ void main() {
           late DatabaseRateLimiter rateLimitUtil;
 
           setUpAll(() async {
-            rateLimitUtil = buildRateLimitUtil(maxAttempts: 1);
+            rateLimitUtil = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 1,
+              ),
+            );
           });
 
           tearDownAll(() async {
@@ -241,12 +232,16 @@ void main() {
           late DatabaseRateLimiter rateLimitUtil;
 
           setUpAll(() async {
-            rateLimitUtil = buildRateLimitUtil(
-              maxAttempts: 2,
-              defaultExtraData: const {
-                'client': 'mobile',
-                'shared': 'default',
-              },
+            rateLimitUtil = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 2,
+                defaultExtraData: const {
+                  'client': 'mobile',
+                  'shared': 'default',
+                },
+              ),
             );
           });
 
@@ -292,7 +287,13 @@ void main() {
         late DatabaseRateLimiter rateLimitUtil;
 
         setUpAll(() async {
-          rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
+          rateLimitUtil = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 2,
+            ),
+          );
         });
 
         tearDownAll(() async {
@@ -354,7 +355,7 @@ void main() {
         });
       });
 
-      group('Given a rate limiter for UUID request identifiers, ', () {
+      group('Given a recorded attempt for a UUID request identifier, ', () {
         late UuidValue requestId;
         late DatabaseRateLimiter rateLimitUtil;
 
@@ -368,18 +369,18 @@ void main() {
               maxAttempts: 2,
             ),
           );
+
+          await rateLimitUtil.tryRecordAttempt(session, key: requestId.uuid);
         });
 
         tearDownAll(() async {
           await _deleteTestAttempts(session);
         });
 
-        group('when counting attempts after recording one, ', () {
+        group('when counting attempts, ', () {
           late int attemptCount;
 
           setUpAll(() async {
-            await rateLimitUtil.tryRecordAttempt(session, key: requestId.uuid);
-
             attemptCount = await rateLimitUtil.countAttempts(
               session,
               key: requestId.uuid,
@@ -398,12 +399,16 @@ void main() {
           late DateTime now;
           late DatabaseRateLimiter rateLimitUtil;
 
-          setUpAll(() async {
+          setUp(() async {
             now = DateTime.utc(2026, 1, 1, 12);
 
-            rateLimitUtil = buildRateLimitUtil(
-              maxAttempts: 2,
-              timeframe: const Duration(hours: 1),
+            rateLimitUtil = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 2,
+                timeframe: const Duration(hours: 1),
+              ),
             );
 
             await withClock(
@@ -417,14 +422,14 @@ void main() {
             );
           });
 
-          tearDownAll(() async {
+          tearDown(() async {
             await _deleteTestAttempts(session);
           });
 
           group('when counting attempts for the request, ', () {
             late int attemptCount;
 
-            setUpAll(() async {
+            setUp(() async {
               await withClock(Clock.fixed(now), () async {
                 attemptCount = await rateLimitUtil.countAttempts(
                   session,
@@ -440,37 +445,6 @@ void main() {
               },
             );
           });
-        },
-      );
-
-      group(
-        'Given a rate limiter with a one-hour timeframe, and a request with an attempt two hours ago and an attempt now, ',
-        () {
-          late DateTime now;
-          late DatabaseRateLimiter rateLimitUtil;
-
-          setUpAll(() async {
-            now = DateTime.utc(2026, 1, 1, 12);
-
-            rateLimitUtil = buildRateLimitUtil(
-              maxAttempts: 2,
-              timeframe: const Duration(hours: 1),
-            );
-
-            await withClock(
-              Clock.fixed(now.subtract(const Duration(hours: 2))),
-              () => rateLimitUtil.tryRecordAttempt(session, key: 'request'),
-            );
-
-            await withClock(
-              Clock.fixed(now),
-              () => rateLimitUtil.tryRecordAttempt(session, key: 'request'),
-            );
-          });
-
-          tearDownAll(() async {
-            await _deleteTestAttempts(session);
-          });
 
           group(
             'when deleting attempts for the request before the window, ',
@@ -478,7 +452,7 @@ void main() {
               late int deletedAttempts;
               late List<RateLimitedRequestAttempt> attempts;
 
-              setUpAll(() async {
+              setUp(() async {
                 await withClock(Clock.fixed(now), () async {
                   deletedAttempts = await rateLimitUtil.deleteAttempts(
                     session,
@@ -512,7 +486,13 @@ void main() {
           setUpAll(() async {
             now = DateTime.utc(2026, 1, 1, 12);
 
-            rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
+            rateLimitUtil = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 2,
+              ),
+            );
 
             await withClock(
               Clock.fixed(now.subtract(const Duration(hours: 2))),
@@ -584,7 +564,13 @@ void main() {
           setUpAll(() async {
             now = DateTime.utc(2026, 1, 1, 12);
 
-            rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
+            rateLimitUtil = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 2,
+              ),
+            );
 
             await withClock(
               Clock.fixed(now.subtract(const Duration(hours: 2))),
@@ -650,10 +636,16 @@ void main() {
 
             rateLimitExceededKeys = [];
 
-            rateLimitUtil = buildRateLimitUtil(
-              maxAttempts: 2,
-              timeframe: const Duration(hours: 1),
-              onRateLimitExceeded: recordRateLimitExceeded,
+            rateLimitUtil = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 2,
+                timeframe: const Duration(hours: 1),
+                onRateLimitExceeded: (final session, final key) async {
+                  rateLimitExceededKeys.add(key);
+                },
+              ),
             );
 
             await withClock(
@@ -695,14 +687,23 @@ void main() {
         late DateTime now;
         late DatabaseRateLimiter rateLimitUtil;
 
-        setUpAll(() async {
+        setUp(() async {
           now = DateTime.utc(2026, 1, 1, 12);
 
-          rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
+          rateLimitUtil = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 2,
+            ),
+          );
 
-          final otherSourceUtil = buildRateLimitUtil(
-            source: _otherSource,
-            maxAttempts: 2,
+          final otherSourceUtil = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _otherSource,
+              maxAttempts: 2,
+            ),
           );
 
           await withClock(
@@ -715,14 +716,14 @@ void main() {
           );
         });
 
-        tearDownAll(() async {
+        tearDown(() async {
           await _deleteTestAttempts(session);
         });
 
         group('when counting attempts for the request, ', () {
           late int attemptCount;
 
-          setUpAll(() async {
+          setUp(() async {
             attemptCount = await rateLimitUtil.countAttempts(
               session,
               key: 'request',
@@ -736,42 +737,13 @@ void main() {
             },
           );
         });
-      });
-
-      group('Given a request with an attempt under two sources, ', () {
-        late DateTime now;
-        late DatabaseRateLimiter rateLimitUtil;
-
-        setUpAll(() async {
-          now = DateTime.utc(2026, 1, 1, 12);
-
-          rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
-
-          final otherSourceUtil = buildRateLimitUtil(
-            source: _otherSource,
-            maxAttempts: 2,
-          );
-
-          await withClock(
-            Clock.fixed(now.subtract(const Duration(minutes: 1))),
-            () async {
-              await rateLimitUtil.tryRecordAttempt(session, key: 'request');
-
-              await otherSourceUtil.tryRecordAttempt(session, key: 'request');
-            },
-          );
-        });
-
-        tearDownAll(() async {
-          await _deleteTestAttempts(session);
-        });
 
         group('when deleting attempts for the request, ', () {
           late int deletedAttempts;
           late List<RateLimitedRequestAttempt> attempts;
           late List<RateLimitedRequestAttempt> otherSourceAttempts;
 
-          setUpAll(() async {
+          setUp(() async {
             await withClock(Clock.fixed(now), () async {
               deletedAttempts = await rateLimitUtil.deleteAttempts(
                 session,
@@ -802,14 +774,23 @@ void main() {
         late DateTime now;
         late DatabaseRateLimiter rateLimitUtil;
 
-        setUpAll(() async {
+        setUp(() async {
           now = DateTime.utc(2026, 1, 1, 12);
 
-          rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
+          rateLimitUtil = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 2,
+            ),
+          );
 
-          final otherDomainUtil = buildRateLimitUtil(
-            domain: _otherDomain,
-            maxAttempts: 2,
+          final otherDomainUtil = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _otherDomain,
+              source: _testSource,
+              maxAttempts: 2,
+            ),
           );
 
           await withClock(
@@ -822,14 +803,14 @@ void main() {
           );
         });
 
-        tearDownAll(() async {
+        tearDown(() async {
           await _deleteTestAttempts(session);
         });
 
         group('when counting attempts for the request, ', () {
           late int attemptCount;
 
-          setUpAll(() async {
+          setUp(() async {
             attemptCount = await rateLimitUtil.countAttempts(
               session,
               key: 'request',
@@ -843,42 +824,13 @@ void main() {
             },
           );
         });
-      });
-
-      group('Given a request with an attempt under two domains, ', () {
-        late DateTime now;
-        late DatabaseRateLimiter rateLimitUtil;
-
-        setUpAll(() async {
-          now = DateTime.utc(2026, 1, 1, 12);
-
-          rateLimitUtil = buildRateLimitUtil(maxAttempts: 2);
-
-          final otherDomainUtil = buildRateLimitUtil(
-            domain: _otherDomain,
-            maxAttempts: 2,
-          );
-
-          await withClock(
-            Clock.fixed(now.subtract(const Duration(minutes: 1))),
-            () async {
-              await rateLimitUtil.tryRecordAttempt(session, key: 'request');
-
-              await otherDomainUtil.tryRecordAttempt(session, key: 'request');
-            },
-          );
-        });
-
-        tearDownAll(() async {
-          await _deleteTestAttempts(session);
-        });
 
         group('when deleting attempts for the request, ', () {
           late int deletedAttempts;
           late List<RateLimitedRequestAttempt> attempts;
           late List<RateLimitedRequestAttempt> otherDomainAttempts;
 
-          setUpAll(() async {
+          setUp(() async {
             await withClock(Clock.fixed(now), () async {
               deletedAttempts = await rateLimitUtil.deleteAttempts(
                 session,
@@ -912,7 +864,13 @@ void main() {
           late DatabaseRateLimiter limiter;
 
           setUpAll(() async {
-            limiter = buildRateLimitUtil(maxAttempts: 1);
+            limiter = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 1,
+              ),
+            );
           });
 
           tearDownAll(() async {
@@ -939,7 +897,13 @@ void main() {
         late DatabaseRateLimiter limiter;
 
         setUpAll(() async {
-          limiter = buildRateLimitUtil(maxAttempts: 1);
+          limiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 1,
+            ),
+          );
         });
 
         tearDownAll(() async {
@@ -966,7 +930,13 @@ void main() {
         late DatabaseRateLimiter limiter;
 
         setUpAll(() async {
-          limiter = buildRateLimitUtil(maxAttempts: 1);
+          limiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 1,
+            ),
+          );
 
           await limiter.tryRecordAttempt(session, key: 'exhausted');
         });
@@ -995,11 +965,15 @@ void main() {
         late DatabaseRateLimiter limiter;
 
         setUpAll(() async {
-          limiter = buildRateLimitUtil(
-            maxAttempts: 1,
-            onRateLimitExceeded: (final session, final key) async {
-              throw _ExpectedRollbackException();
-            },
+          limiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 1,
+              onRateLimitExceeded: (final session, final key) async {
+                throw _ExpectedRollbackException();
+              },
+            ),
           );
 
           await limiter.tryRecordAttempt(session, key: 'request');
@@ -1037,13 +1011,17 @@ void main() {
           late DatabaseRateLimiter limiter;
 
           setUpAll(() async {
-            limiter = buildRateLimitUtil(
-              maxAttempts: 1,
-              onRateLimitExceeded: (final session, final key) async {
-                await limiter.deleteAttempts(session, key: key);
+            limiter = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 1,
+                onRateLimitExceeded: (final session, final key) async {
+                  await limiter.deleteAttempts(session, key: key);
 
-                throw _ExpectedRollbackException();
-              },
+                  throw _ExpectedRollbackException();
+                },
+              ),
             );
 
             await limiter.tryRecordAttempt(session, key: 'request');
@@ -1097,9 +1075,13 @@ void main() {
           setUpAll(() async {
             now = DateTime.utc(2026, 1, 1, 12);
 
-            limiter = buildRateLimitUtil(
-              maxAttempts: 3,
-              timeframe: const Duration(hours: 1),
+            limiter = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 3,
+                timeframe: const Duration(hours: 1),
+              ),
             );
 
             await withClock(
@@ -1153,9 +1135,13 @@ void main() {
           setUpAll(() async {
             now = DateTime.utc(2026, 1, 1, 12);
 
-            limiter = buildRateLimitUtil(
-              maxAttempts: 3,
-              timeframe: const Duration(hours: 1),
+            limiter = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 3,
+                timeframe: const Duration(hours: 1),
+              ),
             );
 
             await withClock(
@@ -1212,15 +1198,19 @@ void main() {
       group(
         'Given a one-hour window with attempts before, at, and after its cutoff, ',
         () {
-          late DatabaseRateLimiter limiter;
+          late RateLimiter limiter;
           late DateTime now;
 
           setUpAll(() async {
             now = DateTime.utc(2026, 1, 1, 12);
 
-            limiter = buildRateLimitUtil(
-              maxAttempts: 3,
-              timeframe: const Duration(hours: 1),
+            limiter = DatabaseRateLimiter(
+              RateLimiterConfig(
+                domain: _testDomain,
+                source: _testSource,
+                maxAttempts: 3,
+                timeframe: const Duration(hours: 1),
+              ),
             );
 
             await withClock(
@@ -1246,13 +1236,10 @@ void main() {
           });
 
           group('when deleting the key without a cutoff, ', () {
-            late RateLimiter publicLimiter;
             late int deleted;
 
             setUpAll(() async {
-              publicLimiter = limiter;
-
-              deleted = await publicLimiter.deleteAttempts(
+              deleted = await limiter.deleteAttempts(
                 session,
                 key: 'request',
               );
@@ -1277,9 +1264,13 @@ void main() {
         setUpAll(() async {
           now = DateTime.utc(2026, 1, 1, 12);
 
-          limiter = buildRateLimitUtil(
-            maxAttempts: 1,
-            timeframe: const Duration(hours: 1),
+          limiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 1,
+              timeframe: const Duration(hours: 1),
+            ),
           );
 
           await withClock(
@@ -1318,7 +1309,13 @@ void main() {
         setUpAll(() async {
           now = DateTime.utc(2026, 1, 1);
 
-          limiter = buildRateLimitUtil(maxAttempts: 1);
+          limiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 1,
+            ),
+          );
 
           await withClock(
             Clock.fixed(now.subtract(const Duration(days: 365))),
@@ -1353,7 +1350,13 @@ void main() {
         setUpAll(() async {
           now = DateTime.utc(2026, 1, 1);
 
-          limiter = buildRateLimitUtil(maxAttempts: 1);
+          limiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 1,
+            ),
+          );
 
           await withClock(Clock.fixed(now), () async {
             await limiter.tryRecordAttempt(session, key: 'first');
@@ -1390,7 +1393,13 @@ void main() {
         late RateLimiter limiter;
 
         setUpAll(() async {
-          limiter = buildRateLimitUtil(maxAttempts: 1);
+          limiter = DatabaseRateLimiter(
+            RateLimiterConfig(
+              domain: _testDomain,
+              source: _testSource,
+              maxAttempts: 1,
+            ),
+          );
 
           await limiter.tryRecordAttempt(session, key: 'request');
         });
