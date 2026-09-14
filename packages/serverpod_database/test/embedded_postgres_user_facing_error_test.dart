@@ -4,9 +4,43 @@ import 'package:test/test.dart';
 
 void main() {
   test(
+    'Given a pinned database port held by another process, '
+    'when the failure is formatted for Serverpod, '
+    'then it names the port and its fixes',
+    () {
+      const failure = PortInUseException('internal bind details', port: 8090);
+
+      final message = formatEmbeddedPostgresFailure(failure);
+
+      expect(
+        message,
+        'Port 8090 is already in use, so the local database cannot accept TCP '
+        'connections there. Stop the other service on that port (for example '
+        'a Docker database from an earlier setup), change `database.port` in '
+        'the relevant file in `config/`, or remove the database password from '
+        '`config/passwords.yaml` to serve the local database over its Unix '
+        'socket only.\n\n'
+        'To use Docker instead, remove `database.dataPath` from the relevant '
+        'file in `config/`, then try again.',
+      );
+    },
+  );
+
+  test(
+    'Given a pinned database port held by another process, '
+    'when the failure is checked for reporting, '
+    'then it is not reported as a bug',
+    () {
+      const failure = PortInUseException('internal bind details', port: 8090);
+
+      expect(shouldReportEmbeddedPostgresFailure(failure), isFalse);
+    },
+  );
+
+  test(
     'Given an embedded database condition the user can correct, '
     'when the failure is formatted for Serverpod, '
-    'then it gives the direct remedy and Docker fallback without reporting an internal issue.',
+    'then it gives the remedy and Docker fallback',
     () {
       const failure = StaleClusterException(
         'internal cluster details',
@@ -25,6 +59,20 @@ void main() {
         'To use Docker instead, remove `database.dataPath` from the relevant '
         'file in `config/`, then try again.',
       );
+    },
+  );
+
+  test(
+    'Given an embedded database condition the user can correct, '
+    'when the failure is checked for reporting, '
+    'then it is not reported as a bug',
+    () {
+      const failure = StaleClusterException(
+        'internal cluster details',
+        existingMajor: 15,
+        requestedMajor: 16,
+      );
+
       expect(shouldReportEmbeddedPostgresFailure(failure), isFalse);
     },
   );
