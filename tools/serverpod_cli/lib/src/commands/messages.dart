@@ -37,6 +37,10 @@ const startBlockedByErrorsManual =
 
 /// Shown when a previous session died mid-compile, leaving the cached build
 /// suspect.
+const podVmServiceUnreachable =
+    'The server came up, but the runner cannot reach its VM service, so it '
+    'could neither learn its addresses nor reload it. Stopping the server.';
+
 const previousCompileInterrupted =
     'A previous compilation was interrupted; discarding the cached build and '
     'recompiling from scratch.';

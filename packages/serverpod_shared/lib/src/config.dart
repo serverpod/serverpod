@@ -534,6 +534,16 @@ class ServerConfig {
     );
   }
 
+  /// A copy of this configuration with [resolvedPort] as the bind port.
+  ///
+  /// A [publicPort] of 0 follows it. A proxy's non-zero [publicPort] stays.
+  ServerConfig withResolvedPort(int resolvedPort) => ServerConfig(
+    port: resolvedPort,
+    publicScheme: publicScheme,
+    publicHost: publicHost,
+    publicPort: publicPort == 0 ? resolvedPort : publicPort,
+  ).._name = _name;
+
   @override
   String toString() {
     var str = '';

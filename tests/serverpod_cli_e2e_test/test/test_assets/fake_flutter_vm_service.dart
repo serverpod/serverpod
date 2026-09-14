@@ -13,6 +13,7 @@ Future<void> main(List<String> args) async {
     stdout.writeln('{}');
     return;
   }
+  _recordLaunch(args);
 
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   server.transform(WebSocketTransformer()).listen(_serveVmServiceClient);
@@ -41,6 +42,18 @@ Future<void> main(List<String> args) async {
   await server.close(force: true);
   await Future.wait(
     signalSubscriptions.map((subscription) => subscription.cancel()),
+  );
+}
+
+/// Appends this launch's pid and [args] as one JSON line to the file named by
+/// `FAKE_FLUTTER_LAUNCH_LOG`, so a test can count launches and read them.
+void _recordLaunch(List<String> args) {
+  final logPath = Platform.environment['FAKE_FLUTTER_LAUNCH_LOG'];
+  if (logPath == null || logPath.isEmpty) return;
+  File(logPath).writeAsStringSync(
+    '${jsonEncode({'pid': pid, 'args': args})}\n',
+    mode: FileMode.append,
+    flush: true,
   );
 }
 

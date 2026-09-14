@@ -5,9 +5,12 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
+import 'package:serverpod_cli/src/runner/line_sink.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
+
+import '../../test_util/wait_for.dart';
 
 /// An IOSink that discards all output.
 class _NullIOSink implements IOSink {
@@ -97,6 +100,43 @@ void main() {
         expect(exitCode, 0);
         expect(serverProcess.isRunning, isFalse);
         expect(disposeCalls, 1);
+      },
+    );
+  });
+
+  group('Given a ServerProcess whose output ends without a newline,', () {
+    late Directory tempDir;
+    late List<String> lines;
+    late ServerProcess serverProcess;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('server_process_test_');
+      await _createMinimalDartProject(tempDir.path);
+      await File('${tempDir.path}/bin/main.dart').writeAsString(
+        'import "dart:io"; void main() { stdout.write("Applying migration"); }',
+      );
+      lines = [];
+      serverProcess = ServerProcess(
+        serverDir: tempDir.path,
+        serverArgs: [],
+        stdoutSink: LineSink(lines.add),
+        stderrSink: _NullIOSink(),
+      );
+    });
+
+    tearDown(() async {
+      await tempDir.delete(recursive: true);
+    });
+
+    test(
+      'when the process exits, '
+      'then the unfinished line is its own, not held for the next process',
+      () async {
+        await serverProcess.start();
+        await serverProcess.exitCode;
+
+        await waitFor(() => lines.isNotEmpty);
+        expect(lines, ['Applying migration']);
       },
     );
   });

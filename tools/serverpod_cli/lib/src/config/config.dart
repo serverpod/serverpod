@@ -347,17 +347,14 @@ class GeneratorConfig implements ModelLoadConfig {
   /// All the modules including my self and internal modules.
   List<ModuleConfig> get modulesAll => _modules;
 
-  /// Create a new [GeneratorConfig] by loading the configuration in the [serverRootDir].
+  /// The absolute server package directory [serverRootDir] names.
   ///
-  /// If [serverRootDir] is empty, the server directory will be automatically
-  /// detected by searching the current directory and nearby locations.
-  ///
-  /// The [interactive] parameter controls whether interactive prompts are enabled.
-  /// Defaults to true unless running in a CI environment (detected via ci package).
-  /// Explicit flag value overrides CI detection.
-  static Future<GeneratorConfig> load({
-    String serverRootDir = '',
+  /// An empty value searches from [startDir] or the current directory, which
+  /// may prompt unless [interactive] is false, or null in CI.
+  static Future<String> resolveServerRootDir(
+    String serverRootDir, {
     required bool? interactive,
+    Directory? startDir,
   }) async {
     // Auto-detect server directory if not specified
     if (serverRootDir.isEmpty) {
@@ -366,6 +363,7 @@ class GeneratorConfig implements ModelLoadConfig {
       final isInteractive = interactive ?? !ci.isCI;
 
       var serverDir = await ServerDirectoryFinder.findOrPrompt(
+        startDir: startDir,
         interactive: isInteractive,
       );
       serverRootDir = serverDir.path;
@@ -373,7 +371,18 @@ class GeneratorConfig implements ModelLoadConfig {
 
     // Anchor the path once at resolution time,
     // so a later cwd change doesn't silently retarget config lookups.
-    serverRootDir = p.normalize(p.absolute(serverRootDir));
+    return p.normalize(p.absolute(serverRootDir));
+  }
+
+  /// Loads the config at [serverRootDir], resolved by [resolveServerRootDir].
+  static Future<GeneratorConfig> load({
+    String serverRootDir = '',
+    required bool? interactive,
+  }) async {
+    serverRootDir = await resolveServerRootDir(
+      serverRootDir,
+      interactive: interactive,
+    );
 
     var serverPackageDirectoryPathParts = p.split(serverRootDir);
 

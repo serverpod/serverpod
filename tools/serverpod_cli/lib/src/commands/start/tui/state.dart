@@ -27,7 +27,7 @@ class ServerWatchState extends TuiState {
   /// Raw stdout/stderr lines shown in the raw server logs overlay
   /// (toggled with the backtick or `.` shortcut).
   @override
-  final rawLines = BoundedQueueList<String>(maxRawLines);
+  BoundedQueueList<String> get rawLines => history.serverLines;
 
   /// Currently active tracked operations (keyed by ID).
   @override
@@ -109,7 +109,7 @@ class ServerWatchState extends TuiState {
   /// Whether stack traces attached to log entries are shown inline.
   ///
   /// When false, an error entry that carries a trace shows a compact
-  /// affordance instead; toggled with `e` on the structured log tab.
+  /// affordance instead. `e` toggles it on the structured log tab.
   /// Individual entries can deviate from this via [toggleStackTrace].
   bool expandStackTraces = false;
 
@@ -142,9 +142,6 @@ class ServerWatchState extends TuiState {
   /// on demand via the backtick or `.` shortcut.
   bool showRawServerLogs = false;
 
-  /// Maximum number of raw lines to keep.
-  static const maxRawLines = 10000;
-
   /// The [launchableApps] index of the currently selected app tab, or 0 when
   /// none is open. Used to start the launch panel cursor on the active app.
   int get activeLaunchableIndex {
@@ -164,13 +161,13 @@ class ServerWatchState extends TuiState {
     return null;
   }
 
+  /// The open app log tabs.
+  Iterable<AppLogTab> get _appLogTabs =>
+      (appsTabArea?.tabs ?? const <PaneTab>[]).whereType<AppLogTab>();
+
   /// Returns the [AppLogTab] for [appId], or null if it is not open.
-  AppLogTab? appLogTabFor(String appId) {
-    for (final tab in appsTabArea?.tabs ?? []) {
-      if (tab is AppLogTab && tab.appId == appId) return tab;
-    }
-    return null;
-  }
+  AppLogTab? appLogTabFor(String appId) =>
+      _appLogTabs.where((tab) => tab.appId == appId).firstOrNull;
 
   void createAppsTabAreaIfNeeded() {
     if (appsTabArea == null) {
@@ -193,15 +190,25 @@ class ServerWatchState extends TuiState {
     if (existing != null) return existing;
 
     createAppsTabAreaIfNeeded();
-    // Renders the session's line buffer, so a tab opened after the app started
-    // shows everything it has produced.
+    final lines = history.flutterLinesFor(appId);
     final tab = AppLogTab(
       appId: appId,
       label: label,
-      lines: history.flutterLinesFor(appId),
+      lines: lines,
+      logHistory: BoundedQueueList<Object>(AppLogTab.maxLogEntries)
+        ..addAll(lines),
     );
     tabs.addTab(tab);
     return tab;
+  }
+
+  /// Reseeds every open [AppLogTab] from [history], which a snapshot replaced.
+  void reloadAppLogTabs() {
+    for (final tab in _appLogTabs) {
+      tab.logHistory
+        ..clear()
+        ..addAll(history.flutterLinesFor(tab.appId));
+    }
   }
 
   /// Removes any existing [AppLogTab] for [appId].
@@ -219,13 +226,10 @@ class ServerWatchState extends TuiState {
   void clearLogs() {
     // Also drops the lines of apps that have no open tab.
     history.clear();
-    rawLines.clear();
     _toggledStackTraces.clear();
-    for (final tab in appsTabArea?.tabs ?? []) {
-      if (tab is AppLogTab) {
-        tab.lines.clear();
-        tab.logHistory.clear();
-      }
+    for (final tab in _appLogTabs) {
+      tab.lines.clear();
+      tab.logHistory.clear();
     }
   }
 }
