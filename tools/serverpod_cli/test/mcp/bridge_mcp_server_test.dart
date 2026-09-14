@@ -225,6 +225,77 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given a BridgeMcpServer that has served a call through one runner,',
+    skip: !hasUnixSocketSupport(),
+    () {
+      late Directory tempServerDir;
+      late String socketPath;
+      late _Pair pair;
+      late McpSocketServer firstRunner;
+
+      setUp(() async {
+        tempServerDir = await Directory.systemTemp.createTemp('bt');
+        addTearDown(() => _safeDelete(tempServerDir));
+        socketPath = '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock';
+        pair = await _makeBridgePair(socketPath);
+        addTearDown(pair.dispose);
+
+        firstRunner = McpSocketServer(serverDir: tempServerDir.path);
+        await firstRunner.start();
+        addTearDown(firstRunner.close);
+        firstRunner.connect(FakeRunnerApi()..onApplyMigrations = () async {});
+        final served = await pair.client.callTool(
+          CallToolRequest(name: 'apply_migrations'),
+        );
+        expect(served.isError, anyOf(isNull, isFalse));
+      });
+
+      group('when that runner is replaced by another on the same socket,', () {
+        var calls = 0;
+
+        setUp(() async {
+          calls = 0;
+          await firstRunner.close();
+          final replacement = McpSocketServer(serverDir: tempServerDir.path);
+          await replacement.start();
+          addTearDown(replacement.close);
+          replacement.connect(
+            FakeRunnerApi()
+              ..onApplyMigrations = () async {
+                calls++;
+              }
+              ..vmServiceUri = 'ws://x',
+          );
+        });
+
+        test(
+          'then the next call reaches the replacement through the same bridge',
+          () async {
+            final result = await pair.client.callTool(
+              CallToolRequest(name: 'apply_migrations'),
+            );
+
+            expect(result.isError, anyOf(isNull, isFalse));
+            expect(calls, 1);
+          },
+        );
+
+        test('then the next resource read reaches the replacement', () async {
+          final result = await pair.client.readResource(
+            ReadResourceRequest(uri: 'serverpod://vm-service'),
+          );
+
+          final text = (result.contents.first as TextResourceContents).text;
+          expect(
+            jsonDecode(text),
+            isNot(containsPair('error', 'not-running')),
+          );
+        });
+      });
+    },
+  );
 }
 
 class _Pair {
