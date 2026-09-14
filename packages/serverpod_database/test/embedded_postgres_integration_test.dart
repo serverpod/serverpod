@@ -1,6 +1,7 @@
 @Tags(['integration'])
 library;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -208,6 +209,67 @@ development:
       );
     },
   );
+
+  group('Given an embedded database pool with a query still running,', () {
+    late DatabasePoolManager poolManager;
+    late Future<void> query;
+
+    setUp(() async {
+      // The Unix socket path must fit in 104 bytes, which macOS's temp does not.
+      final serverDir = Directory(
+        Platform.isWindows ? Directory.systemTemp.path : '/tmp',
+      ).createTempSync('sp_busy_pool_');
+      addTearDown(() => serverDir.deleteSync(recursive: true));
+      poolManager = DatabaseProvider.forDialect(DatabaseDialect.postgres)
+          .createPoolManager(
+            _TestSerializationManager(),
+            null,
+            PostgresDatabaseConfig.embedded(
+              dataPath: p.join(serverDir.path, '.serverpod', 'pgdata'),
+              name: 'serverpod_test',
+              maxConnectionCount: 2,
+            ),
+          );
+      await poolManager.started;
+      late Database database;
+      database = DatabaseConstructor.create(
+        session: _TestSession(() => database),
+        poolManager: poolManager,
+      );
+      query = database.unsafeExecute('SELECT pg_sleep(10)');
+      unawaited(query.then((_) {}, onError: (_) {}));
+      while ((await database.unsafeQuery(
+        "SELECT 1 FROM pg_stat_activity WHERE query = 'SELECT pg_sleep(10)'",
+      )).isEmpty) {}
+    });
+
+    test(
+      'when the pool is stopped, '
+      'then the query completes',
+      () async {
+        final stopping = poolManager.stop();
+        addTearDown(() => stopping);
+
+        await expectLater(query, completes);
+      },
+      timeout: const Timeout(Duration(seconds: 180)),
+    );
+
+    test(
+      'when the pool is force-stopped, '
+      'then the stop completes before the query would have',
+      () async {
+        final stopping = forceStopDatabasePool(poolManager);
+        addTearDown(() => stopping);
+
+        await expectLater(
+          stopping.timeout(const Duration(seconds: 5)),
+          completes,
+        );
+      },
+      timeout: const Timeout(Duration(seconds: 180)),
+    );
+  });
 }
 
 class _TestSerializationManager extends DatabaseSerializationManager {
@@ -219,4 +281,22 @@ class _TestSerializationManager extends DatabaseSerializationManager {
 
   @override
   List<TableDefinition> getTargetTableDefinitions() => const [];
+}
+
+class _TestSession implements DatabaseSession {
+  _TestSession(this._database);
+
+  final Database Function() _database;
+
+  @override
+  Database get db => _database();
+
+  @override
+  Transaction? get transaction => null;
+
+  @override
+  LogQueryFunction? get logQuery => null;
+
+  @override
+  LogWarningFunction? get logWarning => null;
 }
