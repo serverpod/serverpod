@@ -19,17 +19,28 @@ import '../../test_util/short_temp_dir.dart';
 import '../../test_util/wait_for.dart';
 
 void main() {
+  late Directory tempDir;
+  late RunnerSocketServer server;
+
+  setUp(() async {
+    tempDir = await createShortTempDir('rsb');
+    server = RunnerSocketServer(serverDir: tempDir.path);
+    await server.start();
+  });
+
+  tearDown(() async {
+    await server.close();
+    try {
+      tempDir.deleteSync(recursive: true);
+    } catch (_) {}
+  });
+
   group('Given a UI attached while the runner is still starting,', () {
-    late Directory tempDir;
-    late RunnerSocketServer server;
     late FakeRunnerApi startingRunner;
     late _CapturingHolder holder;
     late RunnerClient client;
 
     setUp(() async {
-      tempDir = await createShortTempDir('rsb');
-      server = RunnerSocketServer(serverDir: tempDir.path);
-      await server.start();
       startingRunner = FakeRunnerApi()
         ..stage = RunnerStage.starting
         ..isRunning = false;
@@ -45,13 +56,9 @@ void main() {
     });
 
     tearDown(() async {
-      await server.close();
       if (!startingRunner.eventController.isClosed) {
         await startingRunner.eventController.close();
       }
-      try {
-        tempDir.deleteSync(recursive: true);
-      } catch (_) {}
     });
 
     test(
@@ -179,36 +186,6 @@ void main() {
     );
 
     test(
-      'when the runner was already stopping when the UI attached, '
-      'then the UI is asked to leave with the code the stopping runner named',
-      () async {
-        final stoppingRunner = FakeRunnerApi()
-          ..stage = RunnerStage.stopping
-          ..isRunning = false
-          ..exitCode = 3;
-        server.connect(stoppingRunner);
-        final lateClient = RunnerClient(
-          socketPath: server.socketPath,
-          history: holder.state.history,
-        );
-        await lateClient.attach();
-        addTearDown(lateClient.close);
-
-        int? exitCode;
-        final binding = RunnerStateBinding(
-          client: lateClient,
-          holder: holder,
-          onStopRequested: () {},
-          onRunnerStopped: (code) => exitCode = code,
-        )..bind();
-        addTearDown(binding.dispose);
-
-        await waitFor(() => exitCode != null);
-        expect(exitCode, 3);
-      },
-    );
-
-    test(
       'when an app is still launching and the UI asks to stop it, '
       'then the stop reaches the runner, the key being offered while launching',
       () async {
@@ -268,138 +245,6 @@ void main() {
             (e) => e.message.contains('Server migration skipped.'),
           ),
         );
-      },
-    );
-
-    test(
-      'when the client reconnects to a runner whose app has stopped, '
-      'then its tab is corrected rather than left reading ready',
-      () async {
-        final binding = RunnerStateBinding(
-          client: client,
-          holder: holder,
-          onStopRequested: () {},
-        )..bind();
-        addTearDown(binding.dispose);
-
-        startingRunner
-          ..flutterAppIds = ['admin']
-          ..emit(FlutterAppsChangedEvent(startingRunner.flutterApps))
-          ..emit(
-            const FlutterAppStateEvent(
-              appId: 'admin',
-              running: true,
-              launching: false,
-              url: 'http://localhost:5000',
-            ),
-          );
-        await waitFor(() => _appTab(holder)?.ready ?? false);
-
-        await server.close();
-        final restarted = RunnerSocketServer(serverDir: tempDir.path);
-        await restarted.start();
-        addTearDown(restarted.close);
-        final restartedRunner = FakeRunnerApi()
-          ..stage = RunnerStage.running
-          ..flutterAppIds = ['admin'];
-        addTearDown(restartedRunner.eventController.close);
-        restarted.connect(restartedRunner);
-
-        await waitFor(() => _appTab(holder)?.stopped ?? false);
-        expect(_appTab(holder)!.url, isNull);
-      },
-    );
-
-    test(
-      'when a client attaches to a stack whose app is already running, '
-      'then the snapshot tells it where the app is serving',
-      () async {
-        final runningRunner = FakeRunnerApi()
-          ..stage = RunnerStage.running
-          ..flutterAppIds = ['admin']
-          ..runningFlutterApps = {'admin'}
-          ..flutterAppUrls = {'admin': 'http://localhost:5000'};
-        addTearDown(runningRunner.eventController.close);
-        server.connect(runningRunner);
-        final lateClient = RunnerClient(
-          socketPath: server.socketPath,
-          history: holder.state.history,
-        );
-        await lateClient.attach();
-        addTearDown(lateClient.close);
-
-        final binding = RunnerStateBinding(
-          client: lateClient,
-          holder: holder,
-          onStopRequested: () {},
-        )..bind();
-        addTearDown(binding.dispose);
-
-        await waitFor(() => _appTab(holder)?.ready ?? false);
-        expect(_appTab(holder)!.url, 'http://localhost:5000');
-      },
-    );
-
-    test(
-      'when a client attaches to a stack whose app is already running, '
-      'then its tab opens on what the app has printed',
-      () async {
-        final runningRunner = FakeRunnerApi()
-          ..stage = RunnerStage.running
-          ..flutterAppIds = ['admin']
-          ..runningFlutterApps = {'admin'}
-          ..flutterLogs = {
-            'admin': ['Launching lib/main.dart on Chrome...'],
-          };
-        addTearDown(runningRunner.eventController.close);
-        server.connect(runningRunner);
-        final late = _CapturingHolder(ServerWatchState());
-        final lateClient = RunnerClient(
-          socketPath: server.socketPath,
-          history: late.state.history,
-        );
-        await lateClient.attach();
-        addTearDown(lateClient.close);
-
-        final binding = RunnerStateBinding(
-          client: lateClient,
-          holder: late,
-          onStopRequested: () {},
-        )..bind();
-        addTearDown(binding.dispose);
-
-        await waitFor(() => _appTab(late)?.ready ?? false);
-        expect(_appTab(late)!.logHistory, [
-          'Launching lib/main.dart on Chrome...',
-        ]);
-      },
-    );
-
-    test(
-      'when a snapshot names an app that never ran, '
-      'then no tab is opened for it',
-      () async {
-        final idleRunner = FakeRunnerApi()
-          ..stage = RunnerStage.running
-          ..flutterAppIds = ['admin'];
-        addTearDown(idleRunner.eventController.close);
-        server.connect(idleRunner);
-        final lateClient = RunnerClient(
-          socketPath: server.socketPath,
-          history: holder.state.history,
-        );
-        await lateClient.attach();
-        addTearDown(lateClient.close);
-
-        final binding = RunnerStateBinding(
-          client: lateClient,
-          holder: holder,
-          onStopRequested: () {},
-        )..bind();
-        addTearDown(binding.dispose);
-
-        await waitFor(() => holder.state.launchableApps.isNotEmpty);
-        expect(_appTab(holder), isNull);
       },
     );
 
@@ -465,6 +310,163 @@ void main() {
       },
     );
   });
+
+  group('Given a runner that is already stopping with exit code 3,', () {
+    late FakeRunnerApi stoppingRunner;
+
+    setUp(() {
+      stoppingRunner = FakeRunnerApi()
+        ..stage = RunnerStage.stopping
+        ..isRunning = false
+        ..exitCode = 3;
+      server.connect(stoppingRunner);
+      addTearDown(stoppingRunner.eventController.close);
+    });
+
+    test(
+      'when a UI attaches, '
+      'then it is asked to leave with the code the stopping runner named',
+      () async {
+        int? exitCode;
+        await _attachAndBind(
+          server,
+          onRunnerStopped: (code) => exitCode = code,
+        );
+
+        await waitFor(() => exitCode != null);
+        expect(exitCode, 3);
+      },
+    );
+  });
+
+  group('Given a UI whose app tab reads ready,', () {
+    late _CapturingHolder holder;
+
+    setUp(() async {
+      final runner = FakeRunnerApi()..flutterAppIds = ['admin'];
+      addTearDown(runner.eventController.close);
+      server.connect(runner);
+
+      holder = await _attachAndBind(server);
+
+      runner
+        ..emit(FlutterAppsChangedEvent(runner.flutterApps))
+        ..emit(
+          const FlutterAppStateEvent(
+            appId: 'admin',
+            running: true,
+            launching: false,
+            url: 'http://localhost:5000',
+          ),
+        );
+      await waitFor(() => _appTab(holder)?.ready ?? false);
+    });
+
+    test(
+      'when the client reconnects to a runner whose app has stopped, '
+      'then its tab is corrected rather than left reading ready',
+      () async {
+        await server.close();
+        final restarted = RunnerSocketServer(serverDir: tempDir.path);
+        await restarted.start();
+        addTearDown(restarted.close);
+        final restartedRunner = FakeRunnerApi()
+          ..stage = RunnerStage.running
+          ..flutterAppIds = ['admin'];
+        addTearDown(restartedRunner.eventController.close);
+        restarted.connect(restartedRunner);
+
+        await waitFor(() => _appTab(holder)?.stopped ?? false);
+        expect(_appTab(holder)!.url, isNull);
+      },
+    );
+  });
+
+  group(
+    'Given a stack whose app is already running and has printed a line,',
+    () {
+      setUp(() {
+        final runningRunner = FakeRunnerApi()
+          ..stage = RunnerStage.running
+          ..flutterAppIds = ['admin']
+          ..runningFlutterApps = {'admin'}
+          ..flutterAppUrls = {'admin': 'http://localhost:5000'}
+          ..flutterLogs = {
+            'admin': ['Launching lib/main.dart on Chrome...'],
+          };
+        addTearDown(runningRunner.eventController.close);
+        server.connect(runningRunner);
+      });
+
+      test(
+        'when a client attaches, '
+        'then the snapshot tells it where the app is serving',
+        () async {
+          final holder = await _attachAndBind(server);
+
+          await waitFor(() => _appTab(holder)?.ready ?? false);
+          expect(_appTab(holder)!.url, 'http://localhost:5000');
+        },
+      );
+
+      test(
+        'when a client attaches, '
+        'then its tab opens on what the app has printed',
+        () async {
+          final holder = await _attachAndBind(server);
+
+          await waitFor(() => _appTab(holder)?.ready ?? false);
+          expect(_appTab(holder)!.logHistory, [
+            'Launching lib/main.dart on Chrome...',
+          ]);
+        },
+      );
+    },
+  );
+
+  group('Given a stack whose app has never run,', () {
+    setUp(() {
+      final idleRunner = FakeRunnerApi()
+        ..stage = RunnerStage.running
+        ..flutterAppIds = ['admin'];
+      addTearDown(idleRunner.eventController.close);
+      server.connect(idleRunner);
+    });
+
+    test(
+      'when a client attaches, '
+      'then no tab is opened for it',
+      () async {
+        final holder = await _attachAndBind(server);
+
+        await waitFor(() => holder.state.launchableApps.isNotEmpty);
+        expect(_appTab(holder), isNull);
+      },
+    );
+  });
+}
+
+/// Attaches a UI to [server] and binds its state, ignoring stop requests.
+Future<_CapturingHolder> _attachAndBind(
+  RunnerSocketServer server, {
+  void Function(int)? onRunnerStopped,
+}) async {
+  final holder = _CapturingHolder(ServerWatchState());
+  final client = RunnerClient(
+    socketPath: server.socketPath,
+    history: holder.state.history,
+  );
+  await client.attach();
+  addTearDown(client.close);
+
+  final binding = RunnerStateBinding(
+    client: client,
+    holder: holder,
+    onStopRequested: () {},
+    onRunnerStopped: onRunnerStopped,
+  )..bind();
+  addTearDown(binding.dispose);
+  return holder;
 }
 
 /// Records the binding's callbacks, which the production holder hides.
