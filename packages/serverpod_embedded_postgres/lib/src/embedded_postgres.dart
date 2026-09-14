@@ -53,10 +53,15 @@ abstract class EmbeddedPostgres {
   /// set. Reads the supervisor pidfile, validates the process is still
   /// our postmaster, returns a handle.
   ///
+  /// [password] is the superuser password the launcher was configured with;
+  /// it is only needed to use [tcpEndpoint], the Unix socket needs none.
+  ///
   /// Throws [CrashedException] if the pidfile points at a dead process or
   /// at a foreign one.
-  static Future<EmbeddedPostgres> attach(Directory dataDir) =>
-      EmbeddedPostgresImpl.attach(dataDir);
+  static Future<EmbeddedPostgres> attach(
+    Directory dataDir, {
+    String? password,
+  }) => EmbeddedPostgresImpl.attach(dataDir, password: password);
 
   /// Pre-populate the per-user binary cache for [version] without booting
   /// a postmaster. Useful for CI warm-up and offline prep.
@@ -115,7 +120,18 @@ abstract class EmbeddedPostgres {
   /// is the socket *file* path (passed through `shortestPath()`), not the
   /// directory - `package:postgres` does not auto-append `.s.PGSQL.<port>`
   /// the way libpq does.
+  ///
+  /// A [DualTransport] postmaster reports its Unix socket here; see
+  /// [tcpEndpoint] for the loopback coordinates.
   pg.Endpoint get endpoint;
+
+  /// Loopback TCP coordinates, or `null` when the postmaster only listens on
+  /// its Unix socket. Equals [endpoint] for a [TcpTransport] postmaster.
+  pg.Endpoint? get tcpEndpoint;
+
+  /// libpq-style URI for [tcpEndpoint], or `null` when the postmaster only
+  /// listens on its Unix socket.
+  Uri? get tcpConnectionUri;
 
   /// Resolved PostgreSQL version (major.minor.patch) backing this handle.
   Version get version;
