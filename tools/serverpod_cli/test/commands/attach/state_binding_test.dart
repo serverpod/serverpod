@@ -15,6 +15,7 @@ import 'package:serverpod_shared/log_io.dart' show TestLogWriter;
 import 'package:test/test.dart';
 
 import '../../test_util/fake_runner_api.dart';
+import '../../test_util/serve_replacement.dart';
 import '../../test_util/short_temp_dir.dart';
 import '../../test_util/wait_for.dart';
 
@@ -367,17 +368,55 @@ void main() {
       'then its tab is corrected rather than left reading ready',
       () async {
         await server.close();
-        final restarted = RunnerSocketServer(serverDir: tempDir.path);
-        await restarted.start();
-        addTearDown(restarted.close);
-        final restartedRunner = FakeRunnerApi()
-          ..stage = RunnerStage.running
-          ..flutterAppIds = ['admin'];
-        addTearDown(restartedRunner.eventController.close);
-        restarted.connect(restartedRunner);
+        await serveReplacement(
+          tempDir,
+          FakeRunnerApi()
+            ..stage = RunnerStage.running
+            ..flutterAppIds = ['admin'],
+        );
 
         await waitFor(() => _appTab(holder)?.stopped ?? false);
         expect(_appTab(holder)!.url, isNull);
+      },
+    );
+  });
+
+  group('Given a UI whose app tab shows what the app printed,', () {
+    late _CapturingHolder holder;
+
+    setUp(() async {
+      final runner = FakeRunnerApi()
+        ..stage = RunnerStage.running
+        ..flutterAppIds = ['admin']
+        ..runningFlutterApps = {'admin'}
+        ..flutterLogs = {
+          'admin': ['old'],
+        };
+      addTearDown(runner.eventController.close);
+      server.connect(runner);
+
+      holder = await _attachAndBind(server);
+      await waitFor(() => _appTab(holder)?.logHistory.isNotEmpty ?? false);
+    });
+
+    test(
+      'when the client reconnects to a runner that retained other output, '
+      'then the tab shows that output rather than what it showed before',
+      () async {
+        await server.close();
+        await serveReplacement(
+          tempDir,
+          FakeRunnerApi()
+            ..stage = RunnerStage.running
+            ..flutterAppIds = ['admin']
+            ..runningFlutterApps = {'admin'}
+            ..flutterLogs = {
+              'admin': ['new'],
+            },
+        );
+
+        await waitFor(() => _appTab(holder)!.logHistory.contains('new'));
+        expect(_appTab(holder)!.logHistory, ['new']);
       },
     );
   });
