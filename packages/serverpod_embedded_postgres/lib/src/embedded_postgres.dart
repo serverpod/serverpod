@@ -49,14 +49,15 @@ abstract class EmbeddedPostgres {
     EmbeddedPostgresOptions opts,
   ) => EmbeddedPostgresImpl.startOrAttach(opts);
 
-  /// Reattach to a postmaster started with [EmbeddedPostgresOptions.detach]
-  /// set. Reads the supervisor pidfile, validates the process is still
-  /// our postmaster, returns a handle.
+  /// Reattaches to a postmaster started with [EmbeddedPostgresOptions.detach]
+  /// set.
   ///
-  /// Throws [CrashedException] if the pidfile points at a dead process or
-  /// at a foreign one.
-  static Future<EmbeddedPostgres> attach(Directory dataDir) =>
-      EmbeddedPostgresImpl.attach(dataDir);
+  /// Only [tcpEndpoint] needs [password]. Throws [AttachException] when no live
+  /// postmaster or state file is found.
+  static Future<EmbeddedPostgres> attach(
+    Directory dataDir, {
+    String? password,
+  }) => EmbeddedPostgresImpl.attach(dataDir, password: password);
 
   /// Pre-populate the per-user binary cache for [version] without booting
   /// a postmaster. Useful for CI warm-up and offline prep.
@@ -116,6 +117,14 @@ abstract class EmbeddedPostgres {
   /// directory - `package:postgres` does not auto-append `.s.PGSQL.<port>`
   /// the way libpq does.
   pg.Endpoint get endpoint;
+
+  /// Loopback TCP coordinates, or `null` when the postmaster only listens on
+  /// its Unix socket. Equals [endpoint] for a [TcpTransport] postmaster.
+  pg.Endpoint? get tcpEndpoint;
+
+  /// libpq-style URI for [tcpEndpoint], or `null` when the postmaster only
+  /// listens on its Unix socket.
+  Uri? get tcpConnectionUri;
 
   /// Resolved PostgreSQL version (major.minor.patch) backing this handle.
   Version get version;

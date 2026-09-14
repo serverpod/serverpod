@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
@@ -24,10 +23,41 @@ import 'supervisor/stale_lock_repair.dart';
 import 'supervisor/supervised_process.dart';
 import 'supervisor/supervisor.dart';
 import 'transport.dart';
+import 'transport_listeners.dart';
 
-/// PG's default port - matches `unix_socket_directories` entry name
-/// (`.s.PGSQL.5432`) and is the default `port` setting.
-const int _pgDefaultPort = 5432;
+/// Files this package keeps beside PGDATA, relative to the data root.
+const _stateFileName = 'embedded_postgres_state.json';
+const _pidFileName = 'postgres.pid';
+const _logFileName = 'postgres.log';
+
+/// The TCP password file from before serverpod/serverpod#5706.
+const _legacyPasswordFileName = 'postgres.password';
+
+pg.Endpoint _unixEndpointFor(
+  Directory runDir,
+  Transport transport, {
+  required String database,
+  required String username,
+}) => pg.Endpoint(
+  host: shortestPath(
+    p.join(runDir.absolute.path, '.s.PGSQL.${transport.postmasterPort}'),
+  ),
+  isUnixSocket: true,
+  database: database,
+  username: username,
+);
+
+pg.Endpoint _tcpEndpointFor(
+  Transport transport, {
+  required String database,
+  required String username,
+}) => pg.Endpoint(
+  host: '127.0.0.1',
+  port: transport.tcpPort!,
+  database: database,
+  username: username,
+  password: transport.password,
+);
 
 /// Concrete implementation backing [EmbeddedPostgres.start].
 ///
@@ -43,20 +73,18 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
   final EmbeddedPostgresOptions _options;
   final SupervisedProcess _supervisor;
   final Directory _runDir;
+
   final Transport _resolvedTransport;
-  final String? _resolvedPassword;
 
   EmbeddedPostgresImpl._({
     required EmbeddedPostgresOptions options,
     required SupervisedProcess supervisor,
     required Directory runDir,
     required Transport resolvedTransport,
-    String? resolvedPassword,
   }) : _options = options,
        _supervisor = supervisor,
        _runDir = runDir,
-       _resolvedTransport = resolvedTransport,
-       _resolvedPassword = resolvedPassword;
+       _resolvedTransport = resolvedTransport;
 
   /// Backs [EmbeddedPostgres.startOrAttach].
   static Future<EmbeddedStartResult> startOrAttach(
@@ -67,7 +95,10 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       return EmbeddedStartResult(handle: handle, launched: true);
     } on PostmasterLockBusyException catch (exc, stackTrace) {
       try {
-        var attached = await attach(options.dataDir);
+        var attached = await attach(
+          options.dataDir,
+          password: options.transport.password,
+        );
         return EmbeddedStartResult(handle: attached, launched: false);
       } on AttachException {
         // The postmaster vanished between start()'s lock check and attach().
@@ -78,19 +109,17 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 
   /// Backs [EmbeddedPostgres.attach]. Public only so the abstract class
   /// can delegate.
-  static Future<EmbeddedPostgres> attach(Directory dataDir) async {
+  static Future<EmbeddedPostgres> attach(
+    Directory dataDir, {
+    String? password,
+  }) async {
     var dataRoot = dataDir.parent;
     var runDir = Directory(p.join(dataRoot.path, 'run'));
-    var pidFile = File(p.join(dataRoot.path, 'postgres.pid'));
-    var logFile = File(p.join(dataRoot.path, 'postgres.log'));
-    var pwFile = File(p.join(dataRoot.path, 'postgres.password'));
-    var stateFile = File(
-      p.join(dataRoot.path, 'embedded_postgres_state.json'),
-    );
+    var stateFile = File(p.join(dataRoot.path, _stateFileName));
 
     var attached = AttachedSupervisor.tryAttach(
-      pidFile: pidFile,
-      logFile: logFile,
+      pidFile: File(p.join(dataRoot.path, _pidFileName)),
+      logFile: File(p.join(dataRoot.path, _logFileName)),
     );
     if (attached == null) {
       throw const AttachException(
@@ -101,19 +130,13 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       );
     }
 
-    var tcpPassword = pwFile.existsSync() ? pwFile.readAsStringSync() : null;
-    var state = EmbeddedPostgresState.read(stateFile, tcpPassword: tcpPassword);
+    var state = EmbeddedPostgresState.read(stateFile, tcpPassword: password);
     if (state == null) {
       throw const AttachException(
         'embedded_postgres_state.json missing or malformed. attach() '
         'cannot reconstruct the public-API surface without it.',
       );
     }
-
-    var resolvedPassword = switch (state.transport) {
-      UnixTransport() => null,
-      TcpTransport(:final password) => password,
-    };
 
     return EmbeddedPostgresImpl._(
       options: EmbeddedPostgresOptions(
@@ -127,7 +150,6 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       supervisor: attached,
       runDir: runDir,
       resolvedTransport: state.transport,
-      resolvedPassword: resolvedPassword,
     );
   }
 
@@ -146,9 +168,6 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     var pgDataDir = options.dataDir;
     var dataRoot = pgDataDir.parent;
     var runDir = Directory(p.join(dataRoot.path, 'run'));
-    var pidFile = File(p.join(dataRoot.path, 'postgres.pid'));
-    var logFile = File(p.join(dataRoot.path, 'postgres.log'));
-    var pwFile = File(p.join(dataRoot.path, 'postgres.password'));
 
     ensureSecureDirectorySync(runDir.path);
 
@@ -170,9 +189,6 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
         pgDataDir: pgDataDir,
         dataRoot: dataRoot,
         runDir: runDir,
-        pidFile: pidFile,
-        logFile: logFile,
-        pwFile: pwFile,
       );
     } finally {
       await launchLock.release();
@@ -184,10 +200,11 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     required Directory pgDataDir,
     required Directory dataRoot,
     required Directory runDir,
-    required File pidFile,
-    required File logFile,
-    required File pwFile,
   }) async {
+    var pidFile = File(p.join(dataRoot.path, _pidFileName));
+    var logFile = File(p.join(dataRoot.path, _logFileName));
+    _deleteIfExists(File(p.join(dataRoot.path, _legacyPasswordFileName)));
+
     var binaryStore = BinaryStore(cacheRoot: options.binaryCache);
     var artifact = ServerpodBundleArtifact.forCurrentPlatform(
       spec: bundleSpecFor(options.version),
@@ -207,24 +224,16 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
     var hadCluster = cluster.isInitialized;
 
-    var (resolvedTransport, resolvedPassword) = await _resolveTransport(
-      options.transport,
-      pwFile: pwFile,
-      hadCluster: hadCluster,
-    );
+    var resolvedTransport = await _resolveTransport(options.transport);
 
     if (hadCluster) {
       cluster.requireMajorMatch(options.version.major);
     } else {
       await cluster.ensureInitialized(
         username: options.username,
-        password: resolvedPassword,
+        password: resolvedTransport.password,
       );
     }
-    cluster.reconcilePostgresConf(
-      transport: resolvedTransport,
-      maxConnections: options.maxConnections,
-    );
 
     if (options.repairStaleLocks) {
       await repairStaleEmbeddedPostgresLocks(
@@ -252,18 +261,42 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     // would crash the launch with "lock file ... already exists". Wait for that
     // holder to exit so the launch lands on a free socket. The socket lock uses
     // the same first-line-PID format, so readPostmasterPidFile parses it too.
+    var socketLock = '.s.PGSQL.${resolvedTransport.postmasterPort}.lock';
     var socketLockPid = readPostmasterPidFile(
-      File(p.join(runDir.path, '.s.PGSQL.$_pgDefaultPort.lock')),
+      File(p.join(runDir.path, socketLock)),
     );
     if (socketLockPid != null && isProcessAlive(socketLockPid)) {
       var exited = await waitForPidExit(socketLockPid, options.startTimeout);
       if (!exited) {
         throw PostmasterLockBusyException(
-          '.s.PGSQL.$_pgDefaultPort.lock in ${runDir.path} is still held by '
-          'live PID $socketLockPid after ${options.startTimeout.inSeconds}s',
+          '$socketLock in ${runDir.path} is still held by live PID '
+          '$socketLockPid after ${options.startTimeout.inSeconds}s',
           existingPid: socketLockPid,
         );
       }
+    }
+
+    // No postmaster runs on this cluster now, so its conf is safe to rewrite.
+    cluster.reconcilePostgresConf(
+      transport: resolvedTransport,
+      maxConnections: options.maxConnections,
+    );
+
+    // A pinned port someone else holds is a configuration problem. Find out
+    // before paying for a password rewrite and a postmaster crash.
+    var pinnedPort = options.transport.tcpPort;
+    if (pinnedPort != null && pinnedPort != 0) {
+      await _requireFreePort(pinnedPort);
+    }
+
+    // initdb seeded fresh clusters. Existing ones get this launch's password.
+    var password = resolvedTransport.password;
+    if (hadCluster && password != null) {
+      await cluster.setSuperuserPassword(
+        username: options.username,
+        password: password,
+        timeout: options.startTimeout,
+      );
     }
 
     var supervisor = await _startSupervisorWithPortRetry(
@@ -271,6 +304,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       dataDir: pgDataDir,
       runDir: runDir,
       transport: resolvedTransport,
+      ephemeralPort: pinnedPort == 0,
       startTimeout: options.startTimeout,
       pidFile: pidFile,
       logFile: logFile,
@@ -290,7 +324,6 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
           runDir: runDir,
           transport: resolvedTransport,
           username: options.username,
-          password: resolvedPassword,
           databaseName: options.databaseName,
         );
       } catch (_) {
@@ -300,7 +333,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     }
 
     EmbeddedPostgresState.writeAtomic(
-      File(p.join(dataRoot.path, 'embedded_postgres_state.json')),
+      File(p.join(dataRoot.path, _stateFileName)),
       EmbeddedPostgresState(
         version: options.version,
         username: options.username,
@@ -314,7 +347,6 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       supervisor: supervisor,
       runDir: runDir,
       resolvedTransport: resolvedTransport,
-      resolvedPassword: resolvedPassword,
     );
   }
 
@@ -328,65 +360,61 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
   bool get isRunning => _supervisor.isRunning;
 
   @override
-  pg.Endpoint get endpoint {
-    switch (_resolvedTransport) {
-      case UnixTransport():
-        var sockPath = p.join(
-          _runDir.absolute.path,
-          '.s.PGSQL.$_pgDefaultPort',
-        );
-        return pg.Endpoint(
-          host: shortestPath(sockPath),
-          isUnixSocket: true,
+  pg.Endpoint get endpoint =>
+      _resolvedTransport.servesUnixSocket ? _unixEndpoint : tcpEndpoint!;
+
+  @override
+  pg.Endpoint? get tcpEndpoint => _resolvedTransport.tcpPort == null
+      ? null
+      : _tcpEndpointFor(
+          _resolvedTransport,
           database: _options.databaseName,
           username: _options.username,
         );
-      case TcpTransport(:final port):
-        return pg.Endpoint(
-          host: '127.0.0.1',
-          port: port,
-          database: _options.databaseName,
-          username: _options.username,
-          password: _resolvedPassword,
-        );
-    }
-  }
+
+  pg.Endpoint get _unixEndpoint => _unixEndpointFor(
+    _runDir,
+    _resolvedTransport,
+    database: _options.databaseName,
+    username: _options.username,
+  );
 
   @override
   String get connectionString => connectionUri.toString();
 
   @override
-  Uri get connectionUri {
-    switch (_resolvedTransport) {
-      case UnixTransport():
-        var sockPath = p.join(
-          _runDir.absolute.path,
-          '.s.PGSQL.$_pgDefaultPort',
-        );
-        // libpq form: postgres:///<db>?host=<socket-file-or-dir>&user=<u>
-        // host: '' is required to get the three-slash empty-authority URI
-        // (postgres:///db); otherwise the Uri ctor produces postgres:/db
-        // which libpq rejects.
-        return Uri(
-          scheme: 'postgres',
-          host: '',
-          path: '/${_options.databaseName}',
-          queryParameters: {
-            'host': shortestPath(sockPath),
-            'user': _options.username,
-          },
-        );
-      case TcpTransport(:final port):
-        var pw = _resolvedPassword;
-        return Uri(
-          scheme: 'postgres',
-          userInfo: pw == null ? _options.username : '${_options.username}:$pw',
-          host: '127.0.0.1',
-          port: port,
-          path: '/${_options.databaseName}',
-        );
-    }
+  Uri get connectionUri => _resolvedTransport.servesUnixSocket
+      ? _unixConnectionUri
+      : tcpConnectionUri!;
+
+  @override
+  Uri? get tcpConnectionUri {
+    var tcp = tcpEndpoint;
+    if (tcp == null) return null;
+    var pw = tcp.password;
+    return Uri(
+      scheme: 'postgres',
+      userInfo: pw == null ? tcp.username : '${tcp.username}:$pw',
+      host: tcp.host,
+      port: tcp.port,
+      path: '/${_options.databaseName}',
+    );
   }
+
+  // libpq form: postgres:///<db>?host=<socket-file-or-dir>&port=..&user=<u>
+  // host: '' is required to get the three-slash empty-authority URI
+  // (postgres:///db); otherwise the Uri ctor produces postgres:/db
+  // which libpq rejects.
+  Uri get _unixConnectionUri => Uri(
+    scheme: 'postgres',
+    host: '',
+    path: '/${_options.databaseName}',
+    queryParameters: {
+      'host': _unixEndpoint.host,
+      'port': '${_resolvedTransport.postmasterPort}',
+      'user': _options.username,
+    },
+  );
 
   @override
   Future<void> stop({Duration timeout = const Duration(seconds: 10)}) =>
@@ -397,65 +425,48 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     await stop();
 
     var dataRoot = _options.dataDir.parent;
-    var pgData = _options.dataDir;
-    var runDir = Directory(p.join(dataRoot.path, 'run'));
-    var pidFile = File(p.join(dataRoot.path, 'postgres.pid'));
-    var logFile = File(p.join(dataRoot.path, 'postgres.log'));
-    var rotatedLog = File('${logFile.path}.1');
-
-    for (var entity in [pgData, runDir]) {
-      if (entity.existsSync()) entity.deleteSync(recursive: true);
+    for (var dir in [
+      _options.dataDir,
+      Directory(p.join(dataRoot.path, 'run')),
+    ]) {
+      if (dir.existsSync()) dir.deleteSync(recursive: true);
     }
-    for (var f in [pidFile, logFile, rotatedLog]) {
-      if (f.existsSync()) f.deleteSync();
+    for (var name in [
+      _pidFileName,
+      _logFileName,
+      '$_logFileName.1',
+      _stateFileName,
+      _legacyPasswordFileName,
+    ]) {
+      _deleteIfExists(File(p.join(dataRoot.path, name)));
     }
   }
 }
 
-/// Resolves the user-supplied [transport] into a concrete one ready to
-/// pass to ClusterStore + Supervisor:
-///
-///   - For fresh clusters, always seeds a superuser password (written to
-///     [pwFile]) so a later switch to [TcpTransport] works without re-init.
-///     Unix connections still use trust auth.
-///   - For [TcpTransport] with `port == 0`, allocates an ephemeral port
-///     by binding `127.0.0.1:0` and reading the kernel-assigned port.
-///   - For warm TCP restarts, reads the persisted password sidecar so
-///     the endpoint matches whatever `initdb --pwfile` seeded.
-Future<(Transport, String?)> _resolveTransport(
-  Transport requested, {
-  required File pwFile,
-  required bool hadCluster,
-}) async {
-  String? resolvedPassword;
-  if (!hadCluster || requested is TcpTransport) {
-    resolvedPassword =
-        switch (requested) {
-          TcpTransport(:final password) => password,
-          UnixTransport(:final initialPassword) => initialPassword,
-        } ??
-        (hadCluster && pwFile.existsSync()
-            ? pwFile.readAsStringSync()
-            : _generatePassword());
+void _deleteIfExists(File file) {
+  if (file.existsSync()) file.deleteSync();
+}
 
-    if (!hadCluster || !pwFile.existsSync()) {
-      pwFile.parent.createSync(recursive: true);
-      pwFile.writeAsStringSync(resolvedPassword);
-    }
+/// Throws [PortInUseException] when [port] cannot be bound on loopback.
+Future<void> _requireFreePort(int port) async {
+  try {
+    var probe = await ServerSocket.bind(InternetAddress.loopbackIPv4, port);
+    await probe.close();
+  } on SocketException catch (e) {
+    throw PortInUseException(
+      'port $port on 127.0.0.1 is held by another process: ${e.message}',
+      port: port,
+    );
   }
+}
 
-  switch (requested) {
-    case UnixTransport():
-      // Password is passed to initdb on fresh clusters only; trust auth
-      // does not use it for Unix connections.
-      return (requested, resolvedPassword);
-    case TcpTransport(:final port):
-      var resolvedPort = port == 0 ? await _allocateEphemeralPort() : port;
-      return (
-        TcpTransport(port: resolvedPort, password: resolvedPassword),
-        resolvedPassword,
-      );
-  }
+Future<Transport> _resolveTransport(Transport requested) async {
+  var tcpPort = requested.tcpPort;
+  if (tcpPort == null) return requested;
+  return requested.withTcp(
+    port: tcpPort == 0 ? await _allocateEphemeralPort() : tcpPort,
+    password: requested.password ?? generateRandomString(),
+  );
 }
 
 Future<int> _allocateEphemeralPort() async {
@@ -471,18 +482,17 @@ Future<int> _allocateEphemeralPort() async {
   }
 }
 
-/// Wraps [Supervisor.start] with a single port-race retry. If [transport] is
-/// a TCP transport with an ephemerally-allocated port and PG fails to bind
-/// with EADDRINUSE (we read this from the captured log tail of the crashed
-/// postmaster), we re-allocate the port and try once more.
+/// Starts [Supervisor], retrying once on a new port after a bind race when
+/// [ephemeralPort] allows it.
 ///
-/// [onResolveTransport] is invoked when we re-allocate a port so the
-/// caller can re-reconcile postgresql.conf with the new value.
+/// [onResolveTransport] runs before the retry, because Postgres reads its port
+/// from postgresql.conf.
 Future<Supervisor> _startSupervisorWithPortRetry({
   required Directory installDir,
   required Directory dataDir,
   required Directory runDir,
   required Transport transport,
+  required bool ephemeralPort,
   required Duration startTimeout,
   required File pidFile,
   required File logFile,
@@ -503,18 +513,27 @@ Future<Supervisor> _startSupervisorWithPortRetry({
   try {
     return await attempt(transport);
   } on CrashedException catch (e) {
-    var t = transport;
-    if (t is! TcpTransport) rethrow;
-    var portRace = e.logTail.any(
-      (line) =>
-          line.contains('Address already in use') ||
-          line.contains('could not bind'),
-    );
+    var portRace =
+        transport.tcpPort != null &&
+        e.logTail.any(
+          (line) =>
+              line.contains('Address already in use') ||
+              line.contains('could not bind'),
+        );
     if (!portRace) rethrow;
-    var newPort = await _allocateEphemeralPort();
-    var reallocated = TcpTransport(port: newPort, password: t.password);
-    onResolveTransport(reallocated);
-    return attempt(reallocated);
+    if (!ephemeralPort) {
+      throw PortInUseException(
+        'port ${transport.tcpPort} on 127.0.0.1 is held by another process; '
+        'postgres log tail: ${e.logTail.join('\n')}',
+        port: transport.tcpPort!,
+      );
+    }
+    var retryWith = transport.withTcp(
+      port: await _allocateEphemeralPort(),
+      password: transport.password!,
+    );
+    onResolveTransport(retryWith);
+    return attempt(retryWith);
   }
 }
 
@@ -525,30 +544,12 @@ Future<void> _ensureDatabase({
   required Directory runDir,
   required Transport transport,
   required String username,
-  required String? password,
   required String databaseName,
 }) async {
-  var endpoint = switch (transport) {
-    UnixTransport() => pg.Endpoint(
-      host: shortestPath(
-        p.join(runDir.absolute.path, '.s.PGSQL.$_pgDefaultPort'),
-      ),
-      isUnixSocket: true,
-      database: 'postgres',
-      username: username,
-    ),
-    TcpTransport(:final port) => pg.Endpoint(
-      host: '127.0.0.1',
-      port: port,
-      database: 'postgres',
-      username: username,
-      password: password,
-    ),
-  };
-
-  var conn = await pg.Connection.open(
-    endpoint,
-    settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+  var conn = await _openMaintenanceConnection(
+    runDir: runDir,
+    transport: transport,
+    username: username,
   );
   try {
     var rows = await conn.execute(
@@ -564,6 +565,27 @@ Future<void> _ensureDatabase({
   } finally {
     await conn.close();
   }
+}
+
+/// Opens a superuser connection to the `postgres` maintenance database,
+/// over the socket when [transport] has one and over TCP otherwise.
+Future<pg.Connection> _openMaintenanceConnection({
+  required Directory runDir,
+  required Transport transport,
+  required String username,
+}) {
+  var endpoint = transport.servesUnixSocket
+      ? _unixEndpointFor(
+          runDir,
+          transport,
+          database: 'postgres',
+          username: username,
+        )
+      : _tcpEndpointFor(transport, database: 'postgres', username: username);
+  return pg.Connection.open(
+    endpoint,
+    settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+  );
 }
 
 /// Defensive identifier check so a misspelled databaseName can't pass a
@@ -586,11 +608,4 @@ void _validateDatabaseName(String name) {
       'must match [A-Za-z_][A-Za-z0-9_\$]* (PG identifier rule)',
     );
   }
-}
-
-String _generatePassword() {
-  var rand = Random.secure();
-  const chars =
-      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  return List.generate(32, (_) => chars[rand.nextInt(chars.length)]).join();
 }

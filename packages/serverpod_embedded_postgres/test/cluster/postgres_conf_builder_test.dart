@@ -56,9 +56,34 @@ void main() {
   });
 
   test(
+    'Given a DualTransport on port 5433 and a PGDATA with a sibling "run" dir, '
+    'when the conf body is built, '
+    'then both the loopback listener and the relative socket directory are set',
+    () {
+      var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
+      try {
+        var pgData = Directory(p.join(tmp.path, 'pgdata'))..createSync();
+        Directory(p.join(tmp.path, 'run')).createSync();
+
+        var body = buildPostgresConfBody(
+          transport: const DualTransport(port: 5433),
+          pgDataDir: pgData,
+        );
+
+        expect(body, contains("listen_addresses = '127.0.0.1'"));
+        expect(body, contains('port = 5433'));
+        expect(body, contains("unix_socket_directories = '../run'"));
+        expect(body, contains('unix_socket_permissions = 0700'));
+      } finally {
+        tmp.deleteSync(recursive: true);
+      }
+    },
+  );
+
+  test(
     'Given a Postgres configuration that omits maxConnections, '
     'when building the config, '
-    'then the default is used.',
+    'then the default is used',
     () {
       var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
       try {
