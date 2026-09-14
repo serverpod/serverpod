@@ -116,17 +116,31 @@ void main() {
     );
 
     test(
-      'when a command needing the stack is issued, '
+      'when a hot reload is requested, '
       'then it reports that the runner is still starting',
       () {
         expect(
           api.hotReload,
           throwsA(isA<RunnerStartingException>()),
         );
+      },
+    );
+
+    test(
+      'when migrations are asked to be applied, '
+      'then it reports that the runner is still starting',
+      () {
         expect(
           api.applyMigrations,
           throwsA(isA<RunnerStartingException>()),
         );
+      },
+    );
+
+    test(
+      'when a Flutter app is asked to launch, '
+      'then it reports that the runner is still starting',
+      () {
         expect(
           () => api.launchFlutterApp('admin'),
           throwsA(isA<RunnerStartingException>()),
@@ -135,10 +149,17 @@ void main() {
     );
 
     test(
-      'when a migration is asked for, '
+      'when an ordinary migration is asked for, '
       'then it answers with a failed result rather than throwing',
       () async {
         expect((await api.createMigration()).isError, isTrue);
+      },
+    );
+
+    test(
+      'when a repair migration is asked for, '
+      'then it answers with a failed result rather than throwing',
+      () async {
         expect((await api.createRepairMigration()).isError, isTrue);
       },
     );
@@ -195,8 +216,11 @@ void main() {
         expect(result.isError, isFalse);
         expect(result.created, isTrue);
         expect(result.abortedForWarnings, isFalse);
-        expect(result.message, contains('20260825120000'));
-        expect(result.message, contains('/tmp/migrations/20260825120000'));
+        expect(
+          result.message,
+          'Server migration "20260825120000" created at '
+          '/tmp/migrations/20260825120000.',
+        );
       },
     );
 
@@ -209,7 +233,10 @@ void main() {
         expect(result.isError, isFalse);
         expect(result.created, isFalse);
         expect(result.abortedForWarnings, isFalse);
-        expect(result.message, contains('No changes detected'));
+        expect(
+          result.message,
+          'Server migration skipped. No changes detected.',
+        );
       },
     );
 
@@ -270,8 +297,11 @@ void main() {
 
         expect(result.isError, isFalse);
         expect(result.created, isTrue);
-        expect(result.message, contains('server-v1'));
-        expect(result.message, contains('client-v1'));
+        expect(
+          result.message,
+          'Server migration "server-v1" created at /tmp/server.\n'
+          'Client migration "client-v1" created at /tmp/client.',
+        );
       },
     );
 
@@ -346,7 +376,11 @@ void main() {
 
         expect(result.isError, isTrue);
         expect(result.abortedForWarnings, isFalse);
-        expect(result.message, contains('Client generation failed.'));
+        expect(
+          result.message,
+          'Server migration skipped. No changes detected.\n'
+          'Client generation failed.',
+        );
       },
     );
   });
