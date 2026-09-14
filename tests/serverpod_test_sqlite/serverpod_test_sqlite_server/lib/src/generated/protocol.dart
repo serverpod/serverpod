@@ -893,7 +893,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'address',
       dartName: 'Address',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -921,7 +921,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'address_fk_0',
           columns: ['inhabitantId'],
           referenceTable: 'citizen',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -948,7 +948,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'address_uuid',
       dartName: 'AddressUuid',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -976,7 +976,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'address_uuid_fk_0',
           columns: ['inhabitantId'],
           referenceTable: 'citizen_int',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -1003,7 +1003,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'arena',
       dartName: 'Arena',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1027,7 +1027,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'arena_uuid',
       dartName: 'ArenaUuid',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1051,7 +1051,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'bigint_default',
       dartName: 'BigIntDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1083,7 +1083,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'bigint_default_mix',
       dartName: 'BigIntDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1122,7 +1122,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'bigint_default_model',
       dartName: 'BigIntDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1152,7 +1152,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'bigint_default_persist',
       dartName: 'BigIntDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1177,7 +1177,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'blocking',
       dartName: 'Blocking',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1205,7 +1205,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'blocking_fk_0',
           columns: ['blockedId'],
           referenceTable: 'member',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -1215,7 +1215,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'blocking_fk_1',
           columns: ['blockedById'],
           referenceTable: 'member',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -1246,7 +1246,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'book',
       dartName: 'Book',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1270,7 +1270,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'bool_default',
       dartName: 'BoolDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1309,7 +1309,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'bool_default_mix',
       dartName: 'BoolDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1348,7 +1348,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'bool_default_model',
       dartName: 'BoolDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1384,7 +1384,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'bool_default_persist',
       dartName: 'BoolDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1416,7 +1416,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'cat',
       dartName: 'Cat',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1444,7 +1444,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'cat_fk_0',
           columns: ['motherId'],
           referenceTable: 'cat',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.setNull,
@@ -1457,7 +1457,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'changed_id_type_self',
       dartName: 'ChangedIdTypeSelf',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1491,7 +1491,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'changed_id_type_self_fk_0',
           columns: ['nextId'],
           referenceTable: 'changed_id_type_self',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1501,7 +1501,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'changed_id_type_self_fk_1',
           columns: ['parentId'],
           referenceTable: 'changed_id_type_self',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1528,7 +1528,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'chapter',
       dartName: 'Chapter',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1556,7 +1556,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'chapter_fk_0',
           columns: ['_bookChaptersBookId'],
           referenceTable: 'book',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1569,7 +1569,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'child_table_explicit_column',
       dartName: 'ChildClassExplicitColumn',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1599,7 +1599,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'citizen',
       dartName: 'Citizen',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1633,7 +1633,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'citizen_fk_0',
           columns: ['companyId'],
           referenceTable: 'company',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1643,7 +1643,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'citizen_fk_1',
           columns: ['oldCompanyId'],
           referenceTable: 'company',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1656,7 +1656,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'citizen_int',
       dartName: 'CitizenInt',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1690,7 +1690,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'citizen_int_fk_0',
           columns: ['companyId'],
           referenceTable: 'company_uuid',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1700,7 +1700,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'citizen_int_fk_1',
           columns: ['oldCompanyId'],
           referenceTable: 'company_uuid',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1713,7 +1713,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'city',
       dartName: 'City',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1737,7 +1737,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'city_with_long_table_name_that_is_still_valid',
       dartName: 'CityWithLongTableName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1761,7 +1761,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'comment',
       dartName: 'Comment',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1789,7 +1789,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'comment_fk_0',
           columns: ['orderId'],
           referenceTable: 'order',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -1802,7 +1802,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'comment_int',
       dartName: 'CommentInt',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1830,7 +1830,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'comment_int_fk_0',
           columns: ['orderId'],
           referenceTable: 'order_uuid',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -1843,7 +1843,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'company',
       dartName: 'Company',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1871,7 +1871,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'company_fk_0',
           columns: ['townId'],
           referenceTable: 'town',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1884,7 +1884,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'company_uuid',
       dartName: 'CompanyUuid',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1912,7 +1912,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'company_uuid_fk_0',
           columns: ['townId'],
           referenceTable: 'town_int',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1925,7 +1925,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'contractor',
       dartName: 'Contractor',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -1953,7 +1953,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'contractor_fk_0',
           columns: ['fk_contractor_service_id'],
           referenceTable: 'service',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -1980,7 +1980,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'course',
       dartName: 'Course',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2004,7 +2004,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'course_uuid',
       dartName: 'CourseUuid',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2028,7 +2028,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'customer',
       dartName: 'Customer',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2052,7 +2052,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'customer_int',
       dartName: 'CustomerInt',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2076,7 +2076,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'datetime_default',
       dartName: 'DateTimeDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2115,7 +2115,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'datetime_default_mix',
       dartName: 'DateTimeDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2154,7 +2154,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'datetime_default_model',
       dartName: 'DateTimeDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2190,7 +2190,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'datetime_default_persist',
       dartName: 'DateTimeDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2222,7 +2222,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'deferrable_relation_initially_deferred',
       dartName: 'DeferrableRelationInitiallyDeferred',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2244,7 +2244,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'deferrable_relation_initially_deferred_fk_0',
           columns: ['parentId'],
           referenceTable: 'deferrable_relation_parent',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -2258,7 +2258,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'deferrable_relation_initially_immediate',
       dartName: 'DeferrableRelationInitiallyImmediate',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2280,7 +2280,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'deferrable_relation_initially_immediate_fk_0',
           columns: ['parentId'],
           referenceTable: 'deferrable_relation_parent',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -2294,7 +2294,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'deferrable_relation_parent',
       dartName: 'DeferrableRelationParent',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2318,7 +2318,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'department',
       dartName: 'Department',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2342,7 +2342,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'double_default',
       dartName: 'DoubleDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2374,7 +2374,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'double_default_mix',
       dartName: 'DoubleDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2413,7 +2413,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'double_default_model',
       dartName: 'DoubleDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2443,7 +2443,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'double_default_persist',
       dartName: 'DoubleDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2468,7 +2468,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'duration_default',
       dartName: 'DurationDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2500,7 +2500,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'duration_default_mix',
       dartName: 'DurationDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2539,7 +2539,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'duration_default_model',
       dartName: 'DurationDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2569,7 +2569,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'duration_default_persist',
       dartName: 'DurationDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2594,7 +2594,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'employee',
       dartName: 'Employee',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2622,7 +2622,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'employee_fk_0',
           columns: ['fk_employee_department_id'],
           referenceTable: 'department',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -2635,7 +2635,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'empty_model_relation_item',
       dartName: 'EmptyModelRelationItem',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2663,7 +2663,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'empty_model_relation_item_fk_0',
           columns: ['_relationEmptyModelItemsRelationEmptyModelId'],
           referenceTable: 'relation_empty_model',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -2676,7 +2676,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'empty_model_with_table',
       dartName: 'EmptyModelWithTable',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2694,7 +2694,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'enrollment',
       dartName: 'Enrollment',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2722,7 +2722,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'enrollment_fk_0',
           columns: ['studentId'],
           referenceTable: 'student',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -2732,7 +2732,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'enrollment_fk_1',
           columns: ['courseId'],
           referenceTable: 'course',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -2763,7 +2763,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'enrollment_int',
       dartName: 'EnrollmentInt',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2791,7 +2791,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'enrollment_int_fk_0',
           columns: ['studentId'],
           referenceTable: 'student_uuid',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -2801,7 +2801,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'enrollment_int_fk_1',
           columns: ['courseId'],
           referenceTable: 'course_uuid',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -2832,7 +2832,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'enum_default',
       dartName: 'EnumDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2878,7 +2878,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'enum_default_mix',
       dartName: 'EnumDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2917,7 +2917,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'enum_default_model',
       dartName: 'EnumDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2959,7 +2959,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'enum_default_persist',
       dartName: 'EnumDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -2991,7 +2991,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'int_default',
       dartName: 'IntDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3023,7 +3023,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'int_default_mix',
       dartName: 'IntDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3062,7 +3062,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'int_default_model',
       dartName: 'IntDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3092,7 +3092,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'int_default_persist',
       dartName: 'IntDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3117,7 +3117,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'long_implicit_id_field',
       dartName: 'LongImplicitIdField',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3148,7 +3148,7 @@ class Protocol extends _is.DatabaseSerializationManager
             '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id',
           ],
           referenceTable: 'long_implicit_id_field_collection',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -3161,7 +3161,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'long_implicit_id_field_collection',
       dartName: 'LongImplicitIdFieldCollection',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3185,7 +3185,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'max_field_name',
       dartName: 'MaxFieldName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3209,7 +3209,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'member',
       dartName: 'Member',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3233,7 +3233,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'model_with_required_field',
       dartName: 'ModelWithRequiredField',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3269,7 +3269,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'modified_column_name',
       dartName: 'ModifiedColumnName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3299,7 +3299,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'multiple_max_field_name',
       dartName: 'MultipleMaxFieldName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3336,7 +3336,7 @@ class Protocol extends _is.DatabaseSerializationManager
             '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId',
           ],
           referenceTable: 'relation_to_multiple_max_field_name',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -3349,7 +3349,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'nulls_distinct_data',
       dartName: 'NullsDistinctData',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3408,7 +3408,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_field_persist',
       dartName: 'ObjectFieldPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3432,7 +3432,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_field_scopes',
       dartName: 'ObjectFieldScopes',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3462,7 +3462,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_bit',
       dartName: 'ObjectWithBit',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3603,7 +3603,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_bytedata',
       dartName: 'ObjectWithByteData',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3627,7 +3627,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_duration',
       dartName: 'ObjectWithDuration',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3651,7 +3651,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_dynamic',
       dartName: 'ObjectWithDynamic',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3705,7 +3705,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_enum',
       dartName: 'ObjectWithEnum',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3753,7 +3753,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_enum_enhanced',
       dartName: 'ObjectWithEnumEnhanced',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3807,7 +3807,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_half_vector',
       dartName: 'ObjectWithHalfVector',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3948,7 +3948,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_index',
       dartName: 'ObjectWithIndex',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -3996,7 +3996,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_jsonb',
       dartName: 'ObjectWithJsonb',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4111,7 +4111,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_jsonb_class_level',
       dartName: 'ObjectWithJsonbClassLevel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4147,7 +4147,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_object',
       dartName: 'ObjectWithObject',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4219,7 +4219,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_parent',
       dartName: 'ObjectWithParent',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4241,7 +4241,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'object_with_parent_fk_0',
           columns: ['other'],
           referenceTable: 'object_field_scopes',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -4254,7 +4254,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_self_parent',
       dartName: 'ObjectWithSelfParent',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4276,7 +4276,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'object_with_self_parent_fk_0',
           columns: ['other'],
           referenceTable: 'object_with_self_parent',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -4289,7 +4289,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_sparse_vector',
       dartName: 'ObjectWithSparseVector',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4385,7 +4385,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_uuid',
       dartName: 'ObjectWithUuid',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4415,7 +4415,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'object_with_vector',
       dartName: 'ObjectWithVector',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4556,7 +4556,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'order',
       dartName: 'Order',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4584,7 +4584,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'order_fk_0',
           columns: ['customerId'],
           referenceTable: 'customer',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -4597,7 +4597,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'order_uuid',
       dartName: 'OrderUuid',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4625,7 +4625,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'order_uuid_fk_0',
           columns: ['customerId'],
           referenceTable: 'customer_int',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.cascade,
@@ -4638,7 +4638,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'organization',
       dartName: 'Organization',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4666,7 +4666,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'organization_fk_0',
           columns: ['cityId'],
           referenceTable: 'city',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -4679,7 +4679,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'organization_with_long_table_name_that_is_still_valid',
       dartName: 'OrganizationWithLongTableName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4708,7 +4708,7 @@ class Protocol extends _is.DatabaseSerializationManager
               'organization_with_long_table_name_that_is_still_valid_fk_0',
           columns: ['cityId'],
           referenceTable: 'city_with_long_table_name_that_is_still_valid',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -4721,7 +4721,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'person',
       dartName: 'Person',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4755,7 +4755,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'person_fk_0',
           columns: ['organizationId'],
           referenceTable: 'organization',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -4765,7 +4765,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'person_fk_1',
           columns: ['_cityCitizensCityId'],
           referenceTable: 'city',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -4778,7 +4778,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'person_with_long_table_name_that_is_still_valid',
       dartName: 'PersonWithLongTableName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4815,7 +4815,7 @@ class Protocol extends _is.DatabaseSerializationManager
           columns: ['organizationId'],
           referenceTable:
               'organization_with_long_table_name_that_is_still_valid',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -4828,7 +4828,7 @@ class Protocol extends _is.DatabaseSerializationManager
             '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id',
           ],
           referenceTable: 'city_with_long_table_name_that_is_still_valid',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -4841,7 +4841,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'player',
       dartName: 'Player',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4869,7 +4869,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'player_fk_0',
           columns: ['teamId'],
           referenceTable: 'team',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.setNull,
@@ -4882,7 +4882,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'player_uuid',
       dartName: 'PlayerUuid',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4910,7 +4910,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'player_uuid_fk_0',
           columns: ['teamId'],
           referenceTable: 'team_int',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.setNull,
@@ -4923,7 +4923,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'post',
       dartName: 'Post',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -4951,7 +4951,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'post_fk_0',
           columns: ['nextId'],
           referenceTable: 'post',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.setNull,
@@ -4978,7 +4978,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'related_unique_data',
       dartName: 'RelatedUniqueData',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5006,7 +5006,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'related_unique_data_fk_0',
           columns: ['uniqueDataId'],
           referenceTable: 'unique_data',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.restrict,
@@ -5019,7 +5019,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'relation_empty_model',
       dartName: 'RelationEmptyModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5037,7 +5037,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'relation_to_multiple_max_field_name',
       dartName: 'RelationToMultipleMaxFieldName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5061,7 +5061,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'server_only_changed_id_field_class',
       dartName: 'ServerOnlyChangedIdFieldClass',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5079,7 +5079,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'service',
       dartName: 'Service',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5109,7 +5109,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'simple_data',
       dartName: 'SimpleData',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5133,7 +5133,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'simple_date_time',
       dartName: 'SimpleDateTime',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5157,7 +5157,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'string_default',
       dartName: 'StringDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5189,7 +5189,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'string_default_mix',
       dartName: 'StringDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5228,7 +5228,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'string_default_model',
       dartName: 'StringDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5258,7 +5258,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'string_default_persist',
       dartName: 'StringDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5339,7 +5339,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'student',
       dartName: 'Student',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5363,7 +5363,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'student_uuid',
       dartName: 'StudentUuid',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5387,7 +5387,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'table_with_explicit_column_names',
       dartName: 'TableWithExplicitColumnName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5418,7 +5418,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'team',
       dartName: 'Team',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5446,7 +5446,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'team_fk_0',
           columns: ['arenaId'],
           referenceTable: 'arena',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.setNull,
@@ -5473,7 +5473,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'team_int',
       dartName: 'TeamInt',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5501,7 +5501,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'team_int_fk_0',
           columns: ['arenaId'],
           referenceTable: 'arena_uuid',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.setNull,
@@ -5528,7 +5528,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'town',
       dartName: 'Town',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5556,7 +5556,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'town_fk_0',
           columns: ['mayorId'],
           referenceTable: 'citizen',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -5569,7 +5569,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'town_int',
       dartName: 'TownInt',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5597,7 +5597,7 @@ class Protocol extends _is.DatabaseSerializationManager
           constraintName: 'town_int_fk_0',
           columns: ['mayorId'],
           referenceTable: 'citizen_int',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -5610,7 +5610,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'types',
       dartName: 'Types',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5776,7 +5776,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'unique_data',
       dartName: 'UniqueData',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5820,7 +5820,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'unique_data_with_non_persist',
       dartName: 'UniqueDataWithNonPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5864,7 +5864,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'upsert_test_model',
       dartName: 'UpsertTestModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5931,7 +5931,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'uri_default',
       dartName: 'UriDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -5963,7 +5963,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'uri_default_mix',
       dartName: 'UriDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6002,7 +6002,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'uri_default_model',
       dartName: 'UriDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6032,7 +6032,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'uri_default_persist',
       dartName: 'UriDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6057,7 +6057,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'user_note',
       dartName: 'UserNote',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6088,7 +6088,7 @@ class Protocol extends _is.DatabaseSerializationManager
             '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId',
           ],
           referenceTable: 'user_note_collections',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -6101,7 +6101,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'user_note_collection_with_a_long_name',
       dartName: 'UserNoteCollectionWithALongName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6125,7 +6125,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'user_note_collections',
       dartName: 'UserNoteCollection',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6149,7 +6149,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'user_note_with_a_long_name',
       dartName: 'UserNoteWithALongName',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6180,7 +6180,7 @@ class Protocol extends _is.DatabaseSerializationManager
             '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId',
           ],
           referenceTable: 'user_note_collection_with_a_long_name',
-          referenceTableSchema: 'public',
+          referenceTableSchema: 'main',
           referenceColumns: ['id'],
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
@@ -6193,7 +6193,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'uuid_default',
       dartName: 'UuidDefault',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6246,7 +6246,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'uuid_default_mix',
       dartName: 'UuidDefaultMix',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6285,7 +6285,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'uuid_default_model',
       dartName: 'UuidDefaultModel',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
@@ -6333,7 +6333,7 @@ class Protocol extends _is.DatabaseSerializationManager
     _isp.TableDefinition(
       name: 'uuid_default_persist',
       dartName: 'UuidDefaultPersist',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isp.ColumnDefinition(
