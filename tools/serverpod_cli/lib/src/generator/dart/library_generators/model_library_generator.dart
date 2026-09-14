@@ -234,6 +234,8 @@ class SerializableModelLibraryGenerator {
               classDefinition,
               idTypeReference,
             ),
+            _buildModelJsonIncludeInterface(className),
+            _buildModelJsonIncludeListInterface(className),
             _buildModelIncludeClass(
               className,
               fields,
@@ -241,6 +243,18 @@ class SerializableModelLibraryGenerator {
               idTypeReference,
             ),
             _buildModelIncludeListClass(
+              className,
+              fields,
+              classDefinition,
+              idTypeReference,
+            ),
+            _buildModelJsonIncludeClass(
+              className,
+              fields,
+              classDefinition,
+              idTypeReference,
+            ),
+            _buildModelJsonIncludeListClass(
               className,
               fields,
               classDefinition,
@@ -285,6 +299,31 @@ class SerializableModelLibraryGenerator {
             // On Dart 3.10+, this issue becomes a `dead_code` lint.
             libraryBuilder.ignoreForFile.add('dead_code');
           }
+        } else if (classDefinition.isProjection &&
+            serverCode &&
+            classDefinition.findField('id') != null) {
+          libraryBuilder.directives.add(
+            Directive.import(
+              '${ReCase(classDefinition.baseClassName!).snakeCase}.dart',
+            ),
+          );
+          var idTypeReference =
+              classDefinition.idField.type.reference(
+                    serverCode,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                  )
+                  as TypeReference;
+
+          libraryBuilder.body.addAll([
+            buildRepository.buildModelProjectionRepositoryClass(
+              className,
+              classDefinition.baseClassName!,
+              fields,
+              classDefinition,
+              idTypeReference,
+            ),
+          ]);
         }
       },
     );
@@ -513,6 +552,13 @@ class SerializableModelLibraryGenerator {
         );
 
         classBuilder.methods.add(_buildModelClassTableGetter(idTypeReference));
+      } else if (classDefinition.isProjection &&
+          serverCode &&
+          classDefinition.findField('id') != null) {
+        classBuilder.implements.add(
+          refer('SerializableModel', serverpodUrl(serverCode)),
+        );
+        classBuilder.fields.add(_buildModelClassDBField(className));
       } else {
         classBuilder.implements.add(
           refer('SerializableModel', serverpodUrl(serverCode)),
@@ -637,7 +683,23 @@ class SerializableModelLibraryGenerator {
           ),
         );
       }
-      if (classDefinition.isTableOwner(serverCode)) {
+      if (serverCode &&
+          classDefinition.isProjection &&
+          classDefinition.baseClassName != null &&
+          classDefinition.findField('id') != null) {
+        classBuilder.methods.addAll([
+          _buildProjectionIncludeMethod(
+            className,
+            classDefinition.baseClassName!,
+            fields,
+            classDefinition.subDirParts,
+          ),
+          _buildProjectionIncludeListMethod(
+            className,
+            classDefinition.baseClassName!,
+          ),
+        ]);
+      } else if (classDefinition.isTableOwner(serverCode)) {
         if (_shouldGenerateTableCode(classDefinition)) {
           classBuilder.methods.addAll([
             _buildModelClassIncludeMethod(
@@ -646,6 +708,14 @@ class SerializableModelLibraryGenerator {
               classDefinition.subDirParts,
             ),
             _buildModelClassIncludeListMethod(
+              className,
+            ),
+            _buildModelClassIncludeJsonMethod(
+              className,
+              relationFields,
+              classDefinition.subDirParts,
+            ),
+            _buildModelClassIncludeJsonListMethod(
               className,
             ),
           ]);
@@ -1448,6 +1518,193 @@ class SerializableModelLibraryGenerator {
     );
   }
 
+  Method _buildProjectionIncludeMethod(
+    String className,
+    String baseClassName,
+    Iterable<SerializableModelFieldDefinition> fields,
+    List<String> subDirParts,
+  ) {
+    var relationFields = fields.where((field) => field.relation != null);
+
+    var includeMap = <String, Expression>{};
+    for (var field in relationFields) {
+      if (field.relation is ListRelationDefinition) {
+        includeMap[field.name] = refer(
+          field.type.generics.first.className,
+          field.type.generics.first
+              .reference(serverCode, subDirParts: subDirParts, config: config)
+              .url,
+        ).property('includeList').call([]);
+      } else {
+        includeMap[field.name] = refer(
+          field.type.className,
+          field.type
+              .reference(serverCode, subDirParts: subDirParts, config: config)
+              .url,
+        ).property('include').call([]);
+      }
+    }
+
+    var forwardedFields = fields.where((f) => f.forwardedFrom != null);
+    var forwardedRelationFields = forwardedFields.where(
+      (f) => f.forwardedRelationType != null,
+    );
+    var forwardedJsonFields = forwardedFields.where(
+      (f) => f.forwardedRelationType == null,
+    );
+
+    var forwardedMap = <String, List<SerializableModelFieldDefinition>>{};
+    for (var f in forwardedRelationFields) {
+      var parts = f.forwardedFrom!.split('.');
+      var relation = parts[0];
+      forwardedMap.putIfAbsent(relation, () => []).add(f);
+    }
+
+    for (var entry in forwardedMap.entries) {
+      var relationName = entry.key;
+      var relFields = entry.value;
+      var relType = relFields.first.forwardedRelationType!;
+      var relClassName = relType.className;
+      var relUrl = relType
+          .reference(serverCode, subDirParts: subDirParts, config: config)
+          .url;
+      var relCols = relFields.map(
+        (f) => refer(
+          relClassName,
+          relUrl,
+        ).property('t').property(f.forwardedFrom!.split('.').skip(1).join('.')),
+      );
+
+      includeMap[relationName] =
+          refer(
+            relClassName,
+            relUrl,
+          ).property('includeJson').call([], {
+            'select': Method(
+              (m) => m
+                ..requiredParameters.add(Parameter((p) => p..name = 't'))
+                ..lambda = true
+                ..body = literalList(relCols).code,
+            ).closure,
+          });
+    }
+
+    var jsonColumns = <Expression>[];
+    for (var f in forwardedJsonFields) {
+      var parts = f.forwardedFrom!.split('.');
+      var rootColumnName = parts[0];
+      var jsonKey = parts.skip(1).join('.');
+      jsonColumns.add(
+        refer(baseClassName)
+            .property('t')
+            .property(rootColumnName)
+            .property('jsonKey')
+            .call(
+              [
+                literalString(jsonKey),
+              ],
+              {
+                'fieldName': literalString(f.name),
+              },
+            ),
+      );
+    }
+
+    var columnNames = [
+      ...fields
+          .where(
+            (field) => field.relation == null && field.forwardedFrom == null,
+          )
+          .map(
+            (field) => refer(baseClassName).property('t').property(field.name),
+          ),
+      ...jsonColumns,
+    ];
+
+    return Method(
+      (m) => m
+        ..name = 'include'
+        ..static = true
+        ..returns = TypeReference(
+          (r) => r..symbol = '${baseClassName}JsonInclude',
+        )
+        ..body = refer(baseClassName)
+            .property('includeJson')
+            .call([], {
+              'select': Method(
+                (m) => m
+                  ..requiredParameters.add(Parameter((p) => p..name = 't'))
+                  ..lambda = true
+                  ..body = literalList(columnNames).code,
+              ).closure,
+              ...includeMap,
+            })
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildProjectionIncludeListMethod(
+    String className,
+    String baseClassName,
+  ) {
+    return Method(
+      (m) => m
+        ..name = 'includeList'
+        ..static = true
+        ..returns = TypeReference(
+          (r) => r..symbol = '${baseClassName}JsonIncludeList',
+        )
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'where'
+              ..named = true
+              ..type = typeWhereExpressionBuilder(
+                baseClassName,
+                serverCode,
+              ),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'limit'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'offset'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderBy'
+              ..named = true
+              ..type = typeOrderByBuilder(baseClassName, serverCode),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderByList'
+              ..named = true
+              ..type = typeOrderByListBuilder(baseClassName, serverCode),
+          ),
+        ])
+        ..body = refer(baseClassName)
+            .property('includeJsonList')
+            .call([], {
+              'where': refer('where'),
+              'limit': refer('limit'),
+              'offset': refer('offset'),
+              'orderBy': refer('orderBy'),
+              'orderByList': refer('orderByList'),
+              'include': refer(className).property('include').call([]),
+            })
+            .returned
+            .statement,
+    );
+  }
+
   Method _buildModelClassIncludeMethod(
     String className,
     Iterable<SerializableModelFieldDefinition> relationFields,
@@ -1455,11 +1712,15 @@ class SerializableModelLibraryGenerator {
   ) {
     return Method(
       (m) => m
+        ..docs.add('''
+/// Builds a complete [${className}Include] object for this table, fetching all columns.
+/// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+''')
         ..static = true
         ..name = 'include'
         ..returns = TypeReference((r) => r..symbol = '${className}Include')
-        ..optionalParameters.addAll(
-          relationFields.map((field) {
+        ..optionalParameters.addAll([
+          ...relationFields.map((field) {
             var type = field.type.reference(
               serverCode,
               subDirParts: subDirParts,
@@ -1485,7 +1746,7 @@ class SerializableModelLibraryGenerator {
                 ..named = true,
             );
           }),
-        )
+        ])
         ..body = refer('${className}Include')
             .property('_')
             .call([], {
@@ -1499,6 +1760,10 @@ class SerializableModelLibraryGenerator {
   Method _buildModelClassIncludeListMethod(String className) {
     return Method(
       (m) => m
+        ..docs.add('''
+/// Builds a complete [${className}IncludeList] object for this table, fetching all columns.
+/// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+''')
         ..static = true
         ..name = 'includeList'
         ..returns = TypeReference((r) => r..symbol = '${className}IncludeList')
@@ -1546,7 +1811,9 @@ class SerializableModelLibraryGenerator {
         ..body = refer('${className}IncludeList')
             .property('_')
             .call([], {
-              'where': refer('where'),
+              'where': refer('where').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
               'limit': refer('limit'),
               'offset': refer('offset'),
               'orderBy': refer('orderBy').nullSafeProperty('call').call(
@@ -1556,6 +1823,162 @@ class SerializableModelLibraryGenerator {
                 [refer(className).property('t')],
               ),
               'include': refer('include'),
+            })
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildModelClassIncludeJsonMethod(
+    String className,
+    Iterable<SerializableModelFieldDefinition> relationFields,
+    List<String> subDirParts,
+  ) {
+    return Method(
+      (m) => m
+        ..docs.add('''
+/// Builds a JSON-compatible [${className}JsonInclude] object for this table.
+///
+/// Use [select] to specify which columns to include in the query.
+/// Note: If [select] is specified here on a root include, it will take precedence
+/// over any `select` parameter passed to `findAsJson`.
+''')
+        ..static = true
+        ..name = 'includeJson'
+        ..returns = TypeReference((r) => r..symbol = '${className}JsonInclude')
+        ..optionalParameters.addAll([
+          ...relationFields.map((field) {
+            var type = field.type.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+              typeSuffix: 'JsonInclude',
+              nullable: true,
+            );
+
+            if (field.relation is ListRelationDefinition) {
+              type = field.type.generics.first.reference(
+                serverCode,
+                subDirParts: subDirParts,
+                config: config,
+                typeSuffix: 'JsonIncludeList',
+                nullable: true,
+              );
+            }
+
+            return Parameter(
+              (p) => p
+                ..type = type
+                ..name = field.name
+                ..named = true,
+            );
+          }),
+          Parameter(
+            (p) => p
+              ..name = 'select'
+              ..type = typeSelectColumnsBuilder(
+                className,
+                serverCode,
+              )
+              ..named = true,
+          ),
+        ])
+        ..body = refer('_${className}JsonInclude')
+            .property('_')
+            .call([], {
+              for (var field in relationFields) field.name: refer(field.name),
+              'selectedColumns': refer('select').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
+            })
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildModelClassIncludeJsonListMethod(String className) {
+    return Method(
+      (m) => m
+        ..docs.add('''
+/// Builds a JSON-compatible [${className}JsonIncludeList] object for this table.
+///
+/// Use [select] to specify which columns to include in the query.
+/// When nested in other includes or used with `findAsJson`, only the selected
+/// columns will be fetched.
+''')
+        ..static = true
+        ..name = 'includeJsonList'
+        ..returns = TypeReference(
+          (r) => r..symbol = '${className}JsonIncludeList',
+        )
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'where'
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+              )
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'limit'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'offset'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderBy'
+              ..named = true
+              ..type = typeOrderByBuilder(className, serverCode),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderByList'
+              ..named = true
+              ..type = typeOrderByListBuilder(className, serverCode),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'include'
+              ..named = true
+              ..type = refer('${className}JsonInclude?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'select'
+              ..type = typeSelectColumnsBuilder(
+                className,
+                serverCode,
+              )
+              ..named = true,
+          ),
+        ])
+        ..body = refer('_${className}JsonIncludeList')
+            .property('_')
+            .call([], {
+              'where': refer('where').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
+              'limit': refer('limit'),
+              'offset': refer('offset'),
+              'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                [refer(className).property('t')],
+              ),
+              'orderByList': refer('orderByList').nullSafeProperty('call').call(
+                [refer(className).property('t')],
+              ),
+              'include': refer('include'),
+              'selectedColumns': refer('select').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
             })
             .returned
             .statement,
@@ -3008,6 +3431,24 @@ class SerializableModelLibraryGenerator {
     );
   }
 
+  Class _buildModelJsonIncludeInterface(String className) {
+    return Class((c) {
+      c.abstract = true;
+      c.modifier = ClassModifier.interface;
+      c.name = '${className}JsonInclude';
+      c.implements.add(refer('JsonCompatibleInclude', _databaseRuntimeUrl));
+    });
+  }
+
+  Class _buildModelJsonIncludeListInterface(String className) {
+    return Class((c) {
+      c.abstract = true;
+      c.modifier = ClassModifier.interface;
+      c.name = '${className}JsonIncludeList';
+      c.implements.add(refer('JsonCompatibleInclude', _databaseRuntimeUrl));
+    });
+  }
+
   Class _buildModelIncludeClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
@@ -3015,7 +3456,12 @@ class SerializableModelLibraryGenerator {
     TypeReference idTypeReference,
   ) {
     return Class(((c) {
+      c.modifier = ClassModifier.final$;
       c.extend = refer('IncludeObject', _databaseRuntimeUrl);
+      c.implements.addAll([
+        refer('${className}JsonInclude'),
+        refer('FullModelInclude', _databaseRuntimeUrl),
+      ]);
       c.name = '${className}Include';
       var relationFields = fields
           .where(
@@ -3029,6 +3475,7 @@ class SerializableModelLibraryGenerator {
         _buildModelIncludeClassConstructor(
           relationFields,
           classDefinition,
+          isJson: false,
         ),
       );
 
@@ -3036,6 +3483,7 @@ class SerializableModelLibraryGenerator {
         _buildModelIncludeClassFields(
           relationFields,
           classDefinition,
+          isJson: false,
         ),
       );
 
@@ -3053,10 +3501,103 @@ class SerializableModelLibraryGenerator {
     TypeReference idTypeReference,
   ) {
     return Class(((c) {
+      c.modifier = ClassModifier.final$;
       c.extend = refer('IncludeList', _databaseRuntimeUrl);
+      c.implements.addAll([
+        refer('${className}JsonIncludeList'),
+        refer('FullModelInclude', _databaseRuntimeUrl),
+      ]);
       c.name = '${className}IncludeList';
 
-      c.constructors.add(_buildModelIncludeListClassConstructor(className));
+      c.constructors.add(
+        _buildModelIncludeListClassConstructor(
+          className,
+          isJson: false,
+        ),
+      );
+
+      c.methods.addAll([
+        _buildModelIncludeListClassIncludesGetter(),
+        _buildModelIncludeClassTableGetter(className, idTypeReference),
+      ]);
+    }));
+  }
+
+  Class _buildModelJsonIncludeClass(
+    String className,
+    List<SerializableModelFieldDefinition> fields,
+    ClassDefinition classDefinition,
+    TypeReference idTypeReference,
+  ) {
+    return Class(((c) {
+      c.modifier = ClassModifier.final$;
+      c.extend = refer('IncludeObject', _databaseRuntimeUrl);
+      c.implements.add(refer('${className}JsonInclude'));
+      c.name = '_${className}JsonInclude';
+      var relationFields = fields
+          .where(
+            (f) =>
+                f.relation is ObjectRelationDefinition ||
+                f.relation is ListRelationDefinition,
+          )
+          .toList();
+
+      c.constructors.add(
+        _buildModelIncludeClassConstructor(
+          relationFields,
+          classDefinition,
+          isJson: true,
+        ),
+      );
+
+      c.fields.addAll(
+        _buildModelIncludeClassFields(
+          relationFields,
+          classDefinition,
+          isJson: true,
+        ),
+      );
+
+      c.methods.addAll([
+        _buildModelIncludeClassIncludesGetter(relationFields),
+        _buildModelIncludeClassTableGetter(className, idTypeReference),
+      ]);
+    }));
+  }
+
+  Class _buildModelJsonIncludeListClass(
+    String className,
+    List<SerializableModelFieldDefinition> fields,
+    ClassDefinition classDefinition,
+    TypeReference idTypeReference,
+  ) {
+    return Class(((c) {
+      c.modifier = ClassModifier.final$;
+      c.extend = refer('IncludeList', _databaseRuntimeUrl);
+      c.implements.add(refer('${className}JsonIncludeList'));
+      c.name = '_${className}JsonIncludeList';
+
+      c.constructors.add(
+        _buildModelIncludeListClassConstructor(
+          className,
+          isJson: true,
+        ),
+      );
+
+      c.fields.add(
+        Field(
+          (f) => f
+            ..annotations.add(refer('override'))
+            ..name = 'selectedColumns'
+            ..type = TypeReference(
+              (b) => b
+                ..symbol = 'List'
+                ..isNullable = true
+                ..types.add(refer('Column', _databaseRuntimeUrl)),
+            )
+            ..modifier = FieldModifier.final$,
+        ),
+      );
 
       c.methods.addAll([
         _buildModelIncludeListClassIncludesGetter(),
@@ -3066,19 +3607,20 @@ class SerializableModelLibraryGenerator {
   }
 
   Constructor _buildModelIncludeListClassConstructor(
-    String className,
-  ) {
+    String className, {
+    required bool isJson,
+  }) {
     return Constructor((constructorBuilder) {
       constructorBuilder.name = '_';
 
+      var includeType = isJson
+          ? '${className}JsonInclude?'
+          : '${className}Include?';
       constructorBuilder.optionalParameters.addAll([
         Parameter(
           (p) => p
             ..name = 'where'
-            ..type = typeWhereExpressionBuilder(
-              className,
-              serverCode,
-            )
+            ..toSuper = true
             ..named = true,
         ),
         Parameter(
@@ -3109,19 +3651,16 @@ class SerializableModelLibraryGenerator {
           (p) => p
             ..name = 'include'
             ..toSuper = true
+            ..type = refer(includeType)
             ..named = true,
         ),
-      ]);
-
-      constructorBuilder.body = Block.of([
-        refer('super')
-            .property('where')
-            .assign(
-              refer('where').nullSafeProperty('call').call(
-                [refer(className).property('t')],
-              ),
-            )
-            .statement,
+        if (isJson)
+          Parameter(
+            (p) => p
+              ..name = 'selectedColumns'
+              ..toThis = true
+              ..named = true,
+          ),
       ]);
     });
   }
@@ -3193,9 +3732,12 @@ class SerializableModelLibraryGenerator {
 
   List<Field> _buildModelIncludeClassFields(
     List<SerializableModelFieldDefinition> objectRelationFields,
-    ClassDefinition classDefinition,
-  ) {
+    ClassDefinition classDefinition, {
+    required bool isJson,
+  }) {
     List<Field> modelIncludeClassFields = [];
+    var suffix = isJson ? 'JsonInclude' : 'Include';
+    var listSuffix = isJson ? 'JsonIncludeList' : 'IncludeList';
     for (var field in objectRelationFields) {
       if (field.relation is ObjectRelationDefinition) {
         modelIncludeClassFields.add(
@@ -3207,7 +3749,7 @@ class SerializableModelLibraryGenerator {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
                 nullable: true,
-                typeSuffix: 'Include',
+                typeSuffix: suffix,
               ),
           ),
         );
@@ -3221,25 +3763,42 @@ class SerializableModelLibraryGenerator {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
                 nullable: true,
-                typeSuffix: 'IncludeList',
+                typeSuffix: listSuffix,
               ),
           ),
         );
       }
     }
+    if (isJson) {
+      modelIncludeClassFields.add(
+        Field(
+          (f) => f
+            ..annotations.add(refer('override'))
+            ..name = 'selectedColumns'
+            ..type = TypeReference(
+              (b) => b
+                ..symbol = 'List'
+                ..isNullable = true
+                ..types.add(refer('Column', _databaseRuntimeUrl)),
+            )
+            ..modifier = FieldModifier.final$,
+        ),
+      );
+    }
+
     return modelIncludeClassFields;
   }
 
   Constructor _buildModelIncludeClassConstructor(
     List<SerializableModelFieldDefinition> relationFields,
-    ClassDefinition classDefinition,
-  ) {
+    ClassDefinition classDefinition, {
+    required bool isJson,
+  }) {
     return Constructor((constructorBuilder) {
       constructorBuilder.name = '_';
-      if (relationFields.isEmpty) {
-        return;
-      }
 
+      var suffix = isJson ? 'JsonInclude' : 'Include';
+      var listSuffix = isJson ? 'JsonIncludeList' : 'IncludeList';
       for (var field in relationFields) {
         if (field.relation is ObjectRelationDefinition) {
           constructorBuilder.optionalParameters.add(
@@ -3251,7 +3810,7 @@ class SerializableModelLibraryGenerator {
                   subDirParts: classDefinition.subDirParts,
                   config: config,
                   nullable: true,
-                  typeSuffix: 'Include',
+                  typeSuffix: suffix,
                 )
                 ..named = true,
             ),
@@ -3266,7 +3825,7 @@ class SerializableModelLibraryGenerator {
                   subDirParts: classDefinition.subDirParts,
                   config: config,
                   nullable: true,
-                  typeSuffix: 'IncludeList',
+                  typeSuffix: listSuffix,
                 )
                 ..named = true,
             ),
@@ -3274,10 +3833,23 @@ class SerializableModelLibraryGenerator {
         }
       }
 
-      constructorBuilder.body = Block.of([
-        for (var field in relationFields)
-          refer('_${field.name}').assign(refer(field.name)).statement,
-      ]);
+      if (isJson) {
+        constructorBuilder.optionalParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'selectedColumns'
+              ..toThis = true
+              ..named = true,
+          ),
+        );
+      }
+
+      if (relationFields.isNotEmpty) {
+        constructorBuilder.body = Block.of([
+          for (var field in relationFields)
+            refer('_${field.name}').assign(refer(field.name)).statement,
+        ]);
+      }
     });
   }
 

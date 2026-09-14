@@ -119,9 +119,15 @@ abstract class GitHubAccount
     return {};
   }
 
+  /// Builds a complete [GitHubAccountInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static GitHubAccountInclude include({_iacs.AuthUserInclude? authUser}) {
     return GitHubAccountInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [GitHubAccountIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static GitHubAccountIncludeList includeList({
     _is.WhereExpressionBuilder<GitHubAccountTable>? where,
@@ -132,12 +138,54 @@ abstract class GitHubAccount
     GitHubAccountInclude? include,
   }) {
     return GitHubAccountIncludeList._(
-      where: where,
+      where: where?.call(GitHubAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GitHubAccount.t),
       orderByList: orderByList?.call(GitHubAccount.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [GitHubAccountJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static GitHubAccountJsonInclude includeJson({
+    _iacs.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
+  }) {
+    return _GitHubAccountJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(GitHubAccount.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [GitHubAccountJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static GitHubAccountJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    GitHubAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
+  }) {
+    return _GitHubAccountJsonIncludeList._(
+      where: where?.call(GitHubAccount.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(GitHubAccount.t),
+      orderByList: orderByList?.call(GitHubAccount.t),
+      include: include,
+      selectedColumns: select?.call(GitHubAccount.t),
     );
   }
 
@@ -295,7 +343,14 @@ class GitHubAccountTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class GitHubAccountInclude extends _is.IncludeObject {
+abstract interface class GitHubAccountJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class GitHubAccountJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class GitHubAccountInclude extends _is.IncludeObject
+    implements GitHubAccountJsonInclude, _is.FullModelInclude {
   GitHubAccountInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
@@ -309,17 +364,59 @@ class GitHubAccountInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => GitHubAccount.t;
 }
 
-class GitHubAccountIncludeList extends _is.IncludeList {
+final class GitHubAccountIncludeList extends _is.IncludeList
+    implements GitHubAccountJsonIncludeList, _is.FullModelInclude {
   GitHubAccountIncludeList._({
-    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    GitHubAccountInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => GitHubAccount.t;
+}
+
+final class _GitHubAccountJsonInclude extends _is.IncludeObject
+    implements GitHubAccountJsonInclude {
+  _GitHubAccountJsonInclude._({
+    _iacs.AuthUserJsonInclude? authUser,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(GitHubAccount.t);
+    _authUser = authUser;
   }
+
+  _iacs.AuthUserJsonInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => GitHubAccount.t;
+}
+
+final class _GitHubAccountJsonIncludeList extends _is.IncludeList
+    implements GitHubAccountJsonIncludeList {
+  _GitHubAccountJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    GitHubAccountJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -433,6 +530,135 @@ class GitHubAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    GitHubAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<GitHubAccount>(
+      where: where?.call(GitHubAccount.t),
+      orderBy: orderBy?.call(GitHubAccount.t),
+      orderByList: orderByList?.call(GitHubAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GitHubAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    GitHubAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<GitHubAccount>(
+      where: where?.call(GitHubAccount.t),
+      orderBy: orderBy?.call(GitHubAccount.t),
+      orderByList: orderByList?.call(GitHubAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GitHubAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    GitHubAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<GitHubAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GitHubAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

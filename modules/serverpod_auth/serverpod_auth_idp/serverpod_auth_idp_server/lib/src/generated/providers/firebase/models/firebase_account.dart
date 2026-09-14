@@ -127,9 +127,15 @@ abstract class FirebaseAccount
     return {};
   }
 
+  /// Builds a complete [FirebaseAccountInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static FirebaseAccountInclude include({_iacs.AuthUserInclude? authUser}) {
     return FirebaseAccountInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [FirebaseAccountIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static FirebaseAccountIncludeList includeList({
     _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
@@ -140,12 +146,54 @@ abstract class FirebaseAccount
     FirebaseAccountInclude? include,
   }) {
     return FirebaseAccountIncludeList._(
-      where: where,
+      where: where?.call(FirebaseAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FirebaseAccount.t),
       orderByList: orderByList?.call(FirebaseAccount.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [FirebaseAccountJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static FirebaseAccountJsonInclude includeJson({
+    _iacs.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
+  }) {
+    return _FirebaseAccountJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(FirebaseAccount.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [FirebaseAccountJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static FirebaseAccountJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    _is.OrderByListBuilder<FirebaseAccountTable>? orderByList,
+    FirebaseAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
+  }) {
+    return _FirebaseAccountJsonIncludeList._(
+      where: where?.call(FirebaseAccount.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(FirebaseAccount.t),
+      orderByList: orderByList?.call(FirebaseAccount.t),
+      include: include,
+      selectedColumns: select?.call(FirebaseAccount.t),
     );
   }
 
@@ -320,7 +368,14 @@ class FirebaseAccountTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class FirebaseAccountInclude extends _is.IncludeObject {
+abstract interface class FirebaseAccountJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class FirebaseAccountJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class FirebaseAccountInclude extends _is.IncludeObject
+    implements FirebaseAccountJsonInclude, _is.FullModelInclude {
   FirebaseAccountInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
@@ -334,17 +389,59 @@ class FirebaseAccountInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => FirebaseAccount.t;
 }
 
-class FirebaseAccountIncludeList extends _is.IncludeList {
+final class FirebaseAccountIncludeList extends _is.IncludeList
+    implements FirebaseAccountJsonIncludeList, _is.FullModelInclude {
   FirebaseAccountIncludeList._({
-    _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    FirebaseAccountInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => FirebaseAccount.t;
+}
+
+final class _FirebaseAccountJsonInclude extends _is.IncludeObject
+    implements FirebaseAccountJsonInclude {
+  _FirebaseAccountJsonInclude._({
+    _iacs.AuthUserJsonInclude? authUser,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(FirebaseAccount.t);
+    _authUser = authUser;
   }
+
+  _iacs.AuthUserJsonInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => FirebaseAccount.t;
+}
+
+final class _FirebaseAccountJsonIncludeList extends _is.IncludeList
+    implements FirebaseAccountJsonIncludeList {
+  _FirebaseAccountJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    FirebaseAccountJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -458,6 +555,135 @@ class FirebaseAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    _is.OrderByListBuilder<FirebaseAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    FirebaseAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<FirebaseAccount>(
+      where: where?.call(FirebaseAccount.t),
+      orderBy: orderBy?.call(FirebaseAccount.t),
+      orderByList: orderByList?.call(FirebaseAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(FirebaseAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    _is.OrderByListBuilder<FirebaseAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    FirebaseAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<FirebaseAccount>(
+      where: where?.call(FirebaseAccount.t),
+      orderBy: orderBy?.call(FirebaseAccount.t),
+      orderByList: orderByList?.call(FirebaseAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(FirebaseAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    FirebaseAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<FirebaseAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(FirebaseAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

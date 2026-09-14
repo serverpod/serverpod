@@ -129,9 +129,15 @@ abstract class DurationDefaultMix
     };
   }
 
+  /// Builds a complete [DurationDefaultMixInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static DurationDefaultMixInclude include() {
     return DurationDefaultMixInclude._();
   }
+
+  /// Builds a complete [DurationDefaultMixIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DurationDefaultMixIncludeList includeList({
     _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
@@ -142,12 +148,52 @@ abstract class DurationDefaultMix
     DurationDefaultMixInclude? include,
   }) {
     return DurationDefaultMixIncludeList._(
-      where: where,
+      where: where?.call(DurationDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DurationDefaultMixJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DurationDefaultMixJsonInclude includeJson({
+    _is.SelectColumnsBuilder<DurationDefaultMixTable>? select,
+  }) {
+    return _DurationDefaultMixJsonInclude._(
+      selectedColumns: select?.call(DurationDefaultMix.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DurationDefaultMixJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DurationDefaultMixJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    DurationDefaultMixJsonInclude? include,
+    _is.SelectColumnsBuilder<DurationDefaultMixTable>? select,
+  }) {
+    return _DurationDefaultMixJsonIncludeList._(
+      where: where?.call(DurationDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefaultMix.t),
+      orderByList: orderByList?.call(DurationDefaultMix.t),
+      include: include,
+      selectedColumns: select?.call(DurationDefaultMix.t),
     );
   }
 
@@ -261,7 +307,14 @@ class DurationDefaultMixTable extends _is.Table<int?> {
   ];
 }
 
-class DurationDefaultMixInclude extends _is.IncludeObject {
+abstract interface class DurationDefaultMixJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DurationDefaultMixJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DurationDefaultMixInclude extends _is.IncludeObject
+    implements DurationDefaultMixJsonInclude, _is.FullModelInclude {
   DurationDefaultMixInclude._();
 
   @override
@@ -271,17 +324,52 @@ class DurationDefaultMixInclude extends _is.IncludeObject {
   _is.Table<int?> get table => DurationDefaultMix.t;
 }
 
-class DurationDefaultMixIncludeList extends _is.IncludeList {
+final class DurationDefaultMixIncludeList extends _is.IncludeList
+    implements DurationDefaultMixJsonIncludeList, _is.FullModelInclude {
   DurationDefaultMixIncludeList._({
-    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(DurationDefaultMix.t);
-  }
+    DurationDefaultMixInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => DurationDefaultMix.t;
+}
+
+final class _DurationDefaultMixJsonInclude extends _is.IncludeObject
+    implements DurationDefaultMixJsonInclude {
+  _DurationDefaultMixJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => DurationDefaultMix.t;
+}
+
+final class _DurationDefaultMixJsonIncludeList extends _is.IncludeList
+    implements DurationDefaultMixJsonIncludeList {
+  _DurationDefaultMixJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DurationDefaultMixJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -387,6 +475,129 @@ class DurationDefaultMixRepository {
     return session.db.findById<DurationDefaultMix>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DurationDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DurationDefaultMix>(
+      where: where?.call(DurationDefaultMix.t),
+      orderBy: orderBy?.call(DurationDefaultMix.t),
+      orderByList: orderByList?.call(DurationDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DurationDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DurationDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DurationDefaultMix>(
+      where: where?.call(DurationDefaultMix.t),
+      orderBy: orderBy?.call(DurationDefaultMix.t),
+      orderByList: orderByList?.call(DurationDefaultMix.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DurationDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DurationDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DurationDefaultMix>(
+      id,
+      transaction: transaction,
+      select: select?.call(DurationDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

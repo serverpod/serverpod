@@ -107,6 +107,9 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     };
   }
 
+  /// Builds a complete [CatInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CatInclude include({
     _iayhscrz.CatInclude? mother,
     _iayhscrz.CatIncludeList? kittens,
@@ -117,6 +120,9 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     );
   }
 
+  /// Builds a complete [CatIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CatIncludeList includeList({
     _isd.WhereExpressionBuilder<CatTable>? where,
     int? limit,
@@ -126,12 +132,56 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     CatInclude? include,
   }) {
     return CatIncludeList._(
-      where: where,
+      where: where?.call(Cat.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CatJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CatJsonInclude includeJson({
+    _iayhscrz.CatJsonInclude? mother,
+    _iayhscrz.CatJsonIncludeList? kittens,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+  }) {
+    return _CatJsonInclude._(
+      mother: mother,
+      kittens: kittens,
+      selectedColumns: select?.call(Cat.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CatJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CatJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<CatTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    CatJsonInclude? include,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+  }) {
+    return _CatJsonIncludeList._(
+      where: where?.call(Cat.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      include: include,
+      selectedColumns: select?.call(Cat.t),
     );
   }
 
@@ -284,7 +334,13 @@ class CatTable extends _isd.Table<int?> {
   }
 }
 
-class CatInclude extends _isd.IncludeObject {
+abstract interface class CatJsonInclude implements _isd.JsonCompatibleInclude {}
+
+abstract interface class CatJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class CatInclude extends _isd.IncludeObject
+    implements CatJsonInclude, _isd.FullModelInclude {
   CatInclude._({
     _iayhscrz.CatInclude? mother,
     _iayhscrz.CatIncludeList? kittens,
@@ -307,17 +363,66 @@ class CatInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Cat.t;
 }
 
-class CatIncludeList extends _isd.IncludeList {
+final class CatIncludeList extends _isd.IncludeList
+    implements CatJsonIncludeList, _isd.FullModelInclude {
   CatIncludeList._({
-    _isd.WhereExpressionBuilder<CatTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CatInclude? super.include,
+  });
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Cat.t;
+}
+
+final class _CatJsonInclude extends _isd.IncludeObject
+    implements CatJsonInclude {
+  _CatJsonInclude._({
+    _iayhscrz.CatJsonInclude? mother,
+    _iayhscrz.CatJsonIncludeList? kittens,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(Cat.t);
+    _mother = mother;
+    _kittens = kittens;
   }
+
+  _iayhscrz.CatJsonInclude? _mother;
+
+  _iayhscrz.CatJsonIncludeList? _kittens;
+
+  @override
+  final List<_isd.Column>? selectedColumns;
+
+  @override
+  Map<String, _isd.Include?> get includes => {
+    'mother': _mother,
+    'kittens': _kittens,
+  };
+
+  @override
+  _isd.Table<int?> get table => Cat.t;
+}
+
+final class _CatJsonIncludeList extends _isd.IncludeList
+    implements CatJsonIncludeList {
+  _CatJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CatJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -437,6 +542,135 @@ class CatRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CatTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    _isd.Transaction? transaction,
+    CatJsonInclude? include,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Cat>(
+      where: where?.call(Cat.t),
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Cat.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CatTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    _isd.Transaction? transaction,
+    CatJsonInclude? include,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Cat>(
+      where: where?.call(Cat.t),
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Cat.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    CatJsonInclude? include,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Cat>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Cat.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -134,6 +134,9 @@ abstract class EmailAccountRequest
     return {};
   }
 
+  /// Builds a complete [EmailAccountRequestInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static EmailAccountRequestInclude include({
     _i7k1fa50.SecretChallengeInclude? challenge,
     _i7k1fa50.SecretChallengeInclude? createAccountChallenge,
@@ -144,6 +147,9 @@ abstract class EmailAccountRequest
     );
   }
 
+  /// Builds a complete [EmailAccountRequestIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static EmailAccountRequestIncludeList includeList({
     _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
     int? limit,
@@ -153,12 +159,56 @@ abstract class EmailAccountRequest
     EmailAccountRequestInclude? include,
   }) {
     return EmailAccountRequestIncludeList._(
-      where: where,
+      where: where?.call(EmailAccountRequest.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAccountRequest.t),
       orderByList: orderByList?.call(EmailAccountRequest.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailAccountRequestJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EmailAccountRequestJsonInclude includeJson({
+    _i7k1fa50.SecretChallengeJsonInclude? challenge,
+    _i7k1fa50.SecretChallengeJsonInclude? createAccountChallenge,
+    _is.SelectColumnsBuilder<EmailAccountRequestTable>? select,
+  }) {
+    return _EmailAccountRequestJsonInclude._(
+      challenge: challenge,
+      createAccountChallenge: createAccountChallenge,
+      selectedColumns: select?.call(EmailAccountRequest.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailAccountRequestJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EmailAccountRequestJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
+    EmailAccountRequestJsonInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountRequestTable>? select,
+  }) {
+    return _EmailAccountRequestJsonIncludeList._(
+      where: where?.call(EmailAccountRequest.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccountRequest.t),
+      orderByList: orderByList?.call(EmailAccountRequest.t),
+      include: include,
+      selectedColumns: select?.call(EmailAccountRequest.t),
     );
   }
 
@@ -342,7 +392,14 @@ class EmailAccountRequestTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class EmailAccountRequestInclude extends _is.IncludeObject {
+abstract interface class EmailAccountRequestJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EmailAccountRequestJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EmailAccountRequestInclude extends _is.IncludeObject
+    implements EmailAccountRequestJsonInclude, _is.FullModelInclude {
   EmailAccountRequestInclude._({
     _i7k1fa50.SecretChallengeInclude? challenge,
     _i7k1fa50.SecretChallengeInclude? createAccountChallenge,
@@ -365,17 +422,66 @@ class EmailAccountRequestInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => EmailAccountRequest.t;
 }
 
-class EmailAccountRequestIncludeList extends _is.IncludeList {
+final class EmailAccountRequestIncludeList extends _is.IncludeList
+    implements EmailAccountRequestJsonIncludeList, _is.FullModelInclude {
   EmailAccountRequestIncludeList._({
-    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EmailAccountRequestInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => EmailAccountRequest.t;
+}
+
+final class _EmailAccountRequestJsonInclude extends _is.IncludeObject
+    implements EmailAccountRequestJsonInclude {
+  _EmailAccountRequestJsonInclude._({
+    _i7k1fa50.SecretChallengeJsonInclude? challenge,
+    _i7k1fa50.SecretChallengeJsonInclude? createAccountChallenge,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(EmailAccountRequest.t);
+    _challenge = challenge;
+    _createAccountChallenge = createAccountChallenge;
   }
+
+  _i7k1fa50.SecretChallengeJsonInclude? _challenge;
+
+  _i7k1fa50.SecretChallengeJsonInclude? _createAccountChallenge;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'challenge': _challenge,
+    'createAccountChallenge': _createAccountChallenge,
+  };
+
+  @override
+  _is.Table<_is.UuidValue?> get table => EmailAccountRequest.t;
+}
+
+final class _EmailAccountRequestJsonIncludeList extends _is.IncludeList
+    implements EmailAccountRequestJsonIncludeList {
+  _EmailAccountRequestJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EmailAccountRequestJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -491,6 +597,135 @@ class EmailAccountRequestRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
+    EmailAccountRequestJsonInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountRequestTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EmailAccountRequest>(
+      where: where?.call(EmailAccountRequest.t),
+      orderBy: orderBy?.call(EmailAccountRequest.t),
+      orderByList: orderByList?.call(EmailAccountRequest.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EmailAccountRequest.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
+    EmailAccountRequestJsonInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountRequestTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EmailAccountRequest>(
+      where: where?.call(EmailAccountRequest.t),
+      orderBy: orderBy?.call(EmailAccountRequest.t),
+      orderByList: orderByList?.call(EmailAccountRequest.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EmailAccountRequest.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    EmailAccountRequestJsonInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountRequestTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EmailAccountRequest>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EmailAccountRequest.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

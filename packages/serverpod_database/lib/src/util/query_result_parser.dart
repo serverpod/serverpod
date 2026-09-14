@@ -1,6 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 import '../../serverpod_database.dart';
+import '../concepts/columns.dart';
 import 'column_alias_resolver.dart';
 
 /// Prepares a query result for serverpod serialization.
@@ -11,7 +13,9 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   Map<String, dynamic> rawRow,
   Map<String, Map<Object, List<dynamic>>> resolvedListRelations, {
   Include? include,
+  List<Column>? selectedColumns,
   ColumnAliasResolver? aliasResolver,
+  bool isRoot = true,
 }) {
   // Builder and parser must resolve column aliases identically. The resolver is
   // a pure function of (table, include), so building it here yields the same
@@ -19,15 +23,37 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   // threaded through the recursion.
   var resolver = aliasResolver ?? ColumnAliasResolver.forQuery(table, include);
 
+  var effectiveSelectedColumns = include?.selectedColumns ?? selectedColumns;
+
+  var columnsToRead = effectiveSelectedColumns != null
+      ? effectiveSelectedColumns.map((c) {
+          if (c is ColumnJsonField) return c;
+          return table.columns.firstWhereOrNull(
+                (rc) => rc.columnName == c.columnName,
+              ) ??
+              c;
+        }).toList()
+      : table.columns;
+
   // Resolve this object.
   var resolvedTableRow = _createColumnMapFromQueryAliasColumns(
-    table.columns,
+    [
+      ...columnsToRead,
+      ...?effectiveSelectedColumns?.whereType<ColumnJsonField>(),
+    ],
     rawRow,
     resolver,
   );
 
-  if (resolvedTableRow.isEmpty) {
-    return null;
+  if (!isRoot) {
+    var idQueryKey = resolver.resolve(table.id);
+    var hasIdInResult =
+        rawRow.containsKey(idQueryKey) && rawRow[idQueryKey] != null;
+    if (rawRow.containsKey(idQueryKey)) {
+      if (!hasIdInResult) return null;
+    } else if (resolvedTableRow.isEmpty) {
+      return null;
+    }
   }
 
   // Resolve all includes for the object.
@@ -38,7 +64,8 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
     if (relationTable == null) return;
 
     if (relationInclude is IncludeList) {
-      var primaryKey = resolvedTableRow['id'];
+      var idQueryKey = resolver.resolve(table.id);
+      var primaryKey = resolvedTableRow['id'] ?? rawRow[idQueryKey];
       if (primaryKey == null) {
         throw ArgumentError('Cannot resolve list relation without id.');
       }
@@ -55,6 +82,7 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
         resolvedListRelations,
         include: relationInclude,
         aliasResolver: resolver,
+        isRoot: false,
       );
     }
   });

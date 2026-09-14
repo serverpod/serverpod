@@ -1,0 +1,14 @@
+class: ProjectedArticle
+table: projected_article
+fields:
+  title: String
+  author: ProjectedAuthor?, relation
+  summary: String
+  content: String
+
+projections:
+  ProjectedArticleAuthorNameOnly:
+    select:
+      - title
+      - summary
+      - author.name
