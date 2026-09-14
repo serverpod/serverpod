@@ -187,25 +187,24 @@ void main() {
     );
   });
 
-  group('Given a runner manifest left behind by an aborted start,', () {
-    test(
-      'when it is encoded and decoded, '
-      'then the stage and exit code survive the round trip',
-      () {
-        final original = _manifest().copyWith(
-          stage: RunnerStage.stopping,
-          exitCode: 3,
-        );
+  test(
+    'Given a runner manifest left behind by an aborted start, '
+    'when it is encoded and decoded, '
+    'then the stage and exit code survive the round trip',
+    () {
+      final original = _manifest().copyWith(
+        stage: RunnerStage.stopping,
+        exitCode: 3,
+      );
 
-        final decoded = RunnerManifest.fromJson(
-          jsonDecode(jsonEncode(original.toJson())) as Map<String, Object?>,
-        );
+      final decoded = RunnerManifest.fromJson(
+        jsonDecode(jsonEncode(original.toJson())) as Map<String, Object?>,
+      );
 
-        expect(decoded.stage, RunnerStage.stopping);
-        expect(decoded.exitCode, 3);
-      },
-    );
-  });
+      expect(decoded.stage, RunnerStage.stopping);
+      expect(decoded.exitCode, 3);
+    },
+  );
 
   group('Given a runner configuration,', () {
     const running = RunnerConfig(
@@ -504,17 +503,16 @@ void main() {
     );
   });
 
-  group('Given a server directory name,', () {
-    test(
-      'when the Docker Compose project name is derived, '
-      'then it matches Compose\'s own lowercase, stripped default',
-      () {
-        expect(composeProjectName('/tmp/My Project'), 'myproject');
-        expect(composeProjectName('/tmp/my_project-1'), 'my_project-1');
-        expect(composeProjectName('/tmp/__leading'), 'leading');
-      },
-    );
-  });
+  test(
+    'Given a server directory name, '
+    'when the Docker Compose project name is derived, '
+    'then it matches Compose\'s own lowercase, stripped default',
+    () {
+      expect(composeProjectName('/tmp/My Project'), 'myproject');
+      expect(composeProjectName('/tmp/my_project-1'), 'my_project-1');
+      expect(composeProjectName('/tmp/__leading'), 'leading');
+    },
+  );
 
   group('Given a runner configuration spawning a serve command,', () {
     test(

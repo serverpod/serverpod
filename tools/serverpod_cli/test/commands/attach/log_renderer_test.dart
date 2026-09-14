@@ -160,8 +160,7 @@ void main() {
     );
 
     test(
-      'when an app announces that it is launching and, '
-      'then that it is running, '
+      'when an app announces that it is launching and later that it is running, '
       'then the launch is rendered as launching, not as a stop',
       () async {
         final session = attachWithLogStream(

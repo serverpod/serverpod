@@ -19,25 +19,27 @@ void main() {
 
   setUp(() async {
     tempDir = await createShortTempDir('rrt');
-    registry = RunnerRegistry(dir: Directory('${tempDir.path}/registry'));
   });
 
   tearDown(() => tempDir.deleteBestEffort(recursive: true));
 
-  group('Given a default registry directory set for tests,', () {
-    test(
-      'when a registry is built without a directory, '
-      'then it lives there rather than under the user home',
-      () {
-        RunnerRegistry.defaultDir = Directory('${tempDir.path}/default');
-        addTearDown(() => RunnerRegistry.defaultDir = null);
+  test(
+    'Given a default registry directory set for tests, '
+    'when a registry is built without a directory, '
+    'then it lives there rather than under the user home',
+    () {
+      RunnerRegistry.defaultDir = Directory('${tempDir.path}/default');
+      addTearDown(() => RunnerRegistry.defaultDir = null);
 
-        expect(RunnerRegistry().dir.path, '${tempDir.path}/default');
-      },
-    );
-  });
+      expect(RunnerRegistry().dir.path, '${tempDir.path}/default');
+    },
+  );
 
   group('Given an empty registry,', () {
+    setUp(() {
+      registry = RunnerRegistry(dir: Directory('${tempDir.path}/registry'));
+    });
+
     test(
       'when scanned, '
       'then nothing is found and no directory is created',
@@ -91,6 +93,7 @@ void main() {
     late String dead;
 
     setUp(() async {
+      registry = RunnerRegistry(dir: Directory('${tempDir.path}/registry'));
       live = await _serverDir(tempDir, 'live');
       dead = await _serverDir(tempDir, 'dead');
       await _listen(live);
@@ -190,6 +193,7 @@ void main() {
     late RunnerManifestPublisher publisher;
 
     setUp(() async {
+      registry = RunnerRegistry(dir: Directory('${tempDir.path}/registry'));
       serverDir = await _serverDir(tempDir, 'pub');
       publisher = RunnerManifestPublisher(
         serverDir: serverDir,
