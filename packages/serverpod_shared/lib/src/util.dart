@@ -52,18 +52,16 @@ Uint8List generateRandomBytes(final int length) {
 }
 
 /// Checks whether the 2 given lists contain the same data.
+/// All usages currently require constant-time comparisons.
 bool uint8ListAreEqual(final Uint8List a, final Uint8List b) {
   if (a.length != b.length) {
     return false;
   }
-
+  int result = 0;
   for (int i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) {
-      return false;
-    }
+    result |= a[i] ^ b[i];
   }
-
-  return true;
+  return result == 0;
 }
 
 /// Splits at spaces and joins to lowerCamelCase.
