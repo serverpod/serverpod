@@ -4,15 +4,14 @@ import 'dart:io';
 import 'package:pub_semver/pub_semver.dart';
 
 import 'transport.dart';
+import 'transport_listeners.dart';
 
 /// State persisted to `<.serverpod>/embedded_postgres_state.json` on each
 /// successful start, sufficient for [EmbeddedPostgres.attach] to rebuild
 /// the public-API surface without re-receiving the original
 /// [EmbeddedPostgresOptions].
 ///
-/// The TCP password is NOT persisted here - it lives in
-/// `<.serverpod>/postgres.password` so the same file can be locked down
-/// (chmod 0600) without restricting access to the structural state.
+/// The TCP password is not stored. An attaching process supplies its own.
 class EmbeddedPostgresState {
   /// Resolved version (the running cluster's PG_VERSION major).
   final Version version;
@@ -23,8 +22,7 @@ class EmbeddedPostgresState {
   /// Database created on first start.
   final String databaseName;
 
-  /// Transport used for the running postmaster. For [TcpTransport] the
-  /// [TcpTransport.port] field holds the resolved (non-zero) port.
+  /// Transport the postmaster launched with.
   final Transport transport;
 
   /// Creates a state record.
@@ -36,18 +34,27 @@ class EmbeddedPostgresState {
   });
 
   /// JSON form persisted to disk.
-  Map<String, Object?> toJson() => {
-    'version': version.toString(),
-    'username': username,
-    'databaseName': databaseName,
-    'transport': switch (transport) {
-      UnixTransport() => {'kind': 'unix'},
-      TcpTransport(:final port) => {'kind': 'tcp', 'port': port},
-    },
-  };
+  Map<String, Object?> toJson() {
+    assert(
+      transport.tcpPort != 0,
+      'only a transport with its ephemeral port resolved is persisted',
+    );
+    return {
+      'version': version.toString(),
+      'username': username,
+      'databaseName': databaseName,
+      'transport': {
+        'kind': switch (transport) {
+          UnixTransport() => 'unix',
+          TcpTransport() => 'tcp',
+          DualTransport() => 'dual',
+        },
+        'port': ?transport.tcpPort,
+      },
+    };
+  }
 
-  /// Inverse of [toJson]. The TCP password isn't part of the JSON; it's
-  /// reattached separately by the caller from [pwFile].
+  /// Inverse of [toJson], with the TCP password given as [tcpPassword].
   factory EmbeddedPostgresState.fromJson(
     Map<String, Object?> json, {
     String? tcpPassword,
@@ -59,6 +66,10 @@ class EmbeddedPostgresState {
     var transport = switch (transportJson['kind']) {
       'unix' => const UnixTransport(),
       'tcp' => TcpTransport(
+        port: transportJson['port']! as int,
+        password: tcpPassword,
+      ),
+      'dual' => DualTransport(
         port: transportJson['port']! as int,
         password: tcpPassword,
       ),
@@ -83,8 +94,8 @@ class EmbeddedPostgresState {
   }
 
   /// Reads the state at [stateFile], or null if missing / malformed.
-  /// [tcpPassword] is forwarded into [TcpTransport.password] when the
-  /// persisted transport is TCP.
+  /// [tcpPassword] is forwarded into the transport's password when the
+  /// persisted transport listens on TCP.
   static EmbeddedPostgresState? read(
     File stateFile, {
     String? tcpPassword,
