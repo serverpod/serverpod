@@ -7,10 +7,12 @@ import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_cli/src/runner/runner_socket_server.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_shared/serverpod_shared.dart' show bindUnixSocket;
 import 'package:serverpod_tui/serverpod_tui.dart' show TrackedOperation;
 import 'package:test/test.dart';
 
 import '../test_util/fake_runner_api.dart';
+import '../test_util/serve_replacement.dart';
 import '../test_util/short_temp_dir.dart';
 import '../test_util/wait_for.dart';
 
@@ -375,20 +377,18 @@ void main() {
         await server.close();
         await runner.eventController.close();
 
-        final restarted = RunnerSocketServer(serverDir: tempDir.path);
-        await restarted.start();
-        addTearDown(restarted.close);
-        final newRunner = FakeRunnerApi()
-          ..logHistory = [
-            LogEntry(
-              time: DateTime.utc(2026, 8, 25),
-              level: LogLevel.info,
-              message: 'Fresh runner.',
-              scope: LogScope.root('server'),
-            ),
-          ];
-        addTearDown(newRunner.eventController.close);
-        restarted.connect(newRunner);
+        await serveReplacement(
+          tempDir,
+          FakeRunnerApi()
+            ..logHistory = [
+              LogEntry(
+                time: DateTime.utc(2026, 8, 25),
+                level: LogLevel.info,
+                message: 'Fresh runner.',
+                scope: LogScope.root('server'),
+              ),
+            ],
+        );
 
         await waitFor(() => client.history.serverEntries.isNotEmpty);
 
@@ -460,6 +460,41 @@ void main() {
     );
 
     test(
+      'when a peer accepts the connection but never answers the snapshot, '
+      'then attaching gives up at its deadline rather than waiting forever',
+      () async {
+        final silent = await _silentPeer(tempDir);
+        final client = RunnerClient(
+          socketPath: silent,
+          reconnectDelay: const Duration(milliseconds: 10),
+          replyTimeout: const Duration(milliseconds: 50),
+        );
+        addTearDown(client.close);
+
+        await expectLater(
+          client.attach(waitFor: const Duration(milliseconds: 200)),
+          throwsA(isA<RunnerUnreachableException>()),
+        );
+      },
+    );
+
+    test(
+      'when a peer accepts the connection but never acknowledges a stop, '
+      'then the stop fails rather than waiting forever',
+      () async {
+        final silent = await _silentPeer(tempDir);
+        final client = RunnerClient(
+          socketPath: silent,
+          replyTimeout: const Duration(milliseconds: 50),
+        );
+        addTearDown(client.close);
+        await client.connect();
+
+        await expectLater(client.stop(), throwsA(isA<TimeoutException>()));
+      },
+    );
+
+    test(
       'when nothing is listening, '
       'then the first attach reports it rather than retrying silently',
       () async {
@@ -475,4 +510,14 @@ void main() {
       },
     );
   });
+}
+
+/// Binds a socket in [tempDir] until teardown, accepting connections and never
+/// writing back.
+Future<String> _silentPeer(Directory tempDir) async {
+  final path = '${tempDir.path}/silent.sock';
+  final server = await bindUnixSocket(path);
+  addTearDown(server.close);
+  server.listen((socket) => socket.drain<void>());
+  return path;
 }

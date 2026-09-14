@@ -31,9 +31,11 @@ class RunnerClient implements RunnerApi {
     StartLogHistory? history,
     Duration reconnectDelay = const Duration(milliseconds: 250),
     Duration? reconnectDeadline,
+    Duration replyTimeout = const Duration(seconds: 5),
   }) : history = history ?? StartLogHistory(),
        _reconnectDelay = reconnectDelay,
-       _reconnectDeadline = reconnectDeadline;
+       _reconnectDeadline = reconnectDeadline,
+       _replyTimeout = replyTimeout;
 
   final String socketPath;
 
@@ -41,6 +43,10 @@ class RunnerClient implements RunnerApi {
 
   /// How long to reconnect before the runner is [gone], or forever if null.
   final Duration? _reconnectDeadline;
+
+  /// How long a snapshot or stop may go unanswered before the peer counts as
+  /// down. Other commands run migrations and builds, so they wait.
+  final Duration _replyTimeout;
 
   /// The buffers a renderer reads, kept current from the snapshot and events.
   final StartLogHistory history;
@@ -162,16 +168,11 @@ class RunnerClient implements RunnerApi {
       final held = <RunnerEvent>[];
       _heldEvents = held;
       try {
+        final reply = await peer
+            .sendRequest(runnerSnapshotMethod, const <String, Object?>{})
+            .timeout(_replyTimeout);
         _applySnapshot(
-          RunnerSnapshot.fromJson(
-            Map<String, Object?>.from(
-              await peer.sendRequest(
-                    runnerSnapshotMethod,
-                    const <String, Object?>{},
-                  )
-                  as Map,
-            ),
-          ),
+          RunnerSnapshot.fromJson(Map<String, Object?>.from(reply as Map)),
         );
       } catch (_) {
         _heldEvents = null;
@@ -339,7 +340,7 @@ class RunnerClient implements RunnerApi {
   Future<void> retryStart() => _send('retryStart');
 
   @override
-  Future<void> stop() => _send('stop');
+  Future<void> stop() => _send('stop').timeout(_replyTimeout);
 
   @override
   Future<void> applyMigrations() => _send('applyMigrations');
