@@ -4,6 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../transport.dart';
+import '../transport_listeners.dart';
 
 /// BEGIN/END markers for our managed block in `postgresql.conf`. Rewrites
 /// touch only lines between (and including) these markers; everything else
@@ -35,10 +36,10 @@ String buildPostgresConfBody({
   required Directory pgDataDir,
   int maxConnections = defaultMaxConnections,
 }) {
-  var transportSection = switch (transport) {
-    UnixTransport() => _udsTransportSection(pgDataDir: pgDataDir),
-    TcpTransport(:final port) => _tcpTransportSection(port: port),
-  };
+  var transportSection = _transportSection(
+    transport: transport,
+    pgDataDir: pgDataDir,
+  );
 
   return '''
 cluster_name = 'serverpod_dev'
@@ -74,7 +75,27 @@ shared_preload_libraries = ''
 $transportSection''';
 }
 
-String _udsTransportSection({required Directory pgDataDir}) {
+/// `listen_addresses`, `port` and the socket settings for [transport].
+/// `port` is always stated because it also names the socket file.
+String _transportSection({
+  required Transport transport,
+  required Directory pgDataDir,
+}) {
+  var listen = transport.tcpPort == null ? '' : '127.0.0.1';
+  var socketDir = transport.servesUnixSocket
+      ? _socketDirectoryConfValue(pgDataDir)
+      : '';
+  return """
+listen_addresses = '$listen'
+port = ${transport.postmasterPort}
+unix_socket_directories = '$socketDir'
+unix_socket_permissions = 0700
+""";
+}
+
+/// The `unix_socket_directories` value for [pgDataDir], escaped for a
+/// quoted .conf string.
+String _socketDirectoryConfValue(Directory pgDataDir) {
   // Sibling layout convention: <root>/pgdata is PGDATA, <root>/run is the
   // UDS directory. Compute the relative path from PGDATA so PG's bind
   // sun_path stays short.
@@ -88,11 +109,7 @@ String _udsTransportSection({required Directory pgDataDir}) {
   // separators and then run through the conf-string escape for any
   // residual `'` / `\` (legal in Linux project paths).
   var posixSocketDir = p.posix.joinAll(p.split(relativeSocketDir));
-  return """
-listen_addresses = ''
-unix_socket_directories = '${_quoteConfString(posixSocketDir)}'
-unix_socket_permissions = 0700
-""";
+  return _quoteConfString(posixSocketDir);
 }
 
 /// Escapes a string for use inside a single-quoted PostgreSQL .conf
@@ -102,14 +119,6 @@ unix_socket_permissions = 0700
 /// form, no literal backslash in [s] can be misread as an escape lead-in.
 String _quoteConfString(String s) =>
     s.replaceAll(r'\', r'\\').replaceAll("'", "''");
-
-String _tcpTransportSection({required int port}) {
-  return """
-listen_addresses = '127.0.0.1'
-unix_socket_directories = ''
-port = $port
-""";
-}
 
 /// Idempotent rewriter for a single managed block in [original].
 ///
