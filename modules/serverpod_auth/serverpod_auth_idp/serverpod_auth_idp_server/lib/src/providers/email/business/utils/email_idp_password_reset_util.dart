@@ -272,9 +272,7 @@ class EmailIdpPasswordResetUtil {
   }) async {
     await _rateLimitUtil.deleteAttempts(
       session,
-      before: clock.now().subtract(
-        olderThan ?? _rateLimitUtil.config.timeframe ?? Duration.zero,
-      ),
+      olderThan: olderThan ?? _rateLimitUtil.config.timeframe,
       key: email,
       transaction: transaction,
     );

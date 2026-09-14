@@ -457,7 +457,7 @@ void main() {
                   deletedAttempts = await rateLimitUtil.deleteAttempts(
                     session,
                     key: 'request',
-                    before: now.subtract(const Duration(hours: 1)),
+                    olderThan: const Duration(hours: 1),
                   );
                 });
 
@@ -470,6 +470,83 @@ void main() {
                   expect(deletedAttempts, 1);
 
                   expect(attempts, hasLength(1));
+                },
+              );
+            },
+          );
+
+          group('when deleting attempts older than two hours, ', () {
+            late int deleted;
+            late List<RateLimitedRequestAttempt> remaining;
+
+            setUp(() async {
+              deleted = await withClock(
+                Clock.fixed(now),
+                () => rateLimitUtil.deleteAttempts(
+                  session,
+                  key: 'request',
+                  olderThan: const Duration(hours: 2),
+                ),
+              );
+
+              remaining = await _findAttempts(session, key: 'request');
+            });
+
+            test(
+              'then the explicit age preserves both the cutoff attempt and the recent one.',
+              () {
+                expect(deleted, 0);
+
+                expect(remaining.map((final attempt) => attempt.attemptedAt), [
+                  now.subtract(const Duration(hours: 2)),
+                  now,
+                ]);
+              },
+            );
+          });
+
+          group(
+            'when deleting old attempts in a transaction that rolls back, ',
+            () {
+              late int deleted;
+              late List<RateLimitedRequestAttempt> remaining;
+              Object? error;
+
+              setUp(() async {
+                try {
+                  await session.db.transaction((final transaction) async {
+                    deleted = await withClock(
+                      Clock.fixed(now),
+                      () => rateLimitUtil.deleteAttempts(
+                        session,
+                        olderThan: const Duration(hours: 1),
+                        transaction: transaction,
+                      ),
+                    );
+
+                    throw _ExpectedRollbackException();
+                  });
+                } catch (caughtError) {
+                  error = caughtError;
+                }
+
+                remaining = await _findAttempts(session, key: 'request');
+              });
+
+              test(
+                'then the deletion is rolled back with the caller transaction.',
+                () {
+                  expect(error, isA<_ExpectedRollbackException>());
+
+                  expect(deleted, 1);
+
+                  expect(
+                    remaining.map((final attempt) => attempt.attemptedAt),
+                    [
+                      now.subtract(const Duration(hours: 2)),
+                      now,
+                    ],
+                  );
                 },
               );
             },
@@ -528,7 +605,7 @@ void main() {
                   deletedAttempts = await rateLimitUtil.deleteAttempts(
                     session,
                     key: 'request',
-                    before: now.subtract(const Duration(hours: 1)),
+                    olderThan: const Duration(hours: 1),
                   );
                 });
 
@@ -604,7 +681,7 @@ void main() {
                 await withClock(Clock.fixed(now), () async {
                   deletedAttempts = await rateLimitUtil.deleteAttempts(
                     session,
-                    before: now.subtract(const Duration(hours: 1)),
+                    olderThan: const Duration(hours: 1),
                   );
                 });
 
@@ -1166,15 +1243,18 @@ void main() {
             await _deleteTestAttempts(session);
           });
 
-          group('when deleting attempts before the cutoff, ', () {
+          group('when deleting attempts older than one hour, ', () {
             late int deleted;
             late List<RateLimitedRequestAttempt> remaining;
 
             setUpAll(() async {
-              deleted = await limiter.deleteAttempts(
-                session,
-                key: 'request',
-                before: now.subtract(const Duration(hours: 1)),
+              deleted = await withClock(
+                Clock.fixed(now),
+                () => limiter.deleteAttempts(
+                  session,
+                  key: 'request',
+                  olderThan: const Duration(hours: 1),
+                ),
               );
 
               remaining = await _findAttempts(session);
@@ -1235,7 +1315,7 @@ void main() {
             await _deleteTestAttempts(session);
           });
 
-          group('when deleting the key without a cutoff, ', () {
+          group('when deleting the key without an age filter, ', () {
             late int deleted;
 
             setUpAll(() async {
@@ -1347,7 +1427,7 @@ void main() {
         late DateTime now;
         late RateLimiter limiter;
 
-        setUpAll(() async {
+        setUp(() async {
           now = DateTime.utc(2026, 1, 1);
 
           limiter = DatabaseRateLimiter(
@@ -1365,14 +1445,14 @@ void main() {
           });
         });
 
-        tearDownAll(() async {
+        tearDown(() async {
           await _deleteTestAttempts(session);
         });
 
-        group('when deleting without a key or cutoff, ', () {
+        group('when deleting without a key or age filter, ', () {
           late int deletedAttempts;
 
-          setUpAll(() async {
+          setUp(() async {
             await withClock(Clock.fixed(now), () async {
               deletedAttempts = await limiter.deleteAttempts(session);
             });
@@ -1384,6 +1464,35 @@ void main() {
               expect(deletedAttempts, 2);
 
               expect(await _findAttempts(session), isEmpty);
+            },
+          );
+        });
+
+        group('when deleting attempts older than zero, ', () {
+          late int deletedAttempts;
+          late List<RateLimitedRequestAttempt> remaining;
+
+          setUp(() async {
+            deletedAttempts = await withClock(
+              Clock.fixed(now),
+              () => limiter.deleteAttempts(
+                session,
+                olderThan: Duration.zero,
+              ),
+            );
+
+            remaining = await _findAttempts(session);
+          });
+
+          test(
+            'then both attempts at the current timestamp are preserved.',
+            () {
+              expect(deletedAttempts, 0);
+
+              expect(
+                remaining.map((final attempt) => attempt.key),
+                unorderedEquals(['first', 'second']),
+              );
             },
           );
         });

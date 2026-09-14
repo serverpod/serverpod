@@ -36,14 +36,15 @@ abstract class RateLimiter {
 
   /// Deletes attempts within this limiter's domain and source.
   ///
-  /// If [key] is omitted, matches every key in this scope. If [before] is
-  /// provided, only attempts strictly before it are removed. Omitting [before]
-  /// removes all matching attempts, regardless of the configured window.
+  /// If [key] is omitted, matches every key in this scope. If [olderThan] is
+  /// provided, only attempts strictly older than that duration are removed,
+  /// measured from the current time. Omitting [olderThan] removes all matching
+  /// attempts, regardless of the configured window.
   /// Returns the number of deleted attempts.
   Future<int> deleteAttempts(
     final Session session, {
     final String? key,
-    final DateTime? before,
+    final Duration? olderThan,
     final Transaction? transaction,
   });
 }
@@ -206,16 +207,20 @@ class DatabaseRateLimiter extends RateLimiter {
   Future<int> deleteAttempts(
     final Session session, {
     final String? key,
-    final DateTime? before,
+    final Duration? olderThan,
     final Transaction? transaction,
   }) async {
+    final removeBefore = olderThan == null
+        ? null
+        : clock.now().subtract(olderThan);
+
     final deletedAttempts = await RateLimitedRequestAttempt.db.deleteWhere(
       session,
       where: (final t) {
         var expression =
             t.domain.equals(config.domain) & t.source.equals(config.source);
-        if (before != null) {
-          expression &= t.attemptedAt < before;
+        if (removeBefore != null) {
+          expression &= t.attemptedAt < removeBefore;
         }
         if (key != null) {
           expression &= t.key.equals(key);
