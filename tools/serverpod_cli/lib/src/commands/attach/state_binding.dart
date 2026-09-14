@@ -166,6 +166,7 @@ class RunnerStateBinding {
       onRunnerStopped?.call(client.exitCode ?? 0);
     }
     _syncApps(client.flutterApps);
+    _state.reloadAppLogTabs();
     for (final app in client.flutterApps) {
       final running = client.isFlutterAppRunning(app.id);
       final launching = client.isFlutterAppLaunching(app.id);

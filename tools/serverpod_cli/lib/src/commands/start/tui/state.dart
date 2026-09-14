@@ -161,13 +161,13 @@ class ServerWatchState extends TuiState {
     return null;
   }
 
+  /// The open app log tabs.
+  Iterable<AppLogTab> get _appLogTabs =>
+      (appsTabArea?.tabs ?? const <PaneTab>[]).whereType<AppLogTab>();
+
   /// Returns the [AppLogTab] for [appId], or null if it is not open.
-  AppLogTab? appLogTabFor(String appId) {
-    for (final tab in appsTabArea?.tabs ?? []) {
-      if (tab is AppLogTab && tab.appId == appId) return tab;
-    }
-    return null;
-  }
+  AppLogTab? appLogTabFor(String appId) =>
+      _appLogTabs.where((tab) => tab.appId == appId).firstOrNull;
 
   void createAppsTabAreaIfNeeded() {
     if (appsTabArea == null) {
@@ -202,6 +202,15 @@ class ServerWatchState extends TuiState {
     return tab;
   }
 
+  /// Reseeds every open [AppLogTab] from [history], which a snapshot replaced.
+  void reloadAppLogTabs() {
+    for (final tab in _appLogTabs) {
+      tab.logHistory
+        ..clear()
+        ..addAll(history.flutterLinesFor(tab.appId));
+    }
+  }
+
   /// Removes any existing [AppLogTab] for [appId].
   void removeAppLogTab(String appId) {
     final tab = appLogTabFor(appId);
@@ -218,11 +227,9 @@ class ServerWatchState extends TuiState {
     // Also drops the lines of apps that have no open tab.
     history.clear();
     _toggledStackTraces.clear();
-    for (final tab in appsTabArea?.tabs ?? []) {
-      if (tab is AppLogTab) {
-        tab.lines.clear();
-        tab.logHistory.clear();
-      }
+    for (final tab in _appLogTabs) {
+      tab.lines.clear();
+      tab.logHistory.clear();
     }
   }
 }
