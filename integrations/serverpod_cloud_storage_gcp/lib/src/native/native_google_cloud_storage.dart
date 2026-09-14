@@ -38,13 +38,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
   /// Whether files should be publicly accessible.
   final bool public;
 
-  /// Whether public uploads explicitly set a public-read object ACL.
-  /// Set to false for buckets with uniform bucket-level access, where ACLs
-  /// are disabled and public access must be granted through IAM instead.
-  ///
-  /// Defaults to true.
-  final bool useObjectAcl;
-
   /// Custom public host for generating public URLs.
   /// If not provided, defaults to 'storage.googleapis.com/bucket'.
   final String? publicHost;
@@ -57,7 +50,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String storageId,
     required this.bucket,
     required this.public,
-    this.useObjectAcl = true,
     required gcs.StorageApi storageApi,
     _SigningContext? signingContext,
     http.Client? authClient,
@@ -77,7 +69,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String storageId,
     required String bucket,
     required bool public,
-    bool useObjectAcl = true,
     String? publicHost,
   }) async {
     final serviceAccountJson = serverpod.getPassword('gcpServiceAccount');
@@ -94,7 +85,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
       storageId: storageId,
       bucket: bucket,
       public: public,
-      useObjectAcl: useObjectAcl,
       serviceAccountJson: serviceAccountJson,
       publicHost: publicHost,
     );
@@ -109,7 +99,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String storageId,
     required String bucket,
     required bool public,
-    bool useObjectAcl = true,
     required String serviceAccountJson,
     String? publicHost,
   }) async {
@@ -126,7 +115,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
       storageId: storageId,
       bucket: bucket,
       public: public,
-      useObjectAcl: useObjectAcl,
       storageApi: gcs.StorageApi(authClient),
       signingContext: _SigningContext.fromCredentials(credentials),
       authClient: authClient,
@@ -147,7 +135,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String storageId,
     required String bucket,
     required bool public,
-    bool useObjectAcl = true,
     String? publicHost,
   }) async {
     final authClient = await gcs.clientViaApplicationDefaultCredentials(
@@ -160,7 +147,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
       storageId: storageId,
       bucket: bucket,
       public: public,
-      useObjectAcl: useObjectAcl,
       storageApi: gcs.StorageApi(authClient),
       signingContext: _SigningContext.fromAuthClient(email, authClient),
       authClient: authClient,
@@ -179,7 +165,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String storageId,
     required this.bucket,
     required this.public,
-    this.useObjectAcl = true,
     required gcs.StorageApi storageApi,
     this.publicHost,
   }) : _storageApi = storageApi,
@@ -195,7 +180,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String storageId,
     required this.bucket,
     required this.public,
-    this.useObjectAcl = true,
     required gcs.StorageApi storageApi,
     required gcs.ServiceAccountCredentials credentials,
     this.publicHost,
@@ -213,7 +197,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String storageId,
     required this.bucket,
     required this.public,
-    this.useObjectAcl = true,
     required gcs.StorageApi storageApi,
     required String email,
     required gcs.AuthClient authClient,
@@ -294,7 +277,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
         object,
         bucket,
         uploadMedia: media,
-        predefinedAcl: public && useObjectAcl ? 'publicRead' : null,
         ifGenerationMatch: options.preventOverwrite ? '0' : null,
       );
     } on gcs.DetailedApiRequestError catch (error) {
@@ -471,7 +453,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
         'application/octet-stream';
     final headers = <String, String>{
       'Content-Type': contentType,
-      if (public && useObjectAcl) 'x-goog-acl': 'public-read',
       'x-goog-content-length-range': options.contentLength == null
           ? '0,${options.maxFileSize}'
           : '${options.contentLength},${options.contentLength}',
