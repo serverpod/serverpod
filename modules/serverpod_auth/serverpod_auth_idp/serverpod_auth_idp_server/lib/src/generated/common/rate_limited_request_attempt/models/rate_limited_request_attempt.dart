@@ -260,8 +260,9 @@ class RateLimitedRequestAttemptTable extends _is.Table<_is.UuidValue?> {
       this,
     );
     key = _is.ColumnString(
-      'key',
+      'nonce',
       this,
+      fieldName: 'key',
     );
     ipAddress = _is.ColumnString(
       'ipAddress',
