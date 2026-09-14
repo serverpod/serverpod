@@ -79,7 +79,7 @@ commands:
         flags:
           -s, --server-dir=: "Server project directory. Defaults to auto-detection."
           -m, --mode=: "Serverpod run mode whose database config should be used."
-          -p, --port=: "TCP port override. Defaults to the configured database port."
+          -p, --port=: "TCP port override. Defaults to the configured database port. Requires a database password for the run mode."
 
   - name: quickstart
     flags:
