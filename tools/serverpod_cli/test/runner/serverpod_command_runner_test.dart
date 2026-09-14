@@ -55,6 +55,10 @@ class MockLogger extends VoidLogger {
 
   @override
   void debug(String message, {bool newParagraph = false, LogType? type}) {
+    // The real logger drops messages below the active level before they reach
+    // any output; mirror that here so a debug-level diagnostic does not show
+    // up in assertions about what a command actually printed.
+    if (logLevel.index > LogLevel.debug.index) return;
     output.debug(message);
   }
 
