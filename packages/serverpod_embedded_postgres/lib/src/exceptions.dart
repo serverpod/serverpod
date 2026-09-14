@@ -156,6 +156,16 @@ final class PostmasterLockBusyException extends EmbeddedPostgresException {
   const PostmasterLockBusyException(super.message, {this.existingPid});
 }
 
+/// The pinned TCP [port] is held by another process, and
+/// [EmbeddedPostgresOptions.ephemeralPortFallback] is off.
+final class PortInUseException extends EmbeddedPostgresException {
+  /// The loopback port that could not be bound.
+  final int port;
+
+  /// Creates a [PortInUseException] for [port].
+  const PortInUseException(super.message, {required this.port});
+}
+
 /// PG_VERSION inside the data dir doesn't match
 /// [EmbeddedPostgresOptions.version]. Cross-major upgrades aren't handled
 /// automatically; the caller must `reset()` (and lose the data) or run
