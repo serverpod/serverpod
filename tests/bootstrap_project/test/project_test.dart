@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/util/copy_directory.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
@@ -29,7 +30,7 @@ void main() async {
     } catch (e) {}
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
@@ -39,7 +40,8 @@ void main() async {
     });
 
     test(
-      'when creating a new project then the project is created successfully and can be booted',
+      'when creating a new project, '
+      'then the project is created successfully and can be booted',
       () async {
         createProcess = await startServerpodCli(
           [
@@ -67,6 +69,10 @@ void main() async {
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
           workingDirectory: commandRoot,
+          environment: {
+            ServerpodEnv.databasePort.envVariable:
+                '${await freeLoopbackPort()}',
+          },
         );
 
         var startProjectExitCode = await startProjectProcess.exitCode;
@@ -75,7 +81,7 @@ void main() async {
     );
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
@@ -87,7 +93,8 @@ void main() async {
     });
 
     test(
-      'when creating a new project then the project can be booted without applying migrations',
+      'when creating a new project, '
+      'then the project can be booted without applying migrations',
       () async {
         createProcess = await startServerpodCli(
           [
@@ -115,6 +122,10 @@ void main() async {
           'dart',
           ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
+          environment: {
+            ServerpodEnv.databasePort.envVariable:
+                '${await freeLoopbackPort()}',
+          },
         );
 
         var serverStarted = false;
@@ -1162,7 +1173,7 @@ void main() async {
     );
   });
 
-  group('Given a created project', () {
+  group('Given a created project,', () {
     late String projectName;
     late String commandRoot;
 
@@ -1226,7 +1237,7 @@ void main() async {
     );
 
     test(
-      'when running tests then example unit and integration tests passes',
+      'when running tests, then example unit and integration tests passes',
       () async {
         var testProcess = await startProcess(
           'dart',
@@ -1236,6 +1247,10 @@ void main() async {
             projectName,
             "${projectName}_server",
           ),
+          environment: {
+            ServerpodEnv.databasePort.envVariable:
+                '${await freeLoopbackPort()}',
+          },
         );
 
         await expectLater(testProcess.exitCode, completion(0));
@@ -1296,7 +1311,7 @@ void main() async {
   });
 
   group(
-    'Given a created project and a running pod',
+    'Given a created project and a running pod,',
     () {
       final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
@@ -1324,6 +1339,10 @@ void main() async {
           'dart',
           ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
+          environment: {
+            ServerpodEnv.databasePort.envVariable:
+                '${await freeLoopbackPort()}',
+          },
           keywords: ['Webserver listening on'],
         );
       });
