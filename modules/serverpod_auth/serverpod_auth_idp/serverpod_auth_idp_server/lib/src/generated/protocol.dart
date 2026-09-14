@@ -986,7 +986,7 @@ class Protocol extends _is.DatabaseSerializationManager {
           dartType: 'String',
         ),
         _isp.ColumnDefinition(
-          name: 'key',
+          name: 'nonce',
           columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
@@ -1027,7 +1027,7 @@ class Protocol extends _is.DatabaseSerializationManager {
             ),
             _isp.IndexElementDefinition(
               type: _isp.IndexElementDefinitionType.column,
-              definition: 'key',
+              definition: 'nonce',
             ),
             _isp.IndexElementDefinition(
               type: _isp.IndexElementDefinitionType.column,

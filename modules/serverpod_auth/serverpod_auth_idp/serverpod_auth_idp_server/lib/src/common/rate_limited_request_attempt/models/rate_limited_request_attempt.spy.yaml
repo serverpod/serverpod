@@ -17,7 +17,10 @@ fields:
 
   ### The caller-provided string key identifying the rate limit bucket.
   ### Can be a request ID, a token, an email address, etc.
-  key: String
+  # Stored in the `nonce` column: renaming it would force a destructive migration.
+  key:
+    type: String
+    column: nonce
 
   ### The IP address calling the request, in case it is relevant.
   ### Should only be used for logging and auditing purposes.
