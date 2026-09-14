@@ -1635,7 +1635,7 @@ return deserializeByClassName(value);
           (t) => t
             ..symbol = 'Future'
             ..url = 'dart:async'
-            ..types.add(refer('CrdtDatabaseSession', syncUrl)),
+            ..types.add(refer('OfflineSyncDatabaseSession', syncUrl)),
         )
         ..requiredParameters.add(
           Parameter(
@@ -1669,7 +1669,7 @@ return deserializeByClassName(value);
         ..body = Block.of([
           declareFinal('session')
               .assign(
-                refer('CrdtDatabaseSession', syncUrl)
+                refer('OfflineSyncDatabaseSession', syncUrl)
                     .property('wraps')
                     .call(
                       [
