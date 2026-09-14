@@ -263,19 +263,18 @@ void main() {
     );
   });
 
-  group('Given a discarded-operations event,', () {
-    test(
-      'when it is sent, '
-      'then the ids survive, so a client can drop the right operations',
-      () {
-        final decoded =
-            _roundTrip(const OperationsDiscardedEvent(['scope_1', 'scope_2']))
-                as OperationsDiscardedEvent;
+  test(
+    'Given a discarded-operations event, '
+    'when it is sent, '
+    'then the ids survive, so a client can drop the right operations',
+    () {
+      final decoded =
+          _roundTrip(const OperationsDiscardedEvent(['scope_1', 'scope_2']))
+              as OperationsDiscardedEvent;
 
-        expect(decoded.ids, ['scope_1', 'scope_2']);
-      },
-    );
-  });
+      expect(decoded.ids, ['scope_1', 'scope_2']);
+    },
+  );
 
   group('Given a runner stage name,', () {
     test(

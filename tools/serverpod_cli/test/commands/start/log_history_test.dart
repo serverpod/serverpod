@@ -137,13 +137,7 @@ void main() {
     );
   });
 
-  group('Given a pod that prints what it logs,', () {
-    final posted = _logEvent({
-      'type': 'log',
-      'level': 'info',
-      'message': 'Server started',
-      'time': '2026-04-10T12:00:00.000Z',
-    });
+  group('Given a log history with a listener on its events,', () {
     late List<RunnerEvent> events;
 
     setUp(() {
@@ -156,7 +150,14 @@ void main() {
       'then the entry says a line carries it and the line stands on its own',
       () async {
         history.addServerLine('Server started');
-        history.recordServerLogEvent(posted);
+        history.recordServerLogEvent(
+          _logEvent({
+            'type': 'log',
+            'level': 'info',
+            'message': 'Server started',
+            'time': '2026-04-10T12:00:00.000Z',
+          }),
+        );
         await Future<void>.delayed(Duration.zero);
 
         expect(history.serverLines, ['Server started']);
@@ -219,47 +220,44 @@ void main() {
     });
   });
 
-  group('Given a log event from a pod session,', () {
-    test(
-      'when it is recorded, '
-      'then the session id that correlates it survives the hop',
-      () {
-        history.recordServerLogEvent(
-          _logEvent({
-            'type': 'log',
-            'level': 'info',
-            'message': 'Handled greeting.',
-            'time': '2026-04-10T12:00:00.000Z',
-            'scope': {'id': 'session-42', 'label': 'greeting'},
-          }),
-        );
+  test(
+    'Given a log event from a pod session, '
+    'when it is recorded, '
+    'then the session id that correlates it survives the hop',
+    () {
+      history.recordServerLogEvent(
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'Handled greeting.',
+          'time': '2026-04-10T12:00:00.000Z',
+          'scope': {'id': 'session-42', 'label': 'greeting'},
+        }),
+      );
 
-        final entry = history.serverEntries.single as LogEntry;
-        expect(entry.scope.id, 'session-42');
-        expect(entry.scope.label, 'greeting');
-      },
-    );
+      final entry = history.serverEntries.single as LogEntry;
+      expect(entry.scope.id, 'session-42');
+      expect(entry.scope.label, 'greeting');
+    },
+  );
 
-    test(
-      'when the event carries no scope, '
-      'then the entry is still labelled as the server\'s',
-      () {
-        history.recordServerLogEvent(
-          _logEvent({
-            'type': 'log',
-            'level': 'info',
-            'message': 'No scope here.',
-            'time': '2026-04-10T12:00:00.000Z',
-          }),
-        );
+  test(
+    'Given a log event that carries no scope, '
+    'when it is recorded, '
+    'then the entry is still labelled as the server\'s',
+    () {
+      history.recordServerLogEvent(
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'No scope here.',
+          'time': '2026-04-10T12:00:00.000Z',
+        }),
+      );
 
-        expect(
-          (history.serverEntries.single as LogEntry).scope.label,
-          'server',
-        );
-      },
-    );
-  });
+      expect((history.serverEntries.single as LogEntry).scope.label, 'server');
+    },
+  );
 
   group(
     'Given a warning log event, '
@@ -590,31 +588,30 @@ void main() {
     },
   );
 
-  group('Given open server scopes,', () {
-    test(
-      'when they are discarded, '
-      'then attached clients are told which, since no scope_end will follow',
-      () async {
-        history.recordServerLogEvent(
-          _logEvent({
-            'type': 'scope_start',
-            'id': 'scope_1',
-            'label': 'GET /api/stream-one',
-          }),
-        );
-        final events = <RunnerEvent>[];
-        final sub = history.events.listen(events.add);
-        addTearDown(sub.cancel);
+  test(
+    'Given open server scopes, '
+    'when they are discarded, '
+    'then attached clients are told which, since no scope_end will follow',
+    () async {
+      history.recordServerLogEvent(
+        _logEvent({
+          'type': 'scope_start',
+          'id': 'scope_1',
+          'label': 'GET /api/stream-one',
+        }),
+      );
+      final events = <RunnerEvent>[];
+      final sub = history.events.listen(events.add);
+      addTearDown(sub.cancel);
 
-        history.discardActiveServerScopes();
-        await pumpEventQueue();
+      history.discardActiveServerScopes();
+      await pumpEventQueue();
 
-        final discarded = events.whereType<OperationsDiscardedEvent>().single;
-        expect(discarded.ids, ['scope_1']);
-        expect(history.operationStartTimes, isNot(contains('scope_1')));
-      },
-    );
-  });
+      final discarded = events.whereType<OperationsDiscardedEvent>().single;
+      expect(discarded.ids, ['scope_1']);
+      expect(history.operationStartTimes, isNot(contains('scope_1')));
+    },
+  );
 
   group('Given a Flutter framework error event, when it is recorded,', () {
     const error =

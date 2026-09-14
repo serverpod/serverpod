@@ -404,25 +404,24 @@ void main() {
     session = buildSession(compiler: compiler, initialServer: server);
   });
 
-  group('Given a project that serves no web,', () {
-    test(
-      'when static files change, '
-      'then no browser refresh is attempted',
-      () async {
-        final webless = buildSession(
-          compiler: compiler,
-          initialServer: server,
-          servesWeb: false,
-        );
+  test(
+    'Given a project that serves no web, '
+    'when static files change, '
+    'then no browser refresh is attempted',
+    () async {
+      final webless = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        servesWeb: false,
+      );
 
-        await webless.handleFileChange(
-          FileChangeEvent(dartFiles: {}, staticFilesChanged: true),
-        );
+      await webless.handleFileChange(
+        FileChangeEvent(dartFiles: {}, staticFilesChanged: true),
+      );
 
-        expect(server.calls, isEmpty);
-      },
-    );
-  });
+      expect(server.calls, isEmpty);
+    },
+  );
 
   group('Given static-only file changes and VM service connected', () {
     test(
