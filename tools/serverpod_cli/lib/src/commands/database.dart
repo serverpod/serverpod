@@ -9,7 +9,6 @@ import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_database/embedded.dart';
-import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
     show PasswordManager, PostgresDatabaseConfig, ServerpodConfig;
 
@@ -54,7 +53,9 @@ enum DatabaseStartOption<V> implements OptionDefinition<V> {
       argAbbrev: 'p',
       min: 1,
       max: 65535,
-      helpText: 'TCP port override. Defaults to the configured database port.',
+      helpText:
+          'TCP port override. Defaults to the configured database port. '
+          'Requires a database password for the run mode.',
     ),
   ),
   ;
@@ -65,7 +66,8 @@ enum DatabaseStartOption<V> implements OptionDefinition<V> {
   final ConfigOptionBase<V> option;
 }
 
-/// Starts the configured embedded PostgreSQL database over loopback TCP.
+/// Starts the configured embedded PostgreSQL database, or joins the one the
+/// server already runs, and prints how to reach it.
 class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
   DatabaseStartCommand() : super(options: DatabaseStartOption.values);
 
@@ -74,7 +76,8 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
 
   @override
   final description =
-      'Start the configured embedded PostgreSQL database over TCP.';
+      'Start the configured embedded PostgreSQL database and print how to '
+      'connect to it.';
 
   @override
   Future<void> runWithConfig(
@@ -101,23 +104,46 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
     }
 
     try {
-      var postgres = await _startFromServerpodConfig(
+      var resolved = await _startFromServerpodConfig(
         serverDirectory: serverDirectory,
         runMode: commandConfig.value(DatabaseStartOption.mode),
         port: commandConfig.optionalValue(DatabaseStartOption.port),
       );
+      var postgres = resolved.handle;
 
-      log
-        ..info('Embedded PostgreSQL is ready.')
-        ..info('Connection URI: ${postgres.connectionString}')
-        ..info(
-          Platform.isMacOS ? 'Press ⌃C to stop.' : 'Press Ctrl+C to stop.',
+      log.info(
+        resolved.launched
+            ? 'Embedded PostgreSQL is ready.'
+            : 'Embedded PostgreSQL is ready (joined the database another '
+                  'process started).',
+      );
+      log.info('Unix socket URI: ${postgres.connectionString}');
+      var tcpUri = postgres.tcpConnectionUri;
+      if (tcpUri != null) {
+        log.info('TCP URI: $tcpUri');
+      } else if (resolved.connectivity.password.isEmpty) {
+        log.info(
+          'TCP is off because no database password is configured. Set '
+          '`database` for this run mode in config/passwords.yaml to also '
+          'listen on the configured port.',
         );
+      } else {
+        log.info(
+          'TCP is off because the process that started the database did not '
+          'enable it. Restart that process to also listen on the configured '
+          'port.',
+        );
+      }
+      log.info(
+        resolved.launched
+            ? (Platform.isMacOS ? 'Press ⌃C to stop.' : 'Press Ctrl+C to stop.')
+            : 'Stopping the owning process stops the database.',
+      );
 
       while (postgres.isRunning) {
         await Future<void>.delayed(const Duration(seconds: 1));
       }
-      await postgres.stop();
+      await resolved.stop?.call();
     } on _DatabaseStartConfigurationException catch (e) {
       log.error(e.message);
       throw ExitException.error();
@@ -131,7 +157,7 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
   }
 }
 
-Future<EmbeddedPostgres> _startFromServerpodConfig({
+Future<ResolvedEmbeddedPostgres> _startFromServerpodConfig({
   required Directory serverDirectory,
   required String runMode,
   int? port,
@@ -153,31 +179,37 @@ Future<EmbeddedPostgres> _startFromServerpodConfig({
       'configured for PostgreSQL and try again.',
     );
   }
+  if (port != null && databaseConfig.password.isEmpty) {
+    throw _DatabaseStartConfigurationException(
+      'A TCP port was given, but run mode "$runMode" has no database '
+      'password, so the embedded database only serves its Unix socket. Set '
+      '`database` for this run mode in config/passwords.yaml to listen on '
+      'TCP.',
+    );
+  }
+  if (port != null) databaseConfig = databaseConfig.withPort(port);
 
-  var dataPath = databaseConfig.dataPath;
-  if (dataPath == null) {
+  var resolved = await startOrAttachEmbeddedPostgres(
+    databaseConfig.withResolvedLocalPath(serverDir),
+  );
+  if (resolved == null) {
     throw _DatabaseStartConfigurationException(
       'The command `serverpod database start` can only be used with an '
       'embedded database, but run mode "$runMode" uses an external database.',
     );
   }
-
-  return EmbeddedPostgres.start(
-    EmbeddedPostgresOptions(
-      dataDir: Directory(
-        p.isAbsolute(dataPath)
-            ? dataPath
-            : p.normalize(p.join(serverDir, dataPath)),
-      ),
-      databaseName: databaseConfig.name,
-      username: databaseConfig.user,
-      transport: TcpTransport(
-        port: port ?? databaseConfig.port,
-        password: databaseConfig.password,
-      ),
-      repairStaleLocks: true,
-    ),
-  );
+  var runningPort = resolved.handle.tcpEndpoint?.port;
+  if (!resolved.launched && port != null && runningPort != port) {
+    var listening = runningPort == null
+        ? 'without TCP'
+        : 'on port $runningPort';
+    throw _DatabaseStartConfigurationException(
+      'The embedded database is already running $listening, started by '
+      'another process, so it cannot also listen on port $port. Stop that '
+      'process or drop --port.',
+    );
+  }
+  return resolved;
 }
 
 final class _DatabaseStartConfigurationException implements Exception {
