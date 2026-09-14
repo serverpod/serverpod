@@ -144,8 +144,13 @@ class PostgresPoolManager implements DatabasePoolManager {
   @override
   Future<void> get started => _startedFuture ??= _bootstrap();
 
+  /// Closes the pool, then stops the embedded PostgreSQL this manager
+  /// launched.
+  ///
+  /// Waits for connections in use to be returned unless [force] is set, which
+  /// aborts their queries instead.
   @override
-  Future<void> stop() async {
+  Future<void> stop({bool force = false}) async {
     _databaseStopped = true;
     final pgPool = _pgPool;
     final stopEmbeddedPostgres = _stopEmbeddedPostgres;
@@ -154,7 +159,7 @@ class PostgresPoolManager implements DatabasePoolManager {
     _stopEmbeddedPostgres = null;
     _startedFuture = null;
 
-    await pgPool?.close();
+    await pgPool?.close(force: force);
     await stopEmbeddedPostgres?.call();
   }
 
