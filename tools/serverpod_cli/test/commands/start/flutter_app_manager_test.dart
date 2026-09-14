@@ -59,10 +59,12 @@ class _AppSpec {
     // expect. Pass a desktop device (e.g. `linux`) for non-web scenarios, or
     // null to omit the `device` line from the app's pubspec entry.
     this.device = 'web-server',
+    this.autoLaunch = false,
   });
 
   final String id;
   final String? device;
+  final bool autoLaunch;
 
   /// Directory (and package) name of the fabricated Flutter app.
   String get dirName => '${id.replaceAll('-', '_')}_flutter';
@@ -128,6 +130,7 @@ class _ManagerFixture {
       if (spec.device != null) {
         appEntries.writeln('      device: ${spec.device}');
       }
+      if (spec.autoLaunch) appEntries.writeln('      auto_launch: true');
     }
     final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
     serverPubspecFile.writeAsStringSync('''
@@ -673,6 +676,35 @@ void main() {
             event.message,
             'Error: unable to find asset declared in pubspec.yaml.',
           );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a FlutterAppManager whose auto-launch app has run and stopped,',
+    () {
+      late _ManagerFixture f;
+
+      setUp(() async {
+        f = await _ManagerFixture.create(
+          apps: const [_AppSpec('app-a', autoLaunch: true)],
+          shim: 'never_publishes_uri.dart',
+        );
+        await f.manager.launchAutoLaunchApps();
+        expect(f.manager.isRunning('app-a'), isTrue);
+        await f.manager.stop('app-a');
+      });
+
+      tearDown(() => f.dispose());
+
+      test(
+        'when auto-launch is armed again, as a later client attaching would, '
+        'then the app stays stopped, arming being once per session',
+        () async {
+          await f.manager.launchAutoLaunchApps();
+
+          expect(f.manager.isRunning('app-a'), isFalse);
         },
       );
     },

@@ -94,6 +94,10 @@ Future<void> waitForGeneratedOutput(
   }
 }
 
+/// The manifest the runner serving [serverDirPath] publishes.
+File runnerManifest(String serverDirPath) =>
+    File(path.join(serverDirPath, '.dart_tool', 'serverpod', 'runner.json'));
+
 /// Expects a start whose runner threw after publishing to say so at once.
 void expectRunnerStoppedDuringStartup(
   ProcessResult result,
@@ -112,9 +116,7 @@ void expectRunnerStoppedDuringStartup(
   expect(output, contains('stopped during startup'), reason: output);
   expect(output, contains('runner.log'), reason: output);
   // The runner leaves its manifest behind on purpose, but not at `starting`.
-  var manifest = File(
-    path.join(serverDirPath, '.dart_tool', 'serverpod', 'runner.json'),
-  );
+  var manifest = runnerManifest(serverDirPath);
   expect(
     manifest.existsSync() ? manifest.readAsStringSync() : '',
     isNot(contains('"starting"')),
@@ -520,33 +522,42 @@ fields:
       if (debugPortGate.existsSync()) debugPortGate.deleteSync();
     });
 
+    /// Starts `serverpod start --no-tui` with the fake Flutter on PATH and
+    /// [fakeFlutterEnvironment], capturing its output in [processOutput].
+    Future<void> startWithFakeFlutter(
+      Map<String, String> fakeFlutterEnvironment,
+    ) async {
+      final pathSeparator = Platform.isWindows ? ';' : ':';
+      serverProcess = await startServerpod(
+        ['start', '--no-watch', '--no-tui'],
+        workingDirectory: serverDir,
+        environment: {
+          'PATH':
+              '$fakeFlutterBinDir$pathSeparator'
+              '${Platform.environment['PATH'] ?? ''}',
+          ...fakeFlutterEnvironment,
+        },
+      );
+      stdoutSubscription = serverProcess!.stdout
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .listen(processOutput.writeln);
+      stderrSubscription = serverProcess!.stderr
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .listen(processOutput.writeln);
+    }
+
     test(
       'when running serverpod start from an IDE, '
       'then start forwards the IDE requests to the flutter process',
       () async {
-        final pathSeparator = Platform.isWindows ? ';' : ':';
-        serverProcess = await startServerpod(
-          ['start', '--no-watch', '--no-tui'],
-          workingDirectory: serverDir,
-          environment: {
-            'PATH':
-                '$fakeFlutterBinDir$pathSeparator'
-                '${Platform.environment['PATH'] ?? ''}',
-            // Ensure the IDE request reaches the proxy before Flutter has
-            // published an upstream VM service, matching VS Code's attach
-            // behavior during `serverpod start`.
-            'FAKE_FLUTTER_DEBUG_PORT_GATE': debugPortGate.path,
-          },
-        );
-
-        stdoutSubscription = serverProcess!.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen(processOutput.writeln);
-        stderrSubscription = serverProcess!.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen(processOutput.writeln);
+        // Ensure the IDE request reaches the proxy before Flutter has
+        // published an upstream VM service, matching VS Code's attach
+        // behavior during `serverpod start`.
+        await startWithFakeFlutter({
+          'FAKE_FLUTTER_DEBUG_PORT_GATE': debugPortGate.path,
+        });
 
         final proxyHttpUri = await _waitForVmServiceInfo(
           flutterVmServiceInfoFile,
@@ -603,8 +614,52 @@ fields:
         expect(result['servedBy'], 'fake-flutter-vm-service');
       },
     );
+
+    group('when the first UI attaches,', () {
+      late File launchLog;
+
+      setUp(() async {
+        launchLog = File(path.join(sandboxDir, projectName, 'launches.log'));
+        if (launchLog.existsSync()) launchLog.deleteSync();
+        await startWithFakeFlutter({'FAKE_FLUTTER_LAUNCH_LOG': launchLog.path});
+
+        // The app has come up, so a second launch would have been recorded.
+        await waitForGeneratedOutput(
+          () => processOutput.toString().contains('] running at '),
+          timeout: const Duration(seconds: 120),
+        );
+        expect(
+          launchLog.existsSync(),
+          isTrue,
+          reason: 'The app was never launched.\n$processOutput',
+        );
+      });
+
+      test(
+        'then the app launches once, against the API address the pod reported',
+        () async {
+          final launches = _launchesIn(launchLog);
+          final manifest = jsonDecode(
+            runnerManifest(serverDir).readAsStringSync(),
+          );
+          final api = ((manifest as Map)['servers'] as Map)['api'];
+
+          expect(launches, hasLength(1));
+          expect(
+            launches.single['args'],
+            contains('--dart-define=SERVER_URL=$api'),
+          );
+        },
+      );
+    });
   });
 }
+
+/// The launches the fake Flutter recorded in [launchLog], one map per line.
+List<Map<String, Object?>> _launchesIn(File launchLog) => [
+  for (final line in launchLog.readAsLinesSync())
+    if (line.isNotEmpty) Map<String, Object?>.from(jsonDecode(line) as Map),
+];
 
 Future<Uri> _waitForVmServiceInfo(
   File file, {
