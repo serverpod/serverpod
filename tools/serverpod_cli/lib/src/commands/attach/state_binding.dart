@@ -70,44 +70,65 @@ class RunnerStateBinding {
         onStopRequested();
       }),
     );
-    holder.onHotReload = () => runTrackedAction(holder, client.hotReload);
+    holder.onHotReload = () =>
+        runTrackedAction(holder, () => _reaching(client.hotReload));
     holder.onHotRestart = () {
       final running = client.isRunning;
       runTrackedAction(
         holder,
-        running ? client.hotRestart : client.retryStart,
+        () => _reaching(running ? client.hotRestart : client.retryStart),
         allowWhenStartable: !running,
       );
     };
     holder.onRestartFlutterApp = () =>
-        runTrackedAction(holder, client.restartFlutterApps);
+        runTrackedAction(holder, () => _reaching(client.restartFlutterApps));
     holder.onApplyMigration = () =>
-        runTrackedAction(holder, client.applyMigrations);
+        runTrackedAction(holder, () => _reaching(client.applyMigrations));
     holder.onCreateMigration = ({bool force = false}) => runTrackedAction(
       holder,
-      () => _createMigration(
-        () => client.createMigration(force: force),
-        forceHint: 'Use ⇧+M to force-create it anyway.',
+      () => _reaching(
+        () => _createMigration(
+          () => client.createMigration(force: force),
+          forceHint: 'Use ⇧+M to force-create it anyway.',
+        ),
       ),
     );
     holder.onCreateRepairMigration = ({bool force = false}) => runTrackedAction(
       holder,
-      () => _createMigration(
-        () => client.createRepairMigration(force: force),
-        forceHint: 'Use ⇧+P to force-create it anyway.',
+      () => _reaching(
+        () => _createMigration(
+          () => client.createRepairMigration(force: force),
+          forceHint: 'Use ⇧+P to force-create it anyway.',
+        ),
       ),
     );
 
     holder.onLaunchApp = (index) {
       final app = _appAt(index);
       if (app == null) return;
-      runTrackedAction(holder, () => client.restartFlutterApp(app.id));
+      runTrackedAction(
+        holder,
+        () => _reaching(() => client.restartFlutterApp(app.id)),
+      );
     };
     holder.onStopApp = (index) {
       final app = _appAt(index);
       if (app == null) return;
-      runTrackedAction(holder, () => client.stopFlutterApp(app.id));
+      runTrackedAction(
+        holder,
+        () => _reaching(() => client.stopFlutterApp(app.id)),
+      );
     };
+  }
+
+  /// Runs [action], reporting a runner this client cannot reach, since only
+  /// the runner records the failures of what it runs.
+  Future<void> _reaching(Future<void> Function() action) async {
+    try {
+      await action();
+    } on RunnerUnreachableException catch (e) {
+      log.error('$e');
+    }
   }
 
   /// Creates and applies a migration. The runner records each step's
