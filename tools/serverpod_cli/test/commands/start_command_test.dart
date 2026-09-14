@@ -222,21 +222,27 @@ void main() {
     );
 
     test(
-      'when the runner names no address within the deadline, '
-      'then the caller gets the manifest as it stands',
+      'when the runner runs on without publishing its addresses, '
+      'then the caller keeps waiting, since the pod is still booting',
       () async {
         await starting
             .copyWith(stage: RunnerStage.running)
             .writeTo(tempDir.path);
 
-        final up = await awaitStackUp(
-          tempDir.path,
-          starting,
-          addressTimeout: const Duration(milliseconds: 600),
-        );
+        var settled = false;
+        final up = awaitStackUp(tempDir.path, starting).whenComplete(() {
+          settled = true;
+        });
+        await Future<void>.delayed(const Duration(seconds: 1));
 
-        expect(up.stage, RunnerStage.running);
-        expect(up.servers, isNull);
+        expect(settled, isFalse);
+        await starting
+            .copyWith(
+              stage: RunnerStage.running,
+              servers: const ServerpodAddresses(api: 'http://localhost:8080'),
+            )
+            .writeTo(tempDir.path);
+        await up;
       },
     );
 
