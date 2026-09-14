@@ -25,7 +25,7 @@ class AnonymousIdpUtils {
                  domain: 'anonymous',
                  source: 'account_creation',
                  maxAttempts: config.perIpAddressRateLimit!.maxAttempts,
-                 timeframe: config.perIpAddressRateLimit?.timeframe,
+                 timeframe: config.perIpAddressRateLimit!.timeframe,
                  onRateLimitExceeded: (final session, final key) {
                    throw AnonymousAccountBlockedException(
                      reason:
