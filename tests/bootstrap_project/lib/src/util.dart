@@ -19,6 +19,17 @@ import 'package:uuid/uuid.dart';
   return (projectName: projectName, commandRoot: commandRoot);
 }
 
+/// Returns a loopback port nothing listens on right now.
+///
+/// Every created project defaults to the same database ports, and an embedded
+/// database left running by an earlier process would otherwise hold them.
+Future<int> freeLoopbackPort() async {
+  final socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+  final port = socket.port;
+  await socket.close();
+  return port;
+}
+
 ({String serverDir, String flutterDir, String clientDir})
 createProjectFolderPaths(String projectName) {
   final serverDir = path.join(projectName, '${projectName}_server');
