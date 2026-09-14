@@ -310,21 +310,19 @@ RunnerManifest? _lockHolderInTransit(RunnerResolution resolution) =>
       _ => null,
     };
 
-/// Waits until the stack behind [manifest] leaves [RunnerStage.starting].
+/// Waits until the stack behind [manifest] leaves [RunnerStage.starting] and,
+/// once running, publishes the addresses its pod bound.
 ///
 /// Has no deadline, since a cold start takes minutes.
 Future<RunnerManifest> awaitStackUp(
   String serverDir,
-  RunnerManifest manifest, {
-  Duration addressTimeout = const Duration(seconds: 10),
-}) async {
+  RunnerManifest manifest,
+) async {
   var current = manifest;
-  // A running stage can precede the manifest carrying the bound addresses.
-  final addressWait = Stopwatch();
+  // A running stage precedes the pod binding its ports, by a source compile.
   bool comingUp(RunnerManifest manifest) => switch (manifest.stage) {
     RunnerStage.starting => true,
-    RunnerStage.running when manifest.servers == null =>
-      (addressWait..start()).elapsed < addressTimeout,
+    RunnerStage.running => manifest.servers == null,
     _ => false,
   };
   if (comingUp(current)) {
