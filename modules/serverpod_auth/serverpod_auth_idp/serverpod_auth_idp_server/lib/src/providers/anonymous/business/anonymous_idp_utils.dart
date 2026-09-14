@@ -26,12 +26,6 @@ class AnonymousIdpUtils {
                  source: 'account_creation',
                  maxAttempts: config.perIpAddressRateLimit!.maxAttempts,
                  timeframe: config.perIpAddressRateLimit!.timeframe,
-                 onRateLimitExceeded: (final session, final key) {
-                   throw AnonymousAccountBlockedException(
-                     reason:
-                         AnonymousAccountBlockedExceptionReason.tooManyAttempts,
-                   );
-                 },
                ),
              )
            : null;
@@ -43,11 +37,15 @@ class AnonymousIdpUtils {
     final Session session, {
     final Transaction? transaction,
   }) async {
-    // Check rate limit and either throw or proceed.
-    await _rateLimitUtil?.tryRecordAttempt(
-      session,
-      key: session.remoteIpAddress.toString(),
-    );
+    if (_rateLimitUtil != null &&
+        !await _rateLimitUtil.tryRecordAttempt(
+          session,
+          key: session.remoteIpAddress.toString(),
+        )) {
+      throw AnonymousAccountBlockedException(
+        reason: AnonymousAccountBlockedExceptionReason.tooManyAttempts,
+      );
+    }
 
     final newUser = await _authUsers.create(
       session,
