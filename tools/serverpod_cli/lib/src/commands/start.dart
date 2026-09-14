@@ -1249,7 +1249,9 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       );
       await serverProcess.start(dillPath: dillPath);
       await serverProcess.connectToVmService();
-      await _recordExtensionEvents(serverProcess.vmService, (event) {
+      final listening = await _recordExtensionEvents(serverProcess.vmService, (
+        event,
+      ) {
         logHistory.recordServerLogEvent(event);
         if (event.extensionKind == serverpodAddressesEvent) {
           reportServerAddresses(
@@ -1257,6 +1259,12 @@ Future<WatchLoopSetupResult> setupWatchLoop({
           );
         }
       });
+      // A pod the runner cannot see is one it cannot serve.
+      if (!listening) {
+        log.error(podVmServiceUnreachable);
+        await serverProcess.stop();
+        throw const _PodVmServiceUnreachable();
+      }
       runnerApi.setStage(RunnerStage.running);
       proxy = await _mountOrRetargetProxy(
         serverProcess: serverProcess,
@@ -1269,11 +1277,16 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
     ServerProcess? initialServerProcess;
     if (buildOk) {
-      initialServerProcess = await bootInitialServer(
-        initialDill: watch ? p.join(serverpodToolDir, 'server.dill') : null,
-        startServer: serverProcessFactory,
-        compiler: compiler,
-      );
+      try {
+        initialServerProcess = await bootInitialServer(
+          initialDill: watch ? p.join(serverpodToolDir, 'server.dill') : null,
+          startServer: serverProcessFactory,
+          compiler: compiler,
+        );
+      } on _PodVmServiceUnreachable {
+        await rollback(exitCode: 1);
+        return const WatchLoopAborted(1);
+      }
       if (initialServerProcess case final server?) {
         final rollbackBeforeBoot = rollback;
         rollback = ({int exitCode = 1}) async {
@@ -1515,6 +1528,12 @@ Future<bool> _recordExtensionEvents(
     return false;
   }
   return true;
+}
+
+/// Thrown by the server process factory for a pod whose VM service the runner
+/// could not reach, after stopping that pod.
+class _PodVmServiceUnreachable implements Exception {
+  const _PodVmServiceUnreachable();
 }
 
 /// Boots the initial server process, recovering once from a corrupt cached
