@@ -10,7 +10,6 @@ import 'package:serverpod_cli/src/commands/attach.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/runner_options.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
-import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
@@ -88,17 +87,8 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
   Future<void> runWithConfig(
     Configuration<RunnerStartOption> commandConfig,
   ) async {
-    final config = await loadRunnerProjectConfig(
+    final (:serverDir, :manifest) = await bringUpRunner(
       directory: commandConfig.value(RunnerStartOption.directory),
-      interactive: serverpodRunner.globalConfiguration.optionalValue(
-        GlobalOption.interactive,
-      ),
-    );
-    final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-
-    final manifest = await ensureRunner(
-      config: config,
-      serverDir: serverDir,
       asked: RunnerConfig(
         watch: commandConfig.value(RunnerStartOption.watch),
         flutter: commandConfig.value(RunnerStartOption.flutter),
@@ -106,10 +96,10 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
         serverArgs: argResults?.rest ?? const [],
       ),
       useTui: false,
-      globalArgs: runnerServeGlobalArgs(serverpodRunner.globalConfiguration),
+      global: serverpodRunner.globalConfiguration,
     );
 
-    reportRunnerReady(await awaitStackUp(serverDir, manifest));
+    await reportStackUp(serverDir, manifest);
   }
 }
 
