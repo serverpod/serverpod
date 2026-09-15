@@ -38,6 +38,11 @@ class PostgresPoolManager implements DatabasePoolManager {
   /// supervisor owns). Retained so [stop] can shut it down.
   Future<void> Function()? _stopEmbeddedPostgres;
 
+  /// The embedded PostgreSQL resolved on start, or `null` before that or
+  /// without a `dataPath`.
+  ResolvedEmbeddedPostgres? get embeddedPostgres => _embeddedPostgres;
+  ResolvedEmbeddedPostgres? _embeddedPostgres;
+
   Future<void>? _startedFuture;
   bool _databaseStopped = false;
 
@@ -132,6 +137,7 @@ class PostgresPoolManager implements DatabasePoolManager {
       );
       _stopEmbeddedPostgres = stopLaunched;
       stopLaunched = null;
+      _embeddedPostgres = resolved;
     } catch (e, st) {
       await stopLaunched?.call();
       await _stopEmbeddedPostgres?.call();

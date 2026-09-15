@@ -8,8 +8,10 @@ import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:test/test.dart';
 
-/// TCP transport end-to-end. Validates ephemeral port allocation,
-/// password persistence, and scram-sha-256 auth via package:postgres.
+import 'test_util/select_one.dart';
+
+/// TCP transport end-to-end. Validates ephemeral port allocation, the
+/// per-launch role password, and scram-sha-256 auth via package:postgres.
 void main() {
   late Directory tmpRoot;
 
@@ -21,7 +23,7 @@ void main() {
     if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
   });
 
-  group('Given TcpTransport with port=0', () {
+  group('Given TcpTransport with port=0,', () {
     test(
       'when start runs '
       'then a non-zero ephemeral port is allocated, connection.execute roundtrips via TCP, and the libpq URI carries user:password.',
@@ -69,8 +71,8 @@ void main() {
     );
 
     test(
-      'when start runs twice in a row '
-      'then the persisted password is re-used (so the same Endpoint authenticates against the warm cluster).',
+      'when start runs twice in a row, '
+      'then the second launch authenticates with its own new password',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
 
@@ -95,8 +97,8 @@ void main() {
         );
         expect(
           second.endpoint.password,
-          pwFirst,
-          reason: 'warm restart must re-use the persisted password',
+          isNot(pwFirst),
+          reason: 'nothing is persisted, so each launch gets a new password',
         );
 
         var conn = await pg.Connection.open(
@@ -113,8 +115,8 @@ void main() {
     );
 
     test(
-      'when an explicit password is provided via TcpTransport '
-      'then it is used (and persisted).',
+      'when an explicit password is provided via TcpTransport, '
+      'then it is used',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
         var explicit = 'super-secret-dev-pw';
@@ -129,15 +131,69 @@ void main() {
         );
 
         expect(pg_.endpoint.password, explicit);
-        var pwFile = File(
-          p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
-        );
-        expect(pwFile.existsSync(), isTrue);
-        expect(pwFile.readAsStringSync(), explicit);
 
         await pg_.stop();
       },
       timeout: const Timeout(Duration(seconds: 120)),
     );
+
+    test(
+      'when an explicit password is provided via TcpTransport, '
+      'then no postgres.password file is written next to the data directory',
+      () async {
+        final pgDataDir = Directory(
+          p.join(tmpRoot.path, '.serverpod', 'pgdata'),
+        );
+
+        final pg_ = await EmbeddedPostgres.start(
+          EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            transport: const TcpTransport(password: 'super-secret-dev-pw'),
+            detach: true,
+          ),
+        );
+        addTearDown(pg_.stop);
+
+        expect(
+          File(
+            p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
+          ).existsSync(),
+          isFalse,
+        );
+      },
+      timeout: const Timeout(Duration(seconds: 120)),
+    );
   });
+
+  test(
+    'Given a stopped cluster started with one TcpTransport password, '
+    'when it is restarted with another password, '
+    'then the new password authenticates over TCP',
+    () async {
+      final pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
+      final first = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: pgDataDir,
+          databaseName: 'projectname',
+          transport: const TcpTransport(password: 'first-password'),
+          detach: true,
+        ),
+      );
+      await first.stop();
+
+      final second = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: pgDataDir,
+          databaseName: 'projectname',
+          transport: const TcpTransport(password: 'rotated-password'),
+          detach: true,
+        ),
+      );
+      addTearDown(second.stop);
+
+      expect(await selectOne(second.endpoint), 1);
+    },
+    timeout: const Timeout(Duration(seconds: 180)),
+  );
 }

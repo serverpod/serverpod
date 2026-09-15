@@ -5,6 +5,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'binary/binary_source.dart';
 import 'cluster/postgres_conf_builder.dart';
+import 'exceptions.dart';
 import 'transport.dart';
 
 /// Default PostgreSQL major.minor version. Tracks Serverpod Cloud and the
@@ -77,6 +78,12 @@ class EmbeddedPostgresOptions {
   /// Default: `false`.
   final bool repairStaleLocks;
 
+  /// When `true`, a pinned TCP port that another process holds is swapped for
+  /// a kernel-assigned one instead of throwing [PortInUseException].
+  ///
+  /// Default: `false`.
+  final bool ephemeralPortFallback;
+
   /// Optional callback for binary download / extraction progress on the
   /// very first run. Receives `(fraction, stage)` where `stage` is one of
   /// 'download', 'verify', 'extract'.
@@ -110,6 +117,7 @@ class EmbeddedPostgresOptions {
     this.startTimeout = const Duration(seconds: 60),
     this.detach = false,
     this.repairStaleLocks = false,
+    this.ephemeralPortFallback = false,
     this.onProgress,
     this.maxConnections = defaultMaxConnections,
     this.binarySource,
