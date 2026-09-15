@@ -27,6 +27,14 @@ webServer:
   publicPort: 8082
   publicScheme: http
 
+# HttpOnly SAS cookie for Relic HTML login. `secure: false` is required on
+# http://localhost. `sameSite: strict` is rejected by configureWebAuthRoutes.
+authCookie:
+  secure: false
+  # sameSite: lax
+allowedOrigins:
+  - http://localhost:8082
+
 # This is the database setup for your server.
 database:
   host: localhost

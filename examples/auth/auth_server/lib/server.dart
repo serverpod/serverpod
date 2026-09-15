@@ -11,6 +11,7 @@ import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
+import 'src/web/routes/account.dart';
 
 // This is the starting point of your Serverpod server. In most cases, you will
 // only need to make additions to this file if you add future calls,  are
@@ -123,6 +124,13 @@ void run(List<String> args) async {
     revokedNotificationRoutePath: '/hooks/apple-notification',
     webAuthenticationCallbackRoutePath: '/auth/callback',
   );
+
+  pod.configureWebAuthRoutes(loginSuccessPath: '/account');
+  pod.webServer.addMiddleware(
+    requireLogin(redirectTo: '/auth/login'),
+    '/account',
+  );
+  pod.webServer.addRoute(AccountRoute(), '/account');
 
   // Start the server.
   await pod.start();
