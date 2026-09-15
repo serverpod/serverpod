@@ -34,6 +34,7 @@ class Analyzers {
   final EndpointsAnalyzer _endpoints;
   final StatefulAnalyzer _models;
   final FutureCallsAnalyzer _futureCalls;
+  final ModulesAnalyzer _modules;
 
   /// Overlay provider backing the shared analysis context, used to shadow
   /// `protocol.dart` with a temporary stub during generation without touching
@@ -45,10 +46,12 @@ class Analyzers {
     required EndpointsAnalyzer endpoints,
     required StatefulAnalyzer models,
     required FutureCallsAnalyzer futureCalls,
+    required ModulesAnalyzer modules,
     OverlayResourceProvider? overlay,
   }) : _endpoints = endpoints,
        _models = models,
        _futureCalls = futureCalls,
+       _modules = modules,
        _overlay = overlay;
 
   /// Release resources. No-op for local analyzers; overridden by
@@ -81,10 +84,15 @@ class Analyzers {
       directory: libDirectory,
       collection: collection,
     );
+    final modulesAnalyzer = ModulesAnalyzer(
+      directory: libDirectory,
+      collection: collection,
+    );
     return Analyzers(
       endpoints: endpointsAnalyzer,
       models: modelAnalyzer,
       futureCalls: futureCallsAnalyzer,
+      modules: modulesAnalyzer,
       overlay: overlay,
     );
   }
@@ -124,6 +132,9 @@ class Analyzers {
         affectedPaths,
       );
       shouldGenerate |= await _futureCalls.updateFileContexts(
+        affectedPaths,
+      );
+      shouldGenerate |= await _modules.updateFileContexts(
         affectedPaths,
       );
     }
@@ -297,6 +308,18 @@ class Analyzers {
         ),
       );
 
+      log.debug('Analyzing module startup hooks.');
+      var modulesAnalyzerCollector = CodeGenerationCollector();
+      var moduleDefinitions = await _modules.analyze(
+        collector: modulesAnalyzerCollector,
+        changedFiles: changedFiles,
+      );
+
+      success &= !modulesAnalyzerCollector.hasSevereErrors;
+      modulesAnalyzerCollector.printErrors();
+
+      final module = ModulesAnalyzer.selectPackageModule(moduleDefinitions);
+
       log.debug('Analyzing the endpoints.');
       final endpointAnalyzerCollector = CodeGenerationCollector();
       final endpoints = await _endpoints.analyze(
@@ -313,6 +336,7 @@ class Analyzers {
         endpoints: endpoints,
         models: allModels,
         futureCalls: futureCalls,
+        module: module,
       );
 
       var generatedProtocolFiles =

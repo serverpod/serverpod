@@ -3,6 +3,31 @@ import 'package:recase/recase.dart';
 import '../../generator/types.dart';
 import '../models/definitions.dart';
 
+/// Describes a package [Module] startup hook class.
+class ModuleDefinition {
+  /// Create a new [ModuleDefinition].
+  const ModuleDefinition({
+    required this.className,
+    required this.filePath,
+    required this.isAbstract,
+  });
+
+  /// The actual class name of the module.
+  final String className;
+
+  /// The file path where the module class is stored.
+  final String filePath;
+
+  /// Whether this module class is abstract.
+  final bool isAbstract;
+
+  /// The name of the external package where this module is defined. Will
+  /// return null if the module comes from the project under generation.
+  String? get packageName => filePath.startsWith('package:')
+      ? filePath.split('/').first.split(':').last
+      : null;
+}
+
 /// Describes a single future call.
 class FutureCallDefinition {
   /// Create a new [FutureCallDefinition].

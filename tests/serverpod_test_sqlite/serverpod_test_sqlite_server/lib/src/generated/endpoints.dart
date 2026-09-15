@@ -128,4 +128,11 @@ class Endpoints extends _is.EndpointDispatch {
   _is.FutureCallDispatch? get futureCalls {
     return _il0f3y8p.FutureCalls();
   }
+
+  @override
+  Future<void> onStartup(_is.Session session) async {
+    await modules['serverpod_auth_core']!.onStartup(session);
+    await modules['serverpod_auth_idp']!.onStartup(session);
+    await modules['serverpod_test_shared_module']!.onStartup(session);
+  }
 }

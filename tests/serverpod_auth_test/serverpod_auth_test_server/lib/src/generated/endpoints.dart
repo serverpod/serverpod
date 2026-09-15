@@ -1464,4 +1464,13 @@ class Endpoints extends _is.EndpointDispatch {
     modules['serverpod_auth'] = _i1n3uhu0.Endpoints()
       ..initializeEndpoints(server);
   }
+
+  @override
+  Future<void> onStartup(_is.Session session) async {
+    await modules['serverpod_auth']!.onStartup(session);
+    await modules['serverpod_auth_bridge']!.onStartup(session);
+    await modules['serverpod_auth_core']!.onStartup(session);
+    await modules['serverpod_auth_idp']!.onStartup(session);
+    await modules['serverpod_auth_migration']!.onStartup(session);
+  }
 }

@@ -13,10 +13,17 @@ class ProtocolDefinition {
   /// The future calls that are a part of this protocol.
   final List<FutureCallDefinition> futureCalls;
 
+  /// The package's [Module] startup hook, if any.
+  ///
+  /// Null when the package defines no constructable concrete [Module]
+  /// subclass. Abstract subclasses are ignored.
+  final ModuleDefinition? module;
+
   /// Create a new [ProtocolDefinition].
   const ProtocolDefinition({
     required this.endpoints,
     required this.models,
     required this.futureCalls,
+    this.module,
   });
 }

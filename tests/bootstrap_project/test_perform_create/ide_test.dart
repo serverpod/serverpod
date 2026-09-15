@@ -1,3 +1,4 @@
+@Timeout(Duration(minutes: 12))
 import 'dart:io';
 
 import 'package:bootstrap_project/src/util.dart';
@@ -41,30 +42,18 @@ void main() {
       });
 
       test('then the created project has agent skills installed', () {
-        expect(
-          Directory(
-            p.join(project.projectRoot, '.agents', 'skills'),
-          ).existsSync(),
-          isTrue,
-        );
-        expect(
-          Directory(
-            p.join(project.projectRoot, '.claude', 'skills'),
-          ).existsSync(),
-          isTrue,
-        );
-        expect(
-          Directory(
-            p.join(project.projectRoot, '.cursor', 'skills'),
-          ).existsSync(),
-          isTrue,
-        );
-        expect(
-          Directory(
-            p.join(project.projectRoot, '.opencode', 'skills'),
-          ).existsSync(),
-          isTrue,
-        );
+        for (final rel in [
+          '.agents/skills',
+          '.claude/skills',
+          '.cursor/skills',
+          '.opencode/skills',
+        ]) {
+          expect(
+            Directory(p.join(project.projectRoot, rel)).existsSync(),
+            isTrue,
+            reason: 'Expected $rel after create with all IDEs',
+          );
+        }
       });
 
       group(
