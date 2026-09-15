@@ -112,13 +112,21 @@ void main() {
 
   test(
     'Given a loopback port held by another process, '
-    'when a cluster is started with DualTransport pinned to that port, '
+    'when a cluster is started on that port without ephemeralPortFallback, '
     'then PortInUseException names that port',
     () async {
       var holder = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
       try {
         await expectLater(
-          startWith(DualTransport(port: holder.port, password: 'pw')),
+          EmbeddedPostgres.start(
+            EmbeddedPostgresOptions(
+              dataDir: pgDataDir,
+              databaseName: 'projectname',
+              transport: DualTransport(port: holder.port, password: 'pw'),
+              ephemeralPortFallback: false,
+              detach: true,
+            ),
+          ),
           throwsA(
             isA<PortInUseException>().having(
               (e) => e.port,
@@ -130,6 +138,92 @@ void main() {
       } finally {
         await holder.close();
       }
+    },
+    skip: !hasUnixSocketSupport(),
+    timeout: const Timeout(Duration(seconds: 120)),
+  );
+
+  test(
+    'Given a port held by a listener on all IPv4 addresses, '
+    'when a cluster is started on that port without ephemeralPortFallback, '
+    'then PortInUseException names that port',
+    () async {
+      final holder = await ServerSocket.bind(InternetAddress.anyIPv4, 0);
+      addTearDown(holder.close);
+
+      final starting = EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: pgDataDir,
+          databaseName: 'projectname',
+          transport: DualTransport(port: holder.port, password: 'pw'),
+          ephemeralPortFallback: false,
+          detach: true,
+        ),
+      );
+      addTearDown(() => starting.then((pg_) => pg_.stop(), onError: (_) {}));
+
+      await expectLater(
+        starting,
+        throwsA(
+          isA<PortInUseException>().having(
+            (e) => e.port,
+            'port',
+            holder.port,
+          ),
+        ),
+      );
+    },
+    skip: !hasUnixSocketSupport(),
+    timeout: const Timeout(Duration(seconds: 120)),
+  );
+
+  test(
+    'Given a loopback port held by another process, '
+    'when a cluster is started on that port with ephemeralPortFallback, '
+    'then TCP answers queries on another port',
+    () async {
+      final holder = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(holder.close);
+
+      final pg_ = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: pgDataDir,
+          databaseName: 'projectname',
+          transport: DualTransport(port: holder.port, password: 'pw'),
+          ephemeralPortFallback: true,
+          detach: true,
+        ),
+      );
+      addTearDown(pg_.stop);
+
+      expect(pg_.tcpEndpoint!.port, isNot(holder.port));
+      expect(await selectOne(pg_.tcpEndpoint!), 1);
+    },
+    skip: !hasUnixSocketSupport(),
+    timeout: const Timeout(Duration(seconds: 120)),
+  );
+
+  test(
+    'Given a cluster that fell back from a held port to an ephemeral one, '
+    'when it is attached by its data directory, '
+    'then the attached TCP endpoint names the port it listens on',
+    () async {
+      final holder = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(holder.close);
+      final pg_ = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: pgDataDir,
+          databaseName: 'projectname',
+          transport: DualTransport(port: holder.port, password: 'pw'),
+          ephemeralPortFallback: true,
+          detach: true,
+        ),
+      );
+      addTearDown(pg_.stop);
+
+      final attached = await EmbeddedPostgres.attach(pgDataDir, password: 'pw');
+
+      expect(attached.tcpEndpoint!.port, pg_.tcpEndpoint!.port);
     },
     skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 120)),
