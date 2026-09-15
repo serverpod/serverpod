@@ -814,6 +814,11 @@ class Serverpod {
     try {
       _databasePoolManager?.start();
       await _databasePoolManager?.started;
+      final poolManager = _databasePoolManager;
+      final portWarning = poolManager == null
+          ? null
+          : embeddedPostgresPortFallbackWarning(poolManager);
+      if (portWarning != null) log.warning(portWarning);
     } on EmbeddedPostgresStartupException catch (error, stackTrace) {
       log.error(
         error.message,

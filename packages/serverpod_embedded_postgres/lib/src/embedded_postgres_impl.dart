@@ -278,19 +278,31 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       }
     }
 
+    // Our own postmaster is gone by now, so whoever holds a pinned port is
+    // another process. Find out before paying for a postmaster crash.
+    final pinnedPort = options.transport.tcpPort;
+    final ephemeralPort = pinnedPort == 0 || options.ephemeralPortFallback;
+    if (pinnedPort != null &&
+        pinnedPort != 0 &&
+        !await _isLoopbackPortFree(pinnedPort)) {
+      if (!options.ephemeralPortFallback) {
+        throw PortInUseException(
+          'port $pinnedPort on 127.0.0.1 is held by another process',
+          port: pinnedPort,
+        );
+      }
+      resolvedTransport = resolvedTransport.withTcp(
+        port: await _allocateEphemeralPort(),
+        password: resolvedTransport.password!,
+      );
+    }
+
     // Only now is no other postmaster running on this cluster, so rewriting
     // its conf can no longer change a live instance under its owner.
     cluster.reconcilePostgresConf(
       transport: resolvedTransport,
       maxConnections: options.maxConnections,
     );
-
-    // A pinned port someone else holds is a configuration problem. Find out
-    // before paying for a password rewrite and a postmaster crash.
-    var pinnedPort = options.transport.tcpPort;
-    if (pinnedPort != null && pinnedPort != 0) {
-      await _requireFreePort(pinnedPort);
-    }
 
     // Fresh clusters were seeded by initdb above. Existing ones get the
     // password this launch was configured with, so TCP auth follows the
@@ -309,7 +321,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       dataDir: pgDataDir,
       runDir: runDir,
       transport: resolvedTransport,
-      ephemeralPort: pinnedPort == 0,
+      ephemeralPort: ephemeralPort,
       startTimeout: options.startTimeout,
       pidFile: pidFile,
       logFile: logFile,
@@ -452,16 +464,14 @@ void _deleteIfExists(File file) {
   if (file.existsSync()) file.deleteSync();
 }
 
-/// Throws [PortInUseException] when [port] cannot be bound on loopback.
-Future<void> _requireFreePort(int port) async {
+/// Whether [port] can be bound on loopback right now.
+Future<bool> _isLoopbackPortFree(int port) async {
   try {
     var probe = await ServerSocket.bind(InternetAddress.loopbackIPv4, port);
     await probe.close();
-  } on SocketException catch (e) {
-    throw PortInUseException(
-      'port $port on 127.0.0.1 is held by another process: ${e.message}',
-      port: port,
-    );
+    return true;
+  } on SocketException {
+    return false;
   }
 }
 
@@ -493,8 +503,8 @@ Future<int> _allocateEphemeralPort() async {
 
 /// Wraps [Supervisor.start] with a single port-race retry. When PG fails to
 /// bind with EADDRINUSE (read from the captured log tail of the crashed
-/// postmaster) and the port was [ephemeralPort], a new port is allocated and
-/// the launch attempted once more. A pinned port that is busy throws
+/// postmaster) and [ephemeralPort] allows it, a new port is allocated and the
+/// launch attempted once more. A pinned port that is busy throws
 /// [PortInUseException]: that is the user's configuration to fix.
 ///
 /// [onResolveTransport] is invoked when the transport changes so the

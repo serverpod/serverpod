@@ -365,4 +365,70 @@ void main() {
     },
     timeout: const Timeout(Duration(minutes: 4)),
   );
+
+  test(
+    'Given a project whose database port another process holds, '
+    'when serverpod database start runs, '
+    'then it warns that the database listens on another TCP port',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'passwords-yaml-database-password',
+        databasePort: databasePort,
+      );
+      final holder = await ServerSocket.bind(
+        InternetAddress.loopbackIPv4,
+        databasePort,
+      );
+      addTearDown(holder.close);
+
+      run = await DatabaseStartRun.start(serverDirectory!);
+
+      // The logger wraps long lines, so only the opening of the message is
+      // asserted.
+      expect(
+        run!.output,
+        contains('Port $databasePort is held by another process,'),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given a project whose database port another process holds, '
+    'when serverpod database start passes that port with --port, '
+    'then it exits with an error naming the port',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'passwords-yaml-database-password',
+        databasePort: databasePort,
+      );
+      final holder = await ServerSocket.bind(
+        InternetAddress.loopbackIPv4,
+        databasePort,
+      );
+      addTearDown(holder.close);
+
+      final result = await Process.run(Platform.resolvedExecutable, [
+        'run',
+        await resolveServerpodCliEntrypoint(),
+        '--no-analytics',
+        '--no-interactive',
+        'database',
+        'start',
+        '--server-dir',
+        serverDirectory!.path,
+        '--port',
+        '$databasePort',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+      // The logger wraps long lines, so only the opening of the message is
+      // asserted.
+      expect(
+        '${result.stdout}${result.stderr}',
+        contains('Port $databasePort is already in use,'),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
 }
