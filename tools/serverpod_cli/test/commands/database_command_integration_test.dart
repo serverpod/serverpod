@@ -374,4 +374,82 @@ void main() {
     },
     timeout: const Timeout(Duration(minutes: 4)),
   );
+
+  test(
+    'Given a project whose database port another process holds, '
+    'when serverpod database start runs, '
+    'then it warns that the database listens on another TCP port',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'passwords-yaml-database-password',
+        databasePort: databasePort,
+      );
+      final holder = await ServerSocket.bind(
+        InternetAddress.loopbackIPv4,
+        databasePort,
+      );
+      addTearDown(holder.close);
+
+      run = await DatabaseStartRun.start(serverDirectory!);
+
+      expect(
+        unwrapped(run!.output),
+        allOf(
+          contains(
+            'Port $databasePort is held by another process, so the embedded '
+            'database listens on TCP port ',
+          ),
+          contains(
+            ' instead. Tools set up for port $databasePort reach that other '
+            'process. Stop it or change the database port in the config.',
+          ),
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given a project whose database port another process holds, '
+    'when serverpod database start passes that port with --port, '
+    'then it exits with an error naming the port',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'passwords-yaml-database-password',
+        databasePort: databasePort,
+      );
+      final holder = await ServerSocket.bind(
+        InternetAddress.loopbackIPv4,
+        databasePort,
+      );
+      addTearDown(holder.close);
+
+      final result = await Process.run(Platform.resolvedExecutable, [
+        'run',
+        await resolveServerpodCliEntrypoint(),
+        '--no-analytics',
+        '--no-interactive',
+        'database',
+        'start',
+        '--server-dir',
+        serverDirectory!.path,
+        '--port',
+        '$databasePort',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+      expect(
+        unwrapped('${result.stdout}\n${result.stderr}'),
+        contains(
+          'Port $databasePort is already in use, so the local database cannot '
+          'accept TCP connections there. Stop the other service on that port '
+          '(for example a Docker database from an earlier setup), change '
+          '`database.port` in the relevant file in `config/`, or remove the '
+          'database password from `config/passwords.yaml` to serve the local '
+          'database over its Unix socket only.',
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
 }

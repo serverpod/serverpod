@@ -208,6 +208,51 @@ development:
       );
     },
   );
+
+  test(
+    'Given an embedded PostgreSQL config whose port another process holds, '
+    'when the database pool manager starts the embedded database, '
+    'then it warns that the database listens on another TCP port',
+    () async {
+      final serverDir = Directory.systemTemp.createTempSync(
+        'serverpod_database_held_port_',
+      );
+      addTearDown(() => serverDir.deleteSync(recursive: true));
+      final dataDir = Directory(p.join(serverDir.path, '.serverpod', 'pgdata'));
+      final holder = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(holder.close);
+      final poolManager = DatabaseProvider.forDialect(DatabaseDialect.postgres)
+          .createPoolManager(
+            _TestSerializationManager(),
+            null,
+            PostgresDatabaseConfig(
+              host: 'localhost',
+              port: holder.port,
+              user: 'postgres',
+              password: 'held-port-password',
+              name: 'serverpod_test',
+              dataPath: dataDir.path,
+            ),
+          );
+      addTearDown(poolManager.stop);
+
+      await poolManager.started;
+
+      final running = await EmbeddedPostgres.attach(
+        dataDir,
+        password: 'held-port-password',
+      );
+      final listeningPort = running.tcpEndpoint!.port;
+      expect(
+        embeddedPostgresPortFallbackWarning(poolManager),
+        'Port ${holder.port} is held by another process, so the embedded '
+        'database listens on TCP port $listeningPort instead. Tools set up '
+        'for port ${holder.port} reach that other process. Stop it or change '
+        'the database port in the config.',
+      );
+    },
+    timeout: const Timeout(Duration(seconds: 180)),
+  );
 }
 
 class _TestSerializationManager extends DatabaseSerializationManager {
