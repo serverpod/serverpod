@@ -117,6 +117,8 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
             : 'Embedded PostgreSQL is ready (joined the database another '
                   'process started).',
       );
+      final portWarning = resolved.portFallbackWarning;
+      if (portWarning != null) log.warning(portWarning);
       log.info('Unix socket URI: ${postgres.connectionString}');
       var tcpUri = postgres.tcpConnectionUri;
       if (tcpUri != null) {
@@ -189,8 +191,10 @@ Future<ResolvedEmbeddedPostgres> _startFromServerpodConfig({
   }
   if (port != null) databaseConfig = databaseConfig.withPort(port);
 
+  // An explicit --port fails on a held port instead of moving to a free one.
   var resolved = await startOrAttachEmbeddedPostgres(
     databaseConfig.withResolvedLocalPath(serverDir),
+    ephemeralPortFallback: port == null,
   );
   if (resolved == null) {
     throw _DatabaseStartConfigurationException(

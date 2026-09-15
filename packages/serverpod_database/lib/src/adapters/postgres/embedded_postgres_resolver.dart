@@ -22,11 +22,15 @@ class ResolvedEmbeddedPostgres {
   /// Whether this call launched the postmaster, and so owns [stop].
   final bool launched;
 
+  /// The warning when a held port moved TCP to a free one, or `null`.
+  final String? portFallbackWarning;
+
   /// Creates a [ResolvedEmbeddedPostgres].
   const ResolvedEmbeddedPostgres({
     required this.connectivity,
     required this.handle,
     required this.launched,
+    this.portFallbackWarning,
   });
 
   /// Stops the postmaster when this call launched it, otherwise `null`.
@@ -40,13 +44,17 @@ class ResolvedEmbeddedPostgres {
 /// externally-managed server). Relative `dataPath` values are used as-is
 /// (typically already resolved with [DatabaseConfig.withResolvedLocalPath]).
 ///
+/// A held configured port moves to a free one unless [ephemeralPortFallback]
+/// is `false`.
+///
 /// This pulls `package:serverpod_embedded_postgres` (and its `dart:ffi`
 /// dependencies), so it is deliberately NOT exported from the package barrel -
 /// it must never reach a web client. Server-side consumers reach it via
 /// `package:serverpod_database/embedded.dart`.
 Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
-  PostgresDatabaseConfig config,
-) async {
+  PostgresDatabaseConfig config, {
+  bool ephemeralPortFallback = true,
+}) async {
   final dataDir = config._embeddedPostgresDataDir();
   if (dataDir == null) return null;
 
@@ -60,6 +68,7 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
         transport: embeddedTransportFor(config),
         detach: false,
         repairStaleLocks: true,
+        ephemeralPortFallback: ephemeralPortFallback,
       ),
     );
   } catch (error, stackTrace) {
@@ -72,12 +81,26 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
     );
   }
 
+  final tcpPort = result.handle.tcpEndpoint?.port;
   return ResolvedEmbeddedPostgres(
     connectivity: config._connectivityFrom(result.handle.endpoint),
     handle: result.handle,
     launched: result.launched,
+    portFallbackWarning:
+        result.launched && tcpPort != null && tcpPort != config.port
+        ? 'Port ${config.port} is held by another process, so the embedded '
+              'database listens on TCP port $tcpPort instead. Tools set up '
+              'for port ${config.port} reach that other process. Stop it or '
+              'change the database port in the config.'
+        : null,
   );
 }
+
+/// The [ResolvedEmbeddedPostgres.portFallbackWarning] from [poolManager].
+String? embeddedPostgresPortFallbackWarning(DatabasePoolManager poolManager) =>
+    poolManager is PostgresPoolManager
+    ? poolManager.embeddedPostgres?.portFallbackWarning
+    : null;
 
 /// Stops [poolManager] without waiting for queries still running.
 Future<void> forceStopDatabasePool(DatabasePoolManager poolManager) =>
