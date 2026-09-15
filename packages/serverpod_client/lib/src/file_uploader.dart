@@ -54,11 +54,9 @@ class FileUploader {
           };
           request.headers.addAll(headers);
           request.contentLength = length;
+          unawaited(stream.pipe(request.sink));
 
-          final (_, response) = await (
-            stream.pipe(request.sink),
-            request.send(),
-          ).wait;
+          var response = await request.send();
           await response.stream.drain();
 
           // Accept both 200 and 204 as success (PUT uploads often return 200)
