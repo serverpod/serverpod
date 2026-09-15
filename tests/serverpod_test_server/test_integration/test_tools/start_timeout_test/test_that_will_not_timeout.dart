@@ -1,3 +1,4 @@
+@Timeout(Duration(minutes: 1))
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 

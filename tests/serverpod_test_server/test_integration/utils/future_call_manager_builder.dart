@@ -109,16 +109,12 @@ class _MockDiagnosticsService implements FutureCallDiagnosticsService {
     Object error,
     StackTrace stackTrace, {
     required Session session,
-  }) {
-    throw StateError('Diagnostics service not implemented');
-  }
+  }) {}
 
   @override
   void submitFrameworkException(
     Object error,
     StackTrace stackTrace, {
     String? message,
-  }) {
-    throw StateError('Diagnostics service not implemented');
-  }
+  }) {}
 }

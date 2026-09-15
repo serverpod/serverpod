@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_shared/log.dart';
 
 import 'future_call_diagnostics_service.dart';
 
@@ -78,19 +77,11 @@ class FutureCallScanner {
       _dispatchEntries(entries);
     } catch (error, stackTrace) {
       // Most likely we lost connection to the database
-      var message =
-          'Internal server error. Failed to connect to database in future call manager.';
-
       _diagnosticReporting.submitFrameworkException(
         error,
         stackTrace,
-        message: message,
-      );
-
-      log.error(
-        message,
-        error: error,
-        stackTrace: stackTrace,
+        message:
+            'Internal server error. Failed to connect to database in future call manager.',
       );
     }
 
