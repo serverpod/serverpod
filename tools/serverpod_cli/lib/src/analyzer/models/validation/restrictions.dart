@@ -332,7 +332,7 @@ class Restrictions {
     var errors = <SourceSpanSeverityException>[];
 
     if (database == ModelDatabaseDefinition.sync) {
-      if (!parsedModels.tableNames.containsKey(syncScopesTableName)) {
+      if (!parsedModels.tableNames.containsKey(syncSpacesTableName)) {
         errors.add(SourceSpanSeverityException(syncModuleMissingError, span));
       }
     }
@@ -812,11 +812,11 @@ class Restrictions {
         ];
       }
 
-      if (def.isSyncTable && fieldName == syncScopeIdFieldName) {
+      if (def.isSyncTable && fieldName == syncSpaceIdFieldName) {
         var field = def.findField(fieldName);
         var syncError = field == null
             ? null
-            : validateSyncScopeIdFieldRelation(field);
+            : validateSyncSpaceIdFieldRelation(field);
         if (syncError != null) {
           return [SourceSpanSeverityException(syncError, span)];
         }
@@ -1329,8 +1329,8 @@ class Restrictions {
 
     if (definition is! ModelClassDefinition) return [];
 
-    if (parentNodeName == syncScopeIdFieldName) {
-      var syncError = validateSyncScopeIdParentTable(content);
+    if (parentNodeName == syncSpaceIdFieldName) {
+      var syncError = validateSyncSpaceIdParentTable(content);
       if (syncError != null) {
         return [SourceSpanSeverityException(syncError, span)];
       }
@@ -1390,7 +1390,7 @@ class Restrictions {
 
     errors.addAll(_validateFieldDataType(field.type, span));
     errors.addAll(_validateIdFieldDataType(field, span));
-    errors.addAll(_validateSyncScopeIdFieldType(field, span));
+    errors.addAll(_validateSyncSpaceIdFieldType(field, span));
 
     // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
@@ -1447,8 +1447,8 @@ class Restrictions {
       ];
     }
 
-    if (definition.isSyncTable && parentNodeName == syncScopeIdFieldName) {
-      return [SourceSpanSeverityException(syncScopeIdColumnNameError, span)];
+    if (definition.isSyncTable && parentNodeName == syncSpaceIdFieldName) {
+      return [SourceSpanSeverityException(syncSpaceIdColumnNameError, span)];
     }
 
     if (column.length > _maxColumnNameLength) {
@@ -1658,20 +1658,20 @@ class Restrictions {
     return errors;
   }
 
-  /// Validates the type of the `scopeId` field on tables with
+  /// Validates the type of the `spaceId` field on tables with
   /// `database: sync`.
-  List<SourceSpanSeverityException> _validateSyncScopeIdFieldType(
+  List<SourceSpanSeverityException> _validateSyncSpaceIdFieldType(
     SerializableModelFieldDefinition field,
     SourceSpan? span,
   ) {
     var classDefinition = documentDefinition;
     if (classDefinition is! ModelClassDefinition ||
         !classDefinition.isSyncTable ||
-        field.name != syncScopeIdFieldName) {
+        field.name != syncSpaceIdFieldName) {
       return [];
     }
 
-    var syncError = validateSyncScopeIdFieldType(field);
+    var syncError = validateSyncSpaceIdFieldType(field);
     if (syncError == null) return [];
 
     return [SourceSpanSeverityException(syncError, span)];
@@ -2357,10 +2357,10 @@ class Restrictions {
 
     var declaredKeys = content is YamlMap ? content.keys.toSet() : <dynamic>{};
 
-    if (isSyncScopeRelation(foreignKeyField)) {
+    if (isSyncSpaceRelation(foreignKeyField)) {
       if (!declaredKeys.contains(Keyword.onDelete)) {
         return [
-          SourceSpanSeverityException(syncScopeRelationOnDeleteError, span),
+          SourceSpanSeverityException(syncSpaceRelationOnDeleteError, span),
         ];
       }
       return [];

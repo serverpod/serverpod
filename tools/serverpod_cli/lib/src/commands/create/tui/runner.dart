@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analytics/flush_analytics.dart';
 import 'package:serverpod_cli/src/commands/create/tui/app.dart';
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
@@ -253,5 +254,6 @@ Future<void> _preExit({
     if (template.hasServer) logStartInstructions(projectPath);
   }
 
+  await flushAnalytics();
   await log.flush();
 }

@@ -277,7 +277,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
         object,
         bucket,
         uploadMedia: media,
-        predefinedAcl: public ? 'publicRead' : null,
         ifGenerationMatch: options.preventOverwrite ? '0' : null,
       );
     } on gcs.DetailedApiRequestError catch (error) {
@@ -454,7 +453,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
         'application/octet-stream';
     final headers = <String, String>{
       'Content-Type': contentType,
-      if (public) 'x-goog-acl': 'public-read',
       'x-goog-content-length-range': options.contentLength == null
           ? '0,${options.maxFileSize}'
           : '${options.contentLength},${options.contentLength}',

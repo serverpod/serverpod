@@ -34,6 +34,29 @@ class _CompleterFutureCall extends FutureCall<SimpleData>
   }
 }
 
+/// Polls [condition] until it is fulfilled.
+///
+/// Fails the test if [condition] is not fulfilled within [timeout].
+///
+/// Used instead of waiting a fixed amount of time for background work, which
+/// makes the tests fail on machines that are slower than the delay assumes.
+Future<void> waitUntil(
+  FutureOr<bool> Function() condition, {
+  required String description,
+  Duration timeout = const Duration(seconds: 10),
+  Duration pollInterval = const Duration(milliseconds: 10),
+}) async {
+  final deadline = DateTime.now().add(timeout);
+
+  while (!await condition()) {
+    if (DateTime.now().isAfter(deadline)) {
+      fail('Timed out after $timeout waiting for $description.');
+    }
+
+    await Future.delayed(pollInterval);
+  }
+}
+
 void main() {
   withServerpod(
     'Given FutureCallManager with scheduled FutureCall that is due',
@@ -105,10 +128,11 @@ void main() {
             testCall.completer.complete();
             await testCall.completer.future;
 
-            // Wait for cleanup to run
-            await Future.delayed(const Duration(milliseconds: 100));
-            final claims = await FutureCallClaimEntry.db.find(session);
-            expect(claims, isEmpty);
+            // The claim is cleaned up after the invocation returns.
+            await waitUntil(
+              () async => (await FutureCallClaimEntry.db.find(session)).isEmpty,
+              description: 'the claim to be deleted',
+            );
           },
         );
       });
@@ -321,6 +345,9 @@ void main() {
       group('when start is called', () {
         setUp(() async {
           await futureCallManager.start();
+
+          // Wait for the call to be claimed and its execution to start.
+          await testCall.invocationStarted.future;
         });
 
         tearDown(() async {
@@ -331,26 +358,34 @@ void main() {
         });
 
         test('then heartbeat timestamp is updated periodically', () async {
-          // Wait for future call execution to be scheduled
-          await Future.delayed(const Duration(milliseconds: 100));
-
           final initialClaims = await FutureCallClaimEntry.db.find(session);
           expect(initialClaims, hasLength(1));
-
-          await Future.delayed(heartbeatInterval * 2);
-
-          final updatedClaims = await FutureCallClaimEntry.db.find(session);
-          expect(updatedClaims, hasLength(1));
-
-          final updatedClaim = updatedClaims.first;
           final initialClaim = initialClaims.first;
 
+          late FutureCallClaimEntry updatedClaim;
+          await waitUntil(
+            () async {
+              final claims = await FutureCallClaimEntry.db.find(session);
+              if (claims.length != 1) return false;
+
+              updatedClaim = claims.first;
+              return updatedClaim.lastHeartbeatTime.isAfter(
+                initialClaim.lastHeartbeatTime,
+              );
+            },
+            description: 'the heartbeat timestamp of the claim to be updated',
+          );
+
           expect(updatedClaim.id, equals(initialClaim.id));
+
+          // The heartbeat is not updated more often than configured. Both
+          // timestamps are written by the manager, so this holds regardless
+          // of how slow the machine running the test is.
           expect(
-            updatedClaim.lastHeartbeatTime.isAfter(
+            updatedClaim.lastHeartbeatTime.difference(
               initialClaim.lastHeartbeatTime,
             ),
-            isTrue,
+            greaterThanOrEqualTo(heartbeatInterval),
           );
 
           testCall.completer.complete();
@@ -359,18 +394,18 @@ void main() {
         test(
           'then heartbeat timer is cancelled after future call is executed',
           () async {
-            // Wait for future call execution to be scheduled
-            await Future.delayed(const Duration(milliseconds: 100));
-
-            testCall.completer.complete();
             // ignore: invalid_use_of_visible_for_testing_member
             expect(futureCallManager.heartbeatTimers, hasLength(1));
+
+            testCall.completer.complete();
             await testCall.completer.future;
 
-            // Wait for cleanup to run
-            await Future.delayed(const Duration(milliseconds: 100));
-            // ignore: invalid_use_of_visible_for_testing_member
-            expect(futureCallManager.heartbeatTimers, isEmpty);
+            // The heartbeat timer is cancelled after the invocation returns.
+            await waitUntil(
+              // ignore: invalid_use_of_visible_for_testing_member
+              () => futureCallManager.heartbeatTimers.isEmpty,
+              description: 'the heartbeat timer to be cancelled',
+            );
           },
         );
       });
@@ -462,15 +497,13 @@ void main() {
         test(
           'then the active instance detects the stale heartbeat and reclaims the execution',
           () async {
-            // Wait for future call execution to be scheduled
-            await Future.delayed(const Duration(milliseconds: 100));
-
-            // Wait for degradedFutureCallManager's claim to be stale
-            // and for activeFutureCallManager to acquire the claim
-            await Future.delayed(activeHeartbeatInterval * 4);
-
-            // ignore: invalid_use_of_visible_for_testing_member
-            expect(activeFutureCallManager.heartbeatTimers, hasLength(1));
+            // Wait for degradedFutureCallManager's claim to become stale
+            // and for activeFutureCallManager to acquire the claim.
+            await waitUntil(
+              // ignore: invalid_use_of_visible_for_testing_member
+              () => activeFutureCallManager.heartbeatTimers.length == 1,
+              description: 'the active instance to reclaim the future call',
+            );
 
             testCall.completer.complete();
           },
@@ -479,12 +512,23 @@ void main() {
         test(
           'then the heartbeat update is aborted on the degraded instance due to losing the claim',
           () async {
+            // The degraded instance claims the future call first, since it is
+            // started first and scans more frequently.
+            await waitUntil(
+              // ignore: invalid_use_of_visible_for_testing_member
+              () => degradedFutureCallManager.heartbeatTimers.isNotEmpty,
+              description: 'the degraded instance to claim the future call',
+            );
+
             // Wait for degradedFutureCallManager's heartbeat update
             // to detect claim loss.
-            await Future.delayed(degradedHeartbeatInterval * 2);
+            await waitUntil(
+              // ignore: invalid_use_of_visible_for_testing_member
+              () => degradedFutureCallManager.heartbeatTimers.isEmpty,
+              description:
+                  'the degraded instance to abort its heartbeat update',
+            );
 
-            // ignore: invalid_use_of_visible_for_testing_member
-            expect(degradedFutureCallManager.heartbeatTimers, isEmpty);
             testCall.completer.complete();
           },
         );

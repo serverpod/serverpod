@@ -861,6 +861,8 @@ Future<List<String>> _copyFlutterUpgrade(
           ),
           type: DependencyType.normal,
         ),
+        // 11.x requires compileSdk 37, above Flutter's current default, so new
+        // projects stay on 10.x until Flutter's default catches up.
         (
           name: 'flutter_secure_storage',
           source: DependencySource.version(
@@ -1144,6 +1146,59 @@ Future<List<String>> _copyServerUpgrade(
       );
     }
   }
+
+  log.debug(
+    'Adding cloud storage dependencies to server pubspec',
+    newParagraph: true,
+  );
+  _addDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
+    additions: [
+      (
+        name: 'serverpod_cloud_storage',
+        source: DependencySource.version(
+          VersionConstraint.parse(templateVersion),
+        ),
+        type: DependencyType.normal,
+      ),
+    ],
+  );
+
+  if (customServerpodPath != null) {
+    log.debug(
+      'Adding cloud storage path overrides to root pubspec',
+      newParagraph: true,
+    );
+    _addDependenciesToPubspec(
+      pubspecFile: File(
+        p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+      ),
+      additions: [
+        (
+          name: 'serverpod_cloud_storage',
+          source: DependencySourcePath(
+            '$customServerpodPath/integrations/serverpod_cloud_storage',
+          ),
+          type: DependencyType.override,
+        ),
+        (
+          name: 'serverpod_cloud_storage_gcp',
+          source: DependencySourcePath(
+            '$customServerpodPath/integrations/serverpod_cloud_storage_gcp',
+          ),
+          type: DependencyType.override,
+        ),
+        (
+          name: 'serverpod_cloud_storage_s3_compat',
+          source: DependencySourcePath(
+            '$customServerpodPath/integrations/serverpod_cloud_storage_s3_compat',
+          ),
+          type: DependencyType.override,
+        ),
+      ],
+    );
+  }
+
   return writtenPaths;
 }
 

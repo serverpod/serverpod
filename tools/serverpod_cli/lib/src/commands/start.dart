@@ -9,6 +9,7 @@ import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/flush_analytics.dart';
 import 'package:serverpod_cli/src/analytics/session_metrics.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
@@ -41,6 +42,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_cli/src/util/shutdown_signal.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
@@ -224,9 +226,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
     // Listen for termination signals before starting any services so that
     // a SIGINT at any point triggers graceful shutdown (including Docker
     // cleanup) rather than killing the process.
-    final shutdown = _ShutdownSignal();
-
-    try {
+    await runWithShutdownSignals((shutdown) async {
       // Extract passthrough args (everything after '--'). _setupWatchLoop
       // mutates the ref's value if the in-process migration apply has
       // to defer to the pod's `--apply-migrations`.
@@ -260,9 +260,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
           await ctx.dispose();
           if (exitCode != 0) throw ExitException(exitCode);
       }
-    } finally {
-      shutdown.dispose();
-    }
+    });
   }
 }
 
@@ -494,7 +492,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // `false`, there is no way to recover (non-TUI `--no-watch`), so fail fast.
   required bool keepOpenOnFailure,
   required bool launchFlutterApp,
-  required _ShutdownSignal shutdown,
+  required ShutdownSignal shutdown,
   // Session-wide log retention. Filled here rather than by the presentation
   // layer, so the MCP log tools serve the same content with and without the
   // TUI. See [StartLogHistory].
@@ -1102,52 +1100,6 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
   return proxy;
 }
 
-/// One-shot exit signal shared between the orchestrator, the
-/// presentation layer, and `_setupWatchLoop`.
-///
-/// When [listenForSignals] is true (the default for non-TUI), SIGINT and
-/// SIGTERM complete [future] with 0. The TUI passes `false` because
-/// `runServerpodApp` already owns the signal subscriptions and forwards
-/// them via its own callback. Either way, callers can [complete] the
-/// signal directly (e.g. when the server crashes or the Quit button is
-/// pressed) so the wait-for-exit point only ever has to await [future].
-///
-/// Call [dispose] to cancel the signal subscriptions, if any.
-class _ShutdownSignal {
-  final Completer<int> _completer = Completer<int>();
-  StreamSubscription<void>? _sigintSub;
-  StreamSubscription<void>? _sigtermSub;
-
-  _ShutdownSignal({bool listenForSignals = true}) {
-    if (!listenForSignals) return;
-    _sigintSub = ProcessSignal.sigint.watch().listen(_completeFromSignal);
-    if (!Platform.isWindows) {
-      _sigtermSub = ProcessSignal.sigterm.watch().listen(_completeFromSignal);
-    }
-  }
-
-  void _completeFromSignal(ProcessSignal _) => complete(0);
-
-  /// Completes [future] with [code] if it isn't completed yet; no-op
-  /// otherwise. Safe to call from multiple paths (signal handlers, the
-  /// Quit button, server-exit forwarders).
-  void complete([int code = 0]) {
-    if (!_completer.isCompleted) _completer.complete(code);
-  }
-
-  /// Whether shutdown has been requested.
-  bool get isShutdown => _completer.isCompleted;
-
-  /// Completes with the requested exit code.
-  Future<int> get future => _completer.future;
-
-  /// Cancels the signal subscriptions.
-  void dispose() {
-    _sigintSub?.cancel();
-    _sigtermSub?.cancel();
-  }
-}
-
 /// Cheap pre-flight check for an existing `serverpod start` instance for
 /// [config]'s project, by probing the per-project MCP socket. Logs a
 /// message and returns `true` when another process is listening on it, so
@@ -1224,7 +1176,7 @@ Future<int> _runWithTui({
   var backendStarted = false;
 
   // Shared shutdown signal
-  final shutdown = _ShutdownSignal(listenForSignals: false);
+  final shutdown = ShutdownSignal(listenForSignals: false);
 
   // Captured on a fatal crash so it can be replayed to the real terminal in
   // [preExit] when the user quits. The crash is also shown inside the TUI, but
@@ -1276,6 +1228,7 @@ Future<int> _runWithTui({
       shouldFlushLogs = true;
     }
 
+    await flushAnalytics();
     if (shouldFlushLogs) await log.flush();
   }
 
@@ -1316,7 +1269,7 @@ Future<void> _runTuiBackend({
   required bool launchFlutterApp,
   required List<String> serverArgs,
   required GeneratorConfig config,
-  required _ShutdownSignal shutdown,
+  required ShutdownSignal shutdown,
   required void Function(Object error, StackTrace stackTrace) onFatalError,
 }) async {
   try {

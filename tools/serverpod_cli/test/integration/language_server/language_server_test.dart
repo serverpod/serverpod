@@ -329,4 +329,1202 @@ void main() {
       expect(session.registrations, isEmpty);
     },
   );
+
+  group('Given an initialized language server with registered models,', () {
+    late LanguageServerTestSession session;
+    late String modelsDir;
+    late String userModelPath;
+    late String postModelPath;
+    late String indexedModelPath;
+    late String configModelPath;
+    late String enumModelPath;
+    late String jobModelPath;
+
+    setUp(() async {
+      await ProjectDirectoryBuilder().build().create();
+
+      modelsDir = p.join(
+        d.sandbox,
+        'project',
+        'my_project_server',
+        'lib',
+        'src',
+        'models',
+      );
+
+      userModelPath = p.join(modelsDir, 'user.spy.yaml');
+      postModelPath = p.join(modelsDir, 'post.spy.yaml');
+      indexedModelPath = p.join(modelsDir, 'indexed.spy.yaml');
+      configModelPath = p.join(modelsDir, 'app_config.spy.yaml');
+      enumModelPath = p.join(modelsDir, 'stage_family.spy.yaml');
+      jobModelPath = p.join(modelsDir, 'job.spy.yaml');
+
+      File(userModelPath).writeAsStringSync('''
+class: User
+table: user
+fields:
+  name: String
+''');
+
+      File(postModelPath).writeAsStringSync('''
+class: Post
+table: post
+fields:
+  title: String
+  authorId: int
+  author: User?, relation(field=authorId)
+''');
+
+      File(indexedModelPath).writeAsStringSync('''
+class: Indexed
+table: indexed
+fields:
+  title: String
+  authorId: int
+indexes:
+  indexed_title_idx:
+    fields: title, authorId
+''');
+
+      File(configModelPath).writeAsStringSync('''
+class: AppConfig
+fields:
+  data: project:my_project:ConfigData
+''');
+
+      File(enumModelPath).writeAsStringSync('''
+enum: IngestionStageFamily
+serialized: byName
+values:
+  - alpha
+  - beta
+''');
+
+      File(jobModelPath).writeAsStringSync('''
+class: Job
+table: job
+fields:
+  stage: IngestionStageFamily
+''');
+
+      session = LanguageServerTestSession();
+      await session.initialize(
+        Uri.directory(p.join(d.sandbox, 'project')),
+        linkSupport: false,
+      );
+      session.sendInitialized();
+    });
+
+    tearDown(() async {
+      await session.dispose();
+    });
+
+    test(
+      'when definition is requested on a model type name, '
+      'then it returns the location of the model definition.',
+      () async {
+        // Line 5 in post.spy.yaml is: "  author: User?, relation(field=authorId)"
+        // "User" is at column 10
+        var result = await session.requestDefinition(
+          postModelPath,
+          line: 5,
+          character: 11,
+        );
+
+        expect(result, isNotNull);
+        var location = result as Map<String, dynamic>;
+        var range = location['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        expect(location['uri'], Uri.file(userModelPath).toString());
+        expect(start['line'], 0);
+        expect(start['character'], 7);
+      },
+    );
+
+    test(
+      'when definition is requested on a relation field reference, '
+      'then it returns the location of that field in the current file.',
+      () async {
+        // Line 5 in post.spy.yaml is: "  author: User?, relation(field=authorId)"
+        // "authorId" is at column 32
+        var result = await session.requestDefinition(
+          postModelPath,
+          line: 5,
+          character: 34,
+        );
+
+        expect(result, isNotNull);
+        var location = result as Map<String, dynamic>;
+        var range = location['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        expect(location['uri'], Uri.file(postModelPath).toString());
+        // authorId is defined at line 4: "  authorId: int"
+        expect(start['line'], 4);
+      },
+    );
+
+    test(
+      'when definition is requested on a primitive type, '
+      'then it returns null.',
+      () async {
+        // Line 3 in post.spy.yaml: "  title: String" -> "String" is at column 9
+        var result = await session.requestDefinition(
+          postModelPath,
+          line: 3,
+          character: 10,
+        );
+
+        expect(result, isNull);
+      },
+    );
+
+    test(
+      'when references are requested for a class on its declaration line with includeDeclaration false, '
+      'then it returns references across other model files.',
+      () async {
+        // Line 0 in user.spy.yaml: "class: User" -> "User" is at column 7
+        var result = await session.requestReferences(
+          userModelPath,
+          line: 0,
+          character: 8,
+          includeDeclaration: false,
+        );
+
+        expect(result, isNotNull);
+        expect(result, isA<List>());
+        var locations = (result as List).cast<Map<String, dynamic>>();
+        expect(locations, hasLength(1));
+
+        var loc = locations.first;
+        expect(loc['uri'], Uri.file(postModelPath).toString());
+        var range = loc['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        var end = range['end'] as Map<String, dynamic>;
+        // In post.spy.yaml: "  author: User?, relation(field=authorId)" -> line 5, col 10..14
+        expect(start['line'], 5);
+        expect(start['character'], 10);
+        expect(end['character'], 14);
+      },
+    );
+
+    test(
+      'when references are requested for a class on its declaration line with includeDeclaration true, '
+      'then it returns the declaration and all references.',
+      () async {
+        var result = await session.requestReferences(
+          userModelPath,
+          line: 0,
+          character: 8,
+          includeDeclaration: true,
+        );
+
+        expect(result, isNotNull);
+        expect(result, isA<List>());
+        var locations = (result as List).cast<Map<String, dynamic>>();
+        expect(locations, hasLength(2));
+
+        var declLoc = locations.firstWhere(
+          (loc) => loc['uri'] == Uri.file(userModelPath).toString(),
+        );
+        var declStart = (declLoc['range'] as Map)['start'] as Map;
+        expect(declStart['line'], 0);
+        expect(declStart['character'], 7);
+
+        var refLoc = locations.firstWhere(
+          (loc) => loc['uri'] == Uri.file(postModelPath).toString(),
+        );
+        var refStart = (refLoc['range'] as Map)['start'] as Map;
+        expect(refStart['line'], 5);
+        expect(refStart['character'], 10);
+      },
+    );
+
+    test(
+      'when references are requested for a field, '
+      'then it returns occurrences in relations and declarations.',
+      () async {
+        // Line 4 in post.spy.yaml: "  authorId: int" -> "authorId" is at column 4
+        var result = await session.requestReferences(
+          postModelPath,
+          line: 4,
+          character: 5,
+          includeDeclaration: true,
+        );
+
+        expect(result, isNotNull);
+        expect(result, isA<List>());
+        var locations = (result as List).cast<Map<String, dynamic>>();
+        expect(locations, hasLength(2));
+
+        // Declaration at line 4
+        var decl = locations.firstWhere(
+          (l) => ((l['range'] as Map)['start'] as Map)['line'] == 4,
+        );
+        expect(decl['uri'], Uri.file(postModelPath).toString());
+
+        // Relation reference at line 5
+        var rel = locations.firstWhere(
+          (l) => ((l['range'] as Map)['start'] as Map)['line'] == 5,
+        );
+        expect(rel['uri'], Uri.file(postModelPath).toString());
+      },
+    );
+
+    test(
+      'when references are requested for an enum on its declaration line, '
+      'then it returns references across other model files.',
+      () async {
+        // Line 0 in stage_family.spy.yaml: "enum: IngestionStageFamily" ->
+        // "IngestionStageFamily" is at column 6
+        var result = await session.requestReferences(
+          enumModelPath,
+          line: 0,
+          character: 8,
+          includeDeclaration: false,
+        );
+
+        expect(result, isNotNull);
+        var locations = (result as List).cast<Map<String, dynamic>>();
+        expect(locations, hasLength(1));
+
+        var loc = locations.first;
+        expect(loc['uri'], Uri.file(jobModelPath).toString());
+        var start = (loc['range'] as Map)['start'] as Map;
+        // In job.spy.yaml: "  stage: IngestionStageFamily" -> line 3, col 9
+        expect(start['line'], 3);
+        expect(start['character'], 9);
+      },
+    );
+
+    test(
+      'when references are requested for a primitive type, '
+      'then it returns an empty list.',
+      () async {
+        var result = await session.requestReferences(
+          postModelPath,
+          line: 3,
+          character: 10,
+        );
+
+        expect(result, isA<List>());
+        expect(result as List, isEmpty);
+      },
+    );
+
+    test(
+      'when definition is requested on a word that resolves to nothing, '
+      'then it returns null.',
+      () async {
+        // Line 3 in post.spy.yaml: "  title: String" -> "title" is a field
+        // declaration, not a reference, and matches no model or table name.
+        var result = await session.requestDefinition(
+          postModelPath,
+          line: 3,
+          character: 3,
+        );
+
+        expect(result, isNull);
+      },
+    );
+
+    test(
+      'when definition is requested on a database table name, '
+      'then it returns the location of the model definition.',
+      () async {
+        // Line 1 in user.spy.yaml: "table: user" -> "user" is at column 7
+        var result = await session.requestDefinition(
+          userModelPath,
+          line: 1,
+          character: 8,
+        );
+
+        expect(result, isNotNull);
+        var location = result as Map<String, dynamic>;
+        var range = location['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        expect(location['uri'], Uri.file(userModelPath).toString());
+        expect(start['line'], 0);
+        expect(start['character'], 7);
+      },
+    );
+
+    test(
+      'when definition is requested on a field in an index, '
+      'then it returns the location of the field declaration.',
+      () async {
+        // Line 7 in indexed.spy.yaml: "    fields: title, authorId" ->
+        // "authorId" is at column 19
+        var result = await session.requestDefinition(
+          indexedModelPath,
+          line: 7,
+          character: 20,
+        );
+
+        expect(result, isNotNull);
+        var location = result as Map<String, dynamic>;
+        var range = location['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        expect(location['uri'], Uri.file(indexedModelPath).toString());
+        // authorId is declared at line 4: "  authorId: int"
+        expect(start['line'], 4);
+        expect(start['character'], 2);
+      },
+    );
+
+    test(
+      'when a model definition is requested by class name, '
+      'then it returns the location of the model definition.',
+      () async {
+        var result = await session.requestModelDefinition('User');
+
+        expect(result, isNotNull);
+        var location = result as Map<String, dynamic>;
+        var range = location['range'] as Map<String, dynamic>;
+        var start = range['start'] as Map<String, dynamic>;
+        expect(location['uri'], Uri.file(userModelPath).toString());
+        expect(start['line'], 0);
+        expect(start['character'], 7);
+      },
+    );
+
+    test(
+      'when a model definition is requested by an unknown class name, '
+      'then it returns null.',
+      () async {
+        var result = await session.requestModelDefinition('NonExistent');
+
+        expect(result, isNull);
+      },
+    );
+
+    test(
+      'when definition is requested on a project: type reference, '
+      'then it returns null.',
+      () async {
+        // Line 2 in app_config.spy.yaml: "  data: project:my_project:ConfigData"
+        // -> "ConfigData" is at column 27
+        var result = await session.requestDefinition(
+          configModelPath,
+          line: 2,
+          character: 30,
+        );
+
+        expect(result, isNull);
+      },
+    );
+
+    test(
+      'when references are requested on a project: type reference, '
+      'then it returns an empty list.',
+      () async {
+        var result = await session.requestReferences(
+          configModelPath,
+          line: 2,
+          character: 30,
+        );
+
+        expect(result, isA<List>());
+        expect(result as List, isEmpty);
+      },
+    );
+
+    test(
+      'when references are requested for a field with includeDeclaration false, '
+      'then only the references are returned.',
+      () async {
+        // Line 4 in post.spy.yaml: "  authorId: int" -> "authorId" is at
+        // column 2
+        var result = await session.requestReferences(
+          postModelPath,
+          line: 4,
+          character: 5,
+          includeDeclaration: false,
+        );
+
+        expect(result, isNotNull);
+        var locations = (result as List).cast<Map<String, dynamic>>();
+        expect(locations, hasLength(1));
+
+        var ref = locations.first;
+        expect(ref['uri'], Uri.file(postModelPath).toString());
+        var start = (ref['range'] as Map)['start'] as Map;
+        expect(start['line'], 5);
+        expect(start['character'], 32);
+      },
+    );
+  });
+
+  group(
+    'Given an initialized language server with a model that has a field named like a YAML keyword,',
+    () {
+      late LanguageServerTestSession session;
+      late String profileModelPath;
+
+      setUp(() async {
+        await ProjectDirectoryBuilder()
+            .withModelDirContents([
+              d.file('user.spy.yaml', '''
+class: User
+table: user
+fields:
+  name: String
+'''),
+              d.file('profile.spy.yaml', '''
+class: Profile
+table: profile
+fields:
+  name: String
+  user: User?, relation(field=name)
+'''),
+            ])
+            .build()
+            .create();
+
+        profileModelPath = p.join(
+          d.sandbox,
+          'project',
+          'my_project_server',
+          'lib',
+          'src',
+          'models',
+          'profile.spy.yaml',
+        );
+
+        session = LanguageServerTestSession();
+        await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
+        session.sendInitialized();
+      });
+
+      tearDown(() async {
+        await session.dispose();
+      });
+
+      test(
+        'when definition is requested on a relation reference to that field, '
+        'then it returns the location of the field declaration.',
+        () async {
+          // Line 4 in profile.spy.yaml: "  user: User?, relation(field=name)"
+          // -> the referenced "name" is at column 30
+          var result = await session.requestDefinition(
+            profileModelPath,
+            line: 4,
+            character: 31,
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var range = location['range'] as Map<String, dynamic>;
+          var start = range['start'] as Map<String, dynamic>;
+          expect(location['uri'], Uri.file(profileModelPath).toString());
+          // name is declared at line 3: "  name: String"
+          expect(start['line'], 3);
+          expect(start['character'], 2);
+        },
+      );
+
+      test(
+        'when references are requested for that field, '
+        'then it returns occurrences in relations and declarations.',
+        () async {
+          // Line 3 in profile.spy.yaml: "  name: String" -> "name" is at
+          // column 2
+          var result = await session.requestReferences(
+            profileModelPath,
+            line: 3,
+            character: 3,
+            includeDeclaration: true,
+          );
+
+          expect(result, isNotNull);
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(locations, hasLength(2));
+
+          // Declaration at line 3
+          var decl = locations.firstWhere(
+            (l) => ((l['range'] as Map)['start'] as Map)['line'] == 3,
+          );
+          expect(decl['uri'], Uri.file(profileModelPath).toString());
+
+          // Relation reference at line 4, column 30
+          var rel = locations.firstWhere(
+            (l) => ((l['range'] as Map)['start'] as Map)['line'] == 4,
+          );
+          var relStart = (rel['range'] as Map)['start'] as Map;
+          expect(rel['uri'], Uri.file(profileModelPath).toString());
+          expect(relStart['character'], 30);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an initialized language server with a model that mentions another model in a comment,',
+    () {
+      late LanguageServerTestSession session;
+      late String userModelPath;
+      late String commentModelPath;
+
+      setUp(() async {
+        await ProjectDirectoryBuilder()
+            .withModelDirContents([
+              d.file('user.spy.yaml', '''
+class: User
+table: user
+fields:
+  name: String
+'''),
+              d.file('comment.spy.yaml', '''
+class: Comment
+table: comment
+# The User class should not be matched inside comments
+fields:
+  text: String
+  author: User
+'''),
+            ])
+            .build()
+            .create();
+
+        var modelsDir = p.join(
+          d.sandbox,
+          'project',
+          'my_project_server',
+          'lib',
+          'src',
+          'models',
+        );
+        userModelPath = p.join(modelsDir, 'user.spy.yaml');
+        commentModelPath = p.join(modelsDir, 'comment.spy.yaml');
+
+        session = LanguageServerTestSession();
+        await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
+        session.sendInitialized();
+      });
+
+      tearDown(() async {
+        await session.dispose();
+      });
+
+      test(
+        'when references are requested for the mentioned model, '
+        'then it returns the reference in the model file and excludes the match inside the comment.',
+        () async {
+          // Line 0 in user.spy.yaml: "class: User" -> "User" is at column 7
+          var result = await session.requestReferences(
+            userModelPath,
+            line: 0,
+            character: 8,
+            includeDeclaration: false,
+          );
+
+          expect(result, isNotNull);
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(locations, hasLength(1));
+
+          var ref = locations.first;
+          expect(ref['uri'], Uri.file(commentModelPath).toString());
+          var start = (ref['range'] as Map)['start'] as Map;
+          // Line 5 in comment.spy.yaml: "  author: User" -> "User" is at
+          // column 10; the mention in the comment at line 2 is excluded.
+          expect(start['line'], 5);
+          expect(start['character'], 10);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an initialized language server for a project with a module dependency,',
+    () {
+      late LanguageServerTestSession session;
+      late String orderModelPath;
+      late String moduleModelPath;
+
+      setUp(() async {
+        await ProjectDirectoryBuilder()
+            .withModelDirContents([
+              d.file('order.spy.yaml', '''
+class: Order
+table: order
+fields:
+  user: module:auth:UserInfo
+'''),
+            ])
+            .withModule(
+              'auth',
+              modelDirContents: [
+                d.file('user_info.spy.yaml', '''
+class: UserInfo
+table: user_info
+fields:
+  name: String
+'''),
+              ],
+            )
+            .build()
+            .create();
+
+        orderModelPath = p.join(
+          d.sandbox,
+          'project',
+          'my_project_server',
+          'lib',
+          'src',
+          'models',
+          'order.spy.yaml',
+        );
+        moduleModelPath = p.join(
+          d.sandbox,
+          'project',
+          'auth_server',
+          'lib',
+          'src',
+          'models',
+          'user_info.spy.yaml',
+        );
+
+        session = LanguageServerTestSession();
+        await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
+        session.sendInitialized();
+      });
+
+      tearDown(() async {
+        await session.dispose();
+      });
+
+      test(
+        'when definition is requested on a module-qualified model name, '
+        'then it returns the location of the module model definition.',
+        () async {
+          // Line 3 in order.spy.yaml: "  user: module:auth:UserInfo"
+          // "UserInfo" is at column 20
+          var result = await session.requestDefinition(
+            orderModelPath,
+            line: 3,
+            character: 21,
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var range = location['range'] as Map<String, dynamic>;
+          var start = range['start'] as Map<String, dynamic>;
+          expect(location['uri'], Uri.file(moduleModelPath).toString());
+          expect(start['line'], 0);
+          expect(start['character'], 7);
+        },
+      );
+
+      test(
+        'when a model definition is requested by module-qualified class name, '
+        'then it returns the location of the module model definition.',
+        () async {
+          var result = await session.requestModelDefinition(
+            'UserInfo',
+            moduleAlias: 'auth',
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var range = location['range'] as Map<String, dynamic>;
+          var start = range['start'] as Map<String, dynamic>;
+          expect(location['uri'], Uri.file(moduleModelPath).toString());
+          expect(start['line'], 0);
+          expect(start['character'], 7);
+        },
+      );
+
+      test(
+        'when a model definition is requested with an import prefix that names no module, '
+        'then it falls back to the unqualified model definition.',
+        () async {
+          // Generated Dart code imports modules under prefixes such as _i2,
+          // which say nothing about the module alias.
+          var result = await session.requestModelDefinition(
+            'UserInfo',
+            moduleAlias: '_i2',
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          expect(location['uri'], Uri.file(moduleModelPath).toString());
+        },
+      );
+
+      test(
+        'when references are requested for a module model on its declaration line, '
+        'then it returns module-qualified references in project model files.',
+        () async {
+          // Line 0 in user_info.spy.yaml: "class: UserInfo" -> "UserInfo" is
+          // at column 7
+          var result = await session.requestReferences(
+            moduleModelPath,
+            line: 0,
+            character: 8,
+            includeDeclaration: false,
+          );
+
+          expect(result, isNotNull);
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(locations, hasLength(1));
+
+          var loc = locations.first;
+          expect(loc['uri'], Uri.file(orderModelPath).toString());
+          var range = loc['range'] as Map<String, dynamic>;
+          var start = range['start'] as Map<String, dynamic>;
+          var end = range['end'] as Map<String, dynamic>;
+          expect(start['line'], 3);
+          expect(start['character'], 20);
+          expect(end['character'], 28);
+        },
+      );
+    },
+  );
+
+  group('Given an initialized language server with linkSupport enabled,', () {
+    late LanguageServerTestSession session;
+    late String modelsDir;
+    late String userModelPath;
+    late String postModelPath;
+
+    setUp(() async {
+      await ProjectDirectoryBuilder().build().create();
+
+      modelsDir = p.join(
+        d.sandbox,
+        'project',
+        'my_project_server',
+        'lib',
+        'src',
+        'models',
+      );
+
+      userModelPath = p.join(modelsDir, 'user.spy.yaml');
+      postModelPath = p.join(modelsDir, 'post.spy.yaml');
+
+      File(userModelPath).writeAsStringSync('''
+class: User
+table: user
+fields:
+  name: String
+''');
+
+      File(postModelPath).writeAsStringSync('''
+class: Post
+table: post
+fields:
+  title: String
+  author: User?
+''');
+
+      session = LanguageServerTestSession();
+      await session.initialize(
+        Uri.directory(p.join(d.sandbox, 'project')),
+        linkSupport: true,
+      );
+      session.sendInitialized();
+    });
+
+    tearDown(() async {
+      await session.dispose();
+    });
+
+    test(
+      'when definition is requested with linkSupport, '
+      'then it returns a list containing LocationLink.',
+      () async {
+        // Line 4 in post.spy.yaml is: "  author: User?" -> "User" is at column 10
+        var result = await session.requestDefinition(
+          postModelPath,
+          line: 4,
+          character: 11,
+        );
+
+        expect(result, isNotNull);
+        expect(result, isA<List>());
+        var link = (result as List).first as Map<String, dynamic>;
+        var targetSelectionRange =
+            link['targetSelectionRange'] as Map<String, dynamic>;
+        var targetStart = targetSelectionRange['start'] as Map<String, dynamic>;
+        var originSelectionRange =
+            link['originSelectionRange'] as Map<String, dynamic>;
+        var originStart = originSelectionRange['start'] as Map<String, dynamic>;
+        var originEnd = originSelectionRange['end'] as Map<String, dynamic>;
+
+        expect(link['targetUri'], Uri.file(userModelPath).toString());
+        expect(targetStart['line'], 0);
+        expect(targetStart['character'], 7);
+        expect(originStart['line'], 4);
+        expect(originStart['character'], 10);
+        expect(originEnd['character'], 14);
+      },
+    );
+  });
+
+  group(
+    'Given an initialized language server with models whose table names and '
+    'fields collide with the model file syntax,',
+    () {
+      late LanguageServerTestSession session;
+      late String parameterModelPath;
+      late String holderModelPath;
+      late String recordModelPath;
+      late String ownerModelPath;
+      late String noteModelPath;
+      late String labelModelPath;
+      late String ticketModelPath;
+
+      setUp(() async {
+        await ProjectDirectoryBuilder()
+            .withModelDirContents([
+              // The table name is also a key of the model file syntax.
+              d.file('parameter.spy.yaml', '''
+class: Parameter
+table: parameters
+fields:
+  name: String
+'''),
+              d.file('holder.spy.yaml', '''
+class: Holder
+table: holder
+fields:
+  param: Parameter?, relation(parent=parameters)
+'''),
+              // An enum value that shares the name of a model.
+              d.file('role.spy.yaml', '''
+enum: Role
+serialized: byName
+values:
+  - Parameter
+  - guest
+'''),
+              // A field that is named like a top level key.
+              d.file('record.spy.yaml', '''
+class: Record
+table: record
+fields:
+  table: String
+indexes:
+  record_table_idx:
+    fields: table
+'''),
+              // A model that shares the name of a foreign key action.
+              d.file('cascade.spy.yaml', '''
+class: Cascade
+table: cascade
+fields:
+  name: String
+'''),
+              d.file('owner.spy.yaml', '''
+class: Owner
+table: owner
+fields:
+  item: Cascade?, relation(onDelete=CASCADE)
+'''),
+              // A field named after the table it points at.
+              d.file('ticket.spy.yaml', '''
+class: Ticket
+table: ticket
+fields:
+  recordId: int, relation(parent=record)
+  record: Record?, relation(field=recordId)
+'''),
+              // Quoted defaults that spell out a model and a table name.
+              d.file('label.spy.yaml', '''
+class: Label
+table: label
+fields:
+  name: String, default='Parameter'
+  code: String, default='parameters'
+'''),
+              // A comment dedented below the entries of the fields block.
+              d.file('note.spy.yaml', '''
+class: Note
+table: note
+fields:
+  title: String
+# foreign key
+  authorId: int
+  author: Cascade?, relation(field=authorId)
+'''),
+            ])
+            .build()
+            .create();
+
+        var modelsDir = p.join(
+          d.sandbox,
+          'project',
+          'my_project_server',
+          'lib',
+          'src',
+          'models',
+        );
+        parameterModelPath = p.join(modelsDir, 'parameter.spy.yaml');
+        holderModelPath = p.join(modelsDir, 'holder.spy.yaml');
+        recordModelPath = p.join(modelsDir, 'record.spy.yaml');
+        ownerModelPath = p.join(modelsDir, 'owner.spy.yaml');
+        noteModelPath = p.join(modelsDir, 'note.spy.yaml');
+        labelModelPath = p.join(modelsDir, 'label.spy.yaml');
+        ticketModelPath = p.join(modelsDir, 'ticket.spy.yaml');
+
+        session = LanguageServerTestSession();
+        await session.initialize(Uri.directory(p.join(d.sandbox, 'project')));
+        session.sendInitialized();
+      });
+
+      tearDown(() async {
+        await session.dispose();
+      });
+
+      test(
+        'when definition is requested on a parent table name that is also a key of the model file syntax, '
+        'then it returns the location of the model definition.',
+        () async {
+          // Line 3 in holder.spy.yaml:
+          // "  param: Parameter?, relation(parent=parameters)"
+          // -> "parameters" is at column 37
+          var result = await session.requestDefinition(
+            holderModelPath,
+            line: 3,
+            character: 40,
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var start = (location['range'] as Map)['start'] as Map;
+          expect(location['uri'], Uri.file(parameterModelPath).toString());
+          expect(start['line'], 0);
+          expect(start['character'], 7);
+        },
+      );
+
+      test(
+        'when definition is requested on a field that is named like a top level key, '
+        'then it returns the location of the field declaration.',
+        () async {
+          // Line 6 in record.spy.yaml: "    fields: table"
+          // -> the referenced "table" is at column 12
+          var result = await session.requestDefinition(
+            recordModelPath,
+            line: 6,
+            character: 14,
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var start = (location['range'] as Map)['start'] as Map;
+          expect(location['uri'], Uri.file(recordModelPath).toString());
+          // The field is declared at line 3, not at the "table:" key on line 1
+          expect(start['line'], 3);
+          expect(start['character'], 2);
+        },
+      );
+
+      test(
+        'when definition is requested on a foreign key action written in a different casing than a model that shares its name, '
+        'then it returns null.',
+        () async {
+          // Line 3 in owner.spy.yaml:
+          // "  item: Cascade?, relation(onDelete=CASCADE)"
+          // -> "CASCADE" is at column 36
+          var result = await session.requestDefinition(
+            ownerModelPath,
+            line: 3,
+            character: 38,
+          );
+
+          expect(result, isNull);
+        },
+      );
+
+      test(
+        'when references are requested for a table backed model, '
+        'then it returns both the class name and the parent table usages.',
+        () async {
+          // Line 0 in parameter.spy.yaml: "class: Parameter"
+          var result = await session.requestReferences(
+            parameterModelPath,
+            line: 0,
+            character: 8,
+            includeDeclaration: false,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(locations, hasLength(2));
+          expect(
+            locations.every(
+              (loc) => loc['uri'] == Uri.file(holderModelPath).toString(),
+            ),
+            isTrue,
+          );
+
+          // "  param: Parameter?, relation(parent=parameters)"
+          // -> "Parameter" at column 9, "parameters" at column 37
+          var starts = locations
+              .map((loc) => (loc['range'] as Map)['start'] as Map)
+              .toList();
+          expect(starts.map((start) => start['line']), everyElement(3));
+          expect(starts.map((start) => start['character']), [9, 37]);
+        },
+      );
+
+      test(
+        'when references are requested for a model that shares its name with an enum value, '
+        'then the enum value is not reported as a reference.',
+        () async {
+          // Line 0 in parameter.spy.yaml: "class: Parameter"
+          var result = await session.requestReferences(
+            parameterModelPath,
+            line: 0,
+            character: 8,
+            includeDeclaration: false,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(
+            locations.map((loc) => loc['uri']),
+            isNot(contains(contains('role.spy.yaml'))),
+          );
+          expect(
+            locations.map((loc) => loc['uri']),
+            everyElement(Uri.file(holderModelPath).toString()),
+          );
+        },
+      );
+
+      test(
+        'when definition is requested on a field of a fields block that holds a dedented comment, '
+        'then it returns the location of the field declaration.',
+        () async {
+          // Line 6 in note.spy.yaml:
+          // "  author: Cascade?, relation(field=authorId)"
+          // -> the referenced "authorId" is at column 35
+          var result = await session.requestDefinition(
+            noteModelPath,
+            line: 6,
+            character: 37,
+          );
+
+          expect(result, isNotNull);
+          var location = result as Map<String, dynamic>;
+          var start = (location['range'] as Map)['start'] as Map;
+          expect(location['uri'], Uri.file(noteModelPath).toString());
+          // authorId is declared at line 5, below the comment on line 4
+          expect(start['line'], 5);
+          expect(start['character'], 2);
+        },
+      );
+
+      test(
+        'when references are requested for a field of a fields block that holds a dedented comment, '
+        'then the declaration is reported alongside the relation usage.',
+        () async {
+          // Line 5 in note.spy.yaml: "  authorId: int"
+          var result = await session.requestReferences(
+            noteModelPath,
+            line: 5,
+            character: 4,
+            includeDeclaration: true,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(locations, hasLength(2));
+
+          var starts = locations
+              .map((loc) => (loc['range'] as Map)['start'] as Map)
+              .toList();
+          expect(
+            locations.map((loc) => loc['uri']),
+            everyElement(Uri.file(noteModelPath).toString()),
+          );
+          expect(starts.map((start) => start['line']), [5, 6]);
+          expect(starts.map((start) => start['character']), [2, 35]);
+        },
+      );
+
+      test(
+        'when definition is requested on a quoted default that spells out a model name, '
+        'then it returns null.',
+        () async {
+          // Line 3 in label.spy.yaml:
+          // "  name: String, default='Parameter'"
+          // -> "Parameter" is at column 25
+          var result = await session.requestDefinition(
+            labelModelPath,
+            line: 3,
+            character: 27,
+          );
+
+          expect(result, isNull);
+        },
+      );
+
+      test(
+        'when definition is requested on a quoted default that spells out a table name, '
+        'then it returns null.',
+        () async {
+          // Line 4 in label.spy.yaml:
+          // "  code: String, default='parameters'"
+          // -> "parameters" is at column 25
+          var result = await session.requestDefinition(
+            labelModelPath,
+            line: 4,
+            character: 27,
+          );
+
+          expect(result, isNull);
+        },
+      );
+
+      test(
+        'when references are requested for a model whose name is spelled out by a quoted default, '
+        'then the quoted default is not reported as a reference.',
+        () async {
+          // Line 0 in parameter.spy.yaml: "class: Parameter"
+          var result = await session.requestReferences(
+            parameterModelPath,
+            line: 0,
+            character: 8,
+            includeDeclaration: false,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(
+            locations.map((loc) => loc['uri']),
+            isNot(contains(Uri.file(labelModelPath).toString())),
+          );
+        },
+      );
+
+      test(
+        'when references are requested on a parent table that is also the name of a field of the same model, '
+        'then it returns the usages of the model behind that table.',
+        () async {
+          // Line 3 in ticket.spy.yaml:
+          // "  recordId: int, relation(parent=record)"
+          // -> "record" is at column 33
+          var result = await session.requestReferences(
+            ticketModelPath,
+            line: 3,
+            character: 35,
+            includeDeclaration: false,
+          );
+
+          var locations = (result as List).cast<Map<String, dynamic>>();
+          expect(locations, hasLength(2));
+          expect(
+            locations.map((loc) => loc['uri']),
+            everyElement(Uri.file(ticketModelPath).toString()),
+          );
+
+          // The table usage on line 3 and the class name on line 4, never the
+          // "record:" field declaration.
+          var starts = locations
+              .map((loc) => (loc['range'] as Map)['start'] as Map)
+              .toList();
+          expect(starts.map((start) => start['line']), [3, 4]);
+          expect(starts.map((start) => start['character']), [33, 10]);
+        },
+      );
+    },
+  );
 }

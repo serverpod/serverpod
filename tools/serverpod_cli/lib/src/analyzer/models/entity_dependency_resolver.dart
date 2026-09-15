@@ -52,45 +52,45 @@ class ModelDependencyResolver {
     modelDefinitions.whereType<ModelClassDefinition>().forEach((
       classDefinition,
     ) {
-      _resolveSyncScopeIdField(classDefinition, modelDefinitions);
+      _resolveSyncSpaceIdField(classDefinition, modelDefinitions);
     });
   }
 
-  /// Injects the `scopeId` field on tables with `database: sync` that do not
-  /// declare it, directly or through a relation to the scopes table.
-  static void _resolveSyncScopeIdField(
+  /// Injects the `spaceId` field on tables with `database: sync` that do not
+  /// declare it, directly or through a relation to the spaces table.
+  static void _resolveSyncSpaceIdField(
     ModelClassDefinition classDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     if (!classDefinition.isSyncTable) return;
-    if (classDefinition.syncScopeIdField != null) return;
+    if (classDefinition.syncSpaceIdField != null) return;
 
-    var scopesTableExists = modelDefinitions.any(
+    var spacesTableExists = modelDefinitions.any(
       (model) =>
           model is ModelClassDefinition &&
-          model.tableName == syncScopesTableName,
+          model.tableName == syncSpacesTableName,
     );
-    if (!scopesTableExists) return;
+    if (!spacesTableExists) return;
 
-    var scopeIdField = SerializableModelFieldDefinition(
-      name: syncScopeIdFieldName,
+    var spaceIdField = SerializableModelFieldDefinition(
+      name: syncSpaceIdFieldName,
       type: TypeDefinition.int.asNullable,
       scope: ModelFieldScopeDefinition.all,
       shouldPersist: true,
       isRequired: false,
       documentation: [
-        '/// The scope owning this row. Maintained by the sync engine.',
+        '/// The space owning this row. Maintained by the sync engine.',
       ],
       relation: ForeignRelationDefinition(
-        parentTable: syncScopesTableName,
+        parentTable: syncSpacesTableName,
         foreignFieldName: defaultPrimaryKeyName,
         onDelete: ForeignKeyAction.cascade,
       ),
     );
 
     // Right below the id field, since it is part of the row identity.
-    classDefinition.fields.insert(1, scopeIdField);
-    _resolveFieldIndexes(scopeIdField, classDefinition);
+    classDefinition.fields.insert(1, spaceIdField);
+    _resolveFieldIndexes(spaceIdField, classDefinition);
   }
 
   static void _resolveInheritance(

@@ -51,8 +51,8 @@ bool _isWithinDartTool(String filePath) {
 
 /// Watches one file across initial absence, deletion, and recreation.
 ///
-/// While the file exists, the platform [w.FileWatcher] provides native events.
-/// If it is absent, only that exact path is polled until it appears, avoiding a
+/// While the file exists, a [w.FileWatcher] reports changes to it. If it is
+/// absent, only that exact path is polled until it appears, avoiding a
 /// recursive watch of its potentially large and frequently changing parent.
 class _PersistentFileWatcher implements w.Watcher {
   @override
@@ -102,7 +102,7 @@ class _PersistentFileWatcher implements w.Watcher {
     }
 
     try {
-      final fileWatcher = w.FileWatcher(path);
+      final fileWatcher = w.FileWatcher(path, pollingDelay: pollingDelay);
       late final StreamSubscription<w.WatchEvent> subscription;
       subscription = fileWatcher.events.listen(
         (event) {
@@ -149,10 +149,18 @@ class _PersistentFileWatcher implements w.Watcher {
       _pollTimer?.cancel();
       _pollTimer = null;
 
-      // The underlying watcher cannot report a creation that happened while
-      // the path was absent, so synthesize the change before reattaching it.
-      _eventsController.add(w.WatchEvent(w.ChangeType.MODIFY, path));
+      // Reattach before announcing the reappearance, so the new watcher's
+      // baseline is the file as it is now. Emitting first would leave a window
+      // in which a listener reacts to the event and writes to the file before
+      // the watcher has read its baseline, folding that write into the
+      // baseline instead of reporting it as a change.
       await _watchOrPoll();
+
+      // The underlying watcher cannot report a creation that happened while
+      // the path was absent, so synthesize it here.
+      if (_isListening) {
+        _eventsController.add(w.WatchEvent(w.ChangeType.MODIFY, path));
+      }
     } finally {
       _isCheckingForFile = false;
     }
@@ -230,7 +238,8 @@ class FileWatcher {
   /// [packageConfigPath] and [packageGraphPaths] are the exact pub-artifact
   /// files whose changes map to `packageConfigChanged` / `flutterDependenciesChanged`.
   /// Missing pub artifacts are checked every [missingFilePollingDelay] until
-  /// they appear, then watched natively.
+  /// they appear, then watched directly. The same delay is the polling cadence
+  /// on platforms without native single-file watching.
   FileWatcher({
     required Iterable<String> watchPaths,
     String? packageConfigPath,

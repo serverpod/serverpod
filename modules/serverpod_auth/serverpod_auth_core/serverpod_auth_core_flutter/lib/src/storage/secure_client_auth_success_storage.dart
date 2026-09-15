@@ -31,10 +31,6 @@ class FlutterSecureKeyValueStorage implements KeyValueStorage {
 
   static FlutterSecureStorage _defaultSecureStorage() =>
       const FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          // ignore: deprecated_member_use
-          encryptedSharedPreferences: true,
-        ),
         iOptions: IOSOptions(
           accessibility: KeychainAccessibility.first_unlock,
         ),

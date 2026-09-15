@@ -11,8 +11,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a shared package model when the model has a table property with "database: all" '
-    'when analyzing model '
+    'Given a shared package model with a table property with "database: all", '
+    'when analyzing model, '
     'then no error is collected.',
     () {
       var models = <ModelSource>[
@@ -47,8 +47,8 @@ fields:
   );
 
   test(
-    'Given a shared package model when the model has a table property without "database: all" '
-    'when analyzing model '
+    'Given a shared package model with a table property without "database: all", '
+    'when analyzing model, '
     'then an error is collected that the table requires "database: all".',
     () {
       var models = <ModelSource>[
@@ -87,8 +87,8 @@ fields:
   );
 
   test(
-    'Given a shared package model with a table property and "database: sync" '
-    'when analyzing model '
+    'Given a shared package model with a table property and "database: sync", '
+    'when analyzing model, '
     'then no error is collected.',
     () {
       var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
@@ -96,7 +96,7 @@ fields:
       ]).build();
 
       var models = <ModelSource>[
-        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
         ModelSourceBuilder()
             .withIsSharedModel(true)
             .withModuleAlias('shared')
@@ -106,7 +106,7 @@ table: shared_example
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
   name: String
 ''')
             .build(),
@@ -128,8 +128,8 @@ fields:
   );
 
   test(
-    'Given a shared package model when the model has a serverOnly property '
-    'when analyzing model '
+    'Given a shared package model with a serverOnly property, '
+    'when analyzing model, '
     'then an error is collected that serverOnly is not allowed in shared packages.',
     () {
       var models = <ModelSource>[
@@ -167,8 +167,8 @@ fields:
   );
 
   test(
-    'Given a shared package model when the model has a field with scope serverOnly '
-    'when analyzing model '
+    'Given a shared package model with a field with scope serverOnly, '
+    'when analyzing model, '
     'then an error is collected that field is part of a shared model and can not have scope defined to "serverOnly".',
     () {
       var models = <ModelSource>[
@@ -209,8 +209,8 @@ fields:
   );
 
   test(
-    'Given a sealed shared package model and a subclass on the same shared package '
-    'when analyzing model '
+    'Given a sealed shared package model and a subclass on the same shared package, '
+    'when analyzing model, '
     'then no error is collected.',
     () {
       var models = <ModelSource>[
@@ -309,8 +309,8 @@ fields:
   );
 
   test(
-    'Given a sealed shared package model and a subclass on the project package '
-    'when analyzing model '
+    'Given a sealed shared package model and a subclass on the project package, '
+    'when analyzing model, '
     'then an error is collected that sealed models can not be inherited from.',
     () {
       var models = <ModelSource>[

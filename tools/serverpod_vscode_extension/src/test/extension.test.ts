@@ -8,10 +8,12 @@ import { LanguageClient } from 'vscode-languageclient/node';
 suite('VS Code Extension', () => {
     let execSyncStub: sinon.SinonStub;
     let showErrorMessageStub: sinon.SinonStub;
+    let executeCommandStub: sinon.SinonStub;
 
     setup(() => {
         execSyncStub = sinon.stub(childProcess, 'execSync');
         showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage');
+        executeCommandStub = sinon.stub(vscode.commands, 'executeCommand');
     });
 
     teardown(() => {
@@ -72,6 +74,30 @@ suite('VS Code Extension', () => {
             );
         });
 
+        test('Given serverpod CLI version is outdated when activate is called then the model navigation context key stays disabled.', () => {
+            execSyncStub.returns(Buffer.from('Version: 1.1.0'));
+            const mockContext = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+
+            activate(mockContext);
+
+            assert.strictEqual(
+                executeCommandStub.calledWith('setContext', 'serverpod.modelNavigationEnabled'),
+                false
+            );
+        });
+
+        test('Given serverpod CLI is not installed when activate is called then the model navigation context key stays disabled.', () => {
+            execSyncStub.throws(new Error('Command not found'));
+            const mockContext = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+
+            activate(mockContext);
+
+            assert.strictEqual(
+                executeCommandStub.calledWith('setContext', 'serverpod.modelNavigationEnabled'),
+                false
+            );
+        });
+
         test('Given serverpod version output contains extra whitespace when activate is called then it should trim and parse correctly.', () => {
             execSyncStub.returns(Buffer.from('  Version: 1.2.0  \n'));
             const mockContext = { subscriptions: [] } as unknown as vscode.ExtensionContext;
@@ -100,7 +126,8 @@ suite('VS Code Extension', () => {
 
             let capturedClientOptions: any = null;
             const mockClient = {
-                start: sinon.stub()
+                start: sinon.stub(),
+                onDidChangeState: sinon.stub().returns({ dispose: () => { } })
             };
 
             const LanguageClientModule = require('vscode-languageclient/node');

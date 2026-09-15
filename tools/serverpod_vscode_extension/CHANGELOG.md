@@ -1,3 +1,7 @@
+## 1.6.0
+
+- feat: Implement go to definition for model names in language server to allow easy navigation from models or Dart code.
+
 ## 1.5.0
 
 - refactor: BREAKING. Drops support for bare `.yaml`/`.yml` model files. The language server is only attached to `.spy.yaml`, `.spy.yml` and `.spy` files, and the extension no longer activates for every yaml file.

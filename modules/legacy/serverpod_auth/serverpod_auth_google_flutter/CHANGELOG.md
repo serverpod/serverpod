@@ -1,6 +1,4 @@
-## 4.0.0-rc.1
-
-Release candidate for Serverpod 4.
+## 4.0.0
 
 Serverpod 4 is a major overhaul of the development experience. It introduces a new development experience with an interactive command that boots your entire stack, makes Serverpod projects agent-ready out of the box, and lays the foundation for client-side databases with the new SQLite dialect.
 
@@ -39,6 +37,7 @@ To allow easily building offline-first Flutter apps, the experimental `database:
 - refactor: BREAKING. Refactors the `ServerpodClientException` hierarchy to introduce a proper exception for network errors. Previous HTTP-related exceptions now extend the sealed `ServerpodClientHttpException` class.
 - refactor: BREAKING. Refactors the database exception hierarchy to throw specific exceptions for common operation errors (unique/foreign key constraint violations, SQLite database locked, etc.).
 - refactor: BREAKING. Merges normal and `*withOptions` methods on the `CloudStorage` interface.
+- refactor: BREAKING. Simplifies the `RateLimiter` utility on the `serverpod_auth_idp` module.
 - fix: BREAKING. Requires the `.spy.yaml` extension for model files.
 - fix: BREAKING. Removes the native Google Sign-In web implementation in favor of OAuth2.
 - fix: BREAKING. Removes dead email-related exceptions. ([@realmeylisdev](https://github.com/realmeylisdev))
@@ -54,6 +53,7 @@ To allow easily building offline-first Flutter apps, the experimental `database:
 
 #### Models, ORM and database:
 
+- feat: Generates the sync tables list and session wrappers for `database: sync` models.
 - feat: Allows using the `table` keyword on shared package models configured with `database: all`.
 - feat: Introduces new `upsert` and `upsertRow` methods on the ORM. ([@sedobrengocce](https://github.com/sedobrengocce))
 - feat: Adds a `noReturn` parameter to all ORM methods to allow skipping the returning the data.
@@ -83,6 +83,7 @@ To allow easily building offline-first Flutter apps, the experimental `database:
 
 #### Server, web server and client:
 
+- feat: Adds the `serverpod_cloud_storage` package for native Serverpod Cloud provider support.
 - feat: Adds `Module.onStartup` hooks invoked after migrations and before servers start.
 - feat: Ensures at-least-once semantics for future calls execution.
 - feat: Adds dedicated support for recurring future calls.
@@ -102,6 +103,9 @@ To allow easily building offline-first Flutter apps, the experimental `database:
 - fix: Exports WebSocket event types. ([@loopassembly](https://github.com/loopassembly))
 - fix: Throws `StateError` instead of `Exception` for not configured features. ([@realmeylisdev](https://github.com/realmeylisdev))
 - fix: Changes the default cache policy for Flutter web assets to `private, no-cache` for all files.
+- fix: Fixes `Serverpod.shutdown` not releasing `ProcessSignal` watchers after in-process shutdown/start calls.
+- fix: Waits for Redis subscription confirmation before publishing messages.
+- fix: Makes object ACL optional for native GCP storage integration
 - perf: Optimizes Insights queries 60x by using object relations and improved indexes.
 
 #### Authentication:
@@ -128,6 +132,7 @@ To allow easily building offline-first Flutter apps, the experimental `database:
 
 #### Command line and developer tooling:
 
+- feat: Allows Ctrl/Cmd+Click to navigate to model definitions on VS Code IDEs.
 - feat: Exposes flags on the `serverpod create` command to customize the created project.
 - feat: Adds support for creating server only projects.
 - feat: Exposes unified access to `scloud` through the new `serverpod cloud` command.
@@ -141,6 +146,7 @@ To allow easily building offline-first Flutter apps, the experimental `database:
 - fix: Prunes trailing empty migration dirs. ([@Moe1211](https://github.com/Moe1211))
 - fix: Improves the "Flutter web app not built" page on the template.
 - fix: Serves Flutter app config file on the correct path when project uses only webapp.
+- fix: Prints correct version on `serverpod upgrade`, and prevents accidental downgrades.
 - chore: Changes the template to serve the Flutter web app under root if website is not enabled.
 - chore: Removes automatic run of `flutter_build` during `create` command.
 - chore: Disables WASM by default on new projects.
