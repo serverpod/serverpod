@@ -297,18 +297,29 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       _deleteIfExists(passwordFile);
     }
 
+    // Our postmaster is gone by now, so a held pinned port is someone else's.
+    final pinnedPort = options.transport.tcpPort;
+    final ephemeralPort = pinnedPort == 0 || options.ephemeralPortFallback;
+    if (pinnedPort != null &&
+        pinnedPort != 0 &&
+        !await _isLoopbackPortFree(pinnedPort)) {
+      if (!options.ephemeralPortFallback) {
+        throw PortInUseException(
+          'port $pinnedPort on 127.0.0.1 is held by another process',
+          port: pinnedPort,
+        );
+      }
+      resolvedTransport = resolvedTransport.withTcp(
+        port: await _allocateEphemeralPort(),
+        password: resolvedTransport.password!,
+      );
+    }
+
     // No postmaster runs on this cluster now, so its conf is safe to rewrite.
     cluster.reconcilePostgresConf(
       transport: resolvedTransport,
       maxConnections: options.maxConnections,
     );
-
-    // A pinned port someone else holds is a configuration problem. Find out
-    // before paying for a password rewrite and a postmaster crash.
-    var pinnedPort = options.transport.tcpPort;
-    if (pinnedPort != null && pinnedPort != 0) {
-      await _requireFreePort(pinnedPort);
-    }
 
     // initdb seeded fresh clusters. Existing ones get this launch's password.
     var password = resolvedTransport.password;
@@ -325,7 +336,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       dataDir: pgDataDir,
       runDir: runDir,
       transport: resolvedTransport,
-      ephemeralPort: pinnedPort == 0,
+      ephemeralPort: ephemeralPort,
       startTimeout: options.startTimeout,
       pidFile: pidFile,
       logFile: logFile,
@@ -471,17 +482,28 @@ void _deleteIfExists(File file) {
 String? _readIfExists(File file) =>
     file.existsSync() ? file.readAsStringSync() : null;
 
-/// Throws [PortInUseException] when [port] cannot be bound on loopback.
-Future<void> _requireFreePort(int port) async {
-  try {
-    var probe = await ServerSocket.bind(InternetAddress.loopbackIPv4, port);
-    await probe.close();
-  } on SocketException catch (e) {
-    throw PortInUseException(
-      'port $port on 127.0.0.1 is held by another process: ${e.message}',
-      port: port,
-    );
+/// Whether nothing answers on [port] at either loopback address.
+///
+/// Connects rather than binds: `SO_REUSEADDR` lets a loopback bind share a port
+/// with a listener on all addresses on macOS.
+Future<bool> _isLoopbackPortFree(int port) async {
+  for (var address in [
+    InternetAddress.loopbackIPv4,
+    InternetAddress.loopbackIPv6,
+  ]) {
+    try {
+      var probe = await Socket.connect(
+        address,
+        port,
+        timeout: const Duration(milliseconds: 300),
+      );
+      probe.destroy();
+      return false;
+    } on SocketException {
+      // Nothing listens on this address.
+    }
   }
+  return true;
 }
 
 /// [requested] with its TCP port and password filled in.
