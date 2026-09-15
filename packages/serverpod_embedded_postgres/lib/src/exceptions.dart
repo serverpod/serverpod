@@ -156,8 +156,7 @@ final class PostmasterLockBusyException extends EmbeddedPostgresException {
   const PostmasterLockBusyException(super.message, {this.existingPid});
 }
 
-/// The pinned TCP [port] is held by another process, and
-/// [EmbeddedPostgresOptions.ephemeralPortFallback] is off.
+/// The pinned TCP [port] is held by another process.
 final class PortInUseException extends EmbeddedPostgresException {
   /// The loopback port that could not be bound.
   final int port;

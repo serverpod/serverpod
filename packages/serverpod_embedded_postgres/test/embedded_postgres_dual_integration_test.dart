@@ -136,6 +136,34 @@ void main() {
   );
 
   test(
+    'Given a port held by a listener on all IPv4 addresses, '
+    'when a cluster is started with DualTransport pinned to that port, '
+    'then PortInUseException names that port',
+    () async {
+      final holder = await ServerSocket.bind(InternetAddress.anyIPv4, 0);
+      addTearDown(holder.close);
+
+      final starting = startWith(
+        DualTransport(port: holder.port, password: 'pw'),
+      );
+      addTearDown(() => starting.then((pg_) => pg_.stop(), onError: (_) {}));
+
+      await expectLater(
+        starting,
+        throwsA(
+          isA<PortInUseException>().having(
+            (e) => e.port,
+            'port',
+            holder.port,
+          ),
+        ),
+      );
+    },
+    skip: !hasUnixSocketSupport(),
+    timeout: const Timeout(Duration(seconds: 120)),
+  );
+
+  test(
     'Given a detached DualTransport postmaster, '
     'when its data directory is reattached, '
     'then the socket endpoint is preferred and TCP keeps its port and password',
