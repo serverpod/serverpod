@@ -59,6 +59,42 @@ final authUser = await authUsers.get(
 );
 ```
 
+## Relic HTML (document login)
+
+SAS must be the **primary** token manager and `authCookie` must be set (with `allowedOrigins`). Call after `initializeAuthServices` and before `pod.start()`:
+
+```yaml
+authCookie:
+  secure: false          # http://localhost only
+  # sameSite: lax        # default; strict is rejected (OAuth return GET drops the state cookie)
+allowedOrigins:
+  - http://localhost:8082
+```
+
+```yaml
+# config/passwords.yaml — dedicated HMAC key, do not reuse sessionKeyHashPepper
+shared:
+  webAuthOAuthStatePepper: 'a long random secret'
+```
+
+```dart
+pod.configureWebAuthRoutes(loginSuccessPath: '/account');
+pod.webServer.addMiddleware(
+  requireLogin(redirectTo: '/auth/login'),
+  '/account',
+);
+```
+
+Do **not** mount `requireLogin` at `/` — it wraps `/auth/*` and health probes.
+
+Login hub is `GET/POST /auth/login`. Providers that are registered on `AuthServices` also mount `/auth/google`, `/auth/github`, `/auth/microsoft`, `/auth/apple`. HTML Google callback is `/auth/google/callback` (not Flutter's `/auth/callback`). HTML Apple is `POST /auth/apple/web/callback` (HMAC'd `state` form field; Lax cookies are not sent on Apple `form_post`).
+
+Same-site SAS cookie is how a website and Flutter cookie-mode can share a login. JWT Flutter clients will not pick up the Relic cookie.
+
+Relic POSTs outside `/auth/*` are not form-CSRF'd; prefer GET pages plus Origin. Cookie-less homemade login POSTs are login-CSRF-able — use `configureWebAuthRoutes`.
+
+If the API host ≠ the web host, set `authCookie.domain` and list **both** origins. Register both Flutter and HTML redirect URIs at each provider. Out of scope: email register/reset HTML, Facebook HTML, JWT-in-cookie.
+
 ## Flutter app
 
 Use `SignInWidget` to sign the user in. It provides its own Material surface, so it also renders correctly when mixed with non-Material design systems:

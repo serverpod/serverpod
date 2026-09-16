@@ -8,6 +8,7 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/server/dev_auto_refresh_script.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
+import 'package:serverpod/src/server/response_output.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 
@@ -36,7 +37,7 @@ class WebServer {
     ..injectAt('*/', HealthRoutes(serverpod))
     ..use('*/', _devHtmlInjection)
     ..inject(_ReportExceptionMiddleware(this))
-    ..inject(_SessionMiddleware(serverpod.server));
+    ..inject(_SessionMiddleware(this));
 
   /// Security context if the web server is running over https.
   final SecurityContext? _securityContext;
@@ -123,7 +124,7 @@ class WebServer {
   set fallbackRoute(Route route) =>
       _app.fallback = _ReportExceptionMiddleware(this)(
         _SessionMiddleware(
-          serverpod.server,
+          this,
         )(route.asHandler),
       );
 
@@ -276,19 +277,21 @@ class WebServer {
 }
 
 class _SessionMiddleware extends MiddlewareObject {
-  final Server _server;
+  final WebServer _webServer;
 
-  const _SessionMiddleware(this._server);
+  const _SessionMiddleware(this._webServer);
+
+  Server get _server => _webServer.serverpod.server;
 
   @override
   Handler call(Handler next) {
     return (req) async {
-      String? authenticationKey;
+      final config = _server.serverpod.config;
+
+      String? authenticationHeaderValue;
       try {
-        authenticationKey = unwrapAuthHeaderValue(
-          req.getAuthorizationHeaderValue(
-            _server.serverpod.config.validateHeaders,
-          ),
+        authenticationHeaderValue = req.getAuthorizationHeaderValue(
+          config.validateHeaders,
         );
       } on HeaderException catch (_) {
         // If validation is enabled and header is malformed, return 400
@@ -297,22 +300,90 @@ class _SessionMiddleware extends MiddlewareObject {
         );
       }
 
+      String? authenticationKey;
+      var authenticatedFromCookie = false;
+
+      if (authenticationHeaderValue != null) {
+        // Authorization present (even if the token is garbage): do not fall
+        // back to the auth cookie.
+        authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
+      } else if (config.authCookie != null) {
+        final authMode = req.headers[webAuthModeHeaderName]?.firstOrNull;
+        if (authMode != webAuthModeCookieTransport) {
+          authenticationKey = req.getAuthCookieValue(config.authCookie);
+          authenticatedFromCookie = authenticationKey != null;
+        }
+      }
+
+      if (authenticatedFromCookie && _isUnsafeMethod(req.method)) {
+        final origin = requestOrigin(req);
+        final allowedOrigins = config.allowedOrigins;
+        if (origin == null ||
+            allowedOrigins == null ||
+            !allowedOrigins.contains(origin)) {
+          return Response.forbidden(
+            body: Body.fromString('Request origin not allowed.'),
+          );
+        }
+      }
+
       final deferredSession = _Deferred(
         () => SessionInternalMethods.createWebCallSession(
           server: _server,
           endpoint: req.url.path,
           authenticationKey: authenticationKey,
+          request: req,
         ),
       );
       _sessionProperty[req] = deferredSession;
       try {
-        return await next(req);
+        final result = await next(req);
+        return await _applyQueuedOutput(result, deferredSession);
+      } catch (e, stackTrace) {
+        Session? session;
+        try {
+          session = await deferredSession.ifInitiatedRun((s) => s);
+        } catch (_) {
+          session = null;
+        }
+        await _webServer._reportException(
+          e,
+          stackTrace,
+          space: OriginSpace.application,
+          session: session != null ? Future.value(session) : null,
+          request: req,
+        );
+        if (session != null) {
+          return applyResponseOutput(
+            Response.internalServerError(),
+            headers: session.responseHeaders,
+            cookies: session.responseCookies,
+          );
+        }
+        return Response.internalServerError();
       } finally {
         await deferredSession.ifInitiatedRun((s) => s.close());
       }
     };
   }
+
+  Future<Result> _applyQueuedOutput(
+    Result result,
+    _Deferred<Session> deferredSession,
+  ) async {
+    if (result is! Response) return result;
+    final session = await deferredSession.ifInitiatedRun((s) => s);
+    if (session == null) return result;
+    return applyResponseOutput(
+      result,
+      headers: session.responseHeaders,
+      cookies: session.responseCookies,
+    );
+  }
 }
+
+bool _isUnsafeMethod(Method method) =>
+    method != Method.get && method != Method.head && method != Method.options;
 
 class _ReportExceptionMiddleware extends MiddlewareObject {
   final WebServer _webServer;

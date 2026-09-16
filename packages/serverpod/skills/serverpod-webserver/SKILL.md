@@ -27,7 +27,16 @@ class HelloRoute extends Route {
 pod.webServer.addRoute(HelloRoute(), '/api/hello');
 ```
 
-Routes matched in registration order. `Session` provides DB, logging, and auth access just like in endpoints.
+Routes matched in registration order. `Session` provides DB, logging, and auth access just like in endpoints. With `authCookie` configured, Relic hydrates `session.authenticated` from the `Authorization` header if present, otherwise from the SAS auth cookie. Protect HTML paths with `requireLogin` (never at `/`):
+
+```dart
+pod.webServer.addMiddleware(
+  requireLogin(redirectTo: '/auth/login'),
+  '/account',
+);
+```
+
+Document login lives in the auth package (`configureWebAuthRoutes`). See [serverpod-auth](../serverpod-auth/SKILL.md).
 
 ## HTTP methods
 

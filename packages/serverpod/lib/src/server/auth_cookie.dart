@@ -16,22 +16,28 @@ final _basePathRegExp = RegExp(r'^/[^;\s\x00-\x1f\x7f]{0,255}$');
 /// Web-auth-cookie helpers on [Session]: decides whether a request wants
 /// cookie-based web auth and writes/clears the auth cookie accordingly.
 extension WebAuthCookieSession on Session {
-  /// Whether the request participates in cookie-based web auth transport (via
-  /// the [webAuthModeHeaderName] header) and the server has a
-  /// [ServerpodConfig.authCookie] configured.
+  /// Whether the auth token should be issued or cleared as an `HttpOnly`
+  /// cookie (see [writeWebAuthCookie] / [clearWebAuthCookie]).
   ///
-  /// True for both [webAuthModeCookie] and [webAuthModeCookieTransport];
-  /// whether the main auth cookie may authenticate the call is decided
-  /// separately by the server from the strict [webAuthModeCookie] value.
+  /// True when [ServerpodConfig.authCookie] is configured and either:
+  /// - the request carries [webAuthModeHeaderName] as [webAuthModeCookie] or
+  ///   [webAuthModeCookieTransport] (RPC cookie-mode clients), or
+  /// - this is a [WebCallSession] (Relic HTML; a second delivery path that
+  ///   does not send the marker header).
   ///
-  /// When true the auth token should be issued as an `HttpOnly` cookie (see
-  /// [writeWebAuthCookie]) and omitted from the response body, so it never
-  /// reaches client-side JavaScript.
+  /// The marker is not the single source of truth for cookie delivery.
+  /// Authenticating an incoming Relic request from the auth cookie is
+  /// decided separately by `_SessionMiddleware`, never from the JWT refresh
+  /// cookie. Whether the main auth cookie may authenticate an RPC call is
+  /// decided by the server from the strict [webAuthModeCookie] value.
   bool get isWebAuthCookieRequest {
     if (serverpod.config.authCookie == null) return false;
     final authMode = request?.headers[webAuthModeHeaderName]?.firstOrNull;
-    return authMode == webAuthModeCookie ||
-        authMode == webAuthModeCookieTransport;
+    if (authMode == webAuthModeCookie ||
+        authMode == webAuthModeCookieTransport) {
+      return true;
+    }
+    return this is WebCallSession;
   }
 
   /// If [isWebAuthCookieRequest], writes [token] as the auth cookie and returns
@@ -99,11 +105,10 @@ extension WebAuthCookieSession on Session {
 
   /// Clears the auth cookie for cookie-mode requests (a no-op otherwise).
   ///
-  /// Gated on [isWebAuthCookieRequest] just like [writeWebAuthCookie], so the
-  /// marker is the single source of truth for "this request participates in
-  /// cookie auth": a header/native client signing out gets no stray
-  /// `Set-Cookie`. Cookie clients send the marker on every call (including
-  /// sign-out), so their cookie is still cleared.
+  /// Gated on [isWebAuthCookieRequest] just like [writeWebAuthCookie], so a
+  /// header/native client signing out gets no stray `Set-Cookie`. Cookie
+  /// clients send the marker on every call (including sign-out); Relic HTML
+  /// qualifies via [WebCallSession], so [clearWebAuthCookie] still runs.
   ///
   /// [refreshCookiePath] must match the path the refresh cookie was set with,
   /// or browsers will not remove it.
