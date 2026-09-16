@@ -9913,4 +9913,11 @@ class Endpoints extends _is.EndpointDispatch {
   _is.FutureCallDispatch? get futureCalls {
     return _i3an2vcw.FutureCalls();
   }
+
+  @override
+  Future<void> onStartup(_is.Session session) async {
+    await modules['serverpod_auth']!.onStartup(session);
+    await modules['serverpod_test_module']!.onStartup(session);
+    await modules['serverpod_test_shared_module']!.onStartup(session);
+  }
 }

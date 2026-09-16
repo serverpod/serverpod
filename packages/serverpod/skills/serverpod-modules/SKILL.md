@@ -44,3 +44,22 @@ serverpod create --template module my_module
 ```
 
 Creates server + client packages. Add Flutter package if needed: `flutter create --template package my_module_flutter`. Set `type: module` in `config/generator.yaml`. Prefix table names (e.g. `my_module_orders`) to avoid clashes.
+
+## Module startup hooks
+
+Override post-migration initialization with a single `Module` subclass per package:
+
+```dart
+import 'package:serverpod/serverpod.dart';
+
+class MyModule extends Module {
+  @override
+  Future<void> onStartup(Session session) async {
+    // Runs after DB migrations / Redis connect, before API servers start.
+  }
+}
+```
+
+Run `serverpod generate`. The host invokes the local module (if any), then each dependency module sorted by module name (not dependency order). The session has no auth context — do not close or retain it.
+
+Auth handlers and routes still use configure APIs before `Serverpod.start`. This hook is for post-migration work only.
