@@ -10,6 +10,7 @@ import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
+import 'package:serverpod/src/server/socket_bind_failure.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -160,11 +161,18 @@ class WebServer {
       var host = _config.publicHost;
       logInfo('Webserver listening on $scheme://$host:$_actualPort');
     } catch (e, stackTrace) {
+      final bindFailure = describeSocketBindFailure(
+        error: e,
+        serverLabel: 'web server',
+        port: _config.port,
+        runMode: serverpod.runMode,
+      );
       await _reportException(
         e,
         stackTrace,
-        message:
-            'Failed to bind socket, port ${_config.port} may already be in use.',
+        message: bindFailure.userMessage,
+        includeErrorInLog: !bindFailure.omitStackTrace,
+        includeStackTraceInLog: !bindFailure.omitStackTrace,
       );
     }
     return _running;
@@ -177,10 +185,13 @@ class WebServer {
     String? message,
     Future<Session>? session,
     Request? request,
+    bool includeErrorInLog = true,
+    bool includeStackTraceInLog = true,
   }) async {
-    logError(
-      message != null ? '$message $e' : e,
-      stackTrace: stackTrace,
+    log.error(
+      message != null ? 'WebServer: $message' : 'WebServer: $e',
+      error: includeErrorInLog && e is Exception ? e : null,
+      stackTrace: includeStackTraceInLog ? stackTrace : null,
     );
 
     var context = session != null

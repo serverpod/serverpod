@@ -12,6 +12,7 @@ import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/response_output.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
+import 'package:serverpod/src/server/socket_bind_failure.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 
@@ -186,10 +187,18 @@ class Server implements RouterInjectable {
       _actualPort = server.port;
       _relicServer = server;
     } catch (e, stackTrace) {
+      final bindFailure = describeSocketBindFailure(
+        error: e,
+        serverLabel: name == 'Insights' ? 'Insights server' : 'API server',
+        port: _port,
+        runMode: runMode,
+      );
       await _reportFrameworkException(
         e,
         stackTrace,
-        message: 'Failed to bind socket, port $_port may already be in use.',
+        message: bindFailure.userMessage,
+        includeErrorInLog: !bindFailure.omitStackTrace,
+        includeStackTraceInLog: !bindFailure.omitStackTrace,
       );
       return false;
     }
@@ -666,11 +675,13 @@ class Server implements RouterInjectable {
     String? message,
     Request? request,
     OperationType? operationType,
+    bool includeErrorInLog = true,
+    bool includeStackTraceInLog = true,
   }) async {
     log.error(
       message ?? 'Unhandled exception',
-      error: e,
-      stackTrace: stackTrace,
+      error: includeErrorInLog ? e : null,
+      stackTrace: includeStackTraceInLog ? stackTrace : null,
     );
 
     var context = request != null
