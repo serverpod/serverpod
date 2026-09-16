@@ -27,6 +27,17 @@ void main() {
     await File(
       path.join(nestedDirectory.path, 'file3.txt'),
     ).writeAsString('nested contents');
+    await File(
+      path.join(directory.path, '.env'),
+    ).writeAsString('SECRET=value');
+    await File(
+      path.join(directory.path, '.git', 'config'),
+    ).create(recursive: true);
+    var wellKnownFile = File(
+      path.join(directory.path, '.well-known', 'assetlinks.json'),
+    );
+    await wellKnownFile.create(recursive: true);
+    await wellKnownFile.writeAsString('[]');
   });
 
   tearDownAll(() async {
@@ -183,6 +194,44 @@ void main() {
         expect(response.statusCode, 200);
         expect(response.body, 'nested contents');
         expect(response.headers['cache-control'], isNull);
+      });
+    });
+
+    group('and the directory contains dot-files', () {
+      setUp(() async {
+        pod.webServer.addRoute(
+          StaticRoute.directory(directory),
+          '/url_prefix',
+        );
+        await pod.startWithDatabase();
+      });
+
+      test('when requesting a dot-file then 404 is returned', () async {
+        var response = await client.get(
+          Uri.parse('${pod.webUrl}url_prefix/.env'),
+        );
+
+        expect(response.statusCode, 404);
+        expect(response.body, isNot(contains('SECRET')));
+      });
+
+      test('when requesting a file inside a dot-directory '
+          'then 404 is returned', () async {
+        var response = await client.get(
+          Uri.parse('${pod.webUrl}url_prefix/.git/config'),
+        );
+
+        expect(response.statusCode, 404);
+      });
+
+      test('when requesting a file inside .well-known '
+          'then the file is served', () async {
+        var response = await client.get(
+          Uri.parse('${pod.webUrl}url_prefix/.well-known/assetlinks.json'),
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, '[]');
       });
     });
 

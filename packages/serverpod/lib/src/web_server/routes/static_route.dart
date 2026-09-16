@@ -144,10 +144,14 @@ class StaticRoute extends Route {
     // `.git`. The underlying static handler confines serving to the configured
     // root directory but applies no hidden-file rule, so a misconfigured root
     // (e.g. a project directory) would otherwise expose these. Reject any
-    // request whose path contains a dot-segment.
-    if (request.url.pathSegments.any((segment) => segment.startsWith('.'))) {
+    // request whose path below the route contains a dot-segment, except
+    // `.well-known` (RFC 8615), which is needed for e.g. app links.
+    if (request.remainingPath.segments.any(_isHiddenSegment)) {
       return Response.notFound();
     }
     return _handler(request);
   }
+
+  static bool _isHiddenSegment(String segment) =>
+      segment.startsWith('.') && segment != '.well-known';
 }
