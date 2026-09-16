@@ -16,6 +16,39 @@ class DatabaseUnexpectedResultException extends DatabaseException {
   DatabaseUnexpectedResultException(super.message);
 }
 
+/// Thrown when establishing a database connection fails.
+///
+/// [cause] is the original error from the driver or OS. [sqlState] is the
+/// Postgres SQLSTATE when one is available. This type is produced by the
+/// connect path (`testConnection` / startup retry), not by ordinary queries.
+final class DatabaseConnectException implements DatabaseException {
+  /// Creates a [DatabaseConnectException] wrapping [cause].
+  DatabaseConnectException({
+    required this.cause,
+    this.sqlState,
+    String? message,
+  }) : message = message ?? 'Failed to connect to the database.';
+
+  /// The original connection failure.
+  final Object cause;
+
+  /// Postgres SQLSTATE, if the cause carried one.
+  final String? sqlState;
+
+  @override
+  final String message;
+
+  @override
+  String toString() {
+    final details = [
+      'message: $message',
+      if (sqlState != null) 'sqlState: $sqlState',
+      'cause: $cause',
+    ].join(', ');
+    return 'DatabaseConnectException: { $details }';
+  }
+}
+
 /// Exception thrown when an exception occurs during a database query.
 class DatabaseQueryException extends DatabaseException {
   /// Creates a new [DatabaseQueryException].

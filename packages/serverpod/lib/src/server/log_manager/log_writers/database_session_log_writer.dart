@@ -43,6 +43,12 @@ class DatabaseSessionLogWriter extends SessionLogWriter {
     _internalSession = session;
   }
 
+  /// Detaches the session so further events are no-ops. Used when the
+  /// session log tables are missing.
+  void detach() {
+    _internalSession = null;
+  }
+
   @override
   Future<void> dispose() async {
     if (_closing) return;

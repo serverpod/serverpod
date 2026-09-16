@@ -206,6 +206,12 @@ abstract final class PgErrorCode {
   static const savepointException = '3B000';
   static const invalidSavepointSpecification = '3B001';
 
+  // Class 3D — Invalid Catalog Name
+  static const invalidCatalogName = '3D000';
+
+  // Class 3F — Invalid Schema Name
+  static const invalidSchemaName = '3F000';
+
   // Class 40 — Transaction Rollback
   static const transactionRollback = '40000';
   static const serializationFailure = '40001';
