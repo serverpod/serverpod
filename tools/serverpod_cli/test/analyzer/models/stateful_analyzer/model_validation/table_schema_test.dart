@@ -201,7 +201,7 @@ void main() {
     () {
       var result = analyze(
         [
-          ModelSourceBuilder().withCrdtScopeModel().build(),
+          ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
           ModelSourceBuilder().withYaml('''
         class: User
         table: auth.user
@@ -449,7 +449,7 @@ void main() {
       () {
         var result = analyze(
           [
-            ModelSourceBuilder().withCrdtScopeModel().build(),
+            ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
             ModelSourceBuilder().withYaml('''
         class: User
         table: user
