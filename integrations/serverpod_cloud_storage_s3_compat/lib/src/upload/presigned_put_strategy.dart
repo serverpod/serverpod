@@ -134,6 +134,12 @@ $payloadHash''';
     }
   }
 
+  /// Note on [maxFileSize]: unlike the POST-policy strategy, a presigned PUT
+  /// URL (SigV4) can only sign an *exact* `Content-Length`, not a maximum, so
+  /// [maxFileSize] alone cannot be enforced on the signed URL. Pass
+  /// [contentLength] to bind the upload to an exact size; otherwise the size
+  /// limit is not enforced at the signature layer and must be checked
+  /// server-side after upload.
   @override
   Future<UploadDescription> createUploadDescription({
     required String accessKey,

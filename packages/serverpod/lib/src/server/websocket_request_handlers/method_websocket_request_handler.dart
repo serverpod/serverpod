@@ -36,7 +36,22 @@ class MethodWebsocketRequestHandler {
 
     try {
       server.serverpod.logVerbose('Method websocket connection established.');
+      final maxRequestSize = server.serverpod.config.maxRequestSize;
       await for (final event in webSocket.events) {
+        // Enforce the same size limit as HTTP requests before decoding, so an
+        // oversized frame cannot be utf8-decoded and json-decoded into memory.
+        final messageSize = switch (event) {
+          TextDataReceived() => event.text.length,
+          BinaryDataReceived() => event.data.length,
+          CloseReceived() => 0,
+        };
+        if (messageSize > maxRequestSize) {
+          server.serverpod.logVerbose(
+            'Closing method websocket: message of $messageSize bytes exceeds '
+            'maxRequestSize ($maxRequestSize).',
+          );
+          break;
+        }
         final jsonData = switch (event) {
           TextDataReceived() => event.text,
           BinaryDataReceived() => utf8.decode(event.data),

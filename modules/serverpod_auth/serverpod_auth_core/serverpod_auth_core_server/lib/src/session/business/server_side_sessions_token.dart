@@ -61,7 +61,9 @@ SessionKeyData? tryParseServerSideSessionToken(
     return (serverSideSessionId: serverSideSessionId, secret: secret);
   } catch (e, stackTrace) {
     session?.log(
-      'Failed to parse session key: "$key"',
+      // Do not log the raw session key: it embeds the session secret. Log only
+      // its length to aid debugging without persisting the credential.
+      'Failed to parse session key (length: ${key.length})',
       level: LogLevel.error,
       exception: e,
       stackTrace: stackTrace,

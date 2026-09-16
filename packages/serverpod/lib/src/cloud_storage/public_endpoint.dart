@@ -166,6 +166,11 @@ class CloudStoragePublicEndpoint extends Endpoint {
         null => _mimeTypeMapping[extension] ?? MimeType.octetStream,
       };
       final headers = Headers.build((mutableHeaders) {
+        // Never allow the browser to MIME-sniff user-supplied content served
+        // from the API origin (e.g. an uploaded .svg being interpreted as
+        // HTML/script). Apps serving untrusted uploads should additionally pass
+        // a downloadFileName to force an attachment disposition.
+        mutableHeaders['X-Content-Type-Options'] = ['nosniff'];
         if (stat.cacheControl != null) {
           mutableHeaders['Cache-Control'] = [stat.cacheControl!];
         }

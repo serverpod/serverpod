@@ -139,6 +139,15 @@ class StaticRoute extends Route {
   }
 
   @override
-  FutureOr<Result> handleCall(Session session, Request request) =>
-      _handler(request);
+  FutureOr<Result> handleCall(Session session, Request request) {
+    // Defence-in-depth: never serve dot-files such as `.env` or the contents of
+    // `.git`. The underlying static handler confines serving to the configured
+    // root directory but applies no hidden-file rule, so a misconfigured root
+    // (e.g. a project directory) would otherwise expose these. Reject any
+    // request whose path contains a dot-segment.
+    if (request.url.pathSegments.any((segment) => segment.startsWith('.'))) {
+      return Response.notFound();
+    }
+    return _handler(request);
+  }
 }

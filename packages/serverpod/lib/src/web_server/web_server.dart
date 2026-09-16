@@ -483,12 +483,18 @@ abstract class WidgetRoute extends Route {
 
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
 
-    final headers = Headers.build(
-      (mh) => mh.cacheControl = CacheControlHeader(
+    final headers = Headers.build((mh) {
+      mh.cacheControl = CacheControlHeader(
         noCache: true,
         privateCache: true,
-      ),
-    );
+      );
+      // Security headers for server-rendered pages: prevent MIME-sniffing of
+      // the response and framing of the page (clickjacking). A stricter
+      // Content-Security-Policy is intentionally left to application config, as
+      // a framework-wide default would break apps that load their own assets.
+      mh['X-Content-Type-Options'] = ['nosniff'];
+      mh['X-Frame-Options'] = ['SAMEORIGIN'];
+    });
 
     // Cache-bust paths for {{{@/path/to/asset}}} patterns in the template.
     // This warms up CacheBustingConfig's cache so that the

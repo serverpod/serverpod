@@ -52,18 +52,20 @@ Uint8List generateRandomBytes(final int length) {
 }
 
 /// Checks whether the 2 given lists contain the same data.
+///
+/// The comparison runs in constant time with respect to the list contents: it
+/// always inspects every byte instead of returning on the first mismatch, so it
+/// does not leak information about secret values (e.g. hashes or tokens)
+/// through timing. For equal-length inputs — the security-relevant case
+/// — the running time is independent of where the first differing byte is.
 bool uint8ListAreEqual(final Uint8List a, final Uint8List b) {
-  if (a.length != b.length) {
-    return false;
+  var result = a.length ^ b.length;
+  final length = a.length < b.length ? a.length : b.length;
+  for (int i = 0; i < length; i++) {
+    result |= a[i] ^ b[i];
   }
 
-  for (int i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) {
-      return false;
-    }
-  }
-
-  return true;
+  return result == 0;
 }
 
 /// Splits at spaces and joins to lowerCamelCase.
