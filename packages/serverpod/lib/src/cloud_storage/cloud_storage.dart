@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:serverpod/src/cloud_storage/cloud_storage_exception.dart';
 import 'package:serverpod/src/cloud_storage/upload_description.dart';
 
+import '../server/serverpod.dart';
 import '../server/session.dart';
 
 /// The [CloudStorage] provides a standardized interface to store binary files
@@ -23,6 +24,10 @@ abstract class CloudStorage {
   /// should be accessible to everyone (usually through a web interface),
   /// while the private is accessed internally only.
   CloudStorage(this.storageId);
+
+  /// Called when the storage is added to [pod]. Override to register
+  /// anything the storage needs from the server, such as endpoints.
+  void onAdded(Serverpod pod) {}
 
   /// Saves a file to the cloud. The path should be relative to the root
   /// directory of the storage (i.e. the string shouldn't start with a

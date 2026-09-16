@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:test/test.dart';
@@ -50,6 +51,41 @@ void main() {
       expect(response.statusCode, isNot(HttpStatus.notFound));
     });
   });
+
+  group(
+    'Given a Serverpod with a database and the default storages, '
+    'when the start hooks are run, ',
+    () {
+      late Directory tempDir;
+      late Serverpod pod;
+
+      setUp(() async {
+        tempDir = await Directory.systemTemp.createTemp('cloud_storage_');
+        pod = Serverpod(
+          [],
+          internal.Protocol(),
+          EmptyEndpoints(),
+          config: ServerpodConfig(
+            apiServer: portZeroConfig,
+            database: SqliteDatabaseConfig(
+              filePath: p.join(tempDir.path, 'test.db'),
+            ),
+          ),
+        );
+
+        pod.runStartHooks();
+      });
+
+      tearDown(() async {
+        await pod.shutdown(exitProcess: false);
+        await tempDir.delete(recursive: true);
+      });
+
+      test('then the cloud storage endpoint is registered.', () {
+        expect(pod.endpoints.connectors, contains('serverpod_cloud_storage'));
+      });
+    },
+  );
 
   group('Given a started Serverpod without a DatabaseCloudStorage, '
       'when the server is re-injected into a router as on hot reload, ', () {

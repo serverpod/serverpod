@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/generated/cloud_storage.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_download.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
@@ -14,6 +15,11 @@ import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 class DatabaseCloudStorage extends CloudStorage {
   /// Creates a new [DatabaseCloudStorage].
   DatabaseCloudStorage(super.storageId);
+
+  @override
+  void onAdded(Serverpod pod) {
+    pod.experimental.addStartHook(CloudStoragePublicEndpoint().register);
+  }
 
   @override
   Future<void> deleteFile({

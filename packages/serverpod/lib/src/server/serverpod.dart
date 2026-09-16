@@ -11,7 +11,6 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/src/server/log_manager/session_log.dart';
 import 'package:serverpod/src/server/log_manager/serverpod_logging.dart';
-import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -225,6 +224,7 @@ class Serverpod {
   /// Storage. E.g. see the serverpod_cloud_storage_s3 pub package.
   void addCloudStorage(CloudStorage cloudStorage) {
     storage[cloudStorage.storageId] = cloudStorage;
+    cloudStorage.onAdded(this);
   }
 
   internal.RuntimeSettings _defaultRuntimeSettings(String runMode) {
@@ -650,10 +650,8 @@ class Serverpod {
     }
 
     if (Features.enableDatabase) {
-      storage.addAll({
-        'public': DatabaseCloudStorage('public'),
-        'private': DatabaseCloudStorage('private'),
-      });
+      addCloudStorage(DatabaseCloudStorage('public'));
+      addCloudStorage(DatabaseCloudStorage('private'));
     }
 
     // Setup Redis
@@ -791,18 +789,17 @@ class Serverpod {
     }
   }
 
-  /// Registers the endpoint serving [DatabaseCloudStorage], if one is
-  /// configured. Called at start and again when hot reload rebuilds the
-  /// endpoint dispatch.
+  /// Runs the hooks registered with [ExperimentalApi.addStartHook]. Called at
+  /// start and again when hot reload rebuilds the endpoint dispatch.
   @meta.internal
-  void registerDatabaseCloudStorageEndpoint() {
-    if (storage.values.any((storage) => storage is DatabaseCloudStorage)) {
-      CloudStoragePublicEndpoint().register(this);
+  void runStartHooks() {
+    for (final hook in _experimental._startHooks) {
+      hook(this);
     }
   }
 
   Future<void> _unguardedStart() async {
-    registerDatabaseCloudStorageEndpoint();
+    runStartHooks();
 
     // Ensure the database pool manager has started.
     // The call to start() is necessary in case this method is being invoked
@@ -1543,6 +1540,14 @@ class ExperimentalApi {
   final DiagnosticEventHandler _eventDispatcher;
 
   final TaskManagerImpl _shutdownTasks;
+
+  final _startHooks = <void Function(Serverpod pod)>[];
+
+  /// Registers a hook that runs when the server starts. In development it
+  /// also runs after every hot reload, so hooks must be safe to run repeatedly.
+  void addStartHook(void Function(Serverpod pod) hook) {
+    _startHooks.add(hook);
+  }
 
   /// Shutdown tasks can be used to perform cleanup operations before the server
   /// is shut down. The tasks will be executed asynchronously after the server
