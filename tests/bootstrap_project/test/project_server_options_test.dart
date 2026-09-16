@@ -89,6 +89,16 @@ void main() async {
               ),
             ).readAsStringSync();
             expect(developmentConfig, isNot(contains('database:')));
+
+            final generatorConfig = File(
+              path.join(
+                project.commandRoot,
+                'config',
+                'generator.yaml',
+              ),
+            ).readAsStringSync();
+
+            expect(generatorConfig, contains('database: false'));
           });
         },
       );
