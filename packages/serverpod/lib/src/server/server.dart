@@ -137,6 +137,7 @@ class Server implements RouterInjectable {
       endpoints.connectors.clear();
       endpoints.modules.clear();
       endpoints.initializeEndpoints(this);
+      serverpod.registerDatabaseCloudStorageEndpoint();
     }
 
     if (serverpod.config.loggingMode == ServerpodLoggingMode.verbose) {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' as meta;
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart' hide LogLevel;
 import 'package:serverpod_database/embedded.dart';
@@ -790,15 +791,18 @@ class Serverpod {
     }
   }
 
-  Future<void> _unguardedStart() async {
-    // Register cloud store endpoint if we're using the database cloud store
-    var hasDatabaseStorage = storage.entries.any(
-      (storage) => storage.value is DatabaseCloudStorage,
-    );
-
-    if (hasDatabaseStorage) {
+  /// Registers the endpoint serving [DatabaseCloudStorage], if one is
+  /// configured. Called at start and again when hot reload rebuilds the
+  /// endpoint dispatch.
+  @meta.internal
+  void registerDatabaseCloudStorageEndpoint() {
+    if (storage.values.any((storage) => storage is DatabaseCloudStorage)) {
       CloudStoragePublicEndpoint().register(this);
     }
+  }
+
+  Future<void> _unguardedStart() async {
+    registerDatabaseCloudStorageEndpoint();
 
     // Ensure the database pool manager has started.
     // The call to start() is necessary in case this method is being invoked
