@@ -144,6 +144,50 @@ void main() {
     },
   );
 
+  group(
+    'Given a web server with FlutterRoute configured with '
+    'sameOriginAllowPopups COOP policy',
+    () {
+      late Serverpod pod;
+
+      setUp(() async {
+        pod = IntegrationTestServer.create();
+
+        pod.webServer.addRoute(
+          FlutterRoute(
+            webDir,
+            crossOriginOpenerPolicy:
+                CrossOriginOpenerPolicyHeader.sameOriginAllowPopups,
+          ),
+        );
+
+        await pod.startWithDatabase();
+      });
+
+      tearDown(() async {
+        await pod.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when requesting file then the configured COOP policy is used',
+        () async {
+          final response = await client.get(
+            Uri.parse('${pod.webUrl}main.dart.js'),
+          );
+          expect(response.statusCode, 200);
+          expect(
+            response.headers['cross-origin-opener-policy'],
+            'same-origin-allow-popups',
+          );
+          expect(
+            response.headers['cross-origin-embedder-policy'],
+            'require-corp',
+          );
+        },
+      );
+    },
+  );
+
   group('Given a FlutterRoute with custom index file', () {
     late Serverpod pod;
     late File customIndex;
