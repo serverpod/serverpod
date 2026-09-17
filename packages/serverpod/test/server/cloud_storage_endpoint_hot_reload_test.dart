@@ -54,7 +54,7 @@ void main() {
   });
 
   group(
-    'Given a Serverpod with a database and the default storages, '
+    'Given a Serverpod with a database and no explicitly added storage, '
     'when the start hooks are run, ',
     () {
       late Directory tempDir;
@@ -82,9 +82,12 @@ void main() {
         await tempDir.delete(recursive: true);
       });
 
-      test('then the cloud storage endpoint is registered.', () {
-        expect(pod.endpoints.connectors, contains('serverpod_cloud_storage'));
-      });
+      test(
+        'then the default storages register the cloud storage endpoint.',
+        () {
+          expect(pod.endpoints.connectors, contains('serverpod_cloud_storage'));
+        },
+      );
     },
   );
 
