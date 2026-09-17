@@ -986,9 +986,18 @@ class Serverpod {
     }
 
     final verified = result?.databaseMatchesTargetState ?? false;
-    if (!verified && config.runMode == ServerpodRunMode.development) {
+    if (verified) return;
+
+    if (config.runMode == ServerpodRunMode.development) {
       throw ExitException(1);
     }
+
+    // A maintenance migration run only reports its result through the exit
+    // code, other roles keep starting outside development.
+    final isMigrationRun =
+        config.role == ServerpodRole.maintenance &&
+        (applyMigrations || applyRepairMigration);
+    if (isMigrationRun) _exitCode = 1;
   }
 
   Future<void> _loadRuntimeSettings() async {
