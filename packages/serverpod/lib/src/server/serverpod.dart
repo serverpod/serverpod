@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
-import 'package:meta/meta.dart' as meta;
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart' hide LogLevel;
 import 'package:serverpod_database/embedded.dart';
@@ -786,15 +785,6 @@ class Serverpod {
       if (_exitCode != 0) {
         throw ExitException(_exitCode);
       }
-    }
-  }
-
-  /// Runs the hooks added with [ExperimentalApi.registerStartHook]. Called at
-  /// start and again when hot reload rebuilds the endpoint dispatch.
-  @meta.internal
-  void runStartHooks() {
-    for (final hook in _experimental._startHooks) {
-      hook(this);
     }
   }
 
@@ -1610,6 +1600,14 @@ extension ServerpodInternalMethods on Serverpod {
 
   /// Retrieve the global internal session used by the Serverpod for logging.
   Session get internalLoggingSession => _internalLoggingSession;
+
+  /// Runs the hooks added with [ExperimentalApi.registerStartHook]. Called at
+  /// start and again when hot reload rebuilds the endpoint dispatch.
+  void runStartHooks() {
+    for (final hook in _experimental._startHooks) {
+      hook(this);
+    }
+  }
 
   /// Submits an event to registered event handlers.
   /// They will execute asynchronously.

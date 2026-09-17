@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
+import 'package:serverpod/src/server/serverpod.dart';
 import 'package:test/test.dart';
 
 import 'test_helpers/empty_endpoints.dart';
