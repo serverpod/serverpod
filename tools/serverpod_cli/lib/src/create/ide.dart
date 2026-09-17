@@ -2,18 +2,9 @@ import 'package:serverpod_cli/src/create/copier.dart';
 
 enum TemplateIde {
   antigravity(
-    filePath: '$_antigravityPluginDir/mcp_config.json',
-    config: _genericConfig,
-    moduleConfig: _genericModuleConfig,
-    replacements: [
-      // The Antigravity ecosystem names the Dart MCP server "dart-mcp-server",
-      // so reuse key to avoid duplicates.
-      Replacement(slotName: '"dart":', replacement: '"dart-mcp-server":'),
-    ],
-    // Antigravity discovers project-local MCP config through its plugin system.
-    additionalFiles: {
-      '$_antigravityPluginDir/plugin.json': _antigravityPluginManifest,
-    },
+    filePath: '.agents/mcp_config.json',
+    config: _antigravityConfig,
+    moduleConfig: _antigravityModuleConfig,
   ),
   codex(
     filePath: '.codex/config.toml',
@@ -50,7 +41,6 @@ enum TemplateIde {
     required this.config,
     required this.moduleConfig,
     this.replacements = const [],
-    this.additionalFiles = const {},
   });
 
   /// Path where the config file for the IDE should be created,
@@ -66,10 +56,6 @@ enum TemplateIde {
 
   /// Optional replacements to be applied to the config content before writing.
   final List<Replacement> replacements;
-
-  /// Additional files to write alongside [filePath], keyed by their project-root-relative path.
-  /// Content goes through the same [TemplateIdeExtension.render] pipeline as [config].
-  final Map<String, String> additionalFiles;
 }
 
 extension TemplateIdeExtension on TemplateIde {
@@ -79,14 +65,8 @@ extension TemplateIdeExtension on TemplateIde {
   String effectiveConfig({
     required String serverDirRelative,
     bool isModule = false,
-  }) => render(
-    isModule ? moduleConfig : config,
-    serverDirRelative: serverDirRelative,
-  );
-
-  /// Renders [content] with the server dir slot and this IDE's [replacements].
-  String render(String content, {required String serverDirRelative}) {
-    String result = content.replaceAll(
+  }) {
+    String result = (isModule ? moduleConfig : config).replaceAll(
       _serverDirRelativeSlot,
       serverDirRelative,
     );
@@ -98,19 +78,6 @@ extension TemplateIdeExtension on TemplateIde {
 }
 
 const _serverDirRelativeSlot = '{serverDirRelative}';
-
-/// Folder holding the generated Antigravity plugin. The folder name and the
-/// manifest "name" must match for Antigravity to index the plugin!
-const _antigravityPluginDir = '.agents/plugins/$_antigravityPluginName';
-const _antigravityPluginName = 'serverpod-local';
-
-/// Marker that registers the generated folder as an Antigravity plugin so its
-/// sibling mcp_config.json is ingested.
-const _antigravityPluginManifest =
-    '''{
-  "name": "$_antigravityPluginName"
-}
-''';
 
 /// Generic MCP server config for IDEs.
 const _genericConfig = '''{
@@ -135,6 +102,48 @@ const _genericModuleConfig = '''{
     "dart": {
       "command": "dart",
       "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+/// MCP server config for Antigravity. The GUI app does not inherit the user's
+/// shell PATH, so commands are resolved through a login shell.
+const _antigravityConfig = '''{
+  "mcpServers": {
+    "serverpod": {
+      "command": "/bin/zsh",
+      "args": [
+        "-l",
+        "-c",
+        "exec serverpod mcp-server --server-dir {serverDirRelative}"
+      ],
+      "cwd": "."
+    },
+    "dart-mcp-server": {
+      "command": "/bin/zsh",
+      "args": [
+        "-l",
+        "-c",
+        "exec dart mcp-server"
+      ],
+      "cwd": "."
+    }
+  }
+}
+''';
+
+/// MCP server config for Antigravity in a module project.
+const _antigravityModuleConfig = '''{
+  "mcpServers": {
+    "dart-mcp-server": {
+      "command": "/bin/zsh",
+      "args": [
+        "-l",
+        "-c",
+        "exec dart mcp-server"
+      ],
+      "cwd": "."
     }
   }
 }
