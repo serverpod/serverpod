@@ -71,6 +71,9 @@ void main() {
         'then the created project',
         () {
           final serverDirRelative = '${project.name}_server';
+          const loginShellScript =
+              r's=${SHELL:-/bin/sh}; [ -x \"$s\" ] || s=/bin/sh; '
+              r'case $s in *csh) s=/bin/sh;; esac; exec \"$s\" -l -c \"$1\"';
           final genericConfig =
               '''
 {
@@ -96,23 +99,42 @@ void main() {
               expect(config.existsSync(), isTrue);
               expect(
                 config.readAsStringSync(),
-                '''
+                Platform.isWindows
+                    ? '''
 {
   "mcpServers": {
     "serverpod": {
-      "command": "/bin/zsh",
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"],
+      "cwd": "."
+    },
+    "dart-mcp-server": {
+      "command": "dart",
+      "args": ["mcp-server"],
+      "cwd": "."
+    }
+  }
+}
+'''
+                    : '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "/bin/sh",
       "args": [
-        "-l",
         "-c",
+        "$loginShellScript",
+        "sh",
         "exec serverpod mcp-server --server-dir $serverDirRelative"
       ],
       "cwd": "."
     },
     "dart-mcp-server": {
-      "command": "/bin/zsh",
+      "command": "/bin/sh",
       "args": [
-        "-l",
         "-c",
+        "$loginShellScript",
+        "sh",
         "exec dart mcp-server"
       ],
       "cwd": "."
