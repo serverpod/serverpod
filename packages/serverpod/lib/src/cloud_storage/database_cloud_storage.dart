@@ -17,7 +17,7 @@ class DatabaseCloudStorage extends CloudStorage {
   DatabaseCloudStorage(super.storageId);
 
   @override
-  void onAdded(Serverpod pod) {
+  void onRegistered(Serverpod pod) {
     pod.experimental.addStartHook(CloudStoragePublicEndpoint().register);
   }
 

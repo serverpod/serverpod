@@ -224,7 +224,7 @@ class Serverpod {
   /// Storage. E.g. see the serverpod_cloud_storage_s3 pub package.
   void addCloudStorage(CloudStorage cloudStorage) {
     storage[cloudStorage.storageId] = cloudStorage;
-    cloudStorage.onAdded(this);
+    cloudStorage.onRegistered(this);
   }
 
   internal.RuntimeSettings _defaultRuntimeSettings(String runMode) {

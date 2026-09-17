@@ -25,9 +25,9 @@ abstract class CloudStorage {
   /// while the private is accessed internally only.
   CloudStorage(this.storageId);
 
-  /// Called when the storage is added to [pod]. Override to register
+  /// Called when the storage is registered with [pod]. Override to register
   /// anything the storage needs from the server, such as endpoints.
-  void onAdded(Serverpod pod) {}
+  void onRegistered(Serverpod pod) {}
 
   /// Saves a file to the cloud. The path should be relative to the root
   /// directory of the storage (i.e. the string shouldn't start with a
