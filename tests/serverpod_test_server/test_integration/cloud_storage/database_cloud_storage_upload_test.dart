@@ -144,6 +144,29 @@ void main() {
     );
 
     test(
+      'when a file larger than the max request size but within the maximum file size is uploaded, '
+      'then the response status is 200 and the upload can be verified',
+      () async {
+        const path = 'upload/larger-than-max-request-size.bin';
+        final description = await session.storage.createUploadDescription(
+          storageId: storageId,
+          path: path,
+        );
+
+        final response = await http.post(
+          uploadUri(description),
+          body: Uint8List(server.config.maxRequestSize * 2),
+        );
+
+        expect(response.statusCode, HttpStatus.ok);
+        expect(
+          await session.storage.verifyUpload(storageId: storageId, path: path),
+          isTrue,
+        );
+      },
+    );
+
+    test(
       'when a file larger than the maximum file size is uploaded, '
       'then the response status is 413 and no file is stored',
       () async {

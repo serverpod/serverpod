@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io' show HttpStatus;
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
@@ -104,16 +103,15 @@ class CloudStoragePublicEndpoint extends Endpoint {
       );
     }
 
-    var maxFileSize = min(
-      uploadInfo.maxFileSize,
-      server.serverpod.config.maxRequestSize,
-    );
-    var body = await _readBinaryBody(session.request, maxFileSize);
+    // The upload was authorized with its own size limit, so the request size
+    // limit of the server does not apply.
+    var body = await _readBinaryBody(session.request, uploadInfo.maxFileSize);
     if (body == null) {
       return _rejectUpload(
         session,
         HttpStatus.requestEntityTooLarge,
-        'File exceeds the maximum allowed size of $maxFileSize bytes.',
+        'File exceeds the maximum allowed size of ${uploadInfo.maxFileSize} '
+        'bytes.',
       );
     }
 
