@@ -144,6 +144,57 @@ void main() {
     );
 
     test(
+      'when a file larger than the maximum file size is uploaded, '
+      'then the response status is 413 and no file is stored',
+      () async {
+        const path = 'upload/too-large.bin';
+        final description = await session.storage.createUploadDescription(
+          storageId: storageId,
+          path: path,
+          options: const UploadOptions(maxFileSize: 1024),
+        );
+
+        final response = await http.post(
+          uploadUri(description),
+          body: Uint8List(2 * 1024 * 1024),
+        );
+
+        expect(response.statusCode, HttpStatus.requestEntityTooLarge);
+        expect(
+          await session.storage.verifyUpload(storageId: storageId, path: path),
+          isFalse,
+        );
+      },
+    );
+
+    test(
+      'when a file larger than the maximum file size is streamed without a content length, '
+      'then the response status is 413 and no file is stored',
+      () async {
+        const path = 'upload/too-large-streamed.bin';
+        final description = await session.storage.createUploadDescription(
+          storageId: storageId,
+          path: path,
+          options: const UploadOptions(maxFileSize: 1024),
+        );
+        final request = http.StreamedRequest('POST', uploadUri(description));
+
+        final (_, response) = await (
+          Stream<List<int>>.fromIterable(
+            List.filled(32, Uint8List(64 * 1024)),
+          ).pipe(request.sink),
+          request.send(),
+        ).wait;
+
+        expect(response.statusCode, HttpStatus.requestEntityTooLarge);
+        expect(
+          await session.storage.verifyUpload(storageId: storageId, path: path),
+          isFalse,
+        );
+      },
+    );
+
+    test(
       'when a file is uploaded to an existing path with preventOverwrite enabled, '
       'then the response status is 409 and the existing file is preserved',
       () async {

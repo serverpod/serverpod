@@ -169,10 +169,15 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     await for (var chunk in request.read()) {
       len += chunk.length;
-      if (len > maxFileSize) return null;
+      // Keep draining an oversized body. Cancelling the read resets the
+      // connection before the client receives the response.
+      if (len > maxFileSize) {
+        builder.clear();
+        continue;
+      }
       builder.add(chunk);
     }
-    return builder.takeBytes();
+    return len > maxFileSize ? null : builder.takeBytes();
   }
 
   Future<Response> _fileResponse(
