@@ -22,7 +22,7 @@ void main() {
 
   group(
     'Given a clean state, '
-    'when calling performCreate with a context containing all supported IDEs',
+    'when calling performCreate with a context containing all supported IDEs,',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(ides: TemplateIde.values),
@@ -70,7 +70,6 @@ void main() {
         'then the created project',
         () {
           final serverDirRelative = '${project.name}_server';
-          const antigravityPluginDir = '.agents/plugins/serverpod-local';
           final genericConfig =
               '''
 {
@@ -91,33 +90,33 @@ void main() {
             'has Serverpod and Dart MCP servers configured for Antigravity',
             () {
               final config = File(
-                p.join(
-                  project.projectRoot,
-                  '$antigravityPluginDir/mcp_config.json',
-                ),
+                p.join(project.projectRoot, '.agents/mcp_config.json'),
               );
               expect(config.existsSync(), isTrue);
               expect(
                 config.readAsStringSync(),
-                genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
-              );
-            },
-          );
-
-          test(
-            'has an Antigravity plugin manifest registering the local plugin',
-            () {
-              final manifest = File(
-                p.join(
-                  project.projectRoot,
-                  '$antigravityPluginDir/plugin.json',
-                ),
-              );
-              expect(manifest.existsSync(), isTrue);
-              expect(
-                manifest.readAsStringSync(),
-                '''{
-  "name": "serverpod-local"
+                '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "/bin/zsh",
+      "args": [
+        "-l",
+        "-c",
+        "exec serverpod mcp-server --server-dir $serverDirRelative"
+      ],
+      "cwd": "."
+    },
+    "dart-mcp-server": {
+      "command": "/bin/zsh",
+      "args": [
+        "-l",
+        "-c",
+        "exec dart mcp-server"
+      ],
+      "cwd": "."
+    }
+  }
 }
 ''',
               );
