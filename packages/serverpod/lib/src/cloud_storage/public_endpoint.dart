@@ -67,9 +67,6 @@ class CloudStoragePublicEndpoint extends Endpoint {
   }
 
   /// Uploads a file to the public database cloud storage.
-  ///
-  /// A rejected upload is answered with an HTTP error status and the reason is
-  /// logged to the session.
   Future<Response> upload(
     MethodCallSession session,
     String storageId,

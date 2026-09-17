@@ -144,7 +144,7 @@ void main() {
     );
 
     test(
-      'when a file larger than the max request size but within the maximum file size is uploaded, '
+      'when a file larger than maxRequestSize but within maxFileSize is uploaded, '
       'then the response status is 200 and the upload can be verified',
       () async {
         const path = 'upload/larger-than-max-request-size.bin';
