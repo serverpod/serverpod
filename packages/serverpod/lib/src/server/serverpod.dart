@@ -789,7 +789,7 @@ class Serverpod {
     }
   }
 
-  /// Runs the hooks registered with [ExperimentalApi.addStartHook]. Called at
+  /// Runs the hooks added with [ExperimentalApi.registerStartHook]. Called at
   /// start and again when hot reload rebuilds the endpoint dispatch.
   @meta.internal
   void runStartHooks() {
@@ -1541,12 +1541,17 @@ class ExperimentalApi {
 
   final TaskManagerImpl _shutdownTasks;
 
-  final _startHooks = <void Function(Serverpod pod)>[];
+  final _startHooks = <void Function(Serverpod pod)>{};
 
   /// Registers a hook that runs when the server starts. In development it
   /// also runs after every hot reload, so hooks must be safe to run repeatedly.
-  void addStartHook(void Function(Serverpod pod) hook) {
+  void registerStartHook(void Function(Serverpod pod) hook) {
     _startHooks.add(hook);
+  }
+
+  /// Removes a hook previously added with [registerStartHook].
+  void unregisterStartHook(void Function(Serverpod pod) hook) {
+    _startHooks.remove(hook);
   }
 
   /// Shutdown tasks can be used to perform cleanup operations before the server
