@@ -21,15 +21,26 @@ jobs:
         with:
           flutter-version: '3.44.4'
 
-      - name: Start containers
-        working-directory: projectname_server
-        run: docker compose up --quiet-pull --build -d
+      # {{#postgres}}
+      # The test config sets `database.dataPath`, so the tests run against an
+      # embedded PostgreSQL that Serverpod starts itself. No Docker needed.
+      # The binaries are downloaded once and cached here between runs.
+      - name: Cache embedded PostgreSQL binaries
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/serverpod/pg-binaries
+          key: serverpod-pg-binaries-ubuntu
+      # {{/postgres}}
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Install Serverpod CLI
-        run: dart install serverpod_cli $VERSION
+        run: |
+          dart install serverpod_cli@$VERSION
+          # `dart install` puts executables in the Dart data home, which is not
+          # on the PATH of a GitHub runner.
+          echo "${XDG_STATE_HOME:-$HOME/.local/state}/Dart/install/bin" >> "$GITHUB_PATH"
 
       - name: Run Serverpod generator
         working-directory: projectname_server
@@ -38,8 +49,3 @@ jobs:
       - name: Run tests
         working-directory: projectname_server
         run: dart test
-
-      - name: Stop containers
-        if: always()
-        working-directory: projectname_server
-        run: docker compose down -v
