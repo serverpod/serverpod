@@ -432,13 +432,6 @@ Future<void> _moveDirectoryContents(
     final newPath = p.join(destination.path, p.basename(entity.path));
 
     if (entity is File) {
-      // Never overwrite files already present at the destination, such as the
-      // Antigravity plugin config written under .agents/plugins/ before this
-      // move runs.
-      if (await File(newPath).exists()) {
-        log.debug('Skipped moving ${entity.path}: $newPath already exists.');
-        continue;
-      }
       await entity.rename(newPath);
     } else if (entity is Directory) {
       final newDir = await Directory(newPath).create(recursive: true);
@@ -490,12 +483,6 @@ Future<void> _configureMcpServer(
           isModule: isModule,
         ),
       );
-      for (final entry in ide.additionalFiles.entries) {
-        await _createFileAndWrite(
-          p.join(projectDirPath, entry.key),
-          ide.render(entry.value, serverDirRelative: serverDirRelative),
-        );
-      }
     },
   );
 }
