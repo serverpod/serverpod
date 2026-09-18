@@ -48,20 +48,20 @@ apiServer:
   test(
     'Given project without config directory, '
     'when loading GeneratorConfig, '
-    'then database is disabled.',
+    'then database is enabled.',
     () async {
       await createMockServerpodProject(projectName: 'my_project').create();
 
       var config = await loadConfig();
 
-      expect(config.isDatabaseEnabled, isFalse);
+      expect(config.isDatabaseEnabled, isTrue);
     },
   );
 
   test(
     'Given a config directory with only generator.yaml,'
     'when loading GeneratorConfig ,'
-    'then database is disabled.',
+    'then database is enabled.',
     () async {
       await createMockServerpodProject(
         projectName: 'my_project',
@@ -72,7 +72,7 @@ type: server
 
       var config = await loadConfig();
 
-      expect(config.isDatabaseEnabled, isFalse);
+      expect(config.isDatabaseEnabled, isTrue);
     },
   );
 
