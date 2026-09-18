@@ -31,6 +31,10 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
+  VoidCallback? _onStopStack;
+
+  /// Called once the app has mounted, since an earlier shutdown would crash.
+  VoidCallback? onAttached;
 
   @override
   ServerWatchState get state => _state;
@@ -50,6 +54,8 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
     widgetState.onQuit = _onQuit;
+    widgetState.onStopStack = _onStopStack;
+    onAttached?.call();
   }
 
   @override
@@ -101,17 +107,16 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     _onQuit = cb;
     _widgetState?.onQuit = cb;
   }
+
+  set onStopStack(VoidCallback? cb) {
+    _onStopStack = cb;
+    _widgetState?.onStopStack = cb;
+  }
 }
 
 /// Root TUI component for `serverpod start`.
 class ServerpodWatchApp extends TuiApp<StartAppStateHolder> {
-  const ServerpodWatchApp({
-    super.key,
-    required super.holder,
-    required this.onReady,
-  });
-
-  final void Function(StartAppStateHolder holder) onReady;
+  const ServerpodWatchApp({super.key, required super.holder});
 
   @override
   TuiAppState createState() => ServerpodWatchAppState();
@@ -132,6 +137,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
   VoidCallback? onQuit;
+  VoidCallback? onStopStack;
 
   bool _minSplashElapsed = false;
 
@@ -144,21 +150,16 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   @override
   void initState() {
     super.initState();
-    component.holder.attach(this);
     // Keep splash visible for at least 5 seconds.
     Timer(const Duration(seconds: 5), () {
       _minSplashElapsed = true;
       _tryDismissSplash();
-    });
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      component.onReady(component.holder);
     });
   }
 
   @override
   void dispose() {
     _launchPanelCloseTimer?.cancel();
-    component.holder.detach(this);
     rawScrollController.dispose();
     helpScrollController.dispose();
     appPanelScrollController.dispose();
@@ -220,7 +221,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   /// for a long trace. Collapsing does the reverse and can drop the entry
   /// below the viewport when scrolled up. Runs after the toggle's frame so the
   /// re-laid-out geometry is measured, then scrolls just enough to keep the
-  /// entry on screen; an entry taller than the viewport is pinned with its
+  /// entry on screen. An entry taller than the viewport is pinned with its
   /// message and affordance line at the top and the trace filling the rest.
   void _keepToggledEntryInView(LogEntry entry) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -363,6 +364,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           },
           onLaunchApp: _launchApp,
           onQuit: onQuit,
+          onStopStack: onStopStack,
           onCopyAlert: copyAlert,
           onDismissAlert: dismissAlert,
           onStopOrCloseAppTab: _stopOrCloseAppTab,
@@ -390,7 +392,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
         return false;
       }
-      // Route navigation keys to the help overlay's controller; absorb the
+      // Route navigation keys to the help overlay's controller, and absorb the
       // rest so they don't fall through to tab/scroll handling underneath.
       _handleScrollKey(helpScrollController, event);
       return true;
@@ -528,7 +530,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // Repair migration (Shift for force). Not shown in the bottom bar; it is
+    // Repair migration (Shift for force). Not shown in the bottom bar. It is
     // documented on the help screen instead.
     if (event.logicalKey == LogicalKey.keyP &&
         !event.isControlPressed &&

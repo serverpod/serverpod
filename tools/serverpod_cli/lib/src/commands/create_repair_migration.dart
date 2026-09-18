@@ -4,9 +4,11 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
@@ -83,15 +85,25 @@ class CreateRepairMigrationCommand
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    final serverDir = path.joinAll(config.serverPackageDirectoryPathParts);
+
     File? repairMigration;
     try {
       await log.progress('Creating repair migration', () async {
+        // Only a pod started without a runner still binds the configured port.
+        final insightsAddress =
+            await reportedInsightsAddress(
+              serverDir,
+              command: 'creating a repair migration',
+            ) ??
+            ConfigInfo(mode, serverDir: serverDir).configuredInsightsAddress;
         repairMigration = await createRepairMigrationAction(
           config: config,
           tag: tag,
           force: force,
           runMode: mode,
           targetMigrationVersion: targetVersion,
+          insightsAddress: insightsAddress,
         );
         return repairMigration != null;
       });

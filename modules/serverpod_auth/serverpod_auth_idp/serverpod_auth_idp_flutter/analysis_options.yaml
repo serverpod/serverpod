@@ -6,6 +6,7 @@ analyzer:
     # its dependencies (e.g. storybook_toolkit) are not resolved by the root
     # workspace analyzer.
     - storybook/**
+    - build/**
 
 linter:
   rules:
