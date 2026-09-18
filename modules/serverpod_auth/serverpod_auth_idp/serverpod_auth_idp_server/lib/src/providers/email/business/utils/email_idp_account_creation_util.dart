@@ -346,12 +346,13 @@ class EmailIdpAccountCreationUtil {
   SecretChallengeVerificationConfig<EmailAccountRequest>
   _getVerificationConfig() {
     return SecretChallengeVerificationConfig(
-      rateLimiter: DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
-        RateLimitedRequestAttemptConfig(
+      rateLimiter: DatabaseRateLimiter(
+        RateLimiterConfig(
           domain: 'email',
           source: 'account_creation_verification',
           maxAttempts: _config.registrationVerificationCodeAllowedAttempts,
-          onRateLimitExceeded: _onRateLimitExceeded,
+          onRateLimitExceeded: (final session, final key) =>
+              _onRateLimitExceeded(session, UuidValue.withValidation(key)),
         ),
       ),
       getRequest: _getAccountRequest,

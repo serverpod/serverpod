@@ -12,12 +12,12 @@ import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dar
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 
-/// The field every synced model must declare to hold the owner scope of a row.
-const String syncScopeIdFieldName = 'scopeId';
+/// The field every synced model must declare to hold the owner space of a row.
+const String syncSpaceIdFieldName = 'spaceId';
 
-/// The table holding the sync scopes, owned by the `serverpod_offline_sync`
+/// The table holding the sync spaces, owned by the `serverpod_offline_sync`
 /// module.
-const String syncScopesTableName = 'crdt_scopes';
+const String syncSpacesTableName = 'offline_sync_spaces';
 
 /// The name of the `serverpod_offline_sync` module.
 const String syncModuleName = 'serverpod_offline_sync';
@@ -41,21 +41,21 @@ extension ModelClassDefinitionSync on ModelClassDefinition {
   bool get isSyncTable =>
       tableName != null && database == ModelDatabaseDefinition.sync;
 
-  /// The `scopeId` field of this model, including inherited fields.
-  SerializableModelFieldDefinition? get syncScopeIdField =>
+  /// The `spaceId` field of this model, including inherited fields.
+  SerializableModelFieldDefinition? get syncSpaceIdField =>
       fieldsIncludingInherited
-          .where((field) => field.name == syncScopeIdFieldName)
+          .where((field) => field.name == syncSpaceIdFieldName)
           .firstOrNull;
 }
 
-/// Whether [foreignKeyField] is the `scopeId` ownership link of a sync table.
+/// Whether [foreignKeyField] is the `spaceId` ownership link of a sync table.
 ///
 /// The link is identified by the field name alone. Its parent table, delete
 /// action and column name are validated separately, so a mistake on one of
 /// them is reported once instead of cascading into the errors meant for the
 /// remaining relations.
-bool isSyncScopeRelation(SerializableModelFieldDefinition foreignKeyField) {
-  return foreignKeyField.name == syncScopeIdFieldName &&
+bool isSyncSpaceRelation(SerializableModelFieldDefinition foreignKeyField) {
+  return foreignKeyField.name == syncSpaceIdFieldName &&
       foreignKeyField.relation is ForeignRelationDefinition;
 }
 
@@ -64,7 +64,7 @@ const String syncIdFieldError =
     'Tables with "database: sync" must have a UUID primary key. Declare the '
     'id field as "id: UuidValue?, defaultPersist=random_v7".';
 
-/// The error reported when the scopes table is unknown, which happens when
+/// The error reported when the spaces table is unknown, which happens when
 /// the `serverpod_offline_sync` module is not part of the project.
 const String syncModuleMissingError =
     'The "database: sync" option requires the "serverpod_offline_sync" '
@@ -76,43 +76,43 @@ bool isSyncIdFieldValid(SerializableModelFieldDefinition idField) {
   return false;
 }
 
-/// Validates the type of the `scopeId` [field] of a sync table.
-String? validateSyncScopeIdFieldType(SerializableModelFieldDefinition field) {
+/// Validates the type of the `spaceId` [field] of a sync table.
+String? validateSyncSpaceIdFieldType(SerializableModelFieldDefinition field) {
   if (field.type.className == 'int' && field.type.nullable) return null;
-  return 'The "$syncScopeIdFieldName" field must be of type "int?" on tables '
+  return 'The "$syncSpaceIdFieldName" field must be of type "int?" on tables '
       'with "database: sync".';
 }
 
-/// Validates that the `scopeId` [field] of a sync table declares a relation
-/// to the scopes table.
-String? validateSyncScopeIdFieldRelation(
+/// Validates that the `spaceId` [field] of a sync table declares a relation
+/// to the spaces table.
+String? validateSyncSpaceIdFieldRelation(
   SerializableModelFieldDefinition field,
 ) {
   var relation = field.relation;
   if (relation is ForeignRelationDefinition) return null;
-  return 'The "$syncScopeIdFieldName" field must declare the relation '
-      '"relation(parent=$syncScopesTableName, onDelete=Cascade)" on tables '
+  return 'The "$syncSpaceIdFieldName" field must declare the relation '
+      '"relation(parent=$syncSpacesTableName, onDelete=Cascade)" on tables '
       'with "database: sync".';
 }
 
-/// Validates that the `scopeId` field of a sync table references the scopes
+/// Validates that the `spaceId` field of a sync table references the spaces
 /// table through [parentTable].
-String? validateSyncScopeIdParentTable(String parentTable) {
-  if (parentTable == syncScopesTableName) return null;
-  return 'The "$syncScopeIdFieldName" field must reference the '
-      '"$syncScopesTableName" table on tables with "database: sync".';
+String? validateSyncSpaceIdParentTable(String parentTable) {
+  if (parentTable == syncSpacesTableName) return null;
+  return 'The "$syncSpaceIdFieldName" field must reference the '
+      '"$syncSpacesTableName" table on tables with "database: sync".';
 }
 
-/// The error reported when the `scopeId` field of a sync table overrides its
+/// The error reported when the `spaceId` field of a sync table overrides its
 /// column name.
-const String syncScopeIdColumnNameError =
-    'The "$syncScopeIdFieldName" field must not override its column name on '
+const String syncSpaceIdColumnNameError =
+    'The "$syncSpaceIdFieldName" field must not override its column name on '
     'tables with "database: sync".';
 
-/// The error reported when the `scopeId` relation of a sync table does not
+/// The error reported when the `spaceId` relation of a sync table does not
 /// cascade on delete.
-const String syncScopeRelationOnDeleteError =
-    'The "$syncScopeIdFieldName" relation must use "onDelete=Cascade".';
+const String syncSpaceRelationOnDeleteError =
+    'The "$syncSpaceIdFieldName" relation must use "onDelete=Cascade".';
 
 /// The error reported when a required foreign key of a sync table is not
 /// deferred.
@@ -124,22 +124,22 @@ const String syncRelationDeferredError =
 /// must be deferred.
 ///
 /// Nullable foreign keys can be repaired by the sync engine, so only
-/// non-nullable ones other than the `scopeId` link must be deferred.
+/// non-nullable ones other than the `spaceId` link must be deferred.
 bool requiresSyncDeferredRelation(
   ModelClassDefinition model,
   SerializableModelFieldDefinition field,
 ) {
   var foreignKeyField = model.foreignKeyField(field);
   if (foreignKeyField == null) return false;
-  if (isSyncScopeRelation(foreignKeyField)) return false;
+  if (isSyncSpaceRelation(foreignKeyField)) return false;
   return !foreignKeyField.type.nullable;
 }
 
 /// Validates that a relation between [model] and [relatedModel] does not
 /// cross the boundary between synced and non-synced tables.
 ///
-/// The only allowed relation crossing the boundary is the `scopeId` link from
-/// a synced table to the scopes table. [foreignKeyField] is the field on
+/// The only allowed relation crossing the boundary is the `spaceId` link from
+/// a synced table to the spaces table. [foreignKeyField] is the field on
 /// [model] carrying the foreign key, when [model] originates it.
 String? validateSyncRelationBoundary({
   required ModelClassDefinition model,
@@ -149,7 +149,7 @@ String? validateSyncRelationBoundary({
   if (model.isSyncTable == relatedModel.isSyncTable) return null;
 
   if (model.isSyncTable) {
-    if (foreignKeyField != null && isSyncScopeRelation(foreignKeyField)) {
+    if (foreignKeyField != null && isSyncSpaceRelation(foreignKeyField)) {
       return null;
     }
     return 'Tables with "database: sync" can only have relations to other '
@@ -166,7 +166,7 @@ String? validateSyncRelationBoundary({
 /// Validates that the unique [index] on the sync table [model] can be merged
 /// by the sync engine.
 ///
-/// Unique indexes must be scoped by including the `scopeId` column and must
+/// Unique indexes must include the `spaceId` column to partition by space and
 /// contain at least one other column that can be released on conflicts. The
 /// only global unique indexes allowed are those composed exclusively of
 /// nullable foreign keys to other sync tables.
@@ -189,14 +189,14 @@ String? validateSyncUniqueIndex(
   if (columns.length != index.fields.length) return null;
 
   var otherColumns = columns
-      .where((field) => field.columnName != syncScopeIdFieldName)
+      .where((field) => field.columnName != syncSpaceIdFieldName)
       .toList();
 
   if (otherColumns.length != columns.length) {
     if (otherColumns.any(_isSyncReleasableColumn)) return null;
 
     return 'The unique index "${index.name}" must include at least one '
-        'field besides "$syncScopeIdFieldName" that is nullable, a String, '
+        'field besides "$syncSpaceIdFieldName" that is nullable, a String, '
         'or a UuidValue without a relation, so the sync engine can resolve '
         'conflicts.';
   }
@@ -206,7 +206,7 @@ String? validateSyncUniqueIndex(
   );
   if (!isForeignKeyOnly) {
     return 'The unique index "${index.name}" must include the '
-        '"$syncScopeIdFieldName" field on tables with "database: sync". '
+        '"$syncSpaceIdFieldName" field on tables with "database: sync". '
         'Only unique indexes composed exclusively of relations to other '
         'tables with "database: sync" can be global.';
   }

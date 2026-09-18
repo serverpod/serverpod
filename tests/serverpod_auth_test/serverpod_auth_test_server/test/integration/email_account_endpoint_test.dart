@@ -2,6 +2,8 @@ import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart'
+    show Client;
 import 'package:test/test.dart';
 
 import 'test_tools/serverpod_test_tools.dart';
@@ -98,6 +100,40 @@ void main() {
           );
         },
       );
+
+      group('when requesting a password reset over HTTP from 127.0.0.1, ', () {
+        late List<RateLimitedRequestAttempt> attempts;
+
+        setUp(() async {
+          const email = 'rate-limit-ip@serverpod.dev';
+          final session = sessionBuilder.build();
+          final client = Client('http://127.0.0.1:${session.server.port}/');
+
+          try {
+            await client.emailAccount.startPasswordReset(email: email);
+          } finally {
+            client.close();
+          }
+
+          attempts = await RateLimitedRequestAttempt.db.find(
+            session,
+            where: (final t) =>
+                t.domain.equals('email') &
+                t.source.equals('password_reset') &
+                t.key.equals(email),
+          );
+        });
+
+        test('then the rate-limit attempt stores the client IP address.', () {
+          expect(attempts, hasLength(1));
+
+          // Dual-stack listeners may report an IPv4-mapped IPv6 address.
+          expect(
+            attempts.single.ipAddress,
+            anyOf('127.0.0.1', '::ffff:7f00:1'),
+          );
+        });
+      });
 
       group('when calling `startPasswordReset` for a non existing email', () {
         UuidValue? receivedPasswordResetRequestId;

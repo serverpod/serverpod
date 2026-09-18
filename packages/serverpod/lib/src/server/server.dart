@@ -137,6 +137,7 @@ class Server implements RouterInjectable {
       endpoints.connectors.clear();
       endpoints.modules.clear();
       endpoints.initializeEndpoints(this);
+      serverpod.runStartHooks();
     }
 
     if (serverpod.config.loggingMode == ServerpodLoggingMode.verbose) {

@@ -5,6 +5,7 @@ library;
 export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     show AuthSuccess;
 
+export '../src/common/rate_limited_request_attempt/rate_limit.dart';
 export '../src/generated/protocol.dart'
     show
         EmailAccount,

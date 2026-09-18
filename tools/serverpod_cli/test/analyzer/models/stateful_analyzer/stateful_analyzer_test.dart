@@ -649,7 +649,7 @@ fields:
     () {
       const pathInScope = 'lib/src/model/in_scope.yaml';
       var configNoDatabase = GeneratorConfigBuilder()
-          .withEnabledFeatures([])
+          .withDatabaseEnabled(false)
           .build();
 
       var yamlInScope = ModelSourceBuilder()

@@ -22,42 +22,46 @@ void main() {
     'client.dart',
   );
 
-  var syncModule = ModuleConfigBuilder(
-    'serverpod_offline_sync',
-    'offline_sync',
-  ).build();
-
-  var syncConfig = GeneratorConfigBuilder()
-      .withName(projectName)
-      .withEnabledExperimentalFeatures([ExperimentalFeature.databaseSync])
-      .withModules([syncModule])
-      .build();
-
   group(
     'Given the databaseSync experimental feature enabled, the sync module and a sync table, '
     'when generating the client file,',
     () {
-      late var codeMap = generator.generateProtocolCode(
-        protocolDefinition: ProtocolDefinition(
-          endpoints: [],
-          models: [
-            ModelClassDefinitionBuilder()
-                .withClassName('Person')
-                .withFileName('person')
-                .withTableName('person')
-                .withDatabase(ModelDatabaseDefinition.sync)
-                .build(),
-          ],
-          futureCalls: [],
-        ),
-        config: syncConfig,
-      );
+      late Map<String, String> codeMap;
+
+      setUpAll(() {
+        codeMap = generator.generateProtocolCode(
+          protocolDefinition: ProtocolDefinition(
+            endpoints: [],
+            models: [
+              ModelClassDefinitionBuilder()
+                  .withClassName('Person')
+                  .withFileName('person')
+                  .withTableName('person')
+                  .withDatabase(ModelDatabaseDefinition.sync)
+                  .build(),
+            ],
+            futureCalls: [],
+          ),
+          config: GeneratorConfigBuilder()
+              .withName(projectName)
+              .withEnabledExperimentalFeatures([
+                ExperimentalFeature.databaseSync,
+              ])
+              .withModules([
+                ModuleConfigBuilder(
+                  'serverpod_offline_sync',
+                  'offline_sync',
+                ).build(),
+              ])
+              .build(),
+        );
+      });
 
       test('then the client contains a createSyncSession method.', () {
         expect(
           codeMap[expectedFileName],
           matches(
-            r'Future<_i[a-z0-9]+\.CrdtDatabaseSession> createSyncSession\(\n'
+            r'Future<_i[a-z0-9]+\.OfflineSyncDatabaseSession> createSyncSession\(\n'
             r'    String path, \{\n'
             r'    bool runMigrations = true,\n'
             r'    bool isDebugMode = false,\n'
@@ -68,13 +72,12 @@ void main() {
       });
 
       test(
-        'then createSyncSession wraps createSession with the generated sync '
-        'tables and the persistent user id.',
+        'then createSyncSession wraps createSession with the generated sync tables and the persistent user id.',
         () {
           expect(
             codeMap[expectedFileName],
             matches(
-              r'final session = _i[a-z0-9]+\.CrdtDatabaseSession\.wraps\(\n'
+              r'final session = _i[a-z0-9]+\.OfflineSyncDatabaseSession\.wraps\(\n'
               r'      await createSession\(\n'
               r'        path,\n'
               r'        runMigrations: runMigrations,\n'
@@ -101,21 +104,36 @@ void main() {
     'Given the databaseSync experimental feature enabled, the sync module and no client database tables, '
     'when generating the client file,',
     () {
-      late var codeMap = generator.generateProtocolCode(
-        protocolDefinition: ProtocolDefinition(
-          endpoints: [],
-          models: [
-            ModelClassDefinitionBuilder()
-                .withClassName('Person')
-                .withFileName('person')
-                .withTableName('person')
-                .withDatabase(ModelDatabaseDefinition.server)
-                .build(),
-          ],
-          futureCalls: [],
-        ),
-        config: syncConfig,
-      );
+      late Map<String, String> codeMap;
+
+      setUpAll(() {
+        codeMap = generator.generateProtocolCode(
+          protocolDefinition: ProtocolDefinition(
+            endpoints: [],
+            models: [
+              ModelClassDefinitionBuilder()
+                  .withClassName('Person')
+                  .withFileName('person')
+                  .withTableName('person')
+                  .withDatabase(ModelDatabaseDefinition.server)
+                  .build(),
+            ],
+            futureCalls: [],
+          ),
+          config: GeneratorConfigBuilder()
+              .withName(projectName)
+              .withEnabledExperimentalFeatures([
+                ExperimentalFeature.databaseSync,
+              ])
+              .withModules([
+                ModuleConfigBuilder(
+                  'serverpod_offline_sync',
+                  'offline_sync',
+                ).build(),
+              ])
+              .build(),
+        );
+      });
 
       test('then the client contains no createSyncSession method.', () {
         expect(codeMap[expectedFileName], isNot(contains('createSyncSession')));
@@ -127,24 +145,30 @@ void main() {
     'Given the databaseSync experimental feature enabled and a sync table without the sync module, '
     'when generating the client file,',
     () {
-      late var codeMap = generator.generateProtocolCode(
-        protocolDefinition: ProtocolDefinition(
-          endpoints: [],
-          models: [
-            ModelClassDefinitionBuilder()
-                .withClassName('Person')
-                .withFileName('person')
-                .withTableName('person')
-                .withDatabase(ModelDatabaseDefinition.sync)
-                .build(),
-          ],
-          futureCalls: [],
-        ),
-        config: GeneratorConfigBuilder()
-            .withName(projectName)
-            .withEnabledExperimentalFeatures([ExperimentalFeature.databaseSync])
-            .build(),
-      );
+      late Map<String, String> codeMap;
+
+      setUpAll(() {
+        codeMap = generator.generateProtocolCode(
+          protocolDefinition: ProtocolDefinition(
+            endpoints: [],
+            models: [
+              ModelClassDefinitionBuilder()
+                  .withClassName('Person')
+                  .withFileName('person')
+                  .withTableName('person')
+                  .withDatabase(ModelDatabaseDefinition.sync)
+                  .build(),
+            ],
+            futureCalls: [],
+          ),
+          config: GeneratorConfigBuilder()
+              .withName(projectName)
+              .withEnabledExperimentalFeatures([
+                ExperimentalFeature.databaseSync,
+              ])
+              .build(),
+        );
+      });
 
       test('then the client contains no createSyncSession method.', () {
         expect(codeMap[expectedFileName], isNot(contains('createSyncSession')));
@@ -156,23 +180,30 @@ void main() {
     'Given the databaseSync experimental feature disabled with the sync module and a sync table, '
     'when generating the client file,',
     () {
-      late var codeMap = generator.generateProtocolCode(
-        protocolDefinition: ProtocolDefinition(
-          endpoints: [],
-          models: [
-            ModelClassDefinitionBuilder()
-                .withClassName('Person')
-                .withFileName('person')
-                .withTableName('person')
-                .withDatabase(ModelDatabaseDefinition.sync)
-                .build(),
-          ],
-          futureCalls: [],
-        ),
-        config: GeneratorConfigBuilder().withName(projectName).withModules([
-          syncModule,
-        ]).build(),
-      );
+      late Map<String, String> codeMap;
+
+      setUpAll(() {
+        codeMap = generator.generateProtocolCode(
+          protocolDefinition: ProtocolDefinition(
+            endpoints: [],
+            models: [
+              ModelClassDefinitionBuilder()
+                  .withClassName('Person')
+                  .withFileName('person')
+                  .withTableName('person')
+                  .withDatabase(ModelDatabaseDefinition.sync)
+                  .build(),
+            ],
+            futureCalls: [],
+          ),
+          config: GeneratorConfigBuilder().withName(projectName).withModules([
+            ModuleConfigBuilder(
+              'serverpod_offline_sync',
+              'offline_sync',
+            ).build(),
+          ]).build(),
+        );
+      });
 
       test('then the client contains no createSyncSession method.', () {
         expect(codeMap[expectedFileName], isNot(contains('createSyncSession')));

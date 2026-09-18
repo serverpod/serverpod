@@ -10,7 +10,6 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/src/server/log_manager/session_log.dart';
 import 'package:serverpod/src/server/log_manager/serverpod_logging.dart';
-import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -225,6 +224,7 @@ class Serverpod {
   /// Storage. E.g. see the serverpod_cloud_storage_s3 pub package.
   void addCloudStorage(CloudStorage cloudStorage) {
     storage[cloudStorage.storageId] = cloudStorage;
+    cloudStorage.onRegistered(this);
   }
 
   internal.RuntimeSettings _defaultRuntimeSettings(String runMode) {
@@ -650,10 +650,8 @@ class Serverpod {
     }
 
     if (Features.enableDatabase) {
-      storage.addAll({
-        'public': DatabaseCloudStorage('public'),
-        'private': DatabaseCloudStorage('private'),
-      });
+      addCloudStorage(DatabaseCloudStorage('public'));
+      addCloudStorage(DatabaseCloudStorage('private'));
     }
 
     // Setup Redis
@@ -792,14 +790,7 @@ class Serverpod {
   }
 
   Future<void> _unguardedStart() async {
-    // Register cloud store endpoint if we're using the database cloud store
-    var hasDatabaseStorage = storage.entries.any(
-      (storage) => storage.value is DatabaseCloudStorage,
-    );
-
-    if (hasDatabaseStorage) {
-      CloudStoragePublicEndpoint().register(this);
-    }
+    runStartHooks();
 
     // Ensure the database pool manager has started.
     // The call to start() is necessary in case this method is being invoked
@@ -989,9 +980,18 @@ class Serverpod {
     }
 
     final verified = result?.databaseMatchesTargetState ?? false;
-    if (!verified && config.runMode == ServerpodRunMode.development) {
+    if (verified) return;
+
+    if (config.runMode == ServerpodRunMode.development) {
       throw ExitException(1);
     }
+
+    // A maintenance migration run only reports its result through the exit
+    // code, other roles keep starting outside development.
+    final isMigrationRun =
+        config.role == ServerpodRole.maintenance &&
+        (applyMigrations || applyRepairMigration);
+    if (isMigrationRun) _exitCode = 1;
   }
 
   Future<void> _loadRuntimeSettings() async {
@@ -1587,6 +1587,19 @@ class ExperimentalApi {
 
   final TaskManagerImpl _shutdownTasks;
 
+  final _startHooks = <void Function(Serverpod pod)>{};
+
+  /// Registers a hook that runs when the server starts. In development it
+  /// also runs after every hot reload, so hooks must be safe to run repeatedly.
+  void registerStartHook(void Function(Serverpod pod) hook) {
+    _startHooks.add(hook);
+  }
+
+  /// Removes a hook previously added with [registerStartHook].
+  void unregisterStartHook(void Function(Serverpod pod) hook) {
+    _startHooks.remove(hook);
+  }
+
   /// Shutdown tasks can be used to perform cleanup operations before the server
   /// is shut down. The tasks will be executed asynchronously after the server
   /// has received the shutdown signal.
@@ -1643,6 +1656,14 @@ extension ServerpodInternalMethods on Serverpod {
 
   /// Retrieve the global internal session used by the Serverpod for logging.
   Session get internalLoggingSession => _internalLoggingSession;
+
+  /// Runs the hooks added with [ExperimentalApi.registerStartHook]. Called at
+  /// start and again when hot reload rebuilds the endpoint dispatch.
+  void runStartHooks() {
+    for (final hook in _experimental._startHooks) {
+      hook(this);
+    }
+  }
 
   /// Submits an event to registered event handlers.
   /// They will execute asynchronously.

@@ -28,13 +28,13 @@ class OnDeleteValueRestriction
     if (field == null) return [];
 
     var foreignKeyField = document.foreignKeyField(field);
-    if (foreignKeyField == null || !isSyncScopeRelation(foreignKeyField)) {
+    if (foreignKeyField == null || !isSyncSpaceRelation(foreignKeyField)) {
       return [];
     }
 
     if (value != ForeignKeyAction.cascade) {
       return [
-        SourceSpanSeverityException(syncScopeRelationOnDeleteError, span),
+        SourceSpanSeverityException(syncSpaceRelationOnDeleteError, span),
       ];
     }
 
