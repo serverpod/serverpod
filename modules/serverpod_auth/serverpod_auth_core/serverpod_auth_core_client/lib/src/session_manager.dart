@@ -135,7 +135,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   /// Use [timeout] to set a maximum time for the server validation call. The
   /// validation can be retried at any time by calling [validateAuthentication].
   Future<bool> initialize({
-    Duration timeout = const Duration(seconds: 5),
+    Duration timeout = const Duration(seconds: 2),
   }) async {
     await restore();
     try {
