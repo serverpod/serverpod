@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -46,7 +45,7 @@ Future<File?> createRepairMigrationAction({
   bool force = false,
   String? targetMigrationVersion,
 }) async {
-  if (!config.isFeatureEnabled(ServerpodFeature.database)) {
+  if (!config.isDatabaseEnabled) {
     throw const RepairMigrationException(
       'The database feature is not enabled in this project. '
       'Repair migrations cannot be created.',

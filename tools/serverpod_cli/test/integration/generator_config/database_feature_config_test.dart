@@ -2,7 +2,6 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
@@ -25,226 +24,152 @@ void main() {
     testLogger.output.reset();
   });
 
+  const postgresRunModeYaml = '''
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+''';
+
+  const noDatabaseRunModeYaml = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+''';
+
+  Future<GeneratorConfig> loadConfig() => GeneratorConfig.load(
+    serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
+    interactive: false,
+  );
+
   test(
-    'Given a generator.yaml without features key when loading GeneratorConfig then database feature is enabled by default.',
+    'Given project without config directory, '
+    'when loading GeneratorConfig, '
+    'then database is disabled.',
     () async {
-      var projectDir = createMockServerpodProject(
+      await createMockServerpodProject(projectName: 'my_project').create();
+
+      var config = await loadConfig();
+
+      expect(config.isDatabaseEnabled, isFalse);
+    },
+  );
+
+  test(
+    'Given a config directory with only generator.yaml,'
+    'when loading GeneratorConfig ,'
+    'then database is disabled.',
+    () async {
+      await createMockServerpodProject(
         projectName: 'my_project',
         generatorYamlContent: '''
 type: server
 ''',
-      );
-      await projectDir.create();
+      ).create();
 
-      var config = await GeneratorConfig.load(
-        serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
-        interactive: false,
-      );
+      var config = await loadConfig();
 
-      expect(config.isFeatureEnabled(ServerpodFeature.database), isTrue);
+      expect(config.isDatabaseEnabled, isFalse);
     },
   );
 
   test(
-    'Given a generator.yaml with features database set to true when loading GeneratorConfig then database feature is enabled.',
+    'Given a PostgreSQL database in the run-mode config files, '
+    'when loading GeneratorConfig, '
+    'then database is enabled.',
     () async {
-      var projectDir = createMockServerpodProject(
+      await createMockServerpodProject(
         projectName: 'my_project',
         generatorYamlContent: '''
 type: server
-features:
-  database: true
 ''',
-      );
-      await projectDir.create();
-
-      var config = await GeneratorConfig.load(
-        serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
-        interactive: false,
-      );
-
-      expect(config.isFeatureEnabled(ServerpodFeature.database), isTrue);
-    },
-  );
-
-  test(
-    'Given a generator.yaml with features database set to false when loading GeneratorConfig then database feature is disabled.',
-    () async {
-      var projectDir = createMockServerpodProject(
-        projectName: 'my_project',
-        generatorYamlContent: '''
-type: server
-features:
-  database: false
-''',
-      );
-      await projectDir.create();
-
-      var config = await GeneratorConfig.load(
-        serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
-        interactive: false,
-      );
-
-      expect(config.isFeatureEnabled(ServerpodFeature.database), isFalse);
-    },
-  );
-
-  test(
-    'Given a generator.yaml with empty features map when loading GeneratorConfig then database feature is enabled by default.',
-    () async {
-      var projectDir = createMockServerpodProject(
-        projectName: 'my_project',
-        generatorYamlContent: '''
-type: server
-features: {}
-''',
-      );
-      await projectDir.create();
-
-      var config = await GeneratorConfig.load(
-        serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
-        interactive: false,
-      );
-
-      expect(config.isFeatureEnabled(ServerpodFeature.database), isTrue);
-    },
-  );
-
-  test(
-    'Given a generator.yaml with features set to null when loading GeneratorConfig then database feature is enabled by default.',
-    () async {
-      var projectDir = createMockServerpodProject(
-        projectName: 'my_project',
-        generatorYamlContent: '''
-type: server
-features:
-''',
-      );
-      await projectDir.create();
-
-      var config = await GeneratorConfig.load(
-        serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
-        interactive: false,
-      );
-
-      expect(config.isFeatureEnabled(ServerpodFeature.database), isTrue);
-    },
-  );
-
-  test(
-    'Given project without config directory when loading GeneratorConfig then database feature is disabled by default.',
-    () async {
-      var projectDir = createMockServerpodProject(
-        projectName: 'my_project',
-      );
-      await projectDir.create();
-
-      var config = await GeneratorConfig.load(
-        serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
-        interactive: false,
-      );
-
-      expect(config.isFeatureEnabled(ServerpodFeature.database), isFalse);
-    },
-  );
-
-  group(
-    'Given a generator.yaml with invalid feature value when loading GeneratorConfig',
-    () {
-      late GeneratorConfig config;
-      setUp(() async {
-        var projectDir = createMockServerpodProject(
-          projectName: 'my_project',
-          generatorYamlContent: '''
-type: server
-features:
-  database: invalid
-''',
-        );
-
-        await projectDir.create();
-
-        config = await GeneratorConfig.load(
-          serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
-          interactive: false,
-        );
-      });
-
-      test(
-        'then database feature uses default value (true).',
-        () async {
-          expect(config.isFeatureEnabled(ServerpodFeature.database), isTrue);
+        runModeYamlFiles: {
+          'development.yaml': postgresRunModeYaml,
+          'test.yaml': postgresRunModeYaml,
         },
-      );
+      ).create();
 
-      test(
-        'when loading GeneratorConfig then a warning is logged with source span.',
-        () async {
-          expect(testLogger.output.warnings, hasLength(1));
-          expect(
-            testLogger.output.warnings.first,
-            contains('Invalid value for feature \'database\''),
-          );
-          expect(
-            testLogger.output.warnings.first,
-            contains('\'invalid\''),
-          );
-          expect(
-            testLogger.output.warnings.first,
-            contains('Using default value: true'),
-          );
-          // Check that source span info is included (line number)
-          expect(
-            testLogger.output.warnings.first,
-            contains('line'),
-          );
-        },
-      );
+      var config = await loadConfig();
+
+      expect(config.isDatabaseEnabled, isTrue);
     },
   );
 
-  group(
-    'Given a generator.yaml with null feature value when loading GeneratorConfig',
-    () {
-      late GeneratorConfig config;
-      setUp(() async {
-        var projectDir = createMockServerpodProject(
-          projectName: 'my_project',
-          generatorYamlContent: '''
+  test(
+    'Given a SQLite database in the run-mode config files, '
+    'when loading GeneratorConfig, '
+    'then database is enabled.',
+    () async {
+      await createMockServerpodProject(
+        projectName: 'my_project',
+        generatorYamlContent: '''
 type: server
-features:
-  database:
 ''',
-        );
-        await projectDir.create();
-
-        config = await GeneratorConfig.load(
-          serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
-          interactive: false,
-        );
-      });
-
-      test('then database feature uses default value (true).', () {
-        expect(config.isFeatureEnabled(ServerpodFeature.database), isTrue);
-      });
-
-      test(
-        'then a warning is logged with source span.',
-        () {
-          expect(testLogger.output.warnings, hasLength(1));
-          expect(
-            testLogger.output.warnings.first,
-            contains('Invalid value for feature \'database\''),
-          );
-          expect(
-            testLogger.output.warnings.first,
-            contains('null'),
-          );
-          expect(
-            testLogger.output.warnings.first,
-            contains('Using default value: true'),
-          );
+        runModeYamlFiles: {
+          'development.yaml': '''
+database:
+  filePath: app.db
+''',
         },
+      ).create();
+
+      var config = await loadConfig();
+
+      expect(config.isDatabaseEnabled, isTrue);
+    },
+  );
+
+  test(
+    'Given run-mode config files without a database section, '
+    'when loading GeneratorConfig, '
+    'then database is disabled.',
+    () async {
+      await createMockServerpodProject(
+        projectName: 'my_project',
+        generatorYamlContent: '''
+type: server
+''',
+        runModeYamlFiles: {
+          'development.yaml': noDatabaseRunModeYaml,
+          'test.yaml': noDatabaseRunModeYaml,
+        },
+      ).create();
+
+      var config = await loadConfig();
+
+      expect(config.isDatabaseEnabled, isFalse);
+    },
+  );
+
+  test(
+    'Given run-mode config files where some have a database section and others do not, '
+    'when loading GeneratorConfig, '
+    'then a StateError is thrown.',
+    () async {
+      await createMockServerpodProject(
+        projectName: 'my_project',
+        generatorYamlContent: '''
+type: server
+''',
+        runModeYamlFiles: {
+          'development.yaml': postgresRunModeYaml,
+          'test.yaml': noDatabaseRunModeYaml,
+        },
+      ).create();
+
+      await expectLater(
+        loadConfig(),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            'Inconsistent database configurations across run-mode config files: development.yaml: enabled, test.yaml: disabled. '
+                'A Serverpod project must use uniform database configuration in all run modes.',
+          ),
+        ),
       );
     },
   );
@@ -253,6 +178,7 @@ features:
 d.DirectoryDescriptor createMockServerpodProject({
   String projectName = 'my_project',
   String? generatorYamlContent,
+  Map<String, String> runModeYamlFiles = const {},
 }) {
   var serverDirContents = <d.Descriptor>[
     d.file('pubspec.yaml', '''
@@ -286,10 +212,13 @@ dependencies:
     ]),
   ];
 
-  if (generatorYamlContent != null) {
+  if (generatorYamlContent != null || runModeYamlFiles.isNotEmpty) {
     serverDirContents.add(
       d.dir('config', [
-        d.file('generator.yaml', generatorYamlContent),
+        if (generatorYamlContent != null)
+          d.file('generator.yaml', generatorYamlContent),
+        for (final entry in runModeYamlFiles.entries)
+          d.file(entry.key, entry.value),
       ]),
     );
   }

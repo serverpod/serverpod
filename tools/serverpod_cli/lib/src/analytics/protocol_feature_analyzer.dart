@@ -2,7 +2,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'server_config_features.dart';
@@ -132,7 +131,7 @@ class ProtocolFeatureAnalyzer {
   }) {
     final tally = _FeatureTally();
 
-    if (config.isFeatureEnabled(ServerpodFeature.database)) {
+    if (config.isDatabaseEnabled) {
       switch (config.databaseDialect) {
         case DatabaseDialect.postgres:
           tally.flag('postgres');

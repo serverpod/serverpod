@@ -226,7 +226,7 @@ void main() {
               'test_tools',
             ],
           )
-          .withEnabledFeatures([])
+          .withDatabaseEnabled(false)
           .build();
       var protocolDefinition = const ProtocolDefinition(
         endpoints: [],

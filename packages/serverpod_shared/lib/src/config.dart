@@ -1483,6 +1483,16 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
   ]);
 }
 
+/// Returns `true` when there is a database section in the run-mode
+/// [configMap] with merged [environment] variables.
+bool isDatabaseConfigured(
+  Map<dynamic, dynamic> configMap, {
+  Map<String, String> environment = const {},
+}) {
+  final dbSetup = _databaseConfigMap(configMap, environment);
+  return dbSetup != null;
+}
+
 /// Infer the database dialect from one run-mode config map (the body of
 /// `config/<runMode>.yaml`), using the same `database` merging rules as
 /// [ServerpodConfig.loadFromMap].

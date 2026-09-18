@@ -10,7 +10,6 @@ import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/defaul
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_cli/src/util/type_validators.dart';
@@ -255,7 +254,7 @@ class Restrictions {
       ];
     }
 
-    if (!config.isFeatureEnabled(ServerpodFeature.database)) {
+    if (!config.isDatabaseEnabled) {
       return [
         SourceSpanSeverityException(
           'The "table" property cannot be used when the database feature is disabled.',

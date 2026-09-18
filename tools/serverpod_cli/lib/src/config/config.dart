@@ -5,7 +5,6 @@ import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_manifest.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
@@ -86,7 +85,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required List<ModuleConfig> modules,
     this.serializeAsJsonbByDefault = false,
     required this.extraClasses,
-    required this.enabledFeatures,
+    required this.isDatabaseEnabled,
     required this.databaseDialect,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
@@ -289,8 +288,7 @@ class GeneratorConfig implements ModelLoadConfig {
       ];
     }
 
-    var isDatabaseDisabled = !isFeatureEnabled(ServerpodFeature.database);
-    if (isDatabaseDisabled) {
+    if (!isDatabaseEnabled) {
       return [
         ...serverPackageDirectoryPathParts,
         ..._defaultRelativeServerTestToolsPathParts,
@@ -319,14 +317,11 @@ class GeneratorConfig implements ModelLoadConfig {
   /// stored in the database.
   final bool serializeAsJsonbByDefault;
 
-  /// All the features that are enabled in the serverpod project.
-  final List<ServerpodFeature> enabledFeatures;
+  /// Whether the database is enabled in the serverpod project.
+  final bool isDatabaseEnabled;
 
   /// The dialect of the database, if enabled. Default is [DatabaseDialect.postgres].
   final DatabaseDialect databaseDialect;
-
-  bool isFeatureEnabled(ServerpodFeature feature) =>
-      enabledFeatures.contains(feature);
 
   final List<ExperimentalFeature> experimentalFeatures;
 
@@ -516,12 +511,14 @@ class GeneratorConfig implements ModelLoadConfig {
       }
     }
 
-    var enabledFeatures = _enabledFeatures(file, generatorConfig);
-
     var enabledExperimentalFeatures = [
       ..._enabledExperimentalFeatures(file, generatorConfig),
       ...CommandLineExperimentalFeatures.instance.features,
     ];
+
+    var isDatabaseEnabled = await _inferIsDatabaseEnabledFromConfigs(
+      serverRootDir,
+    );
 
     var databaseDialect = await _inferDatabaseDialectFromConfigs(serverRootDir);
 
@@ -543,7 +540,7 @@ class GeneratorConfig implements ModelLoadConfig {
       serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
-      enabledFeatures: enabledFeatures,
+      isDatabaseEnabled: isDatabaseEnabled,
       databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
     );
@@ -555,6 +552,54 @@ class GeneratorConfig implements ModelLoadConfig {
   ) {
     if (!file.existsSync()) return false;
     return config['serialize_as_jsonb_by_default'] ?? false;
+  }
+
+  /// The database is enabled if any run-mode config file declares a database.
+  /// If there are no run-mode config files, the database is disabled.
+  static Future<bool> _inferIsDatabaseEnabledFromConfigs(
+    String serverRootDir,
+  ) async {
+    final configDir = Directory(p.join(serverRootDir, 'config'));
+    if (!await configDir.exists()) {
+      return false;
+    }
+
+    final databaseConfigByFile = <String, bool>{};
+    await for (final entity in configDir.list(followLinks: false)) {
+      if (entity is! File) continue;
+      final basename = p.basename(entity.path);
+      if (!(basename.endsWith('.yaml') || basename.endsWith('.yml')) ||
+          basename.startsWith('generator.') ||
+          basename.startsWith('passwords.')) {
+        continue;
+      }
+
+      final yamlRoot = loadYaml(await entity.readAsString());
+      if (yamlRoot == null || yamlRoot is! Map) continue;
+
+      final configured = isDatabaseConfigured(
+        Map<dynamic, dynamic>.from(yamlRoot),
+        environment: Platform.environment,
+      );
+
+      databaseConfigByFile[basename] = configured;
+    }
+
+    if (databaseConfigByFile.isEmpty) return false;
+
+    final configurations = databaseConfigByFile.values.toSet();
+    if (configurations.length > 1) {
+      final details = databaseConfigByFile.entries
+          .map((e) => '${e.key}: ${e.value ? 'enabled' : 'disabled'}')
+          .sorted()
+          .join(', ');
+      throw StateError(
+        'Inconsistent database configurations across run-mode config files: $details. '
+        'A Serverpod project must use uniform database configuration in all run modes.',
+      );
+    }
+
+    return configurations.single;
   }
 
   static Future<DatabaseDialect> _inferDatabaseDialectFromConfigs(
@@ -604,46 +649,6 @@ class GeneratorConfig implements ModelLoadConfig {
     }
 
     return dialects.single;
-  }
-
-  static List<ServerpodFeature> _enabledFeatures(File file, YamlMap config) {
-    if (!file.existsSync()) {
-      return ServerpodFeature.values
-          .where((f) => f.missingFileDefault)
-          .toList();
-    }
-
-    var featuresNode = config.nodes['features'];
-    var featuresMap = featuresNode?.value as YamlMap?;
-
-    // If features is not specified or not a Map, use defaults
-    if (featuresMap == null) {
-      return ServerpodFeature.values.where((f) => f.defaultValue).toList();
-    }
-
-    // Return all features based on their explicit value or default
-    return ServerpodFeature.values.where((feature) {
-      var featureName = feature.name;
-      var featureNode = featuresMap.nodes[featureName];
-      // If no value set, use default
-      if (featureNode == null) {
-        return feature.defaultValue;
-      }
-
-      var featureValue = featureNode.value;
-
-      // Valid values are true or false
-      if (featureValue is bool) return featureValue;
-
-      // Invalid value - warn and use default
-      var span = featureNode.span;
-      var message =
-          'Invalid value for feature \'$featureName\': \'${featureValue.toString()}\'. '
-          'Expected \'true\' or \'false\'. '
-          'Using default value: ${feature.defaultValue}.';
-      log.warning(span.message(message));
-      return feature.defaultValue;
-    }).toList();
   }
 
   static List<ExperimentalFeature> _enabledExperimentalFeatures(
