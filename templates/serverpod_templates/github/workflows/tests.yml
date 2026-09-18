@@ -24,12 +24,13 @@ jobs:
       # {{#postgres}}
       # The test config sets `database.dataPath`, so the tests run against an
       # embedded PostgreSQL that Serverpod starts itself. No Docker needed.
-      # The binaries are downloaded once and cached here between runs.
+      # The binaries are downloaded once and cached here between runs. The
+      # bundle changes with the Serverpod version, so the version is in the key.
       - name: Cache embedded PostgreSQL binaries
         uses: actions/cache@v4
         with:
           path: ~/.cache/serverpod/pg-binaries
-          key: serverpod-pg-binaries-ubuntu
+          key: serverpod-pg-binaries-${{ runner.os }}-${{ env.VERSION }}
       # {{/postgres}}
 
       - name: Install dependencies
