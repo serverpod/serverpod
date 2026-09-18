@@ -1,3 +1,13 @@
+## 4.0.1
+
+- fix: Fixes `github/workflows/tests.yml` tests on the template project. ([@dario-valles](https://github.com/dario-valles))
+- fix: Infers database feature flag for generator from run-mode configurations.
+- fix: Returns false from `initialize()` when the auth validation times out.
+- fix: Includes port in presigned PUT host signature. ([@Valley-15](https://github.com/Valley-15))
+- fix: Reports rejected database storage uploads and honors `maxFileSize`.
+- fix: Re-registers database cloud storage endpoint on hot reload.
+- fix: Exits with code 1 when the maintenance role fails to apply migrations.
+
 ## 4.0.0
 
 Serverpod 4 is a major overhaul of the development experience. It introduces a new development experience with an interactive command that boots your entire stack, makes Serverpod projects agent-ready out of the box, and lays the foundation for client-side databases with the new SQLite dialect.
