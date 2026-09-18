@@ -757,6 +757,20 @@ class PostgresDatabaseConfig extends DatabaseConfig {
     dataPath: dataPath,
   );
 
+  /// A copy of this config with [port].
+  PostgresDatabaseConfig withPort(int port) => PostgresDatabaseConfig(
+    host: host,
+    port: port,
+    user: user,
+    password: password,
+    name: name,
+    requireSsl: requireSsl,
+    isUnixSocket: isUnixSocket,
+    searchPaths: searchPaths,
+    maxConnectionCount: maxConnectionCount,
+    dataPath: dataPath,
+  );
+
   /// Returns this config with a relative [dataPath] resolved against
   /// [baseDirectory].
   ///

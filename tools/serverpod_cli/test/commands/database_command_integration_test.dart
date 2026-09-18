@@ -7,44 +7,31 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
+import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:test/test.dart';
 
-void main() {
-  group(
-    'Given a Serverpod project configured with an embedded PostgreSQL password in passwords.yaml,',
-    () {
-      const databasePassword = 'passwords-yaml-database-password';
-      late Directory serverDirectory;
-      late int databasePort;
-      Process? cliProcess;
-      pg.Connection? connection;
-      StreamSubscription<String>? stdoutSubscription;
-      StreamSubscription<String>? stderrSubscription;
+import '../test_util/endpoint_validation_helpers.dart';
 
-      setUp(() async {
-        serverDirectory = Directory.systemTemp.createTempSync(
-          'serverpod_cli_database_start_',
-        );
-        var portReservation = await ServerSocket.bind(
-          InternetAddress.loopbackIPv4,
-          0,
-        );
-        databasePort = portReservation.port;
-        await portReservation.close();
-
-        File(p.join(serverDirectory.path, 'pubspec.yaml')).writeAsStringSync('''
+/// A server project with an embedded database in a fresh temp directory.
+/// [databasePassword] lands in `passwords.yaml` verbatim, so `''` means no
+/// password.
+Directory writeServerProject({
+  required String databasePassword,
+  required int databasePort,
+}) {
+  var serverDirectory = Directory.systemTemp.createTempSync(
+    'sp_db_start_',
+  );
+  File(p.join(serverDirectory.path, 'pubspec.yaml')).writeAsStringSync('''
 name: database_start_test_server
 environment:
   sdk: ^3.8.0
 dependencies:
   serverpod: any
 ''');
-        var configDirectory = Directory(
-          p.join(serverDirectory.path, 'config'),
-        )..createSync();
-        File(
-          p.join(configDirectory.path, 'development.yaml'),
-        ).writeAsStringSync('''
+  var configDirectory = Directory(p.join(serverDirectory.path, 'config'))
+    ..createSync();
+  File(p.join(configDirectory.path, 'development.yaml')).writeAsStringSync('''
 database:
   host: localhost
   port: $databasePort
@@ -52,106 +39,417 @@ database:
   user: postgres
   dataPath: .serverpod/pgdata
 ''');
-        File(p.join(configDirectory.path, 'passwords.yaml')).writeAsStringSync(
-          '''
+  File(p.join(configDirectory.path, 'passwords.yaml')).writeAsStringSync('''
 development:
-  database: $databasePassword
-''',
-        );
-      });
+  database: '$databasePassword'
+''');
+  return serverDirectory;
+}
 
-      tearDown(() async {
-        await connection?.close();
-        if (cliProcess case var process?) {
-          process.kill(
-            Platform.isWindows ? ProcessSignal.sigterm : ProcessSignal.sigint,
+/// [output] with the logger's line wrapping undone.
+String unwrapped(String output) =>
+    const LineSplitter().convert(output).join(' ');
+
+/// `serverpod database start` running against a project.
+class DatabaseStartRun {
+  final Process _process;
+  final List<StreamSubscription<String>> _subscriptions;
+
+  /// Everything printed up to the final "how to stop" line.
+  final String output;
+
+  DatabaseStartRun._(this._process, this._subscriptions, this.output);
+
+  static Future<DatabaseStartRun> start(Directory serverDirectory) async {
+    var output = StringBuffer();
+    var ready = Completer<void>();
+    var process = await Process.start(Platform.resolvedExecutable, [
+      'run',
+      await resolveServerpodCliEntrypoint(),
+      '--no-analytics',
+      '--no-interactive',
+      'database',
+      'start',
+      '--server-dir',
+      serverDirectory.path,
+    ]);
+    var subscriptions = [
+      process.stdout
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .listen((line) {
+            output.writeln(line);
+            var isLastLine =
+                line.contains('to stop.') ||
+                line.contains('stops the database.');
+            if (isLastLine && !ready.isCompleted) ready.complete();
+          }),
+      process.stderr
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .listen(output.writeln),
+    ];
+    unawaited(
+      process.exitCode.then((exitCode) {
+        if (!ready.isCompleted) {
+          ready.completeError(
+            TestFailure(
+              'The command exited with code $exitCode before the '
+              'database became ready.\n$output',
+            ),
           );
-          try {
-            await process.exitCode.timeout(const Duration(seconds: 15));
-          } on TimeoutException {
-            process.kill(ProcessSignal.sigkill);
-            await process.exitCode;
-          }
         }
-        await stdoutSubscription?.cancel();
-        await stderrSubscription?.cancel();
-        if (serverDirectory.existsSync()) {
-          serverDirectory.deleteSync(recursive: true);
-        }
-      });
+      }),
+    );
 
-      test(
-        'when serverpod database start runs without mode or port overrides, '
-        'then the database accepts the password from passwords.yaml.',
-        () async {
-          var output = StringBuffer();
-          var ready = Completer<void>();
-          cliProcess = await Process.start(
-            Platform.resolvedExecutable,
-            [
-              'run',
-              p.join(Directory.current.path, 'bin', 'serverpod_cli.dart'),
-              '--no-analytics',
-              '--no-interactive',
-              'database',
-              'start',
-              '--server-dir',
-              serverDirectory.path,
-            ],
-            workingDirectory: Directory.current.path,
-          );
-          stdoutSubscription = cliProcess!.stdout
-              .transform(utf8.decoder)
-              .transform(const LineSplitter())
-              .listen((line) {
-                output.writeln(line);
-                if (line.contains('Embedded PostgreSQL is ready.') &&
-                    !ready.isCompleted) {
-                  ready.complete();
-                }
-              });
-          stderrSubscription = cliProcess!.stderr
-              .transform(utf8.decoder)
-              .transform(const LineSplitter())
-              .listen(output.writeln);
-          unawaited(
-            cliProcess!.exitCode.then((exitCode) {
-              if (!ready.isCompleted) {
-                ready.completeError(
-                  TestFailure(
-                    'The command exited with code $exitCode before the '
-                    'database became ready.\n$output',
-                  ),
-                );
-              }
-            }),
-          );
+    await ready.future.timeout(
+      const Duration(seconds: 180),
+      onTimeout: () =>
+          throw TestFailure('The database did not become ready.\n$output'),
+    );
+    return DatabaseStartRun._(process, subscriptions, output.toString());
+  }
 
-          await ready.future.timeout(
-            const Duration(seconds: 180),
-            onTimeout: () => throw TestFailure(
-              'The database did not become ready.\n$output',
-            ),
-          );
+  /// Interrupts the command and waits for it to exit.
+  Future<void> dispose() async {
+    _process.kill(
+      Platform.isWindows ? ProcessSignal.sigterm : ProcessSignal.sigint,
+    );
+    try {
+      await _process.exitCode.timeout(const Duration(seconds: 15));
+    } on TimeoutException {
+      _process.kill(ProcessSignal.sigkill);
+      await _process.exitCode;
+    }
+    for (var subscription in _subscriptions) {
+      await subscription.cancel();
+    }
+  }
+}
 
-          connection = await pg.Connection.open(
-            pg.Endpoint(
-              host: 'localhost',
-              port: databasePort,
-              database: 'serverpod_test',
-              username: 'postgres',
-              password: databasePassword,
-            ),
-            settings: const pg.ConnectionSettings(
-              sslMode: pg.SslMode.disable,
-            ),
-          );
-          var result = await connection!.execute('SELECT 1');
+void main() {
+  late int databasePort;
+  Directory? serverDirectory;
+  DatabaseStartRun? run;
+  pg.Connection? connection;
 
-          expect(result.first.first, 1);
-        },
-        timeout: const Timeout(Duration(minutes: 4)),
+  setUp(() async {
+    var portReservation = await ServerSocket.bind(
+      InternetAddress.loopbackIPv4,
+      0,
+    );
+    databasePort = portReservation.port;
+    await portReservation.close();
+  });
+
+  tearDown(() async {
+    await connection?.close();
+    connection = null;
+    await run?.dispose();
+    run = null;
+    serverDirectory?.deleteSync(recursive: true);
+    serverDirectory = null;
+  });
+
+  test(
+    'Given a Serverpod project with a database password in passwords.yaml, '
+    'when serverpod database start runs without mode or port overrides, '
+    'then it prints a TCP URI with that password and the configured port',
+    () async {
+      const databasePassword = 'passwords-yaml-database-password';
+      serverDirectory = writeServerProject(
+        databasePassword: databasePassword,
+        databasePort: databasePort,
+      );
+
+      run = await DatabaseStartRun.start(serverDirectory!);
+
+      expect(
+        unwrapped(run!.output),
+        contains(
+          'TCP URI: postgres://postgres:$databasePassword@'
+          '127.0.0.1:$databasePort/serverpod_test',
+        ),
       );
     },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given a Serverpod project with a database password in passwords.yaml, '
+    'when serverpod database start runs without mode or port overrides, '
+    'then the database accepts the password from passwords.yaml over TCP',
+    () async {
+      const databasePassword = 'passwords-yaml-database-password';
+      serverDirectory = writeServerProject(
+        databasePassword: databasePassword,
+        databasePort: databasePort,
+      );
+
+      run = await DatabaseStartRun.start(serverDirectory!);
+
+      connection = await pg.Connection.open(
+        pg.Endpoint(
+          host: 'localhost',
+          port: databasePort,
+          database: 'serverpod_test',
+          username: 'postgres',
+          password: databasePassword,
+        ),
+        settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+      );
+      var result = await connection!.execute('SELECT 1');
+      expect(result.first.first, 1);
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given a Serverpod project without a database password in passwords.yaml, '
+    'when serverpod database start runs, '
+    'then it prints the Unix socket URI',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: '',
+        databasePort: databasePort,
+      );
+
+      run = await DatabaseStartRun.start(serverDirectory!);
+
+      expect(
+        unwrapped(run!.output),
+        contains('Unix socket URI: postgres:///serverpod_test?host='),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given a Serverpod project without a database password in passwords.yaml, '
+    'when serverpod database start runs, '
+    'then it explains that TCP is off instead of printing a TCP URI',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: '',
+        databasePort: databasePort,
+      );
+
+      run = await DatabaseStartRun.start(serverDirectory!);
+
+      expect(run!.output, isNot(contains('TCP URI:')));
+      expect(
+        unwrapped(run!.output),
+        contains(
+          'TCP is off because no database password is configured. Set '
+          '`database` for this run mode in config/passwords.yaml to also '
+          'listen on the configured port.',
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given a project with a database password and a socket-only database, '
+    'when serverpod database start joins it, '
+    'then it says the process that started the database did not enable TCP',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'passwords-yaml-database-password',
+        databasePort: databasePort,
+      );
+      var socketOnly = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: Directory(
+            p.join(serverDirectory!.path, '.serverpod', 'pgdata'),
+          ),
+          databaseName: 'serverpod_test',
+          transport: const UnixTransport(),
+          detach: true,
+        ),
+      );
+      addTearDown(socketOnly.stop);
+
+      run = await DatabaseStartRun.start(serverDirectory!);
+
+      expect(run!.output, isNot(contains('TCP URI:')));
+      expect(
+        unwrapped(run!.output),
+        contains(
+          'TCP is off because the process that started the database did not '
+          'enable it. Restart that process to also listen on the configured '
+          'port.',
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given serverpod database start running with a database password, '
+    'when a second serverpod database start passes another --port, '
+    'then it exits with an error naming the running port',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'passwords-yaml-database-password',
+        databasePort: databasePort,
+      );
+      run = await DatabaseStartRun.start(serverDirectory!);
+      var otherPortReservation = await ServerSocket.bind(
+        InternetAddress.loopbackIPv4,
+        0,
+      );
+      var otherPort = otherPortReservation.port;
+      await otherPortReservation.close();
+
+      var second = await Process.run(Platform.resolvedExecutable, [
+        'run',
+        await resolveServerpodCliEntrypoint(),
+        '--no-analytics',
+        '--no-interactive',
+        'database',
+        'start',
+        '--server-dir',
+        serverDirectory!.path,
+        '--port',
+        '$otherPort',
+      ]);
+
+      expect(second.exitCode, isNot(0));
+      expect(
+        unwrapped('${second.stdout}\n${second.stderr}'),
+        contains(
+          'The embedded database is already running on port $databasePort, '
+          'started by another process, so it cannot also listen on port '
+          '$otherPort. Stop that process or drop --port.',
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given a project with a database password and a socket-only database, '
+    'when serverpod database start passes --port, '
+    'then it exits with an error saying the database runs without TCP',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'passwords-yaml-database-password',
+        databasePort: databasePort,
+      );
+      var socketOnly = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: Directory(
+            p.join(serverDirectory!.path, '.serverpod', 'pgdata'),
+          ),
+          databaseName: 'serverpod_test',
+          transport: const UnixTransport(),
+          detach: true,
+        ),
+      );
+      addTearDown(socketOnly.stop);
+
+      var result = await Process.run(Platform.resolvedExecutable, [
+        'run',
+        await resolveServerpodCliEntrypoint(),
+        '--no-analytics',
+        '--no-interactive',
+        'database',
+        'start',
+        '--server-dir',
+        serverDirectory!.path,
+        '--port',
+        '$databasePort',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+      expect(
+        unwrapped('${result.stdout}\n${result.stderr}'),
+        contains(
+          'The embedded database is already running without TCP, started by '
+          'another process, so it cannot also listen on port $databasePort. '
+          'Stop that process or drop --port.',
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given a project whose database port another process holds, '
+    'when serverpod database start runs, '
+    'then it warns that the database listens on another TCP port',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'passwords-yaml-database-password',
+        databasePort: databasePort,
+      );
+      final holder = await ServerSocket.bind(
+        InternetAddress.loopbackIPv4,
+        databasePort,
+      );
+      addTearDown(holder.close);
+
+      run = await DatabaseStartRun.start(serverDirectory!);
+
+      expect(
+        unwrapped(run!.output),
+        allOf(
+          contains(
+            'Port $databasePort is held by another process, so the embedded '
+            'database listens on TCP port ',
+          ),
+          contains(
+            ' instead. Tools set up for port $databasePort reach that other '
+            'process. Stop it or change the database port in the config.',
+          ),
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
+    'Given a project whose database port another process holds, '
+    'when serverpod database start passes that port with --port, '
+    'then it exits with an error naming the port',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'passwords-yaml-database-password',
+        databasePort: databasePort,
+      );
+      final holder = await ServerSocket.bind(
+        InternetAddress.loopbackIPv4,
+        databasePort,
+      );
+      addTearDown(holder.close);
+
+      final result = await Process.run(Platform.resolvedExecutable, [
+        'run',
+        await resolveServerpodCliEntrypoint(),
+        '--no-analytics',
+        '--no-interactive',
+        'database',
+        'start',
+        '--server-dir',
+        serverDirectory!.path,
+        '--port',
+        '$databasePort',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+      expect(
+        unwrapped('${result.stdout}\n${result.stderr}'),
+        contains(
+          'Port $databasePort is already in use, so the local database cannot '
+          'accept TCP connections there. Stop the other service on that port '
+          '(for example a Docker database from an earlier setup), change '
+          '`database.port` in the relevant file in `config/`, or remove the '
+          'database password from `config/passwords.yaml` to serve the local '
+          'database over its Unix socket only.',
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
   );
 }

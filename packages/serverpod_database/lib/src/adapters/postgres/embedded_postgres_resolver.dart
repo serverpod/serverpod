@@ -4,7 +4,9 @@ import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../../interface/database_pool_manager.dart';
 import 'embedded_postgres_user_facing_error.dart';
+import 'postgres_pool_manager.dart';
 
 /// Outcome of [startOrAttachEmbeddedPostgres].
 class ResolvedEmbeddedPostgres {
@@ -14,15 +16,25 @@ class ResolvedEmbeddedPostgres {
   /// statements such as `CREATE DATABASE` / `DROP DATABASE`.
   final PostgresDatabaseConfig connectivity;
 
-  /// Stops the postmaster this call launched, or `null` when it attached to one
-  /// another supervisor already owns. Only invoke it for a non-null value.
-  final Future<void> Function()? stop;
+  /// The postmaster handle, whether launched by this call or attached to.
+  final EmbeddedPostgres handle;
+
+  /// Whether this call launched the postmaster, and so owns [stop].
+  final bool launched;
+
+  /// The warning when a held port moved TCP to a free one, or `null`.
+  final String? portFallbackWarning;
 
   /// Creates a [ResolvedEmbeddedPostgres].
   const ResolvedEmbeddedPostgres({
     required this.connectivity,
-    required this.stop,
+    required this.handle,
+    required this.launched,
+    this.portFallbackWarning,
   });
+
+  /// Stops the postmaster when this call launched it, otherwise `null`.
+  Future<void> Function()? get stop => launched ? handle.stop : null;
 }
 
 /// Launches or attaches to the embedded PostgreSQL postmaster backing
@@ -32,29 +44,31 @@ class ResolvedEmbeddedPostgres {
 /// externally-managed server). Relative `dataPath` values are used as-is
 /// (typically already resolved with [DatabaseConfig.withResolvedLocalPath]).
 ///
+/// A held configured port moves to a free one unless [ephemeralPortFallback]
+/// is `false`.
+///
 /// This pulls `package:serverpod_embedded_postgres` (and its `dart:ffi`
 /// dependencies), so it is deliberately NOT exported from the package barrel -
 /// it must never reach a web client. Server-side consumers reach it via
 /// `package:serverpod_database/embedded.dart`.
 Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
-  PostgresDatabaseConfig config,
-) async {
+  PostgresDatabaseConfig config, {
+  bool ephemeralPortFallback = true,
+}) async {
   final dataDir = config._embeddedPostgresDataDir();
   if (dataDir == null) return null;
 
   final EmbeddedStartResult result;
   try {
-    final configuredPassword = config.password.isEmpty ? null : config.password;
     result = await EmbeddedPostgres.startOrAttach(
       EmbeddedPostgresOptions(
         dataDir: dataDir,
         databaseName: config.name,
         username: config.user,
-        transport: hasUnixSocketSupport()
-            ? UnixTransport(initialPassword: configuredPassword)
-            : TcpTransport(password: configuredPassword),
+        transport: embeddedTransportFor(config),
         detach: false,
         repairStaleLocks: true,
+        ephemeralPortFallback: ephemeralPortFallback,
       ),
     );
   } catch (error, stackTrace) {
@@ -67,11 +81,36 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
     );
   }
 
+  final tcpPort = result.handle.tcpEndpoint?.port;
   return ResolvedEmbeddedPostgres(
     connectivity: config._connectivityFrom(result.handle.endpoint),
-    stop: result.launched ? () => result.handle.stop() : null,
+    handle: result.handle,
+    launched: result.launched,
+    portFallbackWarning:
+        result.launched && tcpPort != null && tcpPort != config.port
+        ? 'Port ${config.port} is held by another process, so the embedded '
+              'database listens on TCP port $tcpPort instead. Tools set up '
+              'for port ${config.port} reach that other process. Stop it or '
+              'change the database port in the config.'
+        : null,
   );
 }
+
+/// The [ResolvedEmbeddedPostgres.portFallbackWarning] from [poolManager].
+String? embeddedPostgresPortFallbackWarning(DatabasePoolManager poolManager) =>
+    poolManager is PostgresPoolManager
+    ? poolManager.embeddedPostgres?.portFallbackWarning
+    : null;
+
+/// How the embedded postmaster for [config] listens.
+///
+/// Always the Unix socket, plus loopback TCP on [config]'s port when a password
+/// is configured. Every process derives the same answer, so start order does
+/// not matter.
+Transport embeddedTransportFor(PostgresDatabaseConfig config) =>
+    config.password.isEmpty
+    ? const UnixTransport()
+    : DualTransport(port: config.port, password: config.password);
 
 extension on PostgresDatabaseConfig {
   /// The effective PGDATA [Directory] for the embedded PostgreSQL, or `null`
