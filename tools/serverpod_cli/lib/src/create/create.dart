@@ -23,6 +23,7 @@ import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/entitlements_modifier.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -176,6 +177,11 @@ Future<CreateResult> performCreate(
     projectDir: Directory(p.join(projectRoot.path, name)),
     name: name,
   );
+
+  // Resolved against the directory being created into, so a pin
+  // applies to the new project's `flutter create` and `pub get`.
+  rescopeSdkResolver(serverpodDirs.projectDir);
+
   var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
   if (pubspecFile.existsSync()) {
     _logError('Project $name already exists.');
@@ -1454,6 +1460,7 @@ Future<bool> _runGenerate(
     return await GenerateFiles.generateFiles(
       Directory(serverDirPath),
       interactive: interactive,
+      dartSdkPath: (await sdkResolver.dartSdk).root,
     );
   });
 }

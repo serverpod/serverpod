@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -261,13 +262,24 @@ class FlutterAppManager {
     final device =
         runtime.app.device ?? ideDevice() ?? flutterDeviceWebServerWithBrowser;
 
+    final appDir = p.joinAll(runtime.app.pathParts);
+
+    // Resolved per app: a workspace can hold apps pinned to different Flutter
+    // versions, and the pin is a property of the app's own directory.
+    String? sdkRoot;
+    if (flutterExecutableForTesting == null) {
+      final appResolver = SdkResolver(baseDirectory: Directory(appDir));
+      sdkRoot = (await appResolver.flutterSdk)?.root;
+    }
+
     late final FlutterProcess process;
     process = FlutterProcess(
-      flutterPackageDir: p.joinAll(runtime.app.pathParts),
+      flutterPackageDir: appDir,
       device: device,
       extraArgs: runtime.app.extraRunArgs,
       flutterProxy: runtime.proxy,
       flutterExecutable: flutterExecutableForTesting ?? 'flutter',
+      flutterSdkRoot: sdkRoot,
       machineArgsOverride: argsOverrideForTesting?.call(runtime.app),
       stdoutSink: stdoutSinkFor(runtime.app),
       stderrSink: stderrSinkFor(runtime.app),
@@ -286,10 +298,10 @@ class FlutterAppManager {
       await process.start();
     } on FlutterNotInstalledException catch (e) {
       log.warning(e.message);
-      runtime.spawnInFlight = false;
+      _abandonLaunch(runtime);
       return;
     } catch (_) {
-      runtime.spawnInFlight = false;
+      _abandonLaunch(runtime);
       rethrow;
     }
 
@@ -563,6 +575,17 @@ class FlutterAppManager {
     if (runtime.stopSignaled) return;
     runtime.stopSignaled = true;
     onStop(runtime.app);
+  }
+
+  /// Releases a launch that never reached a running process.
+  ///
+  /// The tab has already been created and reset by [onEnsureAppTab], so it
+  /// has to be told the launch is over; otherwise it sits in its launching
+  /// state for the rest of the session, with its "Stop App" action having
+  /// nothing to act on.
+  void _abandonLaunch(_AppRuntime runtime) {
+    runtime.spawnInFlight = false;
+    onLaunchFailed(runtime.app);
   }
 
   Future<void> _connectAfterLaunch(

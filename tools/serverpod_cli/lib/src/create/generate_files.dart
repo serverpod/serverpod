@@ -12,6 +12,7 @@ class GenerateFiles {
   static Future<bool> generateFiles(
     Directory serverDir, {
     required bool? interactive,
+    required String dartSdkPath,
   }) async {
     GeneratorConfig config;
     try {
@@ -24,7 +25,10 @@ class GenerateFiles {
       return false;
     }
 
-    final isolated = await IsolatedAnalyzers.create(config);
+    final isolated = await IsolatedAnalyzers.create(
+      config,
+      dartSdkPath: dartSdkPath,
+    );
     try {
       final result = await isolated.performGenerate(config: config);
       return result.success;

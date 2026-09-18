@@ -41,6 +41,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/legacy_model_files.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/shutdown_signal.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
@@ -160,6 +161,10 @@ class StartCommand extends ServerpodCommand<StartOption> {
         ),
       );
 
+      rescopeSdkResolver(
+        Directory(p.joinAll(config.serverPackageDirectoryPathParts)),
+      );
+
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
       if (await LegacyModelFiles.report(config)) throw ExitException.error();
@@ -206,6 +211,10 @@ class StartCommand extends ServerpodCommand<StartOption> {
       log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
+
+    rescopeSdkResolver(
+      Directory(p.joinAll(config.serverPackageDirectoryPathParts)),
+    );
 
     if (await _detectExistingInstance(config)) return;
     if (await LegacyModelFiles.report(config)) throw ExitException.error();
@@ -564,9 +573,15 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     rethrow;
   }
 
+  final resolvedDartSdk = await sdkResolver.dartSdk;
+
   // prime: false - the single full prime happens inside generateIfStale; here
   // we only spawn the isolate eagerly so it overlaps the staleness check.
-  final analyzersFuture = IsolatedAnalyzers.create(config, prime: false);
+  final analyzersFuture = IsolatedAnalyzers.create(
+    config,
+    prime: false,
+    dartSdkPath: resolvedDartSdk.root,
+  );
   Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
   // Tear down everything provisioned so far: the analyzer isolate and any
@@ -619,7 +634,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // FES setup (watch mode only).
   KernelCompiler? compiler;
   NativeAssetsBuilder? nativeAssetsBuilder;
-  String? dartExecutable;
+  // Seeded for `--no-watch`, where there is no compiler to take it from.
+  // Watch mode overwrites it with the compiler's, which resolves to the same
+  // SDK root.
+  String? dartExecutable = dartExecutableIn(resolvedDartSdk.root);
   // The resolution's `.dart_tool` whose package_config.json the FES reads;
   // watched below so a dependency change is picked up in place.
   String? serverDartToolDir;
@@ -641,6 +659,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       entryPoint: entryPoint,
       outputDill: initialDill,
       packagesPath: packageConfigPath,
+      sdkRoot: resolvedDartSdk.root,
     );
 
     final localBuilder = _createNativeAssetsBuilder(
