@@ -560,6 +560,13 @@ class GeneratorConfig implements ModelLoadConfig {
     return config['serialize_as_jsonb_by_default'] ?? false;
   }
 
+  static const _runModeConfigFileBaseNames = {
+    'development.yaml',
+    'staging.yaml',
+    'production.yaml',
+    'test.yaml',
+  };
+
   /// Loads the database config of each run-mode config file, keyed by file
   /// name. A run-mode config file without a database section maps to `null`.
   static Future<Map<String, DatabaseConfig?>>
@@ -573,9 +580,7 @@ class GeneratorConfig implements ModelLoadConfig {
     await for (final entity in configDir.list(followLinks: false)) {
       if (entity is! File) continue;
       final basename = p.basename(entity.path);
-      if (!(basename.endsWith('.yaml') || basename.endsWith('.yml')) ||
-          basename.startsWith('generator.') ||
-          basename.startsWith('passwords.')) {
+      if (!_runModeConfigFileBaseNames.contains(basename)) {
         continue;
       }
 
@@ -591,12 +596,12 @@ class GeneratorConfig implements ModelLoadConfig {
     return databaseConfigsByFile;
   }
 
-  /// The database is enabled if any run-mode config file declares a database.
-  /// If there are no run-mode config files, the database is disabled.
+  /// The database is enabled if run-mode config files (when they exist)
+  /// all declare a database section.
   static bool _inferDatabaseEnabledFromConfigs(
     Map<String, DatabaseConfig?> databaseConfigsByFile,
   ) {
-    if (databaseConfigsByFile.isEmpty) return false;
+    if (databaseConfigsByFile.isEmpty) return true;
 
     final configurations = databaseConfigsByFile.values
         .map((config) => config != null)
