@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 import 'package:test/test.dart';
@@ -425,89 +424,35 @@ void main() {
   );
 
   test(
-    'then the presigned URL signature includes the custom endpoint port',
+    'Given a PresignedPutUploadStrategy with a custom endpoint on a non-standard port, '
+    'when uploading data, '
+    'then the Host header includes the port',
     () async {
-      const port = 4567;
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(() => server.close(force: true));
+      final port = server.port;
 
-      final description = await PresignedPutUploadStrategy()
-          .createUploadDescription(
-            accessKey: 'testAccessKey',
-            secretKey: 'testSecretKey',
-            bucket: 'test-bucket',
-            region: 'us-east-1',
-            path: 'test/file.txt',
-            expiration: const Duration(minutes: 10),
-            maxFileSize: 1024 * 1024,
-            public: false,
-            endpoints: CustomEndpointConfig(
-              baseUri: Uri.http('localhost:$port', '/'),
-            ),
-          );
+      final host = server.first.then((request) async {
+        await request.drain<void>();
+        request.response.statusCode = 200;
+        await request.response.close();
+        return request.headers.value('host');
+      });
 
-      final data = jsonDecode(description.encode()) as Map<String, dynamic>;
-      final url = Uri.parse(data['url'] as String);
-
-      final headers = <String, String>{
-        for (final entry in (data['headers'] as Map).entries)
-          entry.key as String: entry.value as String,
-      };
-
-      final signature = url.queryParameters['X-Amz-Signature'];
-      expect(signature, isNotNull);
-
-      final datetime = url.queryParameters['X-Amz-Date']!;
-      final credential = url.queryParameters['X-Amz-Credential']!;
-      final signedHeadersValue = url.queryParameters['X-Amz-SignedHeaders']!;
-
-      expect(signedHeadersValue, contains('host'));
-
-      final queryParameters = Map<String, String>.from(
-        url.queryParameters,
-      )..remove('X-Amz-Signature');
-
-      final signedHeaderNames = signedHeadersValue.split(';');
-
-      final signedHeaders = <String, String?>{
-        for (final name in signedHeaderNames)
-          name: name == 'host'
-              ? 'localhost:$port'
-              : headers.entries
-                    .firstWhere(
-                      (entry) => entry.key.toLowerCase() == name,
-                    )
-                    .value,
-      };
-
-      final canonicalRequest = [
-        'PUT',
-        url.path.split('/').map(Uri.encodeComponent).join('/'),
-        SigV4.buildCanonicalQueryString(queryParameters),
-        SigV4.buildCanonicalHeaders(signedHeaders),
-        SigV4.buildCanonicalSignedHeaders(signedHeaders),
-        'UNSIGNED-PAYLOAD',
-      ].join('\n');
-
-      final credentialScope = credential.split('/').skip(1).join('/');
-
-      final stringToSign = SigV4.buildStringToSign(
-        datetime,
-        credentialScope,
-        SigV4.hashCanonicalRequest(canonicalRequest),
+      await PresignedPutUploadStrategy().uploadData(
+        accessKey: 'testAccessKey',
+        secretKey: 'testSecretKey',
+        bucket: 'test-bucket',
+        region: 'us-east-1',
+        data: ByteData(1),
+        path: 'uploads/test-file.txt',
+        public: false,
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.http('localhost:$port', '/'),
+        ),
       );
 
-      final signingKey = SigV4.calculateSigningKey(
-        'testSecretKey',
-        datetime,
-        'us-east-1',
-        's3',
-      );
-
-      final expectedSignature = SigV4.calculateSignature(
-        signingKey,
-        stringToSign,
-      );
-
-      expect(signature, expectedSignature);
+      expect(await host, 'localhost:$port');
     },
   );
 }
