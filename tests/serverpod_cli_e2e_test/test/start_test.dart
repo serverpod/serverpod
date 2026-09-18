@@ -17,24 +17,24 @@ const startWatchKeywords = [
   serverRestarted,
 ];
 
-/// Creates a `config/development.yaml` with port 0 (OS-assigned) to avoid
-/// port conflicts when multiple tests run concurrently or sequentially.
+/// Sets the server ports in `config/development.yaml` to 0 (OS-assigned) to
+/// avoid port conflicts when multiple tests run concurrently or sequentially.
+/// The rest of the config, including the database section, is kept as is.
 void createDynamicPortConfig(String serverDirPath) {
-  var configDir = Directory(path.join(serverDirPath, 'config'));
-  configDir.createSync(recursive: true);
-  File(path.join(configDir.path, 'development.yaml')).writeAsStringSync('''
-apiServer:
-  port: 0
-  publicHost: localhost
-  publicPort: 0
-  publicScheme: http
+  const serverSections = {'apiServer', 'insightsServer', 'webServer'};
+  var topLevelKey = RegExp(r'^(\w+):');
+  var portEntry = RegExp(r'^(\s+(?:port|publicPort):\s*)\d+');
 
-webServer:
-  port: 0
-  publicHost: localhost
-  publicPort: 0
-  publicScheme: http
-''');
+  var configFile = File(
+    path.join(serverDirPath, 'config', 'development.yaml'),
+  );
+  String? section;
+  var lines = configFile.readAsLinesSync().map((line) {
+    section = topLevelKey.firstMatch(line)?.group(1) ?? section;
+    if (!serverSections.contains(section)) return line;
+    return line.replaceFirstMapped(portEntry, (m) => '${m.group(1)}0');
+  });
+  configFile.writeAsStringSync('${lines.join('\n')}\n');
 }
 
 /// Starts the serverpod process and wires up a [KeywordSearchInStream] to
