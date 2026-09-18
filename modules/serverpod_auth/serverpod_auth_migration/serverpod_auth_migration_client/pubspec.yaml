@@ -3,7 +3,7 @@
 
 name: serverpod_auth_migration_client
 description: Serverpod authentication migration client module.
-version: 4.0.0
+version: 4.0.1
 repository: https://github.com/serverpod/serverpod
 
 environment:
@@ -12,8 +12,8 @@ environment:
 resolution: workspace
 
 dependencies:
-  serverpod_auth_bridge_client: 4.0.0
-  serverpod_auth_client: 4.0.0
-  serverpod_auth_core_client: 4.0.0
-  serverpod_auth_idp_client: 4.0.0
-  serverpod_client: 4.0.0
+  serverpod_auth_bridge_client: 4.0.1
+  serverpod_auth_client: 4.0.1
+  serverpod_auth_core_client: 4.0.1
+  serverpod_auth_idp_client: 4.0.1
+  serverpod_client: 4.0.1
