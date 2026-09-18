@@ -1,6 +1,5 @@
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -162,11 +161,7 @@ void main() {
     () {
       var configWithTestToolsPath = GeneratorConfigBuilder()
           .withName(projectName)
-          .withEnabledFeatures(
-            [
-              ServerpodFeature.database,
-            ],
-          )
+          .withDatabaseEnabled(true)
           .withRelativeServerTestToolsPathParts(
             [
               'test_integration',
@@ -206,11 +201,7 @@ void main() {
     () {
       var configWithTestToolsPath = GeneratorConfigBuilder()
           .withName(projectName)
-          .withEnabledFeatures(
-            [
-              ServerpodFeature.database,
-            ],
-          )
+          .withDatabaseEnabled(true)
           .withRelativeServerTestToolsPathParts(null)
           .build();
 
@@ -245,7 +236,7 @@ void main() {
       var configWithTestToolsPath = GeneratorConfigBuilder()
           .withName(projectName)
           // Disable database feature
-          .withEnabledFeatures([])
+          .withDatabaseEnabled(false)
           .withRelativeServerTestToolsPathParts(null)
           .build();
 

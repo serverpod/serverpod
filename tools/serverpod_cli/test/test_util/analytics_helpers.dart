@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
@@ -22,7 +21,7 @@ GeneratorConfig buildAnalyticsTestConfig(String serverDir) {
     relativeDartClientPackagePathParts: const ['..', 'myapp_client'],
     modules: const [],
     extraClasses: const [],
-    enabledFeatures: const [ServerpodFeature.database],
+    isDatabaseEnabled: true,
     databaseDialect: DatabaseDialect.postgres,
   );
 }

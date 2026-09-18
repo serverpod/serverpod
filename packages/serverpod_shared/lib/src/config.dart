@@ -1491,6 +1491,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
 /// merging environment variables. Uses a placeholder password so PostgreSQL
 /// configs can be parsed without a `passwords.yaml` file (for example in the
 /// CLI).
+@Deprecated('Use inferDatabaseConfigFromConfigMap instead')
 DatabaseDialect? inferDatabaseDialectFromConfigMap(
   Map<dynamic, dynamic> configMap, {
   Map<String, String> environment = const {},
@@ -1502,6 +1503,27 @@ DatabaseDialect? inferDatabaseDialectFromConfigMap(
     {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
     ServerpodConfigMap.database,
   ).dialect;
+}
+
+/// Infer the database config from one run-mode config map (the body of
+/// `config/<runMode>.yaml`), using the same `database` merging rules as
+/// [ServerpodConfig.loadFromMap].
+///
+/// Returns `null` when there is no database section or it is empty after
+/// merging environment variables. Uses a placeholder password so PostgreSQL
+/// configs can be parsed without a `passwords.yaml` file (for example in the
+/// CLI).
+DatabaseConfig? inferDatabaseConfigFromConfigMap(
+  Map<dynamic, dynamic> configMap, {
+  Map<String, String> environment = const {},
+}) {
+  final dbSetup = _databaseConfigMap(configMap, environment);
+  if (dbSetup == null) return null;
+  return DatabaseConfig._fromJson(
+    dbSetup,
+    {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
+    ServerpodConfigMap.database,
+  );
 }
 
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
