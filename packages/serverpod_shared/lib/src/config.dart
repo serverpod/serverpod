@@ -1483,17 +1483,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
   ]);
 }
 
-/// Returns `true` when there is a database section in the run-mode
-/// [configMap] with merged [environment] variables.
-bool isDatabaseConfigured(
-  Map<dynamic, dynamic> configMap, {
-  Map<String, String> environment = const {},
-}) {
-  final dbSetup = _databaseConfigMap(configMap, environment);
-  return dbSetup != null;
-}
-
-/// Infer the database dialect from one run-mode config map (the body of
+/// Infer the database config from one run-mode config map (the body of
 /// `config/<runMode>.yaml`), using the same `database` merging rules as
 /// [ServerpodConfig.loadFromMap].
 ///
@@ -1501,7 +1491,7 @@ bool isDatabaseConfigured(
 /// merging environment variables. Uses a placeholder password so PostgreSQL
 /// configs can be parsed without a `passwords.yaml` file (for example in the
 /// CLI).
-DatabaseDialect? inferDatabaseDialectFromConfigMap(
+DatabaseConfig? inferDatabaseConfigFromConfigMap(
   Map<dynamic, dynamic> configMap, {
   Map<String, String> environment = const {},
 }) {
@@ -1511,7 +1501,7 @@ DatabaseDialect? inferDatabaseDialectFromConfigMap(
     dbSetup,
     {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
     ServerpodConfigMap.database,
-  ).dialect;
+  );
 }
 
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {

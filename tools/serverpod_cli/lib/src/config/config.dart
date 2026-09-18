@@ -516,11 +516,17 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    var isDatabaseEnabled = await _inferIsDatabaseEnabledFromConfigs(
+    var databaseConfigsByFile = await _loadDatabaseConfigsFromRunModeFiles(
       serverRootDir,
     );
 
-    var databaseDialect = await _inferDatabaseDialectFromConfigs(serverRootDir);
+    var isDatabaseEnabled = _inferDatabaseEnabledFromConfigs(
+      databaseConfigsByFile,
+    );
+
+    var databaseDialect = _inferDatabaseDialectFromConfigs(
+      databaseConfigsByFile,
+    );
 
     var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
       file,
@@ -554,17 +560,16 @@ class GeneratorConfig implements ModelLoadConfig {
     return config['serialize_as_jsonb_by_default'] ?? false;
   }
 
-  /// The database is enabled if any run-mode config file declares a database.
-  /// If there are no run-mode config files, the database is disabled.
-  static Future<bool> _inferIsDatabaseEnabledFromConfigs(
-    String serverRootDir,
-  ) async {
+  /// Loads the database config of each run-mode config file, keyed by file
+  /// name. A run-mode config file without a database section maps to `null`.
+  static Future<Map<String, DatabaseConfig?>>
+  _loadDatabaseConfigsFromRunModeFiles(String serverRootDir) async {
     final configDir = Directory(p.join(serverRootDir, 'config'));
     if (!await configDir.exists()) {
-      return false;
+      return {};
     }
 
-    final databaseConfigByFile = <String, bool>{};
+    final databaseConfigsByFile = <String, DatabaseConfig?>{};
     await for (final entity in configDir.list(followLinks: false)) {
       if (entity is! File) continue;
       final basename = p.basename(entity.path);
@@ -577,20 +582,28 @@ class GeneratorConfig implements ModelLoadConfig {
       final yamlRoot = loadYaml(await entity.readAsString());
       if (yamlRoot == null || yamlRoot is! Map) continue;
 
-      final configured = isDatabaseConfigured(
+      databaseConfigsByFile[basename] = inferDatabaseConfigFromConfigMap(
         Map<dynamic, dynamic>.from(yamlRoot),
         environment: Platform.environment,
       );
-
-      databaseConfigByFile[basename] = configured;
     }
 
-    if (databaseConfigByFile.isEmpty) return false;
+    return databaseConfigsByFile;
+  }
 
-    final configurations = databaseConfigByFile.values.toSet();
+  /// The database is enabled if any run-mode config file declares a database.
+  /// If there are no run-mode config files, the database is disabled.
+  static bool _inferDatabaseEnabledFromConfigs(
+    Map<String, DatabaseConfig?> databaseConfigsByFile,
+  ) {
+    if (databaseConfigsByFile.isEmpty) return false;
+
+    final configurations = databaseConfigsByFile.values
+        .map((config) => config != null)
+        .toSet();
     if (configurations.length > 1) {
-      final details = databaseConfigByFile.entries
-          .map((e) => '${e.key}: ${e.value ? 'enabled' : 'disabled'}')
+      final details = databaseConfigsByFile.entries
+          .map((e) => '${e.key}: ${e.value != null ? 'enabled' : 'disabled'}')
           .sorted()
           .join(', ');
       throw StateError(
@@ -602,35 +615,13 @@ class GeneratorConfig implements ModelLoadConfig {
     return configurations.single;
   }
 
-  static Future<DatabaseDialect> _inferDatabaseDialectFromConfigs(
-    String serverRootDir,
-  ) async {
-    final configDir = Directory(p.join(serverRootDir, 'config'));
-    if (!await configDir.exists()) {
-      return DatabaseDialect.postgres;
-    }
-
-    final dialectsByFile = <String, DatabaseDialect>{};
-    await for (final entity in configDir.list(followLinks: false)) {
-      if (entity is! File) continue;
-      final basename = p.basename(entity.path);
-      if (!(basename.endsWith('.yaml') || basename.endsWith('.yml')) ||
-          basename.startsWith('generator.') ||
-          basename.startsWith('passwords.')) {
-        continue;
-      }
-
-      final yamlRoot = loadYaml(await entity.readAsString());
-      if (yamlRoot == null || yamlRoot is! Map) continue;
-
-      final dialect = inferDatabaseDialectFromConfigMap(
-        Map<dynamic, dynamic>.from(yamlRoot),
-        environment: Platform.environment,
-      );
-      if (dialect != null) {
-        dialectsByFile[basename] = dialect;
-      }
-    }
+  static DatabaseDialect _inferDatabaseDialectFromConfigs(
+    Map<String, DatabaseConfig?> databaseConfigsByFile,
+  ) {
+    final dialectsByFile = <String, DatabaseDialect>{
+      for (final entry in databaseConfigsByFile.entries)
+        if (entry.value case final config?) entry.key: config.dialect,
+    };
 
     if (dialectsByFile.isEmpty) {
       return DatabaseDialect.postgres;
