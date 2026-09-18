@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
@@ -134,13 +135,15 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   /// Use [timeout] to set a maximum time for the server validation call. The
   /// validation can be retried at any time by calling [validateAuthentication].
   Future<bool> initialize({
-    Duration timeout = const Duration(seconds: 2),
+    Duration timeout = const Duration(seconds: 5),
   }) async {
     await restore();
     try {
       await validateAuthentication(timeout: timeout);
       return true;
     } on ServerpodClientException catch (_) {
+      return false;
+    } on TimeoutException catch (_) {
       return false;
     }
   }
