@@ -29,6 +29,7 @@ import '../postgres/sql_query_builder.dart';
 import 'sqlite_database_result.dart';
 import 'sqlite_pool_manager.dart';
 import 'sqlite_query_parameters.dart';
+import 'watch_trigger_tables.dart';
 
 /// A connection to the SQLite database.
 @internal
@@ -883,6 +884,51 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }
 
   @override
+  Stream<List<T>> watch<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Include? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<Table>? alsoTriggerOnTables,
+  }) {
+    var table = _getTableOrAssert<T>(session, operation: 'watch');
+    var orderByCols = _resolveOrderBy(orderByList, orderBy);
+
+    var query = SelectQueryBuilder(table: table)
+        .withSelectFields(table.columns)
+        .withWhere(where)
+        .withOrderBy(orderByCols)
+        // SQLite requires LIMIT when OFFSET is used. LIMIT -1 means no cap.
+        .withLimit(offset != null ? (limit ?? -1) : limit)
+        .withOffset(offset)
+        .withInclude(include)
+        .build();
+
+    return _unsafeWatchResultSets(
+      query,
+      throttle: throttle,
+      triggerOnTables: collectWatchTriggerTables(
+        table: table,
+        where: where,
+        orderBy: orderByCols,
+        include: include,
+        extraTables: alsoTriggerOnTables,
+      ),
+    ).asyncMap(
+      (result) => _deserializeMappedResultSet<T>(
+        session,
+        result,
+        table: table,
+        include: include,
+      ),
+    );
+  }
+
+  @override
   Stream<DatabaseResult> unsafeWatch(
     DatabaseSession session,
     String query, {
@@ -1255,6 +1301,49 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       prefixedColumns: true,
     );
 
+    return _deserializeNormalizedRows<T>(
+      session,
+      result,
+      table: table,
+      include: include,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<T>> _deserializeMappedResultSet<T extends TableRow>(
+    DatabaseSession session,
+    ResultSet result, {
+    required Table table,
+    Include? include,
+  }) {
+    var aliasResolver = ColumnAliasResolver.forQuery(table, include);
+    var rows = result
+        .map(
+          (row) => _normalizeQueryResultRow(
+            Map<String, dynamic>.from(row),
+            table,
+            include: include,
+            prefixedColumns: true,
+            aliasResolver: aliasResolver,
+          ),
+        )
+        .toList();
+
+    return _deserializeNormalizedRows<T>(
+      session,
+      rows,
+      table: table,
+      include: include,
+    );
+  }
+
+  Future<List<T>> _deserializeNormalizedRows<T extends TableRow>(
+    DatabaseSession session,
+    Iterable<Map<String, dynamic>> result, {
+    required Table table,
+    Include? include,
+    Transaction? transaction,
+  }) async {
     var resolvedListRelations = await _queryIncludedLists(
       session,
       table,
