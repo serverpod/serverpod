@@ -31,12 +31,17 @@ final class Argon2HashUtil {
   /// constraints.
   static const minSaltLength = 8;
 
+  /// The shortest secret, in bytes, that [Argon2HashUtil.forRandomSecrets]
+  /// hashes.
+  static const minRandomSecretLength = 16;
+
   // The peppers to use for hashing.
   // The first pepper is the primary pepper used for new hashes.
   // The remaining peppers are used as fallback peppers for validating hashes.
   final List<Uint8List> _hashPeppers;
   final int _hashSaltLength;
   final Argon2HashParameters _parameters;
+  final int _minSecretLength;
 
   /// Creates a new instance of [Argon2HashUtil].
   ///
@@ -51,12 +56,46 @@ final class Argon2HashUtil {
     final List<String> fallbackHashPeppers = const [],
     required final int hashSaltLength,
     final Argon2HashParameters? parameters,
+  }) : this._(
+         hashPepper: hashPepper,
+         fallbackHashPeppers: fallbackHashPeppers,
+         hashSaltLength: hashSaltLength,
+         parameters: parameters ?? Argon2HashParameters(),
+         minSecretLength: 0,
+       );
+
+  /// Creates an [Argon2HashUtil] for secrets that are long and randomly
+  /// generated, such as tokens. Never use it for passwords or short codes.
+  ///
+  /// Nobody can guess such a secret, so the slowness of Argon2 protects
+  /// nothing. This hashes at the lowest cost Argon2 allows. The stored format
+  /// is unchanged, so servers on an earlier version still validate these
+  /// hashes. Hashes stored at a higher cost validate here too.
+  Argon2HashUtil.forRandomSecrets({
+    required final String hashPepper,
+    final List<String> fallbackHashPeppers = const [],
+    required final int hashSaltLength,
+  }) : this._(
+         hashPepper: hashPepper,
+         fallbackHashPeppers: fallbackHashPeppers,
+         hashSaltLength: hashSaltLength,
+         parameters: Argon2HashParameters(memory: 8, iterations: 1, lanes: 1),
+         minSecretLength: minRandomSecretLength,
+       );
+
+  Argon2HashUtil._({
+    required final String hashPepper,
+    required final List<String> fallbackHashPeppers,
+    required final int hashSaltLength,
+    required final Argon2HashParameters parameters,
+    required final int minSecretLength,
   }) : _hashPeppers = [
          utf8.encode(hashPepper),
          ...fallbackHashPeppers.map(utf8.encode),
        ],
        _hashSaltLength = hashSaltLength,
-       _parameters = parameters ?? Argon2HashParameters() {
+       _parameters = parameters,
+       _minSecretLength = minSecretLength {
     if (hashSaltLength < minSaltLength) {
       throw ArgumentError.value(
         hashSaltLength,
@@ -181,6 +220,12 @@ final class Argon2HashUtil {
     required final Uint8List salt,
     required final Uint8List pepper,
   }) {
+    assert(
+      secret.length >= _minSecretLength,
+      'Argon2HashUtil.forRandomSecrets is only safe for long random secrets. '
+      'Length is all this can check, so a long but guessable secret still '
+      'passes.',
+    );
     return _createHashWithParameters(
       secret: secret,
       salt: salt,

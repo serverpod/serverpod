@@ -132,6 +132,7 @@ class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
 
   /// The amount of random bytes used for the rotating secret of the refresh token.
   ///
+  /// Must be at least 16.
   /// Defaults to 64.
   final int refreshTokenRotatingSecretLength;
 
@@ -187,6 +188,14 @@ class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
     this.extraClaimsProvider,
     this.onRefreshTokenCreated,
   }) {
+    if (refreshTokenRotatingSecretLength <
+        Argon2HashUtil.minRandomSecretLength) {
+      throw ArgumentError.value(
+        refreshTokenRotatingSecretLength,
+        'refreshTokenRotatingSecretLength',
+        'must be at least ${Argon2HashUtil.minRandomSecretLength} bytes',
+      );
+    }
     _validateRefreshTokenHashPepper(refreshTokenHashPepper);
     for (final fallbackPepper in fallbackRefreshTokenHashPeppers) {
       _validateRefreshTokenHashPepper(fallbackPepper);
