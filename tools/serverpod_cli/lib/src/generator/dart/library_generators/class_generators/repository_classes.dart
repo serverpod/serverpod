@@ -78,6 +78,7 @@ class BuildRepositoryClass {
         ])
         ..methods.addAll([
           _buildFindMethod(className, relationFields),
+          _buildWatchMethod(className, relationFields),
           _buildFindFirstRow(className, relationFields),
           _buildFindByIdMethod(className, relationFields, idTypeReference),
           _buildInsertMethod(className),
@@ -413,6 +414,194 @@ class BuildRepositoryClass {
                   'include': refer('include'),
                 'lockMode': refer('lockMode'),
                 'lockBehavior': refer('lockBehavior'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildWatchMethod(
+    String className,
+    Iterable<SerializableModelFieldDefinition> objectRelationFields,
+  ) {
+    return Method(
+      (m) => m
+        ..docs.add('''
+/// Emits [$className]s matching the given query parameters every time the
+/// source tables are modified.
+///
+/// Use [where] to specify which items to include in the return value.
+/// If none is specified, all items will be returned.
+///
+/// To specify the order of the items use [orderBy] or [orderByList]
+/// when sorting by multiple columns.
+///
+/// The maximum number of items can be set by [limit]. If no limit is set,
+/// all items matching the query will be returned.
+///
+/// [offset] defines how many items to skip, after which [limit] (or all)
+/// items are read from the database.
+///
+/// Use [throttle] to specify the minimum interval between queries. It can
+/// also be set to `null`, in which case the stream will only be throttled
+/// when its subscription is paused.
+///
+/// Source tables are collected from the queried table, [where], [orderBy],
+/// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+/// to that set. Pass [Table] instances such as `$className.t`.
+///
+/// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+/// SQL must be passed via [alsoTriggerOnTables].
+///
+/// The stream always reads committed state and never joins an ambient
+/// [Transaction]. Emissions for a write fire after that write commits.
+///
+/// Currently only supported on SQLite. Calling this method on PostgreSQL
+/// throws an [UnsupportedError].
+///
+/// ```dart
+/// var subscription = Persons.db.watch(
+///   session,
+///   where: (t) => t.lastName.equals('Jones'),
+///   orderBy: (t) => t.firstName,
+///   limit: 100,
+/// ).listen((persons) {
+///   // Handle the latest matching rows.
+/// });
+/// ```''')
+        ..name = 'watch'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Stream'
+            ..url = 'dart:async'
+            ..types.add(
+              TypeReference(
+                (r) => r
+                  ..symbol = 'List'
+                  ..types.add(
+                    TypeReference(
+                      (r) => r..symbol = className,
+                    ),
+                  ),
+              ),
+            ),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+              )
+              ..name = 'where'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'int',
+              )
+              ..name = 'limit'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'int',
+              )
+              ..name = 'offset'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByBuilder(className, serverCode)
+              ..name = 'orderBy'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByListBuilder(className, serverCode)
+              ..name = 'orderByList'
+              ..named = true,
+          ),
+          if (objectRelationFields.isNotEmpty)
+            Parameter(
+              (p) => p
+                ..type = TypeReference(
+                  (b) => b
+                    ..isNullable = true
+                    ..symbol = '${className}Include',
+                )
+                ..name = 'include'
+                ..named = true,
+            ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Duration',
+              )
+              ..name = 'throttle'
+              ..named = true
+              ..defaultTo = refer('Duration').constInstance([], {
+                'milliseconds': literalNum(30),
+              }).code,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Iterable'
+                  ..types.add(
+                    TypeReference(
+                      (t) => t
+                        ..symbol = 'Table'
+                        ..url = _databaseRuntimeUrl,
+                    ),
+                  ),
+              )
+              ..name = 'alsoTriggerOnTables'
+              ..named = true,
+          ),
+        ])
+        ..body = refer('session')
+            .property('db')
+            .property('watch')
+            .call(
+              [],
+              {
+                'where': refer('where').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderByList': refer('orderByList')
+                    .nullSafeProperty('call')
+                    .call(
+                      [refer(className).property('t')],
+                    ),
+                'limit': refer('limit'),
+                'offset': refer('offset'),
+                if (objectRelationFields.isNotEmpty)
+                  'include': refer('include'),
+                'throttle': refer('throttle'),
+                'alsoTriggerOnTables': refer('alsoTriggerOnTables'),
               },
               [refer(className)],
             )
