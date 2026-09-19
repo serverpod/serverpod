@@ -91,9 +91,15 @@ abstract class TownInt
     };
   }
 
+  /// Builds a complete [TownIntInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static TownIntInclude include({_i7hzilwf.CitizenIntInclude? mayor}) {
     return TownIntInclude._(mayor: mayor);
   }
+
+  /// Builds a complete [TownIntIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static TownIntIncludeList includeList({
     _is.WhereExpressionBuilder<TownIntTable>? where,
@@ -104,12 +110,54 @@ abstract class TownInt
     TownIntInclude? include,
   }) {
     return TownIntIncludeList._(
-      where: where,
+      where: where?.call(TownInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TownInt.t),
       orderByList: orderByList?.call(TownInt.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [TownIntJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static TownIntJsonInclude includeJson({
+    _i7hzilwf.CitizenIntJsonInclude? mayor,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
+  }) {
+    return _TownIntJsonInclude._(
+      mayor: mayor,
+      selectedColumns: select?.call(TownInt.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [TownIntJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static TownIntJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<TownIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TownIntTable>? orderBy,
+    _is.OrderByListBuilder<TownIntTable>? orderByList,
+    TownIntJsonInclude? include,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
+  }) {
+    return _TownIntJsonIncludeList._(
+      where: where?.call(TownInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(TownInt.t),
+      orderByList: orderByList?.call(TownInt.t),
+      include: include,
+      selectedColumns: select?.call(TownInt.t),
     );
   }
 
@@ -217,7 +265,14 @@ class TownIntTable extends _is.Table<int?> {
   }
 }
 
-class TownIntInclude extends _is.IncludeObject {
+abstract interface class TownIntJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class TownIntJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class TownIntInclude extends _is.IncludeObject
+    implements TownIntJsonInclude, _is.FullModelInclude {
   TownIntInclude._({_i7hzilwf.CitizenIntInclude? mayor}) {
     _mayor = mayor;
   }
@@ -231,17 +286,59 @@ class TownIntInclude extends _is.IncludeObject {
   _is.Table<int?> get table => TownInt.t;
 }
 
-class TownIntIncludeList extends _is.IncludeList {
+final class TownIntIncludeList extends _is.IncludeList
+    implements TownIntJsonIncludeList, _is.FullModelInclude {
   TownIntIncludeList._({
-    _is.WhereExpressionBuilder<TownIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    TownIntInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => TownInt.t;
+}
+
+final class _TownIntJsonInclude extends _is.IncludeObject
+    implements TownIntJsonInclude {
+  _TownIntJsonInclude._({
+    _i7hzilwf.CitizenIntJsonInclude? mayor,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(TownInt.t);
+    _mayor = mayor;
   }
+
+  _i7hzilwf.CitizenIntJsonInclude? _mayor;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {'mayor': _mayor};
+
+  @override
+  _is.Table<int?> get table => TownInt.t;
+}
+
+final class _TownIntJsonIncludeList extends _is.IncludeList
+    implements TownIntJsonIncludeList {
+  _TownIntJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    TownIntJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -357,6 +454,135 @@ class TownIntRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TownIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TownIntTable>? orderBy,
+    _is.OrderByListBuilder<TownIntTable>? orderByList,
+    _is.Transaction? transaction,
+    TownIntJsonInclude? include,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<TownInt>(
+      where: where?.call(TownInt.t),
+      orderBy: orderBy?.call(TownInt.t),
+      orderByList: orderByList?.call(TownInt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TownInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TownIntTable>? where,
+    int? offset,
+    _is.OrderByBuilder<TownIntTable>? orderBy,
+    _is.OrderByListBuilder<TownIntTable>? orderByList,
+    _is.Transaction? transaction,
+    TownIntJsonInclude? include,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<TownInt>(
+      where: where?.call(TownInt.t),
+      orderBy: orderBy?.call(TownInt.t),
+      orderByList: orderByList?.call(TownInt.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TownInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    TownIntJsonInclude? include,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<TownInt>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TownInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

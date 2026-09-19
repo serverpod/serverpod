@@ -74,6 +74,19 @@ TypeReference typeOrderByListBuilder(
   );
 }
 
+TypeReference typeSelectColumnsBuilder(
+  String className,
+  bool serverCode, {
+  nullable = true,
+}) {
+  return _typeWithTableCallback(
+    className,
+    'SelectColumnsBuilder',
+    serverCode,
+    nullable: nullable,
+  );
+}
+
 TypeReference typeColumnValueListBuilder(
   String className,
   bool serverCode, {
@@ -135,8 +148,20 @@ Expression _buildFromJson(
   SerializableModelFieldDefinition? field,
   String? currentSharedPackageName,
 }) {
-  Expression valueExpression =
-      mapExpression ?? jsonReference.index(literalString(fieldName!));
+  Expression valueExpression;
+  if (field?.forwardedFrom != null && mapExpression == null) {
+    var parts = field!.forwardedFrom!.split('.');
+    var nestedAccess = 'jsonSerialization[\'${parts[0]}\']';
+    for (var i = 1; i < parts.length; i++) {
+      nestedAccess = '($nestedAccess as Map?)?[\'${parts[i]}\']';
+    }
+    valueExpression = CodeExpression(
+      Code('(jsonSerialization[\'${fieldName!}\'] ?? $nestedAccess)'),
+    );
+  } else {
+    valueExpression =
+        mapExpression ?? jsonReference.index(literalString(fieldName!));
+  }
 
   ValueType valueType = type.valueType;
   switch (valueType) {

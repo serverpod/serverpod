@@ -109,6 +109,9 @@ abstract class EnrollmentInt
     };
   }
 
+  /// Builds a complete [EnrollmentIntInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static EnrollmentIntInclude include({
     _iu6t4rw4.StudentUuidInclude? student,
     _irfj8gqh.CourseUuidInclude? course,
@@ -119,6 +122,9 @@ abstract class EnrollmentInt
     );
   }
 
+  /// Builds a complete [EnrollmentIntIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static EnrollmentIntIncludeList includeList({
     _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
     int? limit,
@@ -128,12 +134,56 @@ abstract class EnrollmentInt
     EnrollmentIntInclude? include,
   }) {
     return EnrollmentIntIncludeList._(
-      where: where,
+      where: where?.call(EnrollmentInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EnrollmentIntJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EnrollmentIntJsonInclude includeJson({
+    _iu6t4rw4.StudentUuidJsonInclude? student,
+    _irfj8gqh.CourseUuidJsonInclude? course,
+    _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
+  }) {
+    return _EnrollmentIntJsonInclude._(
+      student: student,
+      course: course,
+      selectedColumns: select?.call(EnrollmentInt.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EnrollmentIntJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EnrollmentIntJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnrollmentIntTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentIntTable>? orderByList,
+    EnrollmentIntJsonInclude? include,
+    _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
+  }) {
+    return _EnrollmentIntJsonIncludeList._(
+      where: where?.call(EnrollmentInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnrollmentInt.t),
+      orderByList: orderByList?.call(EnrollmentInt.t),
+      include: include,
+      selectedColumns: select?.call(EnrollmentInt.t),
     );
   }
 
@@ -271,7 +321,14 @@ class EnrollmentIntTable extends _is.Table<int?> {
   }
 }
 
-class EnrollmentIntInclude extends _is.IncludeObject {
+abstract interface class EnrollmentIntJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EnrollmentIntJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EnrollmentIntInclude extends _is.IncludeObject
+    implements EnrollmentIntJsonInclude, _is.FullModelInclude {
   EnrollmentIntInclude._({
     _iu6t4rw4.StudentUuidInclude? student,
     _irfj8gqh.CourseUuidInclude? course,
@@ -294,17 +351,66 @@ class EnrollmentIntInclude extends _is.IncludeObject {
   _is.Table<int?> get table => EnrollmentInt.t;
 }
 
-class EnrollmentIntIncludeList extends _is.IncludeList {
+final class EnrollmentIntIncludeList extends _is.IncludeList
+    implements EnrollmentIntJsonIncludeList, _is.FullModelInclude {
   EnrollmentIntIncludeList._({
-    _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EnrollmentIntInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => EnrollmentInt.t;
+}
+
+final class _EnrollmentIntJsonInclude extends _is.IncludeObject
+    implements EnrollmentIntJsonInclude {
+  _EnrollmentIntJsonInclude._({
+    _iu6t4rw4.StudentUuidJsonInclude? student,
+    _irfj8gqh.CourseUuidJsonInclude? course,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(EnrollmentInt.t);
+    _student = student;
+    _course = course;
   }
+
+  _iu6t4rw4.StudentUuidJsonInclude? _student;
+
+  _irfj8gqh.CourseUuidJsonInclude? _course;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'student': _student,
+    'course': _course,
+  };
+
+  @override
+  _is.Table<int?> get table => EnrollmentInt.t;
+}
+
+final class _EnrollmentIntJsonIncludeList extends _is.IncludeList
+    implements EnrollmentIntJsonIncludeList {
+  _EnrollmentIntJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EnrollmentIntJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -418,6 +524,135 @@ class EnrollmentIntRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnrollmentIntTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentIntTable>? orderByList,
+    _is.Transaction? transaction,
+    EnrollmentIntJsonInclude? include,
+    _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EnrollmentInt>(
+      where: where?.call(EnrollmentInt.t),
+      orderBy: orderBy?.call(EnrollmentInt.t),
+      orderByList: orderByList?.call(EnrollmentInt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EnrollmentInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EnrollmentIntTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentIntTable>? orderByList,
+    _is.Transaction? transaction,
+    EnrollmentIntJsonInclude? include,
+    _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EnrollmentInt>(
+      where: where?.call(EnrollmentInt.t),
+      orderBy: orderBy?.call(EnrollmentInt.t),
+      orderByList: orderByList?.call(EnrollmentInt.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EnrollmentInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    EnrollmentIntJsonInclude? include,
+    _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EnrollmentInt>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EnrollmentInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

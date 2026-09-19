@@ -101,11 +101,17 @@ abstract class ChallengeTracker
     return {};
   }
 
+  /// Builds a complete [ChallengeTrackerInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ChallengeTrackerInclude include({
     _iais.SecretChallengeInclude? secretChallenge,
   }) {
     return ChallengeTrackerInclude._(secretChallenge: secretChallenge);
   }
+
+  /// Builds a complete [ChallengeTrackerIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ChallengeTrackerIncludeList includeList({
     _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
@@ -116,12 +122,54 @@ abstract class ChallengeTracker
     ChallengeTrackerInclude? include,
   }) {
     return ChallengeTrackerIncludeList._(
-      where: where,
+      where: where?.call(ChallengeTracker.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ChallengeTrackerJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ChallengeTrackerJsonInclude includeJson({
+    _iais.SecretChallengeJsonInclude? secretChallenge,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
+  }) {
+    return _ChallengeTrackerJsonInclude._(
+      secretChallenge: secretChallenge,
+      selectedColumns: select?.call(ChallengeTracker.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ChallengeTrackerJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ChallengeTrackerJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    ChallengeTrackerJsonInclude? include,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
+  }) {
+    return _ChallengeTrackerJsonIncludeList._(
+      where: where?.call(ChallengeTracker.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChallengeTracker.t),
+      orderByList: orderByList?.call(ChallengeTracker.t),
+      include: include,
+      selectedColumns: select?.call(ChallengeTracker.t),
     );
   }
 
@@ -255,7 +303,14 @@ class ChallengeTrackerTable extends _is.Table<int?> {
   }
 }
 
-class ChallengeTrackerInclude extends _is.IncludeObject {
+abstract interface class ChallengeTrackerJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ChallengeTrackerJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ChallengeTrackerInclude extends _is.IncludeObject
+    implements ChallengeTrackerJsonInclude, _is.FullModelInclude {
   ChallengeTrackerInclude._({_iais.SecretChallengeInclude? secretChallenge}) {
     _secretChallenge = secretChallenge;
   }
@@ -271,17 +326,61 @@ class ChallengeTrackerInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ChallengeTracker.t;
 }
 
-class ChallengeTrackerIncludeList extends _is.IncludeList {
+final class ChallengeTrackerIncludeList extends _is.IncludeList
+    implements ChallengeTrackerJsonIncludeList, _is.FullModelInclude {
   ChallengeTrackerIncludeList._({
-    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ChallengeTrackerInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ChallengeTracker.t;
+}
+
+final class _ChallengeTrackerJsonInclude extends _is.IncludeObject
+    implements ChallengeTrackerJsonInclude {
+  _ChallengeTrackerJsonInclude._({
+    _iais.SecretChallengeJsonInclude? secretChallenge,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(ChallengeTracker.t);
+    _secretChallenge = secretChallenge;
   }
+
+  _iais.SecretChallengeJsonInclude? _secretChallenge;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'secretChallenge': _secretChallenge,
+  };
+
+  @override
+  _is.Table<int?> get table => ChallengeTracker.t;
+}
+
+final class _ChallengeTrackerJsonIncludeList extends _is.IncludeList
+    implements ChallengeTrackerJsonIncludeList {
+  _ChallengeTrackerJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ChallengeTrackerJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -395,6 +494,135 @@ class ChallengeTrackerRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.Transaction? transaction,
+    ChallengeTrackerJsonInclude? include,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ChallengeTracker>(
+      where: where?.call(ChallengeTracker.t),
+      orderBy: orderBy?.call(ChallengeTracker.t),
+      orderByList: orderByList?.call(ChallengeTracker.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChallengeTracker.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.Transaction? transaction,
+    ChallengeTrackerJsonInclude? include,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ChallengeTracker>(
+      where: where?.call(ChallengeTracker.t),
+      orderBy: orderBy?.call(ChallengeTracker.t),
+      orderByList: orderByList?.call(ChallengeTracker.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChallengeTracker.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ChallengeTrackerJsonInclude? include,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ChallengeTracker>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChallengeTracker.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

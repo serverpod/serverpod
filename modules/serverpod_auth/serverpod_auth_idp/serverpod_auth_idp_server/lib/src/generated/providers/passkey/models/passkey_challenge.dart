@@ -81,9 +81,15 @@ abstract class PasskeyChallenge
     return {};
   }
 
+  /// Builds a complete [PasskeyChallengeInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static PasskeyChallengeInclude include() {
     return PasskeyChallengeInclude._();
   }
+
+  /// Builds a complete [PasskeyChallengeIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static PasskeyChallengeIncludeList includeList({
     _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
@@ -94,12 +100,52 @@ abstract class PasskeyChallenge
     PasskeyChallengeInclude? include,
   }) {
     return PasskeyChallengeIncludeList._(
-      where: where,
+      where: where?.call(PasskeyChallenge.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PasskeyChallenge.t),
       orderByList: orderByList?.call(PasskeyChallenge.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [PasskeyChallengeJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static PasskeyChallengeJsonInclude includeJson({
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+  }) {
+    return _PasskeyChallengeJsonInclude._(
+      selectedColumns: select?.call(PasskeyChallenge.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [PasskeyChallengeJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static PasskeyChallengeJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    PasskeyChallengeJsonInclude? include,
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+  }) {
+    return _PasskeyChallengeJsonIncludeList._(
+      where: where?.call(PasskeyChallenge.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(PasskeyChallenge.t),
+      orderByList: orderByList?.call(PasskeyChallenge.t),
+      include: include,
+      selectedColumns: select?.call(PasskeyChallenge.t),
     );
   }
 
@@ -187,7 +233,14 @@ class PasskeyChallengeTable extends _is.Table<_is.UuidValue?> {
   ];
 }
 
-class PasskeyChallengeInclude extends _is.IncludeObject {
+abstract interface class PasskeyChallengeJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class PasskeyChallengeJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class PasskeyChallengeInclude extends _is.IncludeObject
+    implements PasskeyChallengeJsonInclude, _is.FullModelInclude {
   PasskeyChallengeInclude._();
 
   @override
@@ -197,17 +250,52 @@ class PasskeyChallengeInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => PasskeyChallenge.t;
 }
 
-class PasskeyChallengeIncludeList extends _is.IncludeList {
+final class PasskeyChallengeIncludeList extends _is.IncludeList
+    implements PasskeyChallengeJsonIncludeList, _is.FullModelInclude {
   PasskeyChallengeIncludeList._({
-    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(PasskeyChallenge.t);
-  }
+    PasskeyChallengeInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => PasskeyChallenge.t;
+}
+
+final class _PasskeyChallengeJsonInclude extends _is.IncludeObject
+    implements PasskeyChallengeJsonInclude {
+  _PasskeyChallengeJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => PasskeyChallenge.t;
+}
+
+final class _PasskeyChallengeJsonIncludeList extends _is.IncludeList
+    implements PasskeyChallengeJsonIncludeList {
+  _PasskeyChallengeJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    PasskeyChallengeJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -313,6 +401,129 @@ class PasskeyChallengeRepository {
     return session.db.findById<PasskeyChallenge>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<PasskeyChallenge>(
+      where: where?.call(PasskeyChallenge.t),
+      orderBy: orderBy?.call(PasskeyChallenge.t),
+      orderByList: orderByList?.call(PasskeyChallenge.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(PasskeyChallenge.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    int? offset,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<PasskeyChallenge>(
+      where: where?.call(PasskeyChallenge.t),
+      orderBy: orderBy?.call(PasskeyChallenge.t),
+      orderByList: orderByList?.call(PasskeyChallenge.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(PasskeyChallenge.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<PasskeyChallenge>(
+      id,
+      transaction: transaction,
+      select: select?.call(PasskeyChallenge.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

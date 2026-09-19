@@ -102,9 +102,15 @@ abstract class BoolDefaultMix
     };
   }
 
+  /// Builds a complete [BoolDefaultMixInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static BoolDefaultMixInclude include() {
     return BoolDefaultMixInclude._();
   }
+
+  /// Builds a complete [BoolDefaultMixIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static BoolDefaultMixIncludeList includeList({
     _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
@@ -115,12 +121,52 @@ abstract class BoolDefaultMix
     BoolDefaultMixInclude? include,
   }) {
     return BoolDefaultMixIncludeList._(
-      where: where,
+      where: where?.call(BoolDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [BoolDefaultMixJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static BoolDefaultMixJsonInclude includeJson({
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+  }) {
+    return _BoolDefaultMixJsonInclude._(
+      selectedColumns: select?.call(BoolDefaultMix.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [BoolDefaultMixJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static BoolDefaultMixJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
+    BoolDefaultMixJsonInclude? include,
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+  }) {
+    return _BoolDefaultMixJsonIncludeList._(
+      where: where?.call(BoolDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BoolDefaultMix.t),
+      orderByList: orderByList?.call(BoolDefaultMix.t),
+      include: include,
+      selectedColumns: select?.call(BoolDefaultMix.t),
     );
   }
 
@@ -228,7 +274,14 @@ class BoolDefaultMixTable extends _is.Table<int?> {
   ];
 }
 
-class BoolDefaultMixInclude extends _is.IncludeObject {
+abstract interface class BoolDefaultMixJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class BoolDefaultMixJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class BoolDefaultMixInclude extends _is.IncludeObject
+    implements BoolDefaultMixJsonInclude, _is.FullModelInclude {
   BoolDefaultMixInclude._();
 
   @override
@@ -238,17 +291,52 @@ class BoolDefaultMixInclude extends _is.IncludeObject {
   _is.Table<int?> get table => BoolDefaultMix.t;
 }
 
-class BoolDefaultMixIncludeList extends _is.IncludeList {
+final class BoolDefaultMixIncludeList extends _is.IncludeList
+    implements BoolDefaultMixJsonIncludeList, _is.FullModelInclude {
   BoolDefaultMixIncludeList._({
-    _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(BoolDefaultMix.t);
-  }
+    BoolDefaultMixInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => BoolDefaultMix.t;
+}
+
+final class _BoolDefaultMixJsonInclude extends _is.IncludeObject
+    implements BoolDefaultMixJsonInclude {
+  _BoolDefaultMixJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => BoolDefaultMix.t;
+}
+
+final class _BoolDefaultMixJsonIncludeList extends _is.IncludeList
+    implements BoolDefaultMixJsonIncludeList {
+  _BoolDefaultMixJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    BoolDefaultMixJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -354,6 +442,129 @@ class BoolDefaultMixRepository {
     return session.db.findById<BoolDefaultMix>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<BoolDefaultMix>(
+      where: where?.call(BoolDefaultMix.t),
+      orderBy: orderBy?.call(BoolDefaultMix.t),
+      orderByList: orderByList?.call(BoolDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(BoolDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
+    int? offset,
+    _is.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<BoolDefaultMix>(
+      where: where?.call(BoolDefaultMix.t),
+      orderBy: orderBy?.call(BoolDefaultMix.t),
+      orderByList: orderByList?.call(BoolDefaultMix.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(BoolDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<BoolDefaultMix>(
+      id,
+      transaction: transaction,
+      select: select?.call(BoolDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

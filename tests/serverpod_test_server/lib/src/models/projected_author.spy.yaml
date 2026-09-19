@@ -1,0 +1,7 @@
+class: ProjectedAuthor
+table: projected_author
+fields:
+  name: String
+  bio: String?
+  email: String
+  phone: String

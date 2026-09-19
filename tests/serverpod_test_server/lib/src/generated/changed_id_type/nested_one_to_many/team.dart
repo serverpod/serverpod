@@ -108,6 +108,9 @@ abstract class TeamInt
     };
   }
 
+  /// Builds a complete [TeamIntInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static TeamIntInclude include({
     _izqzqdtt.ArenaUuidInclude? arena,
     _igtph8zx.PlayerUuidIncludeList? players,
@@ -118,6 +121,9 @@ abstract class TeamInt
     );
   }
 
+  /// Builds a complete [TeamIntIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static TeamIntIncludeList includeList({
     _is.WhereExpressionBuilder<TeamIntTable>? where,
     int? limit,
@@ -127,12 +133,56 @@ abstract class TeamInt
     TeamIntInclude? include,
   }) {
     return TeamIntIncludeList._(
-      where: where,
+      where: where?.call(TeamInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [TeamIntJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static TeamIntJsonInclude includeJson({
+    _izqzqdtt.ArenaUuidJsonInclude? arena,
+    _igtph8zx.PlayerUuidJsonIncludeList? players,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
+  }) {
+    return _TeamIntJsonInclude._(
+      arena: arena,
+      players: players,
+      selectedColumns: select?.call(TeamInt.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [TeamIntJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static TeamIntJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<TeamIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TeamIntTable>? orderBy,
+    _is.OrderByListBuilder<TeamIntTable>? orderByList,
+    TeamIntJsonInclude? include,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
+  }) {
+    return _TeamIntJsonIncludeList._(
+      where: where?.call(TeamInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(TeamInt.t),
+      orderByList: orderByList?.call(TeamInt.t),
+      include: include,
+      selectedColumns: select?.call(TeamInt.t),
     );
   }
 
@@ -286,7 +336,14 @@ class TeamIntTable extends _is.Table<int?> {
   }
 }
 
-class TeamIntInclude extends _is.IncludeObject {
+abstract interface class TeamIntJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class TeamIntJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class TeamIntInclude extends _is.IncludeObject
+    implements TeamIntJsonInclude, _is.FullModelInclude {
   TeamIntInclude._({
     _izqzqdtt.ArenaUuidInclude? arena,
     _igtph8zx.PlayerUuidIncludeList? players,
@@ -309,17 +366,66 @@ class TeamIntInclude extends _is.IncludeObject {
   _is.Table<int?> get table => TeamInt.t;
 }
 
-class TeamIntIncludeList extends _is.IncludeList {
+final class TeamIntIncludeList extends _is.IncludeList
+    implements TeamIntJsonIncludeList, _is.FullModelInclude {
   TeamIntIncludeList._({
-    _is.WhereExpressionBuilder<TeamIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    TeamIntInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => TeamInt.t;
+}
+
+final class _TeamIntJsonInclude extends _is.IncludeObject
+    implements TeamIntJsonInclude {
+  _TeamIntJsonInclude._({
+    _izqzqdtt.ArenaUuidJsonInclude? arena,
+    _igtph8zx.PlayerUuidJsonIncludeList? players,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(TeamInt.t);
+    _arena = arena;
+    _players = players;
   }
+
+  _izqzqdtt.ArenaUuidJsonInclude? _arena;
+
+  _igtph8zx.PlayerUuidJsonIncludeList? _players;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'arena': _arena,
+    'players': _players,
+  };
+
+  @override
+  _is.Table<int?> get table => TeamInt.t;
+}
+
+final class _TeamIntJsonIncludeList extends _is.IncludeList
+    implements TeamIntJsonIncludeList {
+  _TeamIntJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    TeamIntJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -439,6 +545,135 @@ class TeamIntRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TeamIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TeamIntTable>? orderBy,
+    _is.OrderByListBuilder<TeamIntTable>? orderByList,
+    _is.Transaction? transaction,
+    TeamIntJsonInclude? include,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<TeamInt>(
+      where: where?.call(TeamInt.t),
+      orderBy: orderBy?.call(TeamInt.t),
+      orderByList: orderByList?.call(TeamInt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TeamInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TeamIntTable>? where,
+    int? offset,
+    _is.OrderByBuilder<TeamIntTable>? orderBy,
+    _is.OrderByListBuilder<TeamIntTable>? orderByList,
+    _is.Transaction? transaction,
+    TeamIntJsonInclude? include,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<TeamInt>(
+      where: where?.call(TeamInt.t),
+      orderBy: orderBy?.call(TeamInt.t),
+      orderByList: orderByList?.call(TeamInt.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TeamInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    TeamIntJsonInclude? include,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<TeamInt>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TeamInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );
