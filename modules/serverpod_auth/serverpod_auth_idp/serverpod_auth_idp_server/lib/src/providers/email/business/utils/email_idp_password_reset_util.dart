@@ -26,6 +26,7 @@ class EmailIdpPasswordResetUtil {
   EmailIdpPasswordResetUtil({
     required final EmailIdpPasswordResetUtilsConfig config,
     required final Argon2HashUtil passwordHashUtils,
+    final Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _passwordHashUtil = passwordHashUtils,
        _rateLimitUtil = DatabaseRateLimiter(
@@ -38,6 +39,7 @@ class EmailIdpPasswordResetUtil {
        ) {
     _challengeUtil = SecretChallengeUtil(
       hashUtil: passwordHashUtils,
+      completionTokenHash: completionTokenHash,
       verificationConfig: _getVerificationConfig(),
       completionConfig: _getCompletionConfig(),
     );

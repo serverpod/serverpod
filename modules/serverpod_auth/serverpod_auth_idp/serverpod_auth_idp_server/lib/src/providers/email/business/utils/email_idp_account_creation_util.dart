@@ -29,6 +29,7 @@ class EmailIdpAccountCreationUtil {
     required final EmailIdpAccountCreationUtilsConfig config,
     required final Argon2HashUtil passwordHashUtils,
     required final AuthUsers authUsers,
+    final Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _authUsers = authUsers,
        _hashUtils = passwordHashUtils {
@@ -36,6 +37,7 @@ class EmailIdpAccountCreationUtil {
       verificationConfig: _getVerificationConfig(),
       completionConfig: _getCompletionConfig(),
       hashUtil: passwordHashUtils,
+      completionTokenHash: completionTokenHash,
     );
   }
 

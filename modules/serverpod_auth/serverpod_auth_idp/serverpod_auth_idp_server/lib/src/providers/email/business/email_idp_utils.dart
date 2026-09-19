@@ -51,14 +51,21 @@ class EmailIdpUtils {
          parameters: Argon2HashParameters(memory: 19456),
        ),
        account = EmailIdpAccountUtils() {
+    final completionTokenHash = Argon2HashUtil.forRandomSecrets(
+      hashPepper: config.secretHashPepper,
+      fallbackHashPeppers: config.fallbackSecretHashPeppers,
+      hashSaltLength: config.secretHashSaltLength,
+    );
     accountCreation = EmailIdpAccountCreationUtil(
       config: EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(config),
       passwordHashUtils: hashUtil,
       authUsers: authUsers,
+      completionTokenHash: completionTokenHash,
     );
     passwordReset = EmailIdpPasswordResetUtil(
       config: EmailIdpPasswordResetUtilsConfig.fromEmailIdpConfig(config),
       passwordHashUtils: hashUtil,
+      completionTokenHash: completionTokenHash,
     );
     authentication = EmailIdpAuthenticationUtil(
       hashUtil: hashUtil,

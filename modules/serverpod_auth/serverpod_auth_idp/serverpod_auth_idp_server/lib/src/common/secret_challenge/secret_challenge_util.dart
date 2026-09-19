@@ -18,6 +18,7 @@ import '../../../core.dart';
 /// {@endtemplate}
 class SecretChallengeUtil<T> {
   final Argon2HashUtil _hashUtil;
+  final Argon2HashUtil _completionTokenHash;
   final SecretChallengeVerificationConfig<T> _verificationConfig;
   final SecretChallengeCompletionConfig<T> _completionConfig;
 
@@ -26,13 +27,17 @@ class SecretChallengeUtil<T> {
   /// [verificationConfig] is the configuration for verifying challenges.
   /// [completionConfig] is the configuration for completing challenges.
   /// [hashUtil] is the utility for hashing verification codes.
+  /// [completionTokenHash] hashes completion tokens, which are long and random
+  /// and suit [Argon2HashUtil.forRandomSecrets]. Defaults to [hashUtil].
   SecretChallengeUtil({
     required final Argon2HashUtil hashUtil,
+    final Argon2HashUtil? completionTokenHash,
     required final SecretChallengeVerificationConfig<T> verificationConfig,
     required final SecretChallengeCompletionConfig<T> completionConfig,
   }) : _verificationConfig = verificationConfig,
        _completionConfig = completionConfig,
-       _hashUtil = hashUtil;
+       _hashUtil = hashUtil,
+       _completionTokenHash = completionTokenHash ?? hashUtil;
 
   /// Creates a new [SecretChallenge] from a verification code.
   ///
@@ -178,9 +183,9 @@ class SecretChallengeUtil<T> {
       throw ChallengeNotVerifiedException();
     }
 
-    if (!await _validateVerificationCode(
-      verificationCode: credentials.verificationCode,
-      challenge: completionChallenge,
+    if (!await _completionTokenHash.validateHashFromString(
+      secret: credentials.verificationCode,
+      hashString: completionChallenge.challengeCodeHash,
     )) {
       throw ChallengeInvalidVerificationCodeException();
     }
@@ -209,7 +214,9 @@ class SecretChallengeUtil<T> {
     required final Transaction transaction,
   }) async {
     final token = const Uuid().v4();
-    final tokenHash = await _hashUtil.createHashFromString(secret: token);
+    final tokenHash = await _completionTokenHash.createHashFromString(
+      secret: token,
+    );
 
     final challenge = await SecretChallenge.db.insertRow(
       session,
