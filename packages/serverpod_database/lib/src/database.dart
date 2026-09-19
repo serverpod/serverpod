@@ -579,6 +579,40 @@ class Database {
     );
   }
 
+  /// Executes a read query every time the source tables are modified.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are automatically detected using `EXPLAIN QUERY PLAN`
+  /// unless [triggerOnTables] is provided. A provided list fully replaces
+  /// automatic detection; an empty list never re-emits after the initial
+  /// snapshot.
+  ///
+  /// A full-table `DELETE` without a `WHERE` clause may not fire SQLite
+  /// update hooks and therefore may not trigger a re-emission.
+  ///
+  /// You are responsible to sanitize the query to avoid SQL injection. Always
+  /// use [QueryParameters] for passing values to SQL queries.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  Stream<DatabaseResult> unsafeWatch(
+    String query, {
+    QueryParameters? parameters,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<String>? triggerOnTables,
+  }) {
+    return _databaseConnection.unsafeWatch(
+      _session,
+      query,
+      parameters: parameters,
+      throttle: throttle,
+      triggerOnTables: triggerOnTables,
+    );
+  }
+
   /// Executes a [Transaction].
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {

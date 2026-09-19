@@ -756,6 +756,19 @@ class PostgresDatabaseConnection
     return result.affectedRows;
   }
 
+  @override
+  Stream<DatabaseResult> unsafeWatch(
+    DatabaseSession session,
+    String query, {
+    QueryParameters? parameters,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<String>? triggerOnTables,
+  }) {
+    throw UnsupportedError(
+      'Database.unsafeWatch is not supported on PostgreSQL.',
+    );
+  }
+
   Future<Iterable<Map<String, dynamic>>> _mappedResultsQuery(
     DatabaseSession session,
     String query, {

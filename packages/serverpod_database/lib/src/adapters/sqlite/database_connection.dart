@@ -883,6 +883,50 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }
 
   @override
+  Stream<DatabaseResult> unsafeWatch(
+    DatabaseSession session,
+    String query, {
+    QueryParameters? parameters,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<String>? triggerOnTables,
+  }) {
+    var (sql, params) = convertQueryParametersForSqlite(query, parameters);
+    return _unsafeWatchResultSets(
+      sql,
+      parameters: params,
+      throttle: throttle,
+      triggerOnTables: triggerOnTables,
+    ).map(SqliteDatabaseResult.new);
+  }
+
+  Stream<ResultSet> _unsafeWatchResultSets(
+    String sql, {
+    List<Object?> parameters = const [],
+    Duration? throttle,
+    Iterable<String>? triggerOnTables,
+  }) {
+    // Re-queries go through sqlite_async and are not logged via _logQuery
+    // or stamped on lastDatabaseOperationTime. Polling every throttle
+    // interval would flood session logs and treat continuous watches as
+    // health-check database activity.
+    return Stream.fromFuture(_sqliteConnection)
+        .asyncExpand((connection) {
+          return connection.watch(
+            sql,
+            parameters: parameters,
+            throttle: throttle,
+            triggerOnTables: triggerOnTables,
+          );
+        })
+        .handleError((Object error, StackTrace trace) {
+          final serverpodException = error is DatabaseQueryException
+              ? error
+              : _queryExceptionFromSqliteException(error);
+          Error.throwWithStackTrace(serverpodException, trace);
+        });
+  }
+
+  @override
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {
     required TransactionSettings settings,

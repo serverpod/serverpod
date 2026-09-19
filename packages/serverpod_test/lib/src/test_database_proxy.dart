@@ -395,6 +395,21 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
+  Stream<DatabaseResult> unsafeWatch(
+    String query, {
+    QueryParameters? parameters,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<String>? triggerOnTables,
+  }) {
+    return _db.unsafeWatch(
+      query,
+      parameters: parameters,
+      throttle: throttle,
+      triggerOnTables: triggerOnTables,
+    );
+  }
+
+  @override
   Future<List<T>> update<T extends TableRow>(
     List<T> rows, {
     List<Column>? columns,
