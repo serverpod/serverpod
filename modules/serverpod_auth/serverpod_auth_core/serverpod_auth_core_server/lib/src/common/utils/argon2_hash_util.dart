@@ -4,9 +4,11 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
-import 'package:pointycastle/key_derivators/api.dart';
-import 'package:pointycastle/key_derivators/argon2.dart';
+import 'package:serverpod_argon2/serverpod_argon2.dart' as native;
 import 'package:serverpod_shared/serverpod_shared.dart';
+
+/// Argon2 version 1.3, the only one the native library implements.
+const _argon2Version = 19;
 
 /// {@template argon2_hash_util}
 /// A consolidated utility for handling Argon2id-based secret hashing.
@@ -23,6 +25,12 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// See: https://en.wikipedia.org/wiki/Argon2
 /// {@endtemplate}
 final class Argon2HashUtil {
+  /// The shortest salt, in bytes, that Argon2 accepts.
+  ///
+  /// RFC 9106 section 4 recommends 16 and allows 8 only under space
+  /// constraints.
+  static const minSaltLength = 8;
+
   // The peppers to use for hashing.
   // The first pepper is the primary pepper used for new hashes.
   // The remaining peppers are used as fallback peppers for validating hashes.
@@ -48,7 +56,16 @@ final class Argon2HashUtil {
          ...fallbackHashPeppers.map(utf8.encode),
        ],
        _hashSaltLength = hashSaltLength,
-       _parameters = parameters ?? Argon2HashParameters();
+       _parameters = parameters ?? Argon2HashParameters() {
+    if (hashSaltLength < minSaltLength) {
+      throw ArgumentError.value(
+        hashSaltLength,
+        'hashSaltLength',
+        'must be at least $minSaltLength bytes, the shortest salt Argon2 '
+            'accepts',
+      );
+    }
+  }
 
   /// Create the hash for the given [secret] (String).
   ///
@@ -184,27 +201,59 @@ final class Argon2HashUtil {
     required final int lanes,
     required final int desiredKeyLength,
   }) {
-    // Capture variables for use in isolate
-    return Isolate.run(() {
-      final parameters = Argon2Parameters(
-        Argon2Parameters.ARGON2_id,
-        salt,
-        desiredKeyLength: desiredKeyLength,
-        lanes: lanes,
+    return Isolate.run(() async {
+      final hashBytes = await _deriveNatively(
+        secret: secret,
+        salt: salt,
+        pepper: pepper,
         memory: memory,
         iterations: iterations,
-        secret: pepper,
+        lanes: lanes,
+        desiredKeyLength: desiredKeyLength,
       );
 
-      final generator = Argon2BytesGenerator()..init(parameters);
-      final hashBytes = generator.process(secret);
-
-      return _HashResult.fromArgon2Parameters(
-        parameters,
+      return _HashResult._(
         hash: hashBytes,
         salt: salt,
+        memory: memory,
+        iterations: iterations,
+        lanes: lanes,
+        version: _argon2Version,
       );
     });
+  }
+
+  static Future<Uint8List> _deriveNatively({
+    required final Uint8List secret,
+    required final Uint8List salt,
+    required final Uint8List pepper,
+    required final int memory,
+    required final int iterations,
+    required final int lanes,
+    required final int desiredKeyLength,
+  }) async {
+    final native.Argon2 argon2;
+    try {
+      argon2 = await native.Argon2.load();
+    } on ArgumentError catch (e) {
+      throw StateError(
+        'The native Argon2 library could not be loaded. `dart compile exe` '
+        'leaves out native assets, so build the server with `dart build cli`. '
+        '($e)',
+      );
+    }
+
+    return argon2.deriveKey(
+      password: secret,
+      salt: salt,
+      secret: pepper,
+      parameters: native.Argon2Parameters(
+        iterations: iterations,
+        memoryKiB: memory,
+        parallelism: lanes,
+        hashLength: desiredKeyLength,
+      ),
+    );
   }
 }
 
@@ -251,22 +300,6 @@ class _HashResult {
     return '\$argon2id\$v=$version\$m=$memory,t=$iterations,p=$lanes\$$base64Salt\$$base64Hash';
   }
 
-  /// Creates a new [_HashResult] from the given [parameters].
-  factory _HashResult.fromArgon2Parameters(
-    final Argon2Parameters parameters, {
-    required final Uint8List hash,
-    required final Uint8List salt,
-  }) {
-    return _HashResult._(
-      hash: hash,
-      salt: salt,
-      memory: parameters.memory,
-      iterations: parameters.iterations,
-      lanes: parameters.lanes,
-      version: parameters.version,
-    );
-  }
-
   /// Parses a PHC-formatted hash string into a [_HashResult].
   ///
   /// Throws [ArgumentError] if the string format is invalid.
@@ -288,9 +321,7 @@ class _HashResult {
       throw argumentError;
     }
 
-    // Parse version: v=19
-    if (version != Argon2Parameters.ARGON2_VERSION_13 &&
-        version != Argon2Parameters.ARGON2_VERSION_10) {
+    if (version != _argon2Version) {
       throw ArgumentError('Unsupported Argon2 version: $version');
     }
 
@@ -320,13 +351,18 @@ class _HashResult {
       throw argumentError;
     }
 
+    // Earlier versions stored shorter salts, which the native library refuses.
+    if (salt.length < Argon2HashUtil.minSaltLength) {
+      throw argumentError;
+    }
+
     return _HashResult._(
       hash: hash,
       salt: salt,
       memory: memory,
       iterations: iterations,
       lanes: lanes,
-      version: 19,
+      version: _argon2Version,
     );
   }
 }
