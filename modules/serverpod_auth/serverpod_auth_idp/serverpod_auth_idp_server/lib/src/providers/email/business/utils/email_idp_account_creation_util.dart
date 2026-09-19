@@ -29,6 +29,7 @@ class EmailIdpAccountCreationUtil {
     required final EmailIdpAccountCreationUtilsConfig config,
     required final Argon2HashUtil passwordHashUtils,
     required final AuthUsers authUsers,
+    final Argon2HashUtil? verificationCodeHash,
     final Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _authUsers = authUsers,
@@ -36,7 +37,7 @@ class EmailIdpAccountCreationUtil {
     _challengeUtil = SecretChallengeUtil(
       verificationConfig: _getVerificationConfig(),
       completionConfig: _getCompletionConfig(),
-      hashUtil: passwordHashUtils,
+      hashUtil: verificationCodeHash ?? passwordHashUtils,
       completionTokenHash: completionTokenHash,
     );
   }

@@ -51,6 +51,13 @@ class EmailIdpUtils {
          parameters: Argon2HashParameters(memory: 19456),
        ),
        account = EmailIdpAccountUtils() {
+    // Verification codes expire and allow few attempts, so they use the
+    // default Argon2 cost and not the password one.
+    final verificationCodeHash = Argon2HashUtil(
+      hashPepper: config.secretHashPepper,
+      fallbackHashPeppers: config.fallbackSecretHashPeppers,
+      hashSaltLength: config.secretHashSaltLength,
+    );
     final completionTokenHash = Argon2HashUtil.forRandomSecrets(
       hashPepper: config.secretHashPepper,
       fallbackHashPeppers: config.fallbackSecretHashPeppers,
@@ -60,11 +67,13 @@ class EmailIdpUtils {
       config: EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(config),
       passwordHashUtils: hashUtil,
       authUsers: authUsers,
+      verificationCodeHash: verificationCodeHash,
       completionTokenHash: completionTokenHash,
     );
     passwordReset = EmailIdpPasswordResetUtil(
       config: EmailIdpPasswordResetUtilsConfig.fromEmailIdpConfig(config),
       passwordHashUtils: hashUtil,
+      verificationCodeHash: verificationCodeHash,
       completionTokenHash: completionTokenHash,
     );
     authentication = EmailIdpAuthenticationUtil(
