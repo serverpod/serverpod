@@ -136,8 +136,10 @@ class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
   /// Defaults to 64.
   final int refreshTokenRotatingSecretLength;
 
-  /// The amount of random bytes used to hash the rotation secret of the refresh token with.
+  /// The length in bytes of the random salt generated when hashing the rotating
+  /// secret of a refresh token.
   ///
+  /// Must be at least 8, the shortest salt Argon2 accepts.
   /// Defaults to 16.
   final int refreshTokenRotatingSecretSaltLength;
 
