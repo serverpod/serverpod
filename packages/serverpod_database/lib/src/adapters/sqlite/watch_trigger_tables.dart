@@ -25,12 +25,14 @@ Set<String> collectWatchTriggerTables({
 
 void _addWatchTriggerTable(Set<String> tables, Table? table) {
   if (table == null) return;
-  if (!tables.add(table.unqualifiedTableName)) return;
+  tables.add(table.unqualifiedTableName);
   var relation = table.tableRelation;
   if (relation == null) return;
   for (var hop in relation.getRelations) {
-    _addWatchTriggerTable(tables, hop.fieldTable);
-    _addWatchTriggerTable(tables, hop.foreignTable);
+    // getRelations already contains every hop, including paths that return
+    // to a table whose name has been collected before.
+    tables.add(hop.fieldTable.unqualifiedTableName);
+    tables.add(hop.foreignTable.unqualifiedTableName);
   }
 }
 

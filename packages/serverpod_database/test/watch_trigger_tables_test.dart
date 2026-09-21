@@ -106,6 +106,67 @@ void main() {
     );
   });
 
+  group(
+    'Given a citizen relation path through company and town back to citizen, ',
+    () {
+      late Table citizenTable;
+      late Table mayorViaCompany;
+      late ColumnString mayorName;
+
+      setUp(() {
+        citizenTable = Table<int?>(tableName: 'citizen');
+        mayorViaCompany = TableRelationBuilder(citizenTable).withRelationsFrom([
+          BuilderRelation(citizenTable, 'company'),
+          BuilderRelation(Table<int?>(tableName: 'company'), 'town'),
+          BuilderRelation(Table<int?>(tableName: 'town'), 'mayor'),
+        ]).build();
+        mayorName = ColumnString('name', mayorViaCompany);
+      });
+
+      test(
+        'when collecting trigger tables for a filter on the mayor name, '
+        'then citizen and both intermediate tables are included.',
+        () {
+          expect(
+            collectWatchTriggerTables(
+              table: citizenTable,
+              where: mayorName.equals('Alex'),
+            ),
+            {'citizen', 'company', 'town'},
+          );
+        },
+      );
+
+      test(
+        'when collecting trigger tables for ordering by the mayor name, '
+        'then citizen and both intermediate tables are included.',
+        () {
+          expect(
+            collectWatchTriggerTables(
+              table: citizenTable,
+              orderBy: [mayorName.asc()],
+            ),
+            {'citizen', 'company', 'town'},
+          );
+        },
+      );
+
+      test(
+        'when collecting trigger tables for an include of the mayor, '
+        'then citizen and both intermediate tables are included.',
+        () {
+          expect(
+            collectWatchTriggerTables(
+              table: citizenTable,
+              include: _TestIncludeObject(mayorViaCompany),
+            ),
+            {'citizen', 'company', 'town'},
+          );
+        },
+      );
+    },
+  );
+
   group('Given an organization with a people many relation, ', () {
     late Table organizationTable;
     late Table personTable;
