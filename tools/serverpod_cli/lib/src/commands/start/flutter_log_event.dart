@@ -10,6 +10,7 @@ enum FlutterLogSource {
   processStdout,
   processStderr,
   flutterError,
+  cli,
 }
 
 /// A Flutter log before it is flattened into terminal output.
