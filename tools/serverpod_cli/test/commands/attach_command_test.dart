@@ -32,10 +32,10 @@ void main() {
         history.addServerLine("bin/main.dart:3:1: Error: Expected ';'.");
         history.addServerLine('Failed to compile.');
 
-        printLogTail(history, out);
+        printLogTail(history, out, exitCode: 1);
 
         expect(out.lines, [
-          '--- the runner stopped. Its last output was ---',
+          '--- the runner stopped (exit code 1). Its last output was ---',
           "bin/main.dart:3:1: Error: Expected ';'.",
           'Failed to compile.',
         ]);
@@ -55,7 +55,7 @@ void main() {
           ),
         );
 
-        printLogTail(history, out);
+        printLogTail(history, out, exitCode: 1);
 
         expect(out.lines, hasLength(2));
         expect(out.lines.last, contains('Docker is not running.'));
@@ -70,10 +70,10 @@ void main() {
           history.addServerLine('line $i');
         }
 
-        printLogTail(history, out, lines: 3);
+        printLogTail(history, out, exitCode: 1, lines: 3);
 
         expect(out.lines, [
-          '--- the runner stopped. Its last output was ---',
+          '--- the runner stopped (exit code 1). Its last output was ---',
           'line 27',
           'line 28',
           'line 29',
