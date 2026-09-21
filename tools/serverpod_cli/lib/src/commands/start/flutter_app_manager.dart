@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
+import 'package:serverpod_shared/log.dart' show LogLevel;
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Binds a [VmServiceProxy] for a companion Flutter app and writes its
@@ -269,6 +270,12 @@ class FlutterAppManager {
     final existing = runtime.process;
     if (existing != null && existing.isRunning) return;
     if (runtime.spawnInFlight) return;
+
+    if (!runtime.app.hasPackage) {
+      runtime.relaunchInProgress = false;
+      _reportMissingPackage(runtime.app);
+      return;
+    }
 
     runtime.spawnInFlight = true;
     runtime.readySignaled = false;
@@ -575,6 +582,28 @@ class FlutterAppManager {
         'not read the Flutter package name from $flutterPackageDir ($e).',
       );
     }
+  }
+
+  /// Logs before [onLaunchFailed], so a log view it opens has the reason.
+  void _reportMissingPackage(FlutterAppConfig app) {
+    final message =
+        'No Flutter package found at ${p.normalize(p.joinAll(app.pathParts))}. '
+        'Check the "path" of "${app.id}" under "serverpod: flutter_apps" in '
+        '${serverPubspecFile.path}.';
+    stderrSinkFor(app).writeln(message);
+    onLog(
+      app,
+      FlutterLogEvent(
+        time: DateTime.now(),
+        level: LogLevel.error,
+        message: message,
+        source: FlutterLogSource.cli,
+      ),
+    );
+    log.warning(
+      'Launching ${app.name} failed. Check its log for details.',
+    );
+    onLaunchFailed(app);
   }
 
   void _cacheFlutterAppsFingerprint() {

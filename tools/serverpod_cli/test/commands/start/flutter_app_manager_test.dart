@@ -681,6 +681,32 @@ void main() {
     },
   );
 
+  test(
+    'Given a FlutterAppManager with an app whose path has no Flutter package, '
+    'when the app is launched, '
+    'then the launch fails with an error log naming the path',
+    () async {
+      final failedApps = <String>[];
+      final logEvents = <(String, FlutterLogEvent)>[];
+      final f = await _ManagerFixture.create(
+        onLaunchFailed: (app) => failedApps.add(app.id),
+        onLog: (app, event) => logEvents.add((app.id, event)),
+      );
+      addTearDown(() => f.dispose());
+      final flutterDir = f.flutterDir('project');
+      flutterDir.deleteSync(recursive: true);
+
+      await f.manager.launch('project');
+
+      expect(failedApps, ['project']);
+      expect(f.manager.isLaunching('project'), isFalse);
+      final (appId, event) = logEvents.single;
+      expect(appId, 'project');
+      expect(event.level, LogLevel.error);
+      expect(event.message, contains(p.normalize(flutterDir.path)));
+    },
+  );
+
   group(
     'Given a FlutterAppManager whose auto-launch app has run and stopped,',
     () {
