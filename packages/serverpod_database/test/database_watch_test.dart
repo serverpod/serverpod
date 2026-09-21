@@ -278,53 +278,58 @@ void main() {
   );
 
   group(
-    'Given an active watch subscription with triggerOnTables set to the queried table and an unrelated table, ',
+    'Given an active watch subscription with triggerOnTables restricted to items, ',
     () {
-      late List<List<Map<String, dynamic>>> emissions;
-      late StreamSubscription<DatabaseResult> subscription;
+      late StreamIterator<DatabaseResult> iterator;
+      late List<Map<String, dynamic>> initialRows;
 
       setUp(() async {
         await database.unsafeExecute(
           'CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT NOT NULL);',
         );
         await database.unsafeExecute(
-          "INSERT INTO items (name) VALUES ('alpha');",
-        );
-        await database.unsafeExecute(
           'CREATE TABLE other (id INTEGER PRIMARY KEY);',
         );
 
-        emissions = [];
-        subscription = database
-            .unsafeWatch(
-              'SELECT name FROM items ORDER BY id;',
-              throttle: const Duration(milliseconds: 10),
-              triggerOnTables: const ['items'],
-            )
-            .listen(
-              (result) => emissions.add(
-                result.map((row) => row.toColumnMap()).toList(),
-              ),
-            );
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+        iterator = StreamIterator(
+          database.unsafeWatch(
+            'SELECT name FROM items ORDER BY id;',
+            throttle: const Duration(milliseconds: 10),
+            triggerOnTables: const ['items'],
+          ),
+        );
+        await iterator.moveNext().timeout(const Duration(seconds: 5));
+
+        await database.unsafeExecute(
+          "INSERT INTO items (name) VALUES ('alpha');",
+        );
+        await iterator.moveNext().timeout(const Duration(seconds: 5));
+        initialRows = iterator.current.map((row) => row.toColumnMap()).toList();
       });
 
       tearDown(() async {
-        await subscription.cancel();
+        await iterator.cancel();
       });
 
       group('when a row is inserted into the unrelated table, ', () {
+        bool? nextEvent;
+
         setUp(() async {
+          final pendingEvent = iterator.moveNext();
           await database.unsafeExecute('INSERT INTO other DEFAULT VALUES;');
-          await Future<void>.delayed(const Duration(milliseconds: 400));
+          nextEvent = await pendingEvent
+              .then<bool?>((value) => value)
+              .timeout(
+                const Duration(milliseconds: 400),
+                onTimeout: () => null,
+              );
         });
 
         test('then the stream does not emit again.', () {
-          expect(emissions, [
-            [
-              {'name': 'alpha'},
-            ],
+          expect(initialRows, [
+            {'name': 'alpha'},
           ]);
+          expect(nextEvent, isNull);
         });
       });
     },

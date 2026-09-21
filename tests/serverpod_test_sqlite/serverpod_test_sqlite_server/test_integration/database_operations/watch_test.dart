@@ -409,29 +409,29 @@ void main() async {
   );
 
   group(
-    'Given an active typed watch subscription on a settled simple data row, ',
+    'Given an active typed watch subscription on a simple data row, ',
     () {
-      late List<List<SimpleData>> emissions;
-      late StreamSubscription<List<SimpleData>> subscription;
+      late StreamIterator<List<SimpleData>> iterator;
+      late List<SimpleData> initialRows;
 
       setUp(() async {
-        await SimpleData.db.insertRow(session, SimpleData(num: 1));
-        // The insert notification must drain before watch subscribes, or the
-        // initial snapshot can emit twice.
-        await Future<void>.delayed(const Duration(milliseconds: 200));
+        iterator = StreamIterator(
+          session.db.watch<SimpleData>(
+            orderBy: SimpleData.t.id,
+            throttle: const Duration(milliseconds: 10),
+          ),
+        );
+        await iterator.moveNext().timeout(const Duration(seconds: 5));
 
-        emissions = [];
-        subscription = session.db
-            .watch<SimpleData>(
-              orderBy: SimpleData.t.id,
-              throttle: const Duration(milliseconds: 10),
-            )
-            .listen(emissions.add);
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+        // Observe the insert through the active watch so its notification has
+        // been consumed before testing an unrelated write.
+        await SimpleData.db.insertRow(session, SimpleData(num: 1));
+        await iterator.moveNext().timeout(const Duration(seconds: 5));
+        initialRows = iterator.current;
       });
 
       tearDown(() async {
-        await subscription.cancel();
+        await iterator.cancel();
         await SimpleData.db.deleteWhere(
           session,
           where: (t) => Constant.bool(true),
@@ -443,13 +443,24 @@ void main() async {
       });
 
       group('when an unrelated town is inserted, ', () {
+        bool? nextEvent;
+
         setUp(() async {
+          final pendingEvent = iterator.moveNext();
           await Town.db.insertRow(session, Town(name: 'Uppsala'));
-          await Future<void>.delayed(const Duration(milliseconds: 400));
+          nextEvent = await pendingEvent
+              .then<bool?>((value) => value)
+              .timeout(
+                const Duration(milliseconds: 400),
+                onTimeout: () => null,
+              );
         });
 
         test('then the stream does not emit again.', () {
-          expect(emissions, hasLength(1));
+          expect(initialRows.map((row) => row.num), [1]);
+          // Both another result (true) and an unexpected stream end (false)
+          // fail; only the absence of either event is accepted.
+          expect(nextEvent, isNull);
         });
       });
     },
