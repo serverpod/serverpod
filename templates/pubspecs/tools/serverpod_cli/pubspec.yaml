@@ -71,7 +71,7 @@ dependencies:
   yaml_edit: ^2.2.2
 
 dev_dependencies:
-  postgres: ^3.4.0
+  postgres: ^3.5.16
   serverpod_lints: SERVERPOD_VERSION
   term_glyph: ^1.2.2
   test: ^1.25.5
