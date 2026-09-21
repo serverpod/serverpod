@@ -1,3 +1,9 @@
+## 4.0.2
+
+- fix: Adds missing callbacks to `ServerpodCloudEmailIdpConfig` constructor.
+- fix: Adds the missing method to create `ServerpodCloudStorage` custom `storageId`s.
+- perf: Forces upgrade of the `postgres` library to improve performance and security.
+
 ## 4.0.1
 
 - fix: Fixes `github/workflows/tests.yml` tests on the template project. ([@dario-valles](https://github.com/dario-valles))
