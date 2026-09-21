@@ -1,3 +1,16 @@
+## 4.1.0-beta.1
+
+- feat: Adds `serverpod runner` command with `start`, `attach`, `status` and `stop` subcommands.
+- feat: Allows `serverpod start` and `serverpod mcp-server` to attach to an already running server.
+- feat: Exposes `Model.db.watch` for reactive ORM operations on the client.
+- fix: Reports a missing Flutter app package when launching from `serverpod start`.
+
+## 4.0.2
+
+- fix: Adds missing callbacks to `ServerpodCloudEmailIdpConfig` constructor.
+- fix: Adds the missing method to create `ServerpodCloudStorage` custom `storageId`s.
+- perf: Forces upgrade of the `postgres` library to improve performance and security.
+
 ## 4.0.1
 
 - fix: Fixes `github/workflows/tests.yml` tests on the template project. ([@dario-valles](https://github.com/dario-valles))
