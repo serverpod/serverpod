@@ -23,11 +23,11 @@ CLI_CMD="${SERVERPOD_CLI_EXE:-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.d
 
 echo "### modulename_server"
 cd "$BASE/templates/serverpod_templates/modulename_server"
-$CLI_CMD generate --no-analytics
+$CLI_CMD generate --no-analytics "$@"
 
 echo "### projectname_server"
 cd "$BASE/templates/serverpod_templates/projectname_server"
-$CLI_CMD generate --no-analytics
+$CLI_CMD generate --no-analytics "$@"
 
 generateServerUpgradeFiles() {
     # The upgrade folder doesn't have all the files needed to
@@ -42,7 +42,7 @@ generateServerUpgradeFiles() {
     cp "$BASE/templates/serverpod_templates/projectname_server/pubspec.yaml" pubspec.yaml
     cp -r "$BASE/templates/serverpod_templates/projectname_server/.dart_tool" .
 
-    $CLI_CMD generate --no-analytics
+    $CLI_CMD generate --no-analytics "$@"
 
     # Save files after generation
     find . -type f | sort > after.txt

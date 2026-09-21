@@ -90,9 +90,15 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
+  /// Builds a complete [PlayerInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static PlayerInclude include({_iaks25tn.TeamInclude? team}) {
     return PlayerInclude._(team: team);
   }
+
+  /// Builds a complete [PlayerIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static PlayerIncludeList includeList({
     _is.WhereExpressionBuilder<PlayerTable>? where,
@@ -103,12 +109,54 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     PlayerInclude? include,
   }) {
     return PlayerIncludeList._(
-      where: where,
+      where: where?.call(Player.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [PlayerJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static PlayerJsonInclude includeJson({
+    _iaks25tn.TeamJsonInclude? team,
+    _is.SelectColumnsBuilder<PlayerTable>? select,
+  }) {
+    return _PlayerJsonInclude._(
+      team: team,
+      selectedColumns: select?.call(Player.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [PlayerJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static PlayerJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<PlayerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PlayerTable>? orderBy,
+    _is.OrderByListBuilder<PlayerTable>? orderByList,
+    PlayerJsonInclude? include,
+    _is.SelectColumnsBuilder<PlayerTable>? select,
+  }) {
+    return _PlayerJsonIncludeList._(
+      where: where?.call(Player.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Player.t),
+      orderByList: orderByList?.call(Player.t),
+      include: include,
+      selectedColumns: select?.call(Player.t),
     );
   }
 
@@ -216,7 +264,14 @@ class PlayerTable extends _is.Table<int?> {
   }
 }
 
-class PlayerInclude extends _is.IncludeObject {
+abstract interface class PlayerJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class PlayerJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class PlayerInclude extends _is.IncludeObject
+    implements PlayerJsonInclude, _is.FullModelInclude {
   PlayerInclude._({_iaks25tn.TeamInclude? team}) {
     _team = team;
   }
@@ -230,17 +285,59 @@ class PlayerInclude extends _is.IncludeObject {
   _is.Table<int?> get table => Player.t;
 }
 
-class PlayerIncludeList extends _is.IncludeList {
+final class PlayerIncludeList extends _is.IncludeList
+    implements PlayerJsonIncludeList, _is.FullModelInclude {
   PlayerIncludeList._({
-    _is.WhereExpressionBuilder<PlayerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    PlayerInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => Player.t;
+}
+
+final class _PlayerJsonInclude extends _is.IncludeObject
+    implements PlayerJsonInclude {
+  _PlayerJsonInclude._({
+    _iaks25tn.TeamJsonInclude? team,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(Player.t);
+    _team = team;
   }
+
+  _iaks25tn.TeamJsonInclude? _team;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {'team': _team};
+
+  @override
+  _is.Table<int?> get table => Player.t;
+}
+
+final class _PlayerJsonIncludeList extends _is.IncludeList
+    implements PlayerJsonIncludeList {
+  _PlayerJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    PlayerJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -356,6 +453,135 @@ class PlayerRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PlayerTable>? orderBy,
+    _is.OrderByListBuilder<PlayerTable>? orderByList,
+    _is.Transaction? transaction,
+    PlayerJsonInclude? include,
+    _is.SelectColumnsBuilder<PlayerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Player>(
+      where: where?.call(Player.t),
+      orderBy: orderBy?.call(Player.t),
+      orderByList: orderByList?.call(Player.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Player.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerTable>? where,
+    int? offset,
+    _is.OrderByBuilder<PlayerTable>? orderBy,
+    _is.OrderByListBuilder<PlayerTable>? orderByList,
+    _is.Transaction? transaction,
+    PlayerJsonInclude? include,
+    _is.SelectColumnsBuilder<PlayerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Player>(
+      where: where?.call(Player.t),
+      orderBy: orderBy?.call(Player.t),
+      orderByList: orderByList?.call(Player.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Player.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    PlayerJsonInclude? include,
+    _is.SelectColumnsBuilder<PlayerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Player>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Player.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

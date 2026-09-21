@@ -386,9 +386,15 @@ abstract class SharedModelContainer
     };
   }
 
+  /// Builds a complete [SharedModelContainerInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static SharedModelContainerInclude include() {
     return SharedModelContainerInclude._();
   }
+
+  /// Builds a complete [SharedModelContainerIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SharedModelContainerIncludeList includeList({
     _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
@@ -399,12 +405,52 @@ abstract class SharedModelContainer
     SharedModelContainerInclude? include,
   }) {
     return SharedModelContainerIncludeList._(
-      where: where,
+      where: where?.call(SharedModelContainer.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SharedModelContainerJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SharedModelContainerJsonInclude includeJson({
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+  }) {
+    return _SharedModelContainerJsonInclude._(
+      selectedColumns: select?.call(SharedModelContainer.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SharedModelContainerJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SharedModelContainerJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    SharedModelContainerJsonInclude? include,
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+  }) {
+    return _SharedModelContainerJsonIncludeList._(
+      where: where?.call(SharedModelContainer.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SharedModelContainer.t),
+      orderByList: orderByList?.call(SharedModelContainer.t),
+      include: include,
+      selectedColumns: select?.call(SharedModelContainer.t),
     );
   }
 
@@ -943,7 +989,14 @@ class SharedModelContainerTable extends _is.Table<int?> {
   ];
 }
 
-class SharedModelContainerInclude extends _is.IncludeObject {
+abstract interface class SharedModelContainerJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class SharedModelContainerJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class SharedModelContainerInclude extends _is.IncludeObject
+    implements SharedModelContainerJsonInclude, _is.FullModelInclude {
   SharedModelContainerInclude._();
 
   @override
@@ -953,17 +1006,52 @@ class SharedModelContainerInclude extends _is.IncludeObject {
   _is.Table<int?> get table => SharedModelContainer.t;
 }
 
-class SharedModelContainerIncludeList extends _is.IncludeList {
+final class SharedModelContainerIncludeList extends _is.IncludeList
+    implements SharedModelContainerJsonIncludeList, _is.FullModelInclude {
   SharedModelContainerIncludeList._({
-    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(SharedModelContainer.t);
-  }
+    SharedModelContainerInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => SharedModelContainer.t;
+}
+
+final class _SharedModelContainerJsonInclude extends _is.IncludeObject
+    implements SharedModelContainerJsonInclude {
+  _SharedModelContainerJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => SharedModelContainer.t;
+}
+
+final class _SharedModelContainerJsonIncludeList extends _is.IncludeList
+    implements SharedModelContainerJsonIncludeList {
+  _SharedModelContainerJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SharedModelContainerJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -1069,6 +1157,129 @@ class SharedModelContainerRepository {
     return session.db.findById<SharedModelContainer>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SharedModelContainer>(
+      where: where?.call(SharedModelContainer.t),
+      orderBy: orderBy?.call(SharedModelContainer.t),
+      orderByList: orderByList?.call(SharedModelContainer.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SharedModelContainer.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    int? offset,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SharedModelContainer>(
+      where: where?.call(SharedModelContainer.t),
+      orderBy: orderBy?.call(SharedModelContainer.t),
+      orderByList: orderByList?.call(SharedModelContainer.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SharedModelContainer.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SharedModelContainer>(
+      id,
+      transaction: transaction,
+      select: select?.call(SharedModelContainer.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -93,9 +93,15 @@ abstract class Comment
     };
   }
 
+  /// Builds a complete [CommentInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CommentInclude include({_ig920ya2.OrderInclude? order}) {
     return CommentInclude._(order: order);
   }
+
+  /// Builds a complete [CommentIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CommentIncludeList includeList({
     _isd.WhereExpressionBuilder<CommentTable>? where,
@@ -106,12 +112,54 @@ abstract class Comment
     CommentInclude? include,
   }) {
     return CommentIncludeList._(
-      where: where,
+      where: where?.call(Comment.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CommentJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CommentJsonInclude includeJson({
+    _ig920ya2.OrderJsonInclude? order,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+  }) {
+    return _CommentJsonInclude._(
+      order: order,
+      selectedColumns: select?.call(Comment.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CommentJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CommentJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<CommentTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CommentTable>? orderBy,
+    _isd.OrderByListBuilder<CommentTable>? orderByList,
+    CommentJsonInclude? include,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+  }) {
+    return _CommentJsonIncludeList._(
+      where: where?.call(Comment.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Comment.t),
+      orderByList: orderByList?.call(Comment.t),
+      include: include,
+      selectedColumns: select?.call(Comment.t),
     );
   }
 
@@ -220,7 +268,14 @@ class CommentTable extends _isd.Table<int?> {
   }
 }
 
-class CommentInclude extends _isd.IncludeObject {
+abstract interface class CommentJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class CommentJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class CommentInclude extends _isd.IncludeObject
+    implements CommentJsonInclude, _isd.FullModelInclude {
   CommentInclude._({_ig920ya2.OrderInclude? order}) {
     _order = order;
   }
@@ -234,17 +289,59 @@ class CommentInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Comment.t;
 }
 
-class CommentIncludeList extends _isd.IncludeList {
+final class CommentIncludeList extends _isd.IncludeList
+    implements CommentJsonIncludeList, _isd.FullModelInclude {
   CommentIncludeList._({
-    _isd.WhereExpressionBuilder<CommentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CommentInclude? super.include,
+  });
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Comment.t;
+}
+
+final class _CommentJsonInclude extends _isd.IncludeObject
+    implements CommentJsonInclude {
+  _CommentJsonInclude._({
+    _ig920ya2.OrderJsonInclude? order,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(Comment.t);
+    _order = order;
   }
+
+  _ig920ya2.OrderJsonInclude? _order;
+
+  @override
+  final List<_isd.Column>? selectedColumns;
+
+  @override
+  Map<String, _isd.Include?> get includes => {'order': _order};
+
+  @override
+  _isd.Table<int?> get table => Comment.t;
+}
+
+final class _CommentJsonIncludeList extends _isd.IncludeList
+    implements CommentJsonIncludeList {
+  _CommentJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CommentJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -358,6 +455,135 @@ class CommentRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CommentTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CommentTable>? orderBy,
+    _isd.OrderByListBuilder<CommentTable>? orderByList,
+    _isd.Transaction? transaction,
+    CommentJsonInclude? include,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Comment>(
+      where: where?.call(Comment.t),
+      orderBy: orderBy?.call(Comment.t),
+      orderByList: orderByList?.call(Comment.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Comment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CommentTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<CommentTable>? orderBy,
+    _isd.OrderByListBuilder<CommentTable>? orderByList,
+    _isd.Transaction? transaction,
+    CommentJsonInclude? include,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Comment>(
+      where: where?.call(Comment.t),
+      orderBy: orderBy?.call(Comment.t),
+      orderByList: orderByList?.call(Comment.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Comment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    CommentJsonInclude? include,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Comment>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Comment.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

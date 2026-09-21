@@ -153,9 +153,15 @@ abstract class QueryLogEntry
     };
   }
 
+  /// Builds a complete [QueryLogEntryInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static QueryLogEntryInclude include() {
     return QueryLogEntryInclude._();
   }
+
+  /// Builds a complete [QueryLogEntryIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static QueryLogEntryIncludeList includeList({
     _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
@@ -166,12 +172,52 @@ abstract class QueryLogEntry
     QueryLogEntryInclude? include,
   }) {
     return QueryLogEntryIncludeList._(
-      where: where,
+      where: where?.call(QueryLogEntry.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [QueryLogEntryJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static QueryLogEntryJsonInclude includeJson({
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+  }) {
+    return _QueryLogEntryJsonInclude._(
+      selectedColumns: select?.call(QueryLogEntry.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [QueryLogEntryJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static QueryLogEntryJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    QueryLogEntryJsonInclude? include,
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+  }) {
+    return _QueryLogEntryJsonIncludeList._(
+      where: where?.call(QueryLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      include: include,
+      selectedColumns: select?.call(QueryLogEntry.t),
     );
   }
 
@@ -393,7 +439,14 @@ class QueryLogEntryTable extends _is.Table<int?> {
   ];
 }
 
-class QueryLogEntryInclude extends _is.IncludeObject {
+abstract interface class QueryLogEntryJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class QueryLogEntryJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class QueryLogEntryInclude extends _is.IncludeObject
+    implements QueryLogEntryJsonInclude, _is.FullModelInclude {
   QueryLogEntryInclude._();
 
   @override
@@ -403,17 +456,52 @@ class QueryLogEntryInclude extends _is.IncludeObject {
   _is.Table<int?> get table => QueryLogEntry.t;
 }
 
-class QueryLogEntryIncludeList extends _is.IncludeList {
+final class QueryLogEntryIncludeList extends _is.IncludeList
+    implements QueryLogEntryJsonIncludeList, _is.FullModelInclude {
   QueryLogEntryIncludeList._({
-    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(QueryLogEntry.t);
-  }
+    QueryLogEntryInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => QueryLogEntry.t;
+}
+
+final class _QueryLogEntryJsonInclude extends _is.IncludeObject
+    implements QueryLogEntryJsonInclude {
+  _QueryLogEntryJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => QueryLogEntry.t;
+}
+
+final class _QueryLogEntryJsonIncludeList extends _is.IncludeList
+    implements QueryLogEntryJsonIncludeList {
+  _QueryLogEntryJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    QueryLogEntryJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -519,6 +607,129 @@ class QueryLogEntryRepository {
     return session.db.findById<QueryLogEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<QueryLogEntry>(
+      where: where?.call(QueryLogEntry.t),
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(QueryLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<QueryLogEntry>(
+      where: where?.call(QueryLogEntry.t),
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(QueryLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<QueryLogEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(QueryLogEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

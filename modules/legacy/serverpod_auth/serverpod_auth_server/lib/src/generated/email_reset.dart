@@ -90,9 +90,15 @@ abstract class EmailReset
     };
   }
 
+  /// Builds a complete [EmailResetInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static EmailResetInclude include() {
     return EmailResetInclude._();
   }
+
+  /// Builds a complete [EmailResetIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static EmailResetIncludeList includeList({
     _is.WhereExpressionBuilder<EmailResetTable>? where,
@@ -103,12 +109,52 @@ abstract class EmailReset
     EmailResetInclude? include,
   }) {
     return EmailResetIncludeList._(
-      where: where,
+      where: where?.call(EmailReset.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailResetJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EmailResetJsonInclude includeJson({
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+  }) {
+    return _EmailResetJsonInclude._(
+      selectedColumns: select?.call(EmailReset.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailResetJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EmailResetJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    EmailResetJsonInclude? include,
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+  }) {
+    return _EmailResetJsonIncludeList._(
+      where: where?.call(EmailReset.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      include: include,
+      selectedColumns: select?.call(EmailReset.t),
     );
   }
 
@@ -211,7 +257,14 @@ class EmailResetTable extends _is.Table<int?> {
   ];
 }
 
-class EmailResetInclude extends _is.IncludeObject {
+abstract interface class EmailResetJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EmailResetJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EmailResetInclude extends _is.IncludeObject
+    implements EmailResetJsonInclude, _is.FullModelInclude {
   EmailResetInclude._();
 
   @override
@@ -221,17 +274,52 @@ class EmailResetInclude extends _is.IncludeObject {
   _is.Table<int?> get table => EmailReset.t;
 }
 
-class EmailResetIncludeList extends _is.IncludeList {
+final class EmailResetIncludeList extends _is.IncludeList
+    implements EmailResetJsonIncludeList, _is.FullModelInclude {
   EmailResetIncludeList._({
-    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(EmailReset.t);
-  }
+    EmailResetInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => EmailReset.t;
+}
+
+final class _EmailResetJsonInclude extends _is.IncludeObject
+    implements EmailResetJsonInclude {
+  _EmailResetJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => EmailReset.t;
+}
+
+final class _EmailResetJsonIncludeList extends _is.IncludeList
+    implements EmailResetJsonIncludeList {
+  _EmailResetJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EmailResetJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -337,6 +425,129 @@ class EmailResetRepository {
     return session.db.findById<EmailReset>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EmailReset>(
+      where: where?.call(EmailReset.t),
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmailReset.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EmailReset>(
+      where: where?.call(EmailReset.t),
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmailReset.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EmailReset>(
+      id,
+      transaction: transaction,
+      select: select?.call(EmailReset.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

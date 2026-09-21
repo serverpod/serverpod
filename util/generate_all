@@ -24,7 +24,7 @@ for path in "${SERVERPOD_SERVER_PATHS[@]}"; do
     echo "### $path"
     cd "$BASE/$path"
 
-    dart $CLI generate --no-analytics
+    dart $CLI generate --no-analytics "$@"
 done
 
 
@@ -33,4 +33,5 @@ done
 # job runs exactly the same logic - here against the from-source CLI (the script's
 # default), in CI against the prebuilt CLI bundle via SERVERPOD_CLI_EXE.
 cd "$BASE"
-util/generate_templates
+util/generate_templates "$@"
+

@@ -1,0 +1,108 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "projected_addresses",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [],
+        "modifyColumns": [
+          {
+            "__className__": "serverpod.ColumnMigration",
+            "columnName": "street",
+            "addNullable": false,
+            "removeNullable": true,
+            "changeDefault": false
+          },
+          {
+            "__className__": "serverpod.ColumnMigration",
+            "columnName": "state",
+            "addNullable": false,
+            "removeNullable": true,
+            "changeDefault": false
+          },
+          {
+            "__className__": "serverpod.ColumnMigration",
+            "columnName": "country",
+            "addNullable": false,
+            "removeNullable": true,
+            "changeDefault": false
+          }
+        ],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "notNullAdded",
+            "message": "Column \"street\" of table \"projected_addresses\" is modified to be not null. If there are existing rows with null values, this migration will fail.",
+            "table": "projected_addresses",
+            "columns": [
+              "street"
+            ],
+            "destrucive": false
+          },
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "notNullAdded",
+            "message": "Column \"state\" of table \"projected_addresses\" is modified to be not null. If there are existing rows with null values, this migration will fail.",
+            "table": "projected_addresses",
+            "columns": [
+              "state"
+            ],
+            "destrucive": false
+          },
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "notNullAdded",
+            "message": "Column \"country\" of table \"projected_addresses\" is modified to be not null. If there are existing rows with null values, this migration will fail.",
+            "table": "projected_addresses",
+            "columns": [
+              "country"
+            ],
+            "destrucive": false
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "notNullAdded",
+      "message": "Column \"street\" of table \"projected_addresses\" is modified to be not null. If there are existing rows with null values, this migration will fail.",
+      "table": "projected_addresses",
+      "columns": [
+        "street"
+      ],
+      "destrucive": false
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "notNullAdded",
+      "message": "Column \"state\" of table \"projected_addresses\" is modified to be not null. If there are existing rows with null values, this migration will fail.",
+      "table": "projected_addresses",
+      "columns": [
+        "state"
+      ],
+      "destrucive": false
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "notNullAdded",
+      "message": "Column \"country\" of table \"projected_addresses\" is modified to be not null. If there are existing rows with null values, this migration will fail.",
+      "table": "projected_addresses",
+      "columns": [
+        "country"
+      ],
+      "destrucive": false
+    }
+  ],
+  "migrationApiVersion": 1
+}

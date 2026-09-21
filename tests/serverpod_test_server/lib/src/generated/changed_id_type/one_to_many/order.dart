@@ -108,6 +108,9 @@ abstract class OrderUuid
     };
   }
 
+  /// Builds a complete [OrderUuidInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static OrderUuidInclude include({
     _iwdajoe0.CustomerIntInclude? customer,
     _i7e4crca.CommentIntIncludeList? comments,
@@ -118,6 +121,9 @@ abstract class OrderUuid
     );
   }
 
+  /// Builds a complete [OrderUuidIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static OrderUuidIncludeList includeList({
     _is.WhereExpressionBuilder<OrderUuidTable>? where,
     int? limit,
@@ -127,12 +133,56 @@ abstract class OrderUuid
     OrderUuidInclude? include,
   }) {
     return OrderUuidIncludeList._(
-      where: where,
+      where: where?.call(OrderUuid.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(OrderUuid.t),
       orderByList: orderByList?.call(OrderUuid.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [OrderUuidJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static OrderUuidJsonInclude includeJson({
+    _iwdajoe0.CustomerIntJsonInclude? customer,
+    _i7e4crca.CommentIntJsonIncludeList? comments,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
+  }) {
+    return _OrderUuidJsonInclude._(
+      customer: customer,
+      comments: comments,
+      selectedColumns: select?.call(OrderUuid.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [OrderUuidJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static OrderUuidJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    OrderUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
+  }) {
+    return _OrderUuidJsonIncludeList._(
+      where: where?.call(OrderUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(OrderUuid.t),
+      orderByList: orderByList?.call(OrderUuid.t),
+      include: include,
+      selectedColumns: select?.call(OrderUuid.t),
     );
   }
 
@@ -287,7 +337,14 @@ class OrderUuidTable extends _is.Table<_is.UuidValue> {
   }
 }
 
-class OrderUuidInclude extends _is.IncludeObject {
+abstract interface class OrderUuidJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class OrderUuidJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class OrderUuidInclude extends _is.IncludeObject
+    implements OrderUuidJsonInclude, _is.FullModelInclude {
   OrderUuidInclude._({
     _iwdajoe0.CustomerIntInclude? customer,
     _i7e4crca.CommentIntIncludeList? comments,
@@ -310,17 +367,66 @@ class OrderUuidInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue> get table => OrderUuid.t;
 }
 
-class OrderUuidIncludeList extends _is.IncludeList {
+final class OrderUuidIncludeList extends _is.IncludeList
+    implements OrderUuidJsonIncludeList, _is.FullModelInclude {
   OrderUuidIncludeList._({
-    _is.WhereExpressionBuilder<OrderUuidTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    OrderUuidInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue> get table => OrderUuid.t;
+}
+
+final class _OrderUuidJsonInclude extends _is.IncludeObject
+    implements OrderUuidJsonInclude {
+  _OrderUuidJsonInclude._({
+    _iwdajoe0.CustomerIntJsonInclude? customer,
+    _i7e4crca.CommentIntJsonIncludeList? comments,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(OrderUuid.t);
+    _customer = customer;
+    _comments = comments;
   }
+
+  _iwdajoe0.CustomerIntJsonInclude? _customer;
+
+  _i7e4crca.CommentIntJsonIncludeList? _comments;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'customer': _customer,
+    'comments': _comments,
+  };
+
+  @override
+  _is.Table<_is.UuidValue> get table => OrderUuid.t;
+}
+
+final class _OrderUuidJsonIncludeList extends _is.IncludeList
+    implements OrderUuidJsonIncludeList {
+  _OrderUuidJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    OrderUuidJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -436,6 +542,135 @@ class OrderUuidRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    OrderUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<OrderUuid>(
+      where: where?.call(OrderUuid.t),
+      orderBy: orderBy?.call(OrderUuid.t),
+      orderByList: orderByList?.call(OrderUuid.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(OrderUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
+    int? offset,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    OrderUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<OrderUuid>(
+      where: where?.call(OrderUuid.t),
+      orderBy: orderBy?.call(OrderUuid.t),
+      orderByList: orderByList?.call(OrderUuid.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(OrderUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    OrderUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<OrderUuid>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(OrderUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

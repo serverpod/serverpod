@@ -104,9 +104,15 @@ abstract class UuidDefaultPersist
     };
   }
 
+  /// Builds a complete [UuidDefaultPersistInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static UuidDefaultPersistInclude include() {
     return UuidDefaultPersistInclude._();
   }
+
+  /// Builds a complete [UuidDefaultPersistIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UuidDefaultPersistIncludeList includeList({
     _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
@@ -117,12 +123,52 @@ abstract class UuidDefaultPersist
     UuidDefaultPersistInclude? include,
   }) {
     return UuidDefaultPersistIncludeList._(
-      where: where,
+      where: where?.call(UuidDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UuidDefaultPersist.t),
       orderByList: orderByList?.call(UuidDefaultPersist.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UuidDefaultPersistJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UuidDefaultPersistJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+  }) {
+    return _UuidDefaultPersistJsonInclude._(
+      selectedColumns: select?.call(UuidDefaultPersist.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UuidDefaultPersistJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UuidDefaultPersistJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    UuidDefaultPersistJsonInclude? include,
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+  }) {
+    return _UuidDefaultPersistJsonIncludeList._(
+      where: where?.call(UuidDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      include: include,
+      selectedColumns: select?.call(UuidDefaultPersist.t),
     );
   }
 
@@ -236,7 +282,14 @@ class UuidDefaultPersistTable extends _is.Table<int?> {
   ];
 }
 
-class UuidDefaultPersistInclude extends _is.IncludeObject {
+abstract interface class UuidDefaultPersistJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UuidDefaultPersistJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UuidDefaultPersistInclude extends _is.IncludeObject
+    implements UuidDefaultPersistJsonInclude, _is.FullModelInclude {
   UuidDefaultPersistInclude._();
 
   @override
@@ -246,17 +299,52 @@ class UuidDefaultPersistInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UuidDefaultPersist.t;
 }
 
-class UuidDefaultPersistIncludeList extends _is.IncludeList {
+final class UuidDefaultPersistIncludeList extends _is.IncludeList
+    implements UuidDefaultPersistJsonIncludeList, _is.FullModelInclude {
   UuidDefaultPersistIncludeList._({
-    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(UuidDefaultPersist.t);
-  }
+    UuidDefaultPersistInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UuidDefaultPersist.t;
+}
+
+final class _UuidDefaultPersistJsonInclude extends _is.IncludeObject
+    implements UuidDefaultPersistJsonInclude {
+  _UuidDefaultPersistJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UuidDefaultPersist.t;
+}
+
+final class _UuidDefaultPersistJsonIncludeList extends _is.IncludeList
+    implements UuidDefaultPersistJsonIncludeList {
+  _UuidDefaultPersistJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UuidDefaultPersistJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -362,6 +450,129 @@ class UuidDefaultPersistRepository {
     return session.db.findById<UuidDefaultPersist>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UuidDefaultPersist>(
+      where: where?.call(UuidDefaultPersist.t),
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UuidDefaultPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UuidDefaultPersist>(
+      where: where?.call(UuidDefaultPersist.t),
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UuidDefaultPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UuidDefaultPersist>(
+      id,
+      transaction: transaction,
+      select: select?.call(UuidDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

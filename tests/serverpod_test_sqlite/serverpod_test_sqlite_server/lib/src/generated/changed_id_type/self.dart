@@ -144,6 +144,9 @@ abstract class ChangedIdTypeSelf
     };
   }
 
+  /// Builds a complete [ChangedIdTypeSelfInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ChangedIdTypeSelfInclude include({
     _iqjmn1nu.ChangedIdTypeSelfInclude? previous,
     _iqjmn1nu.ChangedIdTypeSelfInclude? next,
@@ -158,6 +161,9 @@ abstract class ChangedIdTypeSelf
     );
   }
 
+  /// Builds a complete [ChangedIdTypeSelfIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ChangedIdTypeSelfIncludeList includeList({
     _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     int? limit,
@@ -167,12 +173,60 @@ abstract class ChangedIdTypeSelf
     ChangedIdTypeSelfInclude? include,
   }) {
     return ChangedIdTypeSelfIncludeList._(
-      where: where,
+      where: where?.call(ChangedIdTypeSelf.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ChangedIdTypeSelfJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ChangedIdTypeSelfJsonInclude includeJson({
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? previous,
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? next,
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? parent,
+    _iqjmn1nu.ChangedIdTypeSelfJsonIncludeList? children,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+  }) {
+    return _ChangedIdTypeSelfJsonInclude._(
+      previous: previous,
+      next: next,
+      parent: parent,
+      children: children,
+      selectedColumns: select?.call(ChangedIdTypeSelf.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ChangedIdTypeSelfJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ChangedIdTypeSelfJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    ChangedIdTypeSelfJsonInclude? include,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+  }) {
+    return _ChangedIdTypeSelfJsonIncludeList._(
+      where: where?.call(ChangedIdTypeSelf.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      include: include,
+      selectedColumns: select?.call(ChangedIdTypeSelf.t),
     );
   }
 
@@ -394,7 +448,14 @@ class ChangedIdTypeSelfTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class ChangedIdTypeSelfInclude extends _is.IncludeObject {
+abstract interface class ChangedIdTypeSelfJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ChangedIdTypeSelfJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ChangedIdTypeSelfInclude extends _is.IncludeObject
+    implements ChangedIdTypeSelfJsonInclude, _is.FullModelInclude {
   ChangedIdTypeSelfInclude._({
     _iqjmn1nu.ChangedIdTypeSelfInclude? previous,
     _iqjmn1nu.ChangedIdTypeSelfInclude? next,
@@ -427,17 +488,76 @@ class ChangedIdTypeSelfInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => ChangedIdTypeSelf.t;
 }
 
-class ChangedIdTypeSelfIncludeList extends _is.IncludeList {
+final class ChangedIdTypeSelfIncludeList extends _is.IncludeList
+    implements ChangedIdTypeSelfJsonIncludeList, _is.FullModelInclude {
   ChangedIdTypeSelfIncludeList._({
-    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ChangedIdTypeSelfInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ChangedIdTypeSelf.t;
+}
+
+final class _ChangedIdTypeSelfJsonInclude extends _is.IncludeObject
+    implements ChangedIdTypeSelfJsonInclude {
+  _ChangedIdTypeSelfJsonInclude._({
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? previous,
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? next,
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? parent,
+    _iqjmn1nu.ChangedIdTypeSelfJsonIncludeList? children,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(ChangedIdTypeSelf.t);
+    _previous = previous;
+    _next = next;
+    _parent = parent;
+    _children = children;
   }
+
+  _iqjmn1nu.ChangedIdTypeSelfJsonInclude? _previous;
+
+  _iqjmn1nu.ChangedIdTypeSelfJsonInclude? _next;
+
+  _iqjmn1nu.ChangedIdTypeSelfJsonInclude? _parent;
+
+  _iqjmn1nu.ChangedIdTypeSelfJsonIncludeList? _children;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'previous': _previous,
+    'next': _next,
+    'parent': _parent,
+    'children': _children,
+  };
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ChangedIdTypeSelf.t;
+}
+
+final class _ChangedIdTypeSelfJsonIncludeList extends _is.IncludeList
+    implements ChangedIdTypeSelfJsonIncludeList {
+  _ChangedIdTypeSelfJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ChangedIdTypeSelfJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -557,6 +677,135 @@ class ChangedIdTypeSelfRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    _is.Transaction? transaction,
+    ChangedIdTypeSelfJsonInclude? include,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ChangedIdTypeSelf>(
+      where: where?.call(ChangedIdTypeSelf.t),
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChangedIdTypeSelf.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    _is.Transaction? transaction,
+    ChangedIdTypeSelfJsonInclude? include,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ChangedIdTypeSelf>(
+      where: where?.call(ChangedIdTypeSelf.t),
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChangedIdTypeSelf.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ChangedIdTypeSelfJsonInclude? include,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ChangedIdTypeSelf>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChangedIdTypeSelf.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

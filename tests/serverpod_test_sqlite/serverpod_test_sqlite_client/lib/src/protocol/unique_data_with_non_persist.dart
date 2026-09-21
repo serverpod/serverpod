@@ -87,9 +87,15 @@ abstract class UniqueDataWithNonPersist
     };
   }
 
+  /// Builds a complete [UniqueDataWithNonPersistInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static UniqueDataWithNonPersistInclude include() {
     return UniqueDataWithNonPersistInclude._();
   }
+
+  /// Builds a complete [UniqueDataWithNonPersistIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UniqueDataWithNonPersistIncludeList includeList({
     _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
@@ -100,12 +106,52 @@ abstract class UniqueDataWithNonPersist
     UniqueDataWithNonPersistInclude? include,
   }) {
     return UniqueDataWithNonPersistIncludeList._(
-      where: where,
+      where: where?.call(UniqueDataWithNonPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UniqueDataWithNonPersistJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UniqueDataWithNonPersistJsonInclude includeJson({
+    _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+  }) {
+    return _UniqueDataWithNonPersistJsonInclude._(
+      selectedColumns: select?.call(UniqueDataWithNonPersist.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UniqueDataWithNonPersistJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UniqueDataWithNonPersistJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _isd.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    UniqueDataWithNonPersistJsonInclude? include,
+    _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+  }) {
+    return _UniqueDataWithNonPersistJsonIncludeList._(
+      where: where?.call(UniqueDataWithNonPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
+      orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
+      include: include,
+      selectedColumns: select?.call(UniqueDataWithNonPersist.t),
     );
   }
 
@@ -192,7 +238,14 @@ class UniqueDataWithNonPersistTable extends _isd.Table<int?> {
   ];
 }
 
-class UniqueDataWithNonPersistInclude extends _isd.IncludeObject {
+abstract interface class UniqueDataWithNonPersistJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class UniqueDataWithNonPersistJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class UniqueDataWithNonPersistInclude extends _isd.IncludeObject
+    implements UniqueDataWithNonPersistJsonInclude, _isd.FullModelInclude {
   UniqueDataWithNonPersistInclude._();
 
   @override
@@ -202,17 +255,52 @@ class UniqueDataWithNonPersistInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => UniqueDataWithNonPersist.t;
 }
 
-class UniqueDataWithNonPersistIncludeList extends _isd.IncludeList {
+final class UniqueDataWithNonPersistIncludeList extends _isd.IncludeList
+    implements UniqueDataWithNonPersistJsonIncludeList, _isd.FullModelInclude {
   UniqueDataWithNonPersistIncludeList._({
-    _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(UniqueDataWithNonPersist.t);
-  }
+    UniqueDataWithNonPersistInclude? super.include,
+  });
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => UniqueDataWithNonPersist.t;
+}
+
+final class _UniqueDataWithNonPersistJsonInclude extends _isd.IncludeObject
+    implements UniqueDataWithNonPersistJsonInclude {
+  _UniqueDataWithNonPersistJsonInclude._({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
+
+  @override
+  Map<String, _isd.Include?> get includes => {};
+
+  @override
+  _isd.Table<int?> get table => UniqueDataWithNonPersist.t;
+}
+
+final class _UniqueDataWithNonPersistJsonIncludeList extends _isd.IncludeList
+    implements UniqueDataWithNonPersistJsonIncludeList {
+  _UniqueDataWithNonPersistJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UniqueDataWithNonPersistJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -318,6 +406,129 @@ class UniqueDataWithNonPersistRepository {
     return session.db.findById<UniqueDataWithNonPersist>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _isd.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UniqueDataWithNonPersist>(
+      where: where?.call(UniqueDataWithNonPersist.t),
+      orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
+      orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UniqueDataWithNonPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _isd.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UniqueDataWithNonPersist>(
+      where: where?.call(UniqueDataWithNonPersist.t),
+      orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
+      orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UniqueDataWithNonPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UniqueDataWithNonPersist>(
+      id,
+      transaction: transaction,
+      select: select?.call(UniqueDataWithNonPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

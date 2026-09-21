@@ -130,6 +130,9 @@ abstract class CitizenInt
     };
   }
 
+  /// Builds a complete [CitizenIntInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CitizenIntInclude include({
     _ih0efjtk.AddressUuidInclude? address,
     _i441ok8u.CompanyUuidInclude? company,
@@ -142,6 +145,9 @@ abstract class CitizenInt
     );
   }
 
+  /// Builds a complete [CitizenIntIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CitizenIntIncludeList includeList({
     _is.WhereExpressionBuilder<CitizenIntTable>? where,
     int? limit,
@@ -151,12 +157,58 @@ abstract class CitizenInt
     CitizenIntInclude? include,
   }) {
     return CitizenIntIncludeList._(
-      where: where,
+      where: where?.call(CitizenInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
       include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CitizenIntJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CitizenIntJsonInclude includeJson({
+    _ih0efjtk.AddressUuidJsonInclude? address,
+    _i441ok8u.CompanyUuidJsonInclude? company,
+    _i441ok8u.CompanyUuidJsonInclude? oldCompany,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+  }) {
+    return _CitizenIntJsonInclude._(
+      address: address,
+      company: company,
+      oldCompany: oldCompany,
+      selectedColumns: select?.call(CitizenInt.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CitizenIntJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CitizenIntJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CitizenIntTable>? orderBy,
+    _is.OrderByListBuilder<CitizenIntTable>? orderByList,
+    CitizenIntJsonInclude? include,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+  }) {
+    return _CitizenIntJsonIncludeList._(
+      where: where?.call(CitizenInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CitizenInt.t),
+      orderByList: orderByList?.call(CitizenInt.t),
+      include: include,
+      selectedColumns: select?.call(CitizenInt.t),
     );
   }
 
@@ -336,7 +388,14 @@ class CitizenIntTable extends _is.Table<int?> {
   }
 }
 
-class CitizenIntInclude extends _is.IncludeObject {
+abstract interface class CitizenIntJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class CitizenIntJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class CitizenIntInclude extends _is.IncludeObject
+    implements CitizenIntJsonInclude, _is.FullModelInclude {
   CitizenIntInclude._({
     _ih0efjtk.AddressUuidInclude? address,
     _i441ok8u.CompanyUuidInclude? company,
@@ -364,17 +423,71 @@ class CitizenIntInclude extends _is.IncludeObject {
   _is.Table<int?> get table => CitizenInt.t;
 }
 
-class CitizenIntIncludeList extends _is.IncludeList {
+final class CitizenIntIncludeList extends _is.IncludeList
+    implements CitizenIntJsonIncludeList, _is.FullModelInclude {
   CitizenIntIncludeList._({
-    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CitizenIntInclude? super.include,
+  });
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => CitizenInt.t;
+}
+
+final class _CitizenIntJsonInclude extends _is.IncludeObject
+    implements CitizenIntJsonInclude {
+  _CitizenIntJsonInclude._({
+    _ih0efjtk.AddressUuidJsonInclude? address,
+    _i441ok8u.CompanyUuidJsonInclude? company,
+    _i441ok8u.CompanyUuidJsonInclude? oldCompany,
+    this.selectedColumns,
   }) {
-    super.where = where?.call(CitizenInt.t);
+    _address = address;
+    _company = company;
+    _oldCompany = oldCompany;
   }
+
+  _ih0efjtk.AddressUuidJsonInclude? _address;
+
+  _i441ok8u.CompanyUuidJsonInclude? _company;
+
+  _i441ok8u.CompanyUuidJsonInclude? _oldCompany;
+
+  @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'address': _address,
+    'company': _company,
+    'oldCompany': _oldCompany,
+  };
+
+  @override
+  _is.Table<int?> get table => CitizenInt.t;
+}
+
+final class _CitizenIntJsonIncludeList extends _is.IncludeList
+    implements CitizenIntJsonIncludeList {
+  _CitizenIntJsonIncludeList._({
+    super.where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CitizenIntJsonInclude? super.include,
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -490,6 +603,135 @@ class CitizenIntRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CitizenIntTable>? orderBy,
+    _is.OrderByListBuilder<CitizenIntTable>? orderByList,
+    _is.Transaction? transaction,
+    CitizenIntJsonInclude? include,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<CitizenInt>(
+      where: where?.call(CitizenInt.t),
+      orderBy: orderBy?.call(CitizenInt.t),
+      orderByList: orderByList?.call(CitizenInt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CitizenInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CitizenIntTable>? orderBy,
+    _is.OrderByListBuilder<CitizenIntTable>? orderByList,
+    _is.Transaction? transaction,
+    CitizenIntJsonInclude? include,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<CitizenInt>(
+      where: where?.call(CitizenInt.t),
+      orderBy: orderBy?.call(CitizenInt.t),
+      orderByList: orderByList?.call(CitizenInt.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CitizenInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CitizenIntJsonInclude? include,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<CitizenInt>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CitizenInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

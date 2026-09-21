@@ -76,7 +76,7 @@ class Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -88,6 +88,7 @@ class Database {
         'Wrap your query in session.db.transaction().',
       );
     }
+    _assertNoSelectedColumns(include);
 
     return _databaseConnection.find<T>(
       _session,
@@ -124,7 +125,66 @@ class Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+    _assertNoSelectedColumns(include);
+
+    return await _databaseConnection.findFirstRow<T>(
+      _session,
+      where: where,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      transaction: resolvedTransaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned rows. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
+  Future<List<Map<String, dynamic>>> findAsJson<T extends TableRow>({
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    JsonCompatibleInclude? include,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -137,7 +197,62 @@ class Database {
       );
     }
 
-    return await _databaseConnection.findFirstRow<T>(
+    return _databaseConnection.findAsJson<T>(
+      _session,
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      transaction: resolvedTransaction,
+      include: include,
+      select: select,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned row. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
+  Future<Map<String, dynamic>?> findFirstRowAsJson<T extends TableRow>({
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    JsonCompatibleInclude? include,
+    List<Column>? select,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
+    return _databaseConnection.findFirstRowAsJson<T>(
       _session,
       where: where,
       offset: offset,
@@ -145,6 +260,7 @@ class Database {
       orderByList: orderByList,
       transaction: resolvedTransaction,
       include: include,
+      select: select,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );
@@ -165,7 +281,47 @@ class Database {
   Future<T?> findById<T extends TableRow>(
     Object id, {
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+    _assertNoSelectedColumns(include);
+
+    return _databaseConnection.findById<T>(
+      _session,
+      id,
+      transaction: resolvedTransaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned row. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
+  Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
+    Object id, {
+    Transaction? transaction,
+    JsonCompatibleInclude? include,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -178,14 +334,31 @@ class Database {
       );
     }
 
-    return _databaseConnection.findById<T>(
+    return _databaseConnection.findByIdAsJson<T>(
       _session,
       id,
       transaction: resolvedTransaction,
       include: include,
+      select: select,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );
+  }
+
+  void _assertNoSelectedColumns(Include? include) {
+    if (include == null) return;
+    if (include.selectedColumns != null) {
+      throw ArgumentError(
+        'Cannot use partial column selection with typed "find" queries. '
+        'Use "findAsJson" or a Model Projection for partial fetching.',
+      );
+    }
+    for (var nested in include.includes.values) {
+      _assertNoSelectedColumns(nested);
+    }
+    if (include is IncludeList) {
+      _assertNoSelectedColumns(include.include);
+    }
   }
 
   /// Acquires row-level locks on rows matching the [where] expression without
