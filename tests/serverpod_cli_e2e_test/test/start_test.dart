@@ -625,7 +625,7 @@ fields:
 
         // The app has come up, so a second launch would have been recorded.
         await waitForGeneratedOutput(
-          () => processOutput.toString().contains('] running at '),
+          () => processOutput.toString().contains('[$projectName] running'),
           timeout: const Duration(seconds: 120),
         );
         expect(
