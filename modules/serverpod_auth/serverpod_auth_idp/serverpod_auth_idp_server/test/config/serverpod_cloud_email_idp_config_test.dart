@@ -69,6 +69,49 @@ void main() {
           expect(config, isA<EmailIdpConfig>());
         },
       );
+
+      test(
+        'when constructing ServerpodCloudEmailIdpConfig with onPasswordResetCompleted, '
+        'then the callback is stored on the config.',
+        () {
+          Future<void> onPasswordResetCompleted(
+            final Session session, {
+            required final UuidValue emailAccountId,
+            required final Transaction? transaction,
+          }) async {}
+
+          final config = ServerpodCloudEmailIdpConfig(
+            appDisplayName: 'My App',
+            onPasswordResetCompleted: onPasswordResetCompleted,
+          );
+
+          expect(
+            config.onPasswordResetCompleted,
+            same(onPasswordResetCompleted),
+          );
+        },
+      );
+
+      test(
+        'when constructing ServerpodCloudEmailIdpConfig with onAfterAccountCreated, '
+        'then the callback is stored on the config.',
+        () {
+          Future<void> onAfterAccountCreated(
+            final Session session, {
+            required final String email,
+            required final UuidValue authUserId,
+            required final UuidValue emailAccountId,
+            required final Transaction? transaction,
+          }) async {}
+
+          final config = ServerpodCloudEmailIdpConfig(
+            appDisplayName: 'My App',
+            onAfterAccountCreated: onAfterAccountCreated,
+          );
+
+          expect(config.onAfterAccountCreated, same(onAfterAccountCreated));
+        },
+      );
     },
   );
 
