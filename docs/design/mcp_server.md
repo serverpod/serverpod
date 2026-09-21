@@ -40,8 +40,6 @@ The bridge is **per-project**: each `serverpod mcp-server` is bound to one serve
 
 Each runner binds to a Unix domain socket (AF_UNIX) rather than TCP or stdio. This avoids network exposure, port conflicts, and explicit permission management. The bridge connects to that socket as an MCP client and re-exposes the runner over stdio.
 
-Requires Dart 3.11+ for AF_UNIX support on Windows.
-
 ### Project-local socket directory
 
 The socket lives inside the server project's `.dart_tool/`:

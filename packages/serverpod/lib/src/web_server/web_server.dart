@@ -148,9 +148,10 @@ class WebServer {
     }
 
     try {
+      // A restart keeps the port of the first start, ephemeral or not.
       final server = await _app.serve(
         address: InternetAddress.anyIPv6,
-        port: _config.port,
+        port: _actualPort ?? _config.port,
         securityContext: _securityContext,
       );
       _actualPort = server.port;
@@ -164,7 +165,8 @@ class WebServer {
         e,
         stackTrace,
         message:
-            'Failed to bind socket, port ${_config.port} may already be in use.',
+            'Failed to bind socket, port ${_actualPort ?? _config.port} may '
+            'already be in use.',
       );
     }
     return _running;

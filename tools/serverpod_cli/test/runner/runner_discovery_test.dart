@@ -1,0 +1,373 @@
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/runner/runner_api.dart';
+import 'package:serverpod_cli/src/runner/runner_discovery.dart';
+import 'package:serverpod_cli/src/runner/runner_manifest.dart';
+import 'package:serverpod_cli/src/runner/runner_paths.dart';
+import 'package:serverpod_cli/src/runner/runner_registry.dart';
+import 'package:serverpod_shared/serverpod_shared.dart'
+    show FileEx, ServerpodAddresses, bindUnixSocket;
+import 'package:test/test.dart';
+
+import '../test_util/hold_lock.dart';
+import '../test_util/short_temp_dir.dart';
+
+const _command = 'creating a repair migration';
+
+void main() {
+  group('Given a server package at a path too long for a Unix socket,', () {
+    late Directory tempDir;
+    late String serverDir;
+    late RunnerRegistry registry;
+
+    setUp(() async {
+      // Short enough for the registry link, too long for the package path.
+      tempDir = await createShortTempDir('rdt');
+      serverDir = '${tempDir.path}/${'p' * 120}';
+      await Directory(serverpodToolDirPath(serverDir)).create(recursive: true);
+      registry = RunnerRegistry(dir: Directory('${tempDir.path}/r'));
+      await _writeManifest(serverDir);
+    });
+
+    tearDown(() async {
+      await tempDir.deleteBestEffort(recursive: true);
+    });
+
+    test(
+      'when its runner is registered and listening, '
+      'then it is resolved as live through the registry link',
+      () async {
+        await registry.register(serverDir);
+        final linked = p.join(
+          registry.toolDirFor(RunnerRegistry.idFor(serverDir)),
+          serverpodTuiSocketName,
+        );
+        await _listenAt(linked);
+
+        final resolution = await resolveRunner(serverDir, registry: registry);
+
+        expect(resolution, isA<LiveRunner>());
+        expect((resolution as LiveRunner).tuiSocket, linked);
+      },
+    );
+
+    test(
+      'when the registry sits at a path too long for a socket as well, '
+      'then resolving throws naming both paths, not reporting no runner',
+      () async {
+        final far = RunnerRegistry(
+          dir: Directory('${tempDir.path}/${'r' * 120}'),
+        );
+
+        await expectLater(
+          resolveRunner(serverDir, registry: far),
+          throwsA(
+            isA<SocketException>().having(
+              (e) => e.message,
+              'message',
+              allOf(contains(serverDir), contains(far.dir.path)),
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  group('Given a server package directory,', () {
+    late Directory tempDir;
+
+    setUp(() async {
+      tempDir = await createShortTempDir('rdt');
+    });
+
+    tearDown(() async {
+      await tempDir.deleteBestEffort(recursive: true);
+    });
+
+    test(
+      'when no manifest exists, '
+      'then no runner is resolved and nothing is reported as stale',
+      () async {
+        final resolution = await resolveRunner(tempDir.path);
+
+        expect(resolution, isA<NoRunner>());
+        expect((resolution as NoRunner).staleManifest, isNull);
+      },
+    );
+
+    test(
+      'when nothing listens beside the manifest, '
+      'then no runner is resolved and the manifest is reported as stale',
+      () async {
+        await _writeManifest(tempDir.path, pid: 9999);
+
+        final resolution = await resolveRunner(tempDir.path);
+
+        expect(resolution, isA<NoRunner>());
+        expect((resolution as NoRunner).staleManifest?.pid, 9999);
+      },
+    );
+
+    test(
+      'when a live runner has published its addresses, '
+      'then the insights address it published is reported',
+      () async {
+        await _writeManifest(
+          tempDir.path,
+          servers: const ServerpodAddresses(insights: 'http://localhost:43111'),
+        );
+        await _listen(tempDir);
+
+        expect(
+          await reportedInsightsAddress(tempDir.path, command: _command),
+          'http://localhost:43111',
+        );
+      },
+    );
+
+    test(
+      'when a live runner has not published its addresses yet, '
+      'then looking up its insights address reports that it is still starting',
+      () async {
+        await _writeManifest(tempDir.path);
+        await _listen(tempDir);
+
+        await expectLater(
+          reportedInsightsAddress(tempDir.path, command: _command),
+          throwsA(isA<RunnerStartingException>()),
+        );
+      },
+    );
+
+    test(
+      'when a live runner speaking another protocol has published addresses, '
+      'then looking up its insights address refuses rather than trusting them',
+      () async {
+        await _writeManifest(
+          tempDir.path,
+          protocolVersion: RunnerManifest.currentProtocolVersion + 1,
+          servers: const ServerpodAddresses(insights: 'http://localhost:43111'),
+        );
+        await _listen(tempDir);
+
+        await expectLater(
+          reportedInsightsAddress(tempDir.path, command: _command),
+          throwsA(isA<IncompatibleRunnerException>()),
+        );
+      },
+    );
+
+    test(
+      'when no runner has ever served it, '
+      'then no insights address is reported',
+      () async {
+        expect(
+          await reportedInsightsAddress(tempDir.path, command: _command),
+          isNull,
+        );
+      },
+    );
+
+    test(
+      'when only the manifest of a crashed runner names an insights address, '
+      'then no insights address is reported',
+      () async {
+        await _writeManifest(
+          tempDir.path,
+          servers: const ServerpodAddresses(insights: 'http://localhost:43111'),
+        );
+
+        expect(
+          await reportedInsightsAddress(tempDir.path, command: _command),
+          isNull,
+        );
+      },
+    );
+
+    test(
+      'when the attach socket beside the manifest is listening, '
+      'then the runner is resolved as live at that socket, registry or not',
+      () async {
+        final socketPath = await _listen(tempDir);
+        await _writeManifest(tempDir.path);
+        final registry = RunnerRegistry(
+          dir: Directory('${tempDir.path}/registry'),
+        );
+        await registry.register(tempDir.path);
+
+        final resolution = await resolveRunner(
+          tempDir.path,
+          registry: registry,
+        );
+
+        expect(resolution, isA<LiveRunner>());
+        expect((resolution as LiveRunner).versionWarning, isNull);
+        expect(resolution.tuiSocket, socketPath);
+      },
+    );
+
+    test(
+      'when the live runner speaks a different protocol version, '
+      'then it is reported as incompatible with the way to replace it',
+      () async {
+        await _listen(tempDir);
+        await _writeManifest(
+          tempDir.path,
+          protocolVersion: RunnerManifest.currentProtocolVersion + 1,
+        );
+
+        final resolution = await resolveRunner(tempDir.path);
+
+        expect(resolution, isA<IncompatibleRunner>());
+        expect((resolution as IncompatibleRunner).message, contains('stop'));
+      },
+    );
+
+    test(
+      'when the live runner came from a different CLI version, '
+      'then it is still live but carries a version warning',
+      () async {
+        await _listen(tempDir);
+        await _writeManifest(tempDir.path, cliVersion: '0.0.1-ancient');
+
+        final resolution = await resolveRunner(tempDir.path);
+
+        expect(resolution, isA<LiveRunner>());
+        expect(
+          (resolution as LiveRunner).versionWarning,
+          allOf(contains('0.0.1-ancient'), contains(templateVersion)),
+        );
+      },
+    );
+
+    test(
+      'when only the MCP socket beside the manifest is listening, '
+      'then liveness falls back to it',
+      () async {
+        await _listen(tempDir, name: serverpodMcpSocketName);
+        await _writeManifest(tempDir.path);
+
+        expect(await resolveRunner(tempDir.path), isA<LiveRunner>());
+      },
+    );
+  });
+
+  group('Given a manifest whose runner does not answer,', () {
+    late Directory tempDir;
+
+    setUp(() async {
+      tempDir = await createShortTempDir('rdl');
+      await _writeManifest(tempDir.path, pid: 424242);
+    });
+
+    tearDown(() async {
+      await tempDir.deleteBestEffort(recursive: true);
+    });
+
+    test(
+      'when its process still holds the lock, '
+      'then it is resolved as no runner with the lock held',
+      () async {
+        await holdLockFromAnotherProcess(tempDir.path);
+
+        final resolution = await resolveRunner(tempDir.path);
+
+        expect(
+          resolution,
+          isA<NoRunner>()
+              .having((r) => r.lockHeld, 'lockHeld', isTrue)
+              .having((r) => r.staleManifest?.pid, 'pid', 424242),
+        );
+      },
+    );
+
+    test(
+      'when the lock is free, '
+      'then it is resolved as no runner with the lock free',
+      () async {
+        final resolution = await resolveRunner(tempDir.path);
+
+        expect(
+          resolution,
+          isA<NoRunner>().having((r) => r.lockHeld, 'lockHeld', isFalse),
+        );
+      },
+    );
+  });
+
+  group(
+    'Given two worktrees whose runners each published an insights address,',
+    () {
+      late Directory root;
+      late String first;
+      late String second;
+
+      setUp(() async {
+        root = await createShortTempDir('rdw');
+        first = p.join(root.path, 'wt1', 'my_server');
+        second = p.join(root.path, 'wt2', 'my_server');
+        for (final (dir, port) in [(first, 43111), (second, 43222)]) {
+          await _writeManifest(
+            dir,
+            servers: ServerpodAddresses(insights: 'http://localhost:$port'),
+          );
+          await _listen(Directory(dir));
+        }
+      });
+
+      tearDown(() async {
+        await root.deleteBestEffort(recursive: true);
+      });
+
+      test(
+        'when each worktree is asked for its insights address, '
+        'then each answers with the address its own runner published',
+        () async {
+          expect(
+            await reportedInsightsAddress(first, command: _command),
+            'http://localhost:43111',
+          );
+          expect(
+            await reportedInsightsAddress(second, command: _command),
+            'http://localhost:43222',
+          );
+        },
+      );
+    },
+  );
+}
+
+/// Binds socket [name] beside [dir]'s manifest and returns its path.
+Future<String> _listen(
+  Directory dir, {
+  String name = serverpodTuiSocketName,
+}) async {
+  final path = p.join(serverpodToolDirPath(dir.path), name);
+  await File(path).parent.create(recursive: true);
+  return _listenAt(path);
+}
+
+/// Binds a Unix socket at [path] until teardown and returns [path].
+Future<String> _listenAt(String path) async {
+  final server = await bindUnixSocket(path);
+  addTearDown(server.close);
+  server.listen((socket) => socket.destroy());
+  return path;
+}
+
+Future<void> _writeManifest(
+  String serverDir, {
+  int pid = 4242,
+  int protocolVersion = RunnerManifest.currentProtocolVersion,
+  String cliVersion = templateVersion,
+  ServerpodAddresses? servers,
+}) => RunnerManifest(
+  pid: pid,
+  protocolVersion: protocolVersion,
+  cliVersion: cliVersion,
+  projectId: RunnerRegistry.idFor(serverDir),
+  config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
+  servers: servers,
+).writeTo(serverDir);

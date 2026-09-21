@@ -266,6 +266,41 @@ void main() {
     );
   });
 
+  test(
+    'Given a claim file younger than staleAfter whose owning process has exited, '
+    'when ensure runs, '
+    'then it installs the bundle without waiting for the claim to age out.',
+    () async {
+      var jarBytes = _buildSyntheticJar();
+      var shaHex = sha256.convert(jarBytes).toString();
+      var exited = await Process.start(Platform.resolvedExecutable, [
+        '--version',
+      ]);
+      await exited.exitCode;
+
+      var claim = File(
+        p.join(cache.path, '${artifact.bom}.${artifact.platform}.claim'),
+      );
+      cache.createSync(recursive: true);
+      claim.writeAsStringSync('${exited.pid}');
+
+      var store = BinaryStore(
+        cacheRoot: cache,
+        httpClient: _maven(artifact, jarBytes: jarBytes, sha256: shaHex),
+        staleAfter: const Duration(minutes: 5),
+        hardTimeout: const Duration(seconds: 5),
+        pollInterval: const Duration(milliseconds: 20),
+      );
+
+      await store.ensure(artifact);
+
+      expect(store.metaFileFor(artifact).existsSync(), isTrue);
+
+      store.close();
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
+
   group(
     'Given a fresh claim file (not yet stale) and a short hard timeout',
     () {

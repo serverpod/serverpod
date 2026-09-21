@@ -40,19 +40,19 @@ class FlutterAppManager {
   FlutterAppManager({
     required this.serverpodToolDir,
     required this.runMode,
-    required this.onProgress,
+    this.onProgress,
     required this.onReady,
     required this.onStart,
     required this.onStop,
     required this.onLaunchFailed,
-    required this.onEnsureAppTab,
+    this.onLaunching,
     required this.onLog,
     required this.stdoutSinkFor,
     required this.stderrSinkFor,
     required this.serverPubspecFile,
     required this.serverPackageDirectoryPathParts,
     required this.projectName,
-    required this.launchFlutterApp,
+    required this.autoLaunchArmed,
     this.environmentOverrideForTesting,
     this.flutterExecutableForTesting,
     this.argsOverrideForTesting,
@@ -90,7 +90,15 @@ class FlutterAppManager {
 
   final String serverpodToolDir;
   final String runMode;
-  final void Function(FlutterAppConfig app, String stage) onProgress;
+
+  /// Whether [launch] can do anything.
+  bool get canLaunchApps => canLaunchAppsIn(runMode);
+
+  /// Whether [launch] can do anything in [runMode].
+  static bool canLaunchAppsIn(String runMode) => runMode == 'development';
+
+  /// Called with each stage the toolchain reports while an app launches.
+  final void Function(FlutterAppConfig app, String stage)? onProgress;
 
   /// Fires once per launch when the app is up: on the published web URL
   /// for web devices, or on the daemon's `app.started` event otherwise
@@ -100,7 +108,9 @@ class FlutterAppManager {
   onStart;
   final void Function(FlutterAppConfig app) onStop;
   final void Function(FlutterAppConfig app) onLaunchFailed;
-  final void Function(FlutterAppConfig app) onEnsureAppTab;
+
+  /// Invoked when a spawn starts, before the callback that reports its end.
+  final void Function(FlutterAppConfig app)? onLaunching;
   final void Function(FlutterAppConfig app, FlutterLogEvent event) onLog;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
   final IOSink Function(FlutterAppConfig app) stderrSinkFor;
@@ -110,7 +120,12 @@ class FlutterAppManager {
   final File serverPubspecFile;
   final List<String> serverPackageDirectoryPathParts;
   final String projectName;
-  final bool launchFlutterApp;
+
+  /// The pod's API URL, null while the API server keeps its configured port.
+  String? resolvedApiUrl;
+
+  /// Whether [loadApps] launches the apps flagged `auto_launch`.
+  bool autoLaunchArmed;
 
   String? _cachedFlutterAppsFingerprint;
 
@@ -136,6 +151,11 @@ class FlutterAppManager {
   /// the tool's output.
   Map<String, String?> get dtdUris => {
     for (final appId in runningAppIds) appId: processFor(appId)?.dtdUri,
+  };
+
+  /// The URLs of running apps by id, null for a non-web or unready app.
+  Map<String, String?> get appUrls => {
+    for (final appId in runningAppIds) appId: processFor(appId)?.flutterAppUrl,
   };
 
   /// Returns the [FlutterProcess] for [appId], if any.
@@ -241,7 +261,7 @@ class FlutterAppManager {
       await launchOverrideForTesting!(appId);
       return;
     }
-    if (runMode != 'development') return;
+    if (!canLaunchApps) return;
 
     final runtime = _runtimeFor(appId);
     if (runtime == null) return;
@@ -253,10 +273,9 @@ class FlutterAppManager {
     runtime.spawnInFlight = true;
     runtime.readySignaled = false;
     runtime.stopSignaled = false;
+    onLaunching?.call(runtime.app);
     final isRelaunch = runtime.relaunchInProgress;
     runtime.relaunchInProgress = false;
-
-    onEnsureAppTab(runtime.app);
 
     final device =
         runtime.app.device ?? ideDevice() ?? flutterDeviceWebServerWithBrowser;
@@ -265,7 +284,10 @@ class FlutterAppManager {
     process = FlutterProcess(
       flutterPackageDir: p.joinAll(runtime.app.pathParts),
       device: device,
-      extraArgs: runtime.app.extraRunArgs,
+      extraArgs: [
+        ...runtime.app.extraRunArgs,
+        for (final define in serverUrlDefines()) '--dart-define=$define',
+      ],
       flutterProxy: runtime.proxy,
       flutterExecutable: flutterExecutableForTesting ?? 'flutter',
       machineArgsOverride: argsOverrideForTesting?.call(runtime.app),
@@ -273,7 +295,7 @@ class FlutterAppManager {
       stderrSink: stderrSinkFor(runtime.app),
       onLog: (event) => onLog(runtime.app, event),
       onProgress: (stage) {
-        onProgress(runtime.app, stage);
+        onProgress?.call(runtime.app, stage);
         log.info('  ${runtime.app.name}: $stage');
       },
       // The ready signal for non-web devices, which never publish a URL. Web
@@ -287,9 +309,11 @@ class FlutterAppManager {
     } on FlutterNotInstalledException catch (e) {
       log.warning(e.message);
       runtime.spawnInFlight = false;
+      onLaunchFailed(runtime.app);
       return;
     } catch (_) {
       runtime.spawnInFlight = false;
+      onLaunchFailed(runtime.app);
       rethrow;
     }
 
@@ -340,8 +364,7 @@ class FlutterAppManager {
     if (runtime == null) return;
 
     runtime.relaunchInProgress = runtime.process != null;
-    // The relaunch resets the tab via [onEnsureAppTab]; a stop signal in
-    // between would only flash a stopped state.
+    // The relaunch reports launching, so a stop signal would only flash.
     runtime.stopSignaled = true;
     await runtime.process?.stop();
     runtime.process = null;
@@ -413,16 +436,34 @@ class FlutterAppManager {
       }
 
       _setupDependencyTracker(app.id);
-      if (launchFlutterApp && app.autoLaunch) {
+      if (autoLaunchArmed && app.autoLaunch) {
         await launch(app.id);
       }
+    }
+  }
+
+  /// The `--dart-define` assignments telling an app where the pod is.
+  ///
+  /// `SERVER_URL` overrides `assets/config.json` in `serverpod_flutter`.
+  List<String> serverUrlDefines() {
+    final url = resolvedApiUrl;
+    return url == null ? const [] : ['SERVER_URL=$url'];
+  }
+
+  /// Arms auto-launch once, launching the `auto_launch` apps not yet running.
+  Future<void> launchAutoLaunchApps() async {
+    if (autoLaunchArmed) return;
+    autoLaunchArmed = true;
+    for (final app in _apps) {
+      if (!app.autoLaunch || isRunning(app.id)) continue;
+      await launch(app.id);
     }
   }
 
   /// Stops every running app and removes per-app VM-service info files.
   Future<void> stopAll() async {
     await _runtimes.values.map((runtime) async {
-      // Session shutdown; don't churn [onStop] consumers per app.
+      // Session shutdown. Don't churn [onStop] consumers per app.
       runtime.stopSignaled = true;
       await runtime.process?.stop();
       runtime.process = null;
@@ -432,7 +473,7 @@ class FlutterAppManager {
 
   /// Closes every proxy and deletes info files.
   ///
-  /// Only an IDE launch removes the device info; a plain terminal run leaves
+  /// Only an IDE launch removes the device info. A plain terminal run leaves
   /// it alone, since it may belong to a pending IDE launch.
   Future<void> dispose() async {
     await stopAll();

@@ -1,10 +1,9 @@
 import 'dart:async';
 
-/// Searches the [onData] string for the [keywords].
+/// A search for [keywords] in the lines passed to [onData].
 ///
-/// The class will search for the keywords and set the [_found] flag to true
-/// if the keyword is found. If the keyword is not found within the timeout
-/// period, the [_found] flag will be set to false.
+/// A keyword matches anywhere in a line, since log lines carry a prefix.
+/// [_found] turns false once [timeout] passes without a new line.
 ///
 /// The user can call [keywordFound] to wait for the keyword to be
 /// found or the timeout to occur.
@@ -44,7 +43,7 @@ class KeywordSearchInStream {
       return;
     }
 
-    if (keywords.contains(data.trim())) {
+    if (keywords.any(data.contains)) {
       _found = true;
     }
 
