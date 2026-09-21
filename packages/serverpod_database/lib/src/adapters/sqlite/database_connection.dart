@@ -908,23 +908,26 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         .withInclude(include)
         .build();
 
-    return _unsafeWatchResultSets(
-      query,
-      throttle: throttle,
-      triggerOnTables: collectWatchTriggerTables(
-        table: table,
-        where: where,
-        orderBy: orderByCols,
-        include: include,
-        extraTables: alsoTriggerOnTables,
-      ),
-    ).asyncMap(
-      (result) => _deserializeMappedResultSet<T>(
-        session,
-        result,
-        table: table,
-        include: include,
-      ),
+    return _watchOutsideTransaction(
+      () =>
+          _unsafeWatchResultSets(
+            query,
+            throttle: throttle,
+            triggerOnTables: collectWatchTriggerTables(
+              table: table,
+              where: where,
+              orderBy: orderByCols,
+              include: include,
+              extraTables: alsoTriggerOnTables,
+            ),
+          ).asyncMap(
+            (result) => _deserializeMappedResultSet<T>(
+              session,
+              result,
+              table: table,
+              include: include,
+            ),
+          ),
     );
   }
 
@@ -937,12 +940,39 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Iterable<String>? triggerOnTables,
   }) {
     var (sql, params) = convertQueryParametersForSqlite(query, parameters);
-    return _unsafeWatchResultSets(
-      sql,
-      parameters: params,
-      throttle: throttle,
-      triggerOnTables: triggerOnTables,
-    ).map(SqliteDatabaseResult.new);
+    return _watchOutsideTransaction(
+      () => _unsafeWatchResultSets(
+        sql,
+        parameters: params,
+        throttle: throttle,
+        triggerOnTables: triggerOnTables,
+      ).map(SqliteDatabaseResult.new),
+    );
+  }
+
+  Stream<T> _watchOutsideTransaction<T>(Stream<T> Function() createStream) {
+    final creationZone = _currentTransactionParentZone ?? Zone.current;
+    late StreamController<T> controller;
+    controller = StreamController<T>(
+      onListen: () {
+        // Both creating and listening to the watch may happen inside a write
+        // transaction. Keep queries and included-list loading outside its lock
+        // guard zone, including after the transaction has completed.
+        final watchZone = _currentTransactionParentZone ?? creationZone;
+        watchZone.fork().run(() {
+          final subscription = createStream().listen(
+            controller.add,
+            onError: controller.addError,
+            onDone: controller.close,
+          );
+          controller
+            ..onPause = subscription.pause
+            ..onResume = subscription.resume
+            ..onCancel = subscription.cancel;
+        });
+      },
+    );
+    return controller.stream;
   }
 
   Stream<ResultSet> _unsafeWatchResultSets(
