@@ -37,6 +37,13 @@ class SqliteSqlGenerator implements SqlGenerator {
 
 const _sqliteSchemaTable = 'serverpod_sqlite_schema';
 
+// ADD COLUMN accepts literal defaults, but not expressions or current-time
+// keywords. Match the entire converted SQLite value, including escaped quotes.
+final _literalDefault = RegExp(
+  r"(?:[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?|'(?:[^']|'')*'|[xX]'(?:[0-9a-fA-F]{2})*'|NULL)",
+  caseSensitive: false,
+);
+
 //
 // SQL generation for SQLite
 //
@@ -138,10 +145,16 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
         .where((index) => index.isUnique)
         .any((i) => i.elements.any((c) => c.definition == name));
 
-    return isPrimary || isUnique || columnDefault != null;
+    if (isPrimary || isUnique) return true;
+    final defaultSql = columnType.getSqliteColumnDefault(columnDefault);
+    if (defaultSql == null) return false;
+    final literal = _literalDefault.matchAsPrefix(defaultSql);
+    return literal == null ||
+        literal.end != defaultSql.length ||
+        (!isNullable && defaultSql.toUpperCase() == 'NULL');
   }
 
-  String toSqlFragment({String? tableName}) {
+  String toSqlFragment({String? tableName, bool forAddColumn = false}) {
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -173,7 +186,11 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
     var nullable = isNullable ? '' : ' NOT NULL';
     var defaultSql = columnType.getSqliteColumnDefault(columnDefault);
 
-    var defaultValue = defaultSql != null ? ' DEFAULT ($defaultSql)' : '';
+    var defaultValue = defaultSql == null
+        ? ''
+        : forAddColumn
+        ? ' DEFAULT $defaultSql'
+        : ' DEFAULT ($defaultSql)';
 
     if (columnDefault == defaultIntSerial && !isPrimary) {
       final columnLocation = tableName == null
@@ -411,7 +428,7 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
       // These will be handled by the table rebuild.
       out +=
           'ALTER TABLE "$name" '
-          'ADD COLUMN ${addColumn.toSqlFragment(tableName: name)};\n';
+          'ADD COLUMN ${addColumn.toSqlFragment(tableName: name, forAddColumn: true)};\n';
     }
 
     // Add indexes
