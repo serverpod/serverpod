@@ -7,9 +7,15 @@ void main() {
   // Creates a client with a URL that doesn't exist
   // This will cause an WebSocketConnectException when the client tries to
   // connect to the server.
-  var client = Client(
-    'http://localhost:123456789/',
-  );
+  late Client client;
+  setUpAll(() {
+    client = Client(
+      'http://localhost:123456789/',
+    );
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   test(
     'Given method call with stream response when exception occurs during call setup then exception is received in stream.',
