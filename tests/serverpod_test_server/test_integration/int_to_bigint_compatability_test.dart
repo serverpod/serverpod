@@ -1,11 +1,16 @@
+import 'package:serverpod/serverpod.dart' show Session;
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:uuid/v4.dart';
 
-void main() async {
+void main() {
   // Suite of regression tests to ensure that int and bigint types are
   // compatible with each other in the database.
-  var session = await IntegrationTestServer().session();
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => session.close());
 
   group('Given table that uses an int column and has a row entry', () {
     var tableName = UuidV4().generate().toString();
