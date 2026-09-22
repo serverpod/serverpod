@@ -112,11 +112,11 @@ buildWithServerpod<T extends InternalTestEndpoints>(
       testGroupName,
       () {
         final sessionBuilder = InternalTestSessionBuilder();
-        late final InternalServerpodSession mainServerpodSession;
-        late final List<InternalServerpodSession> allTestSessions;
+        late InternalServerpodSession mainServerpodSession;
+        late List<InternalServerpodSession> allTestSessions;
         // Assigned in setUpAll whenever the database is enabled, which
         // `rollbacksEnabled` already guarantees for every read below.
-        late final TransactionManager transactionManager;
+        late TransactionManager transactionManager;
 
         setUpAll(() async {
           await testServerpod.start().timeout(

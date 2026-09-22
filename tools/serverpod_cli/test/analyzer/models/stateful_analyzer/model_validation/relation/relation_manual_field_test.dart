@@ -77,8 +77,8 @@ void main() {
     'Given a class with a relation that names a foreign key field that is not declared, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
-      late final ClassDefinition exampleClass;
+      late CodeGenerationCollector collector;
+      late ClassDefinition exampleClass;
 
       setUpAll(() {
         var models = [
@@ -168,8 +168,8 @@ void main() {
     'Given a class with a relation that names an undeclared foreign key field to a model with a UuidValue id, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
-      late final ClassDefinition exampleClass;
+      late CodeGenerationCollector collector;
+      late ClassDefinition exampleClass;
 
       setUpAll(() {
         var models = [
@@ -221,8 +221,8 @@ void main() {
     'Given a class with an optional relation that names a foreign key field that is not declared, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
-      late final ClassDefinition exampleClass;
+      late CodeGenerationCollector collector;
+      late ClassDefinition exampleClass;
 
       setUpAll(() {
         var models = [
@@ -269,7 +269,7 @@ void main() {
     'Given a named one-to-one relation that names an undeclared foreign key field with a unique index, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -313,7 +313,7 @@ void main() {
     'Given a named one-to-one relation that names an undeclared foreign key field without a unique index, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -587,7 +587,7 @@ fields:
     'Given a class with an optional relation pointing to a non-nullable foreign key field, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -631,7 +631,7 @@ fields:
     'Given a class with an optional relation pointing to a nullable foreign key field, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -668,7 +668,7 @@ fields:
     'the foreign key of a class with a non-nullable id, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
