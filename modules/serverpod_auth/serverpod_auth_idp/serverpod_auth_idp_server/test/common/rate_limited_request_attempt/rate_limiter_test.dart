@@ -11,18 +11,15 @@ const _testSource = 'verification';
 const _otherSource = 'other_source';
 
 void main() {
-  late Session Function() buildSession;
   late Session session;
-
-  setUpAll(() {
-    session = buildSession();
-  });
 
   withServerpod(
     '[DatabaseRateLimiter]',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
-      buildSession = sessionBuilder.build;
+      setUpAll(() {
+        session = sessionBuilder.build();
+      });
 
       late List<String> rateLimitExceededKeys;
 

@@ -9,20 +9,17 @@ import '../../test_tools/serverpod_test_tools.dart';
 const _verificationCode = '123456';
 
 void main() {
-  late Session Function() buildSession;
   late Session session;
 
   final hashUtil = _createTestHashUtil();
-
-  setUpAll(() {
-    session = buildSession();
-  });
 
   withServerpod(
     '[SecretChallengeUtil]',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
-      buildSession = sessionBuilder.build;
+      setUpAll(() {
+        session = sessionBuilder.build();
+      });
 
       late SecretChallengeUtil<_TestChallengeRequest> challengeUtil;
       late Map<String, _TestChallengeRequest> requests;
