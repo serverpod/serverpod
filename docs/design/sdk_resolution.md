@@ -69,13 +69,16 @@ first tier that yields an SDK that actually exists on disk:
 | --- | ------ | --------- | ------ |
 | 1 | Project pin | `.fvm/flutter_sdk`, found by walking up | derived from the Flutter root |
 | 2 | PATH | `flutter` | `dart` |
-| 3 | Running SDK | — | `getSdkPath()` |
+| 3 | Global fvm | `fvm flutter` | derived from the Flutter root |
+| 4 | Running SDK | — | `getSdkPath()` |
 
-Tier 1 is the one that makes fvm work with no user action. Tier 3 exists only for
+Tier 1 is the one that makes fvm work with no user action. Tier 3 covers fvm
+users who set a version with `fvm global` instead of pinning each project. It is
+only reached when no `flutter` on `$PATH` reports an SDK root. Tier 4 exists only for
 Dart as a last resort, it is what the CLI does today.
 
 **Dart is derived from Flutter, not resolved separately.** Whenever a Flutter
-root is resolved at tier 1 or 2, the Dart SDK is taken from
+root is resolved at tier 1, 2 or 3, the Dart SDK is taken from
 `<flutterRoot>/bin/cache/dart-sdk` rather than resolved independently. A project
 pinned to Flutter 3.32 gets Dart 3.8, which is what `pub` in that project
 expects.
@@ -166,7 +169,7 @@ on `$PATH`.
 
 **The server may be compiled by a different SDK than before.** On a machine where
 `flutter` on `$PATH` embeds a different Dart than the one running the CLI, tier 2
-now wins over tier 3 and the server is built by the Flutter-embedded Dart.
+now wins over tier 4 and the server is built by the Flutter-embedded Dart.
 
 ## Design decisions
 

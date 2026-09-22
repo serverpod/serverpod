@@ -42,16 +42,18 @@ void _pinFvmFlutter(Directory project, String sdkRoot) {
   Link(p.join(fvmDir.path, 'flutter_sdk')).createSync(sdkRoot);
 }
 
-/// A resolver that never falls through to a real `flutter` on PATH, so the
-/// host machine's own install cannot influence the result.
+/// A resolver that never falls through to a real `flutter` or `fvm` on PATH,
+/// so the host machine's own install cannot influence the result.
 SdkResolver _resolver(
   Directory baseDirectory, {
   String? pathFlutterRoot,
+  String? fvmFlutterRoot,
   String Function()? runningSdkRoot,
 }) {
   return SdkResolver(
     baseDirectory: baseDirectory,
     probePathFlutterRoot: () async => pathFlutterRoot,
+    probeFvmFlutterRoot: () async => fvmFlutterRoot,
     runningSdkRoot: runningSdkRoot,
   );
 }
@@ -347,6 +349,82 @@ void main() {
 
       test('then it names the Flutter SDK as the origin', () {
         expect(resolved.origin, contains('the resolved Flutter SDK'));
+      });
+    });
+  });
+
+  group(
+    'Given a project without fvm pin, no Flutter on PATH, and a global fvm '
+    'version',
+    () {
+      late Directory workingDirectory;
+      late String fvmGlobalSdk;
+
+      setUp(() {
+        workingDirectory = _tempDir();
+        fvmGlobalSdk = _fakeFlutterSdk(workingDirectory, name: 'fvm-global');
+      });
+
+      group('when the Flutter SDK is resolved', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          resolved = await _resolver(
+            workingDirectory,
+            fvmFlutterRoot: fvmGlobalSdk,
+          ).flutterSdk;
+        });
+
+        test('then it resolves to the SDK that fvm reported', () {
+          expect(resolved?.root, fvmGlobalSdk);
+        });
+
+        test('then it names fvm as the origin', () {
+          expect(resolved?.origin, contains('fvm flutter'));
+        });
+      });
+
+      group('when the Dart SDK is resolved', () {
+        late ResolvedSdk resolved;
+
+        setUp(() async {
+          resolved = await _resolver(
+            workingDirectory,
+            fvmFlutterRoot: fvmGlobalSdk,
+          ).dartSdk;
+        });
+
+        test('then it comes from the SDK the fvm version embeds', () {
+          expect(resolved.root, embeddedDartSdkIn(fvmGlobalSdk));
+        });
+      });
+    },
+  );
+
+  group('Given both a Flutter SDK on PATH and a global fvm version', () {
+    late Directory workingDirectory;
+    late String sdkOnPath;
+    late String fvmGlobalSdk;
+
+    setUp(() {
+      workingDirectory = _tempDir();
+      sdkOnPath = _fakeFlutterSdk(workingDirectory, name: 'on-path');
+      fvmGlobalSdk = _fakeFlutterSdk(workingDirectory, name: 'fvm-global');
+    });
+
+    group('when the Flutter SDK is resolved', () {
+      late ResolvedSdk? resolved;
+
+      setUp(() async {
+        resolved = await _resolver(
+          workingDirectory,
+          pathFlutterRoot: sdkOnPath,
+          fvmFlutterRoot: fvmGlobalSdk,
+        ).flutterSdk;
+      });
+
+      test('then PATH wins', () {
+        expect(resolved?.root, sdkOnPath);
       });
     });
   });
