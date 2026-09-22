@@ -2,8 +2,12 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-void main() async {
-  var session = await IntegrationTestServer().session();
+void main() {
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => session.close());
   test(
     'Given that a table does not exist in the database when querying that table then the database exception prompt the user to check if a migration was applied.',
     () async {
