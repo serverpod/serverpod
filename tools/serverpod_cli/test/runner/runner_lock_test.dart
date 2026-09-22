@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/runner/runner_lock.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
-import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
 import 'package:test/test.dart';
+
+import '../test_util/file_system_entity_helpers.dart';
 
 void main() {
   group('Given a server package directory,', () {
@@ -14,7 +15,8 @@ void main() {
     });
 
     tearDown(() async {
-      await tempDir.deleteIfExists(recursive: true);
+      // Windows can briefly retain file handles after the holder has exited.
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
