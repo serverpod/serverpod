@@ -193,4 +193,78 @@ class HelperClass {}
       );
     },
   );
+
+  group(
+    'Given an analyzed future call file cached under its real-cased path',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late File futureCallFile;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        futureCallFile = File(
+          path.join(trackedDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        await analyzer.analyze(
+          collector: CodeGenerationCollector(),
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test(
+        'when the file context is updated with the same file under a '
+        'differently cased path '
+        'then it is re-analyzed as the same future call file.',
+        () async {
+          // The file watcher canonicalizes paths, which lowercases them on
+          // Windows. The analyzer must not treat that as a second file.
+          futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+
+  Future<void> goodbye(Session session, String name) async {
+    session.log('Goodbye \$name');
+  }
+}
+''');
+          var changedPath = path.canonicalize(futureCallFile.path);
+          await expectLater(
+            analyzer.updateFileContexts({changedPath}),
+            completion(true),
+          );
+
+          var collector = CodeGenerationCollector();
+          var definitions = await analyzer.analyze(
+            collector: collector,
+            changedFiles: {changedPath},
+          );
+
+          expect(collector.errors, isEmpty);
+          expect(definitions, hasLength(1));
+          expect(definitions.single.filePath, futureCallFile.path);
+          expect(
+            definitions.single.methods.map((m) => m.name),
+            containsAll(['hello', 'goodbye']),
+          );
+        },
+      );
+    },
+  );
 }
