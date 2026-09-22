@@ -28,7 +28,8 @@ class ClientDatabaseSession implements DatabaseSession {
   /// provide feedback of possible issues. On a Flutter application, this should
   /// be set to [kDebugMode].
   /// [preparedStatementCacheSize] bounds the per-connection statement cache;
-  /// set it to zero to disable caching.
+  /// it is disabled by default. SQL containing large literals can retain large
+  /// amounts of memory when caching is enabled.
   static Future<ClientDatabaseSession> open(
     String path,
     DatabaseSerializationManager serializationManager, {

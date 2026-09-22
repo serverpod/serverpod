@@ -905,6 +905,17 @@ database:
   );
 
   test(
+    'Given SQLite configuration without a statement-cache setting, '
+    'when constructing the configuration, '
+    'then caching remains disabled to avoid retaining literal values.',
+    () {
+      final config = SqliteDatabaseConfig(filePath: '/path/to/db.sqlite');
+
+      expect(config.preparedStatementCacheSize, 0);
+    },
+  );
+
+  test(
     'Given a SqliteDatabaseConfig with a relative filePath, '
     'when resolving local path against a base directory, '
     'then the local path is resolved correctly.',

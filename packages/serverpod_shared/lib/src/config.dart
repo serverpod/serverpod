@@ -862,10 +862,12 @@ class PostgresDatabaseConfig extends DatabaseConfig {
 /// SQLite-specific database configuration.
 class SqliteDatabaseConfig extends DatabaseConfig {
   /// Default number of prepared statements cached per SQLite connection.
-  static const defaultPreparedStatementCacheSize = 100;
+  static const defaultPreparedStatementCacheSize = 0;
 
   /// Maximum number of prepared statements cached per connection. Set to zero
   /// to disable caching. The bound applies separately to each pooled connection.
+  /// Disabled by default because literal-bearing SQL can retain large values
+  /// in the cache. Enable it only after measuring the application's workload.
   final int preparedStatementCacheSize;
 
   /// Creates a new [SqliteDatabaseConfig].
