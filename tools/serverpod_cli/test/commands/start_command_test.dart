@@ -25,6 +25,7 @@ import 'package:serverpod_shared/serverpod_shared.dart' show ServerpodAddresses;
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
+import '../test_util/file_system_entity_helpers.dart';
 import '../test_util/hold_lock.dart';
 import '../test_util/short_temp_dir.dart';
 
@@ -73,15 +74,22 @@ void main() {
 
   group('Given a runner that has published but is still starting,', () {
     late Directory tempDir;
+    late Process holder;
     late RunnerSocketServer socket;
     late RunnerManifest starting;
 
     setUp(() async {
       tempDir = await createShortTempDir('rsu');
+
+      // A live runner keeps its lock even when a socket probe fails. Use a
+      // separate process so the caller cannot retake its own POSIX lock.
+      holder = await holdLockFromAnotherProcess(tempDir.path);
+
       socket = RunnerSocketServer(serverDir: tempDir.path);
       await socket.start();
+
       starting = RunnerManifest(
-        pid: 4242,
+        pid: holder.pid,
         stage: RunnerStage.starting,
         projectId: RunnerRegistry.idFor(tempDir.path),
         config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
@@ -91,9 +99,7 @@ void main() {
 
     tearDown(() async {
       await socket.close();
-      try {
-        tempDir.deleteSync(recursive: true);
-      } catch (_) {}
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -102,7 +108,7 @@ void main() {
       () async {
         final outcome = await awaitRunnerManifest(
           tempDir.path,
-          pid: 4242,
+          pid: holder.pid,
           timeout: const Duration(seconds: 2),
         );
 
@@ -128,8 +134,6 @@ void main() {
       'when a probe fails while the runner still holds its lock, '
       'then the caller keeps waiting, and leaves once the lock is released',
       () async {
-        // A POSIX process can retake its own lock, so another process holds it.
-        final holder = await holdLockFromAnotherProcess(tempDir.path);
         await socket.close();
         final up = awaitStackUp(tempDir.path, starting);
         var settled = false;
@@ -172,18 +176,22 @@ void main() {
       'then the caller leaves with the code the runner named',
       () async {
         final up = awaitStackUp(tempDir.path, starting);
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-        await starting
-            .copyWith(stage: RunnerStage.stopping, exitCode: 3)
-            .writeTo(tempDir.path);
-        await socket.close();
-
-        await expectLater(
+        final aborted = expectLater(
           up,
           throwsA(
             isA<ExitException>().having((e) => e.exitCode, 'exitCode', 3),
           ),
         );
+
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        await starting
+            .copyWith(stage: RunnerStage.stopping, exitCode: 3)
+            .writeTo(tempDir.path);
+        await socket.close();
+        holder.kill();
+        await holder.exitCode;
+
+        await aborted;
       },
     );
 
@@ -229,10 +237,9 @@ void main() {
             .copyWith(stage: RunnerStage.running)
             .writeTo(tempDir.path);
 
+        final up = awaitStackUp(tempDir.path, starting);
         var settled = false;
-        final up = awaitStackUp(tempDir.path, starting).whenComplete(() {
-          settled = true;
-        });
+        up.whenComplete(() => settled = true).ignore();
         await Future<void>.delayed(const Duration(seconds: 1));
 
         expect(settled, isFalse);
@@ -273,6 +280,41 @@ void main() {
         );
       },
     );
+
+    group('when a probe fails while it is running without addresses,', () {
+      late bool completedBeforeAddresses;
+      late RunnerManifest ready;
+
+      setUp(() async {
+        final running = starting.copyWith(stage: RunnerStage.running);
+        await running.writeTo(tempDir.path);
+        await socket.close();
+
+        final up = awaitStackUp(tempDir.path, running);
+        var settled = false;
+        up.whenComplete(() => settled = true).ignore();
+
+        await Future<void>.delayed(const Duration(milliseconds: 700));
+        completedBeforeAddresses = settled;
+
+        socket = RunnerSocketServer(serverDir: tempDir.path);
+        await socket.start();
+        await running
+            .copyWith(
+              servers: const ServerpodAddresses(api: 'http://localhost:8080'),
+            )
+            .writeTo(tempDir.path);
+        ready = await up;
+      });
+
+      test(
+        'then the caller waits for the socket to recover and addresses to publish.',
+        () {
+          expect(completedBeforeAddresses, isFalse);
+          expect(ready.servers?.api, 'http://localhost:8080');
+        },
+      );
+    });
   });
 
   group('Given a spawned runner that died before it published,', () {
