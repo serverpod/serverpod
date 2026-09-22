@@ -336,15 +336,16 @@ class MigrationManager {
     await migrationRunner.runMigrations(session, action);
   }
 
-  /// Returns true if the database structure is up to date. If not, it
-  /// logs a warning via the global [log].
+  /// Returns true if the managed database structure is up to date. If not, it
+  /// logs a warning via the global [log]. Tables with [TableDefinition.managed]
+  /// set to false are excluded from verification.
   static Future<bool> verifyDatabaseIntegrity(DatabaseSession session) async {
     var warnings = <String>[];
 
     var liveDatabase = await session.db.analyzer.analyze();
     var targetTables = session.db.analyzer.getTargetTableDefinitions();
 
-    for (var table in targetTables) {
+    for (var table in targetTables.where((table) => table.managed != false)) {
       var liveTable = liveDatabase.findTableNamed(
         table.name,
         schema: table.schema,
