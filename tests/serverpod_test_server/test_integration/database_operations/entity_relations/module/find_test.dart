@@ -1,11 +1,16 @@
 import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart' show Session;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-void main() async {
-  var session = await IntegrationTestServer().session();
+void main() {
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => session.close());
 
   tearDown(() async {
     await ObjectUser.db.deleteWhere(session, where: (_) => Constant.bool(true));

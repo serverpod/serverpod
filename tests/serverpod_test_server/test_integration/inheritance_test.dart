@@ -19,8 +19,12 @@ String switchOnSealedClass(SealedParent sealedClass) {
   }
 }
 
-void main() async {
-  var session = await IntegrationTestServer().session();
+void main() {
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => session.close());
 
   tearDownAll(() async => await _deleteAll(session));
 

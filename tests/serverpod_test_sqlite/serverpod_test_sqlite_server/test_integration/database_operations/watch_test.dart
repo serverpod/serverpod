@@ -5,8 +5,12 @@ import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:serverpod_test_sqlite_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-void main() async {
-  var session = await IntegrationTestServer().session();
+void main() {
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => session.close());
 
   group('Given a simple data row in the SQLite database, ', () {
     setUp(() async {

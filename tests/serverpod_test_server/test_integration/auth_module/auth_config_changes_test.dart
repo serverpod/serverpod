@@ -1,12 +1,17 @@
+import 'package:serverpod/serverpod.dart' show Session;
 import 'package:serverpod_auth_server/module.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-void main() async {
+void main() {
   var userName = 'test';
   var email = 'test@serverpod.dev';
   var password = 'password';
-  var session = await IntegrationTestServer().session();
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => session.close());
 
   test(
     'Given no validation code length configuration when creating an account then validation code has the default length of 8.',

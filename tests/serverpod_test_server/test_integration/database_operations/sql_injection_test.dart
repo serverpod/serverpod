@@ -17,8 +17,12 @@ const _subselectPayload =
     "decode('','base64')::text OR (SELECT count(*) FROM types) >= 0 "
     "OR decode('','base64')=decode('', 'base64')";
 
-void main() async {
-  var session = await IntegrationTestServer().session();
+void main() {
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => session.close());
 
   tearDown(() async {
     await Types.db.deleteWhere(session, where: (_) => Constant.bool(true));
