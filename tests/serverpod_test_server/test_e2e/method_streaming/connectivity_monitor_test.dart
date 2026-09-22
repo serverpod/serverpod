@@ -13,15 +13,21 @@ class TestConnectivityMonitor extends ConnectivityMonitor {
 
 void main() {
   group(
-    'Given client that disconnects on lost internet connection with an open streaming method connection',
+    'Given client that disconnects on lost internet connection with an open streaming method connection,',
     () {
-      var testConnectivityMonitor = TestConnectivityMonitor();
-      var client = Client(
-        serverUrl,
-        disconnectStreamsOnLostInternetConnection: true,
-      )..authKeyProvider = TestAuthKeyManager();
-
-      client.connectivityMonitor = testConnectivityMonitor;
+      late TestConnectivityMonitor testConnectivityMonitor;
+      late Client client;
+      setUp(() {
+        testConnectivityMonitor = TestConnectivityMonitor();
+        client =
+            Client(
+                serverUrl,
+                disconnectStreamsOnLostInternetConnection: true,
+              )
+              ..authKeyProvider = TestAuthKeyManager()
+              ..connectivityMonitor = testConnectivityMonitor;
+      });
+      tearDown(() => client.close());
       test(
         'when connectivity monitor reports connection is lost then stream is closed with exception.',
         () async {
@@ -52,14 +58,21 @@ void main() {
   );
 
   group(
-    'Given client that does not disconnects on lost internet connection with an open streaming method connection',
+    'Given client that does not disconnects on lost internet connection with an open streaming method connection,',
     () {
-      var testConnectivityMonitor = TestConnectivityMonitor();
-      var client = Client(
-        serverUrl,
-        disconnectStreamsOnLostInternetConnection: false,
-      )..authKeyProvider = TestAuthKeyManager();
-      client.connectivityMonitor = testConnectivityMonitor;
+      late TestConnectivityMonitor testConnectivityMonitor;
+      late Client client;
+      setUp(() {
+        testConnectivityMonitor = TestConnectivityMonitor();
+        client =
+            Client(
+                serverUrl,
+                disconnectStreamsOnLostInternetConnection: false,
+              )
+              ..authKeyProvider = TestAuthKeyManager()
+              ..connectivityMonitor = testConnectivityMonitor;
+      });
+      tearDown(() => client.close());
 
       tearDown(() => client.closeStreamingMethodConnections(exception: null));
 

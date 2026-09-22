@@ -5,7 +5,13 @@ import 'package:test/test.dart';
 import 'object_with_enum_enhanced_builder.dart';
 
 void main() {
-  final client = Client(serverUrl);
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   group(
     'Given an object stored in the database containing an enhanced enum serialized byIndex',
