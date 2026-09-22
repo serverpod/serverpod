@@ -4,8 +4,12 @@ import 'package:test/test.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 
-void main() async {
-  Session session = await IntegrationTestServer().session();
+void main() {
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => session.close());
 
   group('Given declared ObjectWithVector class when analyzing database schema', () {
     late List<IndexDefinition> indexes;
