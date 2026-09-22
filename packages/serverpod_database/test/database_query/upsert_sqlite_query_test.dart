@@ -36,7 +36,7 @@ class UuidRow implements TableRow<int?> {
 }
 
 void main() {
-  ValueEncoder.set(const SqliteValueEncoder());
+  setUpAll(() => ValueEncoder.set(const SqliteValueEncoder()));
 
   test(
     'Given a model with a UUID column, '
