@@ -4,7 +4,12 @@ import 'package:term_glyph/term_glyph.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ascii = false;
+  late bool previousAscii;
+  setUpAll(() {
+    previousAscii = ascii;
+    ascii = false;
+  });
+  tearDownAll(() => ascii = previousAscii);
 
   group('Given a valid pubspec.yaml', () {
     const pubspecString = '''
