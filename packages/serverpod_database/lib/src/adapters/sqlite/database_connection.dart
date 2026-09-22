@@ -185,6 +185,14 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }) async {
     if (rows.isEmpty) return [];
     if (rows.length > 1) {
+      if (noReturn) {
+        await _executeNoReturnBatch(
+          session,
+          rows.map((row) => _parameterizedInsert(row, ignoreConflicts)),
+          transaction,
+        );
+        return [];
+      }
       return DatabaseUtil.runInTransactionOrSavepoint(
         session.db,
         transaction,
@@ -281,6 +289,121 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           table: table,
         ),
     ];
+  }
+
+  _ParameterizedStatement _parameterizedInsert(
+    TableRow row,
+    bool ignoreConflicts,
+  ) {
+    final table = row.table;
+    final json = row.toJsonForDatabase() as Map<String, dynamic>;
+    final columns = table.columns.where((column) {
+      if (column.columnName == 'id' && row.id == null) return false;
+      return json[column.columnName] != null || !column.hasDefault;
+    }).toList();
+    return _ParameterizedStatement(
+      _buildSqlSingleRowInsert(
+        table: table,
+        columns: columns,
+        encodedValues: columns.map(_columnPlaceholder).toList(),
+        ignoreConflicts: ignoreConflicts,
+        noReturn: true,
+      ),
+      [
+        for (final column in columns)
+          poolManager.encoder.encodeColumnParameter(
+            column,
+            json[column.columnName],
+          ),
+      ],
+    );
+  }
+
+  _ParameterizedStatement _parameterizedUpdate(
+    TableRow row,
+    List<Column>? columns,
+  ) {
+    final table = row.table;
+    final selected = (columns ?? table.managedColumns).toSet();
+    if (columns != null) {
+      _validateColumnsExists(selected, table.columns.toSet());
+    }
+    selected.removeWhere((column) => column.columnName == 'id');
+    // Preserve updates that deliberately select only the id column.
+    if (selected.isEmpty) selected.add(table.id);
+    final json = row.toJsonForDatabase() as Map<String, dynamic>;
+    return _ParameterizedStatement(
+      _buildSqlUpdateWhereId(
+        table: table,
+        setClause: selected
+            .map(
+              (column) =>
+                  '"${column.columnName}" = ${_columnPlaceholder(column)}',
+            )
+            .join(', '),
+        idSqlValue: '?',
+        noReturn: true,
+      ),
+      [
+        for (final column in selected)
+          poolManager.encoder.encodeColumnParameter(
+            column,
+            json[column.columnName],
+          ),
+        poolManager.encoder.encodeColumnParameter(table.id, row.id),
+      ],
+    );
+  }
+
+  static String _columnPlaceholder(Column column) =>
+      column is ColumnStructured ? 'jsonb(?)' : '?';
+
+  Future<void> _executeNoReturnBatch(
+    DatabaseSession session,
+    Iterable<_ParameterizedStatement> statements,
+    Transaction? transaction,
+  ) {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      tx,
+    ) async {
+      final sqliteTx = _castToSqliteTransaction(tx)!;
+      String? sql;
+      var parameters = <List<Object?>>[];
+
+      Future<void> flush() async {
+        if (parameters.isEmpty) return;
+        final stopwatch = Stopwatch()..start();
+        poolManager.lastDatabaseOperationTime = DateTime.now();
+        try {
+          if (!sqliteTx._isCancelled) {
+            await sqliteTx._ctx.executeBatch(sql!, parameters);
+          }
+          _logQuery(session, sql!, stopwatch);
+        } catch (error, trace) {
+          final exception = error is DatabaseQueryException
+              ? error
+              : _queryExceptionFromSqliteException(error);
+          _logQuery(
+            session,
+            sql!,
+            stopwatch,
+            exception: exception,
+            trace: trace,
+          );
+          Error.throwWithStackTrace(exception, trace);
+        }
+        parameters = [];
+      }
+
+      for (final statement in statements) {
+        // Only batch consecutive shapes: reordering writes can change conflict,
+        // foreign-key, trigger, and generated-id behavior. Bound each transfer.
+        if (sql != statement.sql || parameters.length == 256) await flush();
+        sql = statement.sql;
+        parameters.add(statement.parameters);
+      }
+      await flush();
+    });
   }
 
   @override
@@ -416,6 +539,14 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     }
 
     if (rows.length > 1) {
+      if (noReturn) {
+        await _executeNoReturnBatch(
+          session,
+          rows.map((row) => _parameterizedUpdate(row, columns)),
+          transaction,
+        );
+        return [];
+      }
       return DatabaseUtil.runInTransactionOrSavepoint(
         session.db,
         transaction,
@@ -1735,6 +1866,13 @@ class _RowPayload {
   final List<Column> columns;
   final List<String> values;
   _RowPayload(this.columns, this.values);
+}
+
+class _ParameterizedStatement {
+  final String sql;
+  final List<Object?> parameters;
+
+  _ParameterizedStatement(this.sql, this.parameters);
 }
 
 class _SqliteSavepoint implements Savepoint {
