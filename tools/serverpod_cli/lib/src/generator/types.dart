@@ -46,6 +46,12 @@ class TypeDefinition {
   /// module or serverpod model.
   final SerializableModelDefinition? projectModelDefinition;
 
+  /// The resolved class, including classes imported from modules.
+  ///
+  /// Unlike [projectModelDefinition], this also describes external model
+  /// restrictions such as sealed classes that cannot be implemented locally.
+  final ClassDefinition? classDefinition;
+
   /// Whether this type is nullable.
   final bool nullable;
 
@@ -123,6 +129,7 @@ class TypeDefinition {
     this.serializationDataType,
     this.enumDefinition,
     this.projectModelDefinition,
+    this.classDefinition,
     this.recordFieldName,
     this.vectorDimension,
   });
@@ -251,6 +258,7 @@ class TypeDefinition {
     serializationDataType: serializationDataType,
     enumDefinition: enumDefinition,
     projectModelDefinition: projectModelDefinition,
+    classDefinition: classDefinition,
     recordFieldName: recordFieldName,
     vectorDimension: vectorDimension,
   );
@@ -266,6 +274,7 @@ class TypeDefinition {
     serializationDataType: serializationDataType,
     enumDefinition: enumDefinition,
     projectModelDefinition: projectModelDefinition,
+    classDefinition: classDefinition,
     recordFieldName: recordFieldName,
     vectorDimension: vectorDimension,
   );
@@ -281,6 +290,7 @@ class TypeDefinition {
     serializationDataType: serializationDataType,
     enumDefinition: enumDefinition,
     projectModelDefinition: projectModelDefinition,
+    classDefinition: classDefinition,
     recordFieldName: recordFieldName,
     vectorDimension: vectorDimension,
   );
@@ -843,6 +853,17 @@ class TypeDefinition {
     }
     bool isProjectModel =
         url == defaultModuleAlias || (url == null && modelDefinition != null);
+    var resolvedModuleAlias = isProjectModel
+        ? defaultModuleAlias
+        : sharedModelDefinition?.type.moduleAlias ?? moduleAlias;
+    var resolvedModel = classDefinitions
+        .where(
+          (model) =>
+              model.className == className &&
+              model.type.moduleAlias == resolvedModuleAlias,
+        )
+        .firstOrNull;
+
     return TypeDefinition(
       className: className,
       nullable: nullable,
@@ -851,6 +872,13 @@ class TypeDefinition {
       projectModelDefinition: isModuleType
           ? null
           : modelDefinition ?? sharedModelDefinition,
+      classDefinition: switch (resolvedModel) {
+        ClassDefinition() => resolvedModel,
+        // Future-call analysis resolves project models a second time without
+        // their module definitions. Keep the previously resolved module class.
+        null when isModuleType => classDefinition,
+        _ => null,
+      },
       generics: generics
           .map((e) => e.applyProtocolReferences(classDefinitions))
           .toList(),
