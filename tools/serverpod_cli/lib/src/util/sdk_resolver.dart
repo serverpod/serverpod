@@ -84,8 +84,9 @@ bool isDartSdk(String root) => File(dartExecutableIn(root)).existsSync();
 /// pays for looking for one.
 ///
 /// The resolution chain:
-/// project pin (`.fvm/flutter_sdk`), `$PATH`, and - for Dart only - the SDK
-/// running this CLI. Dart is derived from the resolved Flutter SDK whenever one
+/// project pin (`.fvm/flutter_sdk`), `$PATH`, a global fvm install via
+/// `fvm flutter`, and - for Dart only - the SDK running this CLI.
+/// Dart is derived from the resolved Flutter SDK whenever one
 /// was found, so the server and the Flutter app are built by matching SDKs.
 class SdkResolver {
   /// Directory the project is resolved relative to.
@@ -95,14 +96,20 @@ class SdkResolver {
   /// PATH tier.
   final Future<String?> Function()? _probePathFlutterRoot;
 
+  /// Overrides the `fvm flutter --version --machine` probe used for the
+  /// global fvm tier.
+  final Future<String?> Function()? _probeFvmFlutterRoot;
+
   /// Overrides the last-resort lookup of the SDK running this CLI.
   final String Function()? _runningSdkRoot;
 
   SdkResolver({
     required this.baseDirectory,
     @visibleForTesting Future<String?> Function()? probePathFlutterRoot,
+    @visibleForTesting Future<String?> Function()? probeFvmFlutterRoot,
     @visibleForTesting String Function()? runningSdkRoot,
   }) : _probePathFlutterRoot = probePathFlutterRoot,
+       _probeFvmFlutterRoot = probeFvmFlutterRoot,
        _runningSdkRoot = runningSdkRoot;
 
   Future<ResolvedSdk?>? _flutter;
@@ -119,15 +126,30 @@ class SdkResolver {
     final pinned = _findFvmProjectPin();
     if (pinned != null) return pinned;
 
-    // Ask the `flutter` on PATH where it lives. This is the only tier that
-    // costs a subprocess, so it runs after the pin lookup rather than before.
+    // Ask the `flutter` on PATH where it lives. This and the fvm tier below
+    // cost a subprocess, so they run after the pin lookup rather than before.
     // Going through the executable rather than reading $PATH directly is what
     // makes shim-based managers (asdf, mise, puro) report their real root.
-    final probed = await (_probePathFlutterRoot ?? _probeFlutterRootOnPath)();
-    if (probed != null && isFlutterSdk(probed)) {
+    final probePath =
+        _probePathFlutterRoot ?? () => _probeFlutterRoot(['flutter']);
+    final flutterOnPath = await probePath();
+    if (flutterOnPath != null && isFlutterSdk(flutterOnPath)) {
       return ResolvedSdk(
-        root: p.normalize(probed),
-        origin: '`flutter` on PATH',
+        root: p.normalize(flutterOnPath),
+        origin: 'flutter on PATH',
+      );
+    }
+
+    // Last, a global fvm install. `fvm flutter` runs the version set with
+    // `fvm global`, which covers fvm users who never pin per project and have
+    // no `flutter` of their own on PATH.
+    final probeFvmPath =
+        _probeFvmFlutterRoot ?? () => _probeFlutterRoot(['fvm', 'flutter']);
+    final fvmOnPath = await probeFvmPath();
+    if (fvmOnPath != null && isFlutterSdk(fvmOnPath)) {
+      return ResolvedSdk(
+        root: p.normalize(fvmOnPath),
+        origin: 'fvm flutter',
       );
     }
 
@@ -226,12 +248,13 @@ class SdkResolver {
     }
   }
 
-  /// Asks the `flutter` on `$PATH` for its own root.
-  static Future<String?> _probeFlutterRootOnPath() async {
+  /// Runs [command] with `--version --machine` and returns the `flutterRoot`
+  /// it reports.
+  static Future<String?> _probeFlutterRoot(List<String> command) async {
     try {
       final result = await Process.run(
-        'flutter',
-        ['--version', '--machine'],
+        command.first,
+        [...command.skip(1), '--version', '--machine'],
         runInShell: Platform.isWindows,
       );
       if (result.exitCode != 0) return null;
@@ -239,7 +262,7 @@ class SdkResolver {
       if (decoded is! Map || decoded['flutterRoot'] is! String) return null;
       return decoded['flutterRoot'] as String;
     } catch (_) {
-      // No `flutter` to spawn, or it answered with something unparseable.
+      // Nothing to spawn, or it answered with something unparseable.
       return null;
     }
   }
