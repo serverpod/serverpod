@@ -10,10 +10,11 @@ import 'package:test/test.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
   });
 
@@ -22,17 +23,19 @@ void main() {
   });
 
   group(
-    'Given endpoint class with @unauthenticatedClientCall annotation and child class when analyzed',
+    'Given endpoint class with @unauthenticatedClientCall annotation and child class, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         File(path.join(testDirectory.path, 'endpoint.dart'))
           ..createSync(recursive: true)
           ..writeAsStringSync('''
@@ -72,17 +75,19 @@ class ChildEndpoint extends BaseEndpoint {}
   );
 
   group(
-    'Given endpoint class with @doNotGenerate annotation and child class when analyzed',
+    'Given endpoint class with @doNotGenerate annotation and child class, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         File(path.join(testDirectory.path, 'endpoint.dart'))
           ..createSync(recursive: true)
           ..writeAsStringSync('''
@@ -118,17 +123,19 @@ class ChildEndpoint extends BaseEndpoint {}
   );
 
   group(
-    'Given child class with additional annotation different from parent annotation when analyzed',
+    'Given child class with additional annotation different from parent annotation, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         File(path.join(testDirectory.path, 'endpoint.dart'))
           ..createSync(recursive: true)
           ..writeAsStringSync('''
@@ -169,16 +176,17 @@ class ChildEndpoint extends BaseEndpoint {}
     },
   );
 
-  group('Given multi-level inheritance with annotations when analyzed', () {
+  group('Given multi-level inheritance with annotations, when analyzed,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
 
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       File(path.join(testDirectory.path, 'endpoint.dart'))
         ..createSync(recursive: true)
         ..writeAsStringSync('''

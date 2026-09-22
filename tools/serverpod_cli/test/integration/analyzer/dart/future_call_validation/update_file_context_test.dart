@@ -13,10 +13,11 @@ import '../../../../test_util/file_system_entity_helpers.dart';
 
 final config = GeneratorConfigBuilder().build();
 
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
   });
 
@@ -25,14 +26,15 @@ void main() {
   });
 
   group(
-    'Given a tracked and analyzed directory with a persistently invalid dart future call file',
+    'Given a tracked and analyzed directory with a persistently invalid dart future call file,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(trackedDirectory.path, 'future_call.dart'),
         );
@@ -78,15 +80,16 @@ class HelperClass {}
   );
 
   group(
-    'Given a tracked and analyzed directory with an invalid dart future call file',
+    'Given a tracked and analyzed directory with an invalid dart future call file,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File futureCallFile;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         futureCallFile = File(
           path.join(trackedDirectory.path, 'future_call.dart'),
         );
@@ -131,15 +134,16 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a tracked directory with a valid future call file analyzed before any models were provided',
+    'Given a tracked directory with a valid future call file analyzed before any models were provided,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File futureCallFile;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         futureCallFile = File(
           path.join(trackedDirectory.path, 'future_call.dart'),
         );

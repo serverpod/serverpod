@@ -12,11 +12,12 @@ import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   var config = GeneratorConfigBuilder().build();
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
   });
 
@@ -24,15 +25,16 @@ void main() {
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
-  group('Given a valid endpoint class when analyzed', () {
+  group('Given a valid endpoint class, when analyzed,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -92,15 +94,16 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given a valid endpoint with documentation when analyzed', () {
+  group('Given a valid endpoint with documentation, when analyzed,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -132,16 +135,17 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a dart class that does not inherit from Endpoint when analyzed',
+    'Given a dart class that does not inherit from Endpoint, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -167,15 +171,17 @@ class ExampleEndpoint {
     },
   );
 
-  group('Given same endpoint class definition in multiple files when analyzed', () {
+  group('Given same endpoint class definition in multiple files, '
+      'when analyzed,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var firstEndpointFile = File(
         path.join(testDirectory.path, 'endpoint.dart'),
       );
