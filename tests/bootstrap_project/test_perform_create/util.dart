@@ -19,7 +19,7 @@ class TempProject {
   final String name;
 
   /// The temp directory the project was created in.
-  late final Directory workingDir;
+  late Directory workingDir;
 
   TempProject(this.name);
 
