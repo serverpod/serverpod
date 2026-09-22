@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 import '../../test_util/table_relation_builder.dart';
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -19,9 +19,12 @@ void main() {
 
   group('Given SelectQueryBuilder', () {
     group('when filtering causes a long join name.', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(relationTable.id.equals(1)).build();
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(relationTable.id.equals(1)).build();
+      });
       var expectedTruncatedName =
           'citizen_thisFieldIsExactly61CharactersLongAndIsThereforeVale9b4';
 
