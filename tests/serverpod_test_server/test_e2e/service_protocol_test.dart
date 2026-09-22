@@ -6,12 +6,24 @@ import 'package:serverpod_test_server/test_util/test_service_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(serverUrl);
-  var serviceClient = service.Client(serviceServerUrl)
-    ..authKeyProvider = TestServiceKeyManager(
-      '0',
-      'super_SECRET_password',
-    );
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
+  late service.Client serviceClient;
+  setUpAll(() {
+    serviceClient = service.Client(serviceServerUrl)
+      ..authKeyProvider = TestServiceKeyManager(
+        '0',
+        'super_SECRET_password',
+      );
+  });
+  tearDownAll(() {
+    serviceClient.close();
+  });
 
   group('Health metrics', () {
     test('Fetch health metrics', () async {
