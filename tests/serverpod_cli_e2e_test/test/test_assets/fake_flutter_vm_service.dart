@@ -6,13 +6,6 @@ import 'dart:io';
 /// test. It publishes a delayed VM-service URI and answers enough VM Service
 /// Protocol requests to exercise an IDE connection through Serverpod's proxy.
 Future<void> main(List<String> args) async {
-  // FlutterProcess probes `flutter --version --machine` before invoking the
-  // tool. Returning valid JSON without flutterRoot makes it use this executable
-  // directly for the subsequent `flutter run` invocation.
-  if (args.contains('--version')) {
-    stdout.writeln('{}');
-    return;
-  }
   _recordLaunch(args);
 
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
