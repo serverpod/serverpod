@@ -55,7 +55,7 @@ abstract class CacheInfo
   CacheInfo copyWith({
     int? numEntries,
     int? maxEntries,
-    List<String>? keys,
+    List<String>? keys = const _is.$UndefinedList<String>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,8 +83,6 @@ abstract class CacheInfo
   }
 }
 
-class _Undefined {}
-
 class _CacheInfoImpl extends CacheInfo {
   _CacheInfoImpl({
     required int numEntries,
@@ -103,12 +101,14 @@ class _CacheInfoImpl extends CacheInfo {
   CacheInfo copyWith({
     int? numEntries,
     int? maxEntries,
-    Object? keys = _Undefined,
+    List<String>? keys = const _is.$UndefinedList<String>(),
   }) {
     return CacheInfo(
       numEntries: numEntries ?? this.numEntries,
       maxEntries: maxEntries ?? this.maxEntries,
-      keys: keys is List<String>? ? keys : this.keys?.map((e0) => e0).toList(),
+      keys: keys is _is.UndefinedSentinel
+          ? this.keys?.map((e0) => e0).toList()
+          : keys,
     );
   }
 }

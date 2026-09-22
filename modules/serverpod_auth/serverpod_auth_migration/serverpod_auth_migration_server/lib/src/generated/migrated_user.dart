@@ -83,9 +83,9 @@ abstract class MigratedUser
   MigratedUser copyWith({
     int? id,
     int? oldUserId,
-    _i1n3uhu0.UserInfo? oldUser,
+    _i1n3uhu0.UserInfo? oldUser = const _UndefinedMigratedUser$oldUser(),
     _is.UuidValue? newAuthUserId,
-    _iacs.AuthUser? newAuthUser,
+    _iacs.AuthUser? newAuthUser = const _UndefinedMigratedUser$newAuthUser(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -140,6 +140,16 @@ abstract class MigratedUser
 
 class _Undefined {}
 
+class _UndefinedMigratedUser$oldUser extends _is.UndefinedSentinel
+    implements _i1n3uhu0.UserInfo {
+  const _UndefinedMigratedUser$oldUser();
+}
+
+class _UndefinedMigratedUser$newAuthUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedMigratedUser$newAuthUser();
+}
+
 class _MigratedUserImpl extends MigratedUser {
   _MigratedUserImpl({
     int? id,
@@ -162,20 +172,20 @@ class _MigratedUserImpl extends MigratedUser {
   MigratedUser copyWith({
     Object? id = _Undefined,
     int? oldUserId,
-    Object? oldUser = _Undefined,
+    _i1n3uhu0.UserInfo? oldUser = const _UndefinedMigratedUser$oldUser(),
     _is.UuidValue? newAuthUserId,
-    Object? newAuthUser = _Undefined,
+    _iacs.AuthUser? newAuthUser = const _UndefinedMigratedUser$newAuthUser(),
   }) {
     return MigratedUser(
       id: id is int? ? id : this.id,
       oldUserId: oldUserId ?? this.oldUserId,
-      oldUser: oldUser is _i1n3uhu0.UserInfo?
-          ? oldUser
-          : this.oldUser?.copyWith(),
+      oldUser: oldUser is _is.UndefinedSentinel
+          ? this.oldUser?.copyWith()
+          : oldUser,
       newAuthUserId: newAuthUserId ?? this.newAuthUserId,
-      newAuthUser: newAuthUser is _iacs.AuthUser?
-          ? newAuthUser
-          : this.newAuthUser?.copyWith(),
+      newAuthUser: newAuthUser is _is.UndefinedSentinel
+          ? this.newAuthUser?.copyWith()
+          : newAuthUser,
     );
   }
 }

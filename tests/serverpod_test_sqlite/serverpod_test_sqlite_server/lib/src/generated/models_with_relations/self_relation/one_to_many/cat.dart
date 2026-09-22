@@ -78,8 +78,8 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? name,
     int? motherId,
-    _iayhscrz.Cat? mother,
-    List<_iayhscrz.Cat>? kittens,
+    _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
+    List<_iayhscrz.Cat>? kittens = const _is.$UndefinedList<_iayhscrz.Cat>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -143,6 +143,11 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedCat$mother extends _is.UndefinedSentinel
+    implements _iayhscrz.Cat {
+  const _UndefinedCat$mother();
+}
+
 class _CatImpl extends Cat {
   _CatImpl({
     int? id,
@@ -166,17 +171,19 @@ class _CatImpl extends Cat {
     Object? id = _Undefined,
     String? name,
     Object? motherId = _Undefined,
-    Object? mother = _Undefined,
-    Object? kittens = _Undefined,
+    _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
+    List<_iayhscrz.Cat>? kittens = const _is.$UndefinedList<_iayhscrz.Cat>(),
   }) {
     return Cat(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
-      mother: mother is _iayhscrz.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_iayhscrz.Cat>?
-          ? kittens
-          : this.kittens?.map((e0) => e0.copyWith()).toList(),
+      mother: mother is _is.UndefinedSentinel
+          ? this.mother?.copyWith()
+          : mother,
+      kittens: kittens is _is.UndefinedSentinel
+          ? this.kittens?.map((e0) => e0.copyWith()).toList()
+          : kittens,
     );
   }
 }

@@ -66,7 +66,8 @@ abstract class UserNoteCollectionWithALongName
   UserNoteCollectionWithALongName copyWith({
     int? id,
     String? name,
-    List<_iegdvue1.UserNoteWithALongName>? notes,
+    List<_iegdvue1.UserNoteWithALongName>? notes =
+        const _is.$UndefinedList<_iegdvue1.UserNoteWithALongName>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -140,14 +141,15 @@ class _UserNoteCollectionWithALongNameImpl
   UserNoteCollectionWithALongName copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? notes = _Undefined,
+    List<_iegdvue1.UserNoteWithALongName>? notes =
+        const _is.$UndefinedList<_iegdvue1.UserNoteWithALongName>(),
   }) {
     return UserNoteCollectionWithALongName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      notes: notes is List<_iegdvue1.UserNoteWithALongName>?
-          ? notes
-          : this.notes?.map((e0) => e0.copyWith()).toList(),
+      notes: notes is _is.UndefinedSentinel
+          ? this.notes?.map((e0) => e0.copyWith()).toList()
+          : notes,
     );
   }
 }

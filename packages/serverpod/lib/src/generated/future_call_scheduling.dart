@@ -25,5 +25,3 @@ sealed class FutureCallScheduling
   @_is.useResult
   FutureCallScheduling copyWith();
 }
-
-class _Undefined {}

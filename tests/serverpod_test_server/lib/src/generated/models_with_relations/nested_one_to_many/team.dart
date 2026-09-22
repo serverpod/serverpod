@@ -78,8 +78,9 @@ abstract class Team implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? name,
     int? arenaId,
-    _iv085ahk.Arena? arena,
-    List<_i9mhudyy.Player>? players,
+    _iv085ahk.Arena? arena = const _UndefinedTeam$arena(),
+    List<_i9mhudyy.Player>? players =
+        const _is.$UndefinedList<_i9mhudyy.Player>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -143,6 +144,11 @@ abstract class Team implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedTeam$arena extends _is.UndefinedSentinel
+    implements _iv085ahk.Arena {
+  const _UndefinedTeam$arena();
+}
+
 class _TeamImpl extends Team {
   _TeamImpl({
     int? id,
@@ -166,17 +172,18 @@ class _TeamImpl extends Team {
     Object? id = _Undefined,
     String? name,
     Object? arenaId = _Undefined,
-    Object? arena = _Undefined,
-    Object? players = _Undefined,
+    _iv085ahk.Arena? arena = const _UndefinedTeam$arena(),
+    List<_i9mhudyy.Player>? players =
+        const _is.$UndefinedList<_i9mhudyy.Player>(),
   }) {
     return Team(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       arenaId: arenaId is int? ? arenaId : this.arenaId,
-      arena: arena is _iv085ahk.Arena? ? arena : this.arena?.copyWith(),
-      players: players is List<_i9mhudyy.Player>?
-          ? players
-          : this.players?.map((e0) => e0.copyWith()).toList(),
+      arena: arena is _is.UndefinedSentinel ? this.arena?.copyWith() : arena,
+      players: players is _is.UndefinedSentinel
+          ? this.players?.map((e0) => e0.copyWith()).toList()
+          : players,
     );
   }
 }

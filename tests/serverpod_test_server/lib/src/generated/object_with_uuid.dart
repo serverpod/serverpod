@@ -59,7 +59,7 @@ abstract class ObjectWithUuid
   ObjectWithUuid copyWith({
     int? id,
     _is.UuidValue? uuid,
-    _is.UuidValue? uuidNullable,
+    _is.UuidValue? uuidNullable = const _is.$UndefinedUuidValue(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -129,14 +129,14 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
   ObjectWithUuid copyWith({
     Object? id = _Undefined,
     _is.UuidValue? uuid,
-    Object? uuidNullable = _Undefined,
+    _is.UuidValue? uuidNullable = const _is.$UndefinedUuidValue(),
   }) {
     return ObjectWithUuid(
       id: id is int? ? id : this.id,
       uuid: uuid ?? this.uuid,
-      uuidNullable: uuidNullable is _is.UuidValue?
-          ? uuidNullable
-          : this.uuidNullable,
+      uuidNullable: uuidNullable is _is.UndefinedSentinel
+          ? this.uuidNullable
+          : uuidNullable,
     );
   }
 }

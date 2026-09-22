@@ -67,7 +67,7 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? name,
     int? teamId,
-    _iaks25tn.Team? team,
+    _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -121,6 +121,11 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedPlayer$team extends _is.UndefinedSentinel
+    implements _iaks25tn.Team {
+  const _UndefinedPlayer$team();
+}
+
 class _PlayerImpl extends Player {
   _PlayerImpl({
     int? id,
@@ -142,13 +147,13 @@ class _PlayerImpl extends Player {
     Object? id = _Undefined,
     String? name,
     Object? teamId = _Undefined,
-    Object? team = _Undefined,
+    _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   }) {
     return Player(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _iaks25tn.Team? ? team : this.team?.copyWith(),
+      team: team is _is.UndefinedSentinel ? this.team?.copyWith() : team,
     );
   }
 }

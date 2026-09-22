@@ -77,7 +77,8 @@ abstract class PersonWithLongTableName
     int? id,
     String? name,
     int? organizationId,
-    _imc5i9r4.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization =
+        const _UndefinedPersonWithLongTableName$organization(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -138,6 +139,12 @@ abstract class PersonWithLongTableName
 
 class _Undefined {}
 
+class _UndefinedPersonWithLongTableName$organization
+    extends _is.UndefinedSentinel
+    implements _imc5i9r4.OrganizationWithLongTableName {
+  const _UndefinedPersonWithLongTableName$organization();
+}
+
 class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
   _PersonWithLongTableNameImpl({
     int? id,
@@ -159,7 +166,8 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     Object? id = _Undefined,
     String? name,
     Object? organizationId = _Undefined,
-    Object? organization = _Undefined,
+    _imc5i9r4.OrganizationWithLongTableName? organization =
+        const _UndefinedPersonWithLongTableName$organization(),
   }) {
     return PersonWithLongTableNameImplicit._(
       id: id is int? ? id : this.id,
@@ -167,9 +175,9 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _imc5i9r4.OrganizationWithLongTableName?
-          ? organization
-          : this.organization?.copyWith(),
+      organization: organization is _is.UndefinedSentinel
+          ? this.organization?.copyWith()
+          : organization,
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
           this._cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
     );

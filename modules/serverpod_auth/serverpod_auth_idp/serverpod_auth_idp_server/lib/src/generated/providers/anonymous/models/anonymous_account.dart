@@ -78,9 +78,9 @@ abstract class AnonymousAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   AnonymousAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedAnonymousAccount$authUser(),
     DateTime? createdAt,
   });
   @override
@@ -127,7 +127,10 @@ abstract class AnonymousAccount
   }
 }
 
-class _Undefined {}
+class _UndefinedAnonymousAccount$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedAnonymousAccount$authUser();
+}
 
 class _AnonymousAccountImpl extends AnonymousAccount {
   _AnonymousAccountImpl({
@@ -147,17 +150,17 @@ class _AnonymousAccountImpl extends AnonymousAccount {
   @_is.useResult
   @override
   AnonymousAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedAnonymousAccount$authUser(),
     DateTime? createdAt,
   }) {
     return AnonymousAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       createdAt: createdAt ?? this.createdAt,
     );
   }

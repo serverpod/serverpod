@@ -61,7 +61,8 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Course copyWith({
     int? id,
     String? name,
-    List<_im07rq0v.Enrollment>? enrollments,
+    List<_im07rq0v.Enrollment>? enrollments =
+        const _is.$UndefinedList<_im07rq0v.Enrollment>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -135,14 +136,15 @@ class _CourseImpl extends Course {
   Course copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? enrollments = _Undefined,
+    List<_im07rq0v.Enrollment>? enrollments =
+        const _is.$UndefinedList<_im07rq0v.Enrollment>(),
   }) {
     return Course(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_im07rq0v.Enrollment>?
-          ? enrollments
-          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+      enrollments: enrollments is _is.UndefinedSentinel
+          ? this.enrollments?.map((e0) => e0.copyWith()).toList()
+          : enrollments,
     );
   }
 }

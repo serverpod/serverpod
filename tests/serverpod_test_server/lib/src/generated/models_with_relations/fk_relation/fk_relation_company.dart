@@ -75,8 +75,10 @@ abstract class FkRelationCompany
   FkRelationCompany copyWith({
     int? id,
     String? name,
-    _iiacif8a.FkRelationOffice? office,
-    List<_iweb20ql.FkRelationEmployee>? employees,
+    _iiacif8a.FkRelationOffice? office =
+        const _UndefinedFkRelationCompany$office(),
+    List<_iweb20ql.FkRelationEmployee>? employees =
+        const _is.$UndefinedList<_iweb20ql.FkRelationEmployee>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -140,6 +142,11 @@ abstract class FkRelationCompany
 
 class _Undefined {}
 
+class _UndefinedFkRelationCompany$office extends _is.UndefinedSentinel
+    implements _iiacif8a.FkRelationOffice {
+  const _UndefinedFkRelationCompany$office();
+}
+
 class _FkRelationCompanyImpl extends FkRelationCompany {
   _FkRelationCompanyImpl({
     int? id,
@@ -160,18 +167,20 @@ class _FkRelationCompanyImpl extends FkRelationCompany {
   FkRelationCompany copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? office = _Undefined,
-    Object? employees = _Undefined,
+    _iiacif8a.FkRelationOffice? office =
+        const _UndefinedFkRelationCompany$office(),
+    List<_iweb20ql.FkRelationEmployee>? employees =
+        const _is.$UndefinedList<_iweb20ql.FkRelationEmployee>(),
   }) {
     return FkRelationCompany(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      office: office is _iiacif8a.FkRelationOffice?
-          ? office
-          : this.office?.copyWith(),
-      employees: employees is List<_iweb20ql.FkRelationEmployee>?
-          ? employees
-          : this.employees?.map((e0) => e0.copyWith()).toList(),
+      office: office is _is.UndefinedSentinel
+          ? this.office?.copyWith()
+          : office,
+      employees: employees is _is.UndefinedSentinel
+          ? this.employees?.map((e0) => e0.copyWith()).toList()
+          : employees,
     );
   }
 }

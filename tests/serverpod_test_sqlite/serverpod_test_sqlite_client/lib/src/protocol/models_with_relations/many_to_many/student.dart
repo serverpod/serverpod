@@ -64,7 +64,8 @@ abstract class Student
   Student copyWith({
     int? id,
     String? name,
-    List<_im07rq0v.Enrollment>? enrollments,
+    List<_im07rq0v.Enrollment>? enrollments =
+        const _isc.$UndefinedList<_im07rq0v.Enrollment>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -140,14 +141,15 @@ class _StudentImpl extends Student {
   Student copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? enrollments = _Undefined,
+    List<_im07rq0v.Enrollment>? enrollments =
+        const _isc.$UndefinedList<_im07rq0v.Enrollment>(),
   }) {
     return Student(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_im07rq0v.Enrollment>?
-          ? enrollments
-          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+      enrollments: enrollments is _isc.UndefinedSentinel
+          ? this.enrollments?.map((e0) => e0.copyWith()).toList()
+          : enrollments,
     );
   }
 }

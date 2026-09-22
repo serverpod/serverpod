@@ -60,10 +60,10 @@ abstract class PlayerUuid
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   PlayerUuid copyWith({
-    _isc.UuidValue? id,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     String? name,
     int? teamId,
-    _i9bz1am4.TeamInt? team,
+    _i9bz1am4.TeamInt? team = const _UndefinedPlayerUuid$team(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,6 +95,11 @@ abstract class PlayerUuid
 
 class _Undefined {}
 
+class _UndefinedPlayerUuid$team extends _isc.UndefinedSentinel
+    implements _i9bz1am4.TeamInt {
+  const _UndefinedPlayerUuid$team();
+}
+
 class _PlayerUuidImpl extends PlayerUuid {
   _PlayerUuidImpl({
     _isc.UuidValue? id,
@@ -113,16 +118,16 @@ class _PlayerUuidImpl extends PlayerUuid {
   @_isc.useResult
   @override
   PlayerUuid copyWith({
-    Object? id = _Undefined,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     String? name,
     Object? teamId = _Undefined,
-    Object? team = _Undefined,
+    _i9bz1am4.TeamInt? team = const _UndefinedPlayerUuid$team(),
   }) {
     return PlayerUuid(
-      id: id is _isc.UuidValue? ? id : this.id,
+      id: id is _isc.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _i9bz1am4.TeamInt? ? team : this.team?.copyWith(),
+      team: team is _isc.UndefinedSentinel ? this.team?.copyWith() : team,
     );
   }
 }

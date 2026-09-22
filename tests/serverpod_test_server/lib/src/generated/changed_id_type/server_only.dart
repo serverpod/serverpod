@@ -43,7 +43,9 @@ abstract class ServerOnlyChangedIdFieldClass
   /// Returns a shallow copy of this [ServerOnlyChangedIdFieldClass]
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
-  ServerOnlyChangedIdFieldClass copyWith({_is.UuidValue? id});
+  ServerOnlyChangedIdFieldClass copyWith({
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -85,8 +87,6 @@ abstract class ServerOnlyChangedIdFieldClass
   }
 }
 
-class _Undefined {}
-
 class _ServerOnlyChangedIdFieldClassImpl extends ServerOnlyChangedIdFieldClass {
   _ServerOnlyChangedIdFieldClassImpl({_is.UuidValue? id}) : super._(id: id);
 
@@ -94,9 +94,11 @@ class _ServerOnlyChangedIdFieldClassImpl extends ServerOnlyChangedIdFieldClass {
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   @override
-  ServerOnlyChangedIdFieldClass copyWith({Object? id = _Undefined}) {
+  ServerOnlyChangedIdFieldClass copyWith({
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+  }) {
     return ServerOnlyChangedIdFieldClass(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
     );
   }
 }

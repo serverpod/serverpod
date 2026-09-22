@@ -55,20 +55,22 @@ class ScopeServerOnlyField
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ScopeServerOnlyField copyWith({
-    Object? allScope = _Undefined,
-    Object? serverOnlyScope = _Undefined,
-    Object? nested = _Undefined,
+    _ih2vh47j.Types? allScope = const _UndefinedScopeServerOnlyField$allScope(),
+    _ih2vh47j.Types? serverOnlyScope =
+        const _UndefinedScopeServerOnlyField$serverOnlyScope(),
+    _ijcqyoxk.ScopeServerOnlyField? nested =
+        const _UndefinedScopeServerOnlyField$nested(),
   }) {
     return ScopeServerOnlyField(
-      allScope: allScope is _ih2vh47j.Types?
-          ? allScope
-          : this.allScope?.copyWith(),
-      serverOnlyScope: serverOnlyScope is _ih2vh47j.Types?
-          ? serverOnlyScope
-          : this.serverOnlyScope?.copyWith(),
-      nested: nested is _ijcqyoxk.ScopeServerOnlyField?
-          ? nested
-          : this.nested?.copyWith(),
+      allScope: allScope is _is.UndefinedSentinel
+          ? this.allScope?.copyWith()
+          : allScope,
+      serverOnlyScope: serverOnlyScope is _is.UndefinedSentinel
+          ? this.serverOnlyScope?.copyWith()
+          : serverOnlyScope,
+      nested: nested is _is.UndefinedSentinel
+          ? this.nested?.copyWith()
+          : nested,
     );
   }
 
@@ -97,4 +99,18 @@ class ScopeServerOnlyField
   }
 }
 
-class _Undefined {}
+class _UndefinedScopeServerOnlyField$allScope extends _is.UndefinedSentinel
+    implements _ih2vh47j.Types {
+  const _UndefinedScopeServerOnlyField$allScope();
+}
+
+class _UndefinedScopeServerOnlyField$serverOnlyScope
+    extends _is.UndefinedSentinel
+    implements _ih2vh47j.Types {
+  const _UndefinedScopeServerOnlyField$serverOnlyScope();
+}
+
+class _UndefinedScopeServerOnlyField$nested extends _is.UndefinedSentinel
+    implements _ijcqyoxk.ScopeServerOnlyField {
+  const _UndefinedScopeServerOnlyField$nested();
+}

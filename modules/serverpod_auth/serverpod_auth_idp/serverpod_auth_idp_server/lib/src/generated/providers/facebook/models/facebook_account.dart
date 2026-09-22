@@ -115,9 +115,9 @@ abstract class FacebookAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   FacebookAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedFacebookAccount$authUser(),
     DateTime? createdAt,
     String? userIdentifier,
     String? email,
@@ -176,6 +176,11 @@ abstract class FacebookAccount
 
 class _Undefined {}
 
+class _UndefinedFacebookAccount$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedFacebookAccount$authUser();
+}
+
 class _FacebookAccountImpl extends FacebookAccount {
   _FacebookAccountImpl({
     _is.UuidValue? id,
@@ -204,9 +209,9 @@ class _FacebookAccountImpl extends FacebookAccount {
   @_is.useResult
   @override
   FacebookAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedFacebookAccount$authUser(),
     DateTime? createdAt,
     String? userIdentifier,
     Object? email = _Undefined,
@@ -215,11 +220,11 @@ class _FacebookAccountImpl extends FacebookAccount {
     Object? lastName = _Undefined,
   }) {
     return FacebookAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       createdAt: createdAt ?? this.createdAt,
       userIdentifier: userIdentifier ?? this.userIdentifier,
       email: email is String? ? email : this.email,

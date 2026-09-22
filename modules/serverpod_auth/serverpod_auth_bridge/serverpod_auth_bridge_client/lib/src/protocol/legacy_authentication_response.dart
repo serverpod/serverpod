@@ -77,7 +77,8 @@ abstract class LegacyAuthenticationResponse
     bool? success,
     String? key,
     int? keyId,
-    _izh8x5we.LegacyUserInfo? userInfo,
+    _izh8x5we.LegacyUserInfo? userInfo =
+        const _UndefinedLegacyAuthenticationResponse$userInfo(),
     _ijl7odiy.LegacyAuthenticationFailReason? failReason,
   });
   @override
@@ -112,6 +113,12 @@ abstract class LegacyAuthenticationResponse
 
 class _Undefined {}
 
+class _UndefinedLegacyAuthenticationResponse$userInfo
+    extends _isc.UndefinedSentinel
+    implements _izh8x5we.LegacyUserInfo {
+  const _UndefinedLegacyAuthenticationResponse$userInfo();
+}
+
 class _LegacyAuthenticationResponseImpl extends LegacyAuthenticationResponse {
   _LegacyAuthenticationResponseImpl({
     required bool success,
@@ -135,16 +142,17 @@ class _LegacyAuthenticationResponseImpl extends LegacyAuthenticationResponse {
     bool? success,
     Object? key = _Undefined,
     Object? keyId = _Undefined,
-    Object? userInfo = _Undefined,
+    _izh8x5we.LegacyUserInfo? userInfo =
+        const _UndefinedLegacyAuthenticationResponse$userInfo(),
     Object? failReason = _Undefined,
   }) {
     return LegacyAuthenticationResponse(
       success: success ?? this.success,
       key: key is String? ? key : this.key,
       keyId: keyId is int? ? keyId : this.keyId,
-      userInfo: userInfo is _izh8x5we.LegacyUserInfo?
-          ? userInfo
-          : this.userInfo?.copyWith(),
+      userInfo: userInfo is _isc.UndefinedSentinel
+          ? this.userInfo?.copyWith()
+          : userInfo,
       failReason: failReason is _ijl7odiy.LegacyAuthenticationFailReason?
           ? failReason
           : this.failReason,

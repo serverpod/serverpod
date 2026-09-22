@@ -78,9 +78,10 @@ abstract class LegacyExternalUserIdentifier
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   LegacyExternalUserIdentifier copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser =
+        const _UndefinedLegacyExternalUserIdentifier$authUser(),
     String? userIdentifier,
   });
   @override
@@ -129,7 +130,11 @@ abstract class LegacyExternalUserIdentifier
   }
 }
 
-class _Undefined {}
+class _UndefinedLegacyExternalUserIdentifier$authUser
+    extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedLegacyExternalUserIdentifier$authUser();
+}
 
 class _LegacyExternalUserIdentifierImpl extends LegacyExternalUserIdentifier {
   _LegacyExternalUserIdentifierImpl({
@@ -149,17 +154,18 @@ class _LegacyExternalUserIdentifierImpl extends LegacyExternalUserIdentifier {
   @_is.useResult
   @override
   LegacyExternalUserIdentifier copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser =
+        const _UndefinedLegacyExternalUserIdentifier$authUser(),
     String? userIdentifier,
   }) {
     return LegacyExternalUserIdentifier(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       userIdentifier: userIdentifier ?? this.userIdentifier,
     );
   }

@@ -86,9 +86,10 @@ abstract class UserProfileImage
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UserProfileImage copyWith({
-    _isc.UuidValue? id,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     _isc.UuidValue? userProfileId,
-    _ixqiikps.UserProfile? userProfile,
+    _ixqiikps.UserProfile? userProfile =
+        const _UndefinedUserProfileImage$userProfile(),
     DateTime? createdAt,
     String? storageId,
     String? path,
@@ -128,7 +129,10 @@ abstract class UserProfileImage
   }
 }
 
-class _Undefined {}
+class _UndefinedUserProfileImage$userProfile extends _isc.UndefinedSentinel
+    implements _ixqiikps.UserProfile {
+  const _UndefinedUserProfileImage$userProfile();
+}
 
 class _UserProfileImageImpl extends UserProfileImage {
   _UserProfileImageImpl({
@@ -154,20 +158,21 @@ class _UserProfileImageImpl extends UserProfileImage {
   @_isc.useResult
   @override
   UserProfileImage copyWith({
-    Object? id = _Undefined,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     _isc.UuidValue? userProfileId,
-    Object? userProfile = _Undefined,
+    _ixqiikps.UserProfile? userProfile =
+        const _UndefinedUserProfileImage$userProfile(),
     DateTime? createdAt,
     String? storageId,
     String? path,
     Uri? url,
   }) {
     return UserProfileImage(
-      id: id is _isc.UuidValue? ? id : this.id,
+      id: id is _isc.UndefinedSentinel ? this.id : id,
       userProfileId: userProfileId ?? this.userProfileId,
-      userProfile: userProfile is _ixqiikps.UserProfile?
-          ? userProfile
-          : this.userProfile?.copyWith(),
+      userProfile: userProfile is _isc.UndefinedSentinel
+          ? this.userProfile?.copyWith()
+          : userProfile,
       createdAt: createdAt ?? this.createdAt,
       storageId: storageId ?? this.storageId,
       path: path ?? this.path,

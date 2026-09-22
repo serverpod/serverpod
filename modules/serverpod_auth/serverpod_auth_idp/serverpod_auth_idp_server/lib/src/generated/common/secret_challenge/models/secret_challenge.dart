@@ -55,7 +55,7 @@ abstract class SecretChallenge
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   SecretChallenge copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? challengeCodeHash,
   });
   @override
@@ -100,8 +100,6 @@ abstract class SecretChallenge
   }
 }
 
-class _Undefined {}
-
 class _SecretChallengeImpl extends SecretChallenge {
   _SecretChallengeImpl({
     _is.UuidValue? id,
@@ -116,11 +114,11 @@ class _SecretChallengeImpl extends SecretChallenge {
   @_is.useResult
   @override
   SecretChallenge copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? challengeCodeHash,
   }) {
     return SecretChallenge(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       challengeCodeHash: challengeCodeHash ?? this.challengeCodeHash,
     );
   }

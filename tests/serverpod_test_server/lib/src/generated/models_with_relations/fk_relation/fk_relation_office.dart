@@ -69,7 +69,8 @@ abstract class FkRelationOffice
     int? id,
     String? address,
     int? companyId,
-    _ikyus01r.FkRelationCompany? company,
+    _ikyus01r.FkRelationCompany? company =
+        const _UndefinedFkRelationOffice$company(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -125,6 +126,11 @@ abstract class FkRelationOffice
 
 class _Undefined {}
 
+class _UndefinedFkRelationOffice$company extends _is.UndefinedSentinel
+    implements _ikyus01r.FkRelationCompany {
+  const _UndefinedFkRelationOffice$company();
+}
+
 class _FkRelationOfficeImpl extends FkRelationOffice {
   _FkRelationOfficeImpl({
     int? id,
@@ -146,15 +152,16 @@ class _FkRelationOfficeImpl extends FkRelationOffice {
     Object? id = _Undefined,
     String? address,
     int? companyId,
-    Object? company = _Undefined,
+    _ikyus01r.FkRelationCompany? company =
+        const _UndefinedFkRelationOffice$company(),
   }) {
     return FkRelationOffice(
       id: id is int? ? id : this.id,
       address: address ?? this.address,
       companyId: companyId ?? this.companyId,
-      company: company is _ikyus01r.FkRelationCompany?
-          ? company
-          : this.company?.copyWith(),
+      company: company is _is.UndefinedSentinel
+          ? this.company?.copyWith()
+          : company,
     );
   }
 }

@@ -68,7 +68,7 @@ abstract class Company
     int? id,
     String? name,
     int? townId,
-    _i59ly1gg.Town? town,
+    _i59ly1gg.Town? town = const _UndefinedCompany$town(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -122,6 +122,11 @@ abstract class Company
 
 class _Undefined {}
 
+class _UndefinedCompany$town extends _is.UndefinedSentinel
+    implements _i59ly1gg.Town {
+  const _UndefinedCompany$town();
+}
+
 class _CompanyImpl extends Company {
   _CompanyImpl({
     int? id,
@@ -143,13 +148,13 @@ class _CompanyImpl extends Company {
     Object? id = _Undefined,
     String? name,
     int? townId,
-    Object? town = _Undefined,
+    _i59ly1gg.Town? town = const _UndefinedCompany$town(),
   }) {
     return Company(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _i59ly1gg.Town? ? town : this.town?.copyWith(),
+      town: town is _is.UndefinedSentinel ? this.town?.copyWith() : town,
     );
   }
 }

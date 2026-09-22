@@ -73,9 +73,9 @@ abstract class UuidDefaultPersist
   @_is.useResult
   UuidDefaultPersist copyWith({
     int? id,
-    _is.UuidValue? uuidDefaultPersistRandom,
-    _is.UuidValue? uuidDefaultPersistRandomV7,
-    _is.UuidValue? uuidDefaultPersistStr,
+    _is.UuidValue? uuidDefaultPersistRandom = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? uuidDefaultPersistRandomV7 = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? uuidDefaultPersistStr = const _is.$UndefinedUuidValue(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -154,21 +154,23 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   @override
   UuidDefaultPersist copyWith({
     Object? id = _Undefined,
-    Object? uuidDefaultPersistRandom = _Undefined,
-    Object? uuidDefaultPersistRandomV7 = _Undefined,
-    Object? uuidDefaultPersistStr = _Undefined,
+    _is.UuidValue? uuidDefaultPersistRandom = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? uuidDefaultPersistRandomV7 = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? uuidDefaultPersistStr = const _is.$UndefinedUuidValue(),
   }) {
     return UuidDefaultPersist(
       id: id is int? ? id : this.id,
-      uuidDefaultPersistRandom: uuidDefaultPersistRandom is _is.UuidValue?
-          ? uuidDefaultPersistRandom
-          : this.uuidDefaultPersistRandom,
-      uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7 is _is.UuidValue?
-          ? uuidDefaultPersistRandomV7
-          : this.uuidDefaultPersistRandomV7,
-      uuidDefaultPersistStr: uuidDefaultPersistStr is _is.UuidValue?
-          ? uuidDefaultPersistStr
-          : this.uuidDefaultPersistStr,
+      uuidDefaultPersistRandom:
+          uuidDefaultPersistRandom is _is.UndefinedSentinel
+          ? this.uuidDefaultPersistRandom
+          : uuidDefaultPersistRandom,
+      uuidDefaultPersistRandomV7:
+          uuidDefaultPersistRandomV7 is _is.UndefinedSentinel
+          ? this.uuidDefaultPersistRandomV7
+          : uuidDefaultPersistRandomV7,
+      uuidDefaultPersistStr: uuidDefaultPersistStr is _is.UndefinedSentinel
+          ? this.uuidDefaultPersistStr
+          : uuidDefaultPersistStr,
     );
   }
 }

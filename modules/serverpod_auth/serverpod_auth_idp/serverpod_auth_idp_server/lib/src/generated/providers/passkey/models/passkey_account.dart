@@ -113,9 +113,9 @@ abstract class PasskeyAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   PasskeyAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedPasskeyAccount$authUser(),
     DateTime? createdAt,
     _idt.ByteData? keyId,
     String? keyIdBase64,
@@ -172,7 +172,10 @@ abstract class PasskeyAccount
   }
 }
 
-class _Undefined {}
+class _UndefinedPasskeyAccount$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedPasskeyAccount$authUser();
+}
 
 class _PasskeyAccountImpl extends PasskeyAccount {
   _PasskeyAccountImpl({
@@ -202,9 +205,9 @@ class _PasskeyAccountImpl extends PasskeyAccount {
   @_is.useResult
   @override
   PasskeyAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedPasskeyAccount$authUser(),
     DateTime? createdAt,
     _idt.ByteData? keyId,
     String? keyIdBase64,
@@ -213,11 +216,11 @@ class _PasskeyAccountImpl extends PasskeyAccount {
     _idt.ByteData? originalChallenge,
   }) {
     return PasskeyAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       createdAt: createdAt ?? this.createdAt,
       keyId: keyId ?? this.keyId.clone(),
       keyIdBase64: keyIdBase64 ?? this.keyIdBase64,

@@ -79,9 +79,10 @@ abstract class Organization
   Organization copyWith({
     int? id,
     String? name,
-    List<_ijqkgw0m.Person>? people,
+    List<_ijqkgw0m.Person>? people =
+        const _isc.$UndefinedList<_ijqkgw0m.Person>(),
     int? cityId,
-    _i64066zp.City? city,
+    _i64066zp.City? city = const _UndefinedOrganization$city(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -145,6 +146,11 @@ abstract class Organization
 
 class _Undefined {}
 
+class _UndefinedOrganization$city extends _isc.UndefinedSentinel
+    implements _i64066zp.City {
+  const _UndefinedOrganization$city();
+}
+
 class _OrganizationImpl extends Organization {
   _OrganizationImpl({
     int? id,
@@ -167,18 +173,19 @@ class _OrganizationImpl extends Organization {
   Organization copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? people = _Undefined,
+    List<_ijqkgw0m.Person>? people =
+        const _isc.$UndefinedList<_ijqkgw0m.Person>(),
     Object? cityId = _Undefined,
-    Object? city = _Undefined,
+    _i64066zp.City? city = const _UndefinedOrganization$city(),
   }) {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is List<_ijqkgw0m.Person>?
-          ? people
-          : this.people?.map((e0) => e0.copyWith()).toList(),
+      people: people is _isc.UndefinedSentinel
+          ? this.people?.map((e0) => e0.copyWith()).toList()
+          : people,
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _i64066zp.City? ? city : this.city?.copyWith(),
+      city: city is _isc.UndefinedSentinel ? this.city?.copyWith() : city,
     );
   }
 }

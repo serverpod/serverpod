@@ -174,19 +174,23 @@ abstract class SharedContainer
     _ilwf0zl1.SharedModel? sharedModel,
     _ilwf0zl1.SharedModel? sharedModelWithModuleAlias,
     _ilwf0zl1.SharedSubclass? sharedSubclass,
-    _ilwf0zl1.SharedSubclass? sharedSubclassNullable,
+    _ilwf0zl1.SharedSubclass? sharedSubclassNullable =
+        const _UndefinedSharedContainer$sharedSubclassNullable(),
     _ilwf0zl1.SharedEnum? sharedEnum,
     _ilwf0zl1.SharedEnum? sharedEnumNullable,
     _ilwf0zl1.SharedSealedParent? sharedSealedParent,
     _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable,
     _ilwf0zl1.SharedSealedChild? sharedSealedChild,
-    _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable =
+        const _UndefinedSharedContainer$sharedSealedChildNullable(),
     _ilwf0zl1.SharedSealedAppException? sharedSealedAppException,
     _ilwf0zl1.SharedSealedAppException? sharedSealedAppExceptionNullable,
     _ilwf0zl1.SharedNotFoundException? sharedNotFoundException,
-    _ilwf0zl1.SharedNotFoundException? sharedNotFoundExceptionNullable,
+    _ilwf0zl1.SharedNotFoundException? sharedNotFoundExceptionNullable =
+        const _UndefinedSharedContainer$sharedNotFoundExceptionNullable(),
     _ilwf0zl1.SharedExtendedAppException? sharedExtendedAppException,
-    _ilwf0zl1.SharedExtendedAppException? sharedExtendedAppExceptionNullable,
+    _ilwf0zl1.SharedExtendedAppException? sharedExtendedAppExceptionNullable =
+        const _UndefinedSharedContainer$sharedExtendedAppExceptionNullable(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -266,6 +270,30 @@ abstract class SharedContainer
 
 class _Undefined {}
 
+class _UndefinedSharedContainer$sharedSubclassNullable
+    extends _iss.UndefinedSentinel
+    implements _ilwf0zl1.SharedSubclass {
+  const _UndefinedSharedContainer$sharedSubclassNullable();
+}
+
+class _UndefinedSharedContainer$sharedSealedChildNullable
+    extends _iss.UndefinedSentinel
+    implements _ilwf0zl1.SharedSealedChild {
+  const _UndefinedSharedContainer$sharedSealedChildNullable();
+}
+
+class _UndefinedSharedContainer$sharedNotFoundExceptionNullable
+    extends _iss.UndefinedSentinel
+    implements _ilwf0zl1.SharedNotFoundException {
+  const _UndefinedSharedContainer$sharedNotFoundExceptionNullable();
+}
+
+class _UndefinedSharedContainer$sharedExtendedAppExceptionNullable
+    extends _iss.UndefinedSentinel
+    implements _ilwf0zl1.SharedExtendedAppException {
+  const _UndefinedSharedContainer$sharedExtendedAppExceptionNullable();
+}
+
 class _SharedContainerImpl extends SharedContainer {
   _SharedContainerImpl({
     required _ilwf0zl1.SharedModel sharedModel,
@@ -311,19 +339,23 @@ class _SharedContainerImpl extends SharedContainer {
     _ilwf0zl1.SharedModel? sharedModel,
     _ilwf0zl1.SharedModel? sharedModelWithModuleAlias,
     _ilwf0zl1.SharedSubclass? sharedSubclass,
-    Object? sharedSubclassNullable = _Undefined,
+    _ilwf0zl1.SharedSubclass? sharedSubclassNullable =
+        const _UndefinedSharedContainer$sharedSubclassNullable(),
     _ilwf0zl1.SharedEnum? sharedEnum,
     Object? sharedEnumNullable = _Undefined,
     _ilwf0zl1.SharedSealedParent? sharedSealedParent,
     Object? sharedSealedParentNullable = _Undefined,
     _ilwf0zl1.SharedSealedChild? sharedSealedChild,
-    Object? sharedSealedChildNullable = _Undefined,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable =
+        const _UndefinedSharedContainer$sharedSealedChildNullable(),
     _ilwf0zl1.SharedSealedAppException? sharedSealedAppException,
     Object? sharedSealedAppExceptionNullable = _Undefined,
     _ilwf0zl1.SharedNotFoundException? sharedNotFoundException,
-    Object? sharedNotFoundExceptionNullable = _Undefined,
+    _ilwf0zl1.SharedNotFoundException? sharedNotFoundExceptionNullable =
+        const _UndefinedSharedContainer$sharedNotFoundExceptionNullable(),
     _ilwf0zl1.SharedExtendedAppException? sharedExtendedAppException,
-    Object? sharedExtendedAppExceptionNullable = _Undefined,
+    _ilwf0zl1.SharedExtendedAppException? sharedExtendedAppExceptionNullable =
+        const _UndefinedSharedContainer$sharedExtendedAppExceptionNullable(),
   }) {
     return SharedContainer(
       sharedModel: sharedModel ?? this.sharedModel.copyWith(),
@@ -331,10 +363,9 @@ class _SharedContainerImpl extends SharedContainer {
           sharedModelWithModuleAlias ??
           this.sharedModelWithModuleAlias.copyWith(),
       sharedSubclass: sharedSubclass ?? this.sharedSubclass.copyWith(),
-      sharedSubclassNullable:
-          sharedSubclassNullable is _ilwf0zl1.SharedSubclass?
-          ? sharedSubclassNullable
-          : this.sharedSubclassNullable?.copyWith(),
+      sharedSubclassNullable: sharedSubclassNullable is _iss.UndefinedSentinel
+          ? this.sharedSubclassNullable?.copyWith()
+          : sharedSubclassNullable,
       sharedEnum: sharedEnum ?? this.sharedEnum,
       sharedEnumNullable: sharedEnumNullable is _ilwf0zl1.SharedEnum?
           ? sharedEnumNullable
@@ -347,9 +378,9 @@ class _SharedContainerImpl extends SharedContainer {
           : this.sharedSealedParentNullable?.copyWith(),
       sharedSealedChild: sharedSealedChild ?? this.sharedSealedChild.copyWith(),
       sharedSealedChildNullable:
-          sharedSealedChildNullable is _ilwf0zl1.SharedSealedChild?
-          ? sharedSealedChildNullable
-          : this.sharedSealedChildNullable?.copyWith(),
+          sharedSealedChildNullable is _iss.UndefinedSentinel
+          ? this.sharedSealedChildNullable?.copyWith()
+          : sharedSealedChildNullable,
       sharedSealedAppException:
           sharedSealedAppException ?? this.sharedSealedAppException.copyWith(),
       sharedSealedAppExceptionNullable:
@@ -360,17 +391,16 @@ class _SharedContainerImpl extends SharedContainer {
       sharedNotFoundException:
           sharedNotFoundException ?? this.sharedNotFoundException.copyWith(),
       sharedNotFoundExceptionNullable:
-          sharedNotFoundExceptionNullable is _ilwf0zl1.SharedNotFoundException?
-          ? sharedNotFoundExceptionNullable
-          : this.sharedNotFoundExceptionNullable?.copyWith(),
+          sharedNotFoundExceptionNullable is _iss.UndefinedSentinel
+          ? this.sharedNotFoundExceptionNullable?.copyWith()
+          : sharedNotFoundExceptionNullable,
       sharedExtendedAppException:
           sharedExtendedAppException ??
           this.sharedExtendedAppException.copyWith(),
       sharedExtendedAppExceptionNullable:
-          sharedExtendedAppExceptionNullable
-              is _ilwf0zl1.SharedExtendedAppException?
-          ? sharedExtendedAppExceptionNullable
-          : this.sharedExtendedAppExceptionNullable?.copyWith(),
+          sharedExtendedAppExceptionNullable is _iss.UndefinedSentinel
+          ? this.sharedExtendedAppExceptionNullable?.copyWith()
+          : sharedExtendedAppExceptionNullable,
     );
   }
 }

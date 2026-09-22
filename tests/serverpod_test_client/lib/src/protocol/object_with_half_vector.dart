@@ -85,7 +85,7 @@ abstract class ObjectWithHalfVector
   ObjectWithHalfVector copyWith({
     int? id,
     _isc.HalfVector? halfVector,
-    _isc.HalfVector? halfVectorNullable,
+    _isc.HalfVector? halfVectorNullable = const _isc.$UndefinedHalfVector(),
     _isc.HalfVector? halfVectorIndexedHnsw,
     _isc.HalfVector? halfVectorIndexedHnswWithParams,
     _isc.HalfVector? halfVectorIndexedIvfflat,
@@ -159,7 +159,7 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
   ObjectWithHalfVector copyWith({
     Object? id = _Undefined,
     _isc.HalfVector? halfVector,
-    Object? halfVectorNullable = _Undefined,
+    _isc.HalfVector? halfVectorNullable = const _isc.$UndefinedHalfVector(),
     _isc.HalfVector? halfVectorIndexedHnsw,
     _isc.HalfVector? halfVectorIndexedHnswWithParams,
     _isc.HalfVector? halfVectorIndexedIvfflat,
@@ -168,9 +168,9 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
     return ObjectWithHalfVector(
       id: id is int? ? id : this.id,
       halfVector: halfVector ?? this.halfVector.clone(),
-      halfVectorNullable: halfVectorNullable is _isc.HalfVector?
-          ? halfVectorNullable
-          : this.halfVectorNullable?.clone(),
+      halfVectorNullable: halfVectorNullable is _isc.UndefinedSentinel
+          ? this.halfVectorNullable?.clone()
+          : halfVectorNullable,
       halfVectorIndexedHnsw:
           halfVectorIndexedHnsw ?? this.halfVectorIndexedHnsw.clone(),
       halfVectorIndexedHnswWithParams:

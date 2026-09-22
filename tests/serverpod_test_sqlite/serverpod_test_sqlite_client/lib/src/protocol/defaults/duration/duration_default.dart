@@ -74,7 +74,7 @@ abstract class DurationDefault
   DurationDefault copyWith({
     int? id,
     Duration? durationDefault,
-    Duration? durationDefaultNull,
+    Duration? durationDefaultNull = const _isc.$UndefinedDuration(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -124,14 +124,14 @@ class _DurationDefaultImpl extends DurationDefault {
   DurationDefault copyWith({
     Object? id = _Undefined,
     Duration? durationDefault,
-    Object? durationDefaultNull = _Undefined,
+    Duration? durationDefaultNull = const _isc.$UndefinedDuration(),
   }) {
     return DurationDefault(
       id: id is int? ? id : this.id,
       durationDefault: durationDefault ?? this.durationDefault,
-      durationDefaultNull: durationDefaultNull is Duration?
-          ? durationDefaultNull
-          : this.durationDefaultNull,
+      durationDefaultNull: durationDefaultNull is _isc.UndefinedSentinel
+          ? this.durationDefaultNull
+          : durationDefaultNull,
     );
   }
 }

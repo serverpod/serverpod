@@ -139,7 +139,8 @@ abstract class IndexDefinition
     _isd.GinOperatorClass? ginOperatorClass,
     _isd.VectorDistanceFunction? vectorDistanceFunction,
     _isd.ColumnType? vectorColumnType,
-    Map<String, String>? parameters,
+    Map<String, String>? parameters =
+        const _iss.$UndefinedMap<String, String>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -238,7 +239,8 @@ class _IndexDefinitionImpl extends IndexDefinition {
     Object? ginOperatorClass = _Undefined,
     Object? vectorDistanceFunction = _Undefined,
     Object? vectorColumnType = _Undefined,
-    Object? parameters = _Undefined,
+    Map<String, String>? parameters =
+        const _iss.$UndefinedMap<String, String>(),
   }) {
     return IndexDefinition(
       indexName: indexName ?? this.indexName,
@@ -261,9 +263,8 @@ class _IndexDefinitionImpl extends IndexDefinition {
       vectorColumnType: vectorColumnType is _isd.ColumnType?
           ? vectorColumnType
           : this.vectorColumnType,
-      parameters: parameters is Map<String, String>?
-          ? parameters
-          : this.parameters?.map(
+      parameters: parameters is _iss.UndefinedSentinel
+          ? this.parameters?.map(
               (
                 key0,
                 value0,
@@ -271,7 +272,8 @@ class _IndexDefinitionImpl extends IndexDefinition {
                 key0,
                 value0,
               ),
-            ),
+            )
+          : parameters,
     );
   }
 }

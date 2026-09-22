@@ -85,10 +85,11 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
   ChildWithInheritedId copyWith({
     _is.UuidValue? id,
     String? name,
-    _id412n1c.ChildWithInheritedId? parent,
-    _is.UuidValue? parentId,
-    Object? createdAt,
-    Object? updatedAt,
+    _id412n1c.ChildWithInheritedId? parent =
+        const _UndefinedChildWithInheritedId$parent(),
+    _is.UuidValue? parentId = const _is.$UndefinedUuidValue(),
+    DateTime? createdAt = const _is.$UndefinedDateTime(),
+    DateTime? updatedAt = const _is.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -138,7 +139,10 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
   }
 }
 
-class _Undefined {}
+class _UndefinedChildWithInheritedId$parent extends _is.UndefinedSentinel
+    implements _id412n1c.ChildWithInheritedId {
+  const _UndefinedChildWithInheritedId$parent();
+}
 
 class _ChildWithInheritedIdImpl extends ChildWithInheritedId {
   _ChildWithInheritedIdImpl({
@@ -164,20 +168,25 @@ class _ChildWithInheritedIdImpl extends ChildWithInheritedId {
   ChildWithInheritedId copyWith({
     _is.UuidValue? id,
     String? name,
-    Object? parent = _Undefined,
-    Object? parentId = _Undefined,
-    Object? createdAt = _Undefined,
-    Object? updatedAt = _Undefined,
+    _id412n1c.ChildWithInheritedId? parent =
+        const _UndefinedChildWithInheritedId$parent(),
+    _is.UuidValue? parentId = const _is.$UndefinedUuidValue(),
+    DateTime? createdAt = const _is.$UndefinedDateTime(),
+    DateTime? updatedAt = const _is.$UndefinedDateTime(),
   }) {
     return ChildWithInheritedId(
       id: id ?? this.id,
       name: name ?? this.name,
-      parent: parent is _id412n1c.ChildWithInheritedId?
-          ? parent
-          : this.parent?.copyWith(),
-      parentId: parentId is _is.UuidValue? ? parentId : this.parentId,
-      createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
-      updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      parent: parent is _is.UndefinedSentinel
+          ? this.parent?.copyWith()
+          : parent,
+      parentId: parentId is _is.UndefinedSentinel ? this.parentId : parentId,
+      createdAt: createdAt is _is.UndefinedSentinel
+          ? this.createdAt
+          : createdAt,
+      updatedAt: updatedAt is _is.UndefinedSentinel
+          ? this.updatedAt
+          : updatedAt,
     );
   }
 }

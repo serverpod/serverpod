@@ -61,7 +61,7 @@ abstract class ObjectUser
     int? id,
     String? name,
     int? userInfoId,
-    _i312scxx.UserInfo? userInfo,
+    _i312scxx.UserInfo? userInfo = const _UndefinedObjectUser$userInfo(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -93,6 +93,11 @@ abstract class ObjectUser
 
 class _Undefined {}
 
+class _UndefinedObjectUser$userInfo extends _isc.UndefinedSentinel
+    implements _i312scxx.UserInfo {
+  const _UndefinedObjectUser$userInfo();
+}
+
 class _ObjectUserImpl extends ObjectUser {
   _ObjectUserImpl({
     int? id,
@@ -114,15 +119,15 @@ class _ObjectUserImpl extends ObjectUser {
     Object? id = _Undefined,
     Object? name = _Undefined,
     int? userInfoId,
-    Object? userInfo = _Undefined,
+    _i312scxx.UserInfo? userInfo = const _UndefinedObjectUser$userInfo(),
   }) {
     return ObjectUser(
       id: id is int? ? id : this.id,
       name: name is String? ? name : this.name,
       userInfoId: userInfoId ?? this.userInfoId,
-      userInfo: userInfo is _i312scxx.UserInfo?
-          ? userInfo
-          : this.userInfo?.copyWith(),
+      userInfo: userInfo is _isc.UndefinedSentinel
+          ? this.userInfo?.copyWith()
+          : userInfo,
     );
   }
 }

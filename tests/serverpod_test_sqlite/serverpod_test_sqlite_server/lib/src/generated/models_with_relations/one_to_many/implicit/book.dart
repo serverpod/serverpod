@@ -63,7 +63,8 @@ abstract class Book implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Book copyWith({
     int? id,
     String? title,
-    List<_ithd8abs.Chapter>? chapters,
+    List<_ithd8abs.Chapter>? chapters =
+        const _is.$UndefinedList<_ithd8abs.Chapter>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -135,14 +136,15 @@ class _BookImpl extends Book {
   Book copyWith({
     Object? id = _Undefined,
     String? title,
-    Object? chapters = _Undefined,
+    List<_ithd8abs.Chapter>? chapters =
+        const _is.$UndefinedList<_ithd8abs.Chapter>(),
   }) {
     return Book(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
-      chapters: chapters is List<_ithd8abs.Chapter>?
-          ? chapters
-          : this.chapters?.map((e0) => e0.copyWith()).toList(),
+      chapters: chapters is _is.UndefinedSentinel
+          ? this.chapters?.map((e0) => e0.copyWith()).toList()
+          : chapters,
     );
   }
 }

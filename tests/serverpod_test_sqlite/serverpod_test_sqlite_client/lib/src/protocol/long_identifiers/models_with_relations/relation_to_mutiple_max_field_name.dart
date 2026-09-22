@@ -59,7 +59,8 @@ abstract class RelationToMultipleMaxFieldName
   RelationToMultipleMaxFieldName copyWith({
     int? id,
     String? name,
-    List<_ipoh7twa.MultipleMaxFieldName>? multipleMaxFieldNames,
+    List<_ipoh7twa.MultipleMaxFieldName>? multipleMaxFieldNames =
+        const _isc.$UndefinedList<_ipoh7twa.MultipleMaxFieldName>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -114,15 +115,15 @@ class _RelationToMultipleMaxFieldNameImpl
   RelationToMultipleMaxFieldName copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? multipleMaxFieldNames = _Undefined,
+    List<_ipoh7twa.MultipleMaxFieldName>? multipleMaxFieldNames =
+        const _isc.$UndefinedList<_ipoh7twa.MultipleMaxFieldName>(),
   }) {
     return RelationToMultipleMaxFieldName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      multipleMaxFieldNames:
-          multipleMaxFieldNames is List<_ipoh7twa.MultipleMaxFieldName>?
-          ? multipleMaxFieldNames
-          : this.multipleMaxFieldNames?.map((e0) => e0.copyWith()).toList(),
+      multipleMaxFieldNames: multipleMaxFieldNames is _isc.UndefinedSentinel
+          ? this.multipleMaxFieldNames?.map((e0) => e0.copyWith()).toList()
+          : multipleMaxFieldNames,
     );
   }
 }

@@ -61,7 +61,7 @@ abstract class UriDefaultModel
   UriDefaultModel copyWith({
     int? id,
     Uri? uriDefaultModel,
-    Uri? uriDefaultModelNull,
+    Uri? uriDefaultModelNull = const _isc.$UndefinedUri(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -111,14 +111,14 @@ class _UriDefaultModelImpl extends UriDefaultModel {
   UriDefaultModel copyWith({
     Object? id = _Undefined,
     Uri? uriDefaultModel,
-    Object? uriDefaultModelNull = _Undefined,
+    Uri? uriDefaultModelNull = const _isc.$UndefinedUri(),
   }) {
     return UriDefaultModel(
       id: id is int? ? id : this.id,
       uriDefaultModel: uriDefaultModel ?? this.uriDefaultModel,
-      uriDefaultModelNull: uriDefaultModelNull is Uri?
-          ? uriDefaultModelNull
-          : this.uriDefaultModelNull,
+      uriDefaultModelNull: uriDefaultModelNull is _isc.UndefinedSentinel
+          ? this.uriDefaultModelNull
+          : uriDefaultModelNull,
     );
   }
 }

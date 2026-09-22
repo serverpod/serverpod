@@ -61,7 +61,7 @@ abstract class Player
     int? id,
     String? name,
     int? teamId,
-    _iaks25tn.Team? team,
+    _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -93,6 +93,11 @@ abstract class Player
 
 class _Undefined {}
 
+class _UndefinedPlayer$team extends _isc.UndefinedSentinel
+    implements _iaks25tn.Team {
+  const _UndefinedPlayer$team();
+}
+
 class _PlayerImpl extends Player {
   _PlayerImpl({
     int? id,
@@ -114,13 +119,13 @@ class _PlayerImpl extends Player {
     Object? id = _Undefined,
     String? name,
     Object? teamId = _Undefined,
-    Object? team = _Undefined,
+    _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   }) {
     return Player(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _iaks25tn.Team? ? team : this.team?.copyWith(),
+      team: team is _isc.UndefinedSentinel ? this.team?.copyWith() : team,
     );
   }
 }

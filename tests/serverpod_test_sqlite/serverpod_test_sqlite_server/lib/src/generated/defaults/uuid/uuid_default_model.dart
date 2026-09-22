@@ -106,9 +106,9 @@ abstract class UuidDefaultModel
     int? id,
     _is.UuidValue? uuidDefaultModelRandom,
     _is.UuidValue? uuidDefaultModelRandomV7,
-    _is.UuidValue? uuidDefaultModelRandomNull,
+    _is.UuidValue? uuidDefaultModelRandomNull = const _is.$UndefinedUuidValue(),
     _is.UuidValue? uuidDefaultModelStr,
-    _is.UuidValue? uuidDefaultModelStrNull,
+    _is.UuidValue? uuidDefaultModelStrNull = const _is.$UndefinedUuidValue(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -195,9 +195,9 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
     Object? id = _Undefined,
     _is.UuidValue? uuidDefaultModelRandom,
     _is.UuidValue? uuidDefaultModelRandomV7,
-    Object? uuidDefaultModelRandomNull = _Undefined,
+    _is.UuidValue? uuidDefaultModelRandomNull = const _is.$UndefinedUuidValue(),
     _is.UuidValue? uuidDefaultModelStr,
-    Object? uuidDefaultModelStrNull = _Undefined,
+    _is.UuidValue? uuidDefaultModelStrNull = const _is.$UndefinedUuidValue(),
   }) {
     return UuidDefaultModel(
       id: id is int? ? id : this.id,
@@ -205,13 +205,14 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
           uuidDefaultModelRandom ?? this.uuidDefaultModelRandom,
       uuidDefaultModelRandomV7:
           uuidDefaultModelRandomV7 ?? this.uuidDefaultModelRandomV7,
-      uuidDefaultModelRandomNull: uuidDefaultModelRandomNull is _is.UuidValue?
-          ? uuidDefaultModelRandomNull
-          : this.uuidDefaultModelRandomNull,
+      uuidDefaultModelRandomNull:
+          uuidDefaultModelRandomNull is _is.UndefinedSentinel
+          ? this.uuidDefaultModelRandomNull
+          : uuidDefaultModelRandomNull,
       uuidDefaultModelStr: uuidDefaultModelStr ?? this.uuidDefaultModelStr,
-      uuidDefaultModelStrNull: uuidDefaultModelStrNull is _is.UuidValue?
-          ? uuidDefaultModelStrNull
-          : this.uuidDefaultModelStrNull,
+      uuidDefaultModelStrNull: uuidDefaultModelStrNull is _is.UndefinedSentinel
+          ? this.uuidDefaultModelStrNull
+          : uuidDefaultModelStrNull,
     );
   }
 }

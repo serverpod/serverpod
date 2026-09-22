@@ -70,7 +70,8 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? name,
     int? organizationId,
-    _i0ptycc3.Organization? organization,
+    _i0ptycc3.Organization? organization =
+        const _UndefinedPerson$organization(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -127,6 +128,11 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedPerson$organization extends _is.UndefinedSentinel
+    implements _i0ptycc3.Organization {
+  const _UndefinedPerson$organization();
+}
+
 class _PersonImpl extends Person {
   _PersonImpl({
     int? id,
@@ -148,7 +154,8 @@ class _PersonImpl extends Person {
     Object? id = _Undefined,
     String? name,
     Object? organizationId = _Undefined,
-    Object? organization = _Undefined,
+    _i0ptycc3.Organization? organization =
+        const _UndefinedPerson$organization(),
   }) {
     return PersonImplicit._(
       id: id is int? ? id : this.id,
@@ -156,9 +163,9 @@ class _PersonImpl extends Person {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _i0ptycc3.Organization?
-          ? organization
-          : this.organization?.copyWith(),
+      organization: organization is _is.UndefinedSentinel
+          ? this.organization?.copyWith()
+          : organization,
       $_cityCitizensCityId: this._cityCitizensCityId,
     );
   }

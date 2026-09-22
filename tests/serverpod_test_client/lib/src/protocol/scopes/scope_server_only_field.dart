@@ -47,16 +47,17 @@ class ScopeServerOnlyField
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ScopeServerOnlyField copyWith({
-    Object? allScope = _Undefined,
-    Object? nested = _Undefined,
+    _ih2vh47j.Types? allScope = const _UndefinedScopeServerOnlyField$allScope(),
+    _ijcqyoxk.ScopeServerOnlyField? nested =
+        const _UndefinedScopeServerOnlyField$nested(),
   }) {
     return ScopeServerOnlyField(
-      allScope: allScope is _ih2vh47j.Types?
-          ? allScope
-          : this.allScope?.copyWith(),
-      nested: nested is _ijcqyoxk.ScopeServerOnlyField?
-          ? nested
-          : this.nested?.copyWith(),
+      allScope: allScope is _isc.UndefinedSentinel
+          ? this.allScope?.copyWith()
+          : allScope,
+      nested: nested is _isc.UndefinedSentinel
+          ? this.nested?.copyWith()
+          : nested,
     );
   }
 
@@ -84,4 +85,12 @@ class ScopeServerOnlyField
   }
 }
 
-class _Undefined {}
+class _UndefinedScopeServerOnlyField$allScope extends _isc.UndefinedSentinel
+    implements _ih2vh47j.Types {
+  const _UndefinedScopeServerOnlyField$allScope();
+}
+
+class _UndefinedScopeServerOnlyField$nested extends _isc.UndefinedSentinel
+    implements _ijcqyoxk.ScopeServerOnlyField {
+  const _UndefinedScopeServerOnlyField$nested();
+}

@@ -90,9 +90,11 @@ abstract class GeneratedRelationEmployee
     int? id,
     String? name,
     int? customCompanyId,
-    _ipeijyfj.GeneratedRelationCompany? company,
+    _ipeijyfj.GeneratedRelationCompany? company =
+        const _UndefinedGeneratedRelationEmployee$company(),
     int? customPreviousCompanyId,
-    _ipeijyfj.GeneratedRelationCompany? previousCompany,
+    _ipeijyfj.GeneratedRelationCompany? previousCompany =
+        const _UndefinedGeneratedRelationEmployee$previousCompany(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -159,6 +161,17 @@ abstract class GeneratedRelationEmployee
 
 class _Undefined {}
 
+class _UndefinedGeneratedRelationEmployee$company extends _is.UndefinedSentinel
+    implements _ipeijyfj.GeneratedRelationCompany {
+  const _UndefinedGeneratedRelationEmployee$company();
+}
+
+class _UndefinedGeneratedRelationEmployee$previousCompany
+    extends _is.UndefinedSentinel
+    implements _ipeijyfj.GeneratedRelationCompany {
+  const _UndefinedGeneratedRelationEmployee$previousCompany();
+}
+
 class _GeneratedRelationEmployeeImpl extends GeneratedRelationEmployee {
   _GeneratedRelationEmployeeImpl({
     int? id,
@@ -184,23 +197,25 @@ class _GeneratedRelationEmployeeImpl extends GeneratedRelationEmployee {
     Object? id = _Undefined,
     String? name,
     int? customCompanyId,
-    Object? company = _Undefined,
+    _ipeijyfj.GeneratedRelationCompany? company =
+        const _UndefinedGeneratedRelationEmployee$company(),
     Object? customPreviousCompanyId = _Undefined,
-    Object? previousCompany = _Undefined,
+    _ipeijyfj.GeneratedRelationCompany? previousCompany =
+        const _UndefinedGeneratedRelationEmployee$previousCompany(),
   }) {
     return GeneratedRelationEmployee(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       customCompanyId: customCompanyId ?? this.customCompanyId,
-      company: company is _ipeijyfj.GeneratedRelationCompany?
-          ? company
-          : this.company?.copyWith(),
+      company: company is _is.UndefinedSentinel
+          ? this.company?.copyWith()
+          : company,
       customPreviousCompanyId: customPreviousCompanyId is int?
           ? customPreviousCompanyId
           : this.customPreviousCompanyId,
-      previousCompany: previousCompany is _ipeijyfj.GeneratedRelationCompany?
-          ? previousCompany
-          : this.previousCompany?.copyWith(),
+      previousCompany: previousCompany is _is.UndefinedSentinel
+          ? this.previousCompany?.copyWith()
+          : previousCompany,
     );
   }
 }

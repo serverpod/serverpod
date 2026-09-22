@@ -81,7 +81,8 @@ abstract class ChallengeTracker
   ChallengeTracker copyWith({
     int? id,
     _is.UuidValue? secretChallengeId,
-    _iais.SecretChallenge? secretChallenge,
+    _iais.SecretChallenge? secretChallenge =
+        const _UndefinedChallengeTracker$secretChallenge(),
     DateTime? trackedAt,
     String? notes,
   });
@@ -134,6 +135,11 @@ abstract class ChallengeTracker
 
 class _Undefined {}
 
+class _UndefinedChallengeTracker$secretChallenge extends _is.UndefinedSentinel
+    implements _iais.SecretChallenge {
+  const _UndefinedChallengeTracker$secretChallenge();
+}
+
 class _ChallengeTrackerImpl extends ChallengeTracker {
   _ChallengeTrackerImpl({
     int? id,
@@ -156,16 +162,17 @@ class _ChallengeTrackerImpl extends ChallengeTracker {
   ChallengeTracker copyWith({
     Object? id = _Undefined,
     _is.UuidValue? secretChallengeId,
-    Object? secretChallenge = _Undefined,
+    _iais.SecretChallenge? secretChallenge =
+        const _UndefinedChallengeTracker$secretChallenge(),
     DateTime? trackedAt,
     Object? notes = _Undefined,
   }) {
     return ChallengeTracker(
       id: id is int? ? id : this.id,
       secretChallengeId: secretChallengeId ?? this.secretChallengeId,
-      secretChallenge: secretChallenge is _iais.SecretChallenge?
-          ? secretChallenge
-          : this.secretChallenge?.copyWith(),
+      secretChallenge: secretChallenge is _is.UndefinedSentinel
+          ? this.secretChallenge?.copyWith()
+          : secretChallenge,
       trackedAt: trackedAt ?? this.trackedAt,
       notes: notes is String? ? notes : this.notes,
     );

@@ -75,7 +75,8 @@ abstract class SharedTableRecord
     int? id,
     String? name,
     _iqfgygbv.SharedEnum? sharedEnum,
-    _iqfgygbv.SharedSubclass? sharedSubclass,
+    _iqfgygbv.SharedSubclass? sharedSubclass =
+        const _UndefinedSharedTableRecord$sharedSubclass(),
     int? itemCount,
   });
   @override
@@ -133,6 +134,11 @@ abstract class SharedTableRecord
 
 class _Undefined {}
 
+class _UndefinedSharedTableRecord$sharedSubclass extends _iss.UndefinedSentinel
+    implements _iqfgygbv.SharedSubclass {
+  const _UndefinedSharedTableRecord$sharedSubclass();
+}
+
 class _SharedTableRecordImpl extends SharedTableRecord {
   _SharedTableRecordImpl({
     int? id,
@@ -156,16 +162,17 @@ class _SharedTableRecordImpl extends SharedTableRecord {
     Object? id = _Undefined,
     String? name,
     _iqfgygbv.SharedEnum? sharedEnum,
-    Object? sharedSubclass = _Undefined,
+    _iqfgygbv.SharedSubclass? sharedSubclass =
+        const _UndefinedSharedTableRecord$sharedSubclass(),
     int? itemCount,
   }) {
     return SharedTableRecord(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       sharedEnum: sharedEnum ?? this.sharedEnum,
-      sharedSubclass: sharedSubclass is _iqfgygbv.SharedSubclass?
-          ? sharedSubclass
-          : this.sharedSubclass?.copyWith(),
+      sharedSubclass: sharedSubclass is _iss.UndefinedSentinel
+          ? this.sharedSubclass?.copyWith()
+          : sharedSubclass,
       itemCount: itemCount ?? this.itemCount,
     );
   }

@@ -65,7 +65,8 @@ abstract class LongImplicitIdFieldCollection
     int? id,
     String? name,
     List<_i4kuijum.LongImplicitIdField>?
-    thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+        thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
+        const _isc.$UndefinedList<_i4kuijum.LongImplicitIdField>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -121,19 +122,20 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
   LongImplicitIdFieldCollection copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
-        _Undefined,
+    List<_i4kuijum.LongImplicitIdField>?
+        thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
+        const _isc.$UndefinedList<_i4kuijum.LongImplicitIdField>(),
   }) {
     return LongImplicitIdFieldCollection(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
           thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-              is List<_i4kuijum.LongImplicitIdField>?
-          ? thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-          : this.thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
+              is _isc.UndefinedSentinel
+          ? this.thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
                 ?.map((e0) => e0.copyWith())
-                .toList(),
+                .toList()
+          : thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
     );
   }
 }

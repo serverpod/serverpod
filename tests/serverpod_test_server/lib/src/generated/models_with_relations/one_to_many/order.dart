@@ -77,8 +77,9 @@ abstract class Order implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? description,
     int? customerId,
-    _i3fqgdb1.Customer? customer,
-    List<_ij3ynzrj.Comment>? comments,
+    _i3fqgdb1.Customer? customer = const _UndefinedOrder$customer(),
+    List<_ij3ynzrj.Comment>? comments =
+        const _is.$UndefinedList<_ij3ynzrj.Comment>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -142,6 +143,11 @@ abstract class Order implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedOrder$customer extends _is.UndefinedSentinel
+    implements _i3fqgdb1.Customer {
+  const _UndefinedOrder$customer();
+}
+
 class _OrderImpl extends Order {
   _OrderImpl({
     int? id,
@@ -165,19 +171,20 @@ class _OrderImpl extends Order {
     Object? id = _Undefined,
     String? description,
     int? customerId,
-    Object? customer = _Undefined,
-    Object? comments = _Undefined,
+    _i3fqgdb1.Customer? customer = const _UndefinedOrder$customer(),
+    List<_ij3ynzrj.Comment>? comments =
+        const _is.$UndefinedList<_ij3ynzrj.Comment>(),
   }) {
     return Order(
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer: customer is _i3fqgdb1.Customer?
-          ? customer
-          : this.customer?.copyWith(),
-      comments: comments is List<_ij3ynzrj.Comment>?
-          ? comments
-          : this.comments?.map((e0) => e0.copyWith()).toList(),
+      customer: customer is _is.UndefinedSentinel
+          ? this.customer?.copyWith()
+          : customer,
+      comments: comments is _is.UndefinedSentinel
+          ? this.comments?.map((e0) => e0.copyWith()).toList()
+          : comments,
     );
   }
 }

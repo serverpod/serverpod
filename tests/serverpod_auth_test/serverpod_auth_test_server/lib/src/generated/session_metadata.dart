@@ -91,7 +91,8 @@ abstract class SessionMetadata
   SessionMetadata copyWith({
     int? id,
     _is.UuidValue? serverSideSessionId,
-    _iacs.ServerSideSession? serverSideSession,
+    _iacs.ServerSideSession? serverSideSession =
+        const _UndefinedSessionMetadata$serverSideSession(),
     String? deviceName,
     String? ipAddress,
     String? userAgent,
@@ -149,6 +150,11 @@ abstract class SessionMetadata
 
 class _Undefined {}
 
+class _UndefinedSessionMetadata$serverSideSession extends _is.UndefinedSentinel
+    implements _iacs.ServerSideSession {
+  const _UndefinedSessionMetadata$serverSideSession();
+}
+
 class _SessionMetadataImpl extends SessionMetadata {
   _SessionMetadataImpl({
     int? id,
@@ -175,7 +181,8 @@ class _SessionMetadataImpl extends SessionMetadata {
   SessionMetadata copyWith({
     Object? id = _Undefined,
     _is.UuidValue? serverSideSessionId,
-    Object? serverSideSession = _Undefined,
+    _iacs.ServerSideSession? serverSideSession =
+        const _UndefinedSessionMetadata$serverSideSession(),
     String? deviceName,
     Object? ipAddress = _Undefined,
     Object? userAgent = _Undefined,
@@ -184,9 +191,9 @@ class _SessionMetadataImpl extends SessionMetadata {
     return SessionMetadata(
       id: id is int? ? id : this.id,
       serverSideSessionId: serverSideSessionId ?? this.serverSideSessionId,
-      serverSideSession: serverSideSession is _iacs.ServerSideSession?
-          ? serverSideSession
-          : this.serverSideSession?.copyWith(),
+      serverSideSession: serverSideSession is _is.UndefinedSentinel
+          ? this.serverSideSession?.copyWith()
+          : serverSideSession,
       deviceName: deviceName ?? this.deviceName,
       ipAddress: ipAddress is String? ? ipAddress : this.ipAddress,
       userAgent: userAgent is String? ? userAgent : this.userAgent,

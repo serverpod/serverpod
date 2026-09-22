@@ -52,7 +52,7 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
   @override
   @_isc.useResult
   ChildClassWithoutId copyWith({
-    Object? id,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     String? grandParentField,
     String? parentField,
     String? childField,
@@ -85,8 +85,6 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
   }
 }
 
-class _Undefined {}
-
 class _ChildClassWithoutIdImpl extends ChildClassWithoutId {
   _ChildClassWithoutIdImpl({
     _isc.UuidValue? id,
@@ -105,13 +103,13 @@ class _ChildClassWithoutIdImpl extends ChildClassWithoutId {
   @_isc.useResult
   @override
   ChildClassWithoutId copyWith({
-    Object? id = _Undefined,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     String? grandParentField,
     String? parentField,
     String? childField,
   }) {
     return ChildClassWithoutId(
-      id: id is _isc.UuidValue? ? id : this.id,
+      id: id is _isc.UndefinedSentinel ? this.id : id,
       grandParentField: grandParentField ?? this.grandParentField,
       parentField: parentField ?? this.parentField,
       childField: childField ?? this.childField,

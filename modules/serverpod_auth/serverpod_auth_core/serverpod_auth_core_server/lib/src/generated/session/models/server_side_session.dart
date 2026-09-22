@@ -147,14 +147,14 @@ abstract class ServerSideSession
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ServerSideSession copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _ivyervu7.AuthUser? authUser,
+    _ivyervu7.AuthUser? authUser = const _UndefinedServerSideSession$authUser(),
     Set<String>? scopeNames,
     DateTime? createdAt,
     DateTime? lastUsedAt,
-    DateTime? expiresAt,
-    Duration? expireAfterUnusedFor,
+    DateTime? expiresAt = const _is.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _is.$UndefinedDuration(),
     _idt.ByteData? sessionKeyHash,
     _idt.ByteData? sessionKeySalt,
     String? method,
@@ -213,7 +213,10 @@ abstract class ServerSideSession
   }
 }
 
-class _Undefined {}
+class _UndefinedServerSideSession$authUser extends _is.UndefinedSentinel
+    implements _ivyervu7.AuthUser {
+  const _UndefinedServerSideSession$authUser();
+}
 
 class _ServerSideSessionImpl extends ServerSideSession {
   _ServerSideSessionImpl({
@@ -247,31 +250,33 @@ class _ServerSideSessionImpl extends ServerSideSession {
   @_is.useResult
   @override
   ServerSideSession copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _ivyervu7.AuthUser? authUser = const _UndefinedServerSideSession$authUser(),
     Set<String>? scopeNames,
     DateTime? createdAt,
     DateTime? lastUsedAt,
-    Object? expiresAt = _Undefined,
-    Object? expireAfterUnusedFor = _Undefined,
+    DateTime? expiresAt = const _is.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _is.$UndefinedDuration(),
     _idt.ByteData? sessionKeyHash,
     _idt.ByteData? sessionKeySalt,
     String? method,
   }) {
     return ServerSideSession(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _ivyervu7.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       createdAt: createdAt ?? this.createdAt,
       lastUsedAt: lastUsedAt ?? this.lastUsedAt,
-      expiresAt: expiresAt is DateTime? ? expiresAt : this.expiresAt,
-      expireAfterUnusedFor: expireAfterUnusedFor is Duration?
-          ? expireAfterUnusedFor
-          : this.expireAfterUnusedFor,
+      expiresAt: expiresAt is _is.UndefinedSentinel
+          ? this.expiresAt
+          : expiresAt,
+      expireAfterUnusedFor: expireAfterUnusedFor is _is.UndefinedSentinel
+          ? this.expireAfterUnusedFor
+          : expireAfterUnusedFor,
       sessionKeyHash: sessionKeyHash ?? this.sessionKeyHash.clone(),
       sessionKeySalt: sessionKeySalt ?? this.sessionKeySalt.clone(),
       method: method ?? this.method,

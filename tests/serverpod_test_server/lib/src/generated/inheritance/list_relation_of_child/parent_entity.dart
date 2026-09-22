@@ -57,7 +57,8 @@ abstract class ParentEntity
   @_is.useResult
   ParentEntity copyWith({
     int? id,
-    List<_i41rqetj.ChildEntity>? children,
+    List<_i41rqetj.ChildEntity>? children =
+        const _is.$UndefinedList<_i41rqetj.ChildEntity>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -126,13 +127,14 @@ class _ParentEntityImpl extends ParentEntity {
   @override
   ParentEntity copyWith({
     Object? id = _Undefined,
-    Object? children = _Undefined,
+    List<_i41rqetj.ChildEntity>? children =
+        const _is.$UndefinedList<_i41rqetj.ChildEntity>(),
   }) {
     return ParentEntity(
       id: id is int? ? id : this.id,
-      children: children is List<_i41rqetj.ChildEntity>?
-          ? children
-          : this.children?.map((e0) => e0.copyWith()).toList(),
+      children: children is _is.UndefinedSentinel
+          ? this.children?.map((e0) => e0.copyWith()).toList()
+          : children,
     );
   }
 }

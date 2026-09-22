@@ -117,14 +117,17 @@ abstract class EmailAccountPasswordResetRequest
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   EmailAccountPasswordResetRequest copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? emailAccountId,
-    _imety4f2.EmailAccount? emailAccount,
+    _imety4f2.EmailAccount? emailAccount =
+        const _UndefinedEmailAccountPasswordResetRequest$emailAccount(),
     DateTime? createdAt,
     _is.UuidValue? challengeId,
-    _i7k1fa50.SecretChallenge? challenge,
-    _is.UuidValue? setPasswordChallengeId,
-    _i7k1fa50.SecretChallenge? setPasswordChallenge,
+    _i7k1fa50.SecretChallenge? challenge =
+        const _UndefinedEmailAccountPasswordResetRequest$challenge(),
+    _is.UuidValue? setPasswordChallengeId = const _is.$UndefinedUuidValue(),
+    _i7k1fa50.SecretChallenge? setPasswordChallenge =
+        const _UndefinedEmailAccountPasswordResetRequest$setPasswordChallenge(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -184,7 +187,23 @@ abstract class EmailAccountPasswordResetRequest
   }
 }
 
-class _Undefined {}
+class _UndefinedEmailAccountPasswordResetRequest$emailAccount
+    extends _is.UndefinedSentinel
+    implements _imety4f2.EmailAccount {
+  const _UndefinedEmailAccountPasswordResetRequest$emailAccount();
+}
+
+class _UndefinedEmailAccountPasswordResetRequest$challenge
+    extends _is.UndefinedSentinel
+    implements _i7k1fa50.SecretChallenge {
+  const _UndefinedEmailAccountPasswordResetRequest$challenge();
+}
+
+class _UndefinedEmailAccountPasswordResetRequest$setPasswordChallenge
+    extends _is.UndefinedSentinel
+    implements _i7k1fa50.SecretChallenge {
+  const _UndefinedEmailAccountPasswordResetRequest$setPasswordChallenge();
+}
 
 class _EmailAccountPasswordResetRequestImpl
     extends EmailAccountPasswordResetRequest {
@@ -213,32 +232,35 @@ class _EmailAccountPasswordResetRequestImpl
   @_is.useResult
   @override
   EmailAccountPasswordResetRequest copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? emailAccountId,
-    Object? emailAccount = _Undefined,
+    _imety4f2.EmailAccount? emailAccount =
+        const _UndefinedEmailAccountPasswordResetRequest$emailAccount(),
     DateTime? createdAt,
     _is.UuidValue? challengeId,
-    Object? challenge = _Undefined,
-    Object? setPasswordChallengeId = _Undefined,
-    Object? setPasswordChallenge = _Undefined,
+    _i7k1fa50.SecretChallenge? challenge =
+        const _UndefinedEmailAccountPasswordResetRequest$challenge(),
+    _is.UuidValue? setPasswordChallengeId = const _is.$UndefinedUuidValue(),
+    _i7k1fa50.SecretChallenge? setPasswordChallenge =
+        const _UndefinedEmailAccountPasswordResetRequest$setPasswordChallenge(),
   }) {
     return EmailAccountPasswordResetRequest(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       emailAccountId: emailAccountId ?? this.emailAccountId,
-      emailAccount: emailAccount is _imety4f2.EmailAccount?
-          ? emailAccount
-          : this.emailAccount?.copyWith(),
+      emailAccount: emailAccount is _is.UndefinedSentinel
+          ? this.emailAccount?.copyWith()
+          : emailAccount,
       createdAt: createdAt ?? this.createdAt,
       challengeId: challengeId ?? this.challengeId,
-      challenge: challenge is _i7k1fa50.SecretChallenge?
-          ? challenge
-          : this.challenge?.copyWith(),
-      setPasswordChallengeId: setPasswordChallengeId is _is.UuidValue?
-          ? setPasswordChallengeId
-          : this.setPasswordChallengeId,
-      setPasswordChallenge: setPasswordChallenge is _i7k1fa50.SecretChallenge?
-          ? setPasswordChallenge
-          : this.setPasswordChallenge?.copyWith(),
+      challenge: challenge is _is.UndefinedSentinel
+          ? this.challenge?.copyWith()
+          : challenge,
+      setPasswordChallengeId: setPasswordChallengeId is _is.UndefinedSentinel
+          ? this.setPasswordChallengeId
+          : setPasswordChallengeId,
+      setPasswordChallenge: setPasswordChallenge is _is.UndefinedSentinel
+          ? this.setPasswordChallenge?.copyWith()
+          : setPasswordChallenge,
     );
   }
 }

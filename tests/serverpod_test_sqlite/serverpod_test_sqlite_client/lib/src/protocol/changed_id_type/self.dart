@@ -95,14 +95,18 @@ abstract class ChangedIdTypeSelf
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ChangedIdTypeSelf copyWith({
-    _isc.UuidValue? id,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     String? name,
-    _iqjmn1nu.ChangedIdTypeSelf? previous,
-    _isc.UuidValue? nextId,
-    _iqjmn1nu.ChangedIdTypeSelf? next,
-    _isc.UuidValue? parentId,
-    _iqjmn1nu.ChangedIdTypeSelf? parent,
-    List<_iqjmn1nu.ChangedIdTypeSelf>? children,
+    _iqjmn1nu.ChangedIdTypeSelf? previous =
+        const _UndefinedChangedIdTypeSelf$previous(),
+    _isc.UuidValue? nextId = const _isc.$UndefinedUuidValue(),
+    _iqjmn1nu.ChangedIdTypeSelf? next =
+        const _UndefinedChangedIdTypeSelf$next(),
+    _isc.UuidValue? parentId = const _isc.$UndefinedUuidValue(),
+    _iqjmn1nu.ChangedIdTypeSelf? parent =
+        const _UndefinedChangedIdTypeSelf$parent(),
+    List<_iqjmn1nu.ChangedIdTypeSelf>? children =
+        const _isc.$UndefinedList<_iqjmn1nu.ChangedIdTypeSelf>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -142,7 +146,20 @@ abstract class ChangedIdTypeSelf
   }
 }
 
-class _Undefined {}
+class _UndefinedChangedIdTypeSelf$previous extends _isc.UndefinedSentinel
+    implements _iqjmn1nu.ChangedIdTypeSelf {
+  const _UndefinedChangedIdTypeSelf$previous();
+}
+
+class _UndefinedChangedIdTypeSelf$next extends _isc.UndefinedSentinel
+    implements _iqjmn1nu.ChangedIdTypeSelf {
+  const _UndefinedChangedIdTypeSelf$next();
+}
+
+class _UndefinedChangedIdTypeSelf$parent extends _isc.UndefinedSentinel
+    implements _iqjmn1nu.ChangedIdTypeSelf {
+  const _UndefinedChangedIdTypeSelf$parent();
+}
 
 class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   _ChangedIdTypeSelfImpl({
@@ -170,30 +187,34 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   @_isc.useResult
   @override
   ChangedIdTypeSelf copyWith({
-    Object? id = _Undefined,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     String? name,
-    Object? previous = _Undefined,
-    Object? nextId = _Undefined,
-    Object? next = _Undefined,
-    Object? parentId = _Undefined,
-    Object? parent = _Undefined,
-    Object? children = _Undefined,
+    _iqjmn1nu.ChangedIdTypeSelf? previous =
+        const _UndefinedChangedIdTypeSelf$previous(),
+    _isc.UuidValue? nextId = const _isc.$UndefinedUuidValue(),
+    _iqjmn1nu.ChangedIdTypeSelf? next =
+        const _UndefinedChangedIdTypeSelf$next(),
+    _isc.UuidValue? parentId = const _isc.$UndefinedUuidValue(),
+    _iqjmn1nu.ChangedIdTypeSelf? parent =
+        const _UndefinedChangedIdTypeSelf$parent(),
+    List<_iqjmn1nu.ChangedIdTypeSelf>? children =
+        const _isc.$UndefinedList<_iqjmn1nu.ChangedIdTypeSelf>(),
   }) {
     return ChangedIdTypeSelf(
-      id: id is _isc.UuidValue? ? id : this.id,
+      id: id is _isc.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
-      previous: previous is _iqjmn1nu.ChangedIdTypeSelf?
-          ? previous
-          : this.previous?.copyWith(),
-      nextId: nextId is _isc.UuidValue? ? nextId : this.nextId,
-      next: next is _iqjmn1nu.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
-      parentId: parentId is _isc.UuidValue? ? parentId : this.parentId,
-      parent: parent is _iqjmn1nu.ChangedIdTypeSelf?
-          ? parent
-          : this.parent?.copyWith(),
-      children: children is List<_iqjmn1nu.ChangedIdTypeSelf>?
-          ? children
-          : this.children?.map((e0) => e0.copyWith()).toList(),
+      previous: previous is _isc.UndefinedSentinel
+          ? this.previous?.copyWith()
+          : previous,
+      nextId: nextId is _isc.UndefinedSentinel ? this.nextId : nextId,
+      next: next is _isc.UndefinedSentinel ? this.next?.copyWith() : next,
+      parentId: parentId is _isc.UndefinedSentinel ? this.parentId : parentId,
+      parent: parent is _isc.UndefinedSentinel
+          ? this.parent?.copyWith()
+          : parent,
+      children: children is _isc.UndefinedSentinel
+          ? this.children?.map((e0) => e0.copyWith()).toList()
+          : children,
     );
   }
 }

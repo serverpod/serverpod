@@ -78,7 +78,8 @@ abstract class AuthenticationResponse
     bool? success,
     String? key,
     int? keyId,
-    _iliwsvmu.UserInfo? userInfo,
+    _iliwsvmu.UserInfo? userInfo =
+        const _UndefinedAuthenticationResponse$userInfo(),
     _ika0ufek.AuthenticationFailReason? failReason,
   });
   @override
@@ -113,6 +114,11 @@ abstract class AuthenticationResponse
 
 class _Undefined {}
 
+class _UndefinedAuthenticationResponse$userInfo extends _is.UndefinedSentinel
+    implements _iliwsvmu.UserInfo {
+  const _UndefinedAuthenticationResponse$userInfo();
+}
+
 class _AuthenticationResponseImpl extends AuthenticationResponse {
   _AuthenticationResponseImpl({
     required bool success,
@@ -136,16 +142,17 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
     bool? success,
     Object? key = _Undefined,
     Object? keyId = _Undefined,
-    Object? userInfo = _Undefined,
+    _iliwsvmu.UserInfo? userInfo =
+        const _UndefinedAuthenticationResponse$userInfo(),
     Object? failReason = _Undefined,
   }) {
     return AuthenticationResponse(
       success: success ?? this.success,
       key: key is String? ? key : this.key,
       keyId: keyId is int? ? keyId : this.keyId,
-      userInfo: userInfo is _iliwsvmu.UserInfo?
-          ? userInfo
-          : this.userInfo?.copyWith(),
+      userInfo: userInfo is _is.UndefinedSentinel
+          ? this.userInfo?.copyWith()
+          : userInfo,
       failReason: failReason is _ika0ufek.AuthenticationFailReason?
           ? failReason
           : this.failReason,

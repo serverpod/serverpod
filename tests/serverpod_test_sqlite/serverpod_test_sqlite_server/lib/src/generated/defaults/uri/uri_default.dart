@@ -61,7 +61,7 @@ abstract class UriDefault
   UriDefault copyWith({
     int? id,
     Uri? uriDefault,
-    Uri? uriDefaultNull,
+    Uri? uriDefaultNull = const _is.$UndefinedUri(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -131,14 +131,14 @@ class _UriDefaultImpl extends UriDefault {
   UriDefault copyWith({
     Object? id = _Undefined,
     Uri? uriDefault,
-    Object? uriDefaultNull = _Undefined,
+    Uri? uriDefaultNull = const _is.$UndefinedUri(),
   }) {
     return UriDefault(
       id: id is int? ? id : this.id,
       uriDefault: uriDefault ?? this.uriDefault,
-      uriDefaultNull: uriDefaultNull is Uri?
-          ? uriDefaultNull
-          : this.uriDefaultNull,
+      uriDefaultNull: uriDefaultNull is _is.UndefinedSentinel
+          ? this.uriDefaultNull
+          : uriDefaultNull,
     );
   }
 }

@@ -64,7 +64,8 @@ abstract class Department
   Department copyWith({
     int? id,
     String? name,
-    List<_ilvmgye0.Employee>? employees,
+    List<_ilvmgye0.Employee>? employees =
+        const _is.$UndefinedList<_ilvmgye0.Employee>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -138,14 +139,15 @@ class _DepartmentImpl extends Department {
   Department copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? employees = _Undefined,
+    List<_ilvmgye0.Employee>? employees =
+        const _is.$UndefinedList<_ilvmgye0.Employee>(),
   }) {
     return Department(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      employees: employees is List<_ilvmgye0.Employee>?
-          ? employees
-          : this.employees?.map((e0) => e0.copyWith()).toList(),
+      employees: employees is _is.UndefinedSentinel
+          ? this.employees?.map((e0) => e0.copyWith()).toList()
+          : employees,
     );
   }
 }

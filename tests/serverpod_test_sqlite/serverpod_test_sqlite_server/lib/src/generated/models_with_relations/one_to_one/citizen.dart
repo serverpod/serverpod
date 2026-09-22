@@ -92,11 +92,11 @@ abstract class Citizen
   Citizen copyWith({
     int? id,
     String? name,
-    _i5rzbc0r.Address? address,
+    _i5rzbc0r.Address? address = const _UndefinedCitizen$address(),
     int? companyId,
-    _i2fdza8t.Company? company,
+    _i2fdza8t.Company? company = const _UndefinedCitizen$company(),
     int? oldCompanyId,
-    _i2fdza8t.Company? oldCompany,
+    _i2fdza8t.Company? oldCompany = const _UndefinedCitizen$oldCompany(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -164,6 +164,21 @@ abstract class Citizen
 
 class _Undefined {}
 
+class _UndefinedCitizen$address extends _is.UndefinedSentinel
+    implements _i5rzbc0r.Address {
+  const _UndefinedCitizen$address();
+}
+
+class _UndefinedCitizen$company extends _is.UndefinedSentinel
+    implements _i2fdza8t.Company {
+  const _UndefinedCitizen$company();
+}
+
+class _UndefinedCitizen$oldCompany extends _is.UndefinedSentinel
+    implements _i2fdza8t.Company {
+  const _UndefinedCitizen$oldCompany();
+}
+
 class _CitizenImpl extends Citizen {
   _CitizenImpl({
     int? id,
@@ -190,26 +205,26 @@ class _CitizenImpl extends Citizen {
   Citizen copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? address = _Undefined,
+    _i5rzbc0r.Address? address = const _UndefinedCitizen$address(),
     int? companyId,
-    Object? company = _Undefined,
+    _i2fdza8t.Company? company = const _UndefinedCitizen$company(),
     Object? oldCompanyId = _Undefined,
-    Object? oldCompany = _Undefined,
+    _i2fdza8t.Company? oldCompany = const _UndefinedCitizen$oldCompany(),
   }) {
     return Citizen(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _i5rzbc0r.Address?
-          ? address
-          : this.address?.copyWith(),
+      address: address is _is.UndefinedSentinel
+          ? this.address?.copyWith()
+          : address,
       companyId: companyId ?? this.companyId,
-      company: company is _i2fdza8t.Company?
-          ? company
-          : this.company?.copyWith(),
+      company: company is _is.UndefinedSentinel
+          ? this.company?.copyWith()
+          : company,
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
-      oldCompany: oldCompany is _i2fdza8t.Company?
-          ? oldCompany
-          : this.oldCompany?.copyWith(),
+      oldCompany: oldCompany is _is.UndefinedSentinel
+          ? this.oldCompany?.copyWith()
+          : oldCompany,
     );
   }
 }

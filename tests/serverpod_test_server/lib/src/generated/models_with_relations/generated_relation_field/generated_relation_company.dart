@@ -77,8 +77,10 @@ abstract class GeneratedRelationCompany
   GeneratedRelationCompany copyWith({
     int? id,
     String? name,
-    _im57bsix.GeneratedRelationOffice? office,
-    List<_inw8ul07.GeneratedRelationEmployee>? employees,
+    _im57bsix.GeneratedRelationOffice? office =
+        const _UndefinedGeneratedRelationCompany$office(),
+    List<_inw8ul07.GeneratedRelationEmployee>? employees =
+        const _is.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -142,6 +144,11 @@ abstract class GeneratedRelationCompany
 
 class _Undefined {}
 
+class _UndefinedGeneratedRelationCompany$office extends _is.UndefinedSentinel
+    implements _im57bsix.GeneratedRelationOffice {
+  const _UndefinedGeneratedRelationCompany$office();
+}
+
 class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
   _GeneratedRelationCompanyImpl({
     int? id,
@@ -162,18 +169,20 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
   GeneratedRelationCompany copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? office = _Undefined,
-    Object? employees = _Undefined,
+    _im57bsix.GeneratedRelationOffice? office =
+        const _UndefinedGeneratedRelationCompany$office(),
+    List<_inw8ul07.GeneratedRelationEmployee>? employees =
+        const _is.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
   }) {
     return GeneratedRelationCompany(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      office: office is _im57bsix.GeneratedRelationOffice?
-          ? office
-          : this.office?.copyWith(),
-      employees: employees is List<_inw8ul07.GeneratedRelationEmployee>?
-          ? employees
-          : this.employees?.map((e0) => e0.copyWith()).toList(),
+      office: office is _is.UndefinedSentinel
+          ? this.office?.copyWith()
+          : office,
+      employees: employees is _is.UndefinedSentinel
+          ? this.employees?.map((e0) => e0.copyWith()).toList()
+          : employees,
     );
   }
 }

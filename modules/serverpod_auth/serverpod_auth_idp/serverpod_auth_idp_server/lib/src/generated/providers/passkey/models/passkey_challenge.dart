@@ -63,7 +63,7 @@ abstract class PasskeyChallenge
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   PasskeyChallenge copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     DateTime? createdAt,
     _idt.ByteData? challenge,
   });
@@ -110,8 +110,6 @@ abstract class PasskeyChallenge
   }
 }
 
-class _Undefined {}
-
 class _PasskeyChallengeImpl extends PasskeyChallenge {
   _PasskeyChallengeImpl({
     _is.UuidValue? id,
@@ -128,12 +126,12 @@ class _PasskeyChallengeImpl extends PasskeyChallenge {
   @_is.useResult
   @override
   PasskeyChallenge copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     DateTime? createdAt,
     _idt.ByteData? challenge,
   }) {
     return PasskeyChallenge(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       createdAt: createdAt ?? this.createdAt,
       challenge: challenge ?? this.challenge.clone(),
     );

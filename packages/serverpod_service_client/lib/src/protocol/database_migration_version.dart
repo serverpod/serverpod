@@ -57,7 +57,7 @@ abstract class DatabaseMigrationVersion
     int? id,
     String? module,
     String? version,
-    Object? timestamp,
+    DateTime? timestamp = const _isc.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -110,13 +110,15 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
     Object? id = _Undefined,
     String? module,
     String? version,
-    Object? timestamp = _Undefined,
+    DateTime? timestamp = const _isc.$UndefinedDateTime(),
   }) {
     return DatabaseMigrationVersion(
       id: id is int? ? id : this.id,
       module: module ?? this.module,
       version: version ?? this.version,
-      timestamp: timestamp is DateTime? ? timestamp : this.timestamp,
+      timestamp: timestamp is _isc.UndefinedSentinel
+          ? this.timestamp
+          : timestamp,
     );
   }
 }

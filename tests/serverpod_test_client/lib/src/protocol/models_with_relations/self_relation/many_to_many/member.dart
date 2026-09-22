@@ -65,8 +65,10 @@ abstract class Member
   Member copyWith({
     int? id,
     String? name,
-    List<_iv5rlvod.Blocking>? blocking,
-    List<_iv5rlvod.Blocking>? blockedBy,
+    List<_iv5rlvod.Blocking>? blocking =
+        const _isc.$UndefinedList<_iv5rlvod.Blocking>(),
+    List<_iv5rlvod.Blocking>? blockedBy =
+        const _isc.$UndefinedList<_iv5rlvod.Blocking>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -124,18 +126,20 @@ class _MemberImpl extends Member {
   Member copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? blocking = _Undefined,
-    Object? blockedBy = _Undefined,
+    List<_iv5rlvod.Blocking>? blocking =
+        const _isc.$UndefinedList<_iv5rlvod.Blocking>(),
+    List<_iv5rlvod.Blocking>? blockedBy =
+        const _isc.$UndefinedList<_iv5rlvod.Blocking>(),
   }) {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking: blocking is List<_iv5rlvod.Blocking>?
-          ? blocking
-          : this.blocking?.map((e0) => e0.copyWith()).toList(),
-      blockedBy: blockedBy is List<_iv5rlvod.Blocking>?
-          ? blockedBy
-          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
+      blocking: blocking is _isc.UndefinedSentinel
+          ? this.blocking?.map((e0) => e0.copyWith()).toList()
+          : blocking,
+      blockedBy: blockedBy is _isc.UndefinedSentinel
+          ? this.blockedBy?.map((e0) => e0.copyWith()).toList()
+          : blockedBy,
     );
   }
 }

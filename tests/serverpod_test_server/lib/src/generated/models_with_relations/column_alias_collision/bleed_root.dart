@@ -99,9 +99,11 @@ abstract class BleedRoot
     int? id,
     String? name,
     int? firstChildId,
-    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24 =
+        const _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun24(),
     int? secondChildId,
-    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23 =
+        const _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun23(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -179,6 +181,18 @@ abstract class BleedRoot
 
 class _Undefined {}
 
+class _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun24
+    extends _is.UndefinedSentinel
+    implements _i2rsfnut.BleedChild {
+  const _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun24();
+}
+
+class _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun23
+    extends _is.UndefinedSentinel
+    implements _i2rsfnut.BleedChild {
+  const _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun23();
+}
+
 class _BleedRootImpl extends BleedRoot {
   _BleedRootImpl({
     int? id,
@@ -206,9 +220,11 @@ class _BleedRootImpl extends BleedRoot {
     Object? id = _Undefined,
     String? name,
     Object? firstChildId = _Undefined,
-    Object? childRelationWithExtremelyLongFieldNameForcingTrun24 = _Undefined,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24 =
+        const _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun24(),
     Object? secondChildId = _Undefined,
-    Object? childRelationWithExtremelyLongFieldNameForcingTrun23 = _Undefined,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23 =
+        const _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun23(),
   }) {
     return BleedRoot(
       id: id is int? ? id : this.id,
@@ -216,17 +232,17 @@ class _BleedRootImpl extends BleedRoot {
       firstChildId: firstChildId is int? ? firstChildId : this.firstChildId,
       childRelationWithExtremelyLongFieldNameForcingTrun24:
           childRelationWithExtremelyLongFieldNameForcingTrun24
-              is _i2rsfnut.BleedChild?
-          ? childRelationWithExtremelyLongFieldNameForcingTrun24
-          : this.childRelationWithExtremelyLongFieldNameForcingTrun24
-                ?.copyWith(),
+              is _is.UndefinedSentinel
+          ? this.childRelationWithExtremelyLongFieldNameForcingTrun24
+                ?.copyWith()
+          : childRelationWithExtremelyLongFieldNameForcingTrun24,
       secondChildId: secondChildId is int? ? secondChildId : this.secondChildId,
       childRelationWithExtremelyLongFieldNameForcingTrun23:
           childRelationWithExtremelyLongFieldNameForcingTrun23
-              is _i2rsfnut.BleedChild?
-          ? childRelationWithExtremelyLongFieldNameForcingTrun23
-          : this.childRelationWithExtremelyLongFieldNameForcingTrun23
-                ?.copyWith(),
+              is _is.UndefinedSentinel
+          ? this.childRelationWithExtremelyLongFieldNameForcingTrun23
+                ?.copyWith()
+          : childRelationWithExtremelyLongFieldNameForcingTrun23,
     );
   }
 }

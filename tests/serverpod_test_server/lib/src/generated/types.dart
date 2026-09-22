@@ -235,26 +235,29 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? anInt,
     bool? aBool,
     double? aDouble,
-    DateTime? aDateTime,
+    DateTime? aDateTime = const _is.$UndefinedDateTime(),
     String? aString,
     _idt.ByteData? aByteData,
-    Duration? aDuration,
-    _is.UuidValue? aUuid,
-    Uri? aUri,
+    Duration? aDuration = const _is.$UndefinedDuration(),
+    _is.UuidValue? aUuid = const _is.$UndefinedUuidValue(),
+    Uri? aUri = const _is.$UndefinedUri(),
     BigInt? aBigInt,
-    _is.Vector? aVector,
-    _is.HalfVector? aHalfVector,
-    _is.SparseVector? aSparseVector,
-    _is.Bit? aBit,
-    _is.GeographyPoint? aGeographyPoint,
-    _is.GeographyLineString? aGeographyLineString,
-    _is.GeographyPolygon? aGeographyPolygon,
-    _is.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _is.Vector? aVector = const _is.$UndefinedVector(),
+    _is.HalfVector? aHalfVector = const _is.$UndefinedHalfVector(),
+    _is.SparseVector? aSparseVector = const _is.$UndefinedSparseVector(),
+    _is.Bit? aBit = const _is.$UndefinedBit(),
+    _is.GeographyPoint? aGeographyPoint = const _is.$UndefinedGeographyPoint(),
+    _is.GeographyLineString? aGeographyLineString =
+        const _is.$UndefinedGeographyLineString(),
+    _is.GeographyPolygon? aGeographyPolygon =
+        const _is.$UndefinedGeographyPolygon(),
+    _is.GeographyGeometryCollection? aGeographyGeometryCollection =
+        const _is.$UndefinedGeographyGeometryCollection(),
     _ionapfu9.TestEnum? anEnum,
     _i7liykk2.TestEnumStringified? aStringifiedEnum,
-    List<int>? aList,
-    Map<int, int>? aMap,
-    Set<int>? aSet,
+    List<int>? aList = const _is.$UndefinedList<int>(),
+    Map<int, int>? aMap = const _is.$UndefinedMap<int, int>(),
+    Set<int>? aSet = const _is.$UndefinedSet<int>(),
     (String, {Uri? optionalUri})? aRecord,
   });
   @override
@@ -425,26 +428,29 @@ class _TypesImpl extends Types {
     Object? anInt = _Undefined,
     Object? aBool = _Undefined,
     Object? aDouble = _Undefined,
-    Object? aDateTime = _Undefined,
+    DateTime? aDateTime = const _is.$UndefinedDateTime(),
     Object? aString = _Undefined,
     Object? aByteData = _Undefined,
-    Object? aDuration = _Undefined,
-    Object? aUuid = _Undefined,
-    Object? aUri = _Undefined,
+    Duration? aDuration = const _is.$UndefinedDuration(),
+    _is.UuidValue? aUuid = const _is.$UndefinedUuidValue(),
+    Uri? aUri = const _is.$UndefinedUri(),
     Object? aBigInt = _Undefined,
-    Object? aVector = _Undefined,
-    Object? aHalfVector = _Undefined,
-    Object? aSparseVector = _Undefined,
-    Object? aBit = _Undefined,
-    Object? aGeographyPoint = _Undefined,
-    Object? aGeographyLineString = _Undefined,
-    Object? aGeographyPolygon = _Undefined,
-    Object? aGeographyGeometryCollection = _Undefined,
+    _is.Vector? aVector = const _is.$UndefinedVector(),
+    _is.HalfVector? aHalfVector = const _is.$UndefinedHalfVector(),
+    _is.SparseVector? aSparseVector = const _is.$UndefinedSparseVector(),
+    _is.Bit? aBit = const _is.$UndefinedBit(),
+    _is.GeographyPoint? aGeographyPoint = const _is.$UndefinedGeographyPoint(),
+    _is.GeographyLineString? aGeographyLineString =
+        const _is.$UndefinedGeographyLineString(),
+    _is.GeographyPolygon? aGeographyPolygon =
+        const _is.$UndefinedGeographyPolygon(),
+    _is.GeographyGeometryCollection? aGeographyGeometryCollection =
+        const _is.$UndefinedGeographyGeometryCollection(),
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
-    Object? aList = _Undefined,
-    Object? aMap = _Undefined,
-    Object? aSet = _Undefined,
+    List<int>? aList = const _is.$UndefinedList<int>(),
+    Map<int, int>? aMap = const _is.$UndefinedMap<int, int>(),
+    Set<int>? aSet = const _is.$UndefinedSet<int>(),
     Object? aRecord = _Undefined,
   }) {
     return Types(
@@ -452,44 +458,51 @@ class _TypesImpl extends Types {
       anInt: anInt is int? ? anInt : this.anInt,
       aBool: aBool is bool? ? aBool : this.aBool,
       aDouble: aDouble is double? ? aDouble : this.aDouble,
-      aDateTime: aDateTime is DateTime? ? aDateTime : this.aDateTime,
+      aDateTime: aDateTime is _is.UndefinedSentinel
+          ? this.aDateTime
+          : aDateTime,
       aString: aString is String? ? aString : this.aString,
       aByteData: aByteData is _idt.ByteData?
           ? aByteData
           : this.aByteData?.clone(),
-      aDuration: aDuration is Duration? ? aDuration : this.aDuration,
-      aUuid: aUuid is _is.UuidValue? ? aUuid : this.aUuid,
-      aUri: aUri is Uri? ? aUri : this.aUri,
+      aDuration: aDuration is _is.UndefinedSentinel
+          ? this.aDuration
+          : aDuration,
+      aUuid: aUuid is _is.UndefinedSentinel ? this.aUuid : aUuid,
+      aUri: aUri is _is.UndefinedSentinel ? this.aUri : aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
-      aVector: aVector is _is.Vector? ? aVector : this.aVector?.clone(),
-      aHalfVector: aHalfVector is _is.HalfVector?
-          ? aHalfVector
-          : this.aHalfVector?.clone(),
-      aSparseVector: aSparseVector is _is.SparseVector?
-          ? aSparseVector
-          : this.aSparseVector?.clone(),
-      aBit: aBit is _is.Bit? ? aBit : this.aBit?.clone(),
-      aGeographyPoint: aGeographyPoint is _is.GeographyPoint?
-          ? aGeographyPoint
-          : this.aGeographyPoint,
-      aGeographyLineString: aGeographyLineString is _is.GeographyLineString?
-          ? aGeographyLineString
-          : this.aGeographyLineString,
-      aGeographyPolygon: aGeographyPolygon is _is.GeographyPolygon?
-          ? aGeographyPolygon
-          : this.aGeographyPolygon,
+      aVector: aVector is _is.UndefinedSentinel
+          ? this.aVector?.clone()
+          : aVector,
+      aHalfVector: aHalfVector is _is.UndefinedSentinel
+          ? this.aHalfVector?.clone()
+          : aHalfVector,
+      aSparseVector: aSparseVector is _is.UndefinedSentinel
+          ? this.aSparseVector?.clone()
+          : aSparseVector,
+      aBit: aBit is _is.UndefinedSentinel ? this.aBit?.clone() : aBit,
+      aGeographyPoint: aGeographyPoint is _is.UndefinedSentinel
+          ? this.aGeographyPoint
+          : aGeographyPoint,
+      aGeographyLineString: aGeographyLineString is _is.UndefinedSentinel
+          ? this.aGeographyLineString
+          : aGeographyLineString,
+      aGeographyPolygon: aGeographyPolygon is _is.UndefinedSentinel
+          ? this.aGeographyPolygon
+          : aGeographyPolygon,
       aGeographyGeometryCollection:
-          aGeographyGeometryCollection is _is.GeographyGeometryCollection?
-          ? aGeographyGeometryCollection
-          : this.aGeographyGeometryCollection,
+          aGeographyGeometryCollection is _is.UndefinedSentinel
+          ? this.aGeographyGeometryCollection
+          : aGeographyGeometryCollection,
       anEnum: anEnum is _ionapfu9.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i7liykk2.TestEnumStringified?
           ? aStringifiedEnum
           : this.aStringifiedEnum,
-      aList: aList is List<int>? ? aList : this.aList?.map((e0) => e0).toList(),
-      aMap: aMap is Map<int, int>?
-          ? aMap
-          : this.aMap?.map(
+      aList: aList is _is.UndefinedSentinel
+          ? this.aList?.map((e0) => e0).toList()
+          : aList,
+      aMap: aMap is _is.UndefinedSentinel
+          ? this.aMap?.map(
               (
                 key0,
                 value0,
@@ -497,8 +510,11 @@ class _TypesImpl extends Types {
                 key0,
                 value0,
               ),
-            ),
-      aSet: aSet is Set<int>? ? aSet : this.aSet?.map((e0) => e0).toSet(),
+            )
+          : aMap,
+      aSet: aSet is _is.UndefinedSentinel
+          ? this.aSet?.map((e0) => e0).toSet()
+          : aSet,
       aRecord: aRecord is (String, {Uri? optionalUri})?
           ? aRecord
           : this.aRecord == null

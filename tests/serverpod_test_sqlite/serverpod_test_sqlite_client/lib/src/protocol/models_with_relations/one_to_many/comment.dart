@@ -70,7 +70,7 @@ abstract class Comment
     int? id,
     String? description,
     int? orderId,
-    _ig920ya2.Order? order,
+    _ig920ya2.Order? order = const _UndefinedComment$order(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -124,6 +124,11 @@ abstract class Comment
 
 class _Undefined {}
 
+class _UndefinedComment$order extends _isc.UndefinedSentinel
+    implements _ig920ya2.Order {
+  const _UndefinedComment$order();
+}
+
 class _CommentImpl extends Comment {
   _CommentImpl({
     int? id,
@@ -145,13 +150,13 @@ class _CommentImpl extends Comment {
     Object? id = _Undefined,
     String? description,
     int? orderId,
-    Object? order = _Undefined,
+    _ig920ya2.Order? order = const _UndefinedComment$order(),
   }) {
     return Comment(
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       orderId: orderId ?? this.orderId,
-      order: order is _ig920ya2.Order? ? order : this.order?.copyWith(),
+      order: order is _isc.UndefinedSentinel ? this.order?.copyWith() : order,
     );
   }
 }

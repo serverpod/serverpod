@@ -38,11 +38,11 @@ class GrandparentClassWithId
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   GrandparentClassWithId copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? grandParentField,
   }) {
     return GrandparentClassWithId(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       grandParentField: grandParentField ?? this.grandParentField,
     );
   }
@@ -70,5 +70,3 @@ class GrandparentClassWithId
     return _is.SerializationManager.encode(this);
   }
 }
-
-class _Undefined {}

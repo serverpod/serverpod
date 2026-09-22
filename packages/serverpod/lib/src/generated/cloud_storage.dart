@@ -121,7 +121,7 @@ abstract class CloudStorageEntry
     String? storageId,
     String? path,
     DateTime? addedTime,
-    DateTime? expiration,
+    DateTime? expiration = const _is.$UndefinedDateTime(),
     _idt.ByteData? byteData,
     bool? verified,
     String? contentType,
@@ -236,7 +236,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     String? storageId,
     String? path,
     DateTime? addedTime,
-    Object? expiration = _Undefined,
+    DateTime? expiration = const _is.$UndefinedDateTime(),
     _idt.ByteData? byteData,
     bool? verified,
     Object? contentType = _Undefined,
@@ -250,7 +250,9 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
       storageId: storageId ?? this.storageId,
       path: path ?? this.path,
       addedTime: addedTime ?? this.addedTime,
-      expiration: expiration is DateTime? ? expiration : this.expiration,
+      expiration: expiration is _is.UndefinedSentinel
+          ? this.expiration
+          : expiration,
       byteData: byteData ?? this.byteData.clone(),
       verified: verified ?? this.verified,
       contentType: contentType is String? ? contentType : this.contentType,

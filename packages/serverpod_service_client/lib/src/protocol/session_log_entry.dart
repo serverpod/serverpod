@@ -175,9 +175,12 @@ abstract class SessionLogEntry
     String? userId,
     bool? isOpen,
     DateTime? touched,
-    List<_iv7ld46g.LogEntry>? logs,
-    List<_inqjskye.QueryLogEntry>? queries,
-    List<_iky1nb92.MessageLogEntry>? messages,
+    List<_iv7ld46g.LogEntry>? logs =
+        const _isc.$UndefinedList<_iv7ld46g.LogEntry>(),
+    List<_inqjskye.QueryLogEntry>? queries =
+        const _isc.$UndefinedList<_inqjskye.QueryLogEntry>(),
+    List<_iky1nb92.MessageLogEntry>? messages =
+        const _isc.$UndefinedList<_iky1nb92.MessageLogEntry>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -298,9 +301,12 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     Object? userId = _Undefined,
     Object? isOpen = _Undefined,
     DateTime? touched,
-    Object? logs = _Undefined,
-    Object? queries = _Undefined,
-    Object? messages = _Undefined,
+    List<_iv7ld46g.LogEntry>? logs =
+        const _isc.$UndefinedList<_iv7ld46g.LogEntry>(),
+    List<_inqjskye.QueryLogEntry>? queries =
+        const _isc.$UndefinedList<_inqjskye.QueryLogEntry>(),
+    List<_iky1nb92.MessageLogEntry>? messages =
+        const _isc.$UndefinedList<_iky1nb92.MessageLogEntry>(),
   }) {
     return SessionLogEntry(
       id: id is int? ? id : this.id,
@@ -317,15 +323,15 @@ class _SessionLogEntryImpl extends SessionLogEntry {
       userId: userId is String? ? userId : this.userId,
       isOpen: isOpen is bool? ? isOpen : this.isOpen,
       touched: touched ?? this.touched,
-      logs: logs is List<_iv7ld46g.LogEntry>?
-          ? logs
-          : this.logs?.map((e0) => e0.copyWith()).toList(),
-      queries: queries is List<_inqjskye.QueryLogEntry>?
-          ? queries
-          : this.queries?.map((e0) => e0.copyWith()).toList(),
-      messages: messages is List<_iky1nb92.MessageLogEntry>?
-          ? messages
-          : this.messages?.map((e0) => e0.copyWith()).toList(),
+      logs: logs is _isc.UndefinedSentinel
+          ? this.logs?.map((e0) => e0.copyWith()).toList()
+          : logs,
+      queries: queries is _isc.UndefinedSentinel
+          ? this.queries?.map((e0) => e0.copyWith()).toList()
+          : queries,
+      messages: messages is _isc.UndefinedSentinel
+          ? this.messages?.map((e0) => e0.copyWith()).toList()
+          : messages,
     );
   }
 }

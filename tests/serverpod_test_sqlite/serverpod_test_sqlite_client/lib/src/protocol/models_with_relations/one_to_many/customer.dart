@@ -64,7 +64,8 @@ abstract class Customer
   Customer copyWith({
     int? id,
     String? name,
-    List<_ig920ya2.Order>? orders,
+    List<_ig920ya2.Order>? orders =
+        const _isc.$UndefinedList<_ig920ya2.Order>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -136,14 +137,15 @@ class _CustomerImpl extends Customer {
   Customer copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? orders = _Undefined,
+    List<_ig920ya2.Order>? orders =
+        const _isc.$UndefinedList<_ig920ya2.Order>(),
   }) {
     return Customer(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_ig920ya2.Order>?
-          ? orders
-          : this.orders?.map((e0) => e0.copyWith()).toList(),
+      orders: orders is _isc.UndefinedSentinel
+          ? this.orders?.map((e0) => e0.copyWith()).toList()
+          : orders,
     );
   }
 }

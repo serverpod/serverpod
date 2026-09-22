@@ -120,7 +120,7 @@ abstract class ObjectWithJsonb
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,
     List<String>? jsonbIndexedImplicitGin,
-    List<String>? nullableJsonb,
+    List<String>? nullableJsonb = const _is.$UndefinedList<String>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -225,7 +225,7 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,
     List<String>? jsonbIndexedImplicitGin,
-    Object? nullableJsonb = _Undefined,
+    List<String>? nullableJsonb = const _is.$UndefinedList<String>(),
   }) {
     return ObjectWithJsonb(
       id: id is int? ? id : this.id,
@@ -252,9 +252,9 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
       jsonbIndexedImplicitGin:
           jsonbIndexedImplicitGin ??
           this.jsonbIndexedImplicitGin.map((e0) => e0).toList(),
-      nullableJsonb: nullableJsonb is List<String>?
-          ? nullableJsonb
-          : this.nullableJsonb?.map((e0) => e0).toList(),
+      nullableJsonb: nullableJsonb is _is.UndefinedSentinel
+          ? this.nullableJsonb?.map((e0) => e0).toList()
+          : nullableJsonb,
     );
   }
 }

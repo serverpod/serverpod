@@ -121,15 +121,24 @@ abstract class ObjectWithObject
   ObjectWithObject copyWith({
     int? id,
     _i0zisc0t.SimpleData? data,
-    _i0zisc0t.SimpleData? nullableData,
+    _i0zisc0t.SimpleData? nullableData =
+        const _UndefinedObjectWithObject$nullableData(),
     List<_i0zisc0t.SimpleData>? dataList,
-    List<_i0zisc0t.SimpleData>? nullableDataList,
+    List<_i0zisc0t.SimpleData>? nullableDataList =
+        const _isc.$UndefinedList<_i0zisc0t.SimpleData>(),
     List<_i0zisc0t.SimpleData?>? listWithNullableData,
-    List<_i0zisc0t.SimpleData?>? nullableListWithNullableData,
-    List<List<_i0zisc0t.SimpleData>>? nestedDataList,
+    List<_i0zisc0t.SimpleData?>? nullableListWithNullableData =
+        const _isc.$UndefinedList<_i0zisc0t.SimpleData?>(),
+    List<List<_i0zisc0t.SimpleData>>? nestedDataList =
+        const _isc.$UndefinedList<List<_i0zisc0t.SimpleData>>(),
     Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
-    nestedDataListInMap,
-    Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap,
+        nestedDataListInMap =
+        const _isc.$UndefinedMap<
+          String,
+          List<List<Map<int, _i0zisc0t.SimpleData>>?>
+        >(),
+    Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap =
+        const _isc.$UndefinedMap<String, Map<int, _i0zisc0t.SimpleData>>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -219,6 +228,11 @@ abstract class ObjectWithObject
 
 class _Undefined {}
 
+class _UndefinedObjectWithObject$nullableData extends _isc.UndefinedSentinel
+    implements _i0zisc0t.SimpleData {
+  const _UndefinedObjectWithObject$nullableData();
+}
+
 class _ObjectWithObjectImpl extends ObjectWithObject {
   _ObjectWithObjectImpl({
     int? id,
@@ -252,44 +266,51 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
   ObjectWithObject copyWith({
     Object? id = _Undefined,
     _i0zisc0t.SimpleData? data,
-    Object? nullableData = _Undefined,
+    _i0zisc0t.SimpleData? nullableData =
+        const _UndefinedObjectWithObject$nullableData(),
     List<_i0zisc0t.SimpleData>? dataList,
-    Object? nullableDataList = _Undefined,
+    List<_i0zisc0t.SimpleData>? nullableDataList =
+        const _isc.$UndefinedList<_i0zisc0t.SimpleData>(),
     List<_i0zisc0t.SimpleData?>? listWithNullableData,
-    Object? nullableListWithNullableData = _Undefined,
-    Object? nestedDataList = _Undefined,
-    Object? nestedDataListInMap = _Undefined,
-    Object? nestedDataMap = _Undefined,
+    List<_i0zisc0t.SimpleData?>? nullableListWithNullableData =
+        const _isc.$UndefinedList<_i0zisc0t.SimpleData?>(),
+    List<List<_i0zisc0t.SimpleData>>? nestedDataList =
+        const _isc.$UndefinedList<List<_i0zisc0t.SimpleData>>(),
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
+        nestedDataListInMap =
+        const _isc.$UndefinedMap<
+          String,
+          List<List<Map<int, _i0zisc0t.SimpleData>>?>
+        >(),
+    Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap =
+        const _isc.$UndefinedMap<String, Map<int, _i0zisc0t.SimpleData>>(),
   }) {
     return ObjectWithObject(
       id: id is int? ? id : this.id,
       data: data ?? this.data.copyWith(),
-      nullableData: nullableData is _i0zisc0t.SimpleData?
-          ? nullableData
-          : this.nullableData?.copyWith(),
+      nullableData: nullableData is _isc.UndefinedSentinel
+          ? this.nullableData?.copyWith()
+          : nullableData,
       dataList: dataList ?? this.dataList.map((e0) => e0.copyWith()).toList(),
-      nullableDataList: nullableDataList is List<_i0zisc0t.SimpleData>?
-          ? nullableDataList
-          : this.nullableDataList?.map((e0) => e0.copyWith()).toList(),
+      nullableDataList: nullableDataList is _isc.UndefinedSentinel
+          ? this.nullableDataList?.map((e0) => e0.copyWith()).toList()
+          : nullableDataList,
       listWithNullableData:
           listWithNullableData ??
           this.listWithNullableData.map((e0) => e0?.copyWith()).toList(),
       nullableListWithNullableData:
-          nullableListWithNullableData is List<_i0zisc0t.SimpleData?>?
-          ? nullableListWithNullableData
-          : this.nullableListWithNullableData
+          nullableListWithNullableData is _isc.UndefinedSentinel
+          ? this.nullableListWithNullableData
                 ?.map((e0) => e0?.copyWith())
-                .toList(),
-      nestedDataList: nestedDataList is List<List<_i0zisc0t.SimpleData>>?
-          ? nestedDataList
-          : this.nestedDataList
+                .toList()
+          : nullableListWithNullableData,
+      nestedDataList: nestedDataList is _isc.UndefinedSentinel
+          ? this.nestedDataList
                 ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
-                .toList(),
-      nestedDataListInMap:
-          nestedDataListInMap
-              is Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
-          ? nestedDataListInMap
-          : this.nestedDataListInMap?.map(
+                .toList()
+          : nestedDataList,
+      nestedDataListInMap: nestedDataListInMap is _isc.UndefinedSentinel
+          ? this.nestedDataListInMap?.map(
               (
                 key0,
                 value0,
@@ -313,11 +334,10 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
                     )
                     .toList(),
               ),
-            ),
-      nestedDataMap:
-          nestedDataMap is Map<String, Map<int, _i0zisc0t.SimpleData>>?
-          ? nestedDataMap
-          : this.nestedDataMap?.map(
+            )
+          : nestedDataListInMap,
+      nestedDataMap: nestedDataMap is _isc.UndefinedSentinel
+          ? this.nestedDataMap?.map(
               (
                 key0,
                 value0,
@@ -333,7 +353,8 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
                   ),
                 ),
               ),
-            ),
+            )
+          : nestedDataMap,
     );
   }
 }

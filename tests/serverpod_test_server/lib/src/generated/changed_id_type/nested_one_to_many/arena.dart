@@ -64,7 +64,7 @@ abstract class ArenaUuid
   ArenaUuid copyWith({
     _is.UuidValue? id,
     String? name,
-    _i9bz1am4.TeamInt? team,
+    _i9bz1am4.TeamInt? team = const _UndefinedArenaUuid$team(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -114,7 +114,10 @@ abstract class ArenaUuid
   }
 }
 
-class _Undefined {}
+class _UndefinedArenaUuid$team extends _is.UndefinedSentinel
+    implements _i9bz1am4.TeamInt {
+  const _UndefinedArenaUuid$team();
+}
 
 class _ArenaUuidImpl extends ArenaUuid {
   _ArenaUuidImpl({
@@ -134,12 +137,12 @@ class _ArenaUuidImpl extends ArenaUuid {
   ArenaUuid copyWith({
     _is.UuidValue? id,
     String? name,
-    Object? team = _Undefined,
+    _i9bz1am4.TeamInt? team = const _UndefinedArenaUuid$team(),
   }) {
     return ArenaUuid(
       id: id ?? this.id,
       name: name ?? this.name,
-      team: team is _i9bz1am4.TeamInt? ? team : this.team?.copyWith(),
+      team: team is _is.UndefinedSentinel ? this.team?.copyWith() : team,
     );
   }
 }

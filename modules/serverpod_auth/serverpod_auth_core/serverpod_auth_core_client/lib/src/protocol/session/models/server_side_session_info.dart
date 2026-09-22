@@ -110,8 +110,8 @@ abstract class ServerSideSessionInfo
     Set<String>? scopeNames,
     DateTime? created,
     DateTime? lastUsed,
-    DateTime? expiresAt,
-    Duration? expireAfterUnusedFor,
+    DateTime? expiresAt = const _isc.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _isc.$UndefinedDuration(),
     String? method,
   });
   @override
@@ -152,8 +152,6 @@ abstract class ServerSideSessionInfo
   }
 }
 
-class _Undefined {}
-
 class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
   _ServerSideSessionInfoImpl({
     required _isc.UuidValue id,
@@ -185,8 +183,8 @@ class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
     Set<String>? scopeNames,
     DateTime? created,
     DateTime? lastUsed,
-    Object? expiresAt = _Undefined,
-    Object? expireAfterUnusedFor = _Undefined,
+    DateTime? expiresAt = const _isc.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _isc.$UndefinedDuration(),
     String? method,
   }) {
     return ServerSideSessionInfo(
@@ -195,10 +193,12 @@ class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       created: created ?? this.created,
       lastUsed: lastUsed ?? this.lastUsed,
-      expiresAt: expiresAt is DateTime? ? expiresAt : this.expiresAt,
-      expireAfterUnusedFor: expireAfterUnusedFor is Duration?
-          ? expireAfterUnusedFor
-          : this.expireAfterUnusedFor,
+      expiresAt: expiresAt is _isc.UndefinedSentinel
+          ? this.expiresAt
+          : expiresAt,
+      expireAfterUnusedFor: expireAfterUnusedFor is _isc.UndefinedSentinel
+          ? this.expireAfterUnusedFor
+          : expireAfterUnusedFor,
       method: method ?? this.method,
     );
   }

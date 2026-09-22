@@ -71,8 +71,10 @@ abstract class City implements _is.TableRow<int?>, _is.ProtocolSerialization {
   City copyWith({
     int? id,
     String? name,
-    List<_ijqkgw0m.Person>? citizens,
-    List<_i0ptycc3.Organization>? organizations,
+    List<_ijqkgw0m.Person>? citizens =
+        const _is.$UndefinedList<_ijqkgw0m.Person>(),
+    List<_i0ptycc3.Organization>? organizations =
+        const _is.$UndefinedList<_i0ptycc3.Organization>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -158,18 +160,20 @@ class _CityImpl extends City {
   City copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? citizens = _Undefined,
-    Object? organizations = _Undefined,
+    List<_ijqkgw0m.Person>? citizens =
+        const _is.$UndefinedList<_ijqkgw0m.Person>(),
+    List<_i0ptycc3.Organization>? organizations =
+        const _is.$UndefinedList<_i0ptycc3.Organization>(),
   }) {
     return City(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      citizens: citizens is List<_ijqkgw0m.Person>?
-          ? citizens
-          : this.citizens?.map((e0) => e0.copyWith()).toList(),
-      organizations: organizations is List<_i0ptycc3.Organization>?
-          ? organizations
-          : this.organizations?.map((e0) => e0.copyWith()).toList(),
+      citizens: citizens is _is.UndefinedSentinel
+          ? this.citizens?.map((e0) => e0.copyWith()).toList()
+          : citizens,
+      organizations: organizations is _is.UndefinedSentinel
+          ? this.organizations?.map((e0) => e0.copyWith()).toList()
+          : organizations,
     );
   }
 }

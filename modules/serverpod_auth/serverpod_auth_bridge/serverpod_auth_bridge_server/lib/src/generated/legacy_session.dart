@@ -89,7 +89,7 @@ abstract class LegacySession
   LegacySession copyWith({
     int? id,
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedLegacySession$authUser(),
     Set<String>? scopeNames,
     String? hash,
     String? method,
@@ -142,6 +142,11 @@ abstract class LegacySession
 
 class _Undefined {}
 
+class _UndefinedLegacySession$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedLegacySession$authUser();
+}
+
 class _LegacySessionImpl extends LegacySession {
   _LegacySessionImpl({
     int? id,
@@ -166,7 +171,7 @@ class _LegacySessionImpl extends LegacySession {
   LegacySession copyWith({
     Object? id = _Undefined,
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedLegacySession$authUser(),
     Set<String>? scopeNames,
     String? hash,
     String? method,
@@ -174,9 +179,9 @@ class _LegacySessionImpl extends LegacySession {
     return LegacySession(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       hash: hash ?? this.hash,
       method: method ?? this.method,

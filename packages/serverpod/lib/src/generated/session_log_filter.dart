@@ -95,8 +95,8 @@ abstract class SessionLogFilter
     bool? error,
     bool? open,
     int? lastSessionLogId,
-    DateTime? startTime,
-    DateTime? endTime,
+    DateTime? startTime = const _is.$UndefinedDateTime(),
+    DateTime? endTime = const _is.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -173,8 +173,8 @@ class _SessionLogFilterImpl extends SessionLogFilter {
     bool? error,
     bool? open,
     Object? lastSessionLogId = _Undefined,
-    Object? startTime = _Undefined,
-    Object? endTime = _Undefined,
+    DateTime? startTime = const _is.$UndefinedDateTime(),
+    DateTime? endTime = const _is.$UndefinedDateTime(),
   }) {
     return SessionLogFilter(
       endpoint: endpoint is String? ? endpoint : this.endpoint,
@@ -186,8 +186,10 @@ class _SessionLogFilterImpl extends SessionLogFilter {
       lastSessionLogId: lastSessionLogId is int?
           ? lastSessionLogId
           : this.lastSessionLogId,
-      startTime: startTime is DateTime? ? startTime : this.startTime,
-      endTime: endTime is DateTime? ? endTime : this.endTime,
+      startTime: startTime is _is.UndefinedSentinel
+          ? this.startTime
+          : startTime,
+      endTime: endTime is _is.UndefinedSentinel ? this.endTime : endTime,
     );
   }
 }

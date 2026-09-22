@@ -48,12 +48,14 @@ class DatabaseMigrationVersionModel
   DatabaseMigrationVersionModel copyWith({
     String? module,
     String? version,
-    Object? timestamp = _Undefined,
+    DateTime? timestamp = const _iss.$UndefinedDateTime(),
   }) {
     return DatabaseMigrationVersionModel(
       module: module ?? this.module,
       version: version ?? this.version,
-      timestamp: timestamp is DateTime? ? timestamp : this.timestamp,
+      timestamp: timestamp is _iss.UndefinedSentinel
+          ? this.timestamp
+          : timestamp,
     );
   }
 
@@ -82,5 +84,3 @@ class DatabaseMigrationVersionModel
     return _iss.SerializationManager.encode(this);
   }
 }
-
-class _Undefined {}

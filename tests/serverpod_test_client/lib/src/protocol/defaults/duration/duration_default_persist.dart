@@ -50,7 +50,7 @@ abstract class DurationDefaultPersist
   @_isc.useResult
   DurationDefaultPersist copyWith({
     int? id,
-    Duration? durationDefaultPersist,
+    Duration? durationDefaultPersist = const _isc.$UndefinedDuration(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,13 +95,13 @@ class _DurationDefaultPersistImpl extends DurationDefaultPersist {
   @override
   DurationDefaultPersist copyWith({
     Object? id = _Undefined,
-    Object? durationDefaultPersist = _Undefined,
+    Duration? durationDefaultPersist = const _isc.$UndefinedDuration(),
   }) {
     return DurationDefaultPersist(
       id: id is int? ? id : this.id,
-      durationDefaultPersist: durationDefaultPersist is Duration?
-          ? durationDefaultPersist
-          : this.durationDefaultPersist,
+      durationDefaultPersist: durationDefaultPersist is _isc.UndefinedSentinel
+          ? this.durationDefaultPersist
+          : durationDefaultPersist,
     );
   }
 }

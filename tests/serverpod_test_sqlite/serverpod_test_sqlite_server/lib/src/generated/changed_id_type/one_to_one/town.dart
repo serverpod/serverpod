@@ -69,7 +69,7 @@ abstract class TownInt
     int? id,
     String? name,
     int? mayorId,
-    _i7hzilwf.CitizenInt? mayor,
+    _i7hzilwf.CitizenInt? mayor = const _UndefinedTownInt$mayor(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -123,6 +123,11 @@ abstract class TownInt
 
 class _Undefined {}
 
+class _UndefinedTownInt$mayor extends _is.UndefinedSentinel
+    implements _i7hzilwf.CitizenInt {
+  const _UndefinedTownInt$mayor();
+}
+
 class _TownIntImpl extends TownInt {
   _TownIntImpl({
     int? id,
@@ -144,13 +149,13 @@ class _TownIntImpl extends TownInt {
     Object? id = _Undefined,
     String? name,
     Object? mayorId = _Undefined,
-    Object? mayor = _Undefined,
+    _i7hzilwf.CitizenInt? mayor = const _UndefinedTownInt$mayor(),
   }) {
     return TownInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       mayorId: mayorId is int? ? mayorId : this.mayorId,
-      mayor: mayor is _i7hzilwf.CitizenInt? ? mayor : this.mayor?.copyWith(),
+      mayor: mayor is _is.UndefinedSentinel ? this.mayor?.copyWith() : mayor,
     );
   }
 }

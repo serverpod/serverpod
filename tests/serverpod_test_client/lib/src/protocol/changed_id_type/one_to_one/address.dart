@@ -61,7 +61,7 @@ abstract class AddressUuid
     _isc.UuidValue? id,
     String? street,
     int? inhabitantId,
-    _i7hzilwf.CitizenInt? inhabitant,
+    _i7hzilwf.CitizenInt? inhabitant = const _UndefinedAddressUuid$inhabitant(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -93,6 +93,11 @@ abstract class AddressUuid
 
 class _Undefined {}
 
+class _UndefinedAddressUuid$inhabitant extends _isc.UndefinedSentinel
+    implements _i7hzilwf.CitizenInt {
+  const _UndefinedAddressUuid$inhabitant();
+}
+
 class _AddressUuidImpl extends AddressUuid {
   _AddressUuidImpl({
     _isc.UuidValue? id,
@@ -114,15 +119,15 @@ class _AddressUuidImpl extends AddressUuid {
     _isc.UuidValue? id,
     String? street,
     Object? inhabitantId = _Undefined,
-    Object? inhabitant = _Undefined,
+    _i7hzilwf.CitizenInt? inhabitant = const _UndefinedAddressUuid$inhabitant(),
   }) {
     return AddressUuid(
       id: id ?? this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _i7hzilwf.CitizenInt?
-          ? inhabitant
-          : this.inhabitant?.copyWith(),
+      inhabitant: inhabitant is _isc.UndefinedSentinel
+          ? this.inhabitant?.copyWith()
+          : inhabitant,
     );
   }
 }

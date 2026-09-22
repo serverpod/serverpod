@@ -45,13 +45,17 @@ class ParentWithChangedId
   @_is.useResult
   ParentWithChangedId copyWith({
     _is.UuidValue? id,
-    Object? createdAt = _Undefined,
-    Object? updatedAt = _Undefined,
+    DateTime? createdAt = const _is.$UndefinedDateTime(),
+    DateTime? updatedAt = const _is.$UndefinedDateTime(),
   }) {
     return ParentWithChangedId(
       id: id ?? this.id,
-      createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
-      updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      createdAt: createdAt is _is.UndefinedSentinel
+          ? this.createdAt
+          : createdAt,
+      updatedAt: updatedAt is _is.UndefinedSentinel
+          ? this.updatedAt
+          : updatedAt,
     );
   }
 
@@ -75,5 +79,3 @@ class ParentWithChangedId
     return _is.SerializationManager.encode(this);
   }
 }
-
-class _Undefined {}

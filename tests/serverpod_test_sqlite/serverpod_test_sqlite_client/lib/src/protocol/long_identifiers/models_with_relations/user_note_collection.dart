@@ -57,7 +57,8 @@ abstract class UserNoteCollection
   UserNoteCollection copyWith({
     int? id,
     String? name,
-    List<_ia9r0qbl.UserNote>? userNotesPropertyName,
+    List<_ia9r0qbl.UserNote>? userNotesPropertyName =
+        const _isc.$UndefinedList<_ia9r0qbl.UserNote>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -111,14 +112,15 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
   UserNoteCollection copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? userNotesPropertyName = _Undefined,
+    List<_ia9r0qbl.UserNote>? userNotesPropertyName =
+        const _isc.$UndefinedList<_ia9r0qbl.UserNote>(),
   }) {
     return UserNoteCollection(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      userNotesPropertyName: userNotesPropertyName is List<_ia9r0qbl.UserNote>?
-          ? userNotesPropertyName
-          : this.userNotesPropertyName?.map((e0) => e0.copyWith()).toList(),
+      userNotesPropertyName: userNotesPropertyName is _isc.UndefinedSentinel
+          ? this.userNotesPropertyName?.map((e0) => e0.copyWith()).toList()
+          : userNotesPropertyName,
     );
   }
 }

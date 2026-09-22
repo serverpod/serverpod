@@ -50,7 +50,7 @@ abstract class ServerOnlyChildClassWithoutId
   @override
   @_is.useResult
   ServerOnlyChildClassWithoutId copyWith({
-    Object? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? grandParentField,
     String? parentField,
     String? childField,
@@ -77,8 +77,6 @@ abstract class ServerOnlyChildClassWithoutId
   }
 }
 
-class _Undefined {}
-
 class _ServerOnlyChildClassWithoutIdImpl extends ServerOnlyChildClassWithoutId {
   _ServerOnlyChildClassWithoutIdImpl({
     _is.UuidValue? id,
@@ -97,13 +95,13 @@ class _ServerOnlyChildClassWithoutIdImpl extends ServerOnlyChildClassWithoutId {
   @_is.useResult
   @override
   ServerOnlyChildClassWithoutId copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? grandParentField,
     String? parentField,
     String? childField,
   }) {
     return ServerOnlyChildClassWithoutId(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       grandParentField: grandParentField ?? this.grandParentField,
       parentField: parentField ?? this.parentField,
       childField: childField ?? this.childField,

@@ -84,7 +84,7 @@ abstract class DateTimeDefaultModel
     int? id,
     DateTime? dateTimeDefaultModelNow,
     DateTime? dateTimeDefaultModelStr,
-    DateTime? dateTimeDefaultModelStrNull,
+    DateTime? dateTimeDefaultModelStrNull = const _is.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -161,7 +161,7 @@ class _DateTimeDefaultModelImpl extends DateTimeDefaultModel {
     Object? id = _Undefined,
     DateTime? dateTimeDefaultModelNow,
     DateTime? dateTimeDefaultModelStr,
-    Object? dateTimeDefaultModelStrNull = _Undefined,
+    DateTime? dateTimeDefaultModelStrNull = const _is.$UndefinedDateTime(),
   }) {
     return DateTimeDefaultModel(
       id: id is int? ? id : this.id,
@@ -169,9 +169,10 @@ class _DateTimeDefaultModelImpl extends DateTimeDefaultModel {
           dateTimeDefaultModelNow ?? this.dateTimeDefaultModelNow,
       dateTimeDefaultModelStr:
           dateTimeDefaultModelStr ?? this.dateTimeDefaultModelStr,
-      dateTimeDefaultModelStrNull: dateTimeDefaultModelStrNull is DateTime?
-          ? dateTimeDefaultModelStrNull
-          : this.dateTimeDefaultModelStrNull,
+      dateTimeDefaultModelStrNull:
+          dateTimeDefaultModelStrNull is _is.UndefinedSentinel
+          ? this.dateTimeDefaultModelStrNull
+          : dateTimeDefaultModelStrNull,
     );
   }
 }

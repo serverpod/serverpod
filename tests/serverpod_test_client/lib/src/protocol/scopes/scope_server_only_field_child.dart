@@ -55,8 +55,10 @@ abstract class ScopeServerOnlyFieldChild extends _iv35mfmj.ScopeServerOnlyField
   @override
   @_isc.useResult
   ScopeServerOnlyFieldChild copyWith({
-    Object? allScope,
-    Object? nested,
+    _ih2vh47j.Types? allScope =
+        const _UndefinedScopeServerOnlyFieldChild$allScope(),
+    _ijcqyoxk.ScopeServerOnlyField? nested =
+        const _UndefinedScopeServerOnlyFieldChild$nested(),
     String? childFoo,
   });
   @override
@@ -85,7 +87,16 @@ abstract class ScopeServerOnlyFieldChild extends _iv35mfmj.ScopeServerOnlyField
   }
 }
 
-class _Undefined {}
+class _UndefinedScopeServerOnlyFieldChild$allScope
+    extends _isc.UndefinedSentinel
+    implements _ih2vh47j.Types {
+  const _UndefinedScopeServerOnlyFieldChild$allScope();
+}
+
+class _UndefinedScopeServerOnlyFieldChild$nested extends _isc.UndefinedSentinel
+    implements _ijcqyoxk.ScopeServerOnlyField {
+  const _UndefinedScopeServerOnlyFieldChild$nested();
+}
 
 class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
   _ScopeServerOnlyFieldChildImpl({
@@ -103,17 +114,19 @@ class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
   @_isc.useResult
   @override
   ScopeServerOnlyFieldChild copyWith({
-    Object? allScope = _Undefined,
-    Object? nested = _Undefined,
+    _ih2vh47j.Types? allScope =
+        const _UndefinedScopeServerOnlyFieldChild$allScope(),
+    _ijcqyoxk.ScopeServerOnlyField? nested =
+        const _UndefinedScopeServerOnlyFieldChild$nested(),
     String? childFoo,
   }) {
     return ScopeServerOnlyFieldChild(
-      allScope: allScope is _ih2vh47j.Types?
-          ? allScope
-          : this.allScope?.copyWith(),
-      nested: nested is _ijcqyoxk.ScopeServerOnlyField?
-          ? nested
-          : this.nested?.copyWith(),
+      allScope: allScope is _isc.UndefinedSentinel
+          ? this.allScope?.copyWith()
+          : allScope,
+      nested: nested is _isc.UndefinedSentinel
+          ? this.nested?.copyWith()
+          : nested,
       childFoo: childFoo ?? this.childFoo,
     );
   }

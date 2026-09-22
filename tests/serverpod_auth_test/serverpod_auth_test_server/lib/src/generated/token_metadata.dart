@@ -91,7 +91,8 @@ abstract class TokenMetadata
   TokenMetadata copyWith({
     int? id,
     _is.UuidValue? refreshTokenId,
-    _iacs.RefreshToken? refreshToken,
+    _iacs.RefreshToken? refreshToken =
+        const _UndefinedTokenMetadata$refreshToken(),
     String? deviceName,
     String? ipAddress,
     String? userAgent,
@@ -148,6 +149,11 @@ abstract class TokenMetadata
 
 class _Undefined {}
 
+class _UndefinedTokenMetadata$refreshToken extends _is.UndefinedSentinel
+    implements _iacs.RefreshToken {
+  const _UndefinedTokenMetadata$refreshToken();
+}
+
 class _TokenMetadataImpl extends TokenMetadata {
   _TokenMetadataImpl({
     int? id,
@@ -174,7 +180,8 @@ class _TokenMetadataImpl extends TokenMetadata {
   TokenMetadata copyWith({
     Object? id = _Undefined,
     _is.UuidValue? refreshTokenId,
-    Object? refreshToken = _Undefined,
+    _iacs.RefreshToken? refreshToken =
+        const _UndefinedTokenMetadata$refreshToken(),
     String? deviceName,
     Object? ipAddress = _Undefined,
     Object? userAgent = _Undefined,
@@ -183,9 +190,9 @@ class _TokenMetadataImpl extends TokenMetadata {
     return TokenMetadata(
       id: id is int? ? id : this.id,
       refreshTokenId: refreshTokenId ?? this.refreshTokenId,
-      refreshToken: refreshToken is _iacs.RefreshToken?
-          ? refreshToken
-          : this.refreshToken?.copyWith(),
+      refreshToken: refreshToken is _is.UndefinedSentinel
+          ? this.refreshToken?.copyWith()
+          : refreshToken,
       deviceName: deviceName ?? this.deviceName,
       ipAddress: ipAddress is String? ? ipAddress : this.ipAddress,
       userAgent: userAgent is String? ? userAgent : this.userAgent,

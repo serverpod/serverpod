@@ -64,7 +64,7 @@ abstract class ImmutableObjectWithMultipleFields
     int? anInt,
     bool? aBool,
     double? aDouble,
-    DateTime? aDateTime,
+    DateTime? aDateTime = const _isc.$UndefinedDateTime(),
     String? aString,
   });
   @override
@@ -170,14 +170,16 @@ class _ImmutableObjectWithMultipleFieldsImpl
     Object? anInt = _Undefined,
     Object? aBool = _Undefined,
     Object? aDouble = _Undefined,
-    Object? aDateTime = _Undefined,
+    DateTime? aDateTime = const _isc.$UndefinedDateTime(),
     Object? aString = _Undefined,
   }) {
     return ImmutableObjectWithMultipleFields(
       anInt: anInt is int? ? anInt : this.anInt,
       aBool: aBool is bool? ? aBool : this.aBool,
       aDouble: aDouble is double? ? aDouble : this.aDouble,
-      aDateTime: aDateTime is DateTime? ? aDateTime : this.aDateTime,
+      aDateTime: aDateTime is _isc.UndefinedSentinel
+          ? this.aDateTime
+          : aDateTime,
       aString: aString is String? ? aString : this.aString,
     );
   }

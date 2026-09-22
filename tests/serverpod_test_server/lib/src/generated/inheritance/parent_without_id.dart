@@ -39,12 +39,12 @@ class ParentClassWithoutId extends _iv35mfmj.GrandparentClassWithId
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ParentClassWithoutId copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? grandParentField,
     String? parentField,
   }) {
     return ParentClassWithoutId(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       grandParentField: grandParentField ?? this.grandParentField,
       parentField: parentField ?? this.parentField,
     );
@@ -75,5 +75,3 @@ class ParentClassWithoutId extends _iv35mfmj.GrandparentClassWithId
     return _is.SerializationManager.encode(this);
   }
 }
-
-class _Undefined {}

@@ -49,7 +49,7 @@ abstract class IntervalFutureCallScheduling
   @_isc.useResult
   IntervalFutureCallScheduling copyWith({
     Duration? interval,
-    DateTime? start,
+    DateTime? start = const _isc.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -90,11 +90,11 @@ class _IntervalFutureCallSchedulingImpl extends IntervalFutureCallScheduling {
   @override
   IntervalFutureCallScheduling copyWith({
     Duration? interval,
-    Object? start = _Undefined,
+    DateTime? start = const _isc.$UndefinedDateTime(),
   }) {
     return IntervalFutureCallScheduling(
       interval: interval ?? this.interval,
-      start: start is DateTime? ? start : this.start,
+      start: start is _isc.UndefinedSentinel ? this.start : start,
     );
   }
 }

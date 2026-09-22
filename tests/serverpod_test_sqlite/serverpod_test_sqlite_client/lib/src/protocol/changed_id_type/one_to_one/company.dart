@@ -61,10 +61,10 @@ abstract class CompanyUuid
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   CompanyUuid copyWith({
-    _isc.UuidValue? id,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     String? name,
     int? townId,
-    _i3qwzvq1.TownInt? town,
+    _i3qwzvq1.TownInt? town = const _UndefinedCompanyUuid$town(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -94,7 +94,10 @@ abstract class CompanyUuid
   }
 }
 
-class _Undefined {}
+class _UndefinedCompanyUuid$town extends _isc.UndefinedSentinel
+    implements _i3qwzvq1.TownInt {
+  const _UndefinedCompanyUuid$town();
+}
 
 class _CompanyUuidImpl extends CompanyUuid {
   _CompanyUuidImpl({
@@ -114,16 +117,16 @@ class _CompanyUuidImpl extends CompanyUuid {
   @_isc.useResult
   @override
   CompanyUuid copyWith({
-    Object? id = _Undefined,
+    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
     String? name,
     int? townId,
-    Object? town = _Undefined,
+    _i3qwzvq1.TownInt? town = const _UndefinedCompanyUuid$town(),
   }) {
     return CompanyUuid(
-      id: id is _isc.UuidValue? ? id : this.id,
+      id: id is _isc.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _i3qwzvq1.TownInt? ? town : this.town?.copyWith(),
+      town: town is _isc.UndefinedSentinel ? this.town?.copyWith() : town,
     );
   }
 }

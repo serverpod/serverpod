@@ -79,7 +79,7 @@ abstract class UserData
   UserData copyWith({
     int? id,
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedUserData$authUser(),
     String? displayName,
     String? bio,
   });
@@ -137,6 +137,11 @@ abstract class UserData
 
 class _Undefined {}
 
+class _UndefinedUserData$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedUserData$authUser();
+}
+
 class _UserDataImpl extends UserData {
   _UserDataImpl({
     int? id,
@@ -159,16 +164,16 @@ class _UserDataImpl extends UserData {
   UserData copyWith({
     Object? id = _Undefined,
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedUserData$authUser(),
     String? displayName,
     Object? bio = _Undefined,
   }) {
     return UserData(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       displayName: displayName ?? this.displayName,
       bio: bio is String? ? bio : this.bio,
     );

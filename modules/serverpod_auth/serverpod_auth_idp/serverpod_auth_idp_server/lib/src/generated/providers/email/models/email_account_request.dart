@@ -106,13 +106,15 @@ abstract class EmailAccountRequest
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   EmailAccountRequest copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     DateTime? createdAt,
     String? email,
     _is.UuidValue? challengeId,
-    _i7k1fa50.SecretChallenge? challenge,
-    _is.UuidValue? createAccountChallengeId,
-    _i7k1fa50.SecretChallenge? createAccountChallenge,
+    _i7k1fa50.SecretChallenge? challenge =
+        const _UndefinedEmailAccountRequest$challenge(),
+    _is.UuidValue? createAccountChallengeId = const _is.$UndefinedUuidValue(),
+    _i7k1fa50.SecretChallenge? createAccountChallenge =
+        const _UndefinedEmailAccountRequest$createAccountChallenge(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -169,7 +171,16 @@ abstract class EmailAccountRequest
   }
 }
 
-class _Undefined {}
+class _UndefinedEmailAccountRequest$challenge extends _is.UndefinedSentinel
+    implements _i7k1fa50.SecretChallenge {
+  const _UndefinedEmailAccountRequest$challenge();
+}
+
+class _UndefinedEmailAccountRequest$createAccountChallenge
+    extends _is.UndefinedSentinel
+    implements _i7k1fa50.SecretChallenge {
+  const _UndefinedEmailAccountRequest$createAccountChallenge();
+}
 
 class _EmailAccountRequestImpl extends EmailAccountRequest {
   _EmailAccountRequestImpl({
@@ -195,29 +206,31 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
   @_is.useResult
   @override
   EmailAccountRequest copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     DateTime? createdAt,
     String? email,
     _is.UuidValue? challengeId,
-    Object? challenge = _Undefined,
-    Object? createAccountChallengeId = _Undefined,
-    Object? createAccountChallenge = _Undefined,
+    _i7k1fa50.SecretChallenge? challenge =
+        const _UndefinedEmailAccountRequest$challenge(),
+    _is.UuidValue? createAccountChallengeId = const _is.$UndefinedUuidValue(),
+    _i7k1fa50.SecretChallenge? createAccountChallenge =
+        const _UndefinedEmailAccountRequest$createAccountChallenge(),
   }) {
     return EmailAccountRequest(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       createdAt: createdAt ?? this.createdAt,
       email: email ?? this.email,
       challengeId: challengeId ?? this.challengeId,
-      challenge: challenge is _i7k1fa50.SecretChallenge?
-          ? challenge
-          : this.challenge?.copyWith(),
-      createAccountChallengeId: createAccountChallengeId is _is.UuidValue?
-          ? createAccountChallengeId
-          : this.createAccountChallengeId,
-      createAccountChallenge:
-          createAccountChallenge is _i7k1fa50.SecretChallenge?
-          ? createAccountChallenge
-          : this.createAccountChallenge?.copyWith(),
+      challenge: challenge is _is.UndefinedSentinel
+          ? this.challenge?.copyWith()
+          : challenge,
+      createAccountChallengeId:
+          createAccountChallengeId is _is.UndefinedSentinel
+          ? this.createAccountChallengeId
+          : createAccountChallengeId,
+      createAccountChallenge: createAccountChallenge is _is.UndefinedSentinel
+          ? this.createAccountChallenge?.copyWith()
+          : createAccountChallenge,
     );
   }
 }

@@ -79,7 +79,7 @@ abstract class ObjectWithBit
   ObjectWithBit copyWith({
     int? id,
     _isc.Bit? bit,
-    _isc.Bit? bitNullable,
+    _isc.Bit? bitNullable = const _isc.$UndefinedBit(),
     _isc.Bit? bitIndexedHnsw,
     _isc.Bit? bitIndexedHnswWithParams,
     _isc.Bit? bitIndexedIvfflat,
@@ -147,7 +147,7 @@ class _ObjectWithBitImpl extends ObjectWithBit {
   ObjectWithBit copyWith({
     Object? id = _Undefined,
     _isc.Bit? bit,
-    Object? bitNullable = _Undefined,
+    _isc.Bit? bitNullable = const _isc.$UndefinedBit(),
     _isc.Bit? bitIndexedHnsw,
     _isc.Bit? bitIndexedHnswWithParams,
     _isc.Bit? bitIndexedIvfflat,
@@ -156,9 +156,9 @@ class _ObjectWithBitImpl extends ObjectWithBit {
     return ObjectWithBit(
       id: id is int? ? id : this.id,
       bit: bit ?? this.bit.clone(),
-      bitNullable: bitNullable is _isc.Bit?
-          ? bitNullable
-          : this.bitNullable?.clone(),
+      bitNullable: bitNullable is _isc.UndefinedSentinel
+          ? this.bitNullable?.clone()
+          : bitNullable,
       bitIndexedHnsw: bitIndexedHnsw ?? this.bitIndexedHnsw.clone(),
       bitIndexedHnswWithParams:
           bitIndexedHnswWithParams ?? this.bitIndexedHnswWithParams.clone(),

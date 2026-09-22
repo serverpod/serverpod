@@ -160,13 +160,13 @@ abstract class AppleAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   AppleAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? userIdentifier,
     String? refreshToken,
     bool? refreshTokenRequestedWithBundleIdentifier,
     DateTime? lastRefreshedAt,
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedAppleAccount$authUser(),
     DateTime? createdAt,
     String? email,
     bool? isEmailVerified,
@@ -230,6 +230,11 @@ abstract class AppleAccount
 
 class _Undefined {}
 
+class _UndefinedAppleAccount$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedAppleAccount$authUser();
+}
+
 class _AppleAccountImpl extends AppleAccount {
   _AppleAccountImpl({
     _is.UuidValue? id,
@@ -267,13 +272,13 @@ class _AppleAccountImpl extends AppleAccount {
   @_is.useResult
   @override
   AppleAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? userIdentifier,
     String? refreshToken,
     bool? refreshTokenRequestedWithBundleIdentifier,
     DateTime? lastRefreshedAt,
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedAppleAccount$authUser(),
     DateTime? createdAt,
     Object? email = _Undefined,
     Object? isEmailVerified = _Undefined,
@@ -282,7 +287,7 @@ class _AppleAccountImpl extends AppleAccount {
     Object? lastName = _Undefined,
   }) {
     return AppleAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       userIdentifier: userIdentifier ?? this.userIdentifier,
       refreshToken: refreshToken ?? this.refreshToken,
       refreshTokenRequestedWithBundleIdentifier:
@@ -290,9 +295,9 @@ class _AppleAccountImpl extends AppleAccount {
           this.refreshTokenRequestedWithBundleIdentifier,
       lastRefreshedAt: lastRefreshedAt ?? this.lastRefreshedAt,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       createdAt: createdAt ?? this.createdAt,
       email: email is String? ? email : this.email,
       isEmailVerified: isEmailVerified is bool?

@@ -76,9 +76,11 @@ abstract class FkRelationEmployee
     int? id,
     String? name,
     int? companyId,
-    _ikyus01r.FkRelationCompany? company,
+    _ikyus01r.FkRelationCompany? company =
+        const _UndefinedFkRelationEmployee$company(),
     int? previousCompanyId,
-    _ikyus01r.FkRelationCompany? previousCompany,
+    _ikyus01r.FkRelationCompany? previousCompany =
+        const _UndefinedFkRelationEmployee$previousCompany(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -115,6 +117,17 @@ abstract class FkRelationEmployee
 
 class _Undefined {}
 
+class _UndefinedFkRelationEmployee$company extends _isc.UndefinedSentinel
+    implements _ikyus01r.FkRelationCompany {
+  const _UndefinedFkRelationEmployee$company();
+}
+
+class _UndefinedFkRelationEmployee$previousCompany
+    extends _isc.UndefinedSentinel
+    implements _ikyus01r.FkRelationCompany {
+  const _UndefinedFkRelationEmployee$previousCompany();
+}
+
 class _FkRelationEmployeeImpl extends FkRelationEmployee {
   _FkRelationEmployeeImpl({
     int? id,
@@ -140,23 +153,25 @@ class _FkRelationEmployeeImpl extends FkRelationEmployee {
     Object? id = _Undefined,
     String? name,
     int? companyId,
-    Object? company = _Undefined,
+    _ikyus01r.FkRelationCompany? company =
+        const _UndefinedFkRelationEmployee$company(),
     Object? previousCompanyId = _Undefined,
-    Object? previousCompany = _Undefined,
+    _ikyus01r.FkRelationCompany? previousCompany =
+        const _UndefinedFkRelationEmployee$previousCompany(),
   }) {
     return FkRelationEmployee(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       companyId: companyId ?? this.companyId,
-      company: company is _ikyus01r.FkRelationCompany?
-          ? company
-          : this.company?.copyWith(),
+      company: company is _isc.UndefinedSentinel
+          ? this.company?.copyWith()
+          : company,
       previousCompanyId: previousCompanyId is int?
           ? previousCompanyId
           : this.previousCompanyId,
-      previousCompany: previousCompany is _ikyus01r.FkRelationCompany?
-          ? previousCompany
-          : this.previousCompany?.copyWith(),
+      previousCompany: previousCompany is _isc.UndefinedSentinel
+          ? this.previousCompany?.copyWith()
+          : previousCompany,
     );
   }
 }

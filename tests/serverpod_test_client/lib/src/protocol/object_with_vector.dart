@@ -81,7 +81,7 @@ abstract class ObjectWithVector
   ObjectWithVector copyWith({
     int? id,
     _isc.Vector? vector,
-    _isc.Vector? vectorNullable,
+    _isc.Vector? vectorNullable = const _isc.$UndefinedVector(),
     _isc.Vector? vectorIndexedHnsw,
     _isc.Vector? vectorIndexedHnswWithParams,
     _isc.Vector? vectorIndexedIvfflat,
@@ -149,7 +149,7 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
   ObjectWithVector copyWith({
     Object? id = _Undefined,
     _isc.Vector? vector,
-    Object? vectorNullable = _Undefined,
+    _isc.Vector? vectorNullable = const _isc.$UndefinedVector(),
     _isc.Vector? vectorIndexedHnsw,
     _isc.Vector? vectorIndexedHnswWithParams,
     _isc.Vector? vectorIndexedIvfflat,
@@ -158,9 +158,9 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
     return ObjectWithVector(
       id: id is int? ? id : this.id,
       vector: vector ?? this.vector.clone(),
-      vectorNullable: vectorNullable is _isc.Vector?
-          ? vectorNullable
-          : this.vectorNullable?.clone(),
+      vectorNullable: vectorNullable is _isc.UndefinedSentinel
+          ? this.vectorNullable?.clone()
+          : vectorNullable,
       vectorIndexedHnsw: vectorIndexedHnsw ?? this.vectorIndexedHnsw.clone(),
       vectorIndexedHnswWithParams:
           vectorIndexedHnswWithParams ??

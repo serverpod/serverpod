@@ -93,9 +93,9 @@ abstract class GoogleAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   GoogleAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedGoogleAccount$authUser(),
     DateTime? created,
     String? email,
     String? userIdentifier,
@@ -146,7 +146,10 @@ abstract class GoogleAccount
   }
 }
 
-class _Undefined {}
+class _UndefinedGoogleAccount$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedGoogleAccount$authUser();
+}
 
 class _GoogleAccountImpl extends GoogleAccount {
   _GoogleAccountImpl({
@@ -170,19 +173,19 @@ class _GoogleAccountImpl extends GoogleAccount {
   @_is.useResult
   @override
   GoogleAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedGoogleAccount$authUser(),
     DateTime? created,
     String? email,
     String? userIdentifier,
   }) {
     return GoogleAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       created: created ?? this.created,
       email: email ?? this.email,
       userIdentifier: userIdentifier ?? this.userIdentifier,

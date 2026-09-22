@@ -84,7 +84,7 @@ abstract class AuthSuccess
   AuthSuccess copyWith({
     String? authStrategy,
     String? token,
-    DateTime? tokenExpiresAt,
+    DateTime? tokenExpiresAt = const _isc.$UndefinedDateTime(),
     String? refreshToken,
     _isc.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -147,7 +147,7 @@ class _AuthSuccessImpl extends AuthSuccess {
   AuthSuccess copyWith({
     String? authStrategy,
     String? token,
-    Object? tokenExpiresAt = _Undefined,
+    DateTime? tokenExpiresAt = const _isc.$UndefinedDateTime(),
     Object? refreshToken = _Undefined,
     _isc.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -155,9 +155,9 @@ class _AuthSuccessImpl extends AuthSuccess {
     return AuthSuccess(
       authStrategy: authStrategy ?? this.authStrategy,
       token: token ?? this.token,
-      tokenExpiresAt: tokenExpiresAt is DateTime?
-          ? tokenExpiresAt
-          : this.tokenExpiresAt,
+      tokenExpiresAt: tokenExpiresAt is _isc.UndefinedSentinel
+          ? this.tokenExpiresAt
+          : tokenExpiresAt,
       refreshToken: refreshToken is String? ? refreshToken : this.refreshToken,
       authUserId: authUserId ?? this.authUserId,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),

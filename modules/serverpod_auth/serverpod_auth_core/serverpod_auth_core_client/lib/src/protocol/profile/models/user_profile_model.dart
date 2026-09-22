@@ -70,7 +70,7 @@ abstract class UserProfileModel
     String? userName,
     String? fullName,
     String? email,
-    Uri? imageUrl,
+    Uri? imageUrl = const _isc.$UndefinedUri(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -128,14 +128,14 @@ class _UserProfileModelImpl extends UserProfileModel {
     Object? userName = _Undefined,
     Object? fullName = _Undefined,
     Object? email = _Undefined,
-    Object? imageUrl = _Undefined,
+    Uri? imageUrl = const _isc.$UndefinedUri(),
   }) {
     return UserProfileModel(
       authUserId: authUserId ?? this.authUserId,
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
-      imageUrl: imageUrl is Uri? ? imageUrl : this.imageUrl,
+      imageUrl: imageUrl is _isc.UndefinedSentinel ? this.imageUrl : imageUrl,
     );
   }
 }

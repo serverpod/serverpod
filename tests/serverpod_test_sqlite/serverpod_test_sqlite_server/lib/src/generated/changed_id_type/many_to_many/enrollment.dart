@@ -82,9 +82,9 @@ abstract class EnrollmentInt
   EnrollmentInt copyWith({
     int? id,
     _is.UuidValue? studentId,
-    _iu6t4rw4.StudentUuid? student,
+    _iu6t4rw4.StudentUuid? student = const _UndefinedEnrollmentInt$student(),
     _is.UuidValue? courseId,
-    _irfj8gqh.CourseUuid? course,
+    _irfj8gqh.CourseUuid? course = const _UndefinedEnrollmentInt$course(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -146,6 +146,16 @@ abstract class EnrollmentInt
 
 class _Undefined {}
 
+class _UndefinedEnrollmentInt$student extends _is.UndefinedSentinel
+    implements _iu6t4rw4.StudentUuid {
+  const _UndefinedEnrollmentInt$student();
+}
+
+class _UndefinedEnrollmentInt$course extends _is.UndefinedSentinel
+    implements _irfj8gqh.CourseUuid {
+  const _UndefinedEnrollmentInt$course();
+}
+
 class _EnrollmentIntImpl extends EnrollmentInt {
   _EnrollmentIntImpl({
     int? id,
@@ -168,20 +178,20 @@ class _EnrollmentIntImpl extends EnrollmentInt {
   EnrollmentInt copyWith({
     Object? id = _Undefined,
     _is.UuidValue? studentId,
-    Object? student = _Undefined,
+    _iu6t4rw4.StudentUuid? student = const _UndefinedEnrollmentInt$student(),
     _is.UuidValue? courseId,
-    Object? course = _Undefined,
+    _irfj8gqh.CourseUuid? course = const _UndefinedEnrollmentInt$course(),
   }) {
     return EnrollmentInt(
       id: id is int? ? id : this.id,
       studentId: studentId ?? this.studentId,
-      student: student is _iu6t4rw4.StudentUuid?
-          ? student
-          : this.student?.copyWith(),
+      student: student is _is.UndefinedSentinel
+          ? this.student?.copyWith()
+          : student,
       courseId: courseId ?? this.courseId,
-      course: course is _irfj8gqh.CourseUuid?
-          ? course
-          : this.course?.copyWith(),
+      course: course is _is.UndefinedSentinel
+          ? this.course?.copyWith()
+          : course,
     );
   }
 }

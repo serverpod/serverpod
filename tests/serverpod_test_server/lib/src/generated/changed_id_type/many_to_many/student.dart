@@ -62,9 +62,10 @@ abstract class StudentUuid
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   StudentUuid copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? name,
-    List<_ih6xbg05.EnrollmentInt>? enrollments,
+    List<_ih6xbg05.EnrollmentInt>? enrollments =
+        const _is.$UndefinedList<_ih6xbg05.EnrollmentInt>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -120,8 +121,6 @@ abstract class StudentUuid
   }
 }
 
-class _Undefined {}
-
 class _StudentUuidImpl extends StudentUuid {
   _StudentUuidImpl({
     _is.UuidValue? id,
@@ -138,16 +137,17 @@ class _StudentUuidImpl extends StudentUuid {
   @_is.useResult
   @override
   StudentUuid copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? name,
-    Object? enrollments = _Undefined,
+    List<_ih6xbg05.EnrollmentInt>? enrollments =
+        const _is.$UndefinedList<_ih6xbg05.EnrollmentInt>(),
   }) {
     return StudentUuid(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_ih6xbg05.EnrollmentInt>?
-          ? enrollments
-          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+      enrollments: enrollments is _is.UndefinedSentinel
+          ? this.enrollments?.map((e0) => e0.copyWith()).toList()
+          : enrollments,
     );
   }
 }

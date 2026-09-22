@@ -99,13 +99,13 @@ abstract class RateLimitedRequestAttempt
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   RateLimitedRequestAttempt copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? domain,
     String? source,
     String? key,
     String? ipAddress,
     DateTime? attemptedAt,
-    Map<String, String>? extraData,
+    Map<String, String>? extraData = const _is.$UndefinedMap<String, String>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -180,24 +180,23 @@ class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
   @_is.useResult
   @override
   RateLimitedRequestAttempt copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? domain,
     String? source,
     String? key,
     Object? ipAddress = _Undefined,
     DateTime? attemptedAt,
-    Object? extraData = _Undefined,
+    Map<String, String>? extraData = const _is.$UndefinedMap<String, String>(),
   }) {
     return RateLimitedRequestAttempt(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       domain: domain ?? this.domain,
       source: source ?? this.source,
       key: key ?? this.key,
       ipAddress: ipAddress is String? ? ipAddress : this.ipAddress,
       attemptedAt: attemptedAt ?? this.attemptedAt,
-      extraData: extraData is Map<String, String>?
-          ? extraData
-          : this.extraData?.map(
+      extraData: extraData is _is.UndefinedSentinel
+          ? this.extraData?.map(
               (
                 key0,
                 value0,
@@ -205,7 +204,8 @@ class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
                 key0,
                 value0,
               ),
-            ),
+            )
+          : extraData,
     );
   }
 }

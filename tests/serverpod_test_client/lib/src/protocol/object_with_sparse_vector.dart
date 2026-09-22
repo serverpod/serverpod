@@ -72,7 +72,8 @@ abstract class ObjectWithSparseVector
   ObjectWithSparseVector copyWith({
     int? id,
     _isc.SparseVector? sparseVector,
-    _isc.SparseVector? sparseVectorNullable,
+    _isc.SparseVector? sparseVectorNullable =
+        const _isc.$UndefinedSparseVector(),
     _isc.SparseVector? sparseVectorIndexedHnsw,
     _isc.SparseVector? sparseVectorIndexedHnswWithParams,
   });
@@ -134,16 +135,17 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
   ObjectWithSparseVector copyWith({
     Object? id = _Undefined,
     _isc.SparseVector? sparseVector,
-    Object? sparseVectorNullable = _Undefined,
+    _isc.SparseVector? sparseVectorNullable =
+        const _isc.$UndefinedSparseVector(),
     _isc.SparseVector? sparseVectorIndexedHnsw,
     _isc.SparseVector? sparseVectorIndexedHnswWithParams,
   }) {
     return ObjectWithSparseVector(
       id: id is int? ? id : this.id,
       sparseVector: sparseVector ?? this.sparseVector.clone(),
-      sparseVectorNullable: sparseVectorNullable is _isc.SparseVector?
-          ? sparseVectorNullable
-          : this.sparseVectorNullable?.clone(),
+      sparseVectorNullable: sparseVectorNullable is _isc.UndefinedSentinel
+          ? this.sparseVectorNullable?.clone()
+          : sparseVectorNullable,
       sparseVectorIndexedHnsw:
           sparseVectorIndexedHnsw ?? this.sparseVectorIndexedHnsw.clone(),
       sparseVectorIndexedHnswWithParams:

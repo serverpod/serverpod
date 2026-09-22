@@ -147,9 +147,9 @@ abstract class RefreshToken
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   RefreshToken copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _ivyervu7.AuthUser? authUser,
+    _ivyervu7.AuthUser? authUser = const _UndefinedRefreshToken$authUser(),
     Set<String>? scopeNames,
     String? extraClaims,
     String? method,
@@ -210,6 +210,11 @@ abstract class RefreshToken
 
 class _Undefined {}
 
+class _UndefinedRefreshToken$authUser extends _is.UndefinedSentinel
+    implements _ivyervu7.AuthUser {
+  const _UndefinedRefreshToken$authUser();
+}
+
 class _RefreshTokenImpl extends RefreshToken {
   _RefreshTokenImpl({
     _is.UuidValue? id,
@@ -240,9 +245,9 @@ class _RefreshTokenImpl extends RefreshToken {
   @_is.useResult
   @override
   RefreshToken copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _ivyervu7.AuthUser? authUser = const _UndefinedRefreshToken$authUser(),
     Set<String>? scopeNames,
     Object? extraClaims = _Undefined,
     String? method,
@@ -252,11 +257,11 @@ class _RefreshTokenImpl extends RefreshToken {
     DateTime? createdAt,
   }) {
     return RefreshToken(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _ivyervu7.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       extraClaims: extraClaims is String? ? extraClaims : this.extraClaims,
       method: method ?? this.method,

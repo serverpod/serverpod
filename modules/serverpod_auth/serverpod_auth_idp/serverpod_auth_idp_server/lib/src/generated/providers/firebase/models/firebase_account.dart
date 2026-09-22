@@ -101,9 +101,9 @@ abstract class FirebaseAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   FirebaseAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedFirebaseAccount$authUser(),
     DateTime? created,
     String? email,
     String? phone,
@@ -158,6 +158,11 @@ abstract class FirebaseAccount
 
 class _Undefined {}
 
+class _UndefinedFirebaseAccount$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedFirebaseAccount$authUser();
+}
+
 class _FirebaseAccountImpl extends FirebaseAccount {
   _FirebaseAccountImpl({
     _is.UuidValue? id,
@@ -182,20 +187,20 @@ class _FirebaseAccountImpl extends FirebaseAccount {
   @_is.useResult
   @override
   FirebaseAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedFirebaseAccount$authUser(),
     DateTime? created,
     Object? email = _Undefined,
     Object? phone = _Undefined,
     String? userIdentifier,
   }) {
     return FirebaseAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       created: created ?? this.created,
       email: email is String? ? email : this.email,
       phone: phone is String? ? phone : this.phone,

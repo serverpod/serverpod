@@ -119,15 +119,15 @@ abstract class UserProfile
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UserProfile copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _ivyervu7.AuthUser? authUser,
+    _ivyervu7.AuthUser? authUser = const _UndefinedUserProfile$authUser(),
     String? userName,
     String? fullName,
     String? email,
     DateTime? createdAt,
-    _is.UuidValue? imageId,
-    _i7y29ltp.UserProfileImage? image,
+    _is.UuidValue? imageId = const _is.$UndefinedUuidValue(),
+    _i7y29ltp.UserProfileImage? image = const _UndefinedUserProfile$image(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -197,6 +197,16 @@ abstract class UserProfile
 
 class _Undefined {}
 
+class _UndefinedUserProfile$authUser extends _is.UndefinedSentinel
+    implements _ivyervu7.AuthUser {
+  const _UndefinedUserProfile$authUser();
+}
+
+class _UndefinedUserProfile$image extends _is.UndefinedSentinel
+    implements _i7y29ltp.UserProfileImage {
+  const _UndefinedUserProfile$image();
+}
+
 class _UserProfileImpl extends UserProfile {
   _UserProfileImpl({
     _is.UuidValue? id,
@@ -225,30 +235,28 @@ class _UserProfileImpl extends UserProfile {
   @_is.useResult
   @override
   UserProfile copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _ivyervu7.AuthUser? authUser = const _UndefinedUserProfile$authUser(),
     Object? userName = _Undefined,
     Object? fullName = _Undefined,
     Object? email = _Undefined,
     DateTime? createdAt,
-    Object? imageId = _Undefined,
-    Object? image = _Undefined,
+    _is.UuidValue? imageId = const _is.$UndefinedUuidValue(),
+    _i7y29ltp.UserProfileImage? image = const _UndefinedUserProfile$image(),
   }) {
     return UserProfile(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _ivyervu7.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
       createdAt: createdAt ?? this.createdAt,
-      imageId: imageId is _is.UuidValue? ? imageId : this.imageId,
-      image: image is _i7y29ltp.UserProfileImage?
-          ? image
-          : this.image?.copyWith(),
+      imageId: imageId is _is.UndefinedSentinel ? this.imageId : imageId,
+      image: image is _is.UndefinedSentinel ? this.image?.copyWith() : image,
     );
   }
 }

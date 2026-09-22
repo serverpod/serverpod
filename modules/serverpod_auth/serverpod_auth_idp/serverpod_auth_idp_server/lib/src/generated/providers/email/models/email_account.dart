@@ -92,9 +92,9 @@ abstract class EmailAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   EmailAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedEmailAccount$authUser(),
     DateTime? createdAt,
     String? email,
     String? passwordHash,
@@ -145,7 +145,10 @@ abstract class EmailAccount
   }
 }
 
-class _Undefined {}
+class _UndefinedEmailAccount$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedEmailAccount$authUser();
+}
 
 class _EmailAccountImpl extends EmailAccount {
   _EmailAccountImpl({
@@ -169,19 +172,19 @@ class _EmailAccountImpl extends EmailAccount {
   @_is.useResult
   @override
   EmailAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedEmailAccount$authUser(),
     DateTime? createdAt,
     String? email,
     String? passwordHash,
   }) {
     return EmailAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       createdAt: createdAt ?? this.createdAt,
       email: email ?? this.email,
       passwordHash: passwordHash ?? this.passwordHash,

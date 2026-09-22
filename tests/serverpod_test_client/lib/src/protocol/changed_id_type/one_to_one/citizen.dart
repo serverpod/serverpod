@@ -90,11 +90,11 @@ abstract class CitizenInt
   CitizenInt copyWith({
     int? id,
     String? name,
-    _ih0efjtk.AddressUuid? address,
+    _ih0efjtk.AddressUuid? address = const _UndefinedCitizenInt$address(),
     _isc.UuidValue? companyId,
-    _i441ok8u.CompanyUuid? company,
-    _isc.UuidValue? oldCompanyId,
-    _i441ok8u.CompanyUuid? oldCompany,
+    _i441ok8u.CompanyUuid? company = const _UndefinedCitizenInt$company(),
+    _isc.UuidValue? oldCompanyId = const _isc.$UndefinedUuidValue(),
+    _i441ok8u.CompanyUuid? oldCompany = const _UndefinedCitizenInt$oldCompany(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -132,6 +132,21 @@ abstract class CitizenInt
 
 class _Undefined {}
 
+class _UndefinedCitizenInt$address extends _isc.UndefinedSentinel
+    implements _ih0efjtk.AddressUuid {
+  const _UndefinedCitizenInt$address();
+}
+
+class _UndefinedCitizenInt$company extends _isc.UndefinedSentinel
+    implements _i441ok8u.CompanyUuid {
+  const _UndefinedCitizenInt$company();
+}
+
+class _UndefinedCitizenInt$oldCompany extends _isc.UndefinedSentinel
+    implements _i441ok8u.CompanyUuid {
+  const _UndefinedCitizenInt$oldCompany();
+}
+
 class _CitizenIntImpl extends CitizenInt {
   _CitizenIntImpl({
     int? id,
@@ -158,28 +173,28 @@ class _CitizenIntImpl extends CitizenInt {
   CitizenInt copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? address = _Undefined,
+    _ih0efjtk.AddressUuid? address = const _UndefinedCitizenInt$address(),
     _isc.UuidValue? companyId,
-    Object? company = _Undefined,
-    Object? oldCompanyId = _Undefined,
-    Object? oldCompany = _Undefined,
+    _i441ok8u.CompanyUuid? company = const _UndefinedCitizenInt$company(),
+    _isc.UuidValue? oldCompanyId = const _isc.$UndefinedUuidValue(),
+    _i441ok8u.CompanyUuid? oldCompany = const _UndefinedCitizenInt$oldCompany(),
   }) {
     return CitizenInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _ih0efjtk.AddressUuid?
-          ? address
-          : this.address?.copyWith(),
+      address: address is _isc.UndefinedSentinel
+          ? this.address?.copyWith()
+          : address,
       companyId: companyId ?? this.companyId,
-      company: company is _i441ok8u.CompanyUuid?
-          ? company
-          : this.company?.copyWith(),
-      oldCompanyId: oldCompanyId is _isc.UuidValue?
-          ? oldCompanyId
-          : this.oldCompanyId,
-      oldCompany: oldCompany is _i441ok8u.CompanyUuid?
-          ? oldCompany
-          : this.oldCompany?.copyWith(),
+      company: company is _isc.UndefinedSentinel
+          ? this.company?.copyWith()
+          : company,
+      oldCompanyId: oldCompanyId is _isc.UndefinedSentinel
+          ? this.oldCompanyId
+          : oldCompanyId,
+      oldCompany: oldCompany is _isc.UndefinedSentinel
+          ? this.oldCompany?.copyWith()
+          : oldCompany,
     );
   }
 }

@@ -95,9 +95,9 @@ abstract class GitHubAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   GitHubAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedGitHubAccount$authUser(),
     String? userIdentifier,
     String? email,
     DateTime? created,
@@ -150,6 +150,11 @@ abstract class GitHubAccount
 
 class _Undefined {}
 
+class _UndefinedGitHubAccount$authUser extends _is.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedGitHubAccount$authUser();
+}
+
 class _GitHubAccountImpl extends GitHubAccount {
   _GitHubAccountImpl({
     _is.UuidValue? id,
@@ -172,19 +177,19 @@ class _GitHubAccountImpl extends GitHubAccount {
   @_is.useResult
   @override
   GitHubAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedGitHubAccount$authUser(),
     String? userIdentifier,
     Object? email = _Undefined,
     DateTime? created,
   }) {
     return GitHubAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _is.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       userIdentifier: userIdentifier ?? this.userIdentifier,
       email: email is String? ? email : this.email,
       created: created ?? this.created,

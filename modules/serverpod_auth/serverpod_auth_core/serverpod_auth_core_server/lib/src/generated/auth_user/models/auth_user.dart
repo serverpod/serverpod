@@ -76,7 +76,7 @@ abstract class AuthUser
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   AuthUser copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,
@@ -131,8 +131,6 @@ abstract class AuthUser
   }
 }
 
-class _Undefined {}
-
 class _AuthUserImpl extends AuthUser {
   _AuthUserImpl({
     _is.UuidValue? id,
@@ -151,13 +149,13 @@ class _AuthUserImpl extends AuthUser {
   @_is.useResult
   @override
   AuthUser copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,
   }) {
     return AuthUser(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       createdAt: createdAt ?? this.createdAt,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       blocked: blocked ?? this.blocked,

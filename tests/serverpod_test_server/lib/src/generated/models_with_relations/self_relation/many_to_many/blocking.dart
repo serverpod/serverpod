@@ -77,9 +77,9 @@ abstract class Blocking
   Blocking copyWith({
     int? id,
     int? blockedId,
-    _iubhvl5a.Member? blocked,
+    _iubhvl5a.Member? blocked = const _UndefinedBlocking$blocked(),
     int? blockedById,
-    _iubhvl5a.Member? blockedBy,
+    _iubhvl5a.Member? blockedBy = const _UndefinedBlocking$blockedBy(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -141,6 +141,16 @@ abstract class Blocking
 
 class _Undefined {}
 
+class _UndefinedBlocking$blocked extends _is.UndefinedSentinel
+    implements _iubhvl5a.Member {
+  const _UndefinedBlocking$blocked();
+}
+
+class _UndefinedBlocking$blockedBy extends _is.UndefinedSentinel
+    implements _iubhvl5a.Member {
+  const _UndefinedBlocking$blockedBy();
+}
+
 class _BlockingImpl extends Blocking {
   _BlockingImpl({
     int? id,
@@ -163,20 +173,20 @@ class _BlockingImpl extends Blocking {
   Blocking copyWith({
     Object? id = _Undefined,
     int? blockedId,
-    Object? blocked = _Undefined,
+    _iubhvl5a.Member? blocked = const _UndefinedBlocking$blocked(),
     int? blockedById,
-    Object? blockedBy = _Undefined,
+    _iubhvl5a.Member? blockedBy = const _UndefinedBlocking$blockedBy(),
   }) {
     return Blocking(
       id: id is int? ? id : this.id,
       blockedId: blockedId ?? this.blockedId,
-      blocked: blocked is _iubhvl5a.Member?
-          ? blocked
-          : this.blocked?.copyWith(),
+      blocked: blocked is _is.UndefinedSentinel
+          ? this.blocked?.copyWith()
+          : blocked,
       blockedById: blockedById ?? this.blockedById,
-      blockedBy: blockedBy is _iubhvl5a.Member?
-          ? blockedBy
-          : this.blockedBy?.copyWith(),
+      blockedBy: blockedBy is _is.UndefinedSentinel
+          ? this.blockedBy?.copyWith()
+          : blockedBy,
     );
   }
 }

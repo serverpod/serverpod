@@ -66,7 +66,7 @@ abstract class MigrationsApplyResult
   /// with some or all fields replaced by the given arguments.
   @_iss.useResult
   MigrationsApplyResult copyWith({
-    List<String>? migrationsApplied,
+    List<String>? migrationsApplied = const _iss.$UndefinedList<String>(),
     String? repairMigrationApplied,
     bool? databaseMatchesTargetState,
   });
@@ -118,14 +118,14 @@ class _MigrationsApplyResultImpl extends MigrationsApplyResult {
   @_iss.useResult
   @override
   MigrationsApplyResult copyWith({
-    Object? migrationsApplied = _Undefined,
+    List<String>? migrationsApplied = const _iss.$UndefinedList<String>(),
     Object? repairMigrationApplied = _Undefined,
     bool? databaseMatchesTargetState,
   }) {
     return MigrationsApplyResult(
-      migrationsApplied: migrationsApplied is List<String>?
-          ? migrationsApplied
-          : this.migrationsApplied?.map((e0) => e0).toList(),
+      migrationsApplied: migrationsApplied is _iss.UndefinedSentinel
+          ? this.migrationsApplied?.map((e0) => e0).toList()
+          : migrationsApplied,
       repairMigrationApplied: repairMigrationApplied is String?
           ? repairMigrationApplied
           : this.repairMigrationApplied,

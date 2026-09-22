@@ -80,9 +80,10 @@ abstract class TeamInt
   TeamInt copyWith({
     int? id,
     String? name,
-    _is.UuidValue? arenaId,
-    _izqzqdtt.ArenaUuid? arena,
-    List<_igtph8zx.PlayerUuid>? players,
+    _is.UuidValue? arenaId = const _is.$UndefinedUuidValue(),
+    _izqzqdtt.ArenaUuid? arena = const _UndefinedTeamInt$arena(),
+    List<_igtph8zx.PlayerUuid>? players =
+        const _is.$UndefinedList<_igtph8zx.PlayerUuid>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -146,6 +147,11 @@ abstract class TeamInt
 
 class _Undefined {}
 
+class _UndefinedTeamInt$arena extends _is.UndefinedSentinel
+    implements _izqzqdtt.ArenaUuid {
+  const _UndefinedTeamInt$arena();
+}
+
 class _TeamIntImpl extends TeamInt {
   _TeamIntImpl({
     int? id,
@@ -168,18 +174,19 @@ class _TeamIntImpl extends TeamInt {
   TeamInt copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? arenaId = _Undefined,
-    Object? arena = _Undefined,
-    Object? players = _Undefined,
+    _is.UuidValue? arenaId = const _is.$UndefinedUuidValue(),
+    _izqzqdtt.ArenaUuid? arena = const _UndefinedTeamInt$arena(),
+    List<_igtph8zx.PlayerUuid>? players =
+        const _is.$UndefinedList<_igtph8zx.PlayerUuid>(),
   }) {
     return TeamInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      arenaId: arenaId is _is.UuidValue? ? arenaId : this.arenaId,
-      arena: arena is _izqzqdtt.ArenaUuid? ? arena : this.arena?.copyWith(),
-      players: players is List<_igtph8zx.PlayerUuid>?
-          ? players
-          : this.players?.map((e0) => e0.copyWith()).toList(),
+      arenaId: arenaId is _is.UndefinedSentinel ? this.arenaId : arenaId,
+      arena: arena is _is.UndefinedSentinel ? this.arena?.copyWith() : arena,
+      players: players is _is.UndefinedSentinel
+          ? this.players?.map((e0) => e0.copyWith()).toList()
+          : players,
     );
   }
 }

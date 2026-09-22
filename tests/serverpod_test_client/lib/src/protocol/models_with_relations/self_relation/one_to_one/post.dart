@@ -70,9 +70,9 @@ abstract class Post
   Post copyWith({
     int? id,
     String? content,
-    _ittc76ec.Post? previous,
+    _ittc76ec.Post? previous = const _UndefinedPost$previous(),
     int? nextId,
-    _ittc76ec.Post? next,
+    _ittc76ec.Post? next = const _UndefinedPost$next(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -106,6 +106,16 @@ abstract class Post
 
 class _Undefined {}
 
+class _UndefinedPost$previous extends _isc.UndefinedSentinel
+    implements _ittc76ec.Post {
+  const _UndefinedPost$previous();
+}
+
+class _UndefinedPost$next extends _isc.UndefinedSentinel
+    implements _ittc76ec.Post {
+  const _UndefinedPost$next();
+}
+
 class _PostImpl extends Post {
   _PostImpl({
     int? id,
@@ -128,18 +138,18 @@ class _PostImpl extends Post {
   Post copyWith({
     Object? id = _Undefined,
     String? content,
-    Object? previous = _Undefined,
+    _ittc76ec.Post? previous = const _UndefinedPost$previous(),
     Object? nextId = _Undefined,
-    Object? next = _Undefined,
+    _ittc76ec.Post? next = const _UndefinedPost$next(),
   }) {
     return Post(
       id: id is int? ? id : this.id,
       content: content ?? this.content,
-      previous: previous is _ittc76ec.Post?
-          ? previous
-          : this.previous?.copyWith(),
+      previous: previous is _isc.UndefinedSentinel
+          ? this.previous?.copyWith()
+          : previous,
       nextId: nextId is int? ? nextId : this.nextId,
-      next: next is _ittc76ec.Post? ? next : this.next?.copyWith(),
+      next: next is _isc.UndefinedSentinel ? this.next?.copyWith() : next,
     );
   }
 }

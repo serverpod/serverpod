@@ -100,9 +100,9 @@ abstract class UuidDefault
     int? id,
     _is.UuidValue? uuidDefaultRandom,
     _is.UuidValue? uuidDefaultRandomV7,
-    _is.UuidValue? uuidDefaultRandomNull,
+    _is.UuidValue? uuidDefaultRandomNull = const _is.$UndefinedUuidValue(),
     _is.UuidValue? uuidDefaultStr,
-    _is.UuidValue? uuidDefaultStrNull,
+    _is.UuidValue? uuidDefaultStrNull = const _is.$UndefinedUuidValue(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -189,21 +189,21 @@ class _UuidDefaultImpl extends UuidDefault {
     Object? id = _Undefined,
     _is.UuidValue? uuidDefaultRandom,
     _is.UuidValue? uuidDefaultRandomV7,
-    Object? uuidDefaultRandomNull = _Undefined,
+    _is.UuidValue? uuidDefaultRandomNull = const _is.$UndefinedUuidValue(),
     _is.UuidValue? uuidDefaultStr,
-    Object? uuidDefaultStrNull = _Undefined,
+    _is.UuidValue? uuidDefaultStrNull = const _is.$UndefinedUuidValue(),
   }) {
     return UuidDefault(
       id: id is int? ? id : this.id,
       uuidDefaultRandom: uuidDefaultRandom ?? this.uuidDefaultRandom,
       uuidDefaultRandomV7: uuidDefaultRandomV7 ?? this.uuidDefaultRandomV7,
-      uuidDefaultRandomNull: uuidDefaultRandomNull is _is.UuidValue?
-          ? uuidDefaultRandomNull
-          : this.uuidDefaultRandomNull,
+      uuidDefaultRandomNull: uuidDefaultRandomNull is _is.UndefinedSentinel
+          ? this.uuidDefaultRandomNull
+          : uuidDefaultRandomNull,
       uuidDefaultStr: uuidDefaultStr ?? this.uuidDefaultStr,
-      uuidDefaultStrNull: uuidDefaultStrNull is _is.UuidValue?
-          ? uuidDefaultStrNull
-          : this.uuidDefaultStrNull,
+      uuidDefaultStrNull: uuidDefaultStrNull is _is.UndefinedSentinel
+          ? this.uuidDefaultStrNull
+          : uuidDefaultStrNull,
     );
   }
 }

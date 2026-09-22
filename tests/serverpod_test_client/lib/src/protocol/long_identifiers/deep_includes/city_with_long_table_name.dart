@@ -71,8 +71,10 @@ abstract class CityWithLongTableName
   CityWithLongTableName copyWith({
     int? id,
     String? name,
-    List<_i5nficvp.PersonWithLongTableName>? citizens,
-    List<_imc5i9r4.OrganizationWithLongTableName>? organizations,
+    List<_i5nficvp.PersonWithLongTableName>? citizens =
+        const _isc.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
+    List<_imc5i9r4.OrganizationWithLongTableName>? organizations =
+        const _isc.$UndefinedList<_imc5i9r4.OrganizationWithLongTableName>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -130,19 +132,20 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
   CityWithLongTableName copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? citizens = _Undefined,
-    Object? organizations = _Undefined,
+    List<_i5nficvp.PersonWithLongTableName>? citizens =
+        const _isc.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
+    List<_imc5i9r4.OrganizationWithLongTableName>? organizations =
+        const _isc.$UndefinedList<_imc5i9r4.OrganizationWithLongTableName>(),
   }) {
     return CityWithLongTableName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      citizens: citizens is List<_i5nficvp.PersonWithLongTableName>?
-          ? citizens
-          : this.citizens?.map((e0) => e0.copyWith()).toList(),
-      organizations:
-          organizations is List<_imc5i9r4.OrganizationWithLongTableName>?
-          ? organizations
-          : this.organizations?.map((e0) => e0.copyWith()).toList(),
+      citizens: citizens is _isc.UndefinedSentinel
+          ? this.citizens?.map((e0) => e0.copyWith()).toList()
+          : citizens,
+      organizations: organizations is _isc.UndefinedSentinel
+          ? this.organizations?.map((e0) => e0.copyWith()).toList()
+          : organizations,
     );
   }
 }

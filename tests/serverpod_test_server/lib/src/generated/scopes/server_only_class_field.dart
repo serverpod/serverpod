@@ -52,8 +52,10 @@ abstract class ServerOnlyClassField
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ServerOnlyClassField copyWith({
-    List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList,
-    Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap,
+    List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList =
+        const _is.$UndefinedList<_i3zqz247.ServerOnlyClass>(),
+    Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap =
+        const _is.$UndefinedMap<String, _i3zqz247.ServerOnlyClass>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -81,8 +83,6 @@ abstract class ServerOnlyClassField
   }
 }
 
-class _Undefined {}
-
 class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
   _ServerOnlyClassFieldImpl({
     List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList,
@@ -97,18 +97,17 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
   @_is.useResult
   @override
   ServerOnlyClassField copyWith({
-    Object? serverOnlyClassList = _Undefined,
-    Object? serverOnlyClassMap = _Undefined,
+    List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList =
+        const _is.$UndefinedList<_i3zqz247.ServerOnlyClass>(),
+    Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap =
+        const _is.$UndefinedMap<String, _i3zqz247.ServerOnlyClass>(),
   }) {
     return ServerOnlyClassField(
-      serverOnlyClassList:
-          serverOnlyClassList is List<_i3zqz247.ServerOnlyClass>?
-          ? serverOnlyClassList
-          : this.serverOnlyClassList?.map((e0) => e0.copyWith()).toList(),
-      serverOnlyClassMap:
-          serverOnlyClassMap is Map<String, _i3zqz247.ServerOnlyClass>?
-          ? serverOnlyClassMap
-          : this.serverOnlyClassMap?.map(
+      serverOnlyClassList: serverOnlyClassList is _is.UndefinedSentinel
+          ? this.serverOnlyClassList?.map((e0) => e0.copyWith()).toList()
+          : serverOnlyClassList,
+      serverOnlyClassMap: serverOnlyClassMap is _is.UndefinedSentinel
+          ? this.serverOnlyClassMap?.map(
               (
                 key0,
                 value0,
@@ -116,7 +115,8 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
                 key0,
                 value0.copyWith(),
               ),
-            ),
+            )
+          : serverOnlyClassMap,
     );
   }
 }

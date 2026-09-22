@@ -67,7 +67,7 @@ abstract class ObjectFieldPersist
     int? id,
     String? normal,
     String? api,
-    _i0zisc0t.SimpleData? data,
+    _i0zisc0t.SimpleData? data = const _UndefinedObjectFieldPersist$data(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -121,6 +121,11 @@ abstract class ObjectFieldPersist
 
 class _Undefined {}
 
+class _UndefinedObjectFieldPersist$data extends _is.UndefinedSentinel
+    implements _i0zisc0t.SimpleData {
+  const _UndefinedObjectFieldPersist$data();
+}
+
 class _ObjectFieldPersistImpl extends ObjectFieldPersist {
   _ObjectFieldPersistImpl({
     int? id,
@@ -142,13 +147,13 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
     Object? id = _Undefined,
     String? normal,
     Object? api = _Undefined,
-    Object? data = _Undefined,
+    _i0zisc0t.SimpleData? data = const _UndefinedObjectFieldPersist$data(),
   }) {
     return ObjectFieldPersist(
       id: id is int? ? id : this.id,
       normal: normal ?? this.normal,
       api: api is String? ? api : this.api,
-      data: data is _i0zisc0t.SimpleData? ? data : this.data?.copyWith(),
+      data: data is _is.UndefinedSentinel ? this.data?.copyWith() : data,
     );
   }
 }

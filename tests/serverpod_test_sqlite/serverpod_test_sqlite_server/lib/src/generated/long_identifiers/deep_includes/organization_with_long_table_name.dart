@@ -83,9 +83,11 @@ abstract class OrganizationWithLongTableName
   OrganizationWithLongTableName copyWith({
     int? id,
     String? name,
-    List<_i5nficvp.PersonWithLongTableName>? people,
+    List<_i5nficvp.PersonWithLongTableName>? people =
+        const _is.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
     int? cityId,
-    _ii8bs4lb.CityWithLongTableName? city,
+    _ii8bs4lb.CityWithLongTableName? city =
+        const _UndefinedOrganizationWithLongTableName$city(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -149,6 +151,11 @@ abstract class OrganizationWithLongTableName
 
 class _Undefined {}
 
+class _UndefinedOrganizationWithLongTableName$city extends _is.UndefinedSentinel
+    implements _ii8bs4lb.CityWithLongTableName {
+  const _UndefinedOrganizationWithLongTableName$city();
+}
+
 class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
   _OrganizationWithLongTableNameImpl({
     int? id,
@@ -171,20 +178,20 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
   OrganizationWithLongTableName copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? people = _Undefined,
+    List<_i5nficvp.PersonWithLongTableName>? people =
+        const _is.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
     Object? cityId = _Undefined,
-    Object? city = _Undefined,
+    _ii8bs4lb.CityWithLongTableName? city =
+        const _UndefinedOrganizationWithLongTableName$city(),
   }) {
     return OrganizationWithLongTableName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is List<_i5nficvp.PersonWithLongTableName>?
-          ? people
-          : this.people?.map((e0) => e0.copyWith()).toList(),
+      people: people is _is.UndefinedSentinel
+          ? this.people?.map((e0) => e0.copyWith()).toList()
+          : people,
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _ii8bs4lb.CityWithLongTableName?
-          ? city
-          : this.city?.copyWith(),
+      city: city is _is.UndefinedSentinel ? this.city?.copyWith() : city,
     );
   }
 }

@@ -69,7 +69,8 @@ abstract class RelatedUniqueData
   RelatedUniqueData copyWith({
     int? id,
     int? uniqueDataId,
-    _iufhyrjh.UniqueData? uniqueData,
+    _iufhyrjh.UniqueData? uniqueData =
+        const _UndefinedRelatedUniqueData$uniqueData(),
     int? number,
   });
   @override
@@ -126,6 +127,11 @@ abstract class RelatedUniqueData
 
 class _Undefined {}
 
+class _UndefinedRelatedUniqueData$uniqueData extends _isc.UndefinedSentinel
+    implements _iufhyrjh.UniqueData {
+  const _UndefinedRelatedUniqueData$uniqueData();
+}
+
 class _RelatedUniqueDataImpl extends RelatedUniqueData {
   _RelatedUniqueDataImpl({
     int? id,
@@ -146,15 +152,16 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   RelatedUniqueData copyWith({
     Object? id = _Undefined,
     int? uniqueDataId,
-    Object? uniqueData = _Undefined,
+    _iufhyrjh.UniqueData? uniqueData =
+        const _UndefinedRelatedUniqueData$uniqueData(),
     int? number,
   }) {
     return RelatedUniqueData(
       id: id is int? ? id : this.id,
       uniqueDataId: uniqueDataId ?? this.uniqueDataId,
-      uniqueData: uniqueData is _iufhyrjh.UniqueData?
-          ? uniqueData
-          : this.uniqueData?.copyWith(),
+      uniqueData: uniqueData is _isc.UndefinedSentinel
+          ? this.uniqueData?.copyWith()
+          : uniqueData,
       number: number ?? this.number,
     );
   }

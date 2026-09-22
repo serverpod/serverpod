@@ -346,40 +346,68 @@ abstract class TypesMap
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   TypesMap copyWith({
-    Map<int, String>? anIntKey,
-    Map<bool, String>? aBoolKey,
-    Map<double, String>? aDoubleKey,
-    Map<DateTime, String>? aDateTimeKey,
-    Map<String, String>? aStringKey,
-    Map<_idt.ByteData, String>? aByteDataKey,
-    Map<Duration, String>? aDurationKey,
-    Map<_isc.UuidValue, String>? aUuidKey,
-    Map<Uri, String>? aUriKey,
-    Map<BigInt, String>? aBigIntKey,
-    Map<_ionapfu9.TestEnum, String>? anEnumKey,
-    Map<_i7liykk2.TestEnumStringified, String>? aStringifiedEnumKey,
-    Map<_iwxwszsz.Types, String>? anObjectKey,
-    Map<Map<_iwxwszsz.Types, String>, String>? aMapKey,
-    Map<List<_iwxwszsz.Types>, String>? aListKey,
-    Map<(String,), String>? aRecordKey,
-    Map<String, int>? anIntValue,
-    Map<String, bool>? aBoolValue,
-    Map<String, double>? aDoubleValue,
-    Map<String, DateTime>? aDateTimeValue,
-    Map<String, String>? aStringValue,
-    Map<String, _idt.ByteData>? aByteDataValue,
-    Map<String, Duration>? aDurationValue,
-    Map<String, _isc.UuidValue>? aUuidValue,
-    Map<String, Uri>? aUriValue,
-    Map<String, BigInt>? aBigIntValue,
-    Map<String, _ionapfu9.TestEnum>? anEnumValue,
-    Map<String, _i7liykk2.TestEnumStringified>? aStringifiedEnumValue,
-    Map<String, _iwxwszsz.Types>? anObjectValue,
-    Map<String, Map<String, _iwxwszsz.Types>>? aMapValue,
-    Map<String, List<_iwxwszsz.Types>>? aListValue,
-    Map<String, (String,)>? aRecordValue,
-    Map<String, (String,)?>? aNullableRecordValue,
-    Map<(String,)?, String>? aNullableRecordKey,
+    Map<int, String>? anIntKey = const _isc.$UndefinedMap<int, String>(),
+    Map<bool, String>? aBoolKey = const _isc.$UndefinedMap<bool, String>(),
+    Map<double, String>? aDoubleKey =
+        const _isc.$UndefinedMap<double, String>(),
+    Map<DateTime, String>? aDateTimeKey =
+        const _isc.$UndefinedMap<DateTime, String>(),
+    Map<String, String>? aStringKey =
+        const _isc.$UndefinedMap<String, String>(),
+    Map<_idt.ByteData, String>? aByteDataKey =
+        const _isc.$UndefinedMap<_idt.ByteData, String>(),
+    Map<Duration, String>? aDurationKey =
+        const _isc.$UndefinedMap<Duration, String>(),
+    Map<_isc.UuidValue, String>? aUuidKey =
+        const _isc.$UndefinedMap<_isc.UuidValue, String>(),
+    Map<Uri, String>? aUriKey = const _isc.$UndefinedMap<Uri, String>(),
+    Map<BigInt, String>? aBigIntKey =
+        const _isc.$UndefinedMap<BigInt, String>(),
+    Map<_ionapfu9.TestEnum, String>? anEnumKey =
+        const _isc.$UndefinedMap<_ionapfu9.TestEnum, String>(),
+    Map<_i7liykk2.TestEnumStringified, String>? aStringifiedEnumKey =
+        const _isc.$UndefinedMap<_i7liykk2.TestEnumStringified, String>(),
+    Map<_iwxwszsz.Types, String>? anObjectKey =
+        const _isc.$UndefinedMap<_iwxwszsz.Types, String>(),
+    Map<Map<_iwxwszsz.Types, String>, String>? aMapKey =
+        const _isc.$UndefinedMap<Map<_iwxwszsz.Types, String>, String>(),
+    Map<List<_iwxwszsz.Types>, String>? aListKey =
+        const _isc.$UndefinedMap<List<_iwxwszsz.Types>, String>(),
+    Map<(String,), String>? aRecordKey =
+        const _isc.$UndefinedMap<(String,), String>(),
+    Map<String, int>? anIntValue = const _isc.$UndefinedMap<String, int>(),
+    Map<String, bool>? aBoolValue = const _isc.$UndefinedMap<String, bool>(),
+    Map<String, double>? aDoubleValue =
+        const _isc.$UndefinedMap<String, double>(),
+    Map<String, DateTime>? aDateTimeValue =
+        const _isc.$UndefinedMap<String, DateTime>(),
+    Map<String, String>? aStringValue =
+        const _isc.$UndefinedMap<String, String>(),
+    Map<String, _idt.ByteData>? aByteDataValue =
+        const _isc.$UndefinedMap<String, _idt.ByteData>(),
+    Map<String, Duration>? aDurationValue =
+        const _isc.$UndefinedMap<String, Duration>(),
+    Map<String, _isc.UuidValue>? aUuidValue =
+        const _isc.$UndefinedMap<String, _isc.UuidValue>(),
+    Map<String, Uri>? aUriValue = const _isc.$UndefinedMap<String, Uri>(),
+    Map<String, BigInt>? aBigIntValue =
+        const _isc.$UndefinedMap<String, BigInt>(),
+    Map<String, _ionapfu9.TestEnum>? anEnumValue =
+        const _isc.$UndefinedMap<String, _ionapfu9.TestEnum>(),
+    Map<String, _i7liykk2.TestEnumStringified>? aStringifiedEnumValue =
+        const _isc.$UndefinedMap<String, _i7liykk2.TestEnumStringified>(),
+    Map<String, _iwxwszsz.Types>? anObjectValue =
+        const _isc.$UndefinedMap<String, _iwxwszsz.Types>(),
+    Map<String, Map<String, _iwxwszsz.Types>>? aMapValue =
+        const _isc.$UndefinedMap<String, Map<String, _iwxwszsz.Types>>(),
+    Map<String, List<_iwxwszsz.Types>>? aListValue =
+        const _isc.$UndefinedMap<String, List<_iwxwszsz.Types>>(),
+    Map<String, (String,)>? aRecordValue =
+        const _isc.$UndefinedMap<String, (String,)>(),
+    Map<String, (String,)?>? aNullableRecordValue =
+        const _isc.$UndefinedMap<String, (String,)?>(),
+    Map<(String,)?, String>? aNullableRecordKey =
+        const _isc.$UndefinedMap<(String,)?, String>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -571,8 +599,6 @@ abstract class TypesMap
   }
 }
 
-class _Undefined {}
-
 class _TypesMapImpl extends TypesMap {
   _TypesMapImpl({
     Map<int, String>? anIntKey,
@@ -651,45 +677,72 @@ class _TypesMapImpl extends TypesMap {
   @_isc.useResult
   @override
   TypesMap copyWith({
-    Object? anIntKey = _Undefined,
-    Object? aBoolKey = _Undefined,
-    Object? aDoubleKey = _Undefined,
-    Object? aDateTimeKey = _Undefined,
-    Object? aStringKey = _Undefined,
-    Object? aByteDataKey = _Undefined,
-    Object? aDurationKey = _Undefined,
-    Object? aUuidKey = _Undefined,
-    Object? aUriKey = _Undefined,
-    Object? aBigIntKey = _Undefined,
-    Object? anEnumKey = _Undefined,
-    Object? aStringifiedEnumKey = _Undefined,
-    Object? anObjectKey = _Undefined,
-    Object? aMapKey = _Undefined,
-    Object? aListKey = _Undefined,
-    Object? aRecordKey = _Undefined,
-    Object? anIntValue = _Undefined,
-    Object? aBoolValue = _Undefined,
-    Object? aDoubleValue = _Undefined,
-    Object? aDateTimeValue = _Undefined,
-    Object? aStringValue = _Undefined,
-    Object? aByteDataValue = _Undefined,
-    Object? aDurationValue = _Undefined,
-    Object? aUuidValue = _Undefined,
-    Object? aUriValue = _Undefined,
-    Object? aBigIntValue = _Undefined,
-    Object? anEnumValue = _Undefined,
-    Object? aStringifiedEnumValue = _Undefined,
-    Object? anObjectValue = _Undefined,
-    Object? aMapValue = _Undefined,
-    Object? aListValue = _Undefined,
-    Object? aRecordValue = _Undefined,
-    Object? aNullableRecordValue = _Undefined,
-    Object? aNullableRecordKey = _Undefined,
+    Map<int, String>? anIntKey = const _isc.$UndefinedMap<int, String>(),
+    Map<bool, String>? aBoolKey = const _isc.$UndefinedMap<bool, String>(),
+    Map<double, String>? aDoubleKey =
+        const _isc.$UndefinedMap<double, String>(),
+    Map<DateTime, String>? aDateTimeKey =
+        const _isc.$UndefinedMap<DateTime, String>(),
+    Map<String, String>? aStringKey =
+        const _isc.$UndefinedMap<String, String>(),
+    Map<_idt.ByteData, String>? aByteDataKey =
+        const _isc.$UndefinedMap<_idt.ByteData, String>(),
+    Map<Duration, String>? aDurationKey =
+        const _isc.$UndefinedMap<Duration, String>(),
+    Map<_isc.UuidValue, String>? aUuidKey =
+        const _isc.$UndefinedMap<_isc.UuidValue, String>(),
+    Map<Uri, String>? aUriKey = const _isc.$UndefinedMap<Uri, String>(),
+    Map<BigInt, String>? aBigIntKey =
+        const _isc.$UndefinedMap<BigInt, String>(),
+    Map<_ionapfu9.TestEnum, String>? anEnumKey =
+        const _isc.$UndefinedMap<_ionapfu9.TestEnum, String>(),
+    Map<_i7liykk2.TestEnumStringified, String>? aStringifiedEnumKey =
+        const _isc.$UndefinedMap<_i7liykk2.TestEnumStringified, String>(),
+    Map<_iwxwszsz.Types, String>? anObjectKey =
+        const _isc.$UndefinedMap<_iwxwszsz.Types, String>(),
+    Map<Map<_iwxwszsz.Types, String>, String>? aMapKey =
+        const _isc.$UndefinedMap<Map<_iwxwszsz.Types, String>, String>(),
+    Map<List<_iwxwszsz.Types>, String>? aListKey =
+        const _isc.$UndefinedMap<List<_iwxwszsz.Types>, String>(),
+    Map<(String,), String>? aRecordKey =
+        const _isc.$UndefinedMap<(String,), String>(),
+    Map<String, int>? anIntValue = const _isc.$UndefinedMap<String, int>(),
+    Map<String, bool>? aBoolValue = const _isc.$UndefinedMap<String, bool>(),
+    Map<String, double>? aDoubleValue =
+        const _isc.$UndefinedMap<String, double>(),
+    Map<String, DateTime>? aDateTimeValue =
+        const _isc.$UndefinedMap<String, DateTime>(),
+    Map<String, String>? aStringValue =
+        const _isc.$UndefinedMap<String, String>(),
+    Map<String, _idt.ByteData>? aByteDataValue =
+        const _isc.$UndefinedMap<String, _idt.ByteData>(),
+    Map<String, Duration>? aDurationValue =
+        const _isc.$UndefinedMap<String, Duration>(),
+    Map<String, _isc.UuidValue>? aUuidValue =
+        const _isc.$UndefinedMap<String, _isc.UuidValue>(),
+    Map<String, Uri>? aUriValue = const _isc.$UndefinedMap<String, Uri>(),
+    Map<String, BigInt>? aBigIntValue =
+        const _isc.$UndefinedMap<String, BigInt>(),
+    Map<String, _ionapfu9.TestEnum>? anEnumValue =
+        const _isc.$UndefinedMap<String, _ionapfu9.TestEnum>(),
+    Map<String, _i7liykk2.TestEnumStringified>? aStringifiedEnumValue =
+        const _isc.$UndefinedMap<String, _i7liykk2.TestEnumStringified>(),
+    Map<String, _iwxwszsz.Types>? anObjectValue =
+        const _isc.$UndefinedMap<String, _iwxwszsz.Types>(),
+    Map<String, Map<String, _iwxwszsz.Types>>? aMapValue =
+        const _isc.$UndefinedMap<String, Map<String, _iwxwszsz.Types>>(),
+    Map<String, List<_iwxwszsz.Types>>? aListValue =
+        const _isc.$UndefinedMap<String, List<_iwxwszsz.Types>>(),
+    Map<String, (String,)>? aRecordValue =
+        const _isc.$UndefinedMap<String, (String,)>(),
+    Map<String, (String,)?>? aNullableRecordValue =
+        const _isc.$UndefinedMap<String, (String,)?>(),
+    Map<(String,)?, String>? aNullableRecordKey =
+        const _isc.$UndefinedMap<(String,)?, String>(),
   }) {
     return TypesMap(
-      anIntKey: anIntKey is Map<int, String>?
-          ? anIntKey
-          : this.anIntKey?.map(
+      anIntKey: anIntKey is _isc.UndefinedSentinel
+          ? this.anIntKey?.map(
               (
                 key0,
                 value0,
@@ -697,10 +750,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aBoolKey: aBoolKey is Map<bool, String>?
-          ? aBoolKey
-          : this.aBoolKey?.map(
+            )
+          : anIntKey,
+      aBoolKey: aBoolKey is _isc.UndefinedSentinel
+          ? this.aBoolKey?.map(
               (
                 key0,
                 value0,
@@ -708,10 +761,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aDoubleKey: aDoubleKey is Map<double, String>?
-          ? aDoubleKey
-          : this.aDoubleKey?.map(
+            )
+          : aBoolKey,
+      aDoubleKey: aDoubleKey is _isc.UndefinedSentinel
+          ? this.aDoubleKey?.map(
               (
                 key0,
                 value0,
@@ -719,10 +772,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aDateTimeKey: aDateTimeKey is Map<DateTime, String>?
-          ? aDateTimeKey
-          : this.aDateTimeKey?.map(
+            )
+          : aDoubleKey,
+      aDateTimeKey: aDateTimeKey is _isc.UndefinedSentinel
+          ? this.aDateTimeKey?.map(
               (
                 key0,
                 value0,
@@ -730,10 +783,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aStringKey: aStringKey is Map<String, String>?
-          ? aStringKey
-          : this.aStringKey?.map(
+            )
+          : aDateTimeKey,
+      aStringKey: aStringKey is _isc.UndefinedSentinel
+          ? this.aStringKey?.map(
               (
                 key0,
                 value0,
@@ -741,10 +794,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aByteDataKey: aByteDataKey is Map<_idt.ByteData, String>?
-          ? aByteDataKey
-          : this.aByteDataKey?.map(
+            )
+          : aStringKey,
+      aByteDataKey: aByteDataKey is _isc.UndefinedSentinel
+          ? this.aByteDataKey?.map(
               (
                 key0,
                 value0,
@@ -752,10 +805,10 @@ class _TypesMapImpl extends TypesMap {
                 key0.clone(),
                 value0,
               ),
-            ),
-      aDurationKey: aDurationKey is Map<Duration, String>?
-          ? aDurationKey
-          : this.aDurationKey?.map(
+            )
+          : aByteDataKey,
+      aDurationKey: aDurationKey is _isc.UndefinedSentinel
+          ? this.aDurationKey?.map(
               (
                 key0,
                 value0,
@@ -763,10 +816,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aUuidKey: aUuidKey is Map<_isc.UuidValue, String>?
-          ? aUuidKey
-          : this.aUuidKey?.map(
+            )
+          : aDurationKey,
+      aUuidKey: aUuidKey is _isc.UndefinedSentinel
+          ? this.aUuidKey?.map(
               (
                 key0,
                 value0,
@@ -774,10 +827,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aUriKey: aUriKey is Map<Uri, String>?
-          ? aUriKey
-          : this.aUriKey?.map(
+            )
+          : aUuidKey,
+      aUriKey: aUriKey is _isc.UndefinedSentinel
+          ? this.aUriKey?.map(
               (
                 key0,
                 value0,
@@ -785,10 +838,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aBigIntKey: aBigIntKey is Map<BigInt, String>?
-          ? aBigIntKey
-          : this.aBigIntKey?.map(
+            )
+          : aUriKey,
+      aBigIntKey: aBigIntKey is _isc.UndefinedSentinel
+          ? this.aBigIntKey?.map(
               (
                 key0,
                 value0,
@@ -796,10 +849,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      anEnumKey: anEnumKey is Map<_ionapfu9.TestEnum, String>?
-          ? anEnumKey
-          : this.anEnumKey?.map(
+            )
+          : aBigIntKey,
+      anEnumKey: anEnumKey is _isc.UndefinedSentinel
+          ? this.anEnumKey?.map(
               (
                 key0,
                 value0,
@@ -807,11 +860,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aStringifiedEnumKey:
-          aStringifiedEnumKey is Map<_i7liykk2.TestEnumStringified, String>?
-          ? aStringifiedEnumKey
-          : this.aStringifiedEnumKey?.map(
+            )
+          : anEnumKey,
+      aStringifiedEnumKey: aStringifiedEnumKey is _isc.UndefinedSentinel
+          ? this.aStringifiedEnumKey?.map(
               (
                 key0,
                 value0,
@@ -819,10 +871,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      anObjectKey: anObjectKey is Map<_iwxwszsz.Types, String>?
-          ? anObjectKey
-          : this.anObjectKey?.map(
+            )
+          : aStringifiedEnumKey,
+      anObjectKey: anObjectKey is _isc.UndefinedSentinel
+          ? this.anObjectKey?.map(
               (
                 key0,
                 value0,
@@ -830,10 +882,10 @@ class _TypesMapImpl extends TypesMap {
                 key0.copyWith(),
                 value0,
               ),
-            ),
-      aMapKey: aMapKey is Map<Map<_iwxwszsz.Types, String>, String>?
-          ? aMapKey
-          : this.aMapKey?.map(
+            )
+          : anObjectKey,
+      aMapKey: aMapKey is _isc.UndefinedSentinel
+          ? this.aMapKey?.map(
               (
                 key0,
                 value0,
@@ -849,10 +901,10 @@ class _TypesMapImpl extends TypesMap {
                 ),
                 value0,
               ),
-            ),
-      aListKey: aListKey is Map<List<_iwxwszsz.Types>, String>?
-          ? aListKey
-          : this.aListKey?.map(
+            )
+          : aMapKey,
+      aListKey: aListKey is _isc.UndefinedSentinel
+          ? this.aListKey?.map(
               (
                 key0,
                 value0,
@@ -860,10 +912,10 @@ class _TypesMapImpl extends TypesMap {
                 key0.map((e1) => e1.copyWith()).toList(),
                 value0,
               ),
-            ),
-      aRecordKey: aRecordKey is Map<(String,), String>?
-          ? aRecordKey
-          : this.aRecordKey?.map(
+            )
+          : aListKey,
+      aRecordKey: aRecordKey is _isc.UndefinedSentinel
+          ? this.aRecordKey?.map(
               (
                 key0,
                 value0,
@@ -871,10 +923,10 @@ class _TypesMapImpl extends TypesMap {
                 (key0.$1,),
                 value0,
               ),
-            ),
-      anIntValue: anIntValue is Map<String, int>?
-          ? anIntValue
-          : this.anIntValue?.map(
+            )
+          : aRecordKey,
+      anIntValue: anIntValue is _isc.UndefinedSentinel
+          ? this.anIntValue?.map(
               (
                 key0,
                 value0,
@@ -882,10 +934,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aBoolValue: aBoolValue is Map<String, bool>?
-          ? aBoolValue
-          : this.aBoolValue?.map(
+            )
+          : anIntValue,
+      aBoolValue: aBoolValue is _isc.UndefinedSentinel
+          ? this.aBoolValue?.map(
               (
                 key0,
                 value0,
@@ -893,10 +945,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aDoubleValue: aDoubleValue is Map<String, double>?
-          ? aDoubleValue
-          : this.aDoubleValue?.map(
+            )
+          : aBoolValue,
+      aDoubleValue: aDoubleValue is _isc.UndefinedSentinel
+          ? this.aDoubleValue?.map(
               (
                 key0,
                 value0,
@@ -904,10 +956,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aDateTimeValue: aDateTimeValue is Map<String, DateTime>?
-          ? aDateTimeValue
-          : this.aDateTimeValue?.map(
+            )
+          : aDoubleValue,
+      aDateTimeValue: aDateTimeValue is _isc.UndefinedSentinel
+          ? this.aDateTimeValue?.map(
               (
                 key0,
                 value0,
@@ -915,10 +967,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aStringValue: aStringValue is Map<String, String>?
-          ? aStringValue
-          : this.aStringValue?.map(
+            )
+          : aDateTimeValue,
+      aStringValue: aStringValue is _isc.UndefinedSentinel
+          ? this.aStringValue?.map(
               (
                 key0,
                 value0,
@@ -926,10 +978,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aByteDataValue: aByteDataValue is Map<String, _idt.ByteData>?
-          ? aByteDataValue
-          : this.aByteDataValue?.map(
+            )
+          : aStringValue,
+      aByteDataValue: aByteDataValue is _isc.UndefinedSentinel
+          ? this.aByteDataValue?.map(
               (
                 key0,
                 value0,
@@ -937,10 +989,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0.clone(),
               ),
-            ),
-      aDurationValue: aDurationValue is Map<String, Duration>?
-          ? aDurationValue
-          : this.aDurationValue?.map(
+            )
+          : aByteDataValue,
+      aDurationValue: aDurationValue is _isc.UndefinedSentinel
+          ? this.aDurationValue?.map(
               (
                 key0,
                 value0,
@@ -948,10 +1000,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aUuidValue: aUuidValue is Map<String, _isc.UuidValue>?
-          ? aUuidValue
-          : this.aUuidValue?.map(
+            )
+          : aDurationValue,
+      aUuidValue: aUuidValue is _isc.UndefinedSentinel
+          ? this.aUuidValue?.map(
               (
                 key0,
                 value0,
@@ -959,10 +1011,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aUriValue: aUriValue is Map<String, Uri>?
-          ? aUriValue
-          : this.aUriValue?.map(
+            )
+          : aUuidValue,
+      aUriValue: aUriValue is _isc.UndefinedSentinel
+          ? this.aUriValue?.map(
               (
                 key0,
                 value0,
@@ -970,10 +1022,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aBigIntValue: aBigIntValue is Map<String, BigInt>?
-          ? aBigIntValue
-          : this.aBigIntValue?.map(
+            )
+          : aUriValue,
+      aBigIntValue: aBigIntValue is _isc.UndefinedSentinel
+          ? this.aBigIntValue?.map(
               (
                 key0,
                 value0,
@@ -981,10 +1033,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      anEnumValue: anEnumValue is Map<String, _ionapfu9.TestEnum>?
-          ? anEnumValue
-          : this.anEnumValue?.map(
+            )
+          : aBigIntValue,
+      anEnumValue: anEnumValue is _isc.UndefinedSentinel
+          ? this.anEnumValue?.map(
               (
                 key0,
                 value0,
@@ -992,11 +1044,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      aStringifiedEnumValue:
-          aStringifiedEnumValue is Map<String, _i7liykk2.TestEnumStringified>?
-          ? aStringifiedEnumValue
-          : this.aStringifiedEnumValue?.map(
+            )
+          : anEnumValue,
+      aStringifiedEnumValue: aStringifiedEnumValue is _isc.UndefinedSentinel
+          ? this.aStringifiedEnumValue?.map(
               (
                 key0,
                 value0,
@@ -1004,10 +1055,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0,
               ),
-            ),
-      anObjectValue: anObjectValue is Map<String, _iwxwszsz.Types>?
-          ? anObjectValue
-          : this.anObjectValue?.map(
+            )
+          : aStringifiedEnumValue,
+      anObjectValue: anObjectValue is _isc.UndefinedSentinel
+          ? this.anObjectValue?.map(
               (
                 key0,
                 value0,
@@ -1015,10 +1066,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0.copyWith(),
               ),
-            ),
-      aMapValue: aMapValue is Map<String, Map<String, _iwxwszsz.Types>>?
-          ? aMapValue
-          : this.aMapValue?.map(
+            )
+          : anObjectValue,
+      aMapValue: aMapValue is _isc.UndefinedSentinel
+          ? this.aMapValue?.map(
               (
                 key0,
                 value0,
@@ -1034,10 +1085,10 @@ class _TypesMapImpl extends TypesMap {
                   ),
                 ),
               ),
-            ),
-      aListValue: aListValue is Map<String, List<_iwxwszsz.Types>>?
-          ? aListValue
-          : this.aListValue?.map(
+            )
+          : aMapValue,
+      aListValue: aListValue is _isc.UndefinedSentinel
+          ? this.aListValue?.map(
               (
                 key0,
                 value0,
@@ -1045,10 +1096,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0.map((e1) => e1.copyWith()).toList(),
               ),
-            ),
-      aRecordValue: aRecordValue is Map<String, (String,)>?
-          ? aRecordValue
-          : this.aRecordValue?.map(
+            )
+          : aListValue,
+      aRecordValue: aRecordValue is _isc.UndefinedSentinel
+          ? this.aRecordValue?.map(
               (
                 key0,
                 value0,
@@ -1056,10 +1107,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 (value0.$1,),
               ),
-            ),
-      aNullableRecordValue: aNullableRecordValue is Map<String, (String,)?>?
-          ? aNullableRecordValue
-          : this.aNullableRecordValue?.map(
+            )
+          : aRecordValue,
+      aNullableRecordValue: aNullableRecordValue is _isc.UndefinedSentinel
+          ? this.aNullableRecordValue?.map(
               (
                 key0,
                 value0,
@@ -1067,10 +1118,10 @@ class _TypesMapImpl extends TypesMap {
                 key0,
                 value0 == null ? null : (value0.$1,),
               ),
-            ),
-      aNullableRecordKey: aNullableRecordKey is Map<(String,)?, String>?
-          ? aNullableRecordKey
-          : this.aNullableRecordKey?.map(
+            )
+          : aNullableRecordValue,
+      aNullableRecordKey: aNullableRecordKey is _isc.UndefinedSentinel
+          ? this.aNullableRecordKey?.map(
               (
                 key0,
                 value0,
@@ -1078,7 +1129,8 @@ class _TypesMapImpl extends TypesMap {
                 key0 == null ? null : (key0.$1,),
                 value0,
               ),
-            ),
+            )
+          : aNullableRecordKey,
     );
   }
 }

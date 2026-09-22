@@ -66,8 +66,8 @@ abstract class DateTimeDefaultPersist
   @_is.useResult
   DateTimeDefaultPersist copyWith({
     int? id,
-    DateTime? dateTimeDefaultPersistNow,
-    DateTime? dateTimeDefaultPersistStr,
+    DateTime? dateTimeDefaultPersistNow = const _is.$UndefinedDateTime(),
+    DateTime? dateTimeDefaultPersistStr = const _is.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -140,17 +140,19 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
   @override
   DateTimeDefaultPersist copyWith({
     Object? id = _Undefined,
-    Object? dateTimeDefaultPersistNow = _Undefined,
-    Object? dateTimeDefaultPersistStr = _Undefined,
+    DateTime? dateTimeDefaultPersistNow = const _is.$UndefinedDateTime(),
+    DateTime? dateTimeDefaultPersistStr = const _is.$UndefinedDateTime(),
   }) {
     return DateTimeDefaultPersist(
       id: id is int? ? id : this.id,
-      dateTimeDefaultPersistNow: dateTimeDefaultPersistNow is DateTime?
-          ? dateTimeDefaultPersistNow
-          : this.dateTimeDefaultPersistNow,
-      dateTimeDefaultPersistStr: dateTimeDefaultPersistStr is DateTime?
-          ? dateTimeDefaultPersistStr
-          : this.dateTimeDefaultPersistStr,
+      dateTimeDefaultPersistNow:
+          dateTimeDefaultPersistNow is _is.UndefinedSentinel
+          ? this.dateTimeDefaultPersistNow
+          : dateTimeDefaultPersistNow,
+      dateTimeDefaultPersistStr:
+          dateTimeDefaultPersistStr is _is.UndefinedSentinel
+          ? this.dateTimeDefaultPersistStr
+          : dateTimeDefaultPersistStr,
     );
   }
 }

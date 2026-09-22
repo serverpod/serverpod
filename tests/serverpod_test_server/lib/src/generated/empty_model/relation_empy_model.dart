@@ -57,7 +57,8 @@ abstract class RelationEmptyModel
   @_is.useResult
   RelationEmptyModel copyWith({
     int? id,
-    List<_iq60yogb.EmptyModelRelationItem>? items,
+    List<_iq60yogb.EmptyModelRelationItem>? items =
+        const _is.$UndefinedList<_iq60yogb.EmptyModelRelationItem>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -125,13 +126,14 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
   @override
   RelationEmptyModel copyWith({
     Object? id = _Undefined,
-    Object? items = _Undefined,
+    List<_iq60yogb.EmptyModelRelationItem>? items =
+        const _is.$UndefinedList<_iq60yogb.EmptyModelRelationItem>(),
   }) {
     return RelationEmptyModel(
       id: id is int? ? id : this.id,
-      items: items is List<_iq60yogb.EmptyModelRelationItem>?
-          ? items
-          : this.items?.map((e0) => e0.copyWith()).toList(),
+      items: items is _is.UndefinedSentinel
+          ? this.items?.map((e0) => e0.copyWith()).toList()
+          : items,
     );
   }
 }

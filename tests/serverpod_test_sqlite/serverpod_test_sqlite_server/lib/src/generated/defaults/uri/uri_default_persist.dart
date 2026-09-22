@@ -53,7 +53,7 @@ abstract class UriDefaultPersist
   @_is.useResult
   UriDefaultPersist copyWith({
     int? id,
-    Uri? uriDefaultPersist,
+    Uri? uriDefaultPersist = const _is.$UndefinedUri(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -120,13 +120,13 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
   @override
   UriDefaultPersist copyWith({
     Object? id = _Undefined,
-    Object? uriDefaultPersist = _Undefined,
+    Uri? uriDefaultPersist = const _is.$UndefinedUri(),
   }) {
     return UriDefaultPersist(
       id: id is int? ? id : this.id,
-      uriDefaultPersist: uriDefaultPersist is Uri?
-          ? uriDefaultPersist
-          : this.uriDefaultPersist,
+      uriDefaultPersist: uriDefaultPersist is _is.UndefinedSentinel
+          ? this.uriDefaultPersist
+          : uriDefaultPersist,
     );
   }
 }
