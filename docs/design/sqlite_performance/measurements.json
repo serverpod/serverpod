@@ -1,0 +1,303 @@
+[
+  {
+    "log": "01-after-02-before.log",
+    "case": "orm_updateWhere_10000_noReturn",
+    "median_ms": 36.693,
+    "min_ms": 30.733,
+    "max_ms": 41.022
+  },
+  {
+    "log": "01-after-02-before.log",
+    "case": "sql_subquery_updateWhere_10000_noReturn",
+    "median_ms": 4.291,
+    "min_ms": 3.719,
+    "max_ms": 4.637
+  },
+  {
+    "log": "01-after-02-before.log",
+    "case": "sql_direct_updateWhere_10000_noReturn",
+    "median_ms": 1.305,
+    "min_ms": 1.192,
+    "max_ms": 1.48
+  },
+  {
+    "log": "01-after-02-before.log",
+    "case": "include_10000_children",
+    "median_ms": 45.471,
+    "min_ms": 25.353,
+    "max_ms": 82.347
+  },
+  {
+    "log": "01-after.log",
+    "case": "include_10000_children",
+    "median_ms": 46.865,
+    "min_ms": 38.243,
+    "max_ms": 66.637
+  },
+  {
+    "log": "01-before.log",
+    "case": "include_10000_children",
+    "median_ms": 187.386,
+    "min_ms": 168.455,
+    "max_ms": 217.704
+  },
+  {
+    "log": "02-after.log",
+    "case": "orm_updateWhere_10000_noReturn",
+    "median_ms": 3.908,
+    "min_ms": 3.672,
+    "max_ms": 4.316
+  },
+  {
+    "log": "02-after.log",
+    "case": "sql_subquery_updateWhere_10000_noReturn",
+    "median_ms": 4.202,
+    "min_ms": 3.827,
+    "max_ms": 5.938
+  },
+  {
+    "log": "02-after.log",
+    "case": "sql_direct_updateWhere_10000_noReturn",
+    "median_ms": 1.304,
+    "min_ms": 1.224,
+    "max_ms": 1.466
+  },
+  {
+    "log": "03-after.log",
+    "case": "insert_1000_noReturn",
+    "median_ms": 3.564,
+    "min_ms": 2.557,
+    "max_ms": 5.669
+  },
+  {
+    "log": "03-after.log",
+    "case": "update_1000_noReturn",
+    "median_ms": 2.724,
+    "min_ms": 2.594,
+    "max_ms": 3.894
+  },
+  {
+    "log": "03-before-05-before.log",
+    "case": "insert_1000_noReturn",
+    "median_ms": 141.078,
+    "min_ms": 119.796,
+    "max_ms": 159.136
+  },
+  {
+    "log": "03-before-05-before.log",
+    "case": "update_1000_noReturn",
+    "median_ms": 114.164,
+    "min_ms": 113.421,
+    "max_ms": 121.182
+  },
+  {
+    "log": "03-before-05-before.log",
+    "case": "upsert_wide_1000_noReturn",
+    "median_ms": 667.478,
+    "min_ms": 641.519,
+    "max_ms": 707.119
+  },
+  {
+    "log": "04-after.log",
+    "case": "find_10000_parents_nested_includes",
+    "median_ms": 301.433,
+    "min_ms": 288.085,
+    "max_ms": 334.514
+  },
+  {
+    "log": "04-before.log",
+    "case": "find_10000_parents_nested_includes",
+    "median_ms": 303.453,
+    "min_ms": 290.559,
+    "max_ms": 333.321
+  },
+  {
+    "log": "05-after.log",
+    "case": "upsert_wide_1000_noReturn",
+    "median_ms": 464.851,
+    "min_ms": 437.935,
+    "max_ms": 480.229
+  },
+  {
+    "log": "05-before.log",
+    "case": "upsert_wide_1000_noReturn",
+    "median_ms": 690.548,
+    "min_ms": 645.947,
+    "max_ms": 710.561
+  },
+  {
+    "log": "06-after.log",
+    "case": "parameterized_read_1000",
+    "median_ms": 209.823,
+    "min_ms": 185.532,
+    "max_ms": 242.063
+  },
+  {
+    "log": "06-after.log",
+    "case": "insert_returning_1000",
+    "median_ms": 142.317,
+    "min_ms": 129.499,
+    "max_ms": 150.579
+  },
+  {
+    "log": "06-after.log",
+    "case": "update_returning_1000",
+    "median_ms": 127.133,
+    "min_ms": 118.428,
+    "max_ms": 181.002
+  },
+  {
+    "log": "06-before.log",
+    "case": "parameterized_read_1000",
+    "median_ms": 171.409,
+    "min_ms": 155.73,
+    "max_ms": 188.073
+  },
+  {
+    "log": "06-before.log",
+    "case": "insert_returning_1000",
+    "median_ms": 150.011,
+    "min_ms": 137.48,
+    "max_ms": 162.93
+  },
+  {
+    "log": "06-before.log",
+    "case": "update_returning_1000",
+    "median_ms": 139.936,
+    "min_ms": 133.756,
+    "max_ms": 144.137
+  },
+  {
+    "log": "06-cache-paired.log",
+    "case": "cache_0_1000_adapter_queries",
+    "median_ms": 163.283,
+    "min_ms": 145.67,
+    "max_ms": 199.627
+  },
+  {
+    "log": "06-cache-paired.log",
+    "case": "cache_100_1000_adapter_queries",
+    "median_ms": 133.744,
+    "min_ms": 129.13,
+    "max_ms": 146.92
+  },
+  {
+    "log": "06-cache-paired.log",
+    "case": "cache_100_1000_adapter_queries",
+    "median_ms": 134.085,
+    "min_ms": 127.807,
+    "max_ms": 138.834
+  },
+  {
+    "log": "06-cache-paired.log",
+    "case": "cache_0_1000_adapter_queries",
+    "median_ms": 143.217,
+    "min_ms": 136.785,
+    "max_ms": 155.293
+  },
+  {
+    "log": "07-after.log",
+    "case": "findById_1000",
+    "median_ms": 146.248,
+    "min_ms": 128.766,
+    "max_ms": 189.611
+  },
+  {
+    "log": "07-before.log",
+    "case": "findById_1000",
+    "median_ms": 239.837,
+    "min_ms": 208.621,
+    "max_ms": 283.368
+  },
+  {
+    "log": "08-after.log",
+    "case": "generated_add_default_100000",
+    "median_ms": 7.193,
+    "min_ms": 6.171,
+    "max_ms": 15.419
+  },
+  {
+    "log": "08-before.log",
+    "case": "generated_add_default_100000",
+    "median_ms": 40.575,
+    "min_ms": 31.024,
+    "max_ms": 65.871
+  },
+  {
+    "log": "09-after.log",
+    "case": "select_skewed_100000_100_queries",
+    "median_ms": 39.444,
+    "min_ms": 34.758,
+    "max_ms": 46.047
+  },
+  {
+    "log": "09-before.log",
+    "case": "select_skewed_100000_100_queries",
+    "median_ms": 595.19,
+    "min_ms": 561.125,
+    "max_ms": 637.592
+  },
+  {
+    "log": "09-startup.log",
+    "case": "pool_open_close_before_maintenance",
+    "median_ms": 22.811,
+    "min_ms": 19.867,
+    "max_ms": 24.476
+  },
+  {
+    "log": "09-startup.log",
+    "case": "pool_open_close_after_maintenance",
+    "median_ms": 30.003,
+    "min_ms": 27.198,
+    "max_ms": 36.067
+  },
+  {
+    "log": "final-bulk.log",
+    "case": "insert_1000_noReturn",
+    "median_ms": 3.46,
+    "min_ms": 2.792,
+    "max_ms": 6.364
+  },
+  {
+    "log": "final-bulk.log",
+    "case": "update_1000_noReturn",
+    "median_ms": 2.873,
+    "min_ms": 2.633,
+    "max_ms": 4.292
+  },
+  {
+    "log": "final-bulk.log",
+    "case": "upsert_wide_1000_noReturn",
+    "median_ms": 242.902,
+    "min_ms": 219.338,
+    "max_ms": 263.751
+  },
+  {
+    "log": "final-read.log",
+    "case": "findById_1000",
+    "median_ms": 177.685,
+    "min_ms": 158.397,
+    "max_ms": 193.395
+  },
+  {
+    "log": "final-optimize.log",
+    "case": "select_skewed_100000_100_queries",
+    "median_ms": 43.183,
+    "min_ms": 34.068,
+    "max_ms": 45.007
+  },
+  {
+    "log": "final-startup.log",
+    "case": "pool_open_close_before_maintenance",
+    "median_ms": 25.433,
+    "min_ms": 20.574,
+    "max_ms": 36.615
+  },
+  {
+    "log": "final-startup.log",
+    "case": "pool_open_close_after_maintenance",
+    "median_ms": 27.703,
+    "min_ms": 24.678,
+    "max_ms": 35.119
+  }
+]
