@@ -580,6 +580,22 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       ).withSelectFields([table.id]).withWhere(where).build();
     }
 
+    // Without returned rows there is no ordering to restore in Dart. Keep the
+    // selection (including pagination) inside the same SQLite statement.
+    if (noReturn) {
+      await _runQuery(
+        session,
+        _buildSqlUpdateWhereIdIn(
+          table: table,
+          setClause: _buildSetClause(columnValues),
+          idListSql: selectQuery,
+          noReturn: true,
+        ),
+        transaction: transaction,
+      );
+      return [];
+    }
+
     // Get ids to update, then UPDATE ... WHERE id IN (...)
     var idResult = await _mappedResultsQuery(
       session,
