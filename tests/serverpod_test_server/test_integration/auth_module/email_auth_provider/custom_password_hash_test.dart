@@ -5,27 +5,32 @@ import 'package:test/test.dart';
 import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
-  AuthConfig.set(
-    AuthConfig(
-      sendValidationEmail: (session, email, validationCode) async {
-        print('Sending validation email to $email with code $validationCode');
-        return true;
-      },
-      passwordHashValidator:
-          ({
-            required password,
-            required email,
-            required hash,
-            onError,
-            onValidationFailure,
-          }) async =>
-              // Always return true to allow the test to proceed
-              PasswordValidationSuccess(),
-      // Custom password hash generator that does not hash the password
-      passwordHashGenerator: (password) async => password,
-      extraSaltyHash: false,
-    ),
-  );
+  late AuthConfig previousAuthConfig;
+  setUpAll(() {
+    previousAuthConfig = AuthConfig.current;
+    AuthConfig.set(
+      AuthConfig(
+        sendValidationEmail: (session, email, validationCode) async {
+          print('Sending validation email to $email with code $validationCode');
+          return true;
+        },
+        passwordHashValidator:
+            ({
+              required password,
+              required email,
+              required hash,
+              onError,
+              onValidationFailure,
+            }) async =>
+                // Always return true to allow the test to proceed
+                PasswordValidationSuccess(),
+        // Custom password hash generator that does not hash the password
+        passwordHashGenerator: (password) async => password,
+        extraSaltyHash: false,
+      ),
+    );
+  });
+  tearDownAll(() => AuthConfig.set(previousAuthConfig));
 
   withServerpod(
     'Given a custom non-hashing password hash generator and a create account request',

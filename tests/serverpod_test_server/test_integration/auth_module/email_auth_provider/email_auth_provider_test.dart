@@ -5,15 +5,20 @@ import 'package:test/test.dart';
 import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
-  AuthConfig.set(
-    AuthConfig(
-      sendValidationEmail: (session, email, validationCode) async {
-        print('Sending validation email to $email with code $validationCode');
-        return true;
-      },
-      extraSaltyHash: false,
-    ),
-  );
+  late AuthConfig previousAuthConfig;
+  setUpAll(() {
+    previousAuthConfig = AuthConfig.current;
+    AuthConfig.set(
+      AuthConfig(
+        sendValidationEmail: (session, email, validationCode) async {
+          print('Sending validation email to $email with code $validationCode');
+          return true;
+        },
+        extraSaltyHash: false,
+      ),
+    );
+  });
+  tearDownAll(() => AuthConfig.set(previousAuthConfig));
 
   withServerpod('Given create account request ', (sessionBuilder, _) {
     late Session session;
