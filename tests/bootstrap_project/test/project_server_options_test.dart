@@ -22,7 +22,7 @@ void main() async {
     'Given an empty temporary workspace,',
     () {
       Directory? tempDirectory;
-      late final String tempPath;
+      late String tempPath;
 
       setUpAll(() {
         tempDirectory = Directory.systemTemp.createTempSync('spb_');
