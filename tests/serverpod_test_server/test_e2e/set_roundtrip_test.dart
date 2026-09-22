@@ -13,7 +13,13 @@ ByteData createByteData() {
 }
 
 void main() {
-  var client = Client(serverUrl);
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   test(
     'Given a Set<int>, when sending it to the echo server, it is returned unmodified',

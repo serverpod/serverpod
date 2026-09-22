@@ -4,7 +4,13 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(serverUrl);
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   test(
     'Given a module streaming endpoint that returns a stream of records with nullable int and nullable class, '
