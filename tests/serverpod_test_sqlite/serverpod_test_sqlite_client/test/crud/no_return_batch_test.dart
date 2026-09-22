@@ -48,7 +48,11 @@ void main() {
       'then all values round trip as data.',
       () async {
         final returned = await Types.db.insert(session, rows, noReturn: true);
-        final stored = await Types.db.find(session, orderBy: (t) => t.id);
+        final stored = await Types.db.find(
+          session,
+          where: (t) => t.aString.equals(rows.first.aString),
+          orderBy: (t) => t.id,
+        );
 
         expect(returned, isEmpty);
         expect(stored.map((r) => r.toJson()), rows.map((r) => r.toJson()));

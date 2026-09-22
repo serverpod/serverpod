@@ -427,7 +427,11 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
               updateWhere: updateWhere,
               returning: Returning.id,
             ).build();
-            final returned = await _runQuery(session, query, transaction: tx);
+            final returned = await _runGeneratedQuery(
+              session,
+              query,
+              transaction: tx,
+            );
             ids = returned.map(
               (result) => poolManager.encoder.coerceColumnValue(
                 row.table.id,
@@ -681,7 +685,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     // Without returned rows there is no ordering to restore in Dart. Keep the
     // selection (including pagination) inside the same SQLite statement.
     if (noReturn) {
-      await _runQuery(
+      await _runGeneratedQuery(
         session,
         _buildSqlUpdateWhereIdIn(
           table: table,
@@ -701,6 +705,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       transaction: transaction,
       table: table,
       prefixedColumns: true,
+      readOnly: true,
     );
     if (idResult.isEmpty) return [];
 
@@ -812,6 +817,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           final orderedIds = (await _mappedResultsQuery(
             session,
             selectIdsQuery,
+            readOnly: true,
             transaction: tx,
           )).map((row) => row.values.first as Object).toList();
 
@@ -878,7 +884,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       table: table,
     ).withCountAlias('c').withWhere(where).withLimit(limit).build();
 
-    var result = await _runQuery(session, query, transaction: transaction);
+    var result = await _runGeneratedQuery(
+      session,
+      query,
+      transaction: transaction,
+      readOnly: true,
+    );
 
     if (result.isEmpty) return 0;
     if (result.length != 1) return 0;
@@ -1159,6 +1170,21 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           .where((statement) => !statement.shouldSkipInBatchQuery)
           .toList();
 
+  Future<ResultSet> _runGeneratedQuery(
+    DatabaseSession session,
+    String query, {
+    List<Object?>? parameters,
+    Transaction? transaction,
+    bool readOnly = false,
+  }) {
+    return _runSingleStatementQuery(
+      session,
+      _ParsedSqlStatement.generated(query, isSelectStatement: readOnly),
+      parameters: parameters,
+      sqliteTx: _castToSqliteTransaction(transaction),
+    );
+  }
+
   Future<ResultSet> _runQuery(
     DatabaseSession session,
     String query, {
@@ -1404,11 +1430,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Table? table,
     Include? include,
     bool prefixedColumns = false,
+    bool readOnly = false,
   }) async {
-    var result = await _runQuery(
+    var result = await _runGeneratedQuery(
       session,
       query,
       parameters: parameters,
+      readOnly: readOnly,
       transaction: transaction,
     );
 
@@ -1458,6 +1486,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       table: table,
       include: include,
       prefixedColumns: true,
+      readOnly: true,
     );
 
     return _deserializeNormalizedRows<T>(
@@ -1602,6 +1631,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           table: relationTable,
           include: nestedInclude,
           prefixedColumns: true,
+          readOnly: true,
         );
 
         var resolvedLists = await _queryIncludedLists(
@@ -1719,29 +1749,30 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }
 }
 
-/// Single SQL statement with optional [ast] for [SqliteDatabaseConnection].
+/// Statement classification for connection routing and script atomicity.
 class _ParsedSqlStatement {
-  _ParsedSqlStatement({required String text, required this.ast})
-    : text = text.trim();
+  _ParsedSqlStatement({required String text, required Statement ast})
+    : text = text.trim(),
+      isSelectStatement = ast is BaseSelectStatement,
+      isWriteStatement =
+          ast is InsertStatement ||
+          ast is UpdateStatement ||
+          ast is DeleteStatement,
+      shouldSkipInBatchQuery =
+          ast is BeginTransactionStatement || ast is CommitStatement;
+
+  // Builders already know the kind of statement they generate. Execution still
+  // uses the driver's single-statement API; raw scripts always use the parser.
+  _ParsedSqlStatement.generated(this.text, {required this.isSelectStatement})
+    : isWriteStatement = !isSelectStatement,
+      shouldSkipInBatchQuery = false;
 
   final String text;
-  final Statement ast;
+  final bool isSelectStatement;
+  final bool isWriteStatement;
+  final bool shouldSkipInBatchQuery;
 
-  /// Whether the statement is empty.
   bool get isEmpty => text.isEmpty;
-
-  /// Whether the statement is a form of SELECT statement.
-  bool get isSelectStatement => ast is BaseSelectStatement;
-
-  /// Whether the statement produces row changes.
-  bool get isWriteStatement =>
-      ast is InsertStatement ||
-      ast is UpdateStatement ||
-      ast is DeleteStatement;
-
-  /// Skipped inside transactions to avoid recursive locks.
-  bool get shouldSkipInBatchQuery =>
-      ast is BeginTransactionStatement || ast is CommitStatement;
 }
 
 /// Single-row INSERT with pre-encoded SQL literals.
