@@ -24,21 +24,22 @@ void main() {
     // A minimal server with no database: starting it must not create a pool, so
     // the encoder stays unavailable. Start it directly rather than via
     // startWithDatabase, which would provision a database.
-    late final pod = Serverpod(
-      [],
-      Protocol(),
-      _EmptyEndpoints(),
-      config: ServerpodConfig(
-        apiServer: ServerConfig(
-          port: 0,
-          publicScheme: 'http',
-          publicHost: 'localhost',
-          publicPort: 0,
-        ),
-      ),
-    );
+    late Serverpod pod;
 
     setUp(() async {
+      pod = Serverpod(
+        [],
+        Protocol(),
+        _EmptyEndpoints(),
+        config: ServerpodConfig(
+          apiServer: ServerConfig(
+            port: 0,
+            publicScheme: 'http',
+            publicHost: 'localhost',
+            publicPort: 0,
+          ),
+        ),
+      );
       await pod.start();
     });
 
@@ -62,25 +63,26 @@ void main() {
   });
 
   group('Given a Serverpod instance with a database configured', () {
-    late final pod = IntegrationTestServer.create(
-      config: ServerpodConfig(
-        database: DatabaseConfig(
-          host: 'postgres',
-          port: 5432,
-          name: 'serverpod_test',
-          user: 'postgres',
-          password: 'password',
-        ),
-        apiServer: ServerConfig(
-          port: 0,
-          publicScheme: 'http',
-          publicHost: 'localhost',
-          publicPort: 0,
-        ),
-      ),
-    );
+    late Serverpod pod;
 
     setUp(() async {
+      pod = IntegrationTestServer.create(
+        config: ServerpodConfig(
+          database: DatabaseConfig(
+            host: 'postgres',
+            port: 5432,
+            name: 'serverpod_test',
+            user: 'postgres',
+            password: 'password',
+          ),
+          apiServer: ServerConfig(
+            port: 0,
+            publicScheme: 'http',
+            publicHost: 'localhost',
+            publicPort: 0,
+          ),
+        ),
+      );
       await pod.startWithDatabase();
     });
 

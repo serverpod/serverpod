@@ -122,7 +122,7 @@ void main() {
     group(
       'when a stream is opened to an endpoint with a Stream return that throws an exception then',
       () {
-        var streamOpened = Completer<void>();
+        late Completer<void> streamOpened;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
 
         var endpoint = 'methodStreaming';
@@ -130,6 +130,7 @@ void main() {
         var connectionId = const Uuid().v4obj();
 
         setUp(() async {
+          streamOpened = Completer<void>();
           closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
           webSocket.textEvents.listen((event) {
             var message = WebSocketMessage.fromJsonString(

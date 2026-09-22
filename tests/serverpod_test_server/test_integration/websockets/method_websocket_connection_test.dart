@@ -6,10 +6,11 @@ import 'websocket_extensions.dart';
 
 void main() {
   group('Given method websocket connection with connected client', () {
-    var server = IntegrationTestServer.create();
+    late Serverpod server;
     late WebSocket webSocket;
 
     setUp(() async {
+      server = IntegrationTestServer.create();
       await server.startWithDatabase();
       webSocket = await WebSocket.connect(
         Uri.parse(server.methodWebSocketUrl),
@@ -38,11 +39,12 @@ void main() {
   });
 
   group('Given method websocket connection with connected method stream', () {
-    var server = IntegrationTestServer.create();
+    late Serverpod server;
     late WebSocket webSocket;
     var endpoint = 'methodStreaming';
 
     setUp(() async {
+      server = IntegrationTestServer.create();
       await server.startWithDatabase();
       webSocket = await WebSocket.connect(
         Uri.parse(server.methodWebSocketUrl),
@@ -89,11 +91,12 @@ void main() {
   group(
     'Given method websocket connection with connected method stream with never listened input stream',
     () {
-      var server = IntegrationTestServer.create();
+      late Serverpod server;
       late WebSocket webSocket;
       var endpoint = 'methodStreaming';
 
       setUp(() async {
+        server = IntegrationTestServer.create();
         await server.startWithDatabase();
         webSocket = await WebSocket.connect(
           Uri.parse(server.methodWebSocketUrl),
@@ -141,11 +144,12 @@ void main() {
   group(
     'Given method websocket connection with connected method stream with paused input stream',
     () {
-      var server = IntegrationTestServer.create();
+      late Serverpod server;
       late WebSocket webSocket;
       var endpoint = 'methodStreaming';
 
       setUp(() async {
+        server = IntegrationTestServer.create();
         await server.startWithDatabase();
         webSocket = await WebSocket.connect(
           Uri.parse(server.methodWebSocketUrl),
@@ -193,11 +197,12 @@ void main() {
   group(
     'Given multiple method websocket connections with connected clients',
     () {
-      var server = IntegrationTestServer.create();
+      late Serverpod server;
       late WebSocket webSocket1;
       late WebSocket webSocket2;
 
       setUp(() async {
+        server = IntegrationTestServer.create();
         await server.startWithDatabase();
         webSocket1 = await WebSocket.connect(
           Uri.parse(server.methodWebSocketUrl),

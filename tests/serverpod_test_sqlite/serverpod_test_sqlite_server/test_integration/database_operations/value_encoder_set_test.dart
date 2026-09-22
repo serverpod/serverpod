@@ -20,21 +20,22 @@ void main() {
   });
 
   group('Given a Serverpod instance with no database configured', () {
-    late final pod = Serverpod(
-      [],
-      Protocol(),
-      _EmptyEndpoints(),
-      config: ServerpodConfig(
-        apiServer: ServerConfig(
-          port: 0,
-          publicScheme: 'http',
-          publicHost: 'localhost',
-          publicPort: 0,
-        ),
-      ),
-    );
+    late Serverpod pod;
 
     setUp(() async {
+      pod = Serverpod(
+        [],
+        Protocol(),
+        _EmptyEndpoints(),
+        config: ServerpodConfig(
+          apiServer: ServerConfig(
+            port: 0,
+            publicScheme: 'http',
+            publicHost: 'localhost',
+            publicPort: 0,
+          ),
+        ),
+      );
       await pod.start();
     });
 
@@ -58,28 +59,29 @@ void main() {
   });
 
   group('Given a Serverpod instance with a database configured', () {
-    late final pod = Serverpod(
-      [],
-      Protocol(),
-      _EmptyEndpoints(),
-      config: ServerpodConfig(
-        // Must match config/*.yaml `database.filePath` (under sqlite_data/).
-        // A bare `serverpod_test_prod.db` resolves to the package root; Docker
-        // only clears sqlite_data/*.db*, so WAL files beside the root file could
-        // go stale and trigger SqliteException "database disk image is malformed".
-        database: SqliteDatabaseConfig(
-          filePath: 'sqlite_data/serverpod_test_prod.db',
-        ),
-        apiServer: ServerConfig(
-          port: 0,
-          publicScheme: 'http',
-          publicHost: 'localhost',
-          publicPort: 0,
-        ),
-      ),
-    );
+    late Serverpod pod;
 
     setUp(() async {
+      pod = Serverpod(
+        [],
+        Protocol(),
+        _EmptyEndpoints(),
+        config: ServerpodConfig(
+          // Must match config/*.yaml `database.filePath` (under sqlite_data/).
+          // A bare `serverpod_test_prod.db` resolves to the package root; Docker
+          // only clears sqlite_data/*.db*, so WAL files beside the root file could
+          // go stale and trigger SqliteException "database disk image is malformed".
+          database: SqliteDatabaseConfig(
+            filePath: 'sqlite_data/serverpod_test_prod.db',
+          ),
+          apiServer: ServerConfig(
+            port: 0,
+            publicScheme: 'http',
+            publicHost: 'localhost',
+            publicPort: 0,
+          ),
+        ),
+      );
       await pod.start();
     });
 
