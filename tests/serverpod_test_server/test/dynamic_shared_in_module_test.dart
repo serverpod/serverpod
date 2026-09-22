@@ -8,7 +8,9 @@ void main() {
   // Registers this project as a host on both shared and module protocols for
   // dynamic fields. This will always be called for real projects, since the
   // server protocol is passed to the `Serverpod` constructor.
-  server.Protocol();
+  setUpAll(() {
+    server.Protocol();
+  });
 
   group(
     'Given a module model with a dynamic field and a shared model as data,',
