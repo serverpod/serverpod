@@ -647,17 +647,6 @@ class FlutterAppManager {
     onStop(runtime.app);
   }
 
-  /// Releases a launch that never reached a running process.
-  ///
-  /// The tab has already been created and reset by [onEnsureAppTab], so it
-  /// has to be told the launch is over; otherwise it sits in its launching
-  /// state for the rest of the session, with its "Stop App" action having
-  /// nothing to act on.
-  void _abandonLaunch(_AppRuntime runtime) {
-    runtime.spawnInFlight = false;
-    onLaunchFailed(runtime.app);
-  }
-
   Future<void> _connectAfterLaunch(
     _AppRuntime runtime,
     FlutterProcess process, {
