@@ -24,6 +24,32 @@ void main() {
   });
 
   test(
+    'Given a cached query against a table, '
+    'when the schema changes, '
+    'then the next execution sees the new schema.',
+    () async {
+      session = await ClientDatabaseSession.open(
+        databasePath,
+        _TestSerializationManager(),
+        runMigrations: false,
+        preparedStatementCacheSize: 2,
+      );
+      await session.db.unsafeQuery(
+        'CREATE TABLE cache_example(id INTEGER PRIMARY KEY)',
+      );
+      await session.db.unsafeQuery('INSERT INTO cache_example VALUES (1)');
+      await session.db.unsafeQuery('SELECT * FROM cache_example');
+
+      await session.db.unsafeQuery(
+        "ALTER TABLE cache_example ADD COLUMN label TEXT DEFAULT 'new'",
+      );
+      final rows = await session.db.unsafeQuery('SELECT * FROM cache_example');
+
+      expect(rows.single.toColumnMap(), {'id': 1, 'label': 'new'});
+    },
+  );
+
+  test(
     'Given a client migration registry, '
     'when opening a client database session, '
     'then the latest migration is applied.',

@@ -909,11 +909,18 @@ database:
     'when resolving local path against a base directory, '
     'then the local path is resolved correctly.',
     () {
-      final config = SqliteDatabaseConfig(filePath: 'data/app.db');
+      final config = SqliteDatabaseConfig(
+        filePath: 'data/app.db',
+        preparedStatementCacheSize: 7,
+      );
 
       expect(
         config.withResolvedLocalPath('/srv/server').filePath,
         p.normalize(p.join('/srv/server', 'data', 'app.db')),
+      );
+      expect(
+        config.withResolvedLocalPath('/srv/server').preparedStatementCacheSize,
+        7,
       );
     },
   );

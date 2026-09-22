@@ -73,6 +73,7 @@ class SqlitePoolManager implements DatabasePoolManager {
     final db = SqliteDatabase(
       path: config.filePath,
       options: SqliteOptions(
+        preparedStatementCacheSize: config.preparedStatementCacheSize,
         maxReaders:
             config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
       ),

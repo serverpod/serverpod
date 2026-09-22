@@ -242,59 +242,31 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       throw StateError('Transaction is required for batch inserts');
     }
 
-    var table = rows.first.table;
-    var columns = withIdNull
-        ? table.columns.where((c) => c.columnName != 'id').toList()
-        : table.columns;
-
-    // SQLite does not support DEFAULT in VALUES; omit columns that are null
-    // and have a default so SQLite applies the column default.
-    var rowPayloads = <_RowPayload>[];
-    for (var row in filteredRows) {
-      var rowJson = row.toJsonForDatabase() as Map<String, dynamic>;
-      var includedColumns = <Column>[];
-      var encodedValues = <String>[];
-      for (var column in columns) {
-        final rawValue = rowJson[column.columnName];
-        final useDefault = rawValue == null && column.hasDefault;
-        if (!useDefault) {
-          includedColumns.add(column);
-          encodedValues.add(
-            poolManager.encoder.encodeColumnValue(
-              column,
-              rawValue,
-              hasDefaults: false,
-            ),
-          );
-        }
-      }
-      rowPayloads.add(_RowPayload(includedColumns, encodedValues));
-    }
-
-    // No need to run in transaction or savepoint here, since we are already
-    // ensure that any batch with more than 1 row has a transaction or
-    // savepoint at the caller's site.
-    return [
-      for (var p in rowPayloads)
-        ...await _mappedResultsQuery(
+    final results = <Map<String, dynamic>>[];
+    for (final row in filteredRows) {
+      final statement = _parameterizedInsert(
+        row,
+        ignoreConflicts,
+        noReturn: noReturn,
+      );
+      results.addAll(
+        await _mappedResultsQuery(
           session,
-          _buildSqlSingleRowInsert(
-            table: table,
-            columns: p.columns,
-            encodedValues: p.values,
-            ignoreConflicts: ignoreConflicts,
-            noReturn: noReturn,
-          ),
+          statement.sql,
+          parameters: statement.parameters,
           transaction: transaction,
-          table: table,
+          table: row.table,
         ),
-    ];
+      );
+    }
+    return results;
   }
 
   _ParameterizedStatement _parameterizedInsert(
     TableRow row,
-    bool ignoreConflicts,
-  ) {
+    bool ignoreConflicts, {
+    bool noReturn = true,
+  }) {
     final table = row.table;
     final json = row.toJsonForDatabase() as Map<String, dynamic>;
     final columns = table.columns.where((column) {
@@ -307,7 +279,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         columns: columns,
         encodedValues: columns.map(_columnPlaceholder).toList(),
         ignoreConflicts: ignoreConflicts,
-        noReturn: true,
+        noReturn: noReturn,
       ),
       [
         for (final column in columns)
@@ -321,8 +293,9 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
   _ParameterizedStatement _parameterizedUpdate(
     TableRow row,
-    List<Column>? columns,
-  ) {
+    List<Column>? columns, {
+    bool noReturn = true,
+  }) {
     final table = row.table;
     final selected = (columns ?? table.managedColumns).toSet();
     if (columns != null) {
@@ -342,7 +315,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             )
             .join(', '),
         idSqlValue: '?',
-        noReturn: true,
+        noReturn: noReturn,
       ),
       [
         for (final column in selected)
@@ -586,45 +559,16 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       );
     }
 
-    var table = rows.first.table;
-    var selectedColumns = (columns ?? table.managedColumns).toSet();
-    if (columns != null) {
-      _validateColumnsExists(selectedColumns, table.columns.toSet());
-      selectedColumns.add(table.id);
-    }
-
-    var encoder = poolManager.encoder;
     var results = <Map<String, dynamic>>[];
-
-    for (var row in rows) {
-      var rowJson = row.toJsonForDatabase() as Map<String, dynamic>;
-      var setParts = <String>[];
-      var idValue = encoder.convert(row.id);
-
-      for (var col in selectedColumns) {
-        if (col.columnName == 'id') continue;
-        final rawValue = rowJson[col.columnName];
-        setParts.add(_buildSetExpression(col, rawValue));
-      }
-      if (setParts.isEmpty) {
-        // No columns to update (e.g. columns: (t) => [t.id]); keep SQL valid.
-        setParts.add('"${table.id.columnName}" = $idValue');
-      }
-
-      // No need to run in transaction or savepoint here, since we are already
-      // ensure that any batch with more than 1 row has a transaction or
-      // savepoint at the top level.
+    for (final row in rows) {
+      final statement = _parameterizedUpdate(row, columns, noReturn: noReturn);
       results.addAll(
         await _mappedResultsQuery(
           session,
-          _buildSqlUpdateWhereId(
-            table: table,
-            setClause: setParts.join(', '),
-            idSqlValue: idValue,
-            noReturn: noReturn,
-          ),
+          statement.sql,
+          parameters: statement.parameters,
           transaction: transaction,
-          table: table,
+          table: row.table,
         ),
       );
     }
@@ -1898,12 +1842,6 @@ int _rowCountFromChanges(ResultSet changesResult) {
   if (changesResult.isEmpty) return 0;
   final n = changesResult.first.columnAt(0);
   return n is int ? n : int.tryParse(n.toString()) ?? 0;
-}
-
-class _RowPayload {
-  final List<Column> columns;
-  final List<String> values;
-  _RowPayload(this.columns, this.values);
 }
 
 class _ParameterizedStatement {

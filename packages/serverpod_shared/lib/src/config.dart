@@ -861,19 +861,37 @@ class PostgresDatabaseConfig extends DatabaseConfig {
 
 /// SQLite-specific database configuration.
 class SqliteDatabaseConfig extends DatabaseConfig {
+  /// Default number of prepared statements cached per SQLite connection.
+  static const defaultPreparedStatementCacheSize = 100;
+
+  /// Maximum number of prepared statements cached per connection. Set to zero
+  /// to disable caching. The bound applies separately to each pooled connection.
+  final int preparedStatementCacheSize;
+
   /// Creates a new [SqliteDatabaseConfig].
-  SqliteDatabaseConfig({required String filePath, super.maxConnectionCount})
-    : super._(
-        host: filePath,
-        port: 0,
-        user: '',
-        password: '',
-        name: '',
-        requireSsl: false,
-        isUnixSocket: false,
-        searchPaths: null,
-        dialect: DatabaseDialect.sqlite,
+  SqliteDatabaseConfig({
+    required String filePath,
+    super.maxConnectionCount,
+    this.preparedStatementCacheSize = defaultPreparedStatementCacheSize,
+  }) : super._(
+         host: filePath,
+         port: 0,
+         user: '',
+         password: '',
+         name: '',
+         requireSsl: false,
+         isUnixSocket: false,
+         searchPaths: null,
+         dialect: DatabaseDialect.sqlite,
+       ) {
+    if (preparedStatementCacheSize < 0) {
+      throw ArgumentError.value(
+        preparedStatementCacheSize,
+        'preparedStatementCacheSize',
+        'Must not be negative',
       );
+    }
+  }
 
   /// The file path to the SQLite database.
   String get filePath => host;
@@ -890,6 +908,7 @@ class SqliteDatabaseConfig extends DatabaseConfig {
     return SqliteDatabaseConfig(
       filePath: path.normalize(path.join(baseDirectory, filePath)),
       maxConnectionCount: maxConnectionCount,
+      preparedStatementCacheSize: preparedStatementCacheSize,
     );
   }
 
@@ -912,6 +931,9 @@ class SqliteDatabaseConfig extends DatabaseConfig {
       maxConnectionCount: maxConnectionCount != null && maxConnectionCount > 0
           ? maxConnectionCount
           : null,
+      preparedStatementCacheSize:
+          dbSetup['preparedStatementCacheSize'] ??
+          defaultPreparedStatementCacheSize,
     );
   }
 
