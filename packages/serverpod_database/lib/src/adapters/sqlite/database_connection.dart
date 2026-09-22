@@ -438,27 +438,50 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
         tx,
       ) async {
-        // The per-row upserts always read back their rows (even when [noReturn]
-        // is set), because the returned ids are needed to detect duplicate
-        // conflict rows below.
-        final results = [
-          for (var row in rows)
-            ...await upsert<T>(
+        final results = <T>[];
+        final affectedIds = <Object?>{};
+        var affectedCount = 0;
+        for (final row in rows) {
+          Iterable<Object?> ids;
+          if (noReturn) {
+            // Only the ids are needed to enforce the batch cardinality rule.
+            // In particular, do not deserialize wide models just to discard them.
+            final query = InsertQueryBuilder(
+              table: row.table,
+              rows: [row],
+              conflictColumns: conflictColumns,
+              updateColumns: updateColumns,
+              updateWhere: updateWhere,
+              returning: Returning.id,
+            ).build();
+            final returned = await _runQuery(session, query, transaction: tx);
+            ids = returned.map(
+              (result) => poolManager.encoder.coerceColumnValue(
+                row.table.id,
+                result.columnAt(0),
+              ),
+            );
+          } else {
+            final returned = await upsert<T>(
               session,
               [row],
               conflictColumns: conflictColumns,
               updateColumns: updateColumns,
               updateWhere: updateWhere,
               transaction: tx,
-            ),
-        ];
+            );
+            results.addAll(returned);
+            ids = returned.map((result) => result.id);
+          }
+          for (final id in ids) {
+            affectedIds.add(id);
+            affectedCount++;
+          }
+        }
 
-        // NOTE: Since we transform batch upserts into multiple single-row
-        // upserts, to achieve the same effect as a batch upsert, we need to
-        // throw if the same row was affected twice - as happens with Postgres.
-        // Rows filtered out by [updateWhere] return nothing and must not be
-        // counted, so duplicates are detected among the returned ids only.
-        if (results.map((r) => r.id).toSet().length != results.length) {
+        // Like PostgreSQL, reject affecting a row twice. Rows skipped by
+        // updateWhere return no id and therefore do not count as affected.
+        if (affectedIds.length != affectedCount) {
           throw DatabaseQueryException(
             'ON CONFLICT DO UPDATE command cannot affect row a second time',
             code: SqliteErrorCode.integrityConstraintViolation,

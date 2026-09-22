@@ -8,6 +8,38 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
+  test(
+    'Given two upserts with equal UUID values, '
+    'when upserting without returning rows, '
+    'then duplicate targets are detected by value and rolled back.',
+    () async {
+      final id = const Uuid().v4obj();
+
+      await expectLater(
+        ChangedIdTypeSelf.db.upsert(
+          session,
+          [
+            ChangedIdTypeSelf(id: id, name: 'first'),
+            ChangedIdTypeSelf(
+              id: UuidValue.fromString(id.toString()),
+              name: 'second',
+            ),
+          ],
+          conflictColumns: (t) => [t.id],
+          noReturn: true,
+        ),
+        throwsA(
+          isA<DatabaseQueryException>().having(
+            (e) => e.message,
+            'message',
+            'ON CONFLICT DO UPDATE command cannot affect row a second time',
+          ),
+        ),
+      );
+      expect(await ChangedIdTypeSelf.db.findById(session, id), isNull);
+    },
+  );
+
   tearDown(() async {
     await UniqueData.db.deleteWhere(
       session,

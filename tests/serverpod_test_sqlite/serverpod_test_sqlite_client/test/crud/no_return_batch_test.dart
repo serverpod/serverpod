@@ -128,4 +128,55 @@ void main() {
       expect(await SimpleData.db.count(session), 1);
     },
   );
+
+  test(
+    'Given two upserts targeting the same new row, '
+    'when upserting without returning rows, '
+    'then the duplicate target is rejected and the batch rolls back.',
+    () async {
+      await expectLater(
+        SimpleData.db.upsert(
+          session,
+          [
+            SimpleData(id: 1, num: 1),
+            SimpleData(id: 1, num: 2),
+          ],
+          conflictColumns: (t) => [t.id],
+          noReturn: true,
+        ),
+        throwsA(
+          isA<DatabaseQueryException>().having(
+            (e) => e.message,
+            'message',
+            'ON CONFLICT DO UPDATE command cannot affect row a second time',
+          ),
+        ),
+      );
+      expect(await SimpleData.db.count(session), 0);
+    },
+  );
+
+  test(
+    'Given an existing row targeted twice by filtered upserts, '
+    'when upserting without returning rows and neither update qualifies, '
+    'then the original row remains and no duplicate-target error is raised.',
+    () async {
+      await SimpleData.db.insertRow(session, SimpleData(id: 1, num: 1));
+
+      final returned = await SimpleData.db.upsert(
+        session,
+        [
+          SimpleData(id: 1, num: 2),
+          SimpleData(id: 1, num: 3),
+        ],
+        conflictColumns: (t) => [t.id],
+        updateWhere: (t) => t.num.equals(99),
+        noReturn: true,
+      );
+      final stored = await SimpleData.db.find(session);
+
+      expect(returned, isEmpty);
+      expect(stored.map((r) => (r.id, r.num)), [(1, 1)]);
+    },
+  );
 }
