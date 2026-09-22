@@ -18,7 +18,7 @@ void main() {
   const newEmailIdpConfig = new_auth_email.EmailIdpConfig(
     secretHashPepper: 'test',
   );
-  late final new_auth_email.EmailIdp newEmailIdp;
+  late new_auth_email.EmailIdp newEmailIdp;
 
   setUpAll(() async {
     new_auth_core.AuthServices.set(
