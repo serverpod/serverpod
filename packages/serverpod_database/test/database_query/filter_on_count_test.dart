@@ -7,7 +7,7 @@ import '../test_util/many_relation_builder.dart';
 import '../test_util/table_relation_builder.dart';
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -16,11 +16,14 @@ void main() {
   ]).build();
   var manyRelation = ManyRelationBuilder(relationTable).build();
 
-  group('Given SelectQueryBuilder', () {
-    group('when filtering on many relation count', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.count() > 3).build();
+  group('Given SelectQueryBuilder,', () {
+    group('when filtering on many relation count,', () {
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.count() > 3).build();
+      });
       test('then a sub query is created for the filter.', () {
         expect(
           query,
@@ -39,10 +42,13 @@ void main() {
       });
     });
 
-    group('when filtering on NOT many relation count', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(~(manyRelation.count() > 0)).build();
+    group('when filtering on NOT many relation count,', () {
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(~(manyRelation.count() > 0)).build();
+      });
 
       test('then the outer query negates the subquery membership.', () {
         expect(
@@ -57,10 +63,13 @@ void main() {
       });
     });
 
-    group('when filtering on filtered many relation count', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.count((t) => t.id.equals(1)) > 3).build();
+    group('when filtering on filtered many relation count,', () {
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.count((t) => t.id.equals(1)) > 3).build();
+      });
 
       test('then having section is added.', () {
         expect(
@@ -70,11 +79,14 @@ void main() {
       });
     });
 
-    group('when filtering on multiple many relation count', () {
-      var where = (manyRelation.count() > 3) & (manyRelation.count() < 5);
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(where).build();
+    group('when filtering on multiple many relation count,', () {
+      late String query;
+      setUp(() {
+        var where = (manyRelation.count() > 3) & (manyRelation.count() < 5);
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(where).build();
+      });
 
       test('then a sub query is created for the first many relation filter.', () {
         expect(
@@ -116,13 +128,16 @@ void main() {
       });
     });
 
-    group('when ordering by and filtering on same filtered many relation count', () {
-      var query = SelectQueryBuilder(table: citizenTable)
-          .withWhere(manyRelation.count((t) => t.id.equals(1)) > 3)
-          .withOrderBy([
-            manyRelation.count((t) => t.id.equals(1)).asc(),
-          ])
-          .build();
+    group('when ordering by and filtering on same filtered many relation count,', () {
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(table: citizenTable)
+            .withWhere(manyRelation.count((t) => t.id.equals(1)) > 3)
+            .withOrderBy([
+              manyRelation.count((t) => t.id.equals(1)).asc(),
+            ])
+            .build();
+      });
 
       test('then a sub query is created for the order by.', () {
         expect(
@@ -159,11 +174,14 @@ void main() {
     });
   });
 
-  group('Given DeleteQueryBuilder', () {
-    group('when filtering on many relation count', () {
-      var query = DeleteQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.count() > 3).build();
+  group('Given DeleteQueryBuilder,', () {
+    group('when filtering on many relation count,', () {
+      late String query;
+      setUp(() {
+        query = DeleteQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.count() > 3).build();
+      });
       test('then a sub query is created for the filter.', () {
         expect(
           query,
@@ -182,10 +200,13 @@ void main() {
       });
     });
 
-    group('when filtering on filtered many relation count', () {
-      var query = DeleteQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.count((t) => t.id.equals(1)) > 3).build();
+    group('when filtering on filtered many relation count,', () {
+      late String query;
+      setUp(() {
+        query = DeleteQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.count((t) => t.id.equals(1)) > 3).build();
+      });
 
       test('then having section is added.', () {
         expect(
@@ -195,11 +216,14 @@ void main() {
       });
     });
 
-    group('when filtering on multiple many relation count', () {
-      var where = (manyRelation.count() > 3) & (manyRelation.count() < 5);
-      var query = DeleteQueryBuilder(
-        table: citizenTable,
-      ).withWhere(where).build();
+    group('when filtering on multiple many relation count,', () {
+      late String query;
+      setUp(() {
+        var where = (manyRelation.count() > 3) & (manyRelation.count() < 5);
+        query = DeleteQueryBuilder(
+          table: citizenTable,
+        ).withWhere(where).build();
+      });
 
       test('then a sub query is created for the first many relation filter.', () {
         expect(

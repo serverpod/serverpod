@@ -7,7 +7,7 @@ import '../../test_util/many_relation_builder.dart';
 import '../../test_util/table_relation_builder.dart';
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -21,11 +21,14 @@ void main() {
   var expectedTruncatedName =
       'where_any_citizen_thisFieldIsExactly61CharactersLongAndIsTh7547';
 
-  group('Given SelectQueryBuilder', () {
-    group('when "any" filtering on relation with a long field name', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.any()).build();
+  group('Given SelectQueryBuilder,', () {
+    group('when "any" filtering on relation with a long field name,', () {
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.any()).build();
+      });
 
       test('then sub query alias name is truncated.', () {
         expect(query, contains('WITH "$expectedTruncatedName" AS'));
@@ -42,10 +45,13 @@ void main() {
     });
   });
 
-  group('Given CountQueryBuilder', () {
-    var query = CountQueryBuilder(
-      table: citizenTable,
-    ).withWhere(manyRelation.any()).build();
+  group('Given CountQueryBuilder,', () {
+    late String query;
+    setUp(() {
+      query = CountQueryBuilder(
+        table: citizenTable,
+      ).withWhere(manyRelation.any()).build();
+    });
 
     test('then sub query alias name is truncated.', () {
       expect(query, contains('WITH "$expectedTruncatedName" AS'));
@@ -61,10 +67,13 @@ void main() {
     });
   });
 
-  group('Given DeleteQueryBuilder', () {
-    var query = DeleteQueryBuilder(
-      table: citizenTable,
-    ).withWhere(manyRelation.any()).build();
+  group('Given DeleteQueryBuilder,', () {
+    late String query;
+    setUp(() {
+      query = DeleteQueryBuilder(
+        table: citizenTable,
+      ).withWhere(manyRelation.any()).build();
+    });
 
     test('then sub query alias name is truncated.', () {
       expect(query, contains('WITH "$expectedTruncatedName" AS'));
