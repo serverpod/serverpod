@@ -13,10 +13,11 @@ import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
 final config = GeneratorConfigBuilder().build();
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
   });
 
@@ -25,17 +26,18 @@ void main() {
   });
 
   group(
-    'Given a future call that extends another future call when analyzed',
+    'Given a future call that extends another future call, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -91,17 +93,19 @@ class SubclassFutureCall extends BaseFutureCall {
   );
 
   group(
-    'Given a future call that extends another future call and overrides a method when analyzed',
+    'Given a future call that extends another future call and overrides a method, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -148,18 +152,19 @@ class SubclassFutureCall extends BaseFutureCall {
   );
 
   group(
-    'Given abstract > concrete > abstract subclass > concrete subclass'
-    'future calls hierarchy when analyzed',
+    'Given abstract > concrete > abstract subclass > concrete subclass future calls hierarchy, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
