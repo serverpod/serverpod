@@ -102,6 +102,13 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   Future<void> _optimize(SqliteDatabase db) async {
     try {
+      // The web driver has a single connection. Its withAllConnections
+      // callback exposes an unscoped database rather than the held lock's
+      // context, so executing through it would try to acquire that lock again.
+      if (db.maxReaders == 0) {
+        await db.execute('PRAGMA optimize=0x10002');
+        return;
+      }
       await db.withAllConnections((writer, readers) async {
         // Most SELECTs run on readers, so the writer's query history alone
         // cannot identify tables that would benefit from fresh statistics.
