@@ -5,7 +5,13 @@ import 'package:test/test.dart';
 import 'object_with_enum_builder.dart';
 
 void main() {
-  var client = Client(serverUrl);
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   test(
     'Given an enum when sending and writing it to the database then the returned value is contains an ID',
