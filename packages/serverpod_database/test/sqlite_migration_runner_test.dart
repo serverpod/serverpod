@@ -39,6 +39,31 @@ void main() {
   });
 
   test(
+    'Given populated data without planner statistics, '
+    'when a migration creates an index, '
+    'then the committed schema includes statistics for that index.',
+    () async {
+      await session.db.unsafeExecute(
+        'CREATE TABLE items(id INTEGER PRIMARY KEY, value INTEGER); '
+        'INSERT INTO items VALUES (1, 10), (2, 20), (3, 30);',
+      );
+      const runner = SqliteDatabaseMigrationRunner(runMode: 'development');
+
+      await runner.runMigrations(session, (tx) async {
+        await session.db.unsafeExecute(
+          'CREATE INDEX items_value ON items(value)',
+          transaction: tx,
+        );
+      });
+
+      final statistics = await session.db.unsafeQuery(
+        "SELECT stat FROM sqlite_stat1 WHERE idx = 'items_value'",
+      );
+      expect(statistics.single.toColumnMap()['stat'], '3 1');
+    },
+  );
+
+  test(
     'Given schema migrations that violate foreign key constraints in a development environment, '
     'when running migrations, '
     'then it fails and reports each foreign key constraint violation.',

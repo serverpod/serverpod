@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:meta/meta.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
@@ -31,6 +34,11 @@ class SqlitePoolManager implements DatabasePoolManager {
   /// Tracks the PRAGMA future kicked off by [start]
   Future<void>? _startedFuture;
   bool _databaseStopped = false;
+  Timer? _optimizationTimer;
+  Future<void>? _optimization;
+
+  /// Interval between planner-statistics maintenance runs.
+  final Duration optimizationInterval;
 
   /// The SQLite database instance.
   ///
@@ -55,8 +63,9 @@ class SqlitePoolManager implements DatabasePoolManager {
   /// database session.
   SqlitePoolManager(
     DatabaseSerializationManager serializationManager,
-    this.config,
-  ) {
+    this.config, {
+    this.optimizationInterval = const Duration(days: 1),
+  }) {
     _serializationManager = serializationManager;
   }
 
@@ -80,21 +89,65 @@ class SqlitePoolManager implements DatabasePoolManager {
     );
     _db = db;
     await db.execute('PRAGMA foreign_keys = ON');
+    await _runOptimization(db);
+    if (!_databaseStopped) {
+      _optimizationTimer = Timer.periodic(optimizationInterval, (_) {
+        unawaited(_runOptimization(db));
+      });
+    }
+  }
+
+  Future<void> _runOptimization(SqliteDatabase db) =>
+      _optimization ??= _optimize(db).whenComplete(() => _optimization = null);
+
+  Future<void> _optimize(SqliteDatabase db) async {
+    try {
+      await db.withAllConnections((writer, readers) async {
+        // Most SELECTs run on readers, so the writer's query history alone
+        // cannot identify tables that would benefit from fresh statistics.
+        await writer.execute('PRAGMA optimize=0x10002');
+        for (final reader in readers) {
+          // RESET disables schema writes and reloads the in-memory schema. It
+          // does not enable writable_schema or modify the database schema.
+          // Readers otherwise retain old planner statistics after ANALYZE.
+          await reader.getAll('PRAGMA writable_schema=RESET');
+        }
+      });
+    } catch (error, stackTrace) {
+      log.warning(
+        'SQLite planner maintenance failed.',
+        metadata: {'error': error.toString(), 'stackTrace': '$stackTrace'},
+      );
+    }
   }
 
   @override
-  Future<void> get started => _startedFuture ??= _bootstrap();
+  Future<void> get started {
+    if (_databaseStopped) {
+      return Future.error(
+        StateError('Database stopped. Call `start()` again to restart.'),
+      );
+    }
+    return _startedFuture ??= _bootstrap();
+  }
 
   /// Closes the database.
   @override
   Future<void> stop() async {
     _databaseStopped = true;
-    final db = _db;
-
-    _db = null;
-    _startedFuture = null;
-
-    await db?.close();
+    _optimizationTimer?.cancel();
+    _optimizationTimer = null;
+    // Bootstrap may still be initializing the pool. Do not close its handles
+    // while startup maintenance is running, or leave a timer behind it.
+    try {
+      await _startedFuture;
+      await _optimization;
+    } finally {
+      final db = _db;
+      _db = null;
+      _startedFuture = null;
+      await db?.close();
+    }
   }
 
   /// Tests the database connection.
