@@ -27,13 +27,14 @@ abstract class AuthenticationOverride {
 /// Construct, then call [bind] before any other method. Methods called
 /// before [bind] throw [LateInitializationError].
 class InternalTestSessionBuilder extends TestSessionBuilder {
-  late final List<InternalServerpodSession> _allTestSessions;
-  late final TestServerpod _testServerpod;
-  late final AuthenticationOverride? _authenticationOverride;
-  late final bool _enableLogging;
-  late final InternalServerpodSession _mainServerpodSession;
+  late List<InternalServerpodSession> _allTestSessions;
+  late TestServerpod _testServerpod;
+  late AuthenticationOverride? _authenticationOverride;
+  late bool _enableLogging;
+  late InternalServerpodSession _mainServerpodSession;
 
-  /// Populates the builder's state. Can only be called once.
+  /// Populates the builder's state. Binding again replaces it, so a group's
+  /// setUpAll can run more than once in the same isolate.
   void bind({
     required TestServerpod testServerpod,
     required List<InternalServerpodSession> allTestSessions,
