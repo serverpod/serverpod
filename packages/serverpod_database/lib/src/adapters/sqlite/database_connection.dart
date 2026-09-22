@@ -1458,7 +1458,22 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         ),
       );
     }
-    return rows;
+    // Included-list loading traverses these rows to collect parent ids before
+    // deserialization traverses them again. Materialize only when rows are
+    // reused, including lists nested through object relations.
+    return _hasIncludedLists(include) ? rows.toList() : rows;
+  }
+
+  static bool _hasIncludedLists(Include? include) {
+    if (include == null) return false;
+
+    for (final nestedInclude in include.includes.values) {
+      if (nestedInclude is IncludeList || _hasIncludedLists(nestedInclude)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   Future<List<T>> _deserializedMappedQuery<T extends TableRow>(
