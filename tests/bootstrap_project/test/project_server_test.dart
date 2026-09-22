@@ -20,10 +20,10 @@ void main() async {
   });
 
   group(
-    'Given a clean state',
+    'Given a clean state,',
     () {
       Directory? tempDirectory;
-      late final String tempPath;
+      late String tempPath;
 
       setUpAll(() {
         tempDirectory = Directory.systemTemp.createTempSync('spb_');
@@ -37,12 +37,12 @@ void main() async {
       });
 
       group(
-        'when creating a new project with the server template',
+        'when creating a new project with the server template,',
         () {
-          late final String projectName;
-          late final String serverDir;
-          late final String flutterDir;
-          late final String clientDir;
+          late String projectName;
+          late String serverDir;
+          late String flutterDir;
+          late String clientDir;
 
           setUpAll(() async {
             final project = createRandomProjectName(tempPath);
