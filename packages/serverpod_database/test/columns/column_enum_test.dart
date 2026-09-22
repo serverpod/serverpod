@@ -9,7 +9,7 @@ enum TestEnum {
 }
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   group('Given a ColumnEnum serialized as index', () {
     var columnName = 'color';
