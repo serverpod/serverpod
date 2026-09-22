@@ -13,11 +13,12 @@ import '../../../../test_util/builders/model_source_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   var config = GeneratorConfigBuilder().build();
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
   });
 
@@ -25,15 +26,16 @@ void main() {
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
-  group('Given a valid endpoint with a method when analyzed', () {
+  group('Given a valid endpoint with a method, when analyzed,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -86,17 +88,19 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a valid endpoint method with a first positional nullable `Session` parameter when analyzed',
+    'Given a valid endpoint method with a first positional nullable `Session` parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -158,17 +162,19 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint with a method that has a `Session` as second positional parameter when analyzed',
+    'Given an endpoint with a method that has a `Session` as second positional parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -194,17 +200,19 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint with a method that has a `Session` as required named parameter when analyzed',
+    'Given an endpoint with a method that has a `Session` as required named parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -232,17 +240,19 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method without a first positional `Session` param and the other parameters are not a `Session` parameter when analyzed',
+    'Given an endpoint method without a first positional `Session` param and the other parameters are not a `Session` parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -276,17 +286,19 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method without a first positional `Session` param and the first parameter instead contains a named `Session` parameter when analyzed',
+    'Given an endpoint method without a first positional `Session` param and the first parameter instead contains a named `Session` parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -320,17 +332,19 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method without a first positional `Session` param and the first parameter instead contains an optional `Session` parameter when analyzed',
+    'Given an endpoint method without a first positional `Session` param and the first parameter instead contains an optional `Session` parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -400,18 +414,21 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given an endpoint method with a stream return type when analyzed', () {
-    var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+  group(
+    'Given an endpoint method with a stream return type, when analyzed,',
+    () {
+      var collector = CodeGenerationCollector();
+      late Directory testDirectory;
 
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
 import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 
@@ -422,47 +439,49 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(
-        collector: collector,
-        models: StatefulAnalyzer(config, []).models,
-      );
-    });
-
-    test('then no validation errors are reported.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    test('then endpoint definition is created.', () {
-      expect(endpointDefinitions, hasLength(1));
-    });
-
-    group('then endpoint method definition', () {
-      test('is a method stream definition.', () {
-        var methodDefinition =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull;
-        expect(methodDefinition, isA<MethodStreamDefinition>());
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(
+          collector: collector,
+          models: StatefulAnalyzer(config, []).models,
+        );
       });
 
-      test('has stream return type.', () {
-        var returnType =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
-        expect(returnType?.className, 'Stream');
-        expect(returnType?.generics, hasLength(1));
-        expect(returnType?.generics.firstOrNull?.className, 'String');
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
       });
-    });
-  });
 
-  group('Given an endpoint method with a stream parameter when analyzed', () {
+      test('then endpoint definition is created.', () {
+        expect(endpointDefinitions, hasLength(1));
+      });
+
+      group('then endpoint method definition', () {
+        test('is a method stream definition.', () {
+          var methodDefinition =
+              endpointDefinitions.firstOrNull?.methods.firstOrNull;
+          expect(methodDefinition, isA<MethodStreamDefinition>());
+        });
+
+        test('has stream return type.', () {
+          var returnType =
+              endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+          expect(returnType?.className, 'Stream');
+          expect(returnType?.generics, hasLength(1));
+          expect(returnType?.generics.firstOrNull?.className, 'String');
+        });
+      });
+    },
+  );
+
+  group('Given an endpoint method with a stream parameter, when analyzed,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -498,16 +517,17 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given an endpoint method that does not return Future when analyzed',
+    'Given an endpoint method that does not return Future, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -549,16 +569,18 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Future missing defined type when analyzed',
+    'Given an endpoint method that returns a Future missing defined type, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -604,16 +626,18 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Stream missing defined type when analyzed',
+    'Given an endpoint method that returns a Stream missing defined type, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -660,16 +684,18 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Stream with nullable type when analyzed',
+    'Given an endpoint method that returns a Stream with nullable type, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -717,16 +743,18 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Stream with dynamic type when analyzed',
+    'Given an endpoint method that returns a Stream with dynamic type, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -773,16 +801,18 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method with Stream parameter that returns a Future with nullable type when analyzed',
+    'Given an endpoint method with Stream parameter that returns a Future with nullable type, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -829,16 +859,17 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Future null type when analyzed',
+    'Given an endpoint method that returns a Future null type, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -873,16 +904,18 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that returns a Future with dynamic type when analyzed',
+    'Given an endpoint method that returns a Future with dynamic type, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -928,15 +961,16 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given a valid endpoint with private method when analyzed', () {
+  group('Given a valid endpoint with private method, when analyzed,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -969,15 +1003,16 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given a valid endpoint with static method when analyzed', () {
+  group('Given a valid endpoint with static method, when analyzed,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -1008,16 +1043,17 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a valid endpoint with static and instance methods when analyzed',
+    'Given a valid endpoint with static and instance methods, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1050,16 +1086,17 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a valid endpoint with multiple methods defined when analyzed',
+    'Given a valid endpoint with multiple methods defined, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1103,15 +1140,16 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given a valid endpoint method with documentation when analyzed', () {
+  group('Given a valid endpoint method with documentation, when analyzed,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -1150,16 +1188,17 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given a valid endpoint method with {@macro} reference and template defined in same class',
+    'Given a valid endpoint method with {@macro} reference and template defined in same class,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1229,16 +1268,17 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a valid endpoint method with {@macro} reference but no matching template',
+    'Given a valid endpoint method with {@macro} reference but no matching template,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1278,16 +1318,17 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a valid endpoint method with "@Deprecated(<string literal>)" annotation',
+    'Given a valid endpoint method with "@Deprecated(<string literal>)" annotation,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1330,16 +1371,17 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a valid endpoint method with "@Deprecated(<string const expr>)" annotation',
+    'Given a valid endpoint method with "@Deprecated(<string const expr>)" annotation,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1383,15 +1425,16 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given a valid endpoint method with "@deprecated" annotation', () {
+  group('Given a valid endpoint method with "@deprecated" annotation,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -1432,15 +1475,16 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method with a void return type', () {
+  group('Given an endpoint method with a void return type,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -1473,15 +1517,16 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method with a record return type', () {
+  group('Given an endpoint method with a record return type,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -1533,15 +1578,16 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method with a function as return type', () {
+  group('Given an endpoint method with a function as return type,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -1602,16 +1648,18 @@ Error on line 6, column 31 of .+: The type "String Function\(\)" is not a suppor
   });
 
   group(
-    'Given valid endpoint with a single method marked as `@doNotGenerate` when analyzed',
+    'Given valid endpoint with a single method marked as `@doNotGenerate`, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1653,13 +1701,14 @@ class ExampleEndpoint extends Endpoint {
     'when analyzing,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1706,13 +1755,14 @@ class ExampleEndpoint extends Endpoint {
   group('Given an endpoint method with a non serializable model return type, '
       'when analyzing,', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -1766,13 +1816,14 @@ fields:
     'when analyzing,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1820,13 +1871,14 @@ class ExampleEndpoint extends Endpoint {
     'when analyzing,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1878,13 +1930,14 @@ class ExampleEndpoint extends Endpoint {
     'when analyzing,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1938,13 +1991,14 @@ class ExampleEndpoint extends Endpoint {
     'when analyzing,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -1997,13 +2051,14 @@ class ExampleEndpoint extends Endpoint {
     'when analyzing,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -2048,13 +2103,14 @@ class ExampleEndpoint extends Endpoint {
     'when analyzing,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
