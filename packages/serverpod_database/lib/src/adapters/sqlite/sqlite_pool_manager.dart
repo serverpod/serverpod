@@ -33,6 +33,7 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   /// Tracks the PRAGMA future kicked off by [start]
   Future<void>? _startedFuture;
+  Future<void>? _stoppingFuture;
   bool _databaseStopped = false;
   Timer? _optimizationTimer;
   Future<void>? _optimization;
@@ -71,6 +72,9 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   @override
   void start() {
+    if (_stoppingFuture != null) {
+      throw StateError('Database is stopping. Await stop() before restarting.');
+    }
     _databaseStopped = false;
     _startedFuture ??= _bootstrap();
   }
@@ -102,29 +106,32 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   Future<void> _optimize(SqliteDatabase db) async {
     try {
-      // The web driver has a single connection. Its withAllConnections
-      // callback exposes an unscoped database rather than the held lock's
-      // context, so executing through it would try to acquire that lock again.
-      if (db.maxReaders == 0) {
-        await db.execute('PRAGMA optimize=0x10002');
-        return;
+      // Most SELECTs run on readers, so inspect all tables (0x10000), run
+      // ANALYZE if useful (0x02), and keep its temporary analysis limit (0x10).
+      await db.execute('PRAGMA optimize=0x10012');
+      // Release the writer before requesting reader leases. An exclusive pool
+      // request can deadlock a transaction that needs an independent reader.
+      // These are best-effort refreshes; a busy reader can refresh next time.
+      for (var i = 0; i < db.maxReaders; i++) {
+        await _refreshReader(db);
       }
-      await db.withAllConnections((writer, readers) async {
-        // Most SELECTs run on readers, so the writer's query history alone
-        // cannot identify tables that would benefit from fresh statistics.
-        await writer.execute('PRAGMA optimize=0x10002');
-        for (final reader in readers) {
-          // RESET disables schema writes and reloads the in-memory schema. It
-          // does not enable writable_schema or modify the database schema.
-          // Readers otherwise retain old planner statistics after ANALYZE.
-          await reader.getAll('PRAGMA writable_schema=RESET');
-        }
-      });
     } catch (error, stackTrace) {
       log.warning(
         'SQLite planner maintenance failed.',
         metadata: {'error': error.toString(), 'stackTrace': '$stackTrace'},
       );
+    }
+  }
+
+  Future<void> _refreshReader(SqliteDatabase db) async {
+    try {
+      await db.readLock((reader) async {
+        // RESET disables schema writes and reloads the in-memory schema; it
+        // does not enable writable_schema or modify the database schema.
+        await reader.getAll('PRAGMA writable_schema=RESET');
+      }, lockTimeout: const Duration(seconds: 1));
+    } on AbortException {
+      // Maintenance must not wait indefinitely for a busy reader.
     }
   }
 
@@ -140,7 +147,10 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   /// Closes the database.
   @override
-  Future<void> stop() async {
+  Future<void> stop() =>
+      _stoppingFuture ??= _stop().whenComplete(() => _stoppingFuture = null);
+
+  Future<void> _stop() async {
     _databaseStopped = true;
     _optimizationTimer?.cancel();
     _optimizationTimer = null;
