@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:typed_data' as _idt;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import 'simple_data.dart' as _i0zisc0t;
 
@@ -399,56 +401,57 @@ abstract class Nullability
     String? aString,
     String? aNullableString,
     DateTime? aDateTime,
-    DateTime? aNullableDateTime = const _isc.$UndefinedDateTime(),
+    DateTime? aNullableDateTime = const _issu.$UndefinedDateTime(),
     _idt.ByteData? aByteData,
     _idt.ByteData? aNullableByteData,
     Duration? aDuration,
-    Duration? aNullableDuration = const _isc.$UndefinedDuration(),
+    Duration? aNullableDuration = const _issu.$UndefinedDuration(),
     _isc.UuidValue? aUuid,
-    _isc.UuidValue? aNullableUuid = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? aNullableUuid = const _issu.$UndefinedUuidValue(),
     _i0zisc0t.SimpleData? anObject,
     _i0zisc0t.SimpleData? aNullableObject =
         const _UndefinedNullability$aNullableObject(),
     List<int>? anIntList,
-    List<int>? aNullableIntList = const _isc.$UndefinedList<int>(),
+    List<int>? aNullableIntList = const _issu.$UndefinedList<int>(),
     List<int?>? aListWithNullableInts,
     List<int?>? aNullableListWithNullableInts =
-        const _isc.$UndefinedList<int?>(),
+        const _issu.$UndefinedList<int?>(),
     List<_i0zisc0t.SimpleData>? anObjectList,
     List<_i0zisc0t.SimpleData>? aNullableObjectList =
-        const _isc.$UndefinedList<_i0zisc0t.SimpleData>(),
+        const _issu.$UndefinedList<_i0zisc0t.SimpleData>(),
     List<_i0zisc0t.SimpleData?>? aListWithNullableObjects,
     List<_i0zisc0t.SimpleData?>? aNullableListWithNullableObjects =
-        const _isc.$UndefinedList<_i0zisc0t.SimpleData?>(),
+        const _issu.$UndefinedList<_i0zisc0t.SimpleData?>(),
     List<DateTime>? aDateTimeList,
     List<DateTime>? aNullableDateTimeList =
-        const _isc.$UndefinedList<DateTime>(),
+        const _issu.$UndefinedList<DateTime>(),
     List<DateTime?>? aListWithNullableDateTimes,
     List<DateTime?>? aNullableListWithNullableDateTimes =
-        const _isc.$UndefinedList<DateTime?>(),
+        const _issu.$UndefinedList<DateTime?>(),
     List<_idt.ByteData>? aByteDataList,
     List<_idt.ByteData>? aNullableByteDataList =
-        const _isc.$UndefinedList<_idt.ByteData>(),
+        const _issu.$UndefinedList<_idt.ByteData>(),
     List<_idt.ByteData?>? aListWithNullableByteDatas,
     List<_idt.ByteData?>? aNullableListWithNullableByteDatas =
-        const _isc.$UndefinedList<_idt.ByteData?>(),
+        const _issu.$UndefinedList<_idt.ByteData?>(),
     List<Duration>? aDurationList,
     List<Duration>? aNullableDurationList =
-        const _isc.$UndefinedList<Duration>(),
+        const _issu.$UndefinedList<Duration>(),
     List<Duration?>? aListWithNullableDurations,
     List<Duration?>? aNullableListWithNullableDurations =
-        const _isc.$UndefinedList<Duration?>(),
+        const _issu.$UndefinedList<Duration?>(),
     List<_isc.UuidValue>? aUuidList,
     List<_isc.UuidValue>? aNullableUuidList =
-        const _isc.$UndefinedList<_isc.UuidValue>(),
+        const _issu.$UndefinedList<_isc.UuidValue>(),
     List<_isc.UuidValue?>? aListWithNullableUuids,
     List<_isc.UuidValue?>? aNullableListWithNullableUuids =
-        const _isc.$UndefinedList<_isc.UuidValue?>(),
+        const _issu.$UndefinedList<_isc.UuidValue?>(),
     Map<String, int>? anIntMap,
-    Map<String, int>? aNullableIntMap = const _isc.$UndefinedMap<String, int>(),
+    Map<String, int>? aNullableIntMap =
+        const _issu.$UndefinedMap<String, int>(),
     Map<String, int?>? aMapWithNullableInts,
     Map<String, int?>? aNullableMapWithNullableInts =
-        const _isc.$UndefinedMap<String, int?>(),
+        const _issu.$UndefinedMap<String, int?>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -651,7 +654,7 @@ abstract class Nullability
 
 class _Undefined {}
 
-class _UndefinedNullability$aNullableObject extends _isc.UndefinedSentinel
+class _UndefinedNullability$aNullableObject extends _issu.UndefinedSentinel
     implements _i0zisc0t.SimpleData {
   const _UndefinedNullability$aNullableObject();
 }
@@ -767,56 +770,57 @@ class _NullabilityImpl extends Nullability {
     String? aString,
     Object? aNullableString = _Undefined,
     DateTime? aDateTime,
-    DateTime? aNullableDateTime = const _isc.$UndefinedDateTime(),
+    DateTime? aNullableDateTime = const _issu.$UndefinedDateTime(),
     _idt.ByteData? aByteData,
     Object? aNullableByteData = _Undefined,
     Duration? aDuration,
-    Duration? aNullableDuration = const _isc.$UndefinedDuration(),
+    Duration? aNullableDuration = const _issu.$UndefinedDuration(),
     _isc.UuidValue? aUuid,
-    _isc.UuidValue? aNullableUuid = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? aNullableUuid = const _issu.$UndefinedUuidValue(),
     _i0zisc0t.SimpleData? anObject,
     _i0zisc0t.SimpleData? aNullableObject =
         const _UndefinedNullability$aNullableObject(),
     List<int>? anIntList,
-    List<int>? aNullableIntList = const _isc.$UndefinedList<int>(),
+    List<int>? aNullableIntList = const _issu.$UndefinedList<int>(),
     List<int?>? aListWithNullableInts,
     List<int?>? aNullableListWithNullableInts =
-        const _isc.$UndefinedList<int?>(),
+        const _issu.$UndefinedList<int?>(),
     List<_i0zisc0t.SimpleData>? anObjectList,
     List<_i0zisc0t.SimpleData>? aNullableObjectList =
-        const _isc.$UndefinedList<_i0zisc0t.SimpleData>(),
+        const _issu.$UndefinedList<_i0zisc0t.SimpleData>(),
     List<_i0zisc0t.SimpleData?>? aListWithNullableObjects,
     List<_i0zisc0t.SimpleData?>? aNullableListWithNullableObjects =
-        const _isc.$UndefinedList<_i0zisc0t.SimpleData?>(),
+        const _issu.$UndefinedList<_i0zisc0t.SimpleData?>(),
     List<DateTime>? aDateTimeList,
     List<DateTime>? aNullableDateTimeList =
-        const _isc.$UndefinedList<DateTime>(),
+        const _issu.$UndefinedList<DateTime>(),
     List<DateTime?>? aListWithNullableDateTimes,
     List<DateTime?>? aNullableListWithNullableDateTimes =
-        const _isc.$UndefinedList<DateTime?>(),
+        const _issu.$UndefinedList<DateTime?>(),
     List<_idt.ByteData>? aByteDataList,
     List<_idt.ByteData>? aNullableByteDataList =
-        const _isc.$UndefinedList<_idt.ByteData>(),
+        const _issu.$UndefinedList<_idt.ByteData>(),
     List<_idt.ByteData?>? aListWithNullableByteDatas,
     List<_idt.ByteData?>? aNullableListWithNullableByteDatas =
-        const _isc.$UndefinedList<_idt.ByteData?>(),
+        const _issu.$UndefinedList<_idt.ByteData?>(),
     List<Duration>? aDurationList,
     List<Duration>? aNullableDurationList =
-        const _isc.$UndefinedList<Duration>(),
+        const _issu.$UndefinedList<Duration>(),
     List<Duration?>? aListWithNullableDurations,
     List<Duration?>? aNullableListWithNullableDurations =
-        const _isc.$UndefinedList<Duration?>(),
+        const _issu.$UndefinedList<Duration?>(),
     List<_isc.UuidValue>? aUuidList,
     List<_isc.UuidValue>? aNullableUuidList =
-        const _isc.$UndefinedList<_isc.UuidValue>(),
+        const _issu.$UndefinedList<_isc.UuidValue>(),
     List<_isc.UuidValue?>? aListWithNullableUuids,
     List<_isc.UuidValue?>? aNullableListWithNullableUuids =
-        const _isc.$UndefinedList<_isc.UuidValue?>(),
+        const _issu.$UndefinedList<_isc.UuidValue?>(),
     Map<String, int>? anIntMap,
-    Map<String, int>? aNullableIntMap = const _isc.$UndefinedMap<String, int>(),
+    Map<String, int>? aNullableIntMap =
+        const _issu.$UndefinedMap<String, int>(),
     Map<String, int?>? aMapWithNullableInts,
     Map<String, int?>? aNullableMapWithNullableInts =
-        const _isc.$UndefinedMap<String, int?>(),
+        const _issu.$UndefinedMap<String, int?>(),
   }) {
     return Nullability(
       anInt: anInt ?? this.anInt,
@@ -834,7 +838,7 @@ class _NullabilityImpl extends Nullability {
           ? aNullableString
           : this.aNullableString,
       aDateTime: aDateTime ?? this.aDateTime,
-      aNullableDateTime: aNullableDateTime is _isc.UndefinedSentinel
+      aNullableDateTime: aNullableDateTime is _issu.UndefinedSentinel
           ? this.aNullableDateTime
           : aNullableDateTime,
       aByteData: aByteData ?? this.aByteData.clone(),
@@ -842,89 +846,89 @@ class _NullabilityImpl extends Nullability {
           ? aNullableByteData
           : this.aNullableByteData?.clone(),
       aDuration: aDuration ?? this.aDuration,
-      aNullableDuration: aNullableDuration is _isc.UndefinedSentinel
+      aNullableDuration: aNullableDuration is _issu.UndefinedSentinel
           ? this.aNullableDuration
           : aNullableDuration,
       aUuid: aUuid ?? this.aUuid,
-      aNullableUuid: aNullableUuid is _isc.UndefinedSentinel
+      aNullableUuid: aNullableUuid is _issu.UndefinedSentinel
           ? this.aNullableUuid
           : aNullableUuid,
       anObject: anObject ?? this.anObject.copyWith(),
-      aNullableObject: aNullableObject is _isc.UndefinedSentinel
+      aNullableObject: aNullableObject is _issu.UndefinedSentinel
           ? this.aNullableObject?.copyWith()
           : aNullableObject,
       anIntList: anIntList ?? this.anIntList.map((e0) => e0).toList(),
-      aNullableIntList: aNullableIntList is _isc.UndefinedSentinel
+      aNullableIntList: aNullableIntList is _issu.UndefinedSentinel
           ? this.aNullableIntList?.map((e0) => e0).toList()
           : aNullableIntList,
       aListWithNullableInts:
           aListWithNullableInts ??
           this.aListWithNullableInts.map((e0) => e0).toList(),
       aNullableListWithNullableInts:
-          aNullableListWithNullableInts is _isc.UndefinedSentinel
+          aNullableListWithNullableInts is _issu.UndefinedSentinel
           ? this.aNullableListWithNullableInts?.map((e0) => e0).toList()
           : aNullableListWithNullableInts,
       anObjectList:
           anObjectList ?? this.anObjectList.map((e0) => e0.copyWith()).toList(),
-      aNullableObjectList: aNullableObjectList is _isc.UndefinedSentinel
+      aNullableObjectList: aNullableObjectList is _issu.UndefinedSentinel
           ? this.aNullableObjectList?.map((e0) => e0.copyWith()).toList()
           : aNullableObjectList,
       aListWithNullableObjects:
           aListWithNullableObjects ??
           this.aListWithNullableObjects.map((e0) => e0?.copyWith()).toList(),
       aNullableListWithNullableObjects:
-          aNullableListWithNullableObjects is _isc.UndefinedSentinel
+          aNullableListWithNullableObjects is _issu.UndefinedSentinel
           ? this.aNullableListWithNullableObjects
                 ?.map((e0) => e0?.copyWith())
                 .toList()
           : aNullableListWithNullableObjects,
       aDateTimeList:
           aDateTimeList ?? this.aDateTimeList.map((e0) => e0).toList(),
-      aNullableDateTimeList: aNullableDateTimeList is _isc.UndefinedSentinel
+      aNullableDateTimeList: aNullableDateTimeList is _issu.UndefinedSentinel
           ? this.aNullableDateTimeList?.map((e0) => e0).toList()
           : aNullableDateTimeList,
       aListWithNullableDateTimes:
           aListWithNullableDateTimes ??
           this.aListWithNullableDateTimes.map((e0) => e0).toList(),
       aNullableListWithNullableDateTimes:
-          aNullableListWithNullableDateTimes is _isc.UndefinedSentinel
+          aNullableListWithNullableDateTimes is _issu.UndefinedSentinel
           ? this.aNullableListWithNullableDateTimes?.map((e0) => e0).toList()
           : aNullableListWithNullableDateTimes,
       aByteDataList:
           aByteDataList ?? this.aByteDataList.map((e0) => e0.clone()).toList(),
-      aNullableByteDataList: aNullableByteDataList is _isc.UndefinedSentinel
+      aNullableByteDataList: aNullableByteDataList is _issu.UndefinedSentinel
           ? this.aNullableByteDataList?.map((e0) => e0.clone()).toList()
           : aNullableByteDataList,
       aListWithNullableByteDatas:
           aListWithNullableByteDatas ??
           this.aListWithNullableByteDatas.map((e0) => e0?.clone()).toList(),
       aNullableListWithNullableByteDatas:
-          aNullableListWithNullableByteDatas is _isc.UndefinedSentinel
+          aNullableListWithNullableByteDatas is _issu.UndefinedSentinel
           ? this.aNullableListWithNullableByteDatas
                 ?.map((e0) => e0?.clone())
                 .toList()
           : aNullableListWithNullableByteDatas,
       aDurationList:
           aDurationList ?? this.aDurationList.map((e0) => e0).toList(),
-      aNullableDurationList: aNullableDurationList is _isc.UndefinedSentinel
+      aNullableDurationList: aNullableDurationList is _issu.UndefinedSentinel
           ? this.aNullableDurationList?.map((e0) => e0).toList()
           : aNullableDurationList,
       aListWithNullableDurations:
           aListWithNullableDurations ??
           this.aListWithNullableDurations.map((e0) => e0).toList(),
       aNullableListWithNullableDurations:
-          aNullableListWithNullableDurations is _isc.UndefinedSentinel
+          aNullableListWithNullableDurations is _issu.UndefinedSentinel
           ? this.aNullableListWithNullableDurations?.map((e0) => e0).toList()
           : aNullableListWithNullableDurations,
       aUuidList: aUuidList ?? this.aUuidList.map((e0) => e0).toList(),
-      aNullableUuidList: aNullableUuidList is _isc.UndefinedSentinel
+      aNullableUuidList: aNullableUuidList is _issu.UndefinedSentinel
           ? this.aNullableUuidList?.map((e0) => e0).toList()
           : aNullableUuidList,
       aListWithNullableUuids:
           aListWithNullableUuids ??
           this.aListWithNullableUuids.map((e0) => e0).toList(),
       aNullableListWithNullableUuids:
-          aNullableListWithNullableUuids is _isc.UndefinedSentinel
+          aNullableListWithNullableUuids is _issu.UndefinedSentinel
           ? this.aNullableListWithNullableUuids?.map((e0) => e0).toList()
           : aNullableListWithNullableUuids,
       anIntMap:
@@ -938,7 +942,7 @@ class _NullabilityImpl extends Nullability {
               value0,
             ),
           ),
-      aNullableIntMap: aNullableIntMap is _isc.UndefinedSentinel
+      aNullableIntMap: aNullableIntMap is _issu.UndefinedSentinel
           ? this.aNullableIntMap?.map(
               (
                 key0,
@@ -961,7 +965,7 @@ class _NullabilityImpl extends Nullability {
             ),
           ),
       aNullableMapWithNullableInts:
-          aNullableMapWithNullableInts is _isc.UndefinedSentinel
+          aNullableMapWithNullableInts is _issu.UndefinedSentinel
           ? this.aNullableMapWithNullableInts?.map(
               (
                 key0,

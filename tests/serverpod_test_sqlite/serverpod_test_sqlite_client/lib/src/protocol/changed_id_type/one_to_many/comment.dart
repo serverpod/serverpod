@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../changed_id_type/one_to_many/order.dart' as _ivss21qh;
@@ -96,7 +98,7 @@ abstract class CommentInt
 
 class _Undefined {}
 
-class _UndefinedCommentInt$order extends _isc.UndefinedSentinel
+class _UndefinedCommentInt$order extends _issu.UndefinedSentinel
     implements _ivss21qh.OrderUuid {
   const _UndefinedCommentInt$order();
 }
@@ -128,7 +130,7 @@ class _CommentIntImpl extends CommentInt {
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       orderId: orderId ?? this.orderId,
-      order: order is _isc.UndefinedSentinel ? this.order?.copyWith() : order,
+      order: order is _issu.UndefinedSentinel ? this.order?.copyWith() : order,
     );
   }
 }

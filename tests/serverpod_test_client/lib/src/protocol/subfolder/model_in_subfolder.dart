@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
     as _i89s5423;
@@ -148,15 +150,15 @@ abstract class ModelInSubfolder
         const _UndefinedModelInSubfolder$classField(),
     _i105ky7k.TestEnumStringified? enumField,
     List<_i105ky7k.TestEnumStringified>? enumListField =
-        const _isc.$UndefinedList<_i105ky7k.TestEnumStringified>(),
+        const _issu.$UndefinedList<_i105ky7k.TestEnumStringified>(),
     (_i105ky7k.TestEnumStringified,)? enumRecordField,
     List<(_i105ky7k.TestEnumStringified,)>? enumRecordListField =
-        const _isc.$UndefinedList<(_i105ky7k.TestEnumStringified,)>(),
+        const _issu.$UndefinedList<(_i105ky7k.TestEnumStringified,)>(),
     (_i89s5423.ModuleClass,)? moduleClassRecordField,
     (_ikr9iqn0.Nullability,)? classRecordField,
     ({_i105ky7k.TestEnumStringified value})? enumNamedRecordField,
     List<({_i105ky7k.TestEnumStringified value})>? enumNamedRecordListField =
-        const _isc.$UndefinedList<({_i105ky7k.TestEnumStringified value})>(),
+        const _issu.$UndefinedList<({_i105ky7k.TestEnumStringified value})>(),
     ({_i89s5423.ModuleClass value})? moduleClassNamedRecordField,
     ({_ikr9iqn0.Nullability value})? classNamedRecordField,
   });
@@ -254,7 +256,7 @@ abstract class ModelInSubfolder
 
 class _Undefined {}
 
-class _UndefinedModelInSubfolder$classField extends _isc.UndefinedSentinel
+class _UndefinedModelInSubfolder$classField extends _issu.UndefinedSentinel
     implements _ikr9iqn0.Nullability {
   const _UndefinedModelInSubfolder$classField();
 }
@@ -295,26 +297,26 @@ class _ModelInSubfolderImpl extends ModelInSubfolder {
         const _UndefinedModelInSubfolder$classField(),
     Object? enumField = _Undefined,
     List<_i105ky7k.TestEnumStringified>? enumListField =
-        const _isc.$UndefinedList<_i105ky7k.TestEnumStringified>(),
+        const _issu.$UndefinedList<_i105ky7k.TestEnumStringified>(),
     Object? enumRecordField = _Undefined,
     List<(_i105ky7k.TestEnumStringified,)>? enumRecordListField =
-        const _isc.$UndefinedList<(_i105ky7k.TestEnumStringified,)>(),
+        const _issu.$UndefinedList<(_i105ky7k.TestEnumStringified,)>(),
     Object? moduleClassRecordField = _Undefined,
     Object? classRecordField = _Undefined,
     Object? enumNamedRecordField = _Undefined,
     List<({_i105ky7k.TestEnumStringified value})>? enumNamedRecordListField =
-        const _isc.$UndefinedList<({_i105ky7k.TestEnumStringified value})>(),
+        const _issu.$UndefinedList<({_i105ky7k.TestEnumStringified value})>(),
     Object? moduleClassNamedRecordField = _Undefined,
     Object? classNamedRecordField = _Undefined,
   }) {
     return ModelInSubfolder(
-      classField: classField is _isc.UndefinedSentinel
+      classField: classField is _issu.UndefinedSentinel
           ? this.classField?.copyWith()
           : classField,
       enumField: enumField is _i105ky7k.TestEnumStringified?
           ? enumField
           : this.enumField,
-      enumListField: enumListField is _isc.UndefinedSentinel
+      enumListField: enumListField is _issu.UndefinedSentinel
           ? this.enumListField?.map((e0) => e0).toList()
           : enumListField,
       enumRecordField: enumRecordField is (_i105ky7k.TestEnumStringified,)?
@@ -322,7 +324,7 @@ class _ModelInSubfolderImpl extends ModelInSubfolder {
           : this.enumRecordField == null
           ? null
           : (this.enumRecordField!.$1,),
-      enumRecordListField: enumRecordListField is _isc.UndefinedSentinel
+      enumRecordListField: enumRecordListField is _issu.UndefinedSentinel
           ? this.enumRecordListField?.map((e0) => (e0.$1,)).toList()
           : enumRecordListField,
       moduleClassRecordField:
@@ -345,7 +347,7 @@ class _ModelInSubfolderImpl extends ModelInSubfolder {
               value: this.enumNamedRecordField!.value,
             ),
       enumNamedRecordListField:
-          enumNamedRecordListField is _isc.UndefinedSentinel
+          enumNamedRecordListField is _issu.UndefinedSentinel
           ? this.enumNamedRecordListField
                 ?.map(
                   (e0) => (

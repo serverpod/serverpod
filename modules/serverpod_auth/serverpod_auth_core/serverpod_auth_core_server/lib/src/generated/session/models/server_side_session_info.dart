@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
     as _i8reeoob;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// DTO for transferring server-side session information between server and client.
 abstract class ServerSideSessionInfo
@@ -108,8 +110,8 @@ abstract class ServerSideSessionInfo
     Set<String>? scopeNames,
     DateTime? created,
     DateTime? lastUsed,
-    DateTime? expiresAt = const _is.$UndefinedDateTime(),
-    Duration? expireAfterUnusedFor = const _is.$UndefinedDuration(),
+    DateTime? expiresAt = const _issu.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _issu.$UndefinedDuration(),
     String? method,
   });
   @override
@@ -181,8 +183,8 @@ class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
     Set<String>? scopeNames,
     DateTime? created,
     DateTime? lastUsed,
-    DateTime? expiresAt = const _is.$UndefinedDateTime(),
-    Duration? expireAfterUnusedFor = const _is.$UndefinedDuration(),
+    DateTime? expiresAt = const _issu.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _issu.$UndefinedDuration(),
     String? method,
   }) {
     return ServerSideSessionInfo(
@@ -191,10 +193,10 @@ class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       created: created ?? this.created,
       lastUsed: lastUsed ?? this.lastUsed,
-      expiresAt: expiresAt is _is.UndefinedSentinel
+      expiresAt: expiresAt is _issu.UndefinedSentinel
           ? this.expiresAt
           : expiresAt,
-      expireAfterUnusedFor: expireAfterUnusedFor is _is.UndefinedSentinel
+      expireAfterUnusedFor: expireAfterUnusedFor is _issu.UndefinedSentinel
           ? this.expireAfterUnusedFor
           : expireAfterUnusedFor,
       method: method ?? this.method,

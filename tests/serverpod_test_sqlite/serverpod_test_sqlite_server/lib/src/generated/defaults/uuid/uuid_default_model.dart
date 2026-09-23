@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class UuidDefaultModel
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -106,9 +108,10 @@ abstract class UuidDefaultModel
     int? id,
     _is.UuidValue? uuidDefaultModelRandom,
     _is.UuidValue? uuidDefaultModelRandomV7,
-    _is.UuidValue? uuidDefaultModelRandomNull = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? uuidDefaultModelRandomNull =
+        const _issu.$UndefinedUuidValue(),
     _is.UuidValue? uuidDefaultModelStr,
-    _is.UuidValue? uuidDefaultModelStrNull = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? uuidDefaultModelStrNull = const _issu.$UndefinedUuidValue(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -195,9 +198,10 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
     Object? id = _Undefined,
     _is.UuidValue? uuidDefaultModelRandom,
     _is.UuidValue? uuidDefaultModelRandomV7,
-    _is.UuidValue? uuidDefaultModelRandomNull = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? uuidDefaultModelRandomNull =
+        const _issu.$UndefinedUuidValue(),
     _is.UuidValue? uuidDefaultModelStr,
-    _is.UuidValue? uuidDefaultModelStrNull = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? uuidDefaultModelStrNull = const _issu.$UndefinedUuidValue(),
   }) {
     return UuidDefaultModel(
       id: id is int? ? id : this.id,
@@ -206,11 +210,12 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
       uuidDefaultModelRandomV7:
           uuidDefaultModelRandomV7 ?? this.uuidDefaultModelRandomV7,
       uuidDefaultModelRandomNull:
-          uuidDefaultModelRandomNull is _is.UndefinedSentinel
+          uuidDefaultModelRandomNull is _issu.UndefinedSentinel
           ? this.uuidDefaultModelRandomNull
           : uuidDefaultModelRandomNull,
       uuidDefaultModelStr: uuidDefaultModelStr ?? this.uuidDefaultModelStr,
-      uuidDefaultModelStrNull: uuidDefaultModelStrNull is _is.UndefinedSentinel
+      uuidDefaultModelStrNull:
+          uuidDefaultModelStrNull is _issu.UndefinedSentinel
           ? this.uuidDefaultModelStrNull
           : uuidDefaultModelStrNull,
     );

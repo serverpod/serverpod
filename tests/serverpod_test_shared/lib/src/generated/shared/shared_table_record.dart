@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
 
 abstract class SharedTableRecord
@@ -133,7 +135,7 @@ abstract class SharedTableRecord
 
 class _Undefined {}
 
-class _UndefinedSharedTableRecord$sharedSubclass extends _iss.UndefinedSentinel
+class _UndefinedSharedTableRecord$sharedSubclass extends _issu.UndefinedSentinel
     implements _ilwf0zl1.SharedSubclass {
   const _UndefinedSharedTableRecord$sharedSubclass();
 }
@@ -169,7 +171,7 @@ class _SharedTableRecordImpl extends SharedTableRecord {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       sharedEnum: sharedEnum ?? this.sharedEnum,
-      sharedSubclass: sharedSubclass is _iss.UndefinedSentinel
+      sharedSubclass: sharedSubclass is _issu.UndefinedSentinel
           ? this.sharedSubclass?.copyWith()
           : sharedSubclass,
       itemCount: itemCount ?? this.itemCount,

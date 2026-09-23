@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../../explicit_column_name/relations/one_to_one/service.dart'
     as _iml73r3x;
@@ -94,7 +96,7 @@ abstract class Contractor
 
 class _Undefined {}
 
-class _UndefinedContractor$service extends _isc.UndefinedSentinel
+class _UndefinedContractor$service extends _issu.UndefinedSentinel
     implements _iml73r3x.Service {
   const _UndefinedContractor$service();
 }
@@ -128,7 +130,7 @@ class _ContractorImpl extends Contractor {
       serviceIdField: serviceIdField is int?
           ? serviceIdField
           : this.serviceIdField,
-      service: service is _isc.UndefinedSentinel
+      service: service is _issu.UndefinedSentinel
           ? this.service?.copyWith()
           : service,
     );

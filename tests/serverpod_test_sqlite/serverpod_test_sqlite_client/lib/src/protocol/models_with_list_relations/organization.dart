@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../models_with_list_relations/city.dart' as _i64066zp;
@@ -80,7 +82,7 @@ abstract class Organization
     int? id,
     String? name,
     List<_ijqkgw0m.Person>? people =
-        const _isc.$UndefinedList<_ijqkgw0m.Person>(),
+        const _issu.$UndefinedList<_ijqkgw0m.Person>(),
     int? cityId,
     _i64066zp.City? city = const _UndefinedOrganization$city(),
   });
@@ -146,7 +148,7 @@ abstract class Organization
 
 class _Undefined {}
 
-class _UndefinedOrganization$city extends _isc.UndefinedSentinel
+class _UndefinedOrganization$city extends _issu.UndefinedSentinel
     implements _i64066zp.City {
   const _UndefinedOrganization$city();
 }
@@ -174,18 +176,18 @@ class _OrganizationImpl extends Organization {
     Object? id = _Undefined,
     String? name,
     List<_ijqkgw0m.Person>? people =
-        const _isc.$UndefinedList<_ijqkgw0m.Person>(),
+        const _issu.$UndefinedList<_ijqkgw0m.Person>(),
     Object? cityId = _Undefined,
     _i64066zp.City? city = const _UndefinedOrganization$city(),
   }) {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is _isc.UndefinedSentinel
+      people: people is _issu.UndefinedSentinel
           ? this.people?.map((e0) => e0.copyWith()).toList()
           : people,
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _isc.UndefinedSentinel ? this.city?.copyWith() : city,
+      city: city is _issu.UndefinedSentinel ? this.city?.copyWith() : city,
     );
   }
 }

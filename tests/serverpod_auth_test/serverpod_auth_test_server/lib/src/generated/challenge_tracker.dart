@@ -8,7 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -17,6 +18,7 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
 import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
     as _ik2mg1i3;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class ChallengeTracker
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -135,7 +137,7 @@ abstract class ChallengeTracker
 
 class _Undefined {}
 
-class _UndefinedChallengeTracker$secretChallenge extends _is.UndefinedSentinel
+class _UndefinedChallengeTracker$secretChallenge extends _issu.UndefinedSentinel
     implements _iais.SecretChallenge {
   const _UndefinedChallengeTracker$secretChallenge();
 }
@@ -170,7 +172,7 @@ class _ChallengeTrackerImpl extends ChallengeTracker {
     return ChallengeTracker(
       id: id is int? ? id : this.id,
       secretChallengeId: secretChallengeId ?? this.secretChallengeId,
-      secretChallenge: secretChallenge is _is.UndefinedSentinel
+      secretChallenge: secretChallenge is _issu.UndefinedSentinel
           ? this.secretChallenge?.copyWith()
           : secretChallenge,
       trackedAt: trackedAt ?? this.trackedAt,

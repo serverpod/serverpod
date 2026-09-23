@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 @_isc.immutable
 abstract class ImmutableObjectWithMultipleFields
@@ -64,7 +66,7 @@ abstract class ImmutableObjectWithMultipleFields
     int? anInt,
     bool? aBool,
     double? aDouble,
-    DateTime? aDateTime = const _isc.$UndefinedDateTime(),
+    DateTime? aDateTime = const _issu.$UndefinedDateTime(),
     String? aString,
   });
   @override
@@ -170,14 +172,14 @@ class _ImmutableObjectWithMultipleFieldsImpl
     Object? anInt = _Undefined,
     Object? aBool = _Undefined,
     Object? aDouble = _Undefined,
-    DateTime? aDateTime = const _isc.$UndefinedDateTime(),
+    DateTime? aDateTime = const _issu.$UndefinedDateTime(),
     Object? aString = _Undefined,
   }) {
     return ImmutableObjectWithMultipleFields(
       anInt: anInt is int? ? anInt : this.anInt,
       aBool: aBool is bool? ? aBool : this.aBool,
       aDouble: aDouble is double? ? aDouble : this.aDouble,
-      aDateTime: aDateTime is _isc.UndefinedSentinel
+      aDateTime: aDateTime is _issu.UndefinedSentinel
           ? this.aDateTime
           : aDateTime,
       aString: aString is String? ? aString : this.aString,

@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../long_identifiers/models_with_relations/user_note.dart'
@@ -58,7 +60,7 @@ abstract class UserNoteCollection
     int? id,
     String? name,
     List<_ia9r0qbl.UserNote>? userNotesPropertyName =
-        const _isc.$UndefinedList<_ia9r0qbl.UserNote>(),
+        const _issu.$UndefinedList<_ia9r0qbl.UserNote>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -113,12 +115,12 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
     Object? id = _Undefined,
     String? name,
     List<_ia9r0qbl.UserNote>? userNotesPropertyName =
-        const _isc.$UndefinedList<_ia9r0qbl.UserNote>(),
+        const _issu.$UndefinedList<_ia9r0qbl.UserNote>(),
   }) {
     return UserNoteCollection(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      userNotesPropertyName: userNotesPropertyName is _isc.UndefinedSentinel
+      userNotesPropertyName: userNotesPropertyName is _issu.UndefinedSentinel
           ? this.userNotesPropertyName?.map((e0) => e0.copyWith()).toList()
           : userNotesPropertyName,
     );

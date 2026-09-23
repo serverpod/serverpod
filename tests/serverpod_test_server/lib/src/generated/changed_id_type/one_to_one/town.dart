@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i7hzilwf;
 
@@ -122,7 +124,7 @@ abstract class TownInt
 
 class _Undefined {}
 
-class _UndefinedTownInt$mayor extends _is.UndefinedSentinel
+class _UndefinedTownInt$mayor extends _issu.UndefinedSentinel
     implements _i7hzilwf.CitizenInt {
   const _UndefinedTownInt$mayor();
 }
@@ -154,7 +156,7 @@ class _TownIntImpl extends TownInt {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       mayorId: mayorId is int? ? mayorId : this.mayorId,
-      mayor: mayor is _is.UndefinedSentinel ? this.mayor?.copyWith() : mayor,
+      mayor: mayor is _issu.UndefinedSentinel ? this.mayor?.copyWith() : mayor,
     );
   }
 }

@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
 import 'shared_model_subclass.dart' as _iu5vt3uc;
@@ -256,9 +258,9 @@ abstract class SharedModelContainer
     _ilwf0zl1.SharedModel? sharedModelNullable =
         const _UndefinedSharedModelContainer$sharedModelNullable(),
     _ilwf0zl1.SharedModel? nonPersistedSharedModel =
-        const _UndefinedSharedModelContainer$nonPersistedSharedModel(),
+        const _UndefinedSharedModelContainer$sharedModelNullable(),
     _ilwf0zl1.SharedModel? serverOnlySharedModel =
-        const _UndefinedSharedModelContainer$serverOnlySharedModel(),
+        const _UndefinedSharedModelContainer$sharedModelNullable(),
     _ilwf0zl1.SharedSubclass? sharedSubclass,
     _ilwf0zl1.SharedSubclass? sharedSubclassNullable =
         const _UndefinedSharedModelContainer$sharedSubclassNullable(),
@@ -275,14 +277,14 @@ abstract class SharedModelContainer
     List<_ilwf0zl1.SharedModel>? sharedModelList,
     List<_ilwf0zl1.SharedModel?>? sharedModelNullableList,
     List<_ilwf0zl1.SharedModel>? sharedModelListNullable =
-        const _is.$UndefinedList<_ilwf0zl1.SharedModel>(),
+        const _issu.$UndefinedList<_ilwf0zl1.SharedModel>(),
     Map<String, _ilwf0zl1.SharedModel>? sharedModelMap,
     Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable =
-        const _is.$UndefinedMap<String, _ilwf0zl1.SharedModel>(),
+        const _issu.$UndefinedMap<String, _ilwf0zl1.SharedModel>(),
     Map<String, _ilwf0zl1.SharedSubclass>? sharedSubclassMap,
     Set<_ilwf0zl1.SharedModel>? sharedModelSet,
     Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable =
-        const _is.$UndefinedSet<_ilwf0zl1.SharedModel>(),
+        const _issu.$UndefinedSet<_ilwf0zl1.SharedModel>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -427,37 +429,25 @@ abstract class SharedModelContainer
 class _Undefined {}
 
 class _UndefinedSharedModelContainer$sharedModelNullable
-    extends _is.UndefinedSentinel
+    extends _issu.UndefinedSentinel
     implements _ilwf0zl1.SharedModel {
   const _UndefinedSharedModelContainer$sharedModelNullable();
 }
 
-class _UndefinedSharedModelContainer$nonPersistedSharedModel
-    extends _is.UndefinedSentinel
-    implements _ilwf0zl1.SharedModel {
-  const _UndefinedSharedModelContainer$nonPersistedSharedModel();
-}
-
-class _UndefinedSharedModelContainer$serverOnlySharedModel
-    extends _is.UndefinedSentinel
-    implements _ilwf0zl1.SharedModel {
-  const _UndefinedSharedModelContainer$serverOnlySharedModel();
-}
-
 class _UndefinedSharedModelContainer$sharedSubclassNullable
-    extends _is.UndefinedSentinel
+    extends _issu.UndefinedSentinel
     implements _ilwf0zl1.SharedSubclass {
   const _UndefinedSharedModelContainer$sharedSubclassNullable();
 }
 
 class _UndefinedSharedModelContainer$sharedSealedChildNullable
-    extends _is.UndefinedSentinel
+    extends _issu.UndefinedSentinel
     implements _ilwf0zl1.SharedSealedChild {
   const _UndefinedSharedModelContainer$sharedSealedChildNullable();
 }
 
 class _UndefinedSharedModelContainer$sharedModelSubclassNullable
-    extends _is.UndefinedSentinel
+    extends _issu.UndefinedSentinel
     implements _iu5vt3uc.SharedModelSubclass {
   const _UndefinedSharedModelContainer$sharedModelSubclassNullable();
 }
@@ -526,9 +516,9 @@ class _SharedModelContainerImpl extends SharedModelContainer {
     _ilwf0zl1.SharedModel? sharedModelNullable =
         const _UndefinedSharedModelContainer$sharedModelNullable(),
     _ilwf0zl1.SharedModel? nonPersistedSharedModel =
-        const _UndefinedSharedModelContainer$nonPersistedSharedModel(),
+        const _UndefinedSharedModelContainer$sharedModelNullable(),
     _ilwf0zl1.SharedModel? serverOnlySharedModel =
-        const _UndefinedSharedModelContainer$serverOnlySharedModel(),
+        const _UndefinedSharedModelContainer$sharedModelNullable(),
     _ilwf0zl1.SharedSubclass? sharedSubclass,
     _ilwf0zl1.SharedSubclass? sharedSubclassNullable =
         const _UndefinedSharedModelContainer$sharedSubclassNullable(),
@@ -545,14 +535,14 @@ class _SharedModelContainerImpl extends SharedModelContainer {
     List<_ilwf0zl1.SharedModel>? sharedModelList,
     List<_ilwf0zl1.SharedModel?>? sharedModelNullableList,
     List<_ilwf0zl1.SharedModel>? sharedModelListNullable =
-        const _is.$UndefinedList<_ilwf0zl1.SharedModel>(),
+        const _issu.$UndefinedList<_ilwf0zl1.SharedModel>(),
     Map<String, _ilwf0zl1.SharedModel>? sharedModelMap,
     Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable =
-        const _is.$UndefinedMap<String, _ilwf0zl1.SharedModel>(),
+        const _issu.$UndefinedMap<String, _ilwf0zl1.SharedModel>(),
     Map<String, _ilwf0zl1.SharedSubclass>? sharedSubclassMap,
     Set<_ilwf0zl1.SharedModel>? sharedModelSet,
     Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable =
-        const _is.$UndefinedSet<_ilwf0zl1.SharedModel>(),
+        const _issu.$UndefinedSet<_ilwf0zl1.SharedModel>(),
   }) {
     return SharedModelContainer(
       id: id is int? ? id : this.id,
@@ -560,17 +550,18 @@ class _SharedModelContainerImpl extends SharedModelContainer {
       sharedModelWithModuleAlias:
           sharedModelWithModuleAlias ??
           this.sharedModelWithModuleAlias.copyWith(),
-      sharedModelNullable: sharedModelNullable is _is.UndefinedSentinel
+      sharedModelNullable: sharedModelNullable is _issu.UndefinedSentinel
           ? this.sharedModelNullable?.copyWith()
           : sharedModelNullable,
-      nonPersistedSharedModel: nonPersistedSharedModel is _is.UndefinedSentinel
+      nonPersistedSharedModel:
+          nonPersistedSharedModel is _issu.UndefinedSentinel
           ? this.nonPersistedSharedModel?.copyWith()
           : nonPersistedSharedModel,
-      serverOnlySharedModel: serverOnlySharedModel is _is.UndefinedSentinel
+      serverOnlySharedModel: serverOnlySharedModel is _issu.UndefinedSentinel
           ? this.serverOnlySharedModel?.copyWith()
           : serverOnlySharedModel,
       sharedSubclass: sharedSubclass ?? this.sharedSubclass.copyWith(),
-      sharedSubclassNullable: sharedSubclassNullable is _is.UndefinedSentinel
+      sharedSubclassNullable: sharedSubclassNullable is _issu.UndefinedSentinel
           ? this.sharedSubclassNullable?.copyWith()
           : sharedSubclassNullable,
       sharedEnum: sharedEnum ?? this.sharedEnum,
@@ -585,13 +576,13 @@ class _SharedModelContainerImpl extends SharedModelContainer {
           : this.sharedSealedParentNullable?.copyWith(),
       sharedSealedChild: sharedSealedChild ?? this.sharedSealedChild.copyWith(),
       sharedSealedChildNullable:
-          sharedSealedChildNullable is _is.UndefinedSentinel
+          sharedSealedChildNullable is _issu.UndefinedSentinel
           ? this.sharedSealedChildNullable?.copyWith()
           : sharedSealedChildNullable,
       sharedModelSubclass:
           sharedModelSubclass ?? this.sharedModelSubclass.copyWith(),
       sharedModelSubclassNullable:
-          sharedModelSubclassNullable is _is.UndefinedSentinel
+          sharedModelSubclassNullable is _issu.UndefinedSentinel
           ? this.sharedModelSubclassNullable?.copyWith()
           : sharedModelSubclassNullable,
       sharedModelList:
@@ -600,7 +591,8 @@ class _SharedModelContainerImpl extends SharedModelContainer {
       sharedModelNullableList:
           sharedModelNullableList ??
           this.sharedModelNullableList.map((e0) => e0?.copyWith()).toList(),
-      sharedModelListNullable: sharedModelListNullable is _is.UndefinedSentinel
+      sharedModelListNullable:
+          sharedModelListNullable is _issu.UndefinedSentinel
           ? this.sharedModelListNullable?.map((e0) => e0.copyWith()).toList()
           : sharedModelListNullable,
       sharedModelMap:
@@ -614,7 +606,7 @@ class _SharedModelContainerImpl extends SharedModelContainer {
               value0.copyWith(),
             ),
           ),
-      sharedModelMapNullable: sharedModelMapNullable is _is.UndefinedSentinel
+      sharedModelMapNullable: sharedModelMapNullable is _issu.UndefinedSentinel
           ? this.sharedModelMapNullable?.map(
               (
                 key0,
@@ -639,7 +631,7 @@ class _SharedModelContainerImpl extends SharedModelContainer {
       sharedModelSet:
           sharedModelSet ??
           this.sharedModelSet.map((e0) => e0.copyWith()).toSet(),
-      sharedModelSetNullable: sharedModelSetNullable is _is.UndefinedSentinel
+      sharedModelSetNullable: sharedModelSetNullable is _issu.UndefinedSentinel
           ? this.sharedModelSetNullable?.map((e0) => e0.copyWith()).toSet()
           : sharedModelSetNullable,
     );

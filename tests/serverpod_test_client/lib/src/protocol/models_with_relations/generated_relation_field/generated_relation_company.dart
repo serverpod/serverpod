@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/generated_relation_field/generated_relation_employee.dart'
     as _inw8ul07;
@@ -73,7 +75,7 @@ abstract class GeneratedRelationCompany
     _im57bsix.GeneratedRelationOffice? office =
         const _UndefinedGeneratedRelationCompany$office(),
     List<_inw8ul07.GeneratedRelationEmployee>? employees =
-        const _isc.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
+        const _issu.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -109,7 +111,7 @@ abstract class GeneratedRelationCompany
 
 class _Undefined {}
 
-class _UndefinedGeneratedRelationCompany$office extends _isc.UndefinedSentinel
+class _UndefinedGeneratedRelationCompany$office extends _issu.UndefinedSentinel
     implements _im57bsix.GeneratedRelationOffice {
   const _UndefinedGeneratedRelationCompany$office();
 }
@@ -137,15 +139,15 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
     _im57bsix.GeneratedRelationOffice? office =
         const _UndefinedGeneratedRelationCompany$office(),
     List<_inw8ul07.GeneratedRelationEmployee>? employees =
-        const _isc.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
+        const _issu.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
   }) {
     return GeneratedRelationCompany(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      office: office is _isc.UndefinedSentinel
+      office: office is _issu.UndefinedSentinel
           ? this.office?.copyWith()
           : office,
-      employees: employees is _isc.UndefinedSentinel
+      employees: employees is _issu.UndefinedSentinel
           ? this.employees?.map((e0) => e0.copyWith()).toList()
           : employees,
     );

@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/fk_relation/fk_relation_employee.dart'
     as _iweb20ql;
@@ -78,7 +80,7 @@ abstract class FkRelationCompany
     _iiacif8a.FkRelationOffice? office =
         const _UndefinedFkRelationCompany$office(),
     List<_iweb20ql.FkRelationEmployee>? employees =
-        const _is.$UndefinedList<_iweb20ql.FkRelationEmployee>(),
+        const _issu.$UndefinedList<_iweb20ql.FkRelationEmployee>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -142,7 +144,7 @@ abstract class FkRelationCompany
 
 class _Undefined {}
 
-class _UndefinedFkRelationCompany$office extends _is.UndefinedSentinel
+class _UndefinedFkRelationCompany$office extends _issu.UndefinedSentinel
     implements _iiacif8a.FkRelationOffice {
   const _UndefinedFkRelationCompany$office();
 }
@@ -170,15 +172,15 @@ class _FkRelationCompanyImpl extends FkRelationCompany {
     _iiacif8a.FkRelationOffice? office =
         const _UndefinedFkRelationCompany$office(),
     List<_iweb20ql.FkRelationEmployee>? employees =
-        const _is.$UndefinedList<_iweb20ql.FkRelationEmployee>(),
+        const _issu.$UndefinedList<_iweb20ql.FkRelationEmployee>(),
   }) {
     return FkRelationCompany(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      office: office is _is.UndefinedSentinel
+      office: office is _issu.UndefinedSentinel
           ? this.office?.copyWith()
           : office,
-      employees: employees is _is.UndefinedSentinel
+      employees: employees is _issu.UndefinedSentinel
           ? this.employees?.map((e0) => e0.copyWith()).toList()
           : employees,
     );

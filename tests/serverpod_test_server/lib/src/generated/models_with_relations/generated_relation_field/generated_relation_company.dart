@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/generated_relation_field/generated_relation_employee.dart'
     as _inw8ul07;
@@ -80,7 +82,7 @@ abstract class GeneratedRelationCompany
     _im57bsix.GeneratedRelationOffice? office =
         const _UndefinedGeneratedRelationCompany$office(),
     List<_inw8ul07.GeneratedRelationEmployee>? employees =
-        const _is.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
+        const _issu.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -144,7 +146,7 @@ abstract class GeneratedRelationCompany
 
 class _Undefined {}
 
-class _UndefinedGeneratedRelationCompany$office extends _is.UndefinedSentinel
+class _UndefinedGeneratedRelationCompany$office extends _issu.UndefinedSentinel
     implements _im57bsix.GeneratedRelationOffice {
   const _UndefinedGeneratedRelationCompany$office();
 }
@@ -172,15 +174,15 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
     _im57bsix.GeneratedRelationOffice? office =
         const _UndefinedGeneratedRelationCompany$office(),
     List<_inw8ul07.GeneratedRelationEmployee>? employees =
-        const _is.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
+        const _issu.$UndefinedList<_inw8ul07.GeneratedRelationEmployee>(),
   }) {
     return GeneratedRelationCompany(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      office: office is _is.UndefinedSentinel
+      office: office is _issu.UndefinedSentinel
           ? this.office?.copyWith()
           : office,
-      employees: employees is _is.UndefinedSentinel
+      employees: employees is _issu.UndefinedSentinel
           ? this.employees?.map((e0) => e0.copyWith()).toList()
           : employees,
     );

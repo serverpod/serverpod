@@ -8,7 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -17,6 +18,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
     as _i99s0abf;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// A fully configured Google account to be used for logins.
 abstract class GoogleAccount
@@ -93,7 +95,7 @@ abstract class GoogleAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   GoogleAccount copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
     _iacs.AuthUser? authUser = const _UndefinedGoogleAccount$authUser(),
     DateTime? created,
@@ -146,7 +148,7 @@ abstract class GoogleAccount
   }
 }
 
-class _UndefinedGoogleAccount$authUser extends _is.UndefinedSentinel
+class _UndefinedGoogleAccount$authUser extends _issu.UndefinedSentinel
     implements _iacs.AuthUser {
   const _UndefinedGoogleAccount$authUser();
 }
@@ -173,7 +175,7 @@ class _GoogleAccountImpl extends GoogleAccount {
   @_is.useResult
   @override
   GoogleAccount copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
     _iacs.AuthUser? authUser = const _UndefinedGoogleAccount$authUser(),
     DateTime? created,
@@ -181,9 +183,9 @@ class _GoogleAccountImpl extends GoogleAccount {
     String? userIdentifier,
   }) {
     return GoogleAccount(
-      id: id is _is.UndefinedSentinel ? this.id : id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _is.UndefinedSentinel
+      authUser: authUser is _issu.UndefinedSentinel
           ? this.authUser?.copyWith()
           : authUser,
       created: created ?? this.created,

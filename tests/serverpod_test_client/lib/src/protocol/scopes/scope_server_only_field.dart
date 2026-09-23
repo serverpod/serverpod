@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../scopes/scope_server_only_field.dart' as _ijcqyoxk;
 import '../types.dart' as _ih2vh47j;
@@ -52,10 +54,10 @@ class ScopeServerOnlyField
         const _UndefinedScopeServerOnlyField$nested(),
   }) {
     return ScopeServerOnlyField(
-      allScope: allScope is _isc.UndefinedSentinel
+      allScope: allScope is _issu.UndefinedSentinel
           ? this.allScope?.copyWith()
           : allScope,
-      nested: nested is _isc.UndefinedSentinel
+      nested: nested is _issu.UndefinedSentinel
           ? this.nested?.copyWith()
           : nested,
     );
@@ -85,12 +87,12 @@ class ScopeServerOnlyField
   }
 }
 
-class _UndefinedScopeServerOnlyField$allScope extends _isc.UndefinedSentinel
+class _UndefinedScopeServerOnlyField$allScope extends _issu.UndefinedSentinel
     implements _ih2vh47j.Types {
   const _UndefinedScopeServerOnlyField$allScope();
 }
 
-class _UndefinedScopeServerOnlyField$nested extends _isc.UndefinedSentinel
+class _UndefinedScopeServerOnlyField$nested extends _issu.UndefinedSentinel
     implements _ijcqyoxk.ScopeServerOnlyField {
   const _UndefinedScopeServerOnlyField$nested();
 }

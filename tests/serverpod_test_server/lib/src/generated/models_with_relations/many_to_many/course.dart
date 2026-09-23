@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _im07rq0v;
 
@@ -62,7 +64,7 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? name,
     List<_im07rq0v.Enrollment>? enrollments =
-        const _is.$UndefinedList<_im07rq0v.Enrollment>(),
+        const _issu.$UndefinedList<_im07rq0v.Enrollment>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -137,12 +139,12 @@ class _CourseImpl extends Course {
     Object? id = _Undefined,
     String? name,
     List<_im07rq0v.Enrollment>? enrollments =
-        const _is.$UndefinedList<_im07rq0v.Enrollment>(),
+        const _issu.$UndefinedList<_im07rq0v.Enrollment>(),
   }) {
     return Course(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is _is.UndefinedSentinel
+      enrollments: enrollments is _issu.UndefinedSentinel
           ? this.enrollments?.map((e0) => e0.copyWith()).toList()
           : enrollments,
     );

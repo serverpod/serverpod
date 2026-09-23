@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
     as _i8reeoob;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// Response model representing a successful authentication result with all
 /// relevant authentication information.
@@ -84,7 +86,7 @@ abstract class AuthSuccess
   AuthSuccess copyWith({
     String? authStrategy,
     String? token,
-    DateTime? tokenExpiresAt = const _is.$UndefinedDateTime(),
+    DateTime? tokenExpiresAt = const _issu.$UndefinedDateTime(),
     String? refreshToken,
     _is.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -147,7 +149,7 @@ class _AuthSuccessImpl extends AuthSuccess {
   AuthSuccess copyWith({
     String? authStrategy,
     String? token,
-    DateTime? tokenExpiresAt = const _is.$UndefinedDateTime(),
+    DateTime? tokenExpiresAt = const _issu.$UndefinedDateTime(),
     Object? refreshToken = _Undefined,
     _is.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -155,7 +157,7 @@ class _AuthSuccessImpl extends AuthSuccess {
     return AuthSuccess(
       authStrategy: authStrategy ?? this.authStrategy,
       token: token ?? this.token,
-      tokenExpiresAt: tokenExpiresAt is _is.UndefinedSentinel
+      tokenExpiresAt: tokenExpiresAt is _issu.UndefinedSentinel
           ? this.tokenExpiresAt
           : tokenExpiresAt,
       refreshToken: refreshToken is String? ? refreshToken : this.refreshToken,

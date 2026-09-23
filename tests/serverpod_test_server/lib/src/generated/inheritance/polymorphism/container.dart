@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../inheritance/polymorphism/child.dart' as _ipp4ou13;
 
@@ -142,7 +144,7 @@ abstract class PolymorphicChildContainer
 }
 
 class _UndefinedPolymorphicChildContainer$nullableChild
-    extends _is.UndefinedSentinel
+    extends _issu.UndefinedSentinel
     implements _ipp4ou13.PolymorphicChild {
   const _UndefinedPolymorphicChildContainer$nullableChild();
 }
@@ -179,7 +181,7 @@ class _PolymorphicChildContainerImpl extends PolymorphicChildContainer {
   }) {
     return PolymorphicChildContainer(
       child: child ?? this.child.copyWith(),
-      nullableChild: nullableChild is _is.UndefinedSentinel
+      nullableChild: nullableChild is _issu.UndefinedSentinel
           ? this.nullableChild?.copyWith()
           : nullableChild,
       childrenList:

@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _im07rq0v;
 
@@ -56,7 +58,7 @@ abstract class Course
     int? id,
     String? name,
     List<_im07rq0v.Enrollment>? enrollments =
-        const _isc.$UndefinedList<_im07rq0v.Enrollment>(),
+        const _issu.$UndefinedList<_im07rq0v.Enrollment>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -109,12 +111,12 @@ class _CourseImpl extends Course {
     Object? id = _Undefined,
     String? name,
     List<_im07rq0v.Enrollment>? enrollments =
-        const _isc.$UndefinedList<_im07rq0v.Enrollment>(),
+        const _issu.$UndefinedList<_im07rq0v.Enrollment>(),
   }) {
     return Course(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is _isc.UndefinedSentinel
+      enrollments: enrollments is _issu.UndefinedSentinel
           ? this.enrollments?.map((e0) => e0.copyWith()).toList()
           : enrollments,
     );

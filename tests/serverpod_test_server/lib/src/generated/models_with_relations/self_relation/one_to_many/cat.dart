@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
     as _iayhscrz;
@@ -78,7 +80,7 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
     String? name,
     int? motherId,
     _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
-    List<_iayhscrz.Cat>? kittens = const _is.$UndefinedList<_iayhscrz.Cat>(),
+    List<_iayhscrz.Cat>? kittens = const _issu.$UndefinedList<_iayhscrz.Cat>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -142,7 +144,7 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
-class _UndefinedCat$mother extends _is.UndefinedSentinel
+class _UndefinedCat$mother extends _issu.UndefinedSentinel
     implements _iayhscrz.Cat {
   const _UndefinedCat$mother();
 }
@@ -171,16 +173,16 @@ class _CatImpl extends Cat {
     String? name,
     Object? motherId = _Undefined,
     _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
-    List<_iayhscrz.Cat>? kittens = const _is.$UndefinedList<_iayhscrz.Cat>(),
+    List<_iayhscrz.Cat>? kittens = const _issu.$UndefinedList<_iayhscrz.Cat>(),
   }) {
     return Cat(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
-      mother: mother is _is.UndefinedSentinel
+      mother: mother is _issu.UndefinedSentinel
           ? this.mother?.copyWith()
           : mother,
-      kittens: kittens is _is.UndefinedSentinel
+      kittens: kittens is _issu.UndefinedSentinel
           ? this.kittens?.map((e0) => e0.copyWith()).toList()
           : kittens,
     );

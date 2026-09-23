@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
@@ -81,7 +83,7 @@ abstract class Blocking
     int? blockedId,
     _iubhvl5a.Member? blocked = const _UndefinedBlocking$blocked(),
     int? blockedById,
-    _iubhvl5a.Member? blockedBy = const _UndefinedBlocking$blockedBy(),
+    _iubhvl5a.Member? blockedBy = const _UndefinedBlocking$blocked(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -143,14 +145,9 @@ abstract class Blocking
 
 class _Undefined {}
 
-class _UndefinedBlocking$blocked extends _isc.UndefinedSentinel
+class _UndefinedBlocking$blocked extends _issu.UndefinedSentinel
     implements _iubhvl5a.Member {
   const _UndefinedBlocking$blocked();
-}
-
-class _UndefinedBlocking$blockedBy extends _isc.UndefinedSentinel
-    implements _iubhvl5a.Member {
-  const _UndefinedBlocking$blockedBy();
 }
 
 class _BlockingImpl extends Blocking {
@@ -177,16 +174,16 @@ class _BlockingImpl extends Blocking {
     int? blockedId,
     _iubhvl5a.Member? blocked = const _UndefinedBlocking$blocked(),
     int? blockedById,
-    _iubhvl5a.Member? blockedBy = const _UndefinedBlocking$blockedBy(),
+    _iubhvl5a.Member? blockedBy = const _UndefinedBlocking$blocked(),
   }) {
     return Blocking(
       id: id is int? ? id : this.id,
       blockedId: blockedId ?? this.blockedId,
-      blocked: blocked is _isc.UndefinedSentinel
+      blocked: blocked is _issu.UndefinedSentinel
           ? this.blocked?.copyWith()
           : blocked,
       blockedById: blockedById ?? this.blockedById,
-      blockedBy: blockedBy is _isc.UndefinedSentinel
+      blockedBy: blockedBy is _issu.UndefinedSentinel
           ? this.blockedBy?.copyWith()
           : blockedBy,
     );

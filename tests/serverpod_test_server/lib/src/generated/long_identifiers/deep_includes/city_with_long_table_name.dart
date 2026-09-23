@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
     as _imc5i9r4;
@@ -79,9 +81,9 @@ abstract class CityWithLongTableName
     int? id,
     String? name,
     List<_i5nficvp.PersonWithLongTableName>? citizens =
-        const _is.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
+        const _issu.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
     List<_imc5i9r4.OrganizationWithLongTableName>? organizations =
-        const _is.$UndefinedList<_imc5i9r4.OrganizationWithLongTableName>(),
+        const _issu.$UndefinedList<_imc5i9r4.OrganizationWithLongTableName>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -168,17 +170,17 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
     Object? id = _Undefined,
     String? name,
     List<_i5nficvp.PersonWithLongTableName>? citizens =
-        const _is.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
+        const _issu.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
     List<_imc5i9r4.OrganizationWithLongTableName>? organizations =
-        const _is.$UndefinedList<_imc5i9r4.OrganizationWithLongTableName>(),
+        const _issu.$UndefinedList<_imc5i9r4.OrganizationWithLongTableName>(),
   }) {
     return CityWithLongTableName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      citizens: citizens is _is.UndefinedSentinel
+      citizens: citizens is _issu.UndefinedSentinel
           ? this.citizens?.map((e0) => e0.copyWith()).toList()
           : citizens,
-      organizations: organizations is _is.UndefinedSentinel
+      organizations: organizations is _issu.UndefinedSentinel
           ? this.organizations?.map((e0) => e0.copyWith()).toList()
           : organizations,
     );

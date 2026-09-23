@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../changed_id_type/self.dart' as _iqjmn1nu;
@@ -95,18 +97,18 @@ abstract class ChangedIdTypeSelf
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ChangedIdTypeSelf copyWith({
-    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
     _iqjmn1nu.ChangedIdTypeSelf? previous =
         const _UndefinedChangedIdTypeSelf$previous(),
-    _isc.UuidValue? nextId = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? nextId = const _issu.$UndefinedUuidValue(),
     _iqjmn1nu.ChangedIdTypeSelf? next =
-        const _UndefinedChangedIdTypeSelf$next(),
-    _isc.UuidValue? parentId = const _isc.$UndefinedUuidValue(),
+        const _UndefinedChangedIdTypeSelf$previous(),
+    _isc.UuidValue? parentId = const _issu.$UndefinedUuidValue(),
     _iqjmn1nu.ChangedIdTypeSelf? parent =
-        const _UndefinedChangedIdTypeSelf$parent(),
+        const _UndefinedChangedIdTypeSelf$previous(),
     List<_iqjmn1nu.ChangedIdTypeSelf>? children =
-        const _isc.$UndefinedList<_iqjmn1nu.ChangedIdTypeSelf>(),
+        const _issu.$UndefinedList<_iqjmn1nu.ChangedIdTypeSelf>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -146,19 +148,9 @@ abstract class ChangedIdTypeSelf
   }
 }
 
-class _UndefinedChangedIdTypeSelf$previous extends _isc.UndefinedSentinel
+class _UndefinedChangedIdTypeSelf$previous extends _issu.UndefinedSentinel
     implements _iqjmn1nu.ChangedIdTypeSelf {
   const _UndefinedChangedIdTypeSelf$previous();
-}
-
-class _UndefinedChangedIdTypeSelf$next extends _isc.UndefinedSentinel
-    implements _iqjmn1nu.ChangedIdTypeSelf {
-  const _UndefinedChangedIdTypeSelf$next();
-}
-
-class _UndefinedChangedIdTypeSelf$parent extends _isc.UndefinedSentinel
-    implements _iqjmn1nu.ChangedIdTypeSelf {
-  const _UndefinedChangedIdTypeSelf$parent();
 }
 
 class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
@@ -187,32 +179,32 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   @_isc.useResult
   @override
   ChangedIdTypeSelf copyWith({
-    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
     _iqjmn1nu.ChangedIdTypeSelf? previous =
         const _UndefinedChangedIdTypeSelf$previous(),
-    _isc.UuidValue? nextId = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? nextId = const _issu.$UndefinedUuidValue(),
     _iqjmn1nu.ChangedIdTypeSelf? next =
-        const _UndefinedChangedIdTypeSelf$next(),
-    _isc.UuidValue? parentId = const _isc.$UndefinedUuidValue(),
+        const _UndefinedChangedIdTypeSelf$previous(),
+    _isc.UuidValue? parentId = const _issu.$UndefinedUuidValue(),
     _iqjmn1nu.ChangedIdTypeSelf? parent =
-        const _UndefinedChangedIdTypeSelf$parent(),
+        const _UndefinedChangedIdTypeSelf$previous(),
     List<_iqjmn1nu.ChangedIdTypeSelf>? children =
-        const _isc.$UndefinedList<_iqjmn1nu.ChangedIdTypeSelf>(),
+        const _issu.$UndefinedList<_iqjmn1nu.ChangedIdTypeSelf>(),
   }) {
     return ChangedIdTypeSelf(
-      id: id is _isc.UndefinedSentinel ? this.id : id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
-      previous: previous is _isc.UndefinedSentinel
+      previous: previous is _issu.UndefinedSentinel
           ? this.previous?.copyWith()
           : previous,
-      nextId: nextId is _isc.UndefinedSentinel ? this.nextId : nextId,
-      next: next is _isc.UndefinedSentinel ? this.next?.copyWith() : next,
-      parentId: parentId is _isc.UndefinedSentinel ? this.parentId : parentId,
-      parent: parent is _isc.UndefinedSentinel
+      nextId: nextId is _issu.UndefinedSentinel ? this.nextId : nextId,
+      next: next is _issu.UndefinedSentinel ? this.next?.copyWith() : next,
+      parentId: parentId is _issu.UndefinedSentinel ? this.parentId : parentId,
+      parent: parent is _issu.UndefinedSentinel
           ? this.parent?.copyWith()
           : parent,
-      children: children is _isc.UndefinedSentinel
+      children: children is _issu.UndefinedSentinel
           ? this.children?.map((e0) => e0.copyWith()).toList()
           : children,
     );

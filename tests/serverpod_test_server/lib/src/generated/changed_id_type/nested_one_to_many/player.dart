@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../changed_id_type/nested_one_to_many/team.dart' as _i9bz1am4;
 
@@ -67,7 +69,7 @@ abstract class PlayerUuid
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   PlayerUuid copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
     int? teamId,
     _i9bz1am4.TeamInt? team = const _UndefinedPlayerUuid$team(),
@@ -124,7 +126,7 @@ abstract class PlayerUuid
 
 class _Undefined {}
 
-class _UndefinedPlayerUuid$team extends _is.UndefinedSentinel
+class _UndefinedPlayerUuid$team extends _issu.UndefinedSentinel
     implements _i9bz1am4.TeamInt {
   const _UndefinedPlayerUuid$team();
 }
@@ -147,16 +149,16 @@ class _PlayerUuidImpl extends PlayerUuid {
   @_is.useResult
   @override
   PlayerUuid copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
     Object? teamId = _Undefined,
     _i9bz1am4.TeamInt? team = const _UndefinedPlayerUuid$team(),
   }) {
     return PlayerUuid(
-      id: id is _is.UndefinedSentinel ? this.id : id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _is.UndefinedSentinel ? this.team?.copyWith() : team,
+      team: team is _issu.UndefinedSentinel ? this.team?.copyWith() : team,
     );
   }
 }

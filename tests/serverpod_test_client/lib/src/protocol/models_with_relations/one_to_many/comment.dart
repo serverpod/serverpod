@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/one_to_many/order.dart' as _ig920ya2;
 
@@ -93,7 +95,7 @@ abstract class Comment
 
 class _Undefined {}
 
-class _UndefinedComment$order extends _isc.UndefinedSentinel
+class _UndefinedComment$order extends _issu.UndefinedSentinel
     implements _ig920ya2.Order {
   const _UndefinedComment$order();
 }
@@ -125,7 +127,7 @@ class _CommentImpl extends Comment {
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       orderId: orderId ?? this.orderId,
-      order: order is _isc.UndefinedSentinel ? this.order?.copyWith() : order,
+      order: order is _issu.UndefinedSentinel ? this.order?.copyWith() : order,
     );
   }
 }

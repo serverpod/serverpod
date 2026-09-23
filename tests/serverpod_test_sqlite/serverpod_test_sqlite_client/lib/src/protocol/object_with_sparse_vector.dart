@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class ObjectWithSparseVector
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
@@ -73,7 +75,7 @@ abstract class ObjectWithSparseVector
     int? id,
     _isc.SparseVector? sparseVector,
     _isc.SparseVector? sparseVectorNullable =
-        const _isc.$UndefinedSparseVector(),
+        const _issu.$UndefinedSparseVector(),
     _isc.SparseVector? sparseVectorIndexedHnsw,
     _isc.SparseVector? sparseVectorIndexedHnswWithParams,
   });
@@ -136,14 +138,14 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
     Object? id = _Undefined,
     _isc.SparseVector? sparseVector,
     _isc.SparseVector? sparseVectorNullable =
-        const _isc.$UndefinedSparseVector(),
+        const _issu.$UndefinedSparseVector(),
     _isc.SparseVector? sparseVectorIndexedHnsw,
     _isc.SparseVector? sparseVectorIndexedHnswWithParams,
   }) {
     return ObjectWithSparseVector(
       id: id is int? ? id : this.id,
       sparseVector: sparseVector ?? this.sparseVector.clone(),
-      sparseVectorNullable: sparseVectorNullable is _isc.UndefinedSentinel
+      sparseVectorNullable: sparseVectorNullable is _issu.UndefinedSentinel
           ? this.sparseVectorNullable?.clone()
           : sparseVectorNullable,
       sparseVectorIndexedHnsw:

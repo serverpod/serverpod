@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import 'simple_data.dart' as _i0zisc0t;
@@ -125,20 +127,20 @@ abstract class ObjectWithObject
         const _UndefinedObjectWithObject$nullableData(),
     List<_i0zisc0t.SimpleData>? dataList,
     List<_i0zisc0t.SimpleData>? nullableDataList =
-        const _isc.$UndefinedList<_i0zisc0t.SimpleData>(),
+        const _issu.$UndefinedList<_i0zisc0t.SimpleData>(),
     List<_i0zisc0t.SimpleData?>? listWithNullableData,
     List<_i0zisc0t.SimpleData?>? nullableListWithNullableData =
-        const _isc.$UndefinedList<_i0zisc0t.SimpleData?>(),
+        const _issu.$UndefinedList<_i0zisc0t.SimpleData?>(),
     List<List<_i0zisc0t.SimpleData>>? nestedDataList =
-        const _isc.$UndefinedList<List<_i0zisc0t.SimpleData>>(),
+        const _issu.$UndefinedList<List<_i0zisc0t.SimpleData>>(),
     Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
         nestedDataListInMap =
-        const _isc.$UndefinedMap<
+        const _issu.$UndefinedMap<
           String,
           List<List<Map<int, _i0zisc0t.SimpleData>>?>
         >(),
     Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap =
-        const _isc.$UndefinedMap<String, Map<int, _i0zisc0t.SimpleData>>(),
+        const _issu.$UndefinedMap<String, Map<int, _i0zisc0t.SimpleData>>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -228,7 +230,7 @@ abstract class ObjectWithObject
 
 class _Undefined {}
 
-class _UndefinedObjectWithObject$nullableData extends _isc.UndefinedSentinel
+class _UndefinedObjectWithObject$nullableData extends _issu.UndefinedSentinel
     implements _i0zisc0t.SimpleData {
   const _UndefinedObjectWithObject$nullableData();
 }
@@ -270,46 +272,46 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
         const _UndefinedObjectWithObject$nullableData(),
     List<_i0zisc0t.SimpleData>? dataList,
     List<_i0zisc0t.SimpleData>? nullableDataList =
-        const _isc.$UndefinedList<_i0zisc0t.SimpleData>(),
+        const _issu.$UndefinedList<_i0zisc0t.SimpleData>(),
     List<_i0zisc0t.SimpleData?>? listWithNullableData,
     List<_i0zisc0t.SimpleData?>? nullableListWithNullableData =
-        const _isc.$UndefinedList<_i0zisc0t.SimpleData?>(),
+        const _issu.$UndefinedList<_i0zisc0t.SimpleData?>(),
     List<List<_i0zisc0t.SimpleData>>? nestedDataList =
-        const _isc.$UndefinedList<List<_i0zisc0t.SimpleData>>(),
+        const _issu.$UndefinedList<List<_i0zisc0t.SimpleData>>(),
     Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
         nestedDataListInMap =
-        const _isc.$UndefinedMap<
+        const _issu.$UndefinedMap<
           String,
           List<List<Map<int, _i0zisc0t.SimpleData>>?>
         >(),
     Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap =
-        const _isc.$UndefinedMap<String, Map<int, _i0zisc0t.SimpleData>>(),
+        const _issu.$UndefinedMap<String, Map<int, _i0zisc0t.SimpleData>>(),
   }) {
     return ObjectWithObject(
       id: id is int? ? id : this.id,
       data: data ?? this.data.copyWith(),
-      nullableData: nullableData is _isc.UndefinedSentinel
+      nullableData: nullableData is _issu.UndefinedSentinel
           ? this.nullableData?.copyWith()
           : nullableData,
       dataList: dataList ?? this.dataList.map((e0) => e0.copyWith()).toList(),
-      nullableDataList: nullableDataList is _isc.UndefinedSentinel
+      nullableDataList: nullableDataList is _issu.UndefinedSentinel
           ? this.nullableDataList?.map((e0) => e0.copyWith()).toList()
           : nullableDataList,
       listWithNullableData:
           listWithNullableData ??
           this.listWithNullableData.map((e0) => e0?.copyWith()).toList(),
       nullableListWithNullableData:
-          nullableListWithNullableData is _isc.UndefinedSentinel
+          nullableListWithNullableData is _issu.UndefinedSentinel
           ? this.nullableListWithNullableData
                 ?.map((e0) => e0?.copyWith())
                 .toList()
           : nullableListWithNullableData,
-      nestedDataList: nestedDataList is _isc.UndefinedSentinel
+      nestedDataList: nestedDataList is _issu.UndefinedSentinel
           ? this.nestedDataList
                 ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
                 .toList()
           : nestedDataList,
-      nestedDataListInMap: nestedDataListInMap is _isc.UndefinedSentinel
+      nestedDataListInMap: nestedDataListInMap is _issu.UndefinedSentinel
           ? this.nestedDataListInMap?.map(
               (
                 key0,
@@ -336,7 +338,7 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
               ),
             )
           : nestedDataListInMap,
-      nestedDataMap: nestedDataMap is _isc.UndefinedSentinel
+      nestedDataMap: nestedDataMap is _issu.UndefinedSentinel
           ? this.nestedDataMap?.map(
               (
                 key0,

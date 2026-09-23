@@ -8,7 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -16,6 +17,7 @@ import 'dart:typed_data' as _idt;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
     as _i8reeoob;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../../auth_user/models/auth_user.dart' as _ivyervu7;
 
 /// Server-side authentication session.
@@ -147,14 +149,14 @@ abstract class ServerSideSession
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ServerSideSession copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
     _ivyervu7.AuthUser? authUser = const _UndefinedServerSideSession$authUser(),
     Set<String>? scopeNames,
     DateTime? createdAt,
     DateTime? lastUsedAt,
-    DateTime? expiresAt = const _is.$UndefinedDateTime(),
-    Duration? expireAfterUnusedFor = const _is.$UndefinedDuration(),
+    DateTime? expiresAt = const _issu.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _issu.$UndefinedDuration(),
     _idt.ByteData? sessionKeyHash,
     _idt.ByteData? sessionKeySalt,
     String? method,
@@ -213,7 +215,7 @@ abstract class ServerSideSession
   }
 }
 
-class _UndefinedServerSideSession$authUser extends _is.UndefinedSentinel
+class _UndefinedServerSideSession$authUser extends _issu.UndefinedSentinel
     implements _ivyervu7.AuthUser {
   const _UndefinedServerSideSession$authUser();
 }
@@ -250,31 +252,31 @@ class _ServerSideSessionImpl extends ServerSideSession {
   @_is.useResult
   @override
   ServerSideSession copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
     _ivyervu7.AuthUser? authUser = const _UndefinedServerSideSession$authUser(),
     Set<String>? scopeNames,
     DateTime? createdAt,
     DateTime? lastUsedAt,
-    DateTime? expiresAt = const _is.$UndefinedDateTime(),
-    Duration? expireAfterUnusedFor = const _is.$UndefinedDuration(),
+    DateTime? expiresAt = const _issu.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _issu.$UndefinedDuration(),
     _idt.ByteData? sessionKeyHash,
     _idt.ByteData? sessionKeySalt,
     String? method,
   }) {
     return ServerSideSession(
-      id: id is _is.UndefinedSentinel ? this.id : id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _is.UndefinedSentinel
+      authUser: authUser is _issu.UndefinedSentinel
           ? this.authUser?.copyWith()
           : authUser,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       createdAt: createdAt ?? this.createdAt,
       lastUsedAt: lastUsedAt ?? this.lastUsedAt,
-      expiresAt: expiresAt is _is.UndefinedSentinel
+      expiresAt: expiresAt is _issu.UndefinedSentinel
           ? this.expiresAt
           : expiresAt,
-      expireAfterUnusedFor: expireAfterUnusedFor is _is.UndefinedSentinel
+      expireAfterUnusedFor: expireAfterUnusedFor is _issu.UndefinedSentinel
           ? this.expireAfterUnusedFor
           : expireAfterUnusedFor,
       sessionKeyHash: sessionKeyHash ?? this.sessionKeyHash.clone(),

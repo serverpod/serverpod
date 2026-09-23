@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod/src/generated/protocol.dart' as _ic00rqxb;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'log_entry.dart' as _iv7ld46g;
 import 'message_log_entry.dart' as _iky1nb92;
 import 'query_log_entry.dart' as _inqjskye;
@@ -187,11 +189,11 @@ abstract class SessionLogEntry
     bool? isOpen,
     DateTime? touched,
     List<_iv7ld46g.LogEntry>? logs =
-        const _is.$UndefinedList<_iv7ld46g.LogEntry>(),
+        const _issu.$UndefinedList<_iv7ld46g.LogEntry>(),
     List<_inqjskye.QueryLogEntry>? queries =
-        const _is.$UndefinedList<_inqjskye.QueryLogEntry>(),
+        const _issu.$UndefinedList<_inqjskye.QueryLogEntry>(),
     List<_iky1nb92.MessageLogEntry>? messages =
-        const _is.$UndefinedList<_iky1nb92.MessageLogEntry>(),
+        const _issu.$UndefinedList<_iky1nb92.MessageLogEntry>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -348,11 +350,11 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     Object? isOpen = _Undefined,
     DateTime? touched,
     List<_iv7ld46g.LogEntry>? logs =
-        const _is.$UndefinedList<_iv7ld46g.LogEntry>(),
+        const _issu.$UndefinedList<_iv7ld46g.LogEntry>(),
     List<_inqjskye.QueryLogEntry>? queries =
-        const _is.$UndefinedList<_inqjskye.QueryLogEntry>(),
+        const _issu.$UndefinedList<_inqjskye.QueryLogEntry>(),
     List<_iky1nb92.MessageLogEntry>? messages =
-        const _is.$UndefinedList<_iky1nb92.MessageLogEntry>(),
+        const _issu.$UndefinedList<_iky1nb92.MessageLogEntry>(),
   }) {
     return SessionLogEntry(
       id: id is int? ? id : this.id,
@@ -372,13 +374,13 @@ class _SessionLogEntryImpl extends SessionLogEntry {
       userId: userId is String? ? userId : this.userId,
       isOpen: isOpen is bool? ? isOpen : this.isOpen,
       touched: touched ?? this.touched,
-      logs: logs is _is.UndefinedSentinel
+      logs: logs is _issu.UndefinedSentinel
           ? this.logs?.map((e0) => e0.copyWith()).toList()
           : logs,
-      queries: queries is _is.UndefinedSentinel
+      queries: queries is _issu.UndefinedSentinel
           ? this.queries?.map((e0) => e0.copyWith()).toList()
           : queries,
-      messages: messages is _is.UndefinedSentinel
+      messages: messages is _issu.UndefinedSentinel
           ? this.messages?.map((e0) => e0.copyWith()).toList()
           : messages,
     );

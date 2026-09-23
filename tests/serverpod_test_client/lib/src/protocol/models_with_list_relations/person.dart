@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../models_with_list_relations/organization.dart' as _i0ptycc3;
 
@@ -95,7 +97,7 @@ abstract class Person
 
 class _Undefined {}
 
-class _UndefinedPerson$organization extends _isc.UndefinedSentinel
+class _UndefinedPerson$organization extends _issu.UndefinedSentinel
     implements _i0ptycc3.Organization {
   const _UndefinedPerson$organization();
 }
@@ -130,7 +132,7 @@ class _PersonImpl extends Person {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _isc.UndefinedSentinel
+      organization: organization is _issu.UndefinedSentinel
           ? this.organization?.copyWith()
           : organization,
     );

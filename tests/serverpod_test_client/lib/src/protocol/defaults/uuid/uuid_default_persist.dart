@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class UuidDefaultPersist
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
@@ -67,10 +69,11 @@ abstract class UuidDefaultPersist
   @_isc.useResult
   UuidDefaultPersist copyWith({
     int? id,
-    _isc.UuidValue? uuidDefaultPersistRandom = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? uuidDefaultPersistRandom =
+        const _issu.$UndefinedUuidValue(),
     _isc.UuidValue? uuidDefaultPersistRandomV7 =
-        const _isc.$UndefinedUuidValue(),
-    _isc.UuidValue? uuidDefaultPersistStr = const _isc.$UndefinedUuidValue(),
+        const _issu.$UndefinedUuidValue(),
+    _isc.UuidValue? uuidDefaultPersistStr = const _issu.$UndefinedUuidValue(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -127,22 +130,23 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   @override
   UuidDefaultPersist copyWith({
     Object? id = _Undefined,
-    _isc.UuidValue? uuidDefaultPersistRandom = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? uuidDefaultPersistRandom =
+        const _issu.$UndefinedUuidValue(),
     _isc.UuidValue? uuidDefaultPersistRandomV7 =
-        const _isc.$UndefinedUuidValue(),
-    _isc.UuidValue? uuidDefaultPersistStr = const _isc.$UndefinedUuidValue(),
+        const _issu.$UndefinedUuidValue(),
+    _isc.UuidValue? uuidDefaultPersistStr = const _issu.$UndefinedUuidValue(),
   }) {
     return UuidDefaultPersist(
       id: id is int? ? id : this.id,
       uuidDefaultPersistRandom:
-          uuidDefaultPersistRandom is _isc.UndefinedSentinel
+          uuidDefaultPersistRandom is _issu.UndefinedSentinel
           ? this.uuidDefaultPersistRandom
           : uuidDefaultPersistRandom,
       uuidDefaultPersistRandomV7:
-          uuidDefaultPersistRandomV7 is _isc.UndefinedSentinel
+          uuidDefaultPersistRandomV7 is _issu.UndefinedSentinel
           ? this.uuidDefaultPersistRandomV7
           : uuidDefaultPersistRandomV7,
-      uuidDefaultPersistStr: uuidDefaultPersistStr is _isc.UndefinedSentinel
+      uuidDefaultPersistStr: uuidDefaultPersistStr is _issu.UndefinedSentinel
           ? this.uuidDefaultPersistStr
           : uuidDefaultPersistStr,
     );

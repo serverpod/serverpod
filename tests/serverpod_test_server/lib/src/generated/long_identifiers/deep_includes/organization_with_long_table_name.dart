@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../long_identifiers/deep_includes/city_with_long_table_name.dart'
     as _ii8bs4lb;
@@ -83,7 +85,7 @@ abstract class OrganizationWithLongTableName
     int? id,
     String? name,
     List<_i5nficvp.PersonWithLongTableName>? people =
-        const _is.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
+        const _issu.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
     int? cityId,
     _ii8bs4lb.CityWithLongTableName? city =
         const _UndefinedOrganizationWithLongTableName$city(),
@@ -150,7 +152,8 @@ abstract class OrganizationWithLongTableName
 
 class _Undefined {}
 
-class _UndefinedOrganizationWithLongTableName$city extends _is.UndefinedSentinel
+class _UndefinedOrganizationWithLongTableName$city
+    extends _issu.UndefinedSentinel
     implements _ii8bs4lb.CityWithLongTableName {
   const _UndefinedOrganizationWithLongTableName$city();
 }
@@ -178,7 +181,7 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
     Object? id = _Undefined,
     String? name,
     List<_i5nficvp.PersonWithLongTableName>? people =
-        const _is.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
+        const _issu.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
     Object? cityId = _Undefined,
     _ii8bs4lb.CityWithLongTableName? city =
         const _UndefinedOrganizationWithLongTableName$city(),
@@ -186,11 +189,11 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
     return OrganizationWithLongTableName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is _is.UndefinedSentinel
+      people: people is _issu.UndefinedSentinel
           ? this.people?.map((e0) => e0.copyWith()).toList()
           : people,
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _is.UndefinedSentinel ? this.city?.copyWith() : city,
+      city: city is _issu.UndefinedSentinel ? this.city?.copyWith() : city,
     );
   }
 }

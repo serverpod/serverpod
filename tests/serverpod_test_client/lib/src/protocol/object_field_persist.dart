@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import 'simple_data.dart' as _i0zisc0t;
 
@@ -93,7 +95,7 @@ abstract class ObjectFieldPersist
 
 class _Undefined {}
 
-class _UndefinedObjectFieldPersist$data extends _isc.UndefinedSentinel
+class _UndefinedObjectFieldPersist$data extends _issu.UndefinedSentinel
     implements _i0zisc0t.SimpleData {
   const _UndefinedObjectFieldPersist$data();
 }
@@ -125,7 +127,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
       id: id is int? ? id : this.id,
       normal: normal ?? this.normal,
       api: api is String? ? api : this.api,
-      data: data is _isc.UndefinedSentinel ? this.data?.copyWith() : data,
+      data: data is _issu.UndefinedSentinel ? this.data?.copyWith() : data,
     );
   }
 }

@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:typed_data' as _idt;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// An entry in the database for an uploaded file.
 abstract class CloudStorageEntry
@@ -117,7 +119,7 @@ abstract class CloudStorageEntry
     String? storageId,
     String? path,
     DateTime? addedTime,
-    DateTime? expiration = const _isc.$UndefinedDateTime(),
+    DateTime? expiration = const _issu.$UndefinedDateTime(),
     _idt.ByteData? byteData,
     bool? verified,
     String? contentType,
@@ -210,7 +212,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     String? storageId,
     String? path,
     DateTime? addedTime,
-    DateTime? expiration = const _isc.$UndefinedDateTime(),
+    DateTime? expiration = const _issu.$UndefinedDateTime(),
     _idt.ByteData? byteData,
     bool? verified,
     Object? contentType = _Undefined,
@@ -224,7 +226,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
       storageId: storageId ?? this.storageId,
       path: path ?? this.path,
       addedTime: addedTime ?? this.addedTime,
-      expiration: expiration is _isc.UndefinedSentinel
+      expiration: expiration is _issu.UndefinedSentinel
           ? this.expiration
           : expiration,
       byteData: byteData ?? this.byteData.clone(),

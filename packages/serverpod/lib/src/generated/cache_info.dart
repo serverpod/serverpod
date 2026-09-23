@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod/src/generated/protocol.dart' as _ic00rqxb;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// Provides high level information about a cache.
 abstract class CacheInfo
@@ -55,7 +57,7 @@ abstract class CacheInfo
   CacheInfo copyWith({
     int? numEntries,
     int? maxEntries,
-    List<String>? keys = const _is.$UndefinedList<String>(),
+    List<String>? keys = const _issu.$UndefinedList<String>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -101,12 +103,12 @@ class _CacheInfoImpl extends CacheInfo {
   CacheInfo copyWith({
     int? numEntries,
     int? maxEntries,
-    List<String>? keys = const _is.$UndefinedList<String>(),
+    List<String>? keys = const _issu.$UndefinedList<String>(),
   }) {
     return CacheInfo(
       numEntries: numEntries ?? this.numEntries,
       maxEntries: maxEntries ?? this.maxEntries,
-      keys: keys is _is.UndefinedSentinel
+      keys: keys is _issu.UndefinedSentinel
           ? this.keys?.map((e0) => e0).toList()
           : keys,
     );

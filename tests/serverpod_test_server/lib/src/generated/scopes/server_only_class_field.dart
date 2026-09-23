@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../scopes/serverOnly/server_only_class.dart' as _i3zqz247;
 
@@ -53,9 +55,9 @@ abstract class ServerOnlyClassField
   @_is.useResult
   ServerOnlyClassField copyWith({
     List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList =
-        const _is.$UndefinedList<_i3zqz247.ServerOnlyClass>(),
+        const _issu.$UndefinedList<_i3zqz247.ServerOnlyClass>(),
     Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap =
-        const _is.$UndefinedMap<String, _i3zqz247.ServerOnlyClass>(),
+        const _issu.$UndefinedMap<String, _i3zqz247.ServerOnlyClass>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,15 +100,15 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
   @override
   ServerOnlyClassField copyWith({
     List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList =
-        const _is.$UndefinedList<_i3zqz247.ServerOnlyClass>(),
+        const _issu.$UndefinedList<_i3zqz247.ServerOnlyClass>(),
     Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap =
-        const _is.$UndefinedMap<String, _i3zqz247.ServerOnlyClass>(),
+        const _issu.$UndefinedMap<String, _i3zqz247.ServerOnlyClass>(),
   }) {
     return ServerOnlyClassField(
-      serverOnlyClassList: serverOnlyClassList is _is.UndefinedSentinel
+      serverOnlyClassList: serverOnlyClassList is _issu.UndefinedSentinel
           ? this.serverOnlyClassList?.map((e0) => e0.copyWith()).toList()
           : serverOnlyClassList,
-      serverOnlyClassMap: serverOnlyClassMap is _is.UndefinedSentinel
+      serverOnlyClassMap: serverOnlyClassMap is _issu.UndefinedSentinel
           ? this.serverOnlyClassMap?.map(
               (
                 key0,

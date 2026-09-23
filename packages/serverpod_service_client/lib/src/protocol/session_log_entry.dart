@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_service_client/src/protocol/protocol.dart'
     as _ian793c4;
 import 'log_entry.dart' as _iv7ld46g;
@@ -176,11 +178,11 @@ abstract class SessionLogEntry
     bool? isOpen,
     DateTime? touched,
     List<_iv7ld46g.LogEntry>? logs =
-        const _isc.$UndefinedList<_iv7ld46g.LogEntry>(),
+        const _issu.$UndefinedList<_iv7ld46g.LogEntry>(),
     List<_inqjskye.QueryLogEntry>? queries =
-        const _isc.$UndefinedList<_inqjskye.QueryLogEntry>(),
+        const _issu.$UndefinedList<_inqjskye.QueryLogEntry>(),
     List<_iky1nb92.MessageLogEntry>? messages =
-        const _isc.$UndefinedList<_iky1nb92.MessageLogEntry>(),
+        const _issu.$UndefinedList<_iky1nb92.MessageLogEntry>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -302,11 +304,11 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     Object? isOpen = _Undefined,
     DateTime? touched,
     List<_iv7ld46g.LogEntry>? logs =
-        const _isc.$UndefinedList<_iv7ld46g.LogEntry>(),
+        const _issu.$UndefinedList<_iv7ld46g.LogEntry>(),
     List<_inqjskye.QueryLogEntry>? queries =
-        const _isc.$UndefinedList<_inqjskye.QueryLogEntry>(),
+        const _issu.$UndefinedList<_inqjskye.QueryLogEntry>(),
     List<_iky1nb92.MessageLogEntry>? messages =
-        const _isc.$UndefinedList<_iky1nb92.MessageLogEntry>(),
+        const _issu.$UndefinedList<_iky1nb92.MessageLogEntry>(),
   }) {
     return SessionLogEntry(
       id: id is int? ? id : this.id,
@@ -323,13 +325,13 @@ class _SessionLogEntryImpl extends SessionLogEntry {
       userId: userId is String? ? userId : this.userId,
       isOpen: isOpen is bool? ? isOpen : this.isOpen,
       touched: touched ?? this.touched,
-      logs: logs is _isc.UndefinedSentinel
+      logs: logs is _issu.UndefinedSentinel
           ? this.logs?.map((e0) => e0.copyWith()).toList()
           : logs,
-      queries: queries is _isc.UndefinedSentinel
+      queries: queries is _issu.UndefinedSentinel
           ? this.queries?.map((e0) => e0.copyWith()).toList()
           : queries,
-      messages: messages is _isc.UndefinedSentinel
+      messages: messages is _issu.UndefinedSentinel
           ? this.messages?.map((e0) => e0.copyWith()).toList()
           : messages,
     );

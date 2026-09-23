@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
     as _i08l111i;
 import '../../../explicit_column_name/relations/one_to_many/employee.dart'
@@ -65,7 +67,7 @@ abstract class Department
     int? id,
     String? name,
     List<_ilvmgye0.Employee>? employees =
-        const _is.$UndefinedList<_ilvmgye0.Employee>(),
+        const _issu.$UndefinedList<_ilvmgye0.Employee>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -140,12 +142,12 @@ class _DepartmentImpl extends Department {
     Object? id = _Undefined,
     String? name,
     List<_ilvmgye0.Employee>? employees =
-        const _is.$UndefinedList<_ilvmgye0.Employee>(),
+        const _issu.$UndefinedList<_ilvmgye0.Employee>(),
   }) {
     return Department(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      employees: employees is _is.UndefinedSentinel
+      employees: employees is _issu.UndefinedSentinel
           ? this.employees?.map((e0) => e0.copyWith()).toList()
           : employees,
     );

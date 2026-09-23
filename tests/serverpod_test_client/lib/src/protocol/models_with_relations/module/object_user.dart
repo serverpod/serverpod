@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i312scxx;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 
 abstract class ObjectUser
@@ -93,7 +95,7 @@ abstract class ObjectUser
 
 class _Undefined {}
 
-class _UndefinedObjectUser$userInfo extends _isc.UndefinedSentinel
+class _UndefinedObjectUser$userInfo extends _issu.UndefinedSentinel
     implements _i312scxx.UserInfo {
   const _UndefinedObjectUser$userInfo();
 }
@@ -125,7 +127,7 @@ class _ObjectUserImpl extends ObjectUser {
       id: id is int? ? id : this.id,
       name: name is String? ? name : this.name,
       userInfoId: userInfoId ?? this.userInfoId,
-      userInfo: userInfo is _isc.UndefinedSentinel
+      userInfo: userInfo is _issu.UndefinedSentinel
           ? this.userInfo?.copyWith()
           : userInfo,
     );

@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
     as _iayhscrz;
@@ -72,7 +74,7 @@ abstract class Cat
     String? name,
     int? motherId,
     _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
-    List<_iayhscrz.Cat>? kittens = const _isc.$UndefinedList<_iayhscrz.Cat>(),
+    List<_iayhscrz.Cat>? kittens = const _issu.$UndefinedList<_iayhscrz.Cat>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -108,7 +110,7 @@ abstract class Cat
 
 class _Undefined {}
 
-class _UndefinedCat$mother extends _isc.UndefinedSentinel
+class _UndefinedCat$mother extends _issu.UndefinedSentinel
     implements _iayhscrz.Cat {
   const _UndefinedCat$mother();
 }
@@ -137,16 +139,16 @@ class _CatImpl extends Cat {
     String? name,
     Object? motherId = _Undefined,
     _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
-    List<_iayhscrz.Cat>? kittens = const _isc.$UndefinedList<_iayhscrz.Cat>(),
+    List<_iayhscrz.Cat>? kittens = const _issu.$UndefinedList<_iayhscrz.Cat>(),
   }) {
     return Cat(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
-      mother: mother is _isc.UndefinedSentinel
+      mother: mother is _issu.UndefinedSentinel
           ? this.mother?.copyWith()
           : mother,
-      kittens: kittens is _isc.UndefinedSentinel
+      kittens: kittens is _issu.UndefinedSentinel
           ? this.kittens?.map((e0) => e0.copyWith()).toList()
           : kittens,
     );

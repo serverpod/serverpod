@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../changed_id_type/one_to_one/town.dart' as _i3qwzvq1;
@@ -61,7 +63,7 @@ abstract class CompanyUuid
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   CompanyUuid copyWith({
-    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
     int? townId,
     _i3qwzvq1.TownInt? town = const _UndefinedCompanyUuid$town(),
@@ -94,7 +96,7 @@ abstract class CompanyUuid
   }
 }
 
-class _UndefinedCompanyUuid$town extends _isc.UndefinedSentinel
+class _UndefinedCompanyUuid$town extends _issu.UndefinedSentinel
     implements _i3qwzvq1.TownInt {
   const _UndefinedCompanyUuid$town();
 }
@@ -117,16 +119,16 @@ class _CompanyUuidImpl extends CompanyUuid {
   @_isc.useResult
   @override
   CompanyUuid copyWith({
-    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
     int? townId,
     _i3qwzvq1.TownInt? town = const _UndefinedCompanyUuid$town(),
   }) {
     return CompanyUuid(
-      id: id is _isc.UndefinedSentinel ? this.id : id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _isc.UndefinedSentinel ? this.town?.copyWith() : town,
+      town: town is _issu.UndefinedSentinel ? this.town?.copyWith() : town,
     );
   }
 }

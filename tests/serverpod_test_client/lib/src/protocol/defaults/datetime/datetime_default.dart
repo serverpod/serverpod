@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class DateTimeDefault
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
@@ -72,7 +74,7 @@ abstract class DateTimeDefault
     int? id,
     DateTime? dateTimeDefaultNow,
     DateTime? dateTimeDefaultStr,
-    DateTime? dateTimeDefaultStrNull = const _isc.$UndefinedDateTime(),
+    DateTime? dateTimeDefaultStrNull = const _issu.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -127,13 +129,13 @@ class _DateTimeDefaultImpl extends DateTimeDefault {
     Object? id = _Undefined,
     DateTime? dateTimeDefaultNow,
     DateTime? dateTimeDefaultStr,
-    DateTime? dateTimeDefaultStrNull = const _isc.$UndefinedDateTime(),
+    DateTime? dateTimeDefaultStrNull = const _issu.$UndefinedDateTime(),
   }) {
     return DateTimeDefault(
       id: id is int? ? id : this.id,
       dateTimeDefaultNow: dateTimeDefaultNow ?? this.dateTimeDefaultNow,
       dateTimeDefaultStr: dateTimeDefaultStr ?? this.dateTimeDefaultStr,
-      dateTimeDefaultStrNull: dateTimeDefaultStrNull is _isc.UndefinedSentinel
+      dateTimeDefaultStrNull: dateTimeDefaultStrNull is _issu.UndefinedSentinel
           ? this.dateTimeDefaultStrNull
           : dateTimeDefaultStrNull,
     );

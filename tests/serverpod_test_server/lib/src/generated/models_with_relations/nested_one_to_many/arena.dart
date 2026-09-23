@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _iaks25tn;
 
@@ -113,7 +115,7 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
-class _UndefinedArena$team extends _is.UndefinedSentinel
+class _UndefinedArena$team extends _issu.UndefinedSentinel
     implements _iaks25tn.Team {
   const _UndefinedArena$team();
 }
@@ -141,7 +143,7 @@ class _ArenaImpl extends Arena {
     return Arena(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      team: team is _is.UndefinedSentinel ? this.team?.copyWith() : team,
+      team: team is _issu.UndefinedSentinel ? this.team?.copyWith() : team,
     );
   }
 }

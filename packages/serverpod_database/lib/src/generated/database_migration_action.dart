@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class DatabaseMigrationAction
     implements _iss.SerializableModel, _iss.ProtocolSerialization {
@@ -100,13 +102,13 @@ abstract class DatabaseMigrationAction
 class _Undefined {}
 
 class _UndefinedDatabaseMigrationAction$alterTable
-    extends _iss.UndefinedSentinel
+    extends _issu.UndefinedSentinel
     implements _isd.TableMigration {
   const _UndefinedDatabaseMigrationAction$alterTable();
 }
 
 class _UndefinedDatabaseMigrationAction$createTable
-    extends _iss.UndefinedSentinel
+    extends _issu.UndefinedSentinel
     implements _isd.TableDefinition {
   const _UndefinedDatabaseMigrationAction$createTable();
 }
@@ -139,10 +141,10 @@ class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
     return DatabaseMigrationAction(
       type: type ?? this.type,
       deleteTable: deleteTable is String? ? deleteTable : this.deleteTable,
-      alterTable: alterTable is _iss.UndefinedSentinel
+      alterTable: alterTable is _issu.UndefinedSentinel
           ? this.alterTable?.copyWith()
           : alterTable,
-      createTable: createTable is _iss.UndefinedSentinel
+      createTable: createTable is _issu.UndefinedSentinel
           ? this.createTable?.copyWith()
           : createTable,
     );

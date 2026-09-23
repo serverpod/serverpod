@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../changed_id_type/many_to_many/enrollment.dart' as _ih6xbg05;
 
@@ -62,10 +64,10 @@ abstract class CourseUuid
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   CourseUuid copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
     List<_ih6xbg05.EnrollmentInt>? enrollments =
-        const _is.$UndefinedList<_ih6xbg05.EnrollmentInt>(),
+        const _issu.$UndefinedList<_ih6xbg05.EnrollmentInt>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -137,15 +139,15 @@ class _CourseUuidImpl extends CourseUuid {
   @_is.useResult
   @override
   CourseUuid copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
     List<_ih6xbg05.EnrollmentInt>? enrollments =
-        const _is.$UndefinedList<_ih6xbg05.EnrollmentInt>(),
+        const _issu.$UndefinedList<_ih6xbg05.EnrollmentInt>(),
   }) {
     return CourseUuid(
-      id: id is _is.UndefinedSentinel ? this.id : id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
-      enrollments: enrollments is _is.UndefinedSentinel
+      enrollments: enrollments is _issu.UndefinedSentinel
           ? this.enrollments?.map((e0) => e0.copyWith()).toList()
           : enrollments,
     );

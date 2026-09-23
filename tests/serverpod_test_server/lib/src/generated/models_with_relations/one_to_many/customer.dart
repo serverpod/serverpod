@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/one_to_many/order.dart' as _ig920ya2;
 
@@ -62,7 +64,8 @@ abstract class Customer
   Customer copyWith({
     int? id,
     String? name,
-    List<_ig920ya2.Order>? orders = const _is.$UndefinedList<_ig920ya2.Order>(),
+    List<_ig920ya2.Order>? orders =
+        const _issu.$UndefinedList<_ig920ya2.Order>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -134,12 +137,13 @@ class _CustomerImpl extends Customer {
   Customer copyWith({
     Object? id = _Undefined,
     String? name,
-    List<_ig920ya2.Order>? orders = const _is.$UndefinedList<_ig920ya2.Order>(),
+    List<_ig920ya2.Order>? orders =
+        const _issu.$UndefinedList<_ig920ya2.Order>(),
   }) {
     return Customer(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is _is.UndefinedSentinel
+      orders: orders is _issu.UndefinedSentinel
           ? this.orders?.map((e0) => e0.copyWith()).toList()
           : orders,
     );

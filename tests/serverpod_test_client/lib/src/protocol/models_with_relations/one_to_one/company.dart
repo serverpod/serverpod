@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/one_to_one/town.dart' as _i59ly1gg;
 
@@ -93,7 +95,7 @@ abstract class Company
 
 class _Undefined {}
 
-class _UndefinedCompany$town extends _isc.UndefinedSentinel
+class _UndefinedCompany$town extends _issu.UndefinedSentinel
     implements _i59ly1gg.Town {
   const _UndefinedCompany$town();
 }
@@ -125,7 +127,7 @@ class _CompanyImpl extends Company {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _isc.UndefinedSentinel ? this.town?.copyWith() : town,
+      town: town is _issu.UndefinedSentinel ? this.town?.copyWith() : town,
     );
   }
 }

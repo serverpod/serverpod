@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class ServerOnlyChangedIdFieldClass
     implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
@@ -44,7 +46,7 @@ abstract class ServerOnlyChangedIdFieldClass
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ServerOnlyChangedIdFieldClass copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,10 +97,10 @@ class _ServerOnlyChangedIdFieldClassImpl extends ServerOnlyChangedIdFieldClass {
   @_is.useResult
   @override
   ServerOnlyChangedIdFieldClass copyWith({
-    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
   }) {
     return ServerOnlyChangedIdFieldClass(
-      id: id is _is.UndefinedSentinel ? this.id : id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
     );
   }
 }

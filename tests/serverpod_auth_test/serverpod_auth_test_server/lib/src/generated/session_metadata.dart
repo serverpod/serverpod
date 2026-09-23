@@ -8,7 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -17,6 +18,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
     as _ik2mg1i3;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class SessionMetadata
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -150,7 +152,8 @@ abstract class SessionMetadata
 
 class _Undefined {}
 
-class _UndefinedSessionMetadata$serverSideSession extends _is.UndefinedSentinel
+class _UndefinedSessionMetadata$serverSideSession
+    extends _issu.UndefinedSentinel
     implements _iacs.ServerSideSession {
   const _UndefinedSessionMetadata$serverSideSession();
 }
@@ -191,7 +194,7 @@ class _SessionMetadataImpl extends SessionMetadata {
     return SessionMetadata(
       id: id is int? ? id : this.id,
       serverSideSessionId: serverSideSessionId ?? this.serverSideSessionId,
-      serverSideSession: serverSideSession is _is.UndefinedSentinel
+      serverSideSession: serverSideSession is _issu.UndefinedSentinel
           ? this.serverSideSession?.copyWith()
           : serverSideSession,
       deviceName: deviceName ?? this.deviceName,

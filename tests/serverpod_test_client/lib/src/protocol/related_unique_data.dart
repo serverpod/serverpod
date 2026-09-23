@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import 'unique_data.dart' as _iufhyrjh;
 
@@ -94,7 +96,7 @@ abstract class RelatedUniqueData
 
 class _Undefined {}
 
-class _UndefinedRelatedUniqueData$uniqueData extends _isc.UndefinedSentinel
+class _UndefinedRelatedUniqueData$uniqueData extends _issu.UndefinedSentinel
     implements _iufhyrjh.UniqueData {
   const _UndefinedRelatedUniqueData$uniqueData();
 }
@@ -126,7 +128,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     return RelatedUniqueData(
       id: id is int? ? id : this.id,
       uniqueDataId: uniqueDataId ?? this.uniqueDataId,
-      uniqueData: uniqueData is _isc.UndefinedSentinel
+      uniqueData: uniqueData is _issu.UndefinedSentinel
           ? this.uniqueData?.copyWith()
           : uniqueData,
       number: number ?? this.number,

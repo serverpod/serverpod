@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart'
     as _ifwxqeej;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../../profile/models/user_profile.dart' as _ixqiikps;
 
 /// Database entity for storing user profile image information.
@@ -86,7 +88,7 @@ abstract class UserProfileImage
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UserProfileImage copyWith({
-    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _isc.UuidValue? userProfileId,
     _ixqiikps.UserProfile? userProfile =
         const _UndefinedUserProfileImage$userProfile(),
@@ -129,7 +131,7 @@ abstract class UserProfileImage
   }
 }
 
-class _UndefinedUserProfileImage$userProfile extends _isc.UndefinedSentinel
+class _UndefinedUserProfileImage$userProfile extends _issu.UndefinedSentinel
     implements _ixqiikps.UserProfile {
   const _UndefinedUserProfileImage$userProfile();
 }
@@ -158,7 +160,7 @@ class _UserProfileImageImpl extends UserProfileImage {
   @_isc.useResult
   @override
   UserProfileImage copyWith({
-    _isc.UuidValue? id = const _isc.$UndefinedUuidValue(),
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _isc.UuidValue? userProfileId,
     _ixqiikps.UserProfile? userProfile =
         const _UndefinedUserProfileImage$userProfile(),
@@ -168,9 +170,9 @@ class _UserProfileImageImpl extends UserProfileImage {
     Uri? url,
   }) {
     return UserProfileImage(
-      id: id is _isc.UndefinedSentinel ? this.id : id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       userProfileId: userProfileId ?? this.userProfileId,
-      userProfile: userProfile is _isc.UndefinedSentinel
+      userProfile: userProfile is _issu.UndefinedSentinel
           ? this.userProfile?.copyWith()
           : userProfile,
       createdAt: createdAt ?? this.createdAt,

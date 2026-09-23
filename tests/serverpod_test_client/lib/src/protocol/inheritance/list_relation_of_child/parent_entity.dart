@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../inheritance/list_relation_of_child/child_entity.dart'
     as _i41rqetj;
@@ -51,7 +53,7 @@ abstract class ParentEntity
   ParentEntity copyWith({
     int? id,
     List<_i41rqetj.ChildEntity>? children =
-        const _isc.$UndefinedList<_i41rqetj.ChildEntity>(),
+        const _issu.$UndefinedList<_i41rqetj.ChildEntity>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -97,11 +99,11 @@ class _ParentEntityImpl extends ParentEntity {
   ParentEntity copyWith({
     Object? id = _Undefined,
     List<_i41rqetj.ChildEntity>? children =
-        const _isc.$UndefinedList<_i41rqetj.ChildEntity>(),
+        const _issu.$UndefinedList<_i41rqetj.ChildEntity>(),
   }) {
     return ParentEntity(
       id: id is int? ? id : this.id,
-      children: children is _isc.UndefinedSentinel
+      children: children is _issu.UndefinedSentinel
           ? this.children?.map((e0) => e0.copyWith()).toList()
           : children,
     );

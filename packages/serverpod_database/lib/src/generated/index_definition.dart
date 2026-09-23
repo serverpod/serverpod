@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// The definition of a (desired) index in the database.
 abstract class IndexDefinition
@@ -140,7 +142,7 @@ abstract class IndexDefinition
     _isd.VectorDistanceFunction? vectorDistanceFunction,
     _isd.ColumnType? vectorColumnType,
     Map<String, String>? parameters =
-        const _iss.$UndefinedMap<String, String>(),
+        const _issu.$UndefinedMap<String, String>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -240,7 +242,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
     Object? vectorDistanceFunction = _Undefined,
     Object? vectorColumnType = _Undefined,
     Map<String, String>? parameters =
-        const _iss.$UndefinedMap<String, String>(),
+        const _issu.$UndefinedMap<String, String>(),
   }) {
     return IndexDefinition(
       indexName: indexName ?? this.indexName,
@@ -263,7 +265,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
       vectorColumnType: vectorColumnType is _isd.ColumnType?
           ? vectorColumnType
           : this.vectorColumnType,
-      parameters: parameters is _iss.UndefinedSentinel
+      parameters: parameters is _issu.UndefinedSentinel
           ? this.parameters?.map(
               (
                 key0,
