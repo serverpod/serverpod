@@ -64,6 +64,9 @@ integrations/.env.test
 .env.test
 PLAN.md
 
+# Local-only secrets and device-test drop folder (never commit)
+.local/
+
 # Scratch paths for the migration tests
 **/migration_test_protocol_files/
 **/repair-migration/

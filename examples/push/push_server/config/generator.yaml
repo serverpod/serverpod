@@ -1,0 +1,10 @@
+type: server
+
+client_package_path: ../push_client
+server_test_tools_path: test/integration/test_tools
+
+modules:
+  serverpod_push_core:
+    nickname: push
+  serverpod_push_store:
+    nickname: pushStore

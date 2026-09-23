@@ -45,6 +45,14 @@ void main() {
           '_iams',
       'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart':
           '_iamc',
+      'package:serverpod_push_core_server/serverpod_push_core_server.dart':
+          '_ipcs',
+      'package:serverpod_push_core_client/serverpod_push_core_client.dart':
+          '_ipcc',
+      'package:serverpod_push_store_server/serverpod_push_store_server.dart':
+          '_ipss',
+      'package:serverpod_push_store_client/serverpod_push_store_client.dart':
+          '_ipsc',
     };
 
     test(

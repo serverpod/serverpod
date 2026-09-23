@@ -1,7 +1,7 @@
 # TEMPLATE
 
 name: serverpod_push_core_server
-description: Serverpod push notification core — provider contract, payload types, and the FCM and OneSignal providers.
+description: Serverpod push notification core — provider contract, payload types, and the FCM, OneSignal, and Amazon SNS providers.
 version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 

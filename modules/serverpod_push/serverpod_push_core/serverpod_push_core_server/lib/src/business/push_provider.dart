@@ -8,7 +8,7 @@ const pushDeliveryIdDataKey = '_spDeliveryId';
 /// A push transport. Implementations send [PushMessage]s and never throw for
 /// per-target failures — those come back as [PushSendResult]s.
 abstract interface class PushProvider {
-  /// Stable provider id, e.g. `'fcm'`, `'apns'`, `'webpush'`.
+  /// Stable provider id, e.g. `'fcm'`, `'sns'`, `'apns'`, `'webpush'`.
   String get provider;
 
   /// Platforms this provider can address.

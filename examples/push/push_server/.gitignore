@@ -1,0 +1,30 @@
+# Files and directories created by pub
+.dart_tool/
+.packages
+
+# Conventional directory for build outputs
+build/
+
+# Ignore the flutter web app directory
+web/app
+
+# Directory created by dartdoc
+doc/api/
+
+# Passwords file
+config/passwords.yaml
+
+# Firebase service account key for Firebase auth
+config/firebase_service_account_key.json
+
+# OneSignal REST credentials (optional provider)
+config/onesignal.json
+
+# Amazon SNS credentials (optional provider)
+config/sns.json
+
+# Embedded PostgreSQL runtime artifacts (data dir, sockets, pidfiles)
+.serverpod/
+
+# SQLite databases created by the ephemeral test database
+**/sp_*.db*

@@ -1,0 +1,69 @@
+# This is the configuration file for your local development environment. By
+# default, it runs a single server on port 8080. To set up your server, you will
+# need to add the name of the database you are connecting to and the user name.
+# The password for the database is stored in the config/passwords.yaml.
+#
+# When running your server locally, the server ports are the same as the public
+# facing ports.
+
+# Configuration for the main API server.
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+
+# Configuration for the Insights server.
+insightsServer:
+  port: 8081
+  publicHost: localhost
+  publicPort: 8081
+  publicScheme: http
+
+# Configuration for the web server.
+webServer:
+  port: 8082
+  publicHost: localhost
+  publicPort: 8082
+  publicScheme: http
+
+# This is the database setup for your server.
+database:
+  host: localhost
+  port: 8090
+  name: push
+  user: postgres
+  #requireSsl: true # defaults to false
+  #isUnixSocket: true # defaults to false
+  dataPath: .serverpod/development/pgdata
+  #maxConnectionCount: 10 # Defaults to 10, a negative or null value removes the limit
+
+
+maxRequestSize: 524288 # The maximum size of requests allowed in bytes
+
+sessionLogs:
+  persistentEnabled: true
+  consoleEnabled: true
+  consoleLogFormat: text # Defaults to "json", options are "text" or "json"
+
+# futureCallExecutionEnabled: true # Defaults to true
+
+#futureCall:
+#  concurrencyLimit: 1 # Defaults to 1, a negative or null value removes the limit
+#  scanInterval: 5000 # Unit in milliseconds, defaults to 5000
+
+# Recommended when serving web clients: keeps auth tokens in httpOnly
+# cookies. Without this, web tokens live in JavaScript-readable storage,
+# where any XSS can steal them. Web clients opt in with
+# `client.cookieAuth = true`. Requires `allowedOrigins`; browsers from
+# origins not in the list lose cross-origin access, including to public
+# endpoints.
+#authCookie:
+#  secure: false # Cookies require https; relax only for http://localhost
+#  #name: serverpod_auth # Defaults to "serverpod_auth"
+#  #refreshName: serverpod_auth_refresh # Defaults to "<name>_refresh"
+#  #domain: example.com # Defaults to host-only; set to share across subdomains
+#  #path: / # Defaults to "/"
+#  #sameSite: lax # Defaults to "lax", options are "strict" or "none"
+#allowedOrigins:
+#  - http://localhost:8082 # The origin serving your Flutter web app

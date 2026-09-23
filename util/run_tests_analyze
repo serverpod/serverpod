@@ -35,6 +35,9 @@ declare -a projectPaths=(
     "examples/legacy/chat/chat_server"
     "examples/legacy/chat/chat_client"
     "examples/legacy/chat/chat_flutter"
+    "examples/push/push_server"
+    "examples/push/push_client"
+    "examples/push/push_flutter"
 
     "tests/serverpod_test_server"
     "tests/serverpod_test_client"

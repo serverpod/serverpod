@@ -1,0 +1,24 @@
+# Yaml-files in the `models` directory specify which serializable objects
+# should be generated. When you add or modify a file, you will need to run
+# `serverpod generate` to make the generated classes available in the server and
+# client.
+#
+# Please consult the documentation for more information on what you can add to
+# your yaml-files.
+
+### A greeting message which can be sent to or from the server.
+class: Greeting
+
+# Add the table key, if this class represents a row in the database.
+#table: greeting
+
+# The fields (and columns if connected to the database) of the class.
+# For a list of supported types, please see the documentation.
+# https://docs.serverpod.dev/concepts/working-with-endpoints
+fields:
+  ### The greeting message.
+  message: String
+  ### The author of the greeting message.
+  author: String
+  ### The time when the message was created.
+  timestamp: DateTime

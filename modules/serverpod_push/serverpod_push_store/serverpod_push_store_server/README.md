@@ -15,6 +15,12 @@ Register providers, then initialize the store on your `Serverpod` instance:
 PushService.set(providers: [
   FcmPushProviderBuilder(credentials: ...),
   OneSignalPushProviderBuilder(appId: ..., restApiKey: ...),
+  SnsPushProviderBuilder(
+    region: 'us-east-1',
+    accessKeyId: ...,
+    secretAccessKey: ...,
+    androidPlatformApplicationArn: ...,
+  ),
 ]);
 await pod.initializePushStore();
 ```

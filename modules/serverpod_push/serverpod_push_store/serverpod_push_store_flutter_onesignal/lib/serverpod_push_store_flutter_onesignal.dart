@@ -2,3 +2,4 @@
 library;
 
 export 'src/onesignal_push_registrar.dart';
+export 'src/onesignal_runtime.dart';

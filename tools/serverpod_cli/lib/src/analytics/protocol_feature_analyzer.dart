@@ -18,6 +18,8 @@ const officialServerpodModules = {
   'serverpod_auth_idp',
   'serverpod_auth_migration',
   'serverpod_chat',
+  'serverpod_push_core',
+  'serverpod_push_store',
 };
 
 /// Prefix for index tags, completed with the index type as written in the model

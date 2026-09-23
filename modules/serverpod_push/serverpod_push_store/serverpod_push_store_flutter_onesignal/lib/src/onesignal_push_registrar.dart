@@ -1,16 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:serverpod_push_store_client/serverpod_push_store_client.dart';
 import 'package:serverpod_push_store_flutter/serverpod_push_store_flutter.dart';
 
-/// Binds OneSignal to [PushDeviceRegistrar].
+import 'onesignal_runtime.dart';
+
+/// Binds OneSignal to [PushDeviceRegistrar] on every Flutter platform.
 class OneSignalPushRegistrar {
   /// Creates a registrar.
   ///
   /// When [initializeSdk] is true (default), [start] calls
-  /// `OneSignal.initialize(appId)`. Set it to false if the host app already
+  /// [OneSignalRuntime.initialize]. Set it to false if the host app already
   /// initialized OneSignal.
   OneSignalPushRegistrar({
     required final Caller caller,
@@ -39,12 +40,12 @@ class OneSignalPushRegistrar {
   /// Optional app version forwarded to `registerDevice`.
   final String? appVersion;
 
-  /// Whether [start] should call `OneSignal.initialize`.
+  /// Whether [start] should initialize the OneSignal SDK.
   final bool initializeSdk;
 
-  OnPushSubscriptionChangeObserver? _subscriptionObserver;
-  OnNotificationWillDisplayListener? _displayListener;
-  OnNotificationClickListener? _clickListener;
+  void Function(String? id)? _subscriptionListener;
+  void Function(Map<String, dynamic>? data)? _receivedListener;
+  void Function(Map<String, dynamic>? data)? _openedListener;
 
   /// Initializes OneSignal (unless already done), registers the current
   /// subscription id, and listens for refresh / receive / open events.
@@ -53,52 +54,49 @@ class OneSignalPushRegistrar {
   /// after the OneSignal verification dialog (or equivalent).
   Future<void> start() async {
     if (initializeSdk) {
-      await OneSignal.initialize(appId);
+      await OneSignalRuntime.initialize(appId);
     }
 
-    final currentId = OneSignal.User.pushSubscription.id;
-    if (currentId != null && currentId.isNotEmpty) {
-      await _register(currentId);
+    final currentId = OneSignalRuntime.subscriptionId;
+    if (OneSignalRuntime.isServerAssigned(currentId)) {
+      await _register(currentId!);
     }
 
-    _subscriptionObserver = (final state) {
-      final id = state.current.id;
-      if (id != null && id.isNotEmpty) {
-        unawaited(_register(id));
+    _subscriptionListener = (final id) {
+      if (OneSignalRuntime.isServerAssigned(id)) {
+        unawaited(_register(id!));
       }
     };
-    OneSignal.User.pushSubscription.addObserver(_subscriptionObserver!);
+    OneSignalRuntime.addSubscriptionListener(_subscriptionListener!);
 
-    _displayListener = (final event) {
-      unawaited(_ack(event.notification.additionalData, PushAckType.received));
+    _receivedListener = (final data) {
+      unawaited(_ack(data, PushAckType.received));
     };
-    OneSignal.Notifications.addForegroundWillDisplayListener(_displayListener!);
+    OneSignalRuntime.addReceivedListener(_receivedListener!);
 
-    _clickListener = (final event) {
-      unawaited(_ack(event.notification.additionalData, PushAckType.opened));
+    _openedListener = (final data) {
+      unawaited(_ack(data, PushAckType.opened));
     };
-    OneSignal.Notifications.addClickListener(_clickListener!);
+    OneSignalRuntime.addOpenedListener(_openedListener!);
   }
 
   /// Cancels listeners. Does not unregister the device or shut down OneSignal.
   Future<void> stop() async {
-    final subscriptionObserver = _subscriptionObserver;
-    if (subscriptionObserver != null) {
-      OneSignal.User.pushSubscription.removeObserver(subscriptionObserver);
+    final subscriptionListener = _subscriptionListener;
+    if (subscriptionListener != null) {
+      OneSignalRuntime.removeSubscriptionListener(subscriptionListener);
     }
-    final displayListener = _displayListener;
-    if (displayListener != null) {
-      OneSignal.Notifications.removeForegroundWillDisplayListener(
-        displayListener,
-      );
+    final receivedListener = _receivedListener;
+    if (receivedListener != null) {
+      OneSignalRuntime.removeReceivedListener(receivedListener);
     }
-    final clickListener = _clickListener;
-    if (clickListener != null) {
-      OneSignal.Notifications.removeClickListener(clickListener);
+    final openedListener = _openedListener;
+    if (openedListener != null) {
+      OneSignalRuntime.removeOpenedListener(openedListener);
     }
-    _subscriptionObserver = null;
-    _displayListener = null;
-    _clickListener = null;
+    _subscriptionListener = null;
+    _receivedListener = null;
+    _openedListener = null;
   }
 
   Future<void> _register(final String subscriptionId) {

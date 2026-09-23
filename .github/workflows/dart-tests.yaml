@@ -176,6 +176,9 @@ jobs:
           - examples/auth/auth_server
           - examples/middleware/middleware_server
           - examples/legacy/auth_example/auth_example_server
+          - examples/push/push_server
+          - modules/serverpod_push/serverpod_push_core/serverpod_push_core_server
+          - modules/serverpod_push/serverpod_push_store/serverpod_push_store_server
           - modules/legacy/serverpod_auth/serverpod_auth_server
           - modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
           - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
@@ -486,6 +489,9 @@ jobs:
           - name: auth_migration
             scope: serverpod_auth_migration_server
             run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+          - name: push_store
+            scope: serverpod_push_store_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_push/serverpod_push_store/serverpod_push_store_server
           # auth_idp is the largest suite here (~44 integration files), so we shard it
           - name: auth_idp (1/3)
             scope: serverpod_auth_idp_server
@@ -646,6 +652,8 @@ jobs:
           - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
           - modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
           - modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+          - modules/serverpod_push/serverpod_push_core/serverpod_push_core_server
+          - modules/serverpod_push/serverpod_push_store/serverpod_push_store_server
           - integrations/serverpod_cloud_storage_gcp
           - integrations/serverpod_cloud_storage_r2
           - integrations/serverpod_cloud_storage_s3

@@ -1,0 +1,8 @@
+greeting:
+  - hello:
+pushTest:
+  - listCases:
+  - runCase:
+  - queueStatus:
+  - scheduleDelayedPing:
+  - authorizedSend:
