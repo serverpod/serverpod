@@ -162,6 +162,106 @@ void main() {
         });
       });
 
+      group('has a watch method', () {
+        var watchMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'watch',
+        );
+
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'watch',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a stream with a list of the base class', () {
+          expect(
+            watchMethod?.returnType?.toSource(),
+            contains('Stream'),
+          );
+          expect(
+            watchMethod?.returnType?.toSource(),
+            contains('List<$testClassName>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            watchMethod?.parameters?.toSource(),
+            contains('DatabaseSession session'),
+          );
+        });
+
+        test('that takes the where callback as a named optional param', () {
+          expect(
+            watchMethod?.parameters?.toSource(),
+            contains('WhereExpressionBuilder<${testClassName}Table>? where'),
+          );
+        });
+
+        test('that takes the limit int as an optional param', () {
+          expect(
+            watchMethod?.parameters?.toSource(),
+            contains('int? limit'),
+          );
+        });
+
+        test('that takes the offset int as an optional param', () {
+          expect(
+            watchMethod?.parameters?.toSource(),
+            contains('int? offset'),
+          );
+        });
+
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            watchMethod?.parameters?.toSource(),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            watchMethod?.parameters?.toSource(),
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
+          );
+        });
+
+        test('that takes throttle as an optional param', () {
+          expect(
+            watchMethod?.parameters?.toSource(),
+            contains('Duration? throttle'),
+          );
+        });
+
+        test('that takes alsoTriggerOnTables as an optional param', () {
+          expect(
+            watchMethod?.parameters?.toSource(),
+            contains('Table>? alsoTriggerOnTables'),
+          );
+        });
+
+        test(
+          'that documents alsoTriggerOnTables as additive source tables',
+          () {
+            expect(
+              codeMap[expectedFilePath],
+              contains(
+                'Source tables are collected from the queried table, [where], [orderBy]',
+              ),
+            );
+            expect(
+              codeMap[expectedFilePath],
+              contains('[alsoTriggerOnTables] is added'),
+            );
+          },
+        );
+      });
+
       group('has a findFirstRow method', () {
         var findRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,

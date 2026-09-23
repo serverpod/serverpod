@@ -59,10 +59,12 @@ class _AppSpec {
     // expect. Pass a desktop device (e.g. `linux`) for non-web scenarios, or
     // null to omit the `device` line from the app's pubspec entry.
     this.device = 'web-server',
+    this.autoLaunch = false,
   });
 
   final String id;
   final String? device;
+  final bool autoLaunch;
 
   /// Directory (and package) name of the fabricated Flutter app.
   String get dirName => '${id.replaceAll('-', '_')}_flutter';
@@ -108,7 +110,6 @@ class _ManagerFixture {
     void Function(FlutterAppConfig app, String? url)? onReady,
     void Function(FlutterAppConfig app)? onStop,
     void Function(FlutterAppConfig app)? onLaunchFailed,
-    void Function(FlutterAppConfig app)? onEnsureAppTab,
     void Function(FlutterAppConfig app, FlutterLogEvent event)? onLog,
     IOSink Function(FlutterAppConfig app)? stdoutSinkFor,
     IOSink Function(FlutterAppConfig app)? stderrSinkFor,
@@ -129,6 +130,7 @@ class _ManagerFixture {
       if (spec.device != null) {
         appEntries.writeln('      device: ${spec.device}');
       }
+      if (spec.autoLaunch) appEntries.writeln('      auto_launch: true');
     }
     final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
     serverPubspecFile.writeAsStringSync('''
@@ -147,7 +149,7 @@ $appEntries''');
 
     final manager = FlutterAppManager(
       projectName: 'project',
-      launchFlutterApp: false,
+      autoLaunchArmed: false,
       environmentOverrideForTesting: environment,
       serverPubspecFile: serverPubspecFile,
       serverPackageDirectoryPathParts: p.split(serverDir.path),
@@ -158,7 +160,6 @@ $appEntries''');
       onStart: (_, _) async {},
       onStop: onStop ?? (_) {},
       onLaunchFailed: onLaunchFailed ?? (_) {},
-      onEnsureAppTab: onEnsureAppTab ?? (_) {},
       onLog: onLog ?? (_, _) {},
       stdoutSinkFor: stdoutSinkFor ?? (_) => stdout,
       stderrSinkFor: stderrSinkFor ?? (_) => stderr,
@@ -235,15 +236,12 @@ dependencies:
 void main() {
   group('Given a FlutterAppManager with two configured apps', () {
     late _ManagerFixture f;
-    late String launchedAppId;
 
     setUp(() async {
-      launchedAppId = '';
       f = await _ManagerFixture.create(
         apps: const [_AppSpec('app-a'), _AppSpec('app-b')],
         shim: 'never_publishes_uri.dart',
         initialize: false,
-        onEnsureAppTab: (app) => launchedAppId = app.id,
       );
     });
 
@@ -293,15 +291,6 @@ void main() {
           expect(f.manager.isRunning('app-a'), isTrue);
           expect(f.manager.isRunning('app-b'), isTrue);
           expect(f.manager.runningAppIds, containsAll(['app-a', 'app-b']));
-        },
-      );
-
-      test(
-        'when launch is called then onEnsureAppTab is invoked',
-        () async {
-          await f.manager.launch('app-a');
-
-          expect(launchedAppId, 'app-a');
         },
       );
 
@@ -687,6 +676,61 @@ void main() {
             event.message,
             'Error: unable to find asset declared in pubspec.yaml.',
           );
+        },
+      );
+    },
+  );
+
+  test(
+    'Given a FlutterAppManager with an app whose path has no Flutter package, '
+    'when the app is launched, '
+    'then the launch fails with an error log naming the path',
+    () async {
+      final failedApps = <String>[];
+      final logEvents = <(String, FlutterLogEvent)>[];
+      final f = await _ManagerFixture.create(
+        onLaunchFailed: (app) => failedApps.add(app.id),
+        onLog: (app, event) => logEvents.add((app.id, event)),
+      );
+      addTearDown(() => f.dispose());
+      final flutterDir = f.flutterDir('project');
+      flutterDir.deleteSync(recursive: true);
+
+      await f.manager.launch('project');
+
+      expect(failedApps, ['project']);
+      expect(f.manager.isLaunching('project'), isFalse);
+      final (appId, event) = logEvents.single;
+      expect(appId, 'project');
+      expect(event.level, LogLevel.error);
+      expect(event.message, contains(p.normalize(flutterDir.path)));
+    },
+  );
+
+  group(
+    'Given a FlutterAppManager whose auto-launch app has run and stopped,',
+    () {
+      late _ManagerFixture f;
+
+      setUp(() async {
+        f = await _ManagerFixture.create(
+          apps: const [_AppSpec('app-a', autoLaunch: true)],
+          shim: 'never_publishes_uri.dart',
+        );
+        await f.manager.launchAutoLaunchApps();
+        expect(f.manager.isRunning('app-a'), isTrue);
+        await f.manager.stop('app-a');
+      });
+
+      tearDown(() => f.dispose());
+
+      test(
+        'when auto-launch is armed again, as a later client attaching would, '
+        'then the app stays stopped, arming being once per session',
+        () async {
+          await f.manager.launchAutoLaunchApps();
+
+          expect(f.manager.isRunning('app-a'), isFalse);
         },
       );
     },

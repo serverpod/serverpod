@@ -96,6 +96,45 @@ void main() {
   );
 
   test(
+    'Given valid public storage configurations, '
+    'when calling createServerpodCloudStorage with custom storage ID, '
+    'then a public storage instance is returned',
+    () async {
+      final storage = await createServerpodCloudStorage(
+        storageId: 'custom',
+        environment: _environmentWithBuckets([
+          _bucket(
+            storageId: 'custom',
+            visibility: 'public',
+            bucketName: 'public-bucket',
+            publicUrl: 'https://cdn.example.com/public-bucket',
+          ),
+        ]),
+        fallback: _unexpectedFallback,
+        createStorage: _testStorageFactory,
+      );
+
+      expect(
+        storage,
+        isA<_TestCloudStorage>()
+            .having((storage) => storage.storageId, 'storageId', 'custom')
+            .having((storage) => storage.bucket, 'bucket', 'public-bucket')
+            .having((storage) => storage.public, 'public', isTrue)
+            .having(
+              (storage) => storage.serviceAccountJson,
+              'serviceAccountJson',
+              _serviceAccountJson,
+            )
+            .having(
+              (storage) => storage.publicHost,
+              'publicHost',
+              'cdn.example.com/public-bucket',
+            ),
+      );
+    },
+  );
+
+  test(
     'Given valid private storage configurations, '
     'when calling createServerpodCloudStorage with private storage ID, '
     'then a private storage instance is returned',
@@ -117,6 +156,40 @@ void main() {
         storage,
         isA<_TestCloudStorage>()
             .having((storage) => storage.storageId, 'storageId', 'private')
+            .having((storage) => storage.bucket, 'bucket', 'private-bucket')
+            .having((storage) => storage.public, 'public', isFalse)
+            .having(
+              (storage) => storage.publicHost,
+              'publicHost',
+              'cdn.example.com/private-bucket',
+            ),
+      );
+    },
+  );
+
+  test(
+    'Given valid private storage configurations, '
+    'when calling createServerpodCloudStorage with custom storage ID, '
+    'then a private storage instance is returned',
+    () async {
+      final storage = await createServerpodCloudStorage(
+        storageId: 'custom',
+        environment: _environmentWithBuckets([
+          _bucket(
+            storageId: 'custom',
+            visibility: 'private',
+            bucketName: 'private-bucket',
+            publicUrl: 'https://cdn.example.com/private-bucket',
+          ),
+        ]),
+        fallback: _unexpectedFallback,
+        createStorage: _testStorageFactory,
+      );
+
+      expect(
+        storage,
+        isA<_TestCloudStorage>()
+            .having((storage) => storage.storageId, 'storageId', 'custom')
             .having((storage) => storage.bucket, 'bucket', 'private-bucket')
             .having((storage) => storage.public, 'public', isFalse)
             .having(

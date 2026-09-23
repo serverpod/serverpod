@@ -3,7 +3,45 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given empty refresh token hash pepper when creating a JwtConfig then an error is thrown.',
+    'Given a refresh token rotating secret length of 15 bytes, '
+    'when creating a JwtConfig, '
+    'then an ArgumentError is thrown',
+    () {
+      expect(
+        () => JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
+            SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          refreshTokenRotatingSecretLength: 15,
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    },
+  );
+
+  test(
+    'Given a refresh token rotating secret length of 16 bytes, '
+    'when creating a JwtConfig, '
+    'then the JwtConfig is created',
+    () {
+      expect(
+        () => JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
+            SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          refreshTokenRotatingSecretLength: 16,
+        ),
+        returnsNormally,
+      );
+    },
+  );
+
+  test(
+    'Given empty refresh token hash pepper, '
+    'when creating a JwtConfig, '
+    'then an error is thrown',
     () {
       expect(
         () => JwtConfig(

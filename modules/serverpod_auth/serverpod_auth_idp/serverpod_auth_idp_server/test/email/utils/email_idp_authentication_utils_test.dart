@@ -700,6 +700,6 @@ Future<List<RateLimitedRequestAttempt>> _getFailedLoginAttempts(
     where: (final t) =>
         t.domain.equals('email') &
         t.source.equals('failed_login') &
-        t.nonce.equals(email),
+        t.key.equals(email),
   );
 }

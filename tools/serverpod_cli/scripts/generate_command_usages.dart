@@ -17,11 +17,13 @@ import 'package:serverpod_cli/src/commands/mcp.dart';
 import 'package:serverpod_cli/src/commands/migrate.dart';
 import 'package:serverpod_cli/src/commands/quickstart.dart';
 import 'package:serverpod_cli/src/commands/run.dart';
+import 'package:serverpod_cli/src/commands/runner.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/mcp/runner_surface.dart';
 
 /// Generates the framework CLI command reference for the docs site.
 ///
@@ -67,6 +69,7 @@ void main(final List<String> args) {
         CreateRepairMigrationCommand(),
         MigrateCommand(),
         RunCommand(),
+        RunnerCommand(),
         StartCommand(),
         UpgradeCommand(),
         VersionCommand(version),
@@ -80,6 +83,14 @@ void main(final List<String> args) {
   ).writeAsStringSync(globalOptionsDoc.toString());
 
   final commandsDocs = generator.generateMarkdown();
+
+  // The MCP page also documents the tools `serverpod start` exposes through
+  // the bridge. They come from the runner surface rather than from the
+  // command's usage output, so they are appended to the generated page.
+  commandsDocs.update(
+    'mcp-server.md',
+    (final content) => '$content\n${_generateMcpToolReference()}\n',
+  );
 
   for (final MapEntry(key: fileName, value: content) in commandsDocs.entries) {
     final commandName = fileName.split('.').first;
@@ -135,6 +146,75 @@ void _generateDocPage(
   File(
     path.join(docPath, '_category_.json'),
   ).writeAsStringSync('{"label": "$docLabel"}');
+}
+
+/// Renders the MCP tool surface that `serverpod start` exposes through the
+/// bridge, so the reference stays in step with [runnerStaticTools] instead of
+/// being maintained by hand.
+String _generateMcpToolReference() {
+  final markdown = StringBuffer();
+
+  markdown.writeln('## Tools\n');
+  markdown.writeln(
+    'The bridge exposes the following tools. Each one acts on the running '
+    '`serverpod start` session, so they report an error when no session is '
+    'running.\n',
+  );
+
+  final tools = [...runnerStaticTools]
+    ..sort((final a, final b) => a.name.compareTo(b.name));
+
+  for (final tool in tools) {
+    markdown.writeln('### `${tool.name}`\n');
+    markdown.writeln('${_toMarkdownText(tool.description ?? '')}\n');
+
+    final properties = tool.inputSchema.properties;
+    if (properties == null || properties.isEmpty) {
+      markdown.writeln('Takes no parameters.\n');
+      continue;
+    }
+
+    final required = tool.inputSchema.required ?? const <String>[];
+    markdown.writeln('| Parameter | Type | Required | Description |');
+    markdown.writeln('| --- | --- | --- | --- |');
+
+    final names = properties.keys.toList()..sort();
+    for (final name in names) {
+      final schema = properties[name]!;
+      final type = schema.type?.typeName ?? '';
+      final isRequired = required.contains(name) ? 'Yes' : 'No';
+      final description = _toMarkdownText(schema.description ?? '');
+      markdown.writeln('| `$name` | `$type` | $isRequired | $description |');
+    }
+    markdown.writeln();
+  }
+
+  final resources = [...runnerStaticResources]
+    ..sort((final a, final b) => a.uri.compareTo(b.uri));
+  if (resources.isNotEmpty) {
+    markdown.writeln('## Resources\n');
+    markdown.writeln('| Resource | Description |');
+    markdown.writeln('| --- | --- |');
+    for (final resource in resources) {
+      final description = _toMarkdownText(resource.description ?? '');
+      markdown.writeln('| `${resource.uri}` | $description |');
+    }
+  }
+
+  return markdown.toString().trimRight();
+}
+
+/// Flattens a tool or parameter description into a single line that is safe to
+/// place inside a markdown table. Em dashes are replaced because the docs style
+/// guide does not allow them.
+String _toMarkdownText(final String description) {
+  return description
+      .replaceAll('\u2014', ',')
+      .split(RegExp(r'\s+'))
+      .where((final word) => word.isNotEmpty)
+      .join(' ')
+      .replaceAll(' ,', ',')
+      .replaceAll('|', r'\|');
 }
 
 String buildCommandMdxFileContent(

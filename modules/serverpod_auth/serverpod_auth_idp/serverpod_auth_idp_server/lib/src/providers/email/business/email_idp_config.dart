@@ -147,8 +147,9 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
   /// Defaults to allowing at most 3 attempts in the last hour.
   final RateLimit maxPasswordResetAttempts;
 
-  /// The length of the random hash in bytes to be used for each password.
+  /// The length in bytes of the random salt generated for each hashed secret.
   ///
+  /// Must be at least 8, the shortest salt Argon2 accepts.
   /// Defaults to 16.
   final int secretHashSaltLength;
 
@@ -222,16 +223,4 @@ class EmailIdpConfigFromPasswords extends EmailIdpConfig {
            'emailSecretHashPepper',
          ),
        );
-}
-
-/// A rolling rate limit which allows [maxAttempts] in the most recent [timeframe].
-class RateLimit {
-  /// The maximum number of attempts allowed within the timeframe.
-  final int maxAttempts;
-
-  /// The timeframe within which the attempts are allowed.
-  final Duration timeframe;
-
-  /// Creates a new [RateLimit] instance.
-  const RateLimit({required this.maxAttempts, required this.timeframe});
 }

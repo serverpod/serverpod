@@ -341,7 +341,9 @@ void main() {
     test(
       'Given a class with a table defined but without the database feature enabled then an error is given.',
       () {
-        var config = GeneratorConfigBuilder().withEnabledFeatures([]).build();
+        var config = GeneratorConfigBuilder()
+            .withDatabaseEnabled(false)
+            .build();
         var modelSources = [
           ModelSourceBuilder().withYaml(
             '''

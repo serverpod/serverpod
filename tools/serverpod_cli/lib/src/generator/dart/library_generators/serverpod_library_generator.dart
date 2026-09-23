@@ -45,7 +45,7 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
               '///',
               '/// The `serverpod_offline_sync` engine is initialized with the tables',
               '/// declared with `database: sync`, wrapping any provided',
-              '/// [databaseInterceptor] with `crdtDatabaseInterceptor`.',
+              '/// [databaseInterceptor] with `offlineSyncDatabaseInterceptor`.',
             ],
           ])
           ..name = 'Serverpod'
@@ -207,7 +207,7 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
                                     ..lambda = true
                                     ..body =
                                         refer(
-                                          'crdtDatabaseInterceptor',
+                                          'offlineSyncDatabaseInterceptor',
                                           syncModule.dartImportUrl(true),
                                         ).call([
                                           refer('session'),
@@ -225,7 +225,7 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
                       .code,
                 );
               if (syncModule != null) {
-                c.body = refer('initializeCrdtSync').call([], {
+                c.body = refer('initializeOfflineSync').call([], {
                   'syncTables': refer('syncTables', 'sync_tables.dart'),
                 }).statement;
               }

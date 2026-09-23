@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analytics/flush_analytics.dart';
 import 'package:serverpod_cli/src/commands/create/tui/app.dart';
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
@@ -11,6 +12,7 @@ import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_cli/src/util/terminal_modes.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
@@ -113,15 +115,9 @@ Future<CreateConfigStateResult> getCreateConfigState({
 /// on exit, and paints frames to stdout. When stdin cannot report those modes
 /// the capture throws before anything is rendered, and because the TUI logger
 /// is already installed by then the failure never reaches the user.
-///
-/// `stdin.hasTerminal` does not answer this: Dart reports every character
-/// device as a terminal, so `< /dev/null` passes that check and then throws
-/// anyway. Reading the mode is the only reliable probe.
 bool shouldUseCreateTui(bool? interactive) {
   if (interactive == false) return false;
-  if (!ci.isCI && _stdinSupportsTerminalModes && stdout.hasTerminal) {
-    return true;
-  }
+  if (!ci.isCI && terminalSupportsTui) return true;
 
   if (interactive == true) {
     log.warning(
@@ -131,19 +127,6 @@ bool shouldUseCreateTui(bool? interactive) {
   }
 
   return false;
-}
-
-/// Whether stdin can report the terminal modes the TUI has to capture.
-///
-/// Any failure to read them means the TUI cannot start, so this deliberately
-/// treats every error as "unsupported".
-bool get _stdinSupportsTerminalModes {
-  try {
-    stdin.echoMode;
-    return true;
-  } catch (_) {
-    return false;
-  }
 }
 
 /// Creates a Serverpod project with the create TUI.
@@ -253,5 +236,6 @@ Future<void> _preExit({
     if (template.hasServer) logStartInstructions(projectPath);
   }
 
+  await flushAnalytics();
   await log.flush();
 }

@@ -11,8 +11,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a class with a table level database keyword '
-    'when validating '
+    'Given a class with a table level database keyword, '
+    'when validating, '
     'then no error is generated.',
     () {
       var models = [
@@ -38,8 +38,8 @@ void main() {
   );
 
   test(
-    'Given a class without a table and a database keyword '
-    'when validating '
+    'Given a class without a table and a database keyword, '
+    'when validating, '
     'then an error is generated.',
     () {
       var models = [
@@ -71,10 +71,10 @@ void main() {
   );
 
   late var syncModels = [
-    ModelSourceBuilder().withFileName('crdt_scope').withYaml(
+    ModelSourceBuilder().withFileName('offline_sync_space').withYaml(
       '''
-      class: CrdtScope
-      table: crdt_scopes
+      class: OfflineSyncSpace
+      table: offline_sync_spaces
       database: all
       fields:
         name: String
@@ -87,15 +87,15 @@ void main() {
       database: sync
       fields:
         id: UuidValue?, defaultPersist=random_v7
-        scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+        spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
         name: String
       ''',
     ).build(),
   ];
 
   test(
-    'Given a class with "database: sync" and the databaseSync experimental feature enabled '
-    'when validating '
+    'Given a class with "database: sync" and the databaseSync experimental feature enabled, '
+    'when validating, '
     'then no error is generated.',
     () {
       var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
@@ -114,8 +114,8 @@ void main() {
   );
 
   test(
-    'Given a class with "database: sync" and all experimental features enabled '
-    'when validating '
+    'Given a class with "database: sync" and all experimental features enabled, '
+    'when validating, '
     'then no error is generated.',
     () {
       var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
@@ -134,8 +134,8 @@ void main() {
   );
 
   test(
-    'Given a class with "database: sync" and the databaseSync experimental feature disabled '
-    'when validating '
+    'Given a class with "database: sync" and the databaseSync experimental feature disabled, '
+    'when validating, '
     'then an error is generated.',
     () {
       var collector = CodeGenerationCollector();

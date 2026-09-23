@@ -10,11 +10,11 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/src/server/log_manager/session_log.dart';
 import 'package:serverpod/src/server/log_manager/serverpod_logging.dart';
-import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/vm_service_addresses.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_cleanup.dart';
@@ -233,6 +233,7 @@ class Serverpod {
   /// Storage. E.g. see the serverpod_cloud_storage_s3 pub package.
   void addCloudStorage(CloudStorage cloudStorage) {
     storage[cloudStorage.storageId] = cloudStorage;
+    cloudStorage.onRegistered(this);
   }
 
   internal.RuntimeSettings _defaultRuntimeSettings(String runMode) {
@@ -704,10 +705,8 @@ class Serverpod {
     }
 
     if (Features.enableDatabase) {
-      storage.addAll({
-        'public': DatabaseCloudStorage('public'),
-        'private': DatabaseCloudStorage('private'),
-      });
+      addCloudStorage(DatabaseCloudStorage('public'));
+      addCloudStorage(DatabaseCloudStorage('private'));
     }
 
     // Setup Redis
@@ -895,14 +894,7 @@ class Serverpod {
     // Flush constructor lifecycle lines before any further stdout writes.
     await _flushLifecycleStdout();
 
-    // Register cloud store endpoint if we're using the database cloud store
-    var hasDatabaseStorage = storage.entries.any(
-      (storage) => storage.value is DatabaseCloudStorage,
-    );
-
-    if (hasDatabaseStorage) {
-      CloudStoragePublicEndpoint().register(this);
-    }
+    runStartHooks();
 
     final applyingMigrations =
         config.applyMigrations || config.applyRepairMigration;
@@ -944,6 +936,8 @@ class Serverpod {
           'Failed to start the Serverpod servers, see logs for details.',
         );
       }
+
+      _publishResolvedAddresses();
 
       _writeLifecycleMessage(
         'SERVERPOD servers started, time: ${DateTime.now().toUtc()}',
@@ -1137,9 +1131,18 @@ class Serverpod {
     }
 
     final verified = result?.databaseMatchesTargetState ?? false;
-    if (!verified && config.runMode == ServerpodRunMode.development) {
+    if (verified) return;
+
+    if (config.runMode == ServerpodRunMode.development) {
       throw ExitException(1);
     }
+
+    // A maintenance migration run only reports its result through the exit
+    // code, other roles keep starting outside development.
+    final isMigrationRun =
+        config.role == ServerpodRole.maintenance &&
+        (applyMigrations || applyRepairMigration);
+    if (isMigrationRun) _exitCode = 1;
   }
 
   Future<void> _loadRuntimeSettings() async {
@@ -1379,11 +1382,26 @@ class Serverpod {
   ) async {
     await server.shutdown();
     await _webServer?.stop();
+    final T result;
     try {
-      return await action();
-    } finally {
-      await _startUserFacingServers();
+      result = await action();
+    } catch (_) {
+      // The action's error is the one to report.
+      await _resumeRequestHandling();
+      rethrow;
     }
+    if (!await _resumeRequestHandling()) {
+      throw StateError(
+        'Failed to resume the Serverpod servers, see logs for details.',
+      );
+    }
+    return result;
+  }
+
+  Future<bool> _resumeRequestHandling() async {
+    final resumed = await _startUserFacingServers();
+    if (resumed) _publishResolvedAddresses();
+    return resumed;
   }
 
   /// Starts the API server and, if configured, the web server.
@@ -1404,6 +1422,35 @@ class Serverpod {
     }
     return ok;
   }
+
+  /// Folds the bound ports into [config] and posts the resulting addresses.
+  void _publishResolvedAddresses() {
+    final api = config.apiServer.withResolvedPort(server.port);
+    final insights = _insightsServer == null
+        ? null
+        : config.insightsServer?.withResolvedPort(_insightsServer!.port);
+    final webPort = Features.enableWebServer(_webServer)
+        ? webServer.port
+        : null;
+    final web = webPort == null
+        ? null
+        : config.webServer?.withResolvedPort(webPort);
+
+    config = config.copyWith(
+      apiServer: api,
+      insightsServer: insights,
+      webServer: web,
+    );
+
+    postServerpodAddresses(
+      api: _publicUrl(api),
+      insights: insights == null ? null : _publicUrl(insights),
+      web: web == null ? null : _publicUrl(web),
+    );
+  }
+
+  static String _publicUrl(ServerConfig server) =>
+      '${server.publicScheme}://${server.publicHost}:${server.publicPort}';
 
   /// Shuts down the Serverpod and all associated servers.
   /// If [exitProcess] is set to false, the process will not exit at the end of
@@ -1802,6 +1849,19 @@ class ExperimentalApi {
 
   final TaskManagerImpl _shutdownTasks;
 
+  final _startHooks = <void Function(Serverpod pod)>{};
+
+  /// Registers a hook that runs when the server starts. In development it
+  /// also runs after every hot reload, so hooks must be safe to run repeatedly.
+  void registerStartHook(void Function(Serverpod pod) hook) {
+    _startHooks.add(hook);
+  }
+
+  /// Removes a hook previously added with [registerStartHook].
+  void unregisterStartHook(void Function(Serverpod pod) hook) {
+    _startHooks.remove(hook);
+  }
+
   /// Shutdown tasks can be used to perform cleanup operations before the server
   /// is shut down. The tasks will be executed asynchronously after the server
   /// has received the shutdown signal.
@@ -1858,6 +1918,14 @@ extension ServerpodInternalMethods on Serverpod {
 
   /// Retrieve the global internal session used by the Serverpod for logging.
   Session get internalLoggingSession => _internalLoggingSession;
+
+  /// Runs the hooks added with [ExperimentalApi.registerStartHook]. Called at
+  /// start and again when hot reload rebuilds the endpoint dispatch.
+  void runStartHooks() {
+    for (final hook in _experimental._startHooks) {
+      hook(this);
+    }
+  }
 
   /// Submits an event to registered event handlers.
   /// They will execute asynchronously.

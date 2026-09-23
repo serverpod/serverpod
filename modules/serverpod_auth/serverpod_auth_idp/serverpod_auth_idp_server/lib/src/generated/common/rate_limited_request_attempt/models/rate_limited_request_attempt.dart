@@ -10,19 +10,20 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
     as _i99s0abf;
 
 /// Database table for tracking rate limited request attempts.
-/// A new entry will be created whenever the request is attempted.
+/// An entry is created for each admitted attempt.
 abstract class RateLimitedRequestAttempt
     implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   RateLimitedRequestAttempt._({
     this.id,
     required this.domain,
     required this.source,
-    required this.nonce,
+    required this.key,
     this.ipAddress,
     DateTime? attemptedAt,
     this.extraData,
@@ -32,7 +33,7 @@ abstract class RateLimitedRequestAttempt
     _is.UuidValue? id,
     required String domain,
     required String source,
-    required String nonce,
+    required String key,
     String? ipAddress,
     DateTime? attemptedAt,
     Map<String, String>? extraData,
@@ -47,7 +48,7 @@ abstract class RateLimitedRequestAttempt
           : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       domain: jsonSerialization['domain'] as String,
       source: jsonSerialization['source'] as String,
-      nonce: jsonSerialization['nonce'] as String,
+      key: jsonSerialization['key'] as String,
       ipAddress: jsonSerialization['ipAddress'] as String?,
       attemptedAt: jsonSerialization['attemptedAt'] == null
           ? null
@@ -77,9 +78,9 @@ abstract class RateLimitedRequestAttempt
   /// Example: "password_reset", "login_attempt", etc.
   String source;
 
-  /// The unique identifier for the request.
+  /// The caller-provided string key identifying the rate limit bucket.
   /// Can be a request ID, a token, an email address, etc.
-  String nonce;
+  String key;
 
   /// The IP address calling the request, in case it is relevant.
   /// Should only be used for logging and auditing purposes.
@@ -101,7 +102,7 @@ abstract class RateLimitedRequestAttempt
     _is.UuidValue? id,
     String? domain,
     String? source,
-    String? nonce,
+    String? key,
     String? ipAddress,
     DateTime? attemptedAt,
     Map<String, String>? extraData,
@@ -113,7 +114,7 @@ abstract class RateLimitedRequestAttempt
       if (id != null) 'id': id?.toJson(),
       'domain': domain,
       'source': source,
-      'nonce': nonce,
+      'key': key,
       if (ipAddress != null) 'ipAddress': ipAddress,
       'attemptedAt': attemptedAt.toJson(),
       if (extraData != null) 'extraData': extraData?.toJson(),
@@ -160,7 +161,7 @@ class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
     _is.UuidValue? id,
     required String domain,
     required String source,
-    required String nonce,
+    required String key,
     String? ipAddress,
     DateTime? attemptedAt,
     Map<String, String>? extraData,
@@ -168,7 +169,7 @@ class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
          id: id,
          domain: domain,
          source: source,
-         nonce: nonce,
+         key: key,
          ipAddress: ipAddress,
          attemptedAt: attemptedAt,
          extraData: extraData,
@@ -182,7 +183,7 @@ class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
     Object? id = _Undefined,
     String? domain,
     String? source,
-    String? nonce,
+    String? key,
     Object? ipAddress = _Undefined,
     DateTime? attemptedAt,
     Object? extraData = _Undefined,
@@ -191,7 +192,7 @@ class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
       id: id is _is.UuidValue? ? id : this.id,
       domain: domain ?? this.domain,
       source: source ?? this.source,
-      nonce: nonce ?? this.nonce,
+      key: key ?? this.key,
       ipAddress: ipAddress is String? ? ipAddress : this.ipAddress,
       attemptedAt: attemptedAt ?? this.attemptedAt,
       extraData: extraData is Map<String, String>?
@@ -223,8 +224,8 @@ class RateLimitedRequestAttemptUpdateTable
     value,
   );
 
-  _is.ColumnValue<String, String> nonce(String value) => _is.ColumnValue(
-    table.nonce,
+  _is.ColumnValue<String, String> key(String value) => _is.ColumnValue(
+    table.key,
     value,
   );
 
@@ -259,8 +260,8 @@ class RateLimitedRequestAttemptTable extends _is.Table<_is.UuidValue?> {
       'source',
       this,
     );
-    nonce = _is.ColumnString(
-      'nonce',
+    key = _is.ColumnString(
+      'key',
       this,
     );
     ipAddress = _is.ColumnString(
@@ -287,9 +288,9 @@ class RateLimitedRequestAttemptTable extends _is.Table<_is.UuidValue?> {
   /// Example: "password_reset", "login_attempt", etc.
   late final _is.ColumnString source;
 
-  /// The unique identifier for the request.
+  /// The caller-provided string key identifying the rate limit bucket.
   /// Can be a request ID, a token, an email address, etc.
-  late final _is.ColumnString nonce;
+  late final _is.ColumnString key;
 
   /// The IP address calling the request, in case it is relevant.
   /// Should only be used for logging and auditing purposes.
@@ -306,7 +307,7 @@ class RateLimitedRequestAttemptTable extends _is.Table<_is.UuidValue?> {
     id,
     domain,
     source,
-    nonce,
+    key,
     ipAddress,
     attemptedAt,
     extraData,
@@ -387,6 +388,69 @@ class RateLimitedRequestAttemptRepository {
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [RateLimitedRequestAttempt]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `RateLimitedRequestAttempt.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<RateLimitedRequestAttempt>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<RateLimitedRequestAttempt>(
+      where: where?.call(RateLimitedRequestAttempt.t),
+      orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
+      orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
+      limit: limit,
+      offset: offset,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

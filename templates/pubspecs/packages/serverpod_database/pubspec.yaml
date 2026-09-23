@@ -16,7 +16,7 @@ dependencies:
   collection: ^1.18.0
   meta: ^1.15.0
   path: ^1.8.3
-  postgres: ^3.4.0
+  postgres: ^3.5.16
   serverpod_embedded_postgres: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION

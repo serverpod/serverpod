@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../concepts/column_value.dart';
 import '../concepts/columns.dart';
 import '../concepts/database_result.dart';
@@ -197,6 +199,19 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   });
 
   /// For most cases use the corresponding method in [Database] instead.
+  Stream<List<T>> watch<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Include? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<Table>? alsoTriggerOnTables,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
   Future<DatabaseResult> simpleQuery(
     DatabaseSession session,
     String query, {
@@ -228,6 +243,15 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Stream<DatabaseResult> unsafeWatch(
+    DatabaseSession session,
+    String query, {
+    QueryParameters? parameters,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<String>? triggerOnTables,
   });
 
   /// For most cases use the corresponding method in [Database] instead.

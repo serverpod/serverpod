@@ -422,4 +422,37 @@ void main() {
       expect(signedHeaders, contains('x-amz-meta-userid'));
     },
   );
+
+  test(
+    'Given a PresignedPutUploadStrategy with a custom endpoint on a non-standard port, '
+    'when uploading data, '
+    'then the Host header includes the port',
+    () async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(() => server.close(force: true));
+      final port = server.port;
+
+      final host = server.first.then((request) async {
+        await request.drain<void>();
+        request.response.statusCode = 200;
+        await request.response.close();
+        return request.headers.value('host');
+      });
+
+      await PresignedPutUploadStrategy().uploadData(
+        accessKey: 'testAccessKey',
+        secretKey: 'testSecretKey',
+        bucket: 'test-bucket',
+        region: 'us-east-1',
+        data: ByteData(1),
+        path: 'uploads/test-file.txt',
+        public: false,
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.http('localhost:$port', '/'),
+        ),
+      );
+
+      expect(await host, 'localhost:$port');
+    },
+  );
 }

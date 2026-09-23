@@ -17,24 +17,24 @@ const startWatchKeywords = [
   serverRestarted,
 ];
 
-/// Creates a `config/development.yaml` with port 0 (OS-assigned) to avoid
-/// port conflicts when multiple tests run concurrently or sequentially.
+/// Sets the server ports in `config/development.yaml` to 0 (OS-assigned) to
+/// avoid port conflicts when multiple tests run concurrently or sequentially.
+/// The rest of the config, including the database section, is kept as is.
 void createDynamicPortConfig(String serverDirPath) {
-  var configDir = Directory(path.join(serverDirPath, 'config'));
-  configDir.createSync(recursive: true);
-  File(path.join(configDir.path, 'development.yaml')).writeAsStringSync('''
-apiServer:
-  port: 0
-  publicHost: localhost
-  publicPort: 0
-  publicScheme: http
+  const serverSections = {'apiServer', 'insightsServer', 'webServer'};
+  var topLevelKey = RegExp(r'^(\w+):');
+  var portEntry = RegExp(r'^(\s+(?:port|publicPort):\s*)\d+');
 
-webServer:
-  port: 0
-  publicHost: localhost
-  publicPort: 0
-  publicScheme: http
-''');
+  var configFile = File(
+    path.join(serverDirPath, 'config', 'development.yaml'),
+  );
+  String? section;
+  var lines = configFile.readAsLinesSync().map((line) {
+    section = topLevelKey.firstMatch(line)?.group(1) ?? section;
+    if (!serverSections.contains(section)) return line;
+    return line.replaceFirstMapped(portEntry, (m) => '${m.group(1)}0');
+  });
+  configFile.writeAsStringSync('${lines.join('\n')}\n');
 }
 
 /// Starts the serverpod process and wires up a [KeywordSearchInStream] to
@@ -94,44 +94,77 @@ Future<void> waitForGeneratedOutput(
   }
 }
 
+/// The manifest the runner serving [serverDirPath] publishes.
+File runnerManifest(String serverDirPath) =>
+    File(path.join(serverDirPath, '.dart_tool', 'serverpod', 'runner.json'));
+
+/// Expects a start whose runner threw after publishing to say so at once.
+void expectRunnerStoppedDuringStartup(
+  ProcessResult result,
+  String serverDirPath,
+) {
+  var output = '${result.stdout}\n${result.stderr}';
+
+  expect(result.exitCode, isNot(0), reason: output);
+  expect(
+    output,
+    isNot(contains('did not come up in time')),
+    reason:
+        'start waited out the runner deadline instead of hearing '
+        'that the runner stopped:\n$output',
+  );
+  expect(output, contains('stopped during startup'), reason: output);
+  expect(output, contains('runner.log'), reason: output);
+  // The runner leaves its manifest behind on purpose, but not at `starting`.
+  var manifest = runnerManifest(serverDirPath);
+  expect(
+    manifest.existsSync() ? manifest.readAsStringSync() : '',
+    isNot(contains('"starting"')),
+    reason: 'the runner left its manifest at starting:\n$output',
+  );
+}
+
 void main() async {
-  group('Given a server project', () {
-    late String sandboxDir;
-    var projectName =
-        'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-    var serverDir = path.join(projectName, '${projectName}_server');
+  late String sandboxDir;
+  var projectName =
+      'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+  var serverDir = path.join(projectName, '${projectName}_server');
 
-    Process? serverProcess;
-    KeywordSearchInStream? streamSearch;
+  Process? serverProcess;
+  KeywordSearchInStream? streamSearch;
 
-    setUpAll(() async {
-      sandboxDir = d.sandbox;
-      var result = await runServerpod(
-        [
-          'create',
-          projectName,
-          '--template',
-          'server',
-          '--no-interactive',
-        ],
-        workingDirectory: sandboxDir,
-      );
-      assert(
-        result.exitCode == 0,
-        'Failed to create the serverpod project.',
-      );
-      createDynamicPortConfig(path.join(sandboxDir, serverDir));
-    });
+  setUpAll(() async {
+    sandboxDir = d.sandbox;
+    var result = await runServerpod(
+      [
+        'create',
+        projectName,
+        '--template',
+        'server',
+        '--no-interactive',
+      ],
+      workingDirectory: sandboxDir,
+    );
+    assert(
+      result.exitCode == 0,
+      'Failed to create the serverpod project.',
+    );
+    createDynamicPortConfig(path.join(sandboxDir, serverDir));
+  });
 
-    tearDown(() async {
-      await serverProcess?.killAndWaitForExit();
-      streamSearch?.cancel();
+  tearDown(() async {
+    await serverProcess?.killAndWaitForExit();
+    streamSearch?.cancel();
+    await stopRunner(path.join(sandboxDir, serverDir));
 
-      serverProcess = null;
-      streamSearch = null;
-    });
+    serverProcess = null;
+    streamSearch = null;
+  });
 
-    group("when running 'serverpod start --watch'", () {
+  group(
+    'Given a server project, '
+    "when running 'serverpod start --watch',",
+    () {
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
           ['start', '--watch'],
@@ -151,25 +184,33 @@ void main() async {
           );
         },
       );
+    },
+  );
 
-      test(
-        'then server is hot-reloaded.',
-        () async {
-          await waitForServerRunning(streamSearch!);
+  group("Given a server project running with 'serverpod start --watch',", () {
+    setUp(() async {
+      (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
+        ['start', '--watch'],
+        workingDirectory: path.join(sandboxDir, serverDir),
+        keywords: startWatchKeywords,
+      );
+      await waitForServerRunning(streamSearch!);
+    });
 
-          // Add a new endpoint file.
-          var endpointFile = File(
-            path.join(
-              sandboxDir,
-              serverDir,
-              'lib',
-              'src',
-              'endpoints',
-              'test_endpoint.dart',
-            ),
-          );
-          endpointFile.createSync(recursive: true);
-          endpointFile.writeAsStringSync('''
+    group('when an endpoint file is added,', () {
+      setUp(() async {
+        var endpointFile = File(
+          path.join(
+            sandboxDir,
+            serverDir,
+            'lib',
+            'src',
+            'endpoints',
+            'test_endpoint.dart',
+          ),
+        );
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
 class TestEndpoint extends Endpoint {
@@ -178,7 +219,11 @@ class TestEndpoint extends Endpoint {
   }
 }
 ''', flush: true);
+      });
 
+      test(
+        'then server is hot-reloaded',
+        () async {
           await expectLater(
             streamSearch!.keywordFound,
             completion(isTrue),
@@ -186,140 +231,184 @@ class TestEndpoint extends Endpoint {
           );
         },
       );
+    });
 
-      test(
-        'when a model file is added, modified, and deleted then server is reloaded each time.',
-        () async {
-          await waitForServerRunning(streamSearch!);
-
-          // Add a model file.
-          var modelFile = File(
-            path.join(
-              sandboxDir,
-              serverDir,
-              'lib',
-              'src',
-              'models',
-              'test_entity.spy.yaml',
-            ),
-          );
-          modelFile.createSync(recursive: true);
-          modelFile.writeAsStringSync('''
+    test(
+      'when a model file is added, modified, and deleted, '
+      'then server is reloaded each time',
+      () async {
+        // Add a model file.
+        var modelFile = File(
+          path.join(
+            sandboxDir,
+            serverDir,
+            'lib',
+            'src',
+            'models',
+            'test_entity.spy.yaml',
+          ),
+        );
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
 class: TestEntity
 fields:
   name: String
 ''', flush: true);
 
-          await expectLater(
-            streamSearch!.keywordFound,
-            completion(isTrue),
-            reason: 'Server was not reloaded after model file was added.',
-          );
+        await expectLater(
+          streamSearch!.keywordFound,
+          completion(isTrue),
+          reason: 'Server was not reloaded after model file was added.',
+        );
 
-          // Verify generated file exists in client package.
-          var clientDir = path.join(projectName, '${projectName}_client');
-          var entityFile = File(
-            path.join(
-              sandboxDir,
-              clientDir,
-              'lib',
-              'src',
-              'protocol',
-              'test_entity.dart',
-            ),
-          );
-          await waitForGeneratedOutput(
-            () =>
-                entityFile.existsSync() &&
-                entityFile.readAsStringSync().contains('class TestEntity'),
-          );
-          expect(
-            entityFile.existsSync(),
-            isTrue,
-            reason: 'Generated entity file not found in client package.',
-          );
-          expect(
-            entityFile.readAsStringSync(),
-            contains('class TestEntity'),
-            reason: 'Generated entity file did not contain expected class.',
-          );
+        // Verify generated file exists in client package.
+        var clientDir = path.join(projectName, '${projectName}_client');
+        var entityFile = File(
+          path.join(
+            sandboxDir,
+            clientDir,
+            'lib',
+            'src',
+            'protocol',
+            'test_entity.dart',
+          ),
+        );
+        await waitForGeneratedOutput(
+          () =>
+              entityFile.existsSync() &&
+              entityFile.readAsStringSync().contains('class TestEntity'),
+        );
+        expect(
+          entityFile.existsSync(),
+          isTrue,
+          reason: 'Generated entity file not found in client package.',
+        );
+        expect(
+          entityFile.readAsStringSync(),
+          contains('class TestEntity'),
+          reason: 'Generated entity file did not contain expected class.',
+        );
 
-          // Modify the model file.
-          await Future.delayed(const Duration(seconds: 1));
-          modelFile.writeAsStringSync('''
+        // Modify the model file.
+        await Future.delayed(const Duration(seconds: 1));
+        modelFile.writeAsStringSync('''
 class: TestEntity
 fields:
   name: String
   age: int
 ''', flush: true);
 
+        await expectLater(
+          streamSearch!.keywordFound,
+          completion(isTrue),
+          reason: 'Server was not reloaded after model file was modified.',
+        );
+
+        await waitForGeneratedOutput(
+          () =>
+              entityFile.existsSync() &&
+              entityFile.readAsStringSync().contains('int age'),
+        );
+        expect(
+          entityFile.readAsStringSync(),
+          contains('int age'),
+          reason: 'Generated entity file did not contain the added field.',
+        );
+
+        // Delete the model file.
+        await Future.delayed(const Duration(seconds: 1));
+        modelFile.deleteSync();
+
+        await expectLater(
+          streamSearch!.keywordFound,
+          completion(isTrue),
+          reason: 'Server was not reloaded after model file was deleted.',
+        );
+
+        await waitForGeneratedOutput(() => !entityFile.existsSync());
+        expect(
+          entityFile.existsSync(),
+          isFalse,
+          reason: 'Generated entity file still exists after model was deleted.',
+        );
+      },
+    );
+  });
+
+  group(
+    'Given a server project, '
+    "when running 'serverpod start --no-watch'",
+    () {
+      setUp(() async {
+        (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
+          ['start', '--no-watch'],
+          workingDirectory: path.join(sandboxDir, serverDir),
+          keywords: startWatchKeywords,
+        );
+      });
+
+      test(
+        'then it reaches running state',
+        () async {
           await expectLater(
             streamSearch!.keywordFound,
             completion(isTrue),
-            reason: 'Server was not reloaded after model file was modified.',
-          );
-
-          await waitForGeneratedOutput(
-            () =>
-                entityFile.existsSync() &&
-                entityFile.readAsStringSync().contains('int age'),
-          );
-          expect(
-            entityFile.readAsStringSync(),
-            contains('int age'),
-            reason: 'Generated entity file did not contain the added field.',
-          );
-
-          // Delete the model file.
-          await Future.delayed(const Duration(seconds: 1));
-          modelFile.deleteSync();
-
-          await expectLater(
-            streamSearch!.keywordFound,
-            completion(isTrue),
-            reason: 'Server was not reloaded after model file was deleted.',
-          );
-
-          await waitForGeneratedOutput(() => !entityFile.existsSync());
-          expect(
-            entityFile.existsSync(),
-            isFalse,
             reason:
-                'Generated entity file still exists after model was deleted.',
+                'Server did not reach "Server running." state before timeout.',
           );
         },
       );
-    });
+    },
+    // This test is flaky, so we retry it 3 times to ensure it passes.
+    // Issue: https://github.com/serverpod/serverpod/issues/4903
+    retry: 3,
+  );
 
-    group(
-      "when running 'serverpod start --no-watch'",
-      () {
-        setUp(() async {
-          (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
-            ['start', '--no-watch'],
-            workingDirectory: path.join(sandboxDir, serverDir),
-            keywords: startWatchKeywords,
-          );
-        });
+  group(
+    'Given a server project whose runner throws after publishing its manifest,',
+    () {
+      // A directory at vm-service-info.json makes the runner throw after boot,
+      // the only way a test can make it throw from outside.
+      late Directory blocker;
 
-        test(
-          'then it reaches running state.',
-          () async {
-            await expectLater(
-              streamSearch!.keywordFound,
-              completion(isTrue),
-              reason:
-                  'Server did not reach "Server running." state before timeout.',
-            );
-          },
+      setUp(() async {
+        blocker = Directory(
+          path.join(
+            sandboxDir,
+            serverDir,
+            '.dart_tool',
+            'serverpod',
+            'vm-service-info.json',
+          ),
         );
-      },
-      // This test is flaky, so we retry it 3 times to ensure it passes.
-      // Issue: https://github.com/serverpod/serverpod/issues/4903
-      retry: 3,
-    );
+        await blocker.create(recursive: true);
+      });
 
-    group("when running 'serverpod start'", () {
+      tearDown(() async {
+        await blocker.delete(recursive: true);
+      });
+
+      test(
+        'when the project is started, '
+        'then start reports the failure at once, with the runner log',
+        () async {
+          var result = await runServerpod(
+            ['start', '--no-watch', '--no-attach', '--no-docker'],
+            workingDirectory: path.join(sandboxDir, serverDir),
+          );
+          expectRunnerStoppedDuringStartup(
+            result,
+            path.join(sandboxDir, serverDir),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a server project, '
+    "when running 'serverpod start'",
+    () {
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
           ['start'],
@@ -354,10 +443,10 @@ fields:
           );
         },
       );
-    });
-  });
+    },
+  );
 
-  group('Given a project with a configured Flutter app', () {
+  group('Given a project with a configured Flutter app,', () {
     const projectName = 'vscode_test_app';
     late String sandboxDir;
     late String serverDir;
@@ -425,6 +514,7 @@ fields:
       await serverProcess?.killAndWaitForExit();
       await stdoutSubscription?.cancel();
       await stderrSubscription?.cancel();
+      await stopRunner(serverDir);
       serverProcess = null;
       stdoutSubscription = null;
       stderrSubscription = null;
@@ -432,33 +522,42 @@ fields:
       if (debugPortGate.existsSync()) debugPortGate.deleteSync();
     });
 
+    /// Starts `serverpod start --no-tui` with the fake Flutter on PATH and
+    /// [fakeFlutterEnvironment], capturing its output in [processOutput].
+    Future<void> startWithFakeFlutter(
+      Map<String, String> fakeFlutterEnvironment,
+    ) async {
+      final pathSeparator = Platform.isWindows ? ';' : ':';
+      serverProcess = await startServerpod(
+        ['start', '--no-watch', '--no-tui'],
+        workingDirectory: serverDir,
+        environment: {
+          'PATH':
+              '$fakeFlutterBinDir$pathSeparator'
+              '${Platform.environment['PATH'] ?? ''}',
+          ...fakeFlutterEnvironment,
+        },
+      );
+      stdoutSubscription = serverProcess!.stdout
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .listen(processOutput.writeln);
+      stderrSubscription = serverProcess!.stderr
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .listen(processOutput.writeln);
+    }
+
     test(
       'when running serverpod start from an IDE, '
       'then start forwards the IDE requests to the flutter process',
       () async {
-        final pathSeparator = Platform.isWindows ? ';' : ':';
-        serverProcess = await startServerpod(
-          ['start', '--no-watch', '--no-tui'],
-          workingDirectory: serverDir,
-          environment: {
-            'PATH':
-                '$fakeFlutterBinDir$pathSeparator'
-                '${Platform.environment['PATH'] ?? ''}',
-            // Ensure the IDE request reaches the proxy before Flutter has
-            // published an upstream VM service, matching VS Code's attach
-            // behavior during `serverpod start`.
-            'FAKE_FLUTTER_DEBUG_PORT_GATE': debugPortGate.path,
-          },
-        );
-
-        stdoutSubscription = serverProcess!.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen(processOutput.writeln);
-        stderrSubscription = serverProcess!.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen(processOutput.writeln);
+        // Ensure the IDE request reaches the proxy before Flutter has
+        // published an upstream VM service, matching VS Code's attach
+        // behavior during `serverpod start`.
+        await startWithFakeFlutter({
+          'FAKE_FLUTTER_DEBUG_PORT_GATE': debugPortGate.path,
+        });
 
         final proxyHttpUri = await _waitForVmServiceInfo(
           flutterVmServiceInfoFile,
@@ -515,8 +614,52 @@ fields:
         expect(result['servedBy'], 'fake-flutter-vm-service');
       },
     );
+
+    group('when the first UI attaches,', () {
+      late File launchLog;
+
+      setUp(() async {
+        launchLog = File(path.join(sandboxDir, projectName, 'launches.log'));
+        if (launchLog.existsSync()) launchLog.deleteSync();
+        await startWithFakeFlutter({'FAKE_FLUTTER_LAUNCH_LOG': launchLog.path});
+
+        // The app has come up, so a second launch would have been recorded.
+        await waitForGeneratedOutput(
+          () => processOutput.toString().contains('[$projectName] running'),
+          timeout: const Duration(seconds: 120),
+        );
+        expect(
+          launchLog.existsSync(),
+          isTrue,
+          reason: 'The app was never launched.\n$processOutput',
+        );
+      });
+
+      test(
+        'then the app launches once, against the API address the pod reported',
+        () async {
+          final launches = _launchesIn(launchLog);
+          final manifest = jsonDecode(
+            runnerManifest(serverDir).readAsStringSync(),
+          );
+          final api = ((manifest as Map)['servers'] as Map)['api'];
+
+          expect(launches, hasLength(1));
+          expect(
+            launches.single['args'],
+            contains('--dart-define=SERVER_URL=$api'),
+          );
+        },
+      );
+    });
   });
 }
+
+/// The launches the fake Flutter recorded in [launchLog], one map per line.
+List<Map<String, Object?>> _launchesIn(File launchLog) => [
+  for (final line in launchLog.readAsLinesSync())
+    if (line.isNotEmpty) Map<String, Object?>.from(jsonDecode(line) as Map),
+];
 
 Future<Uri> _waitForVmServiceInfo(
   File file, {

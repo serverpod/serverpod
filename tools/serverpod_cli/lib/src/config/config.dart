@@ -5,7 +5,6 @@ import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_manifest.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
@@ -86,7 +85,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required List<ModuleConfig> modules,
     this.serializeAsJsonbByDefault = false,
     required this.extraClasses,
-    required this.enabledFeatures,
+    required this.isDatabaseEnabled,
     required this.databaseDialect,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
@@ -289,8 +288,7 @@ class GeneratorConfig implements ModelLoadConfig {
       ];
     }
 
-    var isDatabaseDisabled = !isFeatureEnabled(ServerpodFeature.database);
-    if (isDatabaseDisabled) {
+    if (!isDatabaseEnabled) {
       return [
         ...serverPackageDirectoryPathParts,
         ..._defaultRelativeServerTestToolsPathParts,
@@ -319,14 +317,11 @@ class GeneratorConfig implements ModelLoadConfig {
   /// stored in the database.
   final bool serializeAsJsonbByDefault;
 
-  /// All the features that are enabled in the serverpod project.
-  final List<ServerpodFeature> enabledFeatures;
+  /// Whether the database is enabled in the serverpod project.
+  final bool isDatabaseEnabled;
 
   /// The dialect of the database, if enabled. Default is [DatabaseDialect.postgres].
   final DatabaseDialect databaseDialect;
-
-  bool isFeatureEnabled(ServerpodFeature feature) =>
-      enabledFeatures.contains(feature);
 
   final List<ExperimentalFeature> experimentalFeatures;
 
@@ -347,17 +342,14 @@ class GeneratorConfig implements ModelLoadConfig {
   /// All the modules including my self and internal modules.
   List<ModuleConfig> get modulesAll => _modules;
 
-  /// Create a new [GeneratorConfig] by loading the configuration in the [serverRootDir].
+  /// The absolute server package directory [serverRootDir] names.
   ///
-  /// If [serverRootDir] is empty, the server directory will be automatically
-  /// detected by searching the current directory and nearby locations.
-  ///
-  /// The [interactive] parameter controls whether interactive prompts are enabled.
-  /// Defaults to true unless running in a CI environment (detected via ci package).
-  /// Explicit flag value overrides CI detection.
-  static Future<GeneratorConfig> load({
-    String serverRootDir = '',
+  /// An empty value searches from [startDir] or the current directory, which
+  /// may prompt unless [interactive] is false, or null in CI.
+  static Future<String> resolveServerRootDir(
+    String serverRootDir, {
     required bool? interactive,
+    Directory? startDir,
   }) async {
     // Auto-detect server directory if not specified
     if (serverRootDir.isEmpty) {
@@ -366,6 +358,7 @@ class GeneratorConfig implements ModelLoadConfig {
       final isInteractive = interactive ?? !ci.isCI;
 
       var serverDir = await ServerDirectoryFinder.findOrPrompt(
+        startDir: startDir,
         interactive: isInteractive,
       );
       serverRootDir = serverDir.path;
@@ -373,7 +366,18 @@ class GeneratorConfig implements ModelLoadConfig {
 
     // Anchor the path once at resolution time,
     // so a later cwd change doesn't silently retarget config lookups.
-    serverRootDir = p.normalize(p.absolute(serverRootDir));
+    return p.normalize(p.absolute(serverRootDir));
+  }
+
+  /// Loads the config at [serverRootDir], resolved by [resolveServerRootDir].
+  static Future<GeneratorConfig> load({
+    String serverRootDir = '',
+    required bool? interactive,
+  }) async {
+    serverRootDir = await resolveServerRootDir(
+      serverRootDir,
+      interactive: interactive,
+    );
 
     var serverPackageDirectoryPathParts = p.split(serverRootDir);
 
@@ -516,14 +520,22 @@ class GeneratorConfig implements ModelLoadConfig {
       }
     }
 
-    var enabledFeatures = _enabledFeatures(file, generatorConfig);
-
     var enabledExperimentalFeatures = [
       ..._enabledExperimentalFeatures(file, generatorConfig),
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    var databaseDialect = await _inferDatabaseDialectFromConfigs(serverRootDir);
+    var databaseConfigsByFile = await _loadDatabaseConfigsFromRunModeFiles(
+      serverRootDir,
+    );
+
+    var isDatabaseEnabled = _inferDatabaseEnabledFromConfigs(
+      databaseConfigsByFile,
+    );
+
+    var databaseDialect = _inferDatabaseDialectFromConfigs(
+      databaseConfigsByFile,
+    );
 
     var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
       file,
@@ -543,7 +555,7 @@ class GeneratorConfig implements ModelLoadConfig {
       serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
-      enabledFeatures: enabledFeatures,
+      isDatabaseEnabled: isDatabaseEnabled,
       databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
     );
@@ -557,35 +569,73 @@ class GeneratorConfig implements ModelLoadConfig {
     return config['serialize_as_jsonb_by_default'] ?? false;
   }
 
-  static Future<DatabaseDialect> _inferDatabaseDialectFromConfigs(
-    String serverRootDir,
-  ) async {
+  static const _runModeConfigFileBaseNames = {
+    'development.yaml',
+    'staging.yaml',
+    'production.yaml',
+    'test.yaml',
+  };
+
+  /// Loads the database config of each run-mode config file, keyed by file
+  /// name. A run-mode config file without a database section maps to `null`.
+  static Future<Map<String, DatabaseConfig?>>
+  _loadDatabaseConfigsFromRunModeFiles(String serverRootDir) async {
     final configDir = Directory(p.join(serverRootDir, 'config'));
     if (!await configDir.exists()) {
-      return DatabaseDialect.postgres;
+      return {};
     }
 
-    final dialectsByFile = <String, DatabaseDialect>{};
+    final databaseConfigsByFile = <String, DatabaseConfig?>{};
     await for (final entity in configDir.list(followLinks: false)) {
       if (entity is! File) continue;
       final basename = p.basename(entity.path);
-      if (!(basename.endsWith('.yaml') || basename.endsWith('.yml')) ||
-          basename.startsWith('generator.') ||
-          basename.startsWith('passwords.')) {
+      if (!_runModeConfigFileBaseNames.contains(basename)) {
         continue;
       }
 
       final yamlRoot = loadYaml(await entity.readAsString());
       if (yamlRoot == null || yamlRoot is! Map) continue;
 
-      final dialect = inferDatabaseDialectFromConfigMap(
+      databaseConfigsByFile[basename] = inferDatabaseConfigFromConfigMap(
         Map<dynamic, dynamic>.from(yamlRoot),
         environment: Platform.environment,
       );
-      if (dialect != null) {
-        dialectsByFile[basename] = dialect;
-      }
     }
+
+    return databaseConfigsByFile;
+  }
+
+  /// The database is enabled if run-mode config files (when they exist)
+  /// all declare a database section.
+  static bool _inferDatabaseEnabledFromConfigs(
+    Map<String, DatabaseConfig?> databaseConfigsByFile,
+  ) {
+    if (databaseConfigsByFile.isEmpty) return true;
+
+    final configurations = databaseConfigsByFile.values
+        .map((config) => config != null)
+        .toSet();
+    if (configurations.length > 1) {
+      final details = databaseConfigsByFile.entries
+          .map((e) => '${e.key}: ${e.value != null ? 'enabled' : 'disabled'}')
+          .sorted()
+          .join(', ');
+      throw StateError(
+        'Inconsistent database configurations across run-mode config files: $details. '
+        'A Serverpod project must use uniform database configuration in all run modes.',
+      );
+    }
+
+    return configurations.single;
+  }
+
+  static DatabaseDialect _inferDatabaseDialectFromConfigs(
+    Map<String, DatabaseConfig?> databaseConfigsByFile,
+  ) {
+    final dialectsByFile = <String, DatabaseDialect>{
+      for (final entry in databaseConfigsByFile.entries)
+        if (entry.value case final config?) entry.key: config.dialect,
+    };
 
     if (dialectsByFile.isEmpty) {
       return DatabaseDialect.postgres;
@@ -604,46 +654,6 @@ class GeneratorConfig implements ModelLoadConfig {
     }
 
     return dialects.single;
-  }
-
-  static List<ServerpodFeature> _enabledFeatures(File file, YamlMap config) {
-    if (!file.existsSync()) {
-      return ServerpodFeature.values
-          .where((f) => f.missingFileDefault)
-          .toList();
-    }
-
-    var featuresNode = config.nodes['features'];
-    var featuresMap = featuresNode?.value as YamlMap?;
-
-    // If features is not specified or not a Map, use defaults
-    if (featuresMap == null) {
-      return ServerpodFeature.values.where((f) => f.defaultValue).toList();
-    }
-
-    // Return all features based on their explicit value or default
-    return ServerpodFeature.values.where((feature) {
-      var featureName = feature.name;
-      var featureNode = featuresMap.nodes[featureName];
-      // If no value set, use default
-      if (featureNode == null) {
-        return feature.defaultValue;
-      }
-
-      var featureValue = featureNode.value;
-
-      // Valid values are true or false
-      if (featureValue is bool) return featureValue;
-
-      // Invalid value - warn and use default
-      var span = featureNode.span;
-      var message =
-          'Invalid value for feature \'$featureName\': \'${featureValue.toString()}\'. '
-          'Expected \'true\' or \'false\'. '
-          'Using default value: ${feature.defaultValue}.';
-      log.warning(span.message(message));
-      return feature.defaultValue;
-    }).toList();
   }
 
   static List<ExperimentalFeature> _enabledExperimentalFeatures(

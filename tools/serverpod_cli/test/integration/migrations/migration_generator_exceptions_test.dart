@@ -26,7 +26,7 @@ void main() {
     'test_assets',
   );
 
-  group('Given a latest version migration folder that is empty', () {
+  group('Given a latest version migration folder that is empty,', () {
     var projectDirectory = Directory(
       path.join(testAssetsPath, 'empty_migration'),
     );
@@ -64,7 +64,8 @@ void main() {
     );
 
     test(
-      'when creating repair migration then MigrationVersionLoadException exception is thrown.',
+      'when creating repair migration, '
+      'then MigrationVersionLoadException exception is thrown',
       () async {
         expect(
           generator.repairMigration(
@@ -72,6 +73,7 @@ void main() {
                 CreateRepairMigrationOption.runModes.first /* development */,
             force: false,
             dialect: DatabaseDialect.postgres,
+            insightsAddress: 'http://localhost:8081/',
           ),
           throwsA(
             isA<MigrationVersionLoadException>()

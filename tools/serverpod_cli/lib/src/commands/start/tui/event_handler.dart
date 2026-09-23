@@ -1,10 +1,9 @@
+import 'dart:async';
+
 import 'package:serverpod_tui/serverpod_tui.dart';
 
-import '../../../util/serverpod_cli_logger.dart';
 import '../log_history.dart';
 import 'app.dart';
-
-int _actionCounter = 0;
 
 /// Renders a session's [StartLogHistory] in the TUI.
 ///
@@ -30,16 +29,16 @@ extension TuiLogHistory on StartLogHistory {
   }
 }
 
-/// Runs an async action as a tracked operation with spinner in the TUI.
+/// Runs [action] once the stack can take it, holding [state.actionBusy] until
+/// it ends so keys do not queue commands.
 ///
-/// Guards against concurrent actions - if [state.actionBusy] is true the action
-/// is silently ignored. The action also requires [state.serverReady], unless
-/// [allowWhenStartable] is set and the session is degraded but
-/// [state.serverStartable] (used by the "Start server" recovery action, which
-/// runs precisely when no server is up yet).
+/// The runner records the operation and any failure for every attached
+/// client, so the UI keeps nothing but the busy flag. The action requires
+/// [state.serverReady], unless [allowWhenStartable] is set and the session is
+/// degraded but [state.serverStartable] (the "Start server" recovery action,
+/// which runs precisely when no server is up yet).
 void runTrackedAction(
   StartAppStateHolder holder,
-  String label,
   Future<void> Function() action, {
   bool allowWhenStartable = false,
 }) {
@@ -49,38 +48,12 @@ void runTrackedAction(
   if (state.actionBusy || !ready) return;
 
   state.actionBusy = true;
-  final id =
-      '${label.hashCode}_${DateTime.now().millisecondsSinceEpoch}_${++_actionCounter}';
-  state.activeOperations[id] = TrackedOperation(id: id, label: label);
   holder.markDirty();
 
-  action()
-      .then((_) {
-        _completeTrackedAction(holder, id, success: true);
-      })
-      .catchError((Object e) {
-        _completeTrackedAction(holder, id, success: false);
-        log.error('$label failed: $e');
-      });
-}
-
-void _completeTrackedAction(
-  StartAppStateHolder holder,
-  String id, {
-  required bool success,
-}) {
-  final state = holder.state;
-  state.actionBusy = false;
-  final op = state.activeOperations.remove(id);
-  if (op != null) {
-    op.stopwatch.stop();
-    state.logHistory.add(
-      CompletedOperation(
-        label: op.label,
-        success: success,
-        duration: op.stopwatch.elapsed,
-      ),
-    );
-  }
-  holder.markDirty();
+  unawaited(
+    action().catchError((_) {}).whenComplete(() {
+      state.actionBusy = false;
+      holder.markDirty();
+    }),
+  );
 }

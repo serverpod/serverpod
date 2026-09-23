@@ -339,7 +339,7 @@ class PostgresDatabaseConnection
     const tableAlias = 't';
 
     var query =
-        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id';
+        'UPDATE ${table.quotedTableName} AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id';
     if (!noReturn) {
       var returning = buildReturningClause(table, tableAlias: tableAlias);
       query += ' RETURNING $returning';
@@ -398,7 +398,7 @@ class PostgresDatabaseConnection
         .join(', ');
 
     var query =
-        'UPDATE "${table.tableName}" SET $setClause '
+        'UPDATE ${table.quotedTableName} SET $setClause '
         'WHERE "${table.id.columnName}" = ${poolManager.encoder.convert(id)} '
         'RETURNING *';
 
@@ -469,7 +469,7 @@ class PostgresDatabaseConnection
         // unnecessary: run the UPDATE directly against the selected ids.
         updateQuery =
             'WITH rows_to_update AS ($subquery) '
-            'UPDATE "${table.tableName}" SET $setClause '
+            'UPDATE ${table.quotedTableName} SET $setClause '
             'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update)';
       } else {
         var orderByClause = switch (orders) {
@@ -482,14 +482,15 @@ class PostgresDatabaseConnection
         updateQuery =
             'WITH rows_to_update AS ($subquery), '
             'updated AS ('
-            'UPDATE "${table.tableName}" SET $setClause '
+            'UPDATE ${table.quotedTableName} SET $setClause '
             'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
             'RETURNING *'
             ') '
             'SELECT * FROM updated$orderByClause';
       }
     } else {
-      updateQuery = 'UPDATE "${table.tableName}" SET $setClause WHERE $where';
+      updateQuery =
+          'UPDATE ${table.quotedTableName} SET $setClause WHERE $where';
       if (!noReturn) updateQuery += ' RETURNING *';
     }
 
@@ -753,6 +754,36 @@ class PostgresDatabaseConnection
     );
 
     return result.affectedRows;
+  }
+
+  @override
+  Stream<List<T>> watch<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Include? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<Table>? alsoTriggerOnTables,
+  }) {
+    throw UnsupportedError(
+      'Database.watch is not supported on PostgreSQL.',
+    );
+  }
+
+  @override
+  Stream<DatabaseResult> unsafeWatch(
+    DatabaseSession session,
+    String query, {
+    QueryParameters? parameters,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<String>? triggerOnTables,
+  }) {
+    throw UnsupportedError(
+      'Database.unsafeWatch is not supported on PostgreSQL.',
+    );
   }
 
   Future<Iterable<Map<String, dynamic>>> _mappedResultsQuery(

@@ -376,4 +376,74 @@ class InvalidClass {}
       );
     },
   );
+
+  group(
+    'Given an analyzed endpoint file cached under its real-cased path',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late File endpointFile;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        endpointFile = File(path.join(trackedDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+        analyzer = EndpointsAnalyzer(trackedDirectory);
+        await analyzer.analyze(collector: CodeGenerationCollector());
+      });
+
+      test(
+        'when the file context is updated with the same file under a '
+        'differently cased path '
+        'then it is re-analyzed as the same endpoint file.',
+        () async {
+          // The file watcher canonicalizes paths, which lowercases them on
+          // Windows. The analyzer must not treat that as a second file.
+          endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+
+  Future<String> goodbye(Session session, String name) async {
+    return 'Goodbye \$name';
+  }
+}
+''');
+          var changedPath = path.canonicalize(endpointFile.path);
+          await expectLater(
+            analyzer.updateFileContexts({changedPath}),
+            completion(true),
+          );
+
+          var collector = CodeGenerationCollector();
+          var definitions = await analyzer.analyze(
+            collector: collector,
+            models: [],
+            changedFiles: {changedPath},
+          );
+
+          expect(collector.errors, isEmpty);
+          expect(definitions, hasLength(1));
+          expect(definitions.single.filePath, endpointFile.path);
+          expect(
+            definitions.single.methods.map((m) => m.name),
+            containsAll(['hello', 'goodbye']),
+          );
+        },
+      );
+    },
+  );
 }

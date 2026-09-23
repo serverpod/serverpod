@@ -227,7 +227,7 @@ void main() {
     });
 
     test(
-      'when storing a file then it uploads with publicRead ACL',
+      'when storing a file then it uploads without an object ACL',
       () async {
         when(
           () => mockObjects.insert(
@@ -251,7 +251,7 @@ void main() {
             any(),
             'test-bucket',
             uploadMedia: any(named: 'uploadMedia'),
-            predefinedAcl: 'publicRead',
+            predefinedAcl: null,
             ifGenerationMatch: null,
           ),
         ).called(1);
@@ -330,7 +330,7 @@ void main() {
             any(),
             'test-bucket',
             uploadMedia: any(named: 'uploadMedia'),
-            predefinedAcl: 'publicRead',
+            predefinedAcl: null,
             ifGenerationMatch: '0',
           ),
         ).called(1);
@@ -799,7 +799,7 @@ void main() {
         expect(
           url,
           contains(
-            'X-Goog-SignedHeaders=content-type%3Bhost%3Bx-goog-acl%3B'
+            'X-Goog-SignedHeaders=content-type%3Bhost%3B'
             'x-goog-content-length-range',
           ),
         );
@@ -942,7 +942,7 @@ void main() {
 
     test(
       'when creating a direct upload description '
-      'then it includes public-read ACL header when public is true',
+      'then it omits the ACL header when public is true',
       () async {
         final description = await storage.createUploadDescription(
           session: mockSession,
@@ -950,7 +950,7 @@ void main() {
         );
 
         final data = jsonDecode(description.encode()) as Map<String, dynamic>;
-        expect(data['headers']['x-goog-acl'], 'public-read');
+        expect(data['headers'], isNot(contains('x-goog-acl')));
       },
     );
 
@@ -1341,7 +1341,7 @@ void main() {
             any(),
             'test-bucket',
             uploadMedia: any(named: 'uploadMedia'),
-            predefinedAcl: 'publicRead',
+            predefinedAcl: null,
             ifGenerationMatch: null,
           ),
         ).called(1);

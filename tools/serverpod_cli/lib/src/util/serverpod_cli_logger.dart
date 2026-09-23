@@ -14,6 +14,8 @@ import 'package:serverpod_shared/log_io.dart';
 /// Singleton instance of logger.
 cli.Logger? _logger;
 
+bool _loggerIsDefault = false;
+
 /// Replacements for emojis that are not supported on Windows.
 final Map<String, String> _windowsLoggerReplacements = {
   '🥳': '=D',
@@ -31,15 +33,22 @@ void initializeLogger() {
     'Only one logger initialization is allowed.',
   );
 
-  _logger = ServerpodCliLogger(
-    IsolatedLogWriter(
-      () => StdOutLogWriter(
-        replacements: Platform.isWindows ? _windowsLoggerReplacements : null,
-      ),
-    ),
-  );
+  _logger = ServerpodCliLogger(stdOutLogWriter());
+  _loggerIsDefault = true;
   _attachGlobalLogBridge();
 }
+
+/// Whether no logger or the one [initializeLogger] installs is in place.
+///
+/// A command may replace only this default, not a test's or embedder's logger.
+bool get loggerIsDefault => _logger == null || _loggerIsDefault;
+
+/// A new stdout writer of the kind [initializeLogger] installs.
+shared.LogWriter stdOutLogWriter() => IsolatedLogWriter(
+  () => StdOutLogWriter(
+    replacements: Platform.isWindows ? _windowsLoggerReplacements : null,
+  ),
+);
 
 /// Replaces the logger singleton with the given [logger].
 ///
@@ -50,6 +59,7 @@ void initializeLoggerWith(cli.Logger logger) {
     logger.logLevel = previous.logLevel;
   }
   _logger = logger;
+  _loggerIsDefault = false;
   _attachGlobalLogBridge();
 }
 
@@ -135,6 +145,7 @@ Future<void> closeLogger() async {
   await _detachGlobalLogBridge();
   final logger = _logger;
   _logger = null;
+  _loggerIsDefault = false;
   if (logger == null) return;
   await logger.flush();
   if (logger is ServerpodCliLogger) {

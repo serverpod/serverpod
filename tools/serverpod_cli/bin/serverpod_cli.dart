@@ -5,7 +5,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
-import 'package:serverpod_cli/src/analytics/generate_tracker.dart';
+import 'package:serverpod_cli/src/analytics/flush_analytics.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/cloud.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
@@ -19,12 +19,13 @@ import 'package:serverpod_cli/src/commands/mcp.dart';
 import 'package:serverpod_cli/src/commands/migrate.dart';
 import 'package:serverpod_cli/src/commands/quickstart.dart';
 import 'package:serverpod_cli/src/commands/run.dart';
+import 'package:serverpod_cli/src/commands/runner.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -82,7 +83,9 @@ void main(List<String> args) async {
 /// avoid invoking the webpage every time the CLI is run if there is any
 /// configuration preventing the CLI from writing to the user home directory.
 Future<void> _main(List<String> args) async {
-  initializeCliAnalytics(CliAnalytics(analytics: _postHogAnalytics));
+  initializeCliAnalytics(
+    CliAnalytics(analytics: _postHogAnalytics, commandAnalytics: _analytics),
+  );
 
   final resourceManager = ResourceManager();
   final runCount = resourceManager.runCount;
@@ -133,6 +136,7 @@ ServerpodCommandRunner buildCommandRunner() {
     CreateRepairMigrationCommand(),
     MigrateCommand(),
     RunCommand(),
+    RunnerCommand(),
     StartCommand(),
     UpgradeCommand(),
     VersionCommand(version),
@@ -140,10 +144,7 @@ ServerpodCommandRunner buildCommandRunner() {
 }
 
 Future<void> _preExit() async {
-  // Emit the watch-mode burst still sitting on its debounce timer before the
-  // send queue is drained, so ending a session does not drop its last runs.
-  await generateTracker.flushPending();
-  await _analytics.flush();
+  await flushAnalytics();
   _analytics.cleanUp();
   await closeLogger();
 }

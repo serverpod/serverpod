@@ -18,7 +18,7 @@ import '../email_idp_server_exceptions.dart';
 class EmailIdpPasswordResetUtil {
   final Argon2HashUtil _passwordHashUtil;
   final EmailIdpPasswordResetUtilsConfig _config;
-  final DatabaseRateLimitedRequestAttemptUtil<String> _rateLimitUtil;
+  final DatabaseRateLimiter _rateLimitUtil;
   late final SecretChallengeUtil<EmailAccountPasswordResetRequest>
   _challengeUtil;
 
@@ -26,10 +26,12 @@ class EmailIdpPasswordResetUtil {
   EmailIdpPasswordResetUtil({
     required final EmailIdpPasswordResetUtilsConfig config,
     required final Argon2HashUtil passwordHashUtils,
+    final Argon2HashUtil? verificationCodeHash,
+    final Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _passwordHashUtil = passwordHashUtils,
-       _rateLimitUtil = DatabaseRateLimitedRequestAttemptUtil(
-         RateLimitedRequestAttemptConfig(
+       _rateLimitUtil = DatabaseRateLimiter(
+         RateLimiterConfig(
            domain: 'email',
            source: 'password_reset',
            maxAttempts: config.maxPasswordResetAttempts.maxAttempts,
@@ -37,7 +39,8 @@ class EmailIdpPasswordResetUtil {
          ),
        ) {
     _challengeUtil = SecretChallengeUtil(
-      hashUtil: passwordHashUtils,
+      hashUtil: verificationCodeHash ?? passwordHashUtils,
+      completionTokenHash: completionTokenHash,
       verificationConfig: _getVerificationConfig(),
       completionConfig: _getCompletionConfig(),
     );
@@ -65,7 +68,7 @@ class EmailIdpPasswordResetUtil {
   }) async {
     email = email.normalizedEmail;
 
-    if (await _rateLimitUtil.hasTooManyAttempts(session, nonce: email)) {
+    if (!await _rateLimitUtil.tryRecordAttempt(session, key: email)) {
       throw EmailPasswordResetTooManyAttemptsException();
     }
 
@@ -272,8 +275,8 @@ class EmailIdpPasswordResetUtil {
   }) async {
     await _rateLimitUtil.deleteAttempts(
       session,
-      olderThan: olderThan,
-      nonce: email,
+      olderThan: olderThan ?? _rateLimitUtil.config.timeframe,
+      key: email,
       transaction: transaction,
     );
   }
@@ -311,12 +314,13 @@ class EmailIdpPasswordResetUtil {
   SecretChallengeVerificationConfig<EmailAccountPasswordResetRequest>
   _getVerificationConfig() {
     return SecretChallengeVerificationConfig<EmailAccountPasswordResetRequest>(
-      rateLimiter: DatabaseRateLimitedRequestAttemptUtil(
-        RateLimitedRequestAttemptConfig(
+      rateLimiter: DatabaseRateLimiter(
+        RateLimiterConfig(
           domain: 'email',
           source: 'password_reset_complete',
           maxAttempts: _config.passwordResetVerificationCodeAllowedAttempts,
-          onRateLimitExceeded: _onRateLimitExceeded,
+          onRateLimitExceeded: (final session, final key) =>
+              _onRateLimitExceeded(session, UuidValue.withValidation(key)),
         ),
       ),
       getRequest: _getPasswordResetRequest,
