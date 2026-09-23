@@ -65,15 +65,18 @@ void main() {
   test(
     'Given a missing unmanaged table, '
     'when verifying database integrity, '
-    'then verification succeeds without warnings.',
+    'then verification fails and reports the missing table.',
     () async {
       serializationManager.tables.add(_table('example', managed: false));
 
       final matches = await MigrationManager.verifyDatabaseIntegrity(session);
       await shared.log.flush();
 
-      expect(matches, isTrue);
-      expect(logWriter.entries, isEmpty);
+      expect(matches, isFalse);
+      expect(
+        logWriter.entries.single.message,
+        contains('Table "example" is missing.'),
+      );
     },
   );
 
@@ -102,14 +105,15 @@ void main() {
   });
 
   group(
-    'Given an unmanaged table with different columns and manual constraints,',
+    'Given an unmanaged table with additional columns and manual constraints,',
     () {
       setUp(() async {
         serializationManager.tables.add(_table('example', managed: false));
         await session.db.unsafeExecute('''
           CREATE TABLE example (
-            name integer PRIMARY KEY,
-            parent integer REFERENCES example(name)
+            name text PRIMARY KEY CHECK (name <> ''),
+            parent text REFERENCES example(name),
+            amount numeric NOT NULL DEFAULT 0
           );
         ''');
         await session.db.unsafeExecute(
@@ -133,6 +137,179 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given an unmanaged table missing a declared column, '
+    'when verifying database integrity, '
+    'then verification fails and reports the missing column.',
+    () async {
+      serializationManager.tables.add(_table('example', managed: false));
+      await session.db.unsafeExecute('CREATE TABLE example (extra integer);');
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isFalse);
+      expect(
+        logWriter.entries.single.message,
+        contains('Missing Column "name".'),
+      );
+      expect(logWriter.entries.single.message, isNot(contains('extra')));
+    },
+  );
+
+  test(
+    'Given an unmanaged table with an incompatible declared column type, '
+    'when verifying database integrity, '
+    'then verification fails and reports the expected and actual types.',
+    () async {
+      serializationManager.tables.add(_table('example', managed: false));
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name integer NOT NULL);',
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isFalse);
+      expect(
+        logWriter.entries.single.message,
+        contains('expected type "text", found "integer".'),
+      );
+    },
+  );
+
+  test(
+    'Given an unmanaged table allowing null in a non-nullable model column, '
+    'when verifying database integrity, '
+    'then verification fails and reports the nullability mismatch.',
+    () async {
+      serializationManager.tables.add(_table('example', managed: false));
+      await session.db.unsafeExecute('CREATE TABLE example (name text);');
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isFalse);
+      expect(
+        logWriter.entries.single.message,
+        contains('expected isNullable "false", found "true".'),
+      );
+    },
+  );
+
+  test(
+    'Given an unmanaged table rejecting null in a nullable model column, '
+    'when verifying database integrity, '
+    'then verification fails and reports the nullability mismatch.',
+    () async {
+      serializationManager.tables.add(
+        _table('example', managed: false, isNullable: true),
+      );
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name text NOT NULL);',
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isFalse);
+      expect(
+        logWriter.entries.single.message,
+        contains('expected isNullable "true", found "false".'),
+      );
+    },
+  );
+
+  test(
+    'Given an unmanaged table with a matching nullable column, '
+    'when verifying database integrity, '
+    'then verification succeeds without warnings.',
+    () async {
+      serializationManager.tables.add(
+        _table('example', managed: false, isNullable: true),
+      );
+      await session.db.unsafeExecute('CREATE TABLE example (name text);');
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isTrue);
+      expect(logWriter.entries, isEmpty);
+    },
+  );
+
+  test(
+    'Given an unmanaged table storing a model integer in a bigint column, '
+    'when verifying database integrity, '
+    'then verification succeeds without warnings.',
+    () async {
+      serializationManager.tables.add(
+        _table('example', managed: false, columnType: ColumnType.integer),
+      );
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name bigint NOT NULL);',
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isTrue);
+      expect(logWriter.entries, isEmpty);
+    },
+  );
+
+  test(
+    'Given an unmanaged table with a different column default, '
+    'when verifying database integrity, '
+    'then verification succeeds without warnings.',
+    () async {
+      serializationManager.tables.add(
+        _table('example', managed: false, columnDefault: "'model'"),
+      );
+      await session.db.unsafeExecute(
+        "CREATE TABLE example (name text NOT NULL DEFAULT 'database');",
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isTrue);
+      expect(logWriter.entries, isEmpty);
+    },
+  );
+
+  group('Given an unmanaged table with a mismatched vector dimension,', () {
+    setUp(() async {
+      serializationManager.tables.add(
+        _table(
+          'example',
+          managed: false,
+          columnType: ColumnType.vector,
+          vectorDimension: 3,
+        ),
+      );
+      await session.db.unsafeExecute('CREATE EXTENSION IF NOT EXISTS vector;');
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name vector(2) NOT NULL);',
+      );
+    });
+
+    test(
+      'when verifying database integrity, '
+      'then verification fails and reports the dimension mismatch.',
+      () async {
+        final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+        await shared.log.flush();
+
+        expect(matches, isFalse);
+        expect(
+          logWriter.entries.single.message,
+          contains('expected vector dimension "3", found "2".'),
+        );
+      },
+    );
+  });
 
   test(
     'Given a missing explicitly managed table, '
@@ -219,7 +396,7 @@ void main() {
   );
 
   test(
-    'Given a missing unmanaged table followed by a missing managed table, '
+    'Given a compatible unmanaged table followed by a missing managed table, '
     'when verifying database integrity, '
     'then verification fails and reports only the managed table.',
     () async {
@@ -227,6 +404,9 @@ void main() {
         _table('example', managed: false),
         _table('managed', managed: true),
       ]);
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name text NOT NULL, extra integer);',
+      );
 
       final matches = await MigrationManager.verifyDatabaseIntegrity(session);
       await shared.log.flush();
@@ -241,14 +421,13 @@ void main() {
   );
 
   test(
-    'Given a missing unmanaged table alongside matching managed tables, '
+    'Given a compatible unmanaged table alongside a matching managed table, '
     'when verifying database integrity, '
     'then verification succeeds without warnings.',
     () async {
       serializationManager.tables.addAll([
-        _table('unmanaged', managed: false),
-        _table('example', managed: true),
-        _table('managed'),
+        _table('example', managed: false),
+        _table('managed', managed: true),
       ]);
       await session.db.unsafeExecute(
         'CREATE TABLE example (name text NOT NULL);',
@@ -266,14 +445,23 @@ void main() {
   );
 }
 
-TableDefinition _table(String name, {bool? managed}) => TableDefinition(
+TableDefinition _table(
+  String name, {
+  bool? managed,
+  ColumnType columnType = ColumnType.text,
+  bool isNullable = false,
+  String? columnDefault,
+  int? vectorDimension,
+}) => TableDefinition(
   name: name,
   schema: 'public',
   columns: [
     ColumnDefinition(
       name: 'name',
-      columnType: ColumnType.text,
-      isNullable: false,
+      columnType: columnType,
+      isNullable: isNullable,
+      columnDefault: columnDefault,
+      vectorDimension: vectorDimension,
     ),
   ],
   foreignKeys: [],
