@@ -1,6 +1,9 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 name: serverpod_push_core_client
 description: Client protocol types for the Serverpod push notification core.
-version: 4.0.1
+version: 4.1.0-beta.1
 
 environment:
   sdk: '^3.12.2'
@@ -8,8 +11,8 @@ environment:
 resolution: workspace
 
 dependencies:
-  serverpod_client: 4.0.1
+  serverpod_client: 4.1.0-beta.1
 
 dev_dependencies:
-  serverpod_lints: 4.0.1
+  serverpod_lints: 4.1.0-beta.1
   test: ^1.25.5

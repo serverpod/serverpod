@@ -1,3 +1,5 @@
+# TEMPLATE
+
 name: serverpod_push_core_client
 description: Client protocol types for the Serverpod push notification core.
 version: SERVERPOD_VERSION

@@ -1,3 +1,6 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 name: push_client
 description: Starting point for a Serverpod client.
 
@@ -7,6 +10,6 @@ environment:
 resolution: workspace
 
 dependencies:
-  serverpod_client: 4.0.1
-  serverpod_push_core_client: 4.0.1
-  serverpod_push_store_client: 4.0.1
+  serverpod_client: 4.1.0-beta.1
+  serverpod_push_core_client: 4.1.0-beta.1
+  serverpod_push_store_client: 4.1.0-beta.1

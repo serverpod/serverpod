@@ -77,33 +77,39 @@ void main() {
     );
 
     expect(results.single.outcome, PushDeliveryOutcome.accepted);
-    expect(results.single.providerMessageId, 'projects/test-project/messages/1');
+    expect(
+      results.single.providerMessageId,
+      'projects/test-project/messages/1',
+    );
   });
 
-  test('when FCM returns UNREGISTERED then the outcome is invalidToken.', () async {
-    final provider = FcmPushProvider(
-      credentials: credentials,
-      httpClient: _fcmClient(
-        sendBody: jsonEncode({
-          'error': {
-            'code': 404,
-            'status': 'NOT_FOUND',
-            'details': [
-              {'errorCode': 'UNREGISTERED'},
-            ],
-          },
-        }),
-        sendStatus: 404,
-      ),
-    );
+  test(
+    'when FCM returns UNREGISTERED then the outcome is invalidToken.',
+    () async {
+      final provider = FcmPushProvider(
+        credentials: credentials,
+        httpClient: _fcmClient(
+          sendBody: jsonEncode({
+            'error': {
+              'code': 404,
+              'status': 'NOT_FOUND',
+              'details': [
+                {'errorCode': 'UNREGISTERED'},
+              ],
+            },
+          }),
+          sendStatus: 404,
+        ),
+      );
 
-    final results = await provider.send(
-      message: message(),
-      requests: [request()],
-    );
+      final results = await provider.send(
+        message: message(),
+        requests: [request()],
+      );
 
-    expect(results.single.outcome, PushDeliveryOutcome.invalidToken);
-  });
+      expect(results.single.outcome, PushDeliveryOutcome.invalidToken);
+    },
+  );
 
   test(
     'when FCM returns 429 then the outcome is rateLimited and retryAfter is parsed.',
@@ -135,25 +141,32 @@ void main() {
     },
   );
 
-  test('when FCM returns 401 then the outcome is retryable with UNAUTHENTICATED.', () async {
-    final provider = FcmPushProvider(
-      credentials: credentials,
-      httpClient: _fcmClient(
-        sendBody: jsonEncode({
-          'error': {'code': 401, 'status': 'UNAUTHENTICATED', 'message': 'no'},
-        }),
-        sendStatus: 401,
-      ),
-    );
+  test(
+    'when FCM returns 401 then the outcome is retryable with UNAUTHENTICATED.',
+    () async {
+      final provider = FcmPushProvider(
+        credentials: credentials,
+        httpClient: _fcmClient(
+          sendBody: jsonEncode({
+            'error': {
+              'code': 401,
+              'status': 'UNAUTHENTICATED',
+              'message': 'no',
+            },
+          }),
+          sendStatus: 401,
+        ),
+      );
 
-    final results = await provider.send(
-      message: message(),
-      requests: [request()],
-    );
+      final results = await provider.send(
+        message: message(),
+        requests: [request()],
+      );
 
-    expect(results.single.outcome, PushDeliveryOutcome.retryable);
-    expect(results.single.errorCode, 'UNAUTHENTICATED');
-  });
+      expect(results.single.outcome, PushDeliveryOutcome.retryable);
+      expect(results.single.errorCode, 'UNAUTHENTICATED');
+    },
+  );
 
   test(
     'when FCM returns INVALID_ARGUMENT then the outcome is permanentFailure.',

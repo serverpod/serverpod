@@ -63,8 +63,7 @@ class PushNotifications {
       if (ids.isEmpty) return PushEnqueueResult.empty();
       final devices = await PushDevice.db.find(
         session,
-        where: (final t) =>
-            t.id.inSet(ids) & t.disabledAt.equals(null),
+        where: (final t) => t.id.inSet(ids) & t.disabledAt.equals(null),
         transaction: txn,
       );
       return _enqueue(

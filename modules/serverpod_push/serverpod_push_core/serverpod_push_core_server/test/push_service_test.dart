@@ -57,7 +57,8 @@ void main() {
       );
 
       const endpoint = 'https://push.example/abc';
-      const first = '{"endpoint":"$endpoint","keys":{"p256dh":"aaa","auth":"bbb"}}';
+      const first =
+          '{"endpoint":"$endpoint","keys":{"p256dh":"aaa","auth":"bbb"}}';
       const rotated =
           '{"endpoint":"$endpoint","keys":{"p256dh":"ccc","auth":"ddd"}}';
 

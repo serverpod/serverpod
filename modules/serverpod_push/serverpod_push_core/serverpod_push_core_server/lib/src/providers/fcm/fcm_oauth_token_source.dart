@@ -55,17 +55,18 @@ class FcmOauthTokenSource {
       );
     }
 
-    final assertion = JWT(
-      {
-        'scope': scope,
-        'aud': credentials.tokenUri,
-      },
-      issuer: credentials.clientEmail,
-    ).sign(
-      RSAPrivateKey(credentials.privateKey!),
-      algorithm: JWTAlgorithm.RS256,
-      expiresIn: const Duration(hours: 1),
-    );
+    final assertion =
+        JWT(
+          {
+            'scope': scope,
+            'aud': credentials.tokenUri,
+          },
+          issuer: credentials.clientEmail,
+        ).sign(
+          RSAPrivateKey(credentials.privateKey!),
+          algorithm: JWTAlgorithm.RS256,
+          expiresIn: const Duration(hours: 1),
+        );
 
     final response = await _httpClient.post(
       Uri.parse(credentials.tokenUri),
@@ -80,7 +81,7 @@ class FcmOauthTokenSource {
       throw PushMissingCredentialsException(
         'fcm',
         'OAuth token endpoint returned HTTP ${response.statusCode}: '
-        '${response.body}',
+            '${response.body}',
       );
     }
 

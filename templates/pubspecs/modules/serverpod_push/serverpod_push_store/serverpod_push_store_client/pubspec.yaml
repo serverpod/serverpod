@@ -1,3 +1,5 @@
+# TEMPLATE
+
 name: serverpod_push_store_client
 description: Client for the Serverpod push notification store.
 version: SERVERPOD_VERSION

@@ -106,5 +106,6 @@ class PushMissingCredentialsException implements Exception {
   const PushMissingCredentialsException(this.provider, this.message);
 
   @override
-  String toString() => 'Push provider "$provider" is missing credentials: $message';
+  String toString() =>
+      'Push provider "$provider" is missing credentials: $message';
 }

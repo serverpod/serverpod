@@ -183,7 +183,9 @@ class FcmPushProvider implements PushProvider {
 
     return {
       'token': request.target.credential,
-      if (message.title != null || message.body != null || message.imageUrl != null)
+      if (message.title != null ||
+          message.body != null ||
+          message.imageUrl != null)
         'notification': {
           if (message.title != null) 'title': message.title,
           if (message.body != null) 'body': message.body,
@@ -197,8 +199,8 @@ class FcmPushProvider implements PushProvider {
       },
       'apns': {
         'headers': {
-          'apns-expiration':
-              (request.expiresAt.millisecondsSinceEpoch ~/ 1000).toString(),
+          'apns-expiration': (request.expiresAt.millisecondsSinceEpoch ~/ 1000)
+              .toString(),
           'apns-priority': apnsPriority,
           if (message.collapseKey != null)
             'apns-collapse-id': message.collapseKey,
