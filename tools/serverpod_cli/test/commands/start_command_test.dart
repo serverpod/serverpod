@@ -315,6 +315,56 @@ void main() {
         },
       );
     });
+
+    group('when its manifest is temporarily unavailable during startup,', () {
+      late bool completedBeforePublication;
+      late RunnerManifest ready;
+
+      setUp(() async {
+        await File(serverpodRunnerManifestPath(tempDir.path)).delete();
+
+        final up = awaitStackUp(tempDir.path, starting);
+        var settled = false;
+        up.whenComplete(() => settled = true).ignore();
+
+        await Future<void>.delayed(const Duration(milliseconds: 700));
+        completedBeforePublication = settled;
+
+        await starting
+            .copyWith(
+              stage: RunnerStage.running,
+              servers: const ServerpodAddresses(api: 'http://localhost:8080'),
+            )
+            .writeTo(tempDir.path);
+        ready = await up;
+      });
+
+      test(
+        'then the caller waits for the runner to publish its addresses.',
+        () {
+          expect(completedBeforePublication, isFalse);
+          expect(ready.servers?.api, 'http://localhost:8080');
+        },
+      );
+    });
+
+    test(
+      'when its manifest is unavailable and the runner releases its lock, '
+      'then the caller reports an aborted start.',
+      () async {
+        await File(serverpodRunnerManifestPath(tempDir.path)).delete();
+        await socket.close();
+        holder.kill();
+        await holder.exitCode;
+
+        await expectLater(
+          awaitStackUp(tempDir.path, starting),
+          throwsA(
+            isA<ExitException>().having((e) => e.exitCode, 'exitCode', 1),
+          ),
+        );
+      },
+    );
   });
 
   group('Given a spawned runner that died before it published,', () {

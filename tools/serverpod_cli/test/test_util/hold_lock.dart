@@ -19,7 +19,13 @@ void main() async {
       .open(mode: FileMode.writeOnlyAppend);
   await file.lock(FileLock.exclusive);
   stdout.writeln('locked');
-  await stdin.first;
+
+  try {
+    await stdin.first;
+  } finally {
+    // Keep the handle reachable until the process is asked to stop.
+    await file.close();
+  }
 }
 ''');
   final process = await Process.start(Platform.resolvedExecutable, [

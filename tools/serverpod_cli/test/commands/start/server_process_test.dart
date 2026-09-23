@@ -416,4 +416,20 @@ environment:
   ]
 }
 ''');
+
+  // `dart run` needs both files to use this offline package resolution.
+  await File('$dir/.dart_tool/package_graph.json').writeAsString('''
+{
+  "configVersion": 1,
+  "roots": ["test_server"],
+  "packages": [
+    {
+      "name": "test_server",
+      "version": "1.0.0",
+      "dependencies": [],
+      "devDependencies": []
+    }
+  ]
+}
+''');
 }

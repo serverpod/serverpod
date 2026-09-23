@@ -138,7 +138,9 @@ Future<void> main(List<String> args) async {
   await handle.lock(FileLock.exclusive);
   stdout.writeln('locked');
   await stdout.flush();
+
   await Future<void>.delayed(const Duration(seconds: 30));
+  await handle.close();
 }
 ''');
 
