@@ -40,7 +40,7 @@ dependencies:
   serverpod_push_store_flutter: SERVERPOD_VERSION
   serverpod_push_store_flutter_firebase: SERVERPOD_VERSION
   serverpod_push_store_flutter_onesignal: SERVERPOD_VERSION
-  web: ^1.1.1
+  web: '>=0.3.0 <2.0.0'
 
 dev_dependencies:
   # Used for agents to drive the app through the Dart MCP

@@ -59,6 +59,9 @@ class EndpointPushDevice extends _isc.EndpointRef {
   );
 
   /// Records that a delivery was received or opened.
+  ///
+  /// Anonymous devices may acknowledge without login. Owned devices require
+  /// the owning user.
   _ida.Future<void> acknowledge({
     required _isc.UuidValue deliveryId,
     required _ipcc.PushAckType type,

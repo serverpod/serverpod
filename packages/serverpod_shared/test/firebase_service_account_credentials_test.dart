@@ -21,7 +21,8 @@ void main() {
         final credentials = FirebaseServiceAccountCredentials.fromJson({
           'project_id': 'my-project',
           'client_email': 'sa@my-project.iam.gserviceaccount.com',
-          'private_key': '-----BEGIN PRIVATE KEY-----\nabc\n-----END PRIVATE KEY-----',
+          'private_key':
+              '-----BEGIN PRIVATE KEY-----\nabc\n-----END PRIVATE KEY-----',
           'private_key_id': 'abc123',
         });
         expect(credentials.canSign, isTrue);
@@ -33,11 +34,16 @@ void main() {
       },
     );
 
-    test('when project_id is missing, then fromJson throws FormatException.', () {
-      expect(
-        () => FirebaseServiceAccountCredentials.fromJson({'type': 'service_account'}),
-        throwsA(isA<FormatException>()),
-      );
-    });
+    test(
+      'when project_id is missing, then fromJson throws FormatException.',
+      () {
+        expect(
+          () => FirebaseServiceAccountCredentials.fromJson({
+            'type': 'service_account',
+          }),
+          throwsA(isA<FormatException>()),
+        );
+      },
+    );
   });
 }
