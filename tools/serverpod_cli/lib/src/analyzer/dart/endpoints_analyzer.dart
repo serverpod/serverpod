@@ -131,8 +131,7 @@ class EndpointsAnalyzer {
     List<SerializableModelDefinition>? models,
     Set<String>? changedFiles,
   }) async {
-    changedFiles ??= {};
-    await refreshAnalysisContext(collection, changedFiles);
+    changedFiles = await refreshAnalysisContext(collection, changedFiles ?? {});
 
     // On the first run, mark every Dart file as dirty so the single
     // code path handles both first and subsequent runs.
@@ -418,7 +417,7 @@ class EndpointsAnalyzer {
   /// to newly added endpoint files still trigger generation when the cache
   /// has not yet been updated for other reasons.
   bool _isEndpointFile(File file) {
-    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
+    if (!p.isWithin(absoluteIncludedPaths, file.absolute.path)) return false;
     if (!file.path.endsWith('.dart')) return false;
     if (isUnrenderedTemplatePath(file.path)) return false;
     if (!file.existsSync()) return false;
