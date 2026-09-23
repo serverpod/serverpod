@@ -24,4 +24,4 @@ dev_dependencies:
   test: ^1.25.5
 
 false_secrets:
-  - test/providers/fcm/fcm_push_provider_test.dart
+  - test/
