@@ -65,10 +65,8 @@ void main() {
           );
         });
 
-        test(
-          'when verifying the challenge, '
-          'then the completion token is stored at the minimal Argon2 cost',
-          () async {
+        group('when verifying the challenge,', () {
+          setUp(() async {
             await session.db.transaction(
               (final transaction) => challengeUtil.verifyChallenge(
                 session,
@@ -77,33 +75,28 @@ void main() {
                 transaction: transaction,
               ),
             );
+          });
 
-            expect(
-              request.completionChallenge?.challengeCodeHash,
-              startsWith(_minimalCostPrefix),
-            );
-          },
-        );
+          test(
+            'then the completion token is stored at the minimal Argon2 cost',
+            () async {
+              expect(
+                request.completionChallenge?.challengeCodeHash,
+                startsWith(_minimalCostPrefix),
+              );
+            },
+          );
 
-        test(
-          'when verifying the challenge, '
-          'then the verification code stays stored at the cost of the verification code hash',
-          () async {
-            await session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
-                session,
-                requestId: request.id,
-                verificationCode: _verificationCode,
-                transaction: transaction,
-              ),
-            );
-
-            expect(
-              request.verificationChallenge.challengeCodeHash,
-              startsWith(_verificationCodeCostPrefix),
-            );
-          },
-        );
+          test(
+            'then the verification code stays stored at the cost of the verification code hash',
+            () async {
+              expect(
+                request.verificationChallenge.challengeCodeHash,
+                startsWith(_verificationCodeCostPrefix),
+              );
+            },
+          );
+        });
       },
     );
 

@@ -86,38 +86,36 @@ void main() {
         );
       });
 
-      test(
-        'when refreshing the access token, '
-        'then a new token pair is returned',
-        () async {
-          final refreshed = await jwt.refreshAccessToken(
+      group('when refreshing the access token,', () {
+        late AuthSuccess refreshed;
+        setUp(() async {
+          refreshed = await jwt.refreshAccessToken(
             session,
             refreshToken: authSuccess.refreshToken!,
           );
+        });
 
-          expect(refreshed.refreshToken, isNot(authSuccess.refreshToken));
-        },
-      );
+        test(
+          'then a new token pair is returned',
+          () {
+            expect(refreshed.refreshToken, isNot(authSuccess.refreshToken));
+          },
+        );
 
-      test(
-        'when refreshing the access token, '
-        'then the new rotating secret is stored at the minimal Argon2 cost',
-        () async {
-          await jwt.refreshAccessToken(
-            session,
-            refreshToken: authSuccess.refreshToken!,
-          );
-
-          final refreshToken = await RefreshToken.db.findFirstRow(
-            session,
-            where: (final t) => t.authUserId.equals(authUserId),
-          );
-          expect(
-            refreshToken?.rotatingSecretHash,
-            startsWith(_minimalCostPrefix),
-          );
-        },
-      );
+        test(
+          'then the new rotating secret is stored at the minimal Argon2 cost',
+          () async {
+            final refreshToken = await RefreshToken.db.findFirstRow(
+              session,
+              where: (final t) => t.authUserId.equals(authUserId),
+            );
+            expect(
+              refreshToken?.rotatingSecretHash,
+              startsWith(_minimalCostPrefix),
+            );
+          },
+        );
+      });
 
       test(
         'when refreshing with another rotating secret, '
