@@ -73,6 +73,7 @@ const _reservedPrefixes = {
   'package:serverpod_service_client/serverpod_service_client.dart': '_issc',
   'package:serverpod_database/serverpod_database.dart': '_isd',
   'package:serverpod_serialization/serverpod_serialization.dart': '_iss',
+  'package:serverpod_serialization/undefined_sentinel.dart': '_issu',
   'package:serverpod_shared/serverpod_shared.dart': '_issh',
   'package:serverpod_test/serverpod_test.dart': '_ist',
   'package:serverpod_test/serverpod_test_public_exports.dart': '_istp',

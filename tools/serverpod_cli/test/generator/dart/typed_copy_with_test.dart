@@ -60,6 +60,13 @@ void main() {
           '_is.',
         );
 
+        expect(
+          code,
+          contains(
+            "import 'package:serverpod_serialization/undefined_sentinel.dart' "
+            'as _issu;',
+          ),
+        );
         expect(_parameters(code, 'Example'), expected);
         expect(_parameters(code, '_ExampleImpl'), expected);
       },
@@ -82,6 +89,13 @@ void main() {
           '_isc.',
         );
 
+        expect(
+          code,
+          contains(
+            "import 'package:serverpod_serialization/undefined_sentinel.dart' "
+            'as _issu;',
+          ),
+        );
         expect(_parameters(code, 'Example'), expected);
         expect(_parameters(code, '_ExampleImpl'), expected);
       },
@@ -108,6 +122,13 @@ void main() {
             .values
             .single;
 
+        expect(
+          code,
+          contains(
+            "import 'package:serverpod_serialization/undefined_sentinel.dart' "
+            'as _issu;',
+          ),
+        );
         expect(_parameters(code, 'Example'), _typedParameters);
         expect(_parameters(code, '_ExampleImpl'), _typedParameters);
       },
@@ -128,24 +149,24 @@ void main() {
         expect(
           _copyWith(code, '_ExampleImpl').body.toSource(),
           '{return Example('
-          'list: list is _is.UndefinedSentinel ? this.list?.map((e0) => e0.map((e1) => e1).toList()).toList() : list, '
-          'map: map is _is.UndefinedSentinel ? this.map?.map((key0, value0) => MapEntry(key0, value0)) : map, '
-          'set: set is _is.UndefinedSentinel ? this.set?.map((e0) => e0).toSet() : set, '
-          'date: date is _is.UndefinedSentinel ? this.date : date, '
-          'uuid: uuid is _is.UndefinedSentinel ? this.uuid : uuid, '
-          'duration: duration is _is.UndefinedSentinel ? this.duration : duration, '
-          'uri: uri is _is.UndefinedSentinel ? this.uri : uri, '
-          'vector: vector is _is.UndefinedSentinel ? this.vector?.clone() : vector, '
-          'halfVector: halfVector is _is.UndefinedSentinel ? this.halfVector?.clone() : halfVector, '
-          'sparseVector: sparseVector is _is.UndefinedSentinel ? this.sparseVector?.clone() : sparseVector, '
-          'bit: bit is _is.UndefinedSentinel ? this.bit?.clone() : bit, '
-          'point: point is _is.UndefinedSentinel ? this.point : point, '
-          'line: line is _is.UndefinedSentinel ? this.line : line, '
-          'polygon: polygon is _is.UndefinedSentinel ? this.polygon : polygon, '
-          'geometries: geometries is _is.UndefinedSentinel ? this.geometries : geometries);}',
+          'list: list is _issu.UndefinedSentinel ? this.list?.map((e0) => e0.map((e1) => e1).toList()).toList() : list, '
+          'map: map is _issu.UndefinedSentinel ? this.map?.map((key0, value0) => MapEntry(key0, value0)) : map, '
+          'set: set is _issu.UndefinedSentinel ? this.set?.map((e0) => e0).toSet() : set, '
+          'date: date is _issu.UndefinedSentinel ? this.date : date, '
+          'uuid: uuid is _issu.UndefinedSentinel ? this.uuid : uuid, '
+          'duration: duration is _issu.UndefinedSentinel ? this.duration : duration, '
+          'uri: uri is _issu.UndefinedSentinel ? this.uri : uri, '
+          'vector: vector is _issu.UndefinedSentinel ? this.vector?.clone() : vector, '
+          'halfVector: halfVector is _issu.UndefinedSentinel ? this.halfVector?.clone() : halfVector, '
+          'sparseVector: sparseVector is _issu.UndefinedSentinel ? this.sparseVector?.clone() : sparseVector, '
+          'bit: bit is _issu.UndefinedSentinel ? this.bit?.clone() : bit, '
+          'point: point is _issu.UndefinedSentinel ? this.point : point, '
+          'line: line is _issu.UndefinedSentinel ? this.line : line, '
+          'polygon: polygon is _issu.UndefinedSentinel ? this.polygon : polygon, '
+          'geometries: geometries is _issu.UndefinedSentinel ? this.geometries : geometries);}',
         );
         expect(code, isNot(contains('class _Undefined ')));
-        expect(code, isNot(contains('extends _is.UndefinedSentinel')));
+        expect(code, isNot(contains('extends _issu.UndefinedSentinel')));
       },
     );
   });
@@ -474,7 +495,7 @@ void main() {
         );
         expect(
           _copyWith(childCode, '_ChildImpl').body.toSource(),
-          '{return Child(value: value is _is.UndefinedSentinel ? this.value?.copyWith() : value);}',
+          '{return Child(value: value is _issu.UndefinedSentinel ? this.value?.copyWith() : value);}',
         );
         final unit = parseString(content: childCode).unit;
         final sentinel = CompilationUnitHelpers.tryFindClassDeclaration(
@@ -483,7 +504,7 @@ void main() {
         );
         expect(
           sentinel?.extendsClause?.superclass.toSource(),
-          '_is.UndefinedSentinel',
+          '_issu.UndefinedSentinel',
         );
         expect(
           sentinel?.implementsClause?.interfaces.single.toSource(),
@@ -520,7 +541,7 @@ void main() {
         _parameters(code, '_ExampleImpl'),
         '({Object? value = _Undefined})',
       );
-      expect(code, isNot(contains('extends _is.UndefinedSentinel')));
+      expect(code, isNot(contains('extends _issu.UndefinedSentinel')));
     },
   );
 
@@ -595,21 +616,21 @@ void main() {
 }
 
 const _typedParameters =
-    r'({List<List<String?>>? list = const _iss.$UndefinedList<List<String?>>(), '
-    r'Map<String, int?>? map = const _iss.$UndefinedMap<String, int?>(), '
-    r'Set<int>? set = const _iss.$UndefinedSet<int>(), '
-    r'DateTime? date = const _iss.$UndefinedDateTime(), '
-    r'_iss.UuidValue? uuid = const _iss.$UndefinedUuidValue(), '
-    r'Duration? duration = const _iss.$UndefinedDuration(), '
-    r'Uri? uri = const _iss.$UndefinedUri(), '
-    r'_iss.Vector? vector = const _iss.$UndefinedVector(), '
-    r'_iss.HalfVector? halfVector = const _iss.$UndefinedHalfVector(), '
-    r'_iss.SparseVector? sparseVector = const _iss.$UndefinedSparseVector(), '
-    r'_iss.Bit? bit = const _iss.$UndefinedBit(), '
-    r'_iss.GeographyPoint? point = const _iss.$UndefinedGeographyPoint(), '
-    r'_iss.GeographyLineString? line = const _iss.$UndefinedGeographyLineString(), '
-    r'_iss.GeographyPolygon? polygon = const _iss.$UndefinedGeographyPolygon(), '
-    r'_iss.GeographyGeometryCollection? geometries = const _iss.$UndefinedGeographyGeometryCollection()})';
+    r'({List<List<String?>>? list = const _issu.$UndefinedList<List<String?>>(), '
+    r'Map<String, int?>? map = const _issu.$UndefinedMap<String, int?>(), '
+    r'Set<int>? set = const _issu.$UndefinedSet<int>(), '
+    r'DateTime? date = const _issu.$UndefinedDateTime(), '
+    r'_iss.UuidValue? uuid = const _issu.$UndefinedUuidValue(), '
+    r'Duration? duration = const _issu.$UndefinedDuration(), '
+    r'Uri? uri = const _issu.$UndefinedUri(), '
+    r'_iss.Vector? vector = const _issu.$UndefinedVector(), '
+    r'_iss.HalfVector? halfVector = const _issu.$UndefinedHalfVector(), '
+    r'_iss.SparseVector? sparseVector = const _issu.$UndefinedSparseVector(), '
+    r'_iss.Bit? bit = const _issu.$UndefinedBit(), '
+    r'_iss.GeographyPoint? point = const _issu.$UndefinedGeographyPoint(), '
+    r'_iss.GeographyLineString? line = const _issu.$UndefinedGeographyLineString(), '
+    r'_iss.GeographyPolygon? polygon = const _issu.$UndefinedGeographyPolygon(), '
+    r'_iss.GeographyGeometryCollection? geometries = const _issu.$UndefinedGeographyGeometryCollection()})';
 
 const _repeatedModelParameters =
     r'({_itx02h2p.Target? first = const _UndefinedExample$first(), '

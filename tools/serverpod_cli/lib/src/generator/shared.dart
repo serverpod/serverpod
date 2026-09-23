@@ -37,6 +37,10 @@ String serverpodServiceClientUrl(bool serverCode) {
 const String serverpodSerializationUrl =
     'package:serverpod_serialization/serverpod_serialization.dart';
 
+/// The import url of the internal copyWith sentinels.
+const String serverpodUndefinedSentinelUrl =
+    'package:serverpod_serialization/undefined_sentinel.dart';
+
 /// The import url of the serverpod test package.
 const String serverpodTestUrl = 'package:serverpod_test/serverpod_test.dart';
 const String serverpodTestPublicExportsUrl =

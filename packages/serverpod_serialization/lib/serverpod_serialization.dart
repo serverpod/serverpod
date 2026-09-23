@@ -10,5 +10,4 @@ export 'src/extensions/serialization_extensions.dart';
 export 'src/pgvector.dart';
 export 'src/postgis.dart';
 export 'src/serialization.dart';
-export 'src/undefined_sentinel.dart';
 export 'src/websocket_messages.dart';
