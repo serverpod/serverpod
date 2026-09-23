@@ -84,6 +84,34 @@ void requireUnixSocketPathFits(String path) {
   );
 }
 
+/// A path to the Unix socket at [path] that fits the platform's `sun_path`.
+///
+/// Returns [shortestPath] of [path] when it fits. Otherwise returns [path]
+/// reached through a link to its directory. The link lives in a directory
+/// private to the current user, created once per isolate with a random name,
+/// and each socket directory gets one link, reused by every later call.
+///
+/// Throws a [SocketException] when not even the path through the link fits.
+String reachableUnixSocketPath(String path) {
+  if (unixSocketPathFits(path)) return shortestPath(path);
+
+  final socketDir = p.canonicalize(p.dirname(path));
+  final link = _socketDirLinks.putIfAbsent(socketDir, () {
+    final linkDir = _socketLinkDir ??= Directory.systemTemp.createTempSync(
+      'sp',
+    );
+    return Link(
+      p.join(linkDir.path, '${_socketDirLinks.length}'),
+    )..createSync(socketDir);
+  });
+  final linked = p.join(link.path, p.basename(path));
+  requireUnixSocketPathFits(linked);
+  return linked;
+}
+
+Directory? _socketLinkDir;
+final _socketDirLinks = <String, Link>{};
+
 /// The bytes [shortestPath] of [path] takes in `sun_path`, NUL included.
 int _unixSocketPathBytes(String path) =>
     utf8.encode(shortestPath(path)).length + 1;
