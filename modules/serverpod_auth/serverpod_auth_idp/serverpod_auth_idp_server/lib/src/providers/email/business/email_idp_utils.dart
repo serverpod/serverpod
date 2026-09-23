@@ -47,8 +47,12 @@ class EmailIdpUtils {
          hashPepper: config.secretHashPepper,
          fallbackHashPeppers: config.fallbackSecretHashPeppers,
          hashSaltLength: config.secretHashSaltLength,
-         // 19MiB memory cost as recommended by OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
-         parameters: Argon2HashParameters(memory: 19456),
+         // Cost as recommended by OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+         parameters: Argon2HashParameters(
+           memory: 19456,
+           iterations: 2,
+           lanes: 1,
+         ),
        ),
        account = EmailIdpAccountUtils() {
     // Verification codes expire and allow few attempts, so they use the

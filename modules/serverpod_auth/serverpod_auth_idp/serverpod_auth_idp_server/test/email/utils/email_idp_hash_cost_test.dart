@@ -98,7 +98,7 @@ void main() {
       test(
         'and a verified registration, '
         'when completing the account creation with a password, '
-        'then the password is hashed with 19 MiB of Argon2 memory',
+        'then the password is hashed at the OWASP Argon2 cost',
         () async {
           final requestId = await session.db.transaction(
             (final transaction) =>
@@ -134,7 +134,7 @@ void main() {
           );
           expect(
             account?.passwordHash,
-            startsWith(r'$argon2id$v=19$m=19456,t=3,'),
+            startsWith(r'$argon2id$v=19$m=19456,t=2,p=1$'),
           );
         },
       );
