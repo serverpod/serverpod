@@ -10,14 +10,20 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
         final modelType = allocate(
           refer('SerializableModel', serverpodUrl(true)),
         );
+        final invokeFutureCallTypedef =
+            '''
+  /// Invokes a future call.
+  typedef _InvokeFutureCall = Future<void> Function(String name, $modelType? object);
+''';
+
+        if (!config.isFutureCallEnabled) return invokeFutureCallTypedef;
+
         final serverpod = allocate(
           refer('Serverpod', serverpodUrl(true)),
         );
 
         return '''
-  /// Invokes a future call.
-  typedef _InvokeFutureCall = Future<void> Function(String name, $modelType? object);
-
+$invokeFutureCallTypedef
   extension ServerpodFutureCallsGetter on $serverpod {
   /// Generated future calls.
   FutureCalls get futureCalls => FutureCalls();

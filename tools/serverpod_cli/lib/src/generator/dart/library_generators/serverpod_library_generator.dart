@@ -19,7 +19,8 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
 
     // The futureCalls getter is an extension, which is only applicable when
     // imported without a prefix, so it must be re-exported here as well.
-    if (protocolDefinition.shouldGenerateFutureCalls) {
+    if (protocolDefinition.shouldGenerateFutureCalls &&
+        config.isFutureCallEnabled) {
       library.directives.add(
         Directive.export(
           'future_calls.dart',

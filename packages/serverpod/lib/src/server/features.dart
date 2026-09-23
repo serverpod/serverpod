@@ -31,8 +31,10 @@ class Features {
     return _instance._config.webServer != null;
   }
 
-  /// Returns true if the web server is enabled.
-  static bool get enableFutureCalls => enableDatabase;
+  /// Returns true if future calls are enabled. Future calls require the
+  /// database and can be disabled with `futureCall.enabled`.
+  static bool get enableFutureCalls =>
+      enableDatabase && _instance._config.futureCall.enabled;
 
   /// Returns true if the web server is enabled and the health check interval is valid.
   static bool get enableScheduledHealthChecks =>

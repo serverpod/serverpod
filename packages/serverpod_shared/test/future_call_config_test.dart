@@ -352,4 +352,204 @@ futureCall:
       expect(config.futureCall.deleteBrokenCalls, isFalse);
     },
   );
+
+  group('Given a Serverpod config without futureCall section', () {
+    late Map configMap;
+
+    setUp(() {
+      configMap = loadYaml('''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+''');
+    });
+
+    test(
+      'when loading from Map, '
+      'then future calls are enabled.',
+      () {
+        final config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          configMap,
+        );
+        expect(config.futureCall.enabled, isTrue);
+      },
+    );
+
+    test(
+      'when loading from Map with SERVERPOD_FUTURE_CALL_ENABLED set to false, '
+      'then future calls are disabled.',
+      () {
+        final config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          configMap,
+          environment: {'SERVERPOD_FUTURE_CALL_ENABLED': 'false'},
+        );
+        expect(config.futureCall.enabled, isFalse);
+      },
+    );
+
+    test(
+      'when loading from Map with SERVERPOD_FUTURE_CALL_ENABLED set to an invalid value, '
+      'then an exception naming the environment variable is thrown.',
+      () {
+        expect(
+          () => ServerpodConfig.loadFromMap(
+            runMode,
+            serverId,
+            passwords,
+            configMap,
+            environment: {'SERVERPOD_FUTURE_CALL_ENABLED': 'invalid'},
+          ),
+          throwsA(
+            isA<Exception>().having(
+              (e) => e.toString(),
+              'message',
+              contains(
+                'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_ENABLED.',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when inferring whether future calls are enabled, '
+      'then future calls are enabled.',
+      () {
+        final isEnabled = inferFutureCallEnabledFromConfigMap(configMap);
+        expect(isEnabled, isTrue);
+      },
+    );
+
+    test(
+      'when inferring whether future calls are enabled with SERVERPOD_FUTURE_CALL_ENABLED set to false, '
+      'then future calls are disabled.',
+      () {
+        final isEnabled = inferFutureCallEnabledFromConfigMap(
+          configMap,
+          environment: {'SERVERPOD_FUTURE_CALL_ENABLED': 'false'},
+        );
+        expect(isEnabled, isFalse);
+      },
+    );
+  });
+
+  group('Given a Serverpod config with futureCall.enabled set to false', () {
+    late Map configMap;
+
+    setUp(() {
+      configMap = loadYaml('''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCall:
+  enabled: false
+''');
+    });
+
+    test(
+      'when loading from Map, '
+      'then future calls are disabled.',
+      () {
+        final config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          configMap,
+        );
+        expect(config.futureCall.enabled, isFalse);
+      },
+    );
+
+    test(
+      'when loading from Map with SERVERPOD_FUTURE_CALL_ENABLED set to true, '
+      'then future calls are enabled.',
+      () {
+        final config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          configMap,
+          environment: {'SERVERPOD_FUTURE_CALL_ENABLED': 'true'},
+        );
+        expect(config.futureCall.enabled, isTrue);
+      },
+    );
+
+    test(
+      'when inferring whether future calls are enabled, '
+      'then future calls are disabled.',
+      () {
+        final isEnabled = inferFutureCallEnabledFromConfigMap(configMap);
+        expect(isEnabled, isFalse);
+      },
+    );
+
+    test(
+      'when inferring whether future calls are enabled with SERVERPOD_FUTURE_CALL_ENABLED set to true, '
+      'then future calls are enabled.',
+      () {
+        final isEnabled = inferFutureCallEnabledFromConfigMap(
+          configMap,
+          environment: {'SERVERPOD_FUTURE_CALL_ENABLED': 'true'},
+        );
+        expect(isEnabled, isTrue);
+      },
+    );
+  });
+
+  group('Given a Serverpod config with futureCall.enabled set to true', () {
+    late Map configMap;
+
+    setUp(() {
+      configMap = loadYaml('''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCall:
+  enabled: true
+''');
+    });
+
+    test(
+      'when loading from Map, '
+      'then future calls are enabled.',
+      () {
+        final config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          configMap,
+        );
+        expect(config.futureCall.enabled, isTrue);
+      },
+    );
+
+    test(
+      'when loading from Map with SERVERPOD_FUTURE_CALL_ENABLED set to false, '
+      'then future calls are disabled.',
+      () {
+        final config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          configMap,
+          environment: {'SERVERPOD_FUTURE_CALL_ENABLED': 'false'},
+        );
+        expect(config.futureCall.enabled, isFalse);
+      },
+    );
+  });
 }

@@ -67,8 +67,11 @@ Handle failures inside the call and reschedule if the work must eventually succe
 ```yaml
 futureCallExecutionEnabled: true  # SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED
 futureCall:
+  enabled: true                   # SERVERPOD_FUTURE_CALL_ENABLED (default true)
   concurrencyLimit: 5             # SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT (default 1, <1 maps to unlimited and is not recommended)
   scanInterval: 2000              # SERVERPOD_FUTURE_CALL_SCAN_INTERVAL (ms, default 5000)
 ```
+
+`futureCallExecutionEnabled: false` only stops execution; calls can still be scheduled. `futureCall.enabled: false` disables future calls entirely: no future call manager is created and `serverpod generate` omits the `pod.futureCalls` getter. The value must match across all run-mode config files, or generation fails.
 
 Keep future calls idempotent. A call should tolerate retries or restarts without duplicating irreversible side effects.

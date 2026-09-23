@@ -104,6 +104,37 @@ void main() {
     },
   );
 
+  group(
+    'Given a server package with future calls and future calls disabled, '
+    'when generating protocol code,',
+    () {
+      late String? serverpodFile;
+      setUpAll(() {
+        var config = GeneratorConfigBuilder()
+            .withName(projectName)
+            .withFutureCallEnabled(false)
+            .build();
+
+        var codeMap = generator.generateProtocolCode(
+          protocolDefinition: ProtocolDefinition(
+            endpoints: [],
+            models: [],
+            futureCalls: [FutureCallDefinitionBuilder().build()],
+          ),
+          config: config,
+        );
+        serverpodFile = codeMap[expectedFileName];
+      });
+
+      test(
+        'then the serverpod file does not export the future calls getter.',
+        () {
+          expect(serverpodFile, isNot(contains("export 'future_calls.dart'")));
+        },
+      );
+    },
+  );
+
   test(
     'Given a module package '
     'when generating protocol code '

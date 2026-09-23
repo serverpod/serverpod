@@ -87,6 +87,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.isDatabaseEnabled,
     required this.databaseDialect,
+    this.isFutureCallEnabled = true,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
@@ -323,6 +324,9 @@ class GeneratorConfig implements ModelLoadConfig {
   /// The dialect of the database, if enabled. Default is [DatabaseDialect.postgres].
   final DatabaseDialect databaseDialect;
 
+  /// Whether future calls are enabled in the serverpod project.
+  final bool isFutureCallEnabled;
+
   final List<ExperimentalFeature> experimentalFeatures;
 
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
@@ -525,8 +529,10 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    var databaseConfigsByFile = await _loadDatabaseConfigsFromRunModeFiles(
-      serverRootDir,
+    var runModeConfigsByFile = await _loadRunModeConfigFiles(serverRootDir);
+
+    var databaseConfigsByFile = _loadDatabaseConfigsFromRunModeFiles(
+      runModeConfigsByFile,
     );
 
     var isDatabaseEnabled = _inferDatabaseEnabledFromConfigs(
@@ -540,6 +546,10 @@ class GeneratorConfig implements ModelLoadConfig {
     var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
       file,
       generatorConfig,
+    );
+
+    var isFutureCallEnabled = _loadIsFutureCallEnabledFromRunModeFiles(
+      runModeConfigsByFile,
     );
 
     return GeneratorConfig(
@@ -557,6 +567,7 @@ class GeneratorConfig implements ModelLoadConfig {
       extraClasses: extraClasses,
       isDatabaseEnabled: isDatabaseEnabled,
       databaseDialect: databaseDialect,
+      isFutureCallEnabled: isFutureCallEnabled,
       experimentalFeatures: enabledExperimentalFeatures,
     );
   }
@@ -576,16 +587,17 @@ class GeneratorConfig implements ModelLoadConfig {
     'test.yaml',
   };
 
-  /// Loads the database config of each run-mode config file, keyed by file
-  /// name. A run-mode config file without a database section maps to `null`.
-  static Future<Map<String, DatabaseConfig?>>
-  _loadDatabaseConfigsFromRunModeFiles(String serverRootDir) async {
+  /// Loads the content of each run-mode config file, keyed by file name. A
+  /// run-mode config file whose content is not a map maps to `null`.
+  static Future<Map<String, Map<dynamic, dynamic>?>> _loadRunModeConfigFiles(
+    String serverRootDir,
+  ) async {
     final configDir = Directory(p.join(serverRootDir, 'config'));
     if (!await configDir.exists()) {
       return {};
     }
 
-    final databaseConfigsByFile = <String, DatabaseConfig?>{};
+    final configsByFile = <String, Map<dynamic, dynamic>?>{};
     await for (final entity in configDir.list(followLinks: false)) {
       if (entity is! File) continue;
       final basename = p.basename(entity.path);
@@ -594,15 +606,58 @@ class GeneratorConfig implements ModelLoadConfig {
       }
 
       final yamlRoot = loadYaml(await entity.readAsString());
-      if (yamlRoot == null || yamlRoot is! Map) continue;
+      configsByFile[basename] = yamlRoot is Map
+          ? Map<dynamic, dynamic>.from(yamlRoot)
+          : null;
+    }
 
-      databaseConfigsByFile[basename] = inferDatabaseConfigFromConfigMap(
-        Map<dynamic, dynamic>.from(yamlRoot),
-        environment: Platform.environment,
+    return configsByFile;
+  }
+
+  /// Loads the database config of each run-mode config file, keyed by file
+  /// name. A run-mode config file without a database section maps to `null`.
+  static Map<String, DatabaseConfig?> _loadDatabaseConfigsFromRunModeFiles(
+    Map<String, Map<dynamic, dynamic>?> runModeConfigsByFile,
+  ) {
+    return {
+      for (final entry in runModeConfigsByFile.entries)
+        if (entry.value case final configMap?)
+          entry.key: inferDatabaseConfigFromConfigMap(
+            configMap,
+            environment: Platform.environment,
+          ),
+    };
+  }
+
+  /// Future calls are enabled unless the run-mode config files (when they
+  /// exist) disable them through `futureCall.enabled` or the
+  /// `SERVERPOD_FUTURE_CALL_ENABLED` environment variable.
+  static bool _loadIsFutureCallEnabledFromRunModeFiles(
+    Map<String, Map<dynamic, dynamic>?> runModeConfigsByFile,
+  ) {
+    final enabledByFile = <String, bool>{
+      for (final entry in runModeConfigsByFile.entries)
+        entry.key: inferFutureCallEnabledFromConfigMap(
+          entry.value ?? const {},
+          environment: Platform.environment,
+        ),
+    };
+
+    if (enabledByFile.isEmpty) return true;
+
+    final configurations = enabledByFile.values.toSet();
+    if (configurations.length > 1) {
+      final details = enabledByFile.entries
+          .map((e) => '${e.key}: ${e.value ? 'enabled' : 'disabled'}')
+          .sorted()
+          .join(', ');
+      throw StateError(
+        'Inconsistent future call configurations across run-mode config files: $details. '
+        'A Serverpod project must use uniform future call configuration in all run modes.',
       );
     }
 
-    return databaseConfigsByFile;
+    return configurations.single;
   }
 
   /// The database is enabled if run-mode config files (when they exist)

@@ -22,6 +22,7 @@ class GeneratorConfigBuilder {
   bool _serializeAsJsonbByDefault;
   bool _isDatabaseEnabled;
   DatabaseDialect _databaseDialect;
+  bool _isFutureCallEnabled;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
 
@@ -54,6 +55,7 @@ class GeneratorConfigBuilder {
       _serializeAsJsonbByDefault = false,
       _isDatabaseEnabled = true,
       _databaseDialect = DatabaseDialect.postgres,
+      _isFutureCallEnabled = true,
       _enabledExperimentalFeatures = [];
 
   GeneratorConfigBuilder withName(String name) {
@@ -145,6 +147,11 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withFutureCallEnabled(bool isFutureCallEnabled) {
+    _isFutureCallEnabled = isFutureCallEnabled;
+    return this;
+  }
+
   GeneratorConfigBuilder withEnabledExperimentalFeatures(
     List<ExperimentalFeature> features,
   ) {
@@ -174,6 +181,7 @@ class GeneratorConfigBuilder {
       serializeAsJsonbByDefault: _serializeAsJsonbByDefault,
       isDatabaseEnabled: _isDatabaseEnabled,
       databaseDialect: _databaseDialect,
+      isFutureCallEnabled: _isFutureCallEnabled,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
     );

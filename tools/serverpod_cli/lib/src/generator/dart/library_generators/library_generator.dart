@@ -988,7 +988,8 @@ return deserializeByClassName(value);
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
 
-    if (protocolDefinition.shouldGenerateFutureCalls) {
+    if (protocolDefinition.shouldGenerateFutureCalls &&
+        config.isFutureCallEnabled) {
       library.directives.add(
         Directive.export(
           'future_calls.dart',
