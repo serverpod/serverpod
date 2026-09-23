@@ -7,6 +7,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';
+import '../../test_util/file_system_entity_helpers.dart';
 
 /// `createMigrationAction` only generates a client migration when the host
 /// project owns client-side database tables. Shared-package and module tables
@@ -32,9 +33,9 @@ name: ${projectName}_server
 ''');
   });
 
-  tearDown(() {
+  tearDown(() async {
     if (root.existsSync()) {
-      root.deleteSync(recursive: true);
+      await root.deleteWithRetry(recursive: true);
     }
   });
 

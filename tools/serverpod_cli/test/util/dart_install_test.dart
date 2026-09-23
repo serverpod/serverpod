@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import '../test_util/file_system_entity_helpers.dart';
+
 Directory _createTempDirectory() {
   final directory = Directory.systemTemp.createTempSync('serverpod_upgrade');
-  addTearDown(() => directory.deleteSync(recursive: true));
+  addTearDown(() => directory.deleteWithRetry(recursive: true));
   return directory;
 }
 
@@ -34,9 +36,9 @@ void main() {
       expect(result.exitCode, 0, reason: '${result.stdout}${result.stderr}');
     });
 
-    tearDownAll(() {
+    tearDownAll(() async {
       final directory = Directory(p.dirname(probe));
-      if (directory.existsSync()) directory.deleteSync(recursive: true);
+      await directory.deleteWithRetry(recursive: true);
     });
 
     /// Non-zero means runDartInstall threw rather than returning a result.

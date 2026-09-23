@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 
 import 'builders/generator_config_builder.dart';
 import 'endpoint_validation_helpers.dart';
+import 'file_system_entity_helpers.dart';
 
 GeneratorConfig buildAnalyticsTestConfig(String serverDir) {
   return GeneratorConfig(
@@ -98,7 +99,7 @@ class GenerateAnalyticsFixture {
     );
   }
 
-  void dispose() => projectDir.deleteIfExists(recursive: true);
+  Future<void> dispose() => projectDir.deleteWithRetry(recursive: true);
 }
 
 void _writeDevelopmentConfig(Directory projectDir) {

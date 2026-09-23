@@ -9,6 +9,8 @@ import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
 import 'package:test/test.dart';
 
+import '../test_util/file_system_entity_helpers.dart';
+
 void main() {
   group(
     'Given a Serverpod project configured with an embedded PostgreSQL password in passwords.yaml,',
@@ -76,7 +78,7 @@ development:
         await stdoutSubscription?.cancel();
         await stderrSubscription?.cancel();
         if (serverDirectory.existsSync()) {
-          serverDirectory.deleteSync(recursive: true);
+          await serverDirectory.deleteWithRetry(recursive: true);
         }
       });
 

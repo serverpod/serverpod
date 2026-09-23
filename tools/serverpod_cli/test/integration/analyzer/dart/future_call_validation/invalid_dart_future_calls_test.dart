@@ -9,6 +9,7 @@ import 'package:test/test.dart';
 
 import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
+import '../../../../test_util/file_system_entity_helpers.dart';
 
 final config = GeneratorConfigBuilder().build();
 late Directory testProjectDirectory;
@@ -19,9 +20,9 @@ void main() {
     await createTestEnvironment(testProjectDirectory);
   });
 
-  tearDownAll(() {
+  tearDownAll(() async {
     if (testProjectDirectory.existsSync()) {
-      testProjectDirectory.deleteSync(recursive: true);
+      await testProjectDirectory.deleteWithRetry(recursive: true);
     }
   });
 

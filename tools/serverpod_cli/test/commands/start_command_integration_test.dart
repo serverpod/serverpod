@@ -27,6 +27,8 @@ import 'package:serverpod_shared/serverpod_shared.dart'
     show hasUnixSocketSupport;
 import 'package:test/test.dart';
 
+import '../test_util/file_system_entity_helpers.dart';
+
 final _testLogger = _TestLogger();
 
 void main() {
@@ -41,8 +43,8 @@ void main() {
   tearDownAll(() async {
     await closeLogger();
     RunnerRegistry.defaultDir = null;
-    await registryDirectory.delete(recursive: true);
-    await _compiledRunnerDirectory?.delete(recursive: true);
+    await registryDirectory.deleteWithRetry(recursive: true);
+    await _compiledRunnerDirectory?.deleteWithRetry(recursive: true);
   });
 
   group('Given a Serverpod project configured with SQLite,', () {
