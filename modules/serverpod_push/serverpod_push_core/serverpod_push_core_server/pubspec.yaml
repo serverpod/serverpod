@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_push_core_server
-description: Serverpod push notification core — provider contract, payload types, and the FCM provider.
+description: Serverpod push notification core — provider contract, payload types, and the FCM and OneSignal providers.
 version: 4.0.1
 repository: https://github.com/serverpod/serverpod
 

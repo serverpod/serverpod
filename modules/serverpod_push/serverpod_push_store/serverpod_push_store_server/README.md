@@ -12,7 +12,10 @@ documentation.
 Register providers, then initialize the store on your `Serverpod` instance:
 
 ```dart
-PushService.set(providers: [FcmPushProviderBuilder(credentials: ...)]);
+PushService.set(providers: [
+  FcmPushProviderBuilder(credentials: ...),
+  OneSignalPushProviderBuilder(appId: ..., restApiKey: ...),
+]);
 await pod.initializePushStore();
 ```
 

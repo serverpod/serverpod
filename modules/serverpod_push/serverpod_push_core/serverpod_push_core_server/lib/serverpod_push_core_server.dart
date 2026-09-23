@@ -14,3 +14,5 @@ export 'src/generated/endpoints.dart';
 export 'src/generated/protocol.dart';
 export 'src/providers/fcm/fcm_push_provider.dart';
 export 'src/providers/fcm/fcm_push_provider_builder.dart';
+export 'src/providers/onesignal/onesignal_push_provider.dart';
+export 'src/providers/onesignal/onesignal_push_provider_builder.dart';
