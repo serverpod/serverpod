@@ -4,9 +4,11 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
-import 'package:pointycastle/key_derivators/api.dart';
-import 'package:pointycastle/key_derivators/argon2.dart';
+import 'package:serverpod_argon2/serverpod_argon2.dart' as native;
 import 'package:serverpod_shared/serverpod_shared.dart';
+
+/// Argon2 version 1.3, the only one the native library implements.
+const _argon2Version = 19;
 
 /// {@template argon2_hash_util}
 /// A consolidated utility for handling Argon2id-based secret hashing.
@@ -23,12 +25,23 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// See: https://en.wikipedia.org/wiki/Argon2
 /// {@endtemplate}
 final class Argon2HashUtil {
+  /// The shortest salt, in bytes, that Argon2 accepts.
+  ///
+  /// RFC 9106 section 4 recommends 16 and allows 8 only under space
+  /// constraints.
+  static const minSaltLength = 8;
+
+  /// The shortest secret, in bytes, that [Argon2HashUtil.forRandomSecrets]
+  /// hashes.
+  static const minRandomSecretLength = 16;
+
   // The peppers to use for hashing.
   // The first pepper is the primary pepper used for new hashes.
   // The remaining peppers are used as fallback peppers for validating hashes.
   final List<Uint8List> _hashPeppers;
   final int _hashSaltLength;
   final Argon2HashParameters _parameters;
+  final int _minSecretLength;
 
   /// Creates a new instance of [Argon2HashUtil].
   ///
@@ -43,12 +56,55 @@ final class Argon2HashUtil {
     final List<String> fallbackHashPeppers = const [],
     required final int hashSaltLength,
     final Argon2HashParameters? parameters,
+  }) : this._(
+         hashPepper: hashPepper,
+         fallbackHashPeppers: fallbackHashPeppers,
+         hashSaltLength: hashSaltLength,
+         parameters: parameters ?? Argon2HashParameters(),
+         minSecretLength: 0,
+       );
+
+  /// Creates an [Argon2HashUtil] for secrets that are long and randomly
+  /// generated, such as tokens. Never use it for passwords or short codes.
+  ///
+  /// Nobody can guess such a secret, so the slowness of Argon2 protects
+  /// nothing. This hashes at the lowest cost Argon2 allows. The stored format
+  /// is unchanged, so servers on an earlier version still validate these
+  /// hashes. Hashes stored at a higher cost validate here too.
+  Argon2HashUtil.forRandomSecrets({
+    required final String hashPepper,
+    final List<String> fallbackHashPeppers = const [],
+    required final int hashSaltLength,
+  }) : this._(
+         hashPepper: hashPepper,
+         fallbackHashPeppers: fallbackHashPeppers,
+         hashSaltLength: hashSaltLength,
+         parameters: Argon2HashParameters(memory: 8, iterations: 1, lanes: 1),
+         minSecretLength: minRandomSecretLength,
+       );
+
+  Argon2HashUtil._({
+    required final String hashPepper,
+    required final List<String> fallbackHashPeppers,
+    required final int hashSaltLength,
+    required final Argon2HashParameters parameters,
+    required final int minSecretLength,
   }) : _hashPeppers = [
          utf8.encode(hashPepper),
          ...fallbackHashPeppers.map(utf8.encode),
        ],
        _hashSaltLength = hashSaltLength,
-       _parameters = parameters ?? Argon2HashParameters();
+       _parameters = parameters,
+       _minSecretLength = minSecretLength {
+    if (hashSaltLength < minSaltLength) {
+      throw ArgumentError.value(
+        hashSaltLength,
+        'hashSaltLength',
+        'must be at least $minSaltLength bytes, the shortest salt Argon2 '
+            'accepts',
+      );
+    }
+  }
 
   /// Create the hash for the given [secret] (String).
   ///
@@ -164,6 +220,12 @@ final class Argon2HashUtil {
     required final Uint8List salt,
     required final Uint8List pepper,
   }) {
+    assert(
+      secret.length >= _minSecretLength,
+      'Argon2HashUtil.forRandomSecrets is only safe for long random secrets. '
+      'Length is all this can check, so a long but guessable secret still '
+      'passes.',
+    );
     return _createHashWithParameters(
       secret: secret,
       salt: salt,
@@ -184,27 +246,59 @@ final class Argon2HashUtil {
     required final int lanes,
     required final int desiredKeyLength,
   }) {
-    // Capture variables for use in isolate
-    return Isolate.run(() {
-      final parameters = Argon2Parameters(
-        Argon2Parameters.ARGON2_id,
-        salt,
-        desiredKeyLength: desiredKeyLength,
-        lanes: lanes,
+    return Isolate.run(() async {
+      final hashBytes = await _deriveNatively(
+        secret: secret,
+        salt: salt,
+        pepper: pepper,
         memory: memory,
         iterations: iterations,
-        secret: pepper,
+        lanes: lanes,
+        desiredKeyLength: desiredKeyLength,
       );
 
-      final generator = Argon2BytesGenerator()..init(parameters);
-      final hashBytes = generator.process(secret);
-
-      return _HashResult.fromArgon2Parameters(
-        parameters,
+      return _HashResult._(
         hash: hashBytes,
         salt: salt,
+        memory: memory,
+        iterations: iterations,
+        lanes: lanes,
+        version: _argon2Version,
       );
     });
+  }
+
+  static Future<Uint8List> _deriveNatively({
+    required final Uint8List secret,
+    required final Uint8List salt,
+    required final Uint8List pepper,
+    required final int memory,
+    required final int iterations,
+    required final int lanes,
+    required final int desiredKeyLength,
+  }) async {
+    final native.Argon2 argon2;
+    try {
+      argon2 = await native.Argon2.load();
+    } on ArgumentError catch (e) {
+      throw StateError(
+        'The native Argon2 library could not be loaded. `dart compile exe` '
+        'leaves out native assets, so build the server with `dart build cli`. '
+        '($e)',
+      );
+    }
+
+    return argon2.deriveKey(
+      password: secret,
+      salt: salt,
+      secret: pepper,
+      parameters: native.Argon2Parameters(
+        iterations: iterations,
+        memoryKiB: memory,
+        parallelism: lanes,
+        hashLength: desiredKeyLength,
+      ),
+    );
   }
 }
 
@@ -251,22 +345,6 @@ class _HashResult {
     return '\$argon2id\$v=$version\$m=$memory,t=$iterations,p=$lanes\$$base64Salt\$$base64Hash';
   }
 
-  /// Creates a new [_HashResult] from the given [parameters].
-  factory _HashResult.fromArgon2Parameters(
-    final Argon2Parameters parameters, {
-    required final Uint8List hash,
-    required final Uint8List salt,
-  }) {
-    return _HashResult._(
-      hash: hash,
-      salt: salt,
-      memory: parameters.memory,
-      iterations: parameters.iterations,
-      lanes: parameters.lanes,
-      version: parameters.version,
-    );
-  }
-
   /// Parses a PHC-formatted hash string into a [_HashResult].
   ///
   /// Throws [ArgumentError] if the string format is invalid.
@@ -288,9 +366,7 @@ class _HashResult {
       throw argumentError;
     }
 
-    // Parse version: v=19
-    if (version != Argon2Parameters.ARGON2_VERSION_13 &&
-        version != Argon2Parameters.ARGON2_VERSION_10) {
+    if (version != _argon2Version) {
       throw ArgumentError('Unsupported Argon2 version: $version');
     }
 
@@ -320,13 +396,18 @@ class _HashResult {
       throw argumentError;
     }
 
+    // Earlier versions stored shorter salts, which the native library refuses.
+    if (salt.length < Argon2HashUtil.minSaltLength) {
+      throw argumentError;
+    }
+
     return _HashResult._(
       hash: hash,
       salt: salt,
       memory: memory,
       iterations: iterations,
       lanes: lanes,
-      version: 19,
+      version: _argon2Version,
     );
   }
 }

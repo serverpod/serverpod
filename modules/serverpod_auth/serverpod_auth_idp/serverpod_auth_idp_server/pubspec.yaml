@@ -18,7 +18,6 @@ dependencies:
   http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
   passkeys_server: ^1.0.0
-  pointycastle: '>=3.7.4 <5.0.0'
   serverpod: 4.0.2
   serverpod_auth_core_server: 4.0.2
   serverpod_shared: 4.0.2
