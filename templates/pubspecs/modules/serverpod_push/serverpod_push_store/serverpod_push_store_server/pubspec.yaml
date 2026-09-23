@@ -1,0 +1,26 @@
+# TEMPLATE
+
+name: serverpod_push_store_server
+description: Serverpod push notification store — durable queue, dispatcher, and device endpoints.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+resolution: workspace
+
+dependencies:
+  clock: ^1.1.1
+  collection: ^1.19.0
+  crypto: ^3.0.2
+  meta: ^1.15.0
+  serverpod: SERVERPOD_VERSION
+  serverpod_push_core_server: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
+  uuid: ^4.5.3
+
+dev_dependencies:
+  serverpod_lints: SERVERPOD_VERSION
+  serverpod_test: SERVERPOD_VERSION
+  test: ^1.25.5

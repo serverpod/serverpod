@@ -1,0 +1,27 @@
+# TEMPLATE
+
+name: serverpod_push_core_server
+description: Serverpod push notification core — provider contract, payload types, and the FCM provider.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+resolution: workspace
+
+dependencies:
+  clock: ^1.1.1
+  crypto: ^3.0.2
+  dart_jsonwebtoken: ^3.1.0
+  http: ">=1.1.0 <2.0.0"
+  meta: ^1.15.0
+  serverpod: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
+
+dev_dependencies:
+  serverpod_lints: SERVERPOD_VERSION
+  test: ^1.25.5
+
+false_secrets:
+  - test/providers/fcm/fcm_push_provider_test.dart

@@ -1,0 +1,18 @@
+### A platform-agnostic push payload.
+###
+### SCHEMA RULE (locked): this class is append-only and nullable-only,
+### permanently. It is persisted inside a JSON column, so there is no migration
+### for its interior, and a rolling deploy will read rows written by the previous
+### release. Renaming or un-nullabling a field here is a data-format break, not a
+### schema change.
+class: PushMessage
+fields:
+  title: String?
+  body: String?
+  data: Map<String, String>
+  imageUrl: String?
+  collapseKey: String?
+  priority: PushPriority
+  ### Authored duration. Converted once, at enqueue, into PushDelivery.expiresAt.
+  ### Never recomputed, never re-derived at send time.
+  timeToLive: Duration?

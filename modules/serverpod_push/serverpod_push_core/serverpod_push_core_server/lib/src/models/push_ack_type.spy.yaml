@@ -1,0 +1,7 @@
+### Client acknowledgement of a delivered notification.
+enum: PushAckType
+serialized: byName
+default: received
+values:
+  - received
+  - opened

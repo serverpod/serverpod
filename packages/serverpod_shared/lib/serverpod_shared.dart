@@ -5,6 +5,7 @@ export 'src/duration.dart';
 export 'src/enums.dart';
 export 'src/environment_variables.dart';
 export 'src/exceptions/exit_exception.dart';
+export 'src/firebase_service_account_credentials.dart';
 export 'src/exceptions/password_missing_exceptions.dart';
 export 'src/internal_error.dart';
 export 'src/method_streaming_exceptions.dart';

@@ -11,6 +11,7 @@ workspace:
   - examples/legacy/auth_example/auth_example_client
   - examples/legacy/auth_example/auth_example_server
   - examples/middleware/*
+  - examples/push/*
   - integrations/*
   # `serverpod_auth_google_flutter` is intentionally excluded, see
   # util/non_workspace_packages.
@@ -21,6 +22,7 @@ workspace:
   - modules/legacy/serverpod_auth/serverpod_auth_server
   - modules/legacy/serverpod_auth/serverpod_auth_shared_flutter
   - modules/serverpod_auth/*/*
+  - modules/serverpod_push/*/*
   - packages/*
   - tests/*
   - tests/*/*

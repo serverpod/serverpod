@@ -1,0 +1,8 @@
+### Why an acknowledge call failed.
+enum: PushAcknowledgeFailureReason
+serialized: byName
+default: notFound
+values:
+  - notFound
+  - notOwned
+  - anonymousDevice

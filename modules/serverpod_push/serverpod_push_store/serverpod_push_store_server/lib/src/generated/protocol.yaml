@@ -1,0 +1,4 @@
+pushDevice:
+  - registerDevice:
+  - unregisterDevice:
+  - acknowledge:

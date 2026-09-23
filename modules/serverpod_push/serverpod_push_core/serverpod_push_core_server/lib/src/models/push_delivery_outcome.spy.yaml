@@ -1,0 +1,13 @@
+### Outcome of a single provider send for one target.
+enum: PushDeliveryOutcome
+serialized: byName
+default: retryable
+values:
+  - accepted
+  - retryable
+  - rateLimited
+  - invalidToken
+  - permanentFailure
+  ### Returned when a request's `expiresAt` has already passed at send time.
+  ### Terminal, but must not be reported as `permanentFailure`.
+  - expired

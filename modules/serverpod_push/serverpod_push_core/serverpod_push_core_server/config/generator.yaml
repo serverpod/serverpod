@@ -1,0 +1,4 @@
+type: module
+nickname: serverpod_push_core
+
+client_package_path: ../serverpod_push_core_client

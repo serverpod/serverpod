@@ -1,0 +1,27 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_push_store_server
+description: Serverpod push notification store — durable queue, dispatcher, and device endpoints.
+version: 4.0.1
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '^3.12.2'
+
+resolution: workspace
+
+dependencies:
+  clock: ^1.1.1
+  collection: ^1.19.0
+  crypto: ^3.0.2
+  meta: ^1.15.0
+  serverpod: 4.0.1
+  serverpod_push_core_server: 4.0.1
+  serverpod_shared: 4.0.1
+  uuid: ^4.5.3
+
+dev_dependencies:
+  serverpod_lints: 4.0.1
+  serverpod_test: 4.0.1
+  test: ^1.25.5

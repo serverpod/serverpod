@@ -1,0 +1,8 @@
+include: package:serverpod_lints/public.yaml
+
+analyzer:
+  exclude:
+    - lib/src/protocol/**
+
+formatter:
+  trailing_commas: preserve

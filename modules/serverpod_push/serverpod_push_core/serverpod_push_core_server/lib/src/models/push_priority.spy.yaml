@@ -1,0 +1,8 @@
+### Delivery priority. Mapped onto each provider's own priority field at send
+### time (FCM `android.priority`, APNs `apns-priority`).
+enum: PushPriority
+serialized: byName
+default: normal
+values:
+  - normal
+  - high

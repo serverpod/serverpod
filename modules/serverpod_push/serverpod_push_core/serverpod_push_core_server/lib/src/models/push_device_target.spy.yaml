@@ -1,0 +1,8 @@
+### A device address for a single send request.
+class: PushDeviceTarget
+fields:
+  provider: String
+  ### Opaque provider credential, used for sending. FCM/APNs: the device token.
+  ### Web Push: the JSON-encoded subscription (endpoint + p256dh + auth).
+  credential: String
+  platform: PushPlatform

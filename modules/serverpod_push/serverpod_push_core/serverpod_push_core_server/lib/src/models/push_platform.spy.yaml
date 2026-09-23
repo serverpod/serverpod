@@ -1,0 +1,9 @@
+### Target platform for a push device.
+enum: PushPlatform
+serialized: byName
+default: android
+values:
+  - android
+  - ios
+  - web
+  - macos

@@ -1,0 +1,46 @@
+### One (notification, device) send attempt, with retry state.
+class: PushDelivery
+serverOnly: true
+table: serverpod_push_delivery
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  notification: PushNotification?, relation(name=push_notification_deliveries, onDelete=Cascade)
+  device: PushDevice?, relation(name=push_device_deliveries, onDelete=Cascade)
+
+  ### Denormalized from PushDevice so the claim query can scope to a provider.
+  provider: String
+
+  status: PushDeliveryStatus
+
+  ### Send budget. Incremented only at completion. Capped by maxAttempts.
+  attempts: int, default=0
+  ### Crash budget. Incremented at claim. Capped by maxClaims.
+  claimCount: int, default=0
+  ### Backoff driver. Incremented on every deferral, including rateLimited.
+  backoffExponent: int, default=0
+
+  ### Set once at enqueue from PushMessage.timeToLive. Never recomputed.
+  expiresAt: DateTime?
+  nextAttemptAt: DateTime
+  firstAttemptAt: DateTime?
+  lastAttemptAt: DateTime?
+  lastOutcome: module:push:PushDeliveryOutcome?
+  lastErrorCode: String?
+  lastErrorMessage: String?
+  providerMessageId: String?
+  claimedBy: String?
+  claimedAt: DateTime?
+  receivedAt: DateTime?
+  openedAt: DateTime?
+  createdAt: DateTime, defaultModel=now
+
+indexes:
+  serverpod_push_delivery_claim_idx:
+    fields: provider, status, nextAttemptAt
+  serverpod_push_delivery_reaper_idx:
+    fields: status, claimedAt
+  serverpod_push_delivery_retention_idx:
+    fields: status, createdAt
+  serverpod_push_delivery_unique_idx:
+    fields: notificationId, deviceId
+    unique: true

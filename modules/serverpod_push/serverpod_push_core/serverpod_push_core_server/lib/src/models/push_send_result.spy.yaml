@@ -1,0 +1,9 @@
+### Result of sending to one [PushDeviceTarget].
+class: PushSendResult
+fields:
+  target: PushDeviceTarget
+  outcome: PushDeliveryOutcome
+  providerMessageId: String?
+  errorCode: String?
+  errorMessage: String?
+  retryAfter: Duration?

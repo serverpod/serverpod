@@ -68,6 +68,14 @@ declare -a projectPaths=(
     "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter"
     "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client"
 
+    "modules/serverpod_push/serverpod_push_core/serverpod_push_core_server"
+    "modules/serverpod_push/serverpod_push_core/serverpod_push_core_client"
+    "modules/serverpod_push/serverpod_push_store/serverpod_push_store_server"
+    "modules/serverpod_push/serverpod_push_store/serverpod_push_store_client"
+    "modules/serverpod_push/serverpod_push_store/serverpod_push_store_flutter"
+    "modules/serverpod_push/serverpod_push_store/serverpod_push_store_flutter_firebase"
+    "modules/serverpod_push/serverpod_push_store/serverpod_push_store_flutter_onesignal"
+
     "modules/legacy/serverpod_chat/serverpod_chat_server"
     "modules/legacy/serverpod_chat/serverpod_chat_client"
     "modules/legacy/serverpod_chat/serverpod_chat_flutter"

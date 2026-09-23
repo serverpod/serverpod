@@ -1,0 +1,15 @@
+name: serverpod_push_core_client
+description: Client protocol types for the Serverpod push notification core.
+version: SERVERPOD_VERSION
+
+environment:
+  sdk: DART_VERSION
+
+resolution: workspace
+
+dependencies:
+  serverpod_client: SERVERPOD_VERSION
+
+dev_dependencies:
+  serverpod_lints: SERVERPOD_VERSION
+  test: ^1.25.5

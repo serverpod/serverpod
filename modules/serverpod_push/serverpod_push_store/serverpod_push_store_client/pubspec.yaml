@@ -1,0 +1,16 @@
+name: serverpod_push_store_client
+description: Client for the Serverpod push notification store.
+version: 4.0.1
+
+environment:
+  sdk: '^3.12.2'
+
+resolution: workspace
+
+dependencies:
+  serverpod_client: 4.0.1
+  serverpod_push_core_client: 4.0.1
+
+dev_dependencies:
+  serverpod_lints: 4.0.1
+  test: ^1.25.5

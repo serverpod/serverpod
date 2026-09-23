@@ -1,0 +1,13 @@
+### Delivery lifecycle. Terminal: accepted, abandoned, discarded, expired.
+enum: PushDeliveryStatus
+serialized: byName
+serverOnly: true
+default: pending
+values:
+  - pending
+  - sending
+  - accepted
+  - failed
+  - abandoned
+  - discarded
+  - expired

@@ -80,6 +80,14 @@ cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_brid
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server/CHANGELOG.md
 
+cp CHANGELOG.md modules/serverpod_push/serverpod_push_core/serverpod_push_core_server/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_push/serverpod_push_core/serverpod_push_core_client/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_push/serverpod_push_store/serverpod_push_store_server/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_push/serverpod_push_store/serverpod_push_store_client/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_push/serverpod_push_store/serverpod_push_store_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_push/serverpod_push_store/serverpod_push_store_flutter_firebase/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_push/serverpod_push_store/serverpod_push_store_flutter_onesignal/CHANGELOG.md
+
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3_compat/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_gcp/CHANGELOG.md

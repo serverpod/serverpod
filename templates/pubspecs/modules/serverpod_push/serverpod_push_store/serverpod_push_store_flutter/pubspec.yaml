@@ -1,0 +1,24 @@
+# TEMPLATE
+
+name: serverpod_push_store_flutter
+description: Flutter device registrar for the Serverpod push notification store.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.15.0
+  serverpod_push_core_client: SERVERPOD_VERSION
+  serverpod_push_store_client: SERVERPOD_VERSION
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  serverpod_lints: SERVERPOD_VERSION

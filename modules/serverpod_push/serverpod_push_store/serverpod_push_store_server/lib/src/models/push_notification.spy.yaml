@@ -1,0 +1,23 @@
+### A fan-out of one authored message to N devices.
+class: PushNotification
+serverOnly: true
+table: serverpod_push_notification
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  message: module:push:PushMessage
+  ### Discriminator for the JSON column's interior. Written on every row so a
+  ### future breaking change to PushMessage has something to branch on.
+  schemaVersion: int, default=1
+  dedupeKey: String?
+  ### When the key becomes reusable. Notification retention deletes rows past
+  ### this with no remaining deliveries, which is what frees the key.
+  dedupeExpiresAt: DateTime?
+  createdAt: DateTime, defaultModel=now
+  deliveries: List<PushDelivery>?, relation(name=push_notification_deliveries)
+
+indexes:
+  serverpod_push_notification_dedupe_idx:
+    fields: dedupeKey
+    unique: true
+  serverpod_push_notification_retention_idx:
+    fields: dedupeExpiresAt

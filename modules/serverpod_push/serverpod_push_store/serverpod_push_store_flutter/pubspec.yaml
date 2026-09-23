@@ -1,0 +1,25 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_push_store_flutter
+description: Flutter device registrar for the Serverpod push notification store.
+version: 4.0.1
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '^3.12.2'
+  flutter: '^3.44.4'
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.15.0
+  serverpod_push_core_client: 4.0.1
+  serverpod_push_store_client: 4.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  serverpod_lints: 4.0.1

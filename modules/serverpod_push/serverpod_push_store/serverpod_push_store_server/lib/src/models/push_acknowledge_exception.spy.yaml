@@ -1,0 +1,4 @@
+### Thrown when acknowledge cannot be applied.
+exception: PushAcknowledgeException
+fields:
+  reason: PushAcknowledgeFailureReason

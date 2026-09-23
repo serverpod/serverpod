@@ -1,0 +1,38 @@
+### A registered push device.
+class: PushDevice
+serverOnly: true
+table: serverpod_push_device
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  provider: String
+  ### Credential used for sending. Rotates.
+  credential: String
+  ### sha256 of PushProvider.identityKeyFor(credential) — the stable identity,
+  ### not the credential.
+  identityHash: String
+  platform: module:push:PushPlatform
+  userIdentifier: String?
+  ### Client-generated, stable across token rotation. When present it is the
+  ### upsert key, so a rotated token replaces its predecessor instead of
+  ### accumulating a duplicate.
+  installationId: String?
+  locale: String?
+  appVersion: String?
+  createdAt: DateTime, defaultModel=now
+  updatedAt: DateTime, defaultModel=now
+  disabledAt: DateTime?
+  disabledReason: String?
+  deliveries: List<PushDelivery>?, relation(name=push_device_deliveries)
+
+indexes:
+  serverpod_push_device_identity_idx:
+    fields: provider, identityHash
+    unique: true
+  ### NULLs are distinct in Postgres btrees, so this permits unlimited rows with
+  ### a null installationId while still making (provider, installationId) the
+  ### upsert key whenever the client supplies one.
+  serverpod_push_device_installation_idx:
+    fields: provider, installationId
+    unique: true
+  serverpod_push_device_user_idx:
+    fields: userIdentifier
