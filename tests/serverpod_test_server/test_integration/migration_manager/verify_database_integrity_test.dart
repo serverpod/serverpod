@@ -113,7 +113,8 @@ void main() {
           CREATE TABLE example (
             name text PRIMARY KEY CHECK (name <> ''),
             parent text REFERENCES example(name),
-            amount numeric NOT NULL DEFAULT 0
+            amount numeric NOT NULL DEFAULT 0,
+            created_at timestamp NOT NULL DEFAULT (now() AT TIME ZONE 'utc')
           );
         ''');
         await session.db.unsafeExecute(
@@ -269,6 +270,31 @@ void main() {
       );
       await session.db.unsafeExecute(
         "CREATE TABLE example (name text NOT NULL DEFAULT 'database');",
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isTrue);
+      expect(logWriter.entries, isEmpty);
+    },
+  );
+
+  test(
+    'Given an unmanaged timestamp column with a custom default expression, '
+    'when verifying database integrity, '
+    'then verification succeeds without warnings.',
+    () async {
+      serializationManager.tables.add(
+        _table(
+          'example',
+          managed: false,
+          columnType: ColumnType.timestampWithoutTimeZone,
+        ),
+      );
+      await session.db.unsafeExecute(
+        'CREATE TABLE example '
+        "(name timestamp NOT NULL DEFAULT (now() AT TIME ZONE 'utc'));",
       );
 
       final matches = await MigrationManager.verifyDatabaseIntegrity(session);
