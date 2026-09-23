@@ -253,9 +253,8 @@ class SecretChallengeUtil<T> {
 
   /// Decodes and returns the credentials from a completion token.
   ///
-  /// This method only decodes the token - validation against the stored
-  /// challenge should be done by calling [_validateVerificationCode] with the
-  /// extracted verification code.
+  /// This method only decodes the token. Validate the extracted verification
+  /// code against the stored completion challenge with [_completionTokenHash].
   ///
   /// Throws [ChallengeInvalidCompletionTokenException] if the token format is
   /// malformed or invalid.
