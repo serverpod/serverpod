@@ -11,6 +11,7 @@ import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/builders/model_class_definition_builder.dart';
+import '../../test_util/builders/module_config_builder.dart';
 import '../../test_util/builders/serializable_entity_field_definition_builder.dart';
 import '../../test_util/compilation_unit_helpers.dart';
 
@@ -148,6 +149,277 @@ void main() {
       },
     );
   });
+
+  group('Given two nullable fields referring to the same model,', () {
+    late ModelClassDefinition model;
+
+    setUp(() {
+      final target = ModelClassDefinitionBuilder()
+          .withClassName('Target')
+          .withModuleAlias('protocol')
+          .build();
+      model = ModelClassDefinitionBuilder()
+          .withField(_field('first', 'Target?'))
+          .withField(_field('second', 'Target?'))
+          .build();
+      ModelDependencyResolver.resolveModelDependencies([target, model]);
+    });
+
+    test(
+      'when generating server code, '
+      'then both fields reuse one private sentinel in both signatures.',
+      () {
+        final code = const DartServerCodeGenerator()
+            .generateSerializableModelsCode(
+              models: [model],
+              config: GeneratorConfigBuilder().build(),
+            )
+            .values
+            .single;
+
+        expect(_privateSentinels(code), hasLength(1));
+        expect(_parameters(code, 'Example'), _repeatedModelParameters);
+        expect(_parameters(code, '_ExampleImpl'), _repeatedModelParameters);
+      },
+    );
+
+    test(
+      'when generating client code, '
+      'then both fields reuse one private sentinel in both signatures.',
+      () {
+        final code = const DartClientCodeGenerator()
+            .generateSerializableModelsCode(
+              models: [model],
+              config: GeneratorConfigBuilder().build(),
+            )
+            .values
+            .single;
+
+        expect(_privateSentinels(code), hasLength(1));
+        expect(_parameters(code, 'Example'), _repeatedModelParameters);
+        expect(_parameters(code, '_ExampleImpl'), _repeatedModelParameters);
+      },
+    );
+
+    test(
+      'when generating client code with an earlier server-only field, '
+      'then visible fields reuse a sentinel declared for the client.',
+      () {
+        model.fields.insert(
+          0,
+          FieldDefinitionBuilder()
+              .withName('serverOnly')
+              .withType(model.fields.first.type)
+              .withScope(ModelFieldScopeDefinition.serverOnly)
+              .build(),
+        );
+
+        final code = const DartClientCodeGenerator()
+            .generateSerializableModelsCode(
+              models: [model],
+              config: GeneratorConfigBuilder().build(),
+            )
+            .values
+            .single;
+
+        expect(_privateSentinels(code), hasLength(1));
+        expect(_parameters(code, 'Example'), _repeatedModelParameters);
+        expect(_parameters(code, '_ExampleImpl'), _repeatedModelParameters);
+      },
+    );
+
+    test(
+      'when generating shared code, '
+      'then both fields reuse one private sentinel in both signatures.',
+      () {
+        final shared = ModelClassDefinitionBuilder()
+            .withSharedPackageName('shared')
+            .build();
+        shared.fields.addAll(model.fields);
+
+        final code = const DartSharedCodeGenerator()
+            .generateSerializableModelsCode(
+              models: [shared],
+              config: GeneratorConfigBuilder().withSharedModelsSourcePathsParts(
+                {
+                  'shared': ['shared'],
+                },
+              ).build(),
+            )
+            .values
+            .single;
+
+        expect(_privateSentinels(code), hasLength(1));
+        expect(_parameters(code, 'Example'), _repeatedModelParameters);
+        expect(_parameters(code, '_ExampleImpl'), _repeatedModelParameters);
+      },
+    );
+  });
+
+  test(
+    'Given repeated references to same-named models from different modules, '
+    'when generating copyWith, '
+    'then each resolved model type has its own reusable sentinel.',
+    () {
+      final local = ModelClassDefinitionBuilder()
+          .withClassName('Target')
+          .withModuleAlias('protocol')
+          .build();
+      final external = ModelClassDefinitionBuilder()
+          .withClassName('Target')
+          .withModuleAlias('module')
+          .build();
+      final model = ModelClassDefinitionBuilder()
+          .withField(_field('local', 'Target?'))
+          .withField(_field('external', 'module:module:Target?'))
+          .withField(_field('otherLocal', 'Target?'))
+          .withField(_field('otherExternal', 'module:module:Target?'))
+          .build();
+      ModelDependencyResolver.resolveModelDependencies([
+        local,
+        external,
+        model,
+      ]);
+
+      final code = const DartServerCodeGenerator()
+          .generateSerializableModelsCode(
+            models: [model],
+            config: GeneratorConfigBuilder().withModules([
+              ModuleConfigBuilder('module').build(),
+            ]).build(),
+          )
+          .values
+          .single;
+
+      expect(_privateSentinels(code), hasLength(2));
+      expect(_privateSentinels(code).map((c) => c.namePart.typeName.lexeme), [
+        r'_UndefinedExample$local',
+        r'_UndefinedExample$external',
+      ]);
+      final defaults = _copyWith(code, '_ExampleImpl').parameters!.parameters
+          .cast<DefaultFormalParameter>()
+          .map((p) => p.defaultValue?.toSource());
+      expect(defaults, [
+        r'const _UndefinedExample$local()',
+        r'const _UndefinedExample$external()',
+        r'const _UndefinedExample$local()',
+        r'const _UndefinedExample$external()',
+      ]);
+    },
+  );
+
+  test(
+    'Given a sealed parent and child with repeated model fields, '
+    'when generating their shared library, '
+    'then the root declares one sentinel reused by the child part.',
+    () {
+      final target = ModelClassDefinitionBuilder()
+          .withClassName('Target')
+          .withModuleAlias('protocol')
+          .build();
+      final parent = ModelClassDefinitionBuilder()
+          .withClassName('Parent')
+          .withFileName('parent')
+          .withIsSealed(true)
+          .withField(_field('first', 'Target?'))
+          .build();
+      final child = ModelClassDefinitionBuilder()
+          .withClassName('Child')
+          .withFileName('child')
+          .withExtendsClass(parent)
+          .withField(_field('second', 'Target?'))
+          .build();
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+      ModelDependencyResolver.resolveModelDependencies([target, parent, child]);
+
+      final files = const DartServerCodeGenerator()
+          .generateSerializableModelsCode(
+            models: [parent, child],
+            config: GeneratorConfigBuilder().build(),
+          );
+      final parentCode =
+          files[path.join('lib', 'src', 'generated', 'parent.dart')]!;
+      final childCode =
+          files[path.join('lib', 'src', 'generated', 'child.dart')]!;
+
+      expect(_privateSentinels(parentCode), hasLength(1));
+      expect(_privateSentinels(childCode), isEmpty);
+      expect(
+        _parameters(childCode, 'Child'),
+        _repeatedModelParameters.replaceAll('Example', 'Parent'),
+      );
+      expect(
+        _parameters(childCode, '_ChildImpl'),
+        _parameters(childCode, 'Child'),
+      );
+    },
+  );
+
+  test(
+    'Given sibling parts with model fields absent from their sealed root, '
+    'when generating the library, '
+    'then the root declares the sentinel needed by both nested parts.',
+    () {
+      final target = ModelClassDefinitionBuilder()
+          .withClassName('Target')
+          .withModuleAlias('protocol')
+          .build();
+      final root = ModelClassDefinitionBuilder()
+          .withClassName('Root')
+          .withFileName('root')
+          .withIsSealed(true)
+          .build();
+      final first = ModelClassDefinitionBuilder()
+          .withClassName('First')
+          .withFileName('first')
+          .withSubDirParts(['nested'])
+          .withExtendsClass(root)
+          .withField(_field('value', 'Target?'))
+          .build();
+      final second = ModelClassDefinitionBuilder()
+          .withClassName('Second')
+          .withFileName('second')
+          .withSubDirParts(['other'])
+          .withExtendsClass(root)
+          .withField(_field('value', 'Target?'))
+          .build();
+      root.childClasses.addAll([
+        ResolvedInheritanceDefinition(first),
+        ResolvedInheritanceDefinition(second),
+      ]);
+      ModelDependencyResolver.resolveModelDependencies([
+        target,
+        root,
+        first,
+        second,
+      ]);
+
+      final files = const DartServerCodeGenerator()
+          .generateSerializableModelsCode(
+            models: [root, first, second],
+            config: GeneratorConfigBuilder().build(),
+          );
+      final rootCode =
+          files[path.join('lib', 'src', 'generated', 'root.dart')]!;
+      final firstCode =
+          files[path.join('lib', 'src', 'generated', 'nested', 'first.dart')]!;
+      final secondCode =
+          files[path.join('lib', 'src', 'generated', 'other', 'second.dart')]!;
+
+      expect(_privateSentinels(rootCode), hasLength(1));
+      expect(_privateSentinels(firstCode), isEmpty);
+      expect(_privateSentinels(secondCode), isEmpty);
+      expect(
+        _parameters(secondCode, '_SecondImpl'),
+        r'({_itx02h2p.Target? value = const _UndefinedFirst$value()})',
+      );
+      expect(
+        _parameters(firstCode, '_FirstImpl'),
+        _parameters(secondCode, '_SecondImpl'),
+      );
+      expect(rootCode, contains("import 'example.dart' as _itx02h2p;"));
+    },
+  );
 
   group('Given a nullable model field inherited by a child,', () {
     late ModelClassDefinition parent;
@@ -338,6 +610,21 @@ const _typedParameters =
     r'_iss.GeographyLineString? line = const _iss.$UndefinedGeographyLineString(), '
     r'_iss.GeographyPolygon? polygon = const _iss.$UndefinedGeographyPolygon(), '
     r'_iss.GeographyGeometryCollection? geometries = const _iss.$UndefinedGeographyGeometryCollection()})';
+
+const _repeatedModelParameters =
+    r'({_itx02h2p.Target? first = const _UndefinedExample$first(), '
+    r'_itx02h2p.Target? second = const _UndefinedExample$first()})';
+
+Iterable<ClassDeclaration> _privateSentinels(String code) =>
+    parseString(
+      content: code,
+    ).unit.declarations.whereType<ClassDeclaration>().where(
+      (declaration) =>
+          declaration.extendsClause?.superclass.toSource().endsWith(
+            '.UndefinedSentinel',
+          ) ??
+          false,
+    );
 
 String _parameters(String code, String className) =>
     _copyWith(code, className).parameters!.toSource();

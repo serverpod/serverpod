@@ -30,6 +30,11 @@ class SerializableModelLibraryGenerator {
   final bool serverCode;
   final GeneratorConfig config;
 
+  // Each generated class uses the sentinel registry of its Dart library.
+  // Sealed descendants share the registry declared in their top node's file.
+  final _copyWithSentinels =
+      <String, Map<ClassDefinition, ({String name, TypeDefinition type})>>{};
+
   SerializableModelLibraryGenerator({
     required this.serverCode,
     required this.config,
@@ -84,6 +89,10 @@ class SerializableModelLibraryGenerator {
   }
 
   Library _generateClassLibrary(ClassDefinition classDefinition) {
+    _copyWithSentinels[classDefinition.className] = _collectCopyWithSentinels(
+      classDefinition.sealedTopNode ?? classDefinition,
+    );
+
     switch (classDefinition) {
       case ExceptionClassDefinition():
         return _generateExceptionLibrary(classDefinition);
@@ -127,7 +136,7 @@ class SerializableModelLibraryGenerator {
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
           if (_shouldCreateUndefinedClass(definition, fields))
             _buildUndefinedClass(),
-          ..._buildTypedUndefinedClasses(definition, fields),
+          ..._buildTypedUndefinedClasses(definition),
           if (!definition.isParentClass)
             _buildModelImplClass(
               className,
@@ -198,7 +207,7 @@ class SerializableModelLibraryGenerator {
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
           if (_shouldCreateUndefinedClass(classDefinition, fields))
             _buildUndefinedClass(),
-          ..._buildTypedUndefinedClasses(classDefinition, fields),
+          ..._buildTypedUndefinedClasses(classDefinition),
           if (!classDefinition.isParentClass)
             _buildModelImplClass(
               className,
@@ -686,29 +695,52 @@ class SerializableModelLibraryGenerator {
     return model is ClassDefinition && !model.isSealed;
   }
 
-  String _privateCopyWithSentinelName(String className, String fieldName) =>
-      '_Undefined$className\$$fieldName';
+  Map<ClassDefinition, ({String name, TypeDefinition type})>
+  _collectCopyWithSentinels(ClassDefinition libraryRoot) {
+    final sentinels = <ClassDefinition, ({String name, TypeDefinition type})>{};
+    final libraryClasses = [
+      libraryRoot,
+      if (libraryRoot.isSealedTopNode) ...libraryRoot.descendantClasses,
+    ];
+
+    for (final definition in libraryClasses) {
+      for (final field in definition.fieldsIncludingInherited) {
+        if (!field.shouldIncludeField(serverCode) ||
+            !field.type.nullable ||
+            !_hasPrivateCopyWithSentinel(field.type)) {
+          continue;
+        }
+
+        final model =
+            (field.type.classDefinition ?? field.type.projectModelDefinition)
+                as ClassDefinition;
+        sentinels.putIfAbsent(
+          model,
+          () => (
+            name: '_Undefined${definition.className}\$${field.name}',
+            type: field.type,
+          ),
+        );
+      }
+    }
+
+    return sentinels;
+  }
 
   Iterable<Class> _buildTypedUndefinedClasses(
     ClassDefinition definition,
-    List<SerializableModelFieldDefinition> fields,
   ) sync* {
-    for (final field in fields) {
-      if (!field.shouldIncludeField(serverCode) ||
-          !field.type.nullable ||
-          !_hasPrivateCopyWithSentinel(field.type)) {
-        continue;
-      }
+    if (definition.sealedTopNode != null && !definition.isSealedTopNode) {
+      return;
+    }
 
+    for (final sentinel in _copyWithSentinels[definition.className]!.values) {
       yield Class((c) {
         c
-          ..name = _privateCopyWithSentinelName(
-            definition.className,
-            field.name,
-          )
+          ..name = sentinel.name
           ..extend = refer('UndefinedSentinel', serverpodUrl(serverCode))
           ..implements.add(
-            field.type.reference(
+            sentinel.type.reference(
               serverCode,
               nullable: false,
               subDirParts: definition.subDirParts,
@@ -727,9 +759,10 @@ class SerializableModelLibraryGenerator {
   ) {
     final type = field.type;
     if (_hasPrivateCopyWithSentinel(type)) {
-      return refer(
-        _privateCopyWithSentinelName(className, field.name),
-      ).constInstance([]);
+      final model = type.classDefinition ?? type.projectModelDefinition;
+      final sentinel = _copyWithSentinels[className]![model]!;
+
+      return refer(sentinel.name).constInstance([]);
     }
 
     return TypeReference((t) {
