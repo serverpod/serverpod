@@ -58,6 +58,30 @@ SdkResolver _resolver(
   );
 }
 
+/// Shims are shell scripts.
+const _platformsWithShellShims = '!windows';
+
+/// Writes an executable `flutter` [script] under [parent] and returns its
+/// path.
+String _flutterShim(Directory parent, String script) {
+  final shim = p.join(parent.path, 'shim_bin', 'flutter');
+  File(shim)
+    ..createSync(recursive: true)
+    ..writeAsStringSync(script);
+  Process.runSync('chmod', ['755', shim]);
+  return shim;
+}
+
+/// A resolver whose PATH tier runs [flutterShim] for real, with the global fvm
+/// tier disabled.
+SdkResolver _shimResolver(Directory baseDirectory, String flutterShim) {
+  return SdkResolver(
+    baseDirectory: baseDirectory,
+    flutterExecutable: flutterShim,
+    probeFvmFlutterRoot: () async => null,
+  );
+}
+
 void main() {
   group('Given a project pinned with fvm', () {
     late Directory temp;
@@ -541,4 +565,79 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given a flutter shim that reports the SDK a directory is bound to, '
+    'and another SDK in unbound directories,',
+    testOn: _platformsWithShellShims,
+    () {
+      late Directory project;
+      late String projectSdk;
+      late String flutterShim;
+
+      setUp(() {
+        final temp = _tempDir();
+        projectSdk = _fakeFlutterSdk(temp, name: 'project-sdk');
+        final unboundSdk = _fakeFlutterSdk(temp, name: 'unbound-sdk');
+        project = Directory(p.join(temp.path, 'project'))..createSync();
+        // Bound the way `puro use` binds a directory to an environment.
+        File(
+          p.join(project.path, '.flutter_env'),
+        ).writeAsStringSync(projectSdk);
+        flutterShim = _flutterShim(
+          temp,
+          '#!/bin/sh\n'
+          'root="$unboundSdk"\n'
+          'if [ -f .flutter_env ]; then read -r root < .flutter_env; fi\n'
+          'printf \'{"flutterRoot": "%s"}\\n\' "\$root"\n',
+        );
+      });
+
+      group('when the Flutter SDK is resolved for a bound project,', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          resolved = await _shimResolver(project, flutterShim).flutterSdk;
+        });
+
+        test('then it resolves the SDK the project is bound to', () {
+          expect(resolved?.root, projectSdk);
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a flutter wrapper that prints a notice before its machine JSON,',
+    testOn: _platformsWithShellShims,
+    () {
+      late Directory project;
+      late String sdkOnPath;
+      late String flutterShim;
+
+      setUp(() {
+        final temp = _tempDir();
+        sdkOnPath = _fakeFlutterSdk(temp, name: 'on-path');
+        project = Directory(p.join(temp.path, 'project'))..createSync();
+        flutterShim = _flutterShim(
+          temp,
+          '#!/bin/sh\n'
+          'echo "A new version of puro is available."\n'
+          'echo \'{"flutterRoot": "$sdkOnPath"}\'\n',
+        );
+      });
+
+      group('when the Flutter SDK is resolved,', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          resolved = await _shimResolver(project, flutterShim).flutterSdk;
+        });
+
+        test('then it resolves the SDK the wrapper reported', () {
+          expect(resolved?.root, sdkOnPath);
+        });
+      });
+    },
+  );
 }

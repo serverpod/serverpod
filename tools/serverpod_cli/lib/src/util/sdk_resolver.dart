@@ -96,6 +96,9 @@ class SdkResolver {
   /// PATH tier.
   final Future<String?> Function()? _probePathFlutterRoot;
 
+  /// The `flutter` the PATH tier probes.
+  final String _flutterExecutable;
+
   /// Overrides the `fvm flutter --version --machine` probe used for the
   /// global fvm tier.
   final Future<String?> Function()? _probeFvmFlutterRoot;
@@ -106,9 +109,11 @@ class SdkResolver {
   SdkResolver({
     required this.baseDirectory,
     @visibleForTesting Future<String?> Function()? probePathFlutterRoot,
+    @visibleForTesting String flutterExecutable = 'flutter',
     @visibleForTesting Future<String?> Function()? probeFvmFlutterRoot,
     @visibleForTesting String Function()? runningSdkRoot,
   }) : _probePathFlutterRoot = probePathFlutterRoot,
+       _flutterExecutable = flutterExecutable,
        _probeFvmFlutterRoot = probeFvmFlutterRoot,
        _runningSdkRoot = runningSdkRoot;
 
@@ -131,7 +136,7 @@ class SdkResolver {
     // Going through the executable rather than reading $PATH directly is what
     // makes shim-based managers (asdf, mise, puro) report their real root.
     final probePath =
-        _probePathFlutterRoot ?? () => _probeFlutterRoot(['flutter']);
+        _probePathFlutterRoot ?? () => _probeFlutterRoot([_flutterExecutable]);
     final flutterOnPath = await probePath();
     if (flutterOnPath != null && isFlutterSdk(flutterOnPath)) {
       return ResolvedSdk(
