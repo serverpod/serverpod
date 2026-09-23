@@ -34,6 +34,20 @@ abstract final class ServerpodCloudProvider {
     environment: Platform.environment,
     fallback: fallback,
   );
+
+  /// Creates a cloud storage instance for [storageId] configured
+  /// by Serverpod Cloud.
+  ///
+  /// Returns [fallback] when Serverpod Cloud storage is not configured.
+  /// Invalid configuration throws a [CloudStorageException].
+  static Future<CloudStorage> custom({
+    required String storageId,
+    required FutureOr<CloudStorage> Function() fallback,
+  }) => createServerpodCloudStorage(
+    storageId: storageId,
+    environment: Platform.environment,
+    fallback: fallback,
+  );
 }
 
 /// Creates a Serverpod Cloud storage for [storageId].

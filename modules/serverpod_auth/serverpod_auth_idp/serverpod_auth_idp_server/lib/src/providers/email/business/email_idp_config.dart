@@ -147,8 +147,9 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
   /// Defaults to allowing at most 3 attempts in the last hour.
   final RateLimit maxPasswordResetAttempts;
 
-  /// The length of the random hash in bytes to be used for each password.
+  /// The length in bytes of the random salt generated for each hashed secret.
   ///
+  /// Must be at least 8, the shortest salt Argon2 accepts.
   /// Defaults to 16.
   final int secretHashSaltLength;
 

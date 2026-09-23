@@ -14,10 +14,11 @@ import 'package:serverpod_cli/src/commands/mcp.dart';
 import 'package:serverpod_cli/src/commands/migrate.dart';
 import 'package:serverpod_cli/src/commands/quickstart.dart';
 import 'package:serverpod_cli/src/commands/run.dart';
+import 'package:serverpod_cli/src/commands/runner.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:test/test.dart';
 
 class _SilentAnalytics extends Analytics {
@@ -29,7 +30,7 @@ class _SilentAnalytics extends Analytics {
 }
 
 void main() {
-  group('Given every registered Serverpod command, ', () {
+  group('Given every registered Serverpod command,', () {
     late Iterable<String> commandNames;
 
     setUp(() {
@@ -53,6 +54,7 @@ void main() {
             CreateRepairMigrationCommand(),
             MigrateCommand(),
             RunCommand(),
+            RunnerCommand(),
             StartCommand(),
             UpgradeCommand(),
             VersionCommand(version),

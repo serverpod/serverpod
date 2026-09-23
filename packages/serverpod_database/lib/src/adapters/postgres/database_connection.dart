@@ -756,6 +756,36 @@ class PostgresDatabaseConnection
     return result.affectedRows;
   }
 
+  @override
+  Stream<List<T>> watch<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Include? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<Table>? alsoTriggerOnTables,
+  }) {
+    throw UnsupportedError(
+      'Database.watch is not supported on PostgreSQL.',
+    );
+  }
+
+  @override
+  Stream<DatabaseResult> unsafeWatch(
+    DatabaseSession session,
+    String query, {
+    QueryParameters? parameters,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<String>? triggerOnTables,
+  }) {
+    throw UnsupportedError(
+      'Database.unsafeWatch is not supported on PostgreSQL.',
+    );
+  }
+
   Future<Iterable<Map<String, dynamic>>> _mappedResultsQuery(
     DatabaseSession session,
     String query, {

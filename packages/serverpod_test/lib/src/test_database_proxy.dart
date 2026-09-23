@@ -50,6 +50,35 @@ class TestDatabaseProxy implements Database {
     );
   }
 
+  /// Emits [TableRow]s matching the query whenever source tables change.
+  ///
+  /// Requires `rollbackDatabase` to be [RollbackDatabase.disabled]. Watch
+  /// streams read committed state on a separate connection and do not observe
+  /// uncommitted writes from the rollback transaction.
+  @override
+  Stream<List<T>> watch<T extends TableRow>({
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Include? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<Table>? alsoTriggerOnTables,
+  }) {
+    _assertWatchAllowed();
+    return _db.watch<T>(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
+    );
+  }
+
   @override
   Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
@@ -394,6 +423,27 @@ class TestDatabaseProxy implements Database {
     );
   }
 
+  /// Executes a read query whenever the source tables are modified.
+  ///
+  /// Requires `rollbackDatabase` to be [RollbackDatabase.disabled]. Watch
+  /// streams read committed state on a separate connection and do not observe
+  /// uncommitted writes from the rollback transaction.
+  @override
+  Stream<DatabaseResult> unsafeWatch(
+    String query, {
+    QueryParameters? parameters,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<String>? triggerOnTables,
+  }) {
+    _assertWatchAllowed();
+    return _db.unsafeWatch(
+      query,
+      parameters: parameters,
+      throttle: throttle,
+      triggerOnTables: triggerOnTables,
+    );
+  }
+
   @override
   Future<List<T>> update<T extends TableRow>(
     List<T> rows, {
@@ -469,6 +519,16 @@ class TestDatabaseProxy implements Database {
         noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  void _assertWatchAllowed() {
+    if (_rollbackDatabase == RollbackDatabase.disabled) return;
+    throw InvalidConfigurationException(
+      'Methods watch and unsafeWatch are not supported when database rollbacks '
+      'are enabled. Watch streams read committed state on a separate connection '
+      'and do not observe uncommitted test writes. Disable rolling back the '
+      'database by setting `rollbackDatabase` to `RollbackDatabase.disabled`.',
     );
   }
 

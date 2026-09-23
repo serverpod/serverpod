@@ -22,14 +22,18 @@ final int Function(int pid, int sig) _libcKill = Platform.isWindows
 /// [Process] instance and awaiting [Process.exitCode] - no PID-recycling
 /// race, reactive on exit.
 ///
-/// POSIX: `kill(pid, 0)` (non-delivering probe). EPERM (cross-user PID
-/// recycling) is reported as dead - a non-issue on a single-user dev box.
-///
-/// Windows: `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, ...)` returns a
-/// handle iff the PID is assigned, with no ACL grant required.
+/// POSIX uses `kill(pid, 0)`. Windows waits zero ms on the process handle,
+/// since a handle outlives its process. Another user's process reads dead.
 bool isProcessAlive(int pid) {
   if (Platform.isWindows) {
-    return _withProcessHandle(pid, (_) => true) ?? false;
+    return _withProcessHandle(pid, (handle) {
+          final win32.Win32Result(value: signalled) = win32.WaitForSingleObject(
+            handle,
+            0,
+          );
+          return signalled == win32.WAIT_TIMEOUT;
+        }, access: win32.PROCESS_SYNCHRONIZE) ??
+        false;
   }
   return _libcKill(pid, 0) == 0;
 }
@@ -77,12 +81,14 @@ String? _readWindowsImagePath(int pid) {
   });
 }
 
-/// Opens a `PROCESS_QUERY_LIMITED_INFORMATION` handle to [pid], runs [body]
-/// with it, and closes the handle. Returns null when the PID is unassigned.
-/// Windows-only.
-T? _withProcessHandle<T>(int pid, T? Function(win32.HANDLE handle) body) {
+/// Runs [body] on a handle to [pid], or returns null if it cannot open one.
+T? _withProcessHandle<T>(
+  int pid,
+  T? Function(win32.HANDLE handle) body, {
+  win32.PROCESS_ACCESS_RIGHTS access = const win32.PROCESS_ACCESS_RIGHTS(0),
+}) {
   final win32.Win32Result(value: handle) = win32.OpenProcess(
-    win32.PROCESS_QUERY_LIMITED_INFORMATION,
+    win32.PROCESS_QUERY_LIMITED_INFORMATION | access,
     false,
     pid,
   );
