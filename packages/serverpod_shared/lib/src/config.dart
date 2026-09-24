@@ -1007,6 +1007,10 @@ class FutureCallConfig {
   /// If true, the server will delete broken future calls on startup.
   final bool deleteBrokenCalls;
 
+  /// Whether future calls are enabled. If false, future calls can neither
+  /// be scheduled nor executed. Defaults to true.
+  final bool enabled;
+
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
     this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
@@ -1015,6 +1019,7 @@ class FutureCallConfig {
     ),
     this.checkBrokenCalls,
     this.deleteBrokenCalls = false,
+    this.enabled = true,
   });
 
   /// The default concurrency limit for future calls.
@@ -1051,6 +1056,9 @@ class FutureCallConfig {
             .futureCallDeleteBrokenCalls
             .configKey];
 
+    final enabled =
+        futureCallConfigJson[ServerpodEnv.futureCallEnabled.configKey];
+
     return FutureCallConfig(
       // If the user did not configure the concurrency limit, use the default
       concurrencyLimit: hasConcurrencyLimitKey
@@ -1061,6 +1069,7 @@ class FutureCallConfig {
       ),
       checkBrokenCalls: checkBrokenCalls,
       deleteBrokenCalls: deleteBrokenCalls ?? false,
+      enabled: enabled ?? true,
     );
   }
 
@@ -1073,6 +1082,7 @@ class FutureCallConfig {
     );
     output.writeln('check broken future calls: $checkBrokenCalls');
     output.writeln('delete broken future calls: $deleteBrokenCalls');
+    output.writeln('future calls enabled: $enabled');
     return output.toString();
   }
 }
@@ -1582,6 +1592,7 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.futureCallScanInterval, int.parse),
     (ServerpodEnv.futureCallCheckBrokenCalls, bool.parse),
     (ServerpodEnv.futureCallDeleteBrokenCalls, bool.parse),
+    (ServerpodEnv.futureCallEnabled, bool.parse),
   ]);
 }
 

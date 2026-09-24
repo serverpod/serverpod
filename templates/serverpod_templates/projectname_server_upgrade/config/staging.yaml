@@ -76,6 +76,7 @@ sessionLogs:
 # futureCallExecutionEnabled: true # Defaults to true
 
 #futureCall:
+#  enabled: true # Defaults to true, set to false to disable scheduling and running future calls
 #  concurrencyLimit: 1 # Defaults to 1, a negative or null value removes the limit
 #  scanInterval: 5000 # Unit in milliseconds, defaults to 5000
 
