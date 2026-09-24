@@ -102,6 +102,26 @@ void main() {
         expect(disposeCalls, 1);
       },
     );
+
+    test('when given a custom target, then it runs that entrypoint', () async {
+      await File(
+        p.join(tempDir.path, 'bin', 'main_enterprise.dart'),
+      ).writeAsString('void main() { print("enterprise entrypoint"); }');
+      final lines = <String>[];
+      serverProcess = ServerProcess(
+        serverDir: tempDir.path,
+        target: 'bin/main_enterprise.dart',
+        serverArgs: [],
+        stdoutSink: LineSink(lines.add),
+        stderrSink: _NullIOSink(),
+      );
+
+      await serverProcess.start();
+
+      expect(await serverProcess.exitCode, 0);
+      await waitFor(() => lines.isNotEmpty);
+      expect(lines, ['enterprise entrypoint']);
+    });
   });
 
   group('Given a ServerProcess whose output ends without a newline,', () {

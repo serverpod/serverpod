@@ -103,6 +103,33 @@ void main() {
     );
 
     test(
+      'when the entrypoint changes, then the cached kernel is not reused',
+      () async {
+        final watchDirs = {p.join(tempDir.path, 'bin')};
+        await compiler.start();
+        expect(await compiler.compileIfNeeded(watchDirs), isTrue);
+        await compiler.dispose();
+
+        final alternate = p.join(tempDir.path, 'bin', 'main_enterprise.dart');
+        await File(alternate).writeAsString('void main() {}');
+        final enterpriseCompiler = KernelCompiler(
+          entryPoint: alternate,
+          outputDill: compiler.outputDill,
+          packagesPath: compiler.packagesPath,
+        );
+        try {
+          expect(await enterpriseCompiler.isDillUpToDate({}), isFalse);
+          await enterpriseCompiler.start();
+          expect(await enterpriseCompiler.compileIfNeeded(watchDirs), isTrue);
+          expect(await enterpriseCompiler.isDillUpToDate({}), isTrue);
+        } finally {
+          await enterpriseCompiler.dispose();
+        }
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
       'when invalidateCachedDill is called, '
       'then the dill, incremental dill, and marker are deleted',
       () async {

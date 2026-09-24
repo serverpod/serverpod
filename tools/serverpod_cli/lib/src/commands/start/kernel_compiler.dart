@@ -56,6 +56,9 @@ class KernelCompiler {
   /// behind if the session dies mid-compile.
   String get _compileMarkerPath => '$outputDill.compiling';
 
+  /// A cached kernel is only valid for the entrypoint that produced it.
+  String get _entryPointPath => '$outputDill.entrypoint';
+
   /// Start the Frontend Server process.
   ///
   /// This starts the server in resident mode, ready to receive compile
@@ -81,6 +84,14 @@ class KernelCompiler {
   /// format, and the last compile that wrote it completed.
   Future<bool> isDillUpToDate(Set<String> watchDirs) async {
     if (File(_compileMarkerPath).existsSync()) return false;
+
+    try {
+      if (await File(_entryPointPath).readAsString() != entryPoint) {
+        return false;
+      }
+    } on FileSystemException {
+      return false;
+    }
 
     final dillFile = File(outputDill);
     if (!await dillFile.exists()) return false;
@@ -130,6 +141,7 @@ class KernelCompiler {
     await File(outputDill).deleteIfExists();
     await File('$outputDill.incremental.dill').deleteIfExists();
     await File(_compileMarkerPath).deleteIfExists();
+    await File(_entryPointPath).deleteIfExists();
   }
 
   /// Compile the project.
@@ -188,7 +200,11 @@ class KernelCompiler {
   ///
   /// Awaitable so callers can order it before disposing or reloading; the
   /// underlying FES `accept` is a fire-and-forget stdin write.
-  Future<void> accept() => _client.then((c) => c.accept());
+  Future<void> accept() async {
+    final client = await _client;
+    client.accept();
+    await File(_entryPointPath).writeAsStringAtomically(entryPoint);
+  }
 
   /// Reject the last compile result.
   Future<void> reject() => _client.then((c) => c.reject());

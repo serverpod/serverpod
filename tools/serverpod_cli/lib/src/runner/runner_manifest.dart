@@ -189,12 +189,14 @@ class RunnerConfig {
     required this.watch,
     required this.flutter,
     required this.serverArgs,
+    this.target = 'bin/main.dart',
     this.docker,
   });
 
   final bool watch;
   final bool flutter;
   final List<String> serverArgs;
+  final String target;
 
   /// Whether the stack runs Docker Compose, null when a request left it open.
   final bool? docker;
@@ -202,6 +204,7 @@ class RunnerConfig {
   /// The option names on which this differs from the requested [other].
   List<String> differencesFrom(RunnerConfig other) => [
     if (watch != other.watch) '--watch',
+    if (target != other.target) '--target',
     if (flutter != other.flutter) '--flutter',
     if (other.docker != null && docker != other.docker) '--docker',
     if (!_serverArgsEqual.equals(serverArgs, other.serverArgs))
@@ -213,6 +216,7 @@ class RunnerConfig {
     return [
       '--directory',
       directory,
+      if (target != 'bin/main.dart') ...['--target', target],
       if (watch) '--watch' else '--no-watch',
       if (flutter) '--flutter' else '--no-flutter',
       if (docker == true) '--docker',
@@ -223,6 +227,7 @@ class RunnerConfig {
 
   Map<String, Object?> toJson() => {
     'watch': watch,
+    'target': target,
     'flutter': flutter,
     if (docker != null) 'docker': docker,
     'serverArgs': serverArgs,
@@ -230,6 +235,7 @@ class RunnerConfig {
 
   static RunnerConfig fromJson(Map<String, Object?> json) => RunnerConfig(
     watch: json['watch'] as bool? ?? true,
+    target: json['target'] as String? ?? 'bin/main.dart',
     flutter: json['flutter'] as bool? ?? true,
     docker: json['docker'] as bool?,
     serverArgs: switch (json['serverArgs']) {

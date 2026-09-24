@@ -68,6 +68,7 @@ import 'package:vm_service/vm_service_io.dart';
 enum StartOption<V> implements OptionDefinition<V> {
   watch<bool>(runnerWatchOption),
   directory<String>(runnerDirectoryOption),
+  target<String>(runnerTargetOption),
   docker<bool>(runnerDockerOption),
   attach(
     FlagOption(
@@ -87,8 +88,7 @@ enum StartOption<V> implements OptionDefinition<V> {
           '--no-attach, since nothing renders.',
     ),
   ),
-  flutter<bool>(runnerFlutterOption),
-  ;
+  flutter<bool>(runnerFlutterOption);
 
   const StartOption(this.option);
 
@@ -135,6 +135,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
         watch: commandConfig.value(StartOption.watch),
         flutter: commandConfig.value(StartOption.flutter),
         docker: commandConfig.optionalValue(StartOption.docker),
+        target: commandConfig.value(StartOption.target),
         serverArgs: argResults?.rest ?? const [],
       ),
       useTui: useTui,
@@ -904,6 +905,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   required GeneratorConfig config,
   required String serverDir,
   required ServerArgsRef serverArgs,
+  String target = 'bin/main.dart',
   required bool watch,
   required bool? docker,
   required bool launchFlutterApp,
@@ -933,6 +935,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   }
 
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
+  log.info('Server entrypoint: $target');
 
   final RunnerLock lock;
   try {
@@ -975,6 +978,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         watch: watch,
         flutter: launchFlutterApp,
         docker: startDocker,
+        target: target,
         serverArgs: requestedServerArgs,
       ),
     ),
@@ -1117,7 +1121,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     // Null reloads the pod on every package_config.json change.
     PackageDependencyTracker? serverDependencyTracker;
     if (watch) {
-      final entryPoint = p.join(serverDir, 'bin', 'main.dart');
+      final entryPoint = p.join(serverDir, target);
       final initialDill = p.join(serverpodToolDir, 'server.dill');
       // One root for compiler, hooks and watcher. KernelCompiler says why.
       final projectRoot = await discoverProjectRootFrom(serverDir);
@@ -1236,6 +1240,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     Future<ServerProcess> serverProcessFactory(String? dillPath) async {
       final serverProcess = ServerProcess(
         serverDir: serverDir,
+        target: target,
         serverArgs: serverArgs.value,
         dartExecutable: dartExecutable,
         enableVmService: true,
