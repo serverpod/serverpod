@@ -228,6 +228,7 @@ class Protocol extends _is.DatabaseSerializationManager {
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
           matchType: null,
+          deferrable: _isp.DeferrableConstraint.initiallyDeferred,
         ),
       ],
       indexes: [

@@ -616,6 +616,46 @@ void main() {
         expect(images, isEmpty);
       },
     );
+
+    test(
+      'when the profile references an image that is inserted later in the same transaction, then the transaction succeeds.',
+      () async {
+        final profile = await UserProfile.db.findFirstRow(
+          session,
+          where: (final t) => t.authUserId.equals(authUserId),
+        );
+        final imageId = const Uuid().v4obj();
+
+        await session.db.transaction((final transaction) async {
+          await UserProfile.db.updateRow(
+            session,
+            profile!.copyWith(imageId: imageId),
+            transaction: transaction,
+          );
+          await UserProfileImage.db.insertRow(
+            session,
+            UserProfileImage(
+              id: imageId,
+              userProfileId: profile.id!,
+              storageId: 'public',
+              path: 'image.png',
+              url: Uri.parse('https://example.com/image.png'),
+            ),
+            transaction: transaction,
+          );
+          await session.db.unsafeExecute(
+            'SET CONSTRAINTS ALL IMMEDIATE;',
+            transaction: transaction,
+          );
+        });
+
+        final profileAfter = await UserProfile.db.findById(
+          session,
+          profile!.id!,
+        );
+        expect(profileAfter?.imageId, imageId);
+      },
+    );
   });
 
   withServerpod('Given an `AuthUser` with a profile with an image,', (
