@@ -185,7 +185,13 @@ extension ColumnComparisons on ColumnDefinition {
   bool get isPrimary => name == defaultPrimaryKeyName;
 
   /// Compares this column definition with [other], returning a list of mismatches.
-  List<ColumnComparisonWarning> like(ColumnDefinition other) {
+  ///
+  /// Set [ignoreDefault] when comparing columns whose defaults are maintained
+  /// outside Serverpod's migrations.
+  List<ColumnComparisonWarning> like(
+    ColumnDefinition other, {
+    bool ignoreDefault = false,
+  }) {
     List<ColumnComparisonWarning> mismatches = [];
 
     if (name != other.name) {
@@ -218,7 +224,7 @@ extension ColumnComparisons on ColumnDefinition {
       );
     }
 
-    if (columnDefault != other.columnDefault) {
+    if (!ignoreDefault && columnDefault != other.columnDefault) {
       mismatches.add(
         ColumnComparisonWarning(
           name: 'default value',
