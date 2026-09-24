@@ -336,8 +336,13 @@ class MigrationManager {
     await migrationRunner.runMigrations(session, action);
   }
 
-  /// Returns true if the database structure is up to date. If not, it
-  /// logs a warning via the global [log].
+  /// Returns true if the database structure matches the model requirements.
+  /// If not, it logs a warning via the global [log].
+  ///
+  /// For tables with [TableDefinition.managed] set to false, only the presence
+  /// of the table and its declared columns, compatible column types, nullability,
+  /// and vector dimensions are verified. Defaults, additional columns, indexes,
+  /// foreign keys, and other migration-owned properties are not compared.
   static Future<bool> verifyDatabaseIntegrity(DatabaseSession session) async {
     var warnings = <String>[];
 
@@ -353,7 +358,11 @@ class MigrationManager {
         warnings.add('Table "${table.name}" is missing.');
         continue;
       }
-      var mismatches = liveTable.like(table).asStringList();
+      var mismatches =
+          (table.managed == false
+                  ? _compareUnmanagedColumns(table, liveTable)
+                  : liveTable.like(table))
+              .asStringList();
 
       if (mismatches.isNotEmpty) {
         warnings.add(
@@ -373,5 +382,34 @@ class MigrationManager {
     }
 
     return warnings.isEmpty;
+  }
+
+  static List<ColumnComparisonWarning> _compareUnmanagedColumns(
+    TableDefinition targetTable,
+    TableDefinition liveTable,
+  ) {
+    var mismatches = <ColumnComparisonWarning>[];
+
+    for (var column in targetTable.columns) {
+      var liveColumn = liveTable.findColumnNamed(column.name);
+      if (liveColumn == null) {
+        mismatches.add(
+          ColumnComparisonWarning(
+            name: column.name,
+            expected: column.name,
+          ),
+        );
+        continue;
+      }
+
+      var columnMismatches = column.like(liveColumn, ignoreDefault: true);
+      if (columnMismatches.isNotEmpty) {
+        mismatches.add(
+          ColumnComparisonWarning(name: column.name).addSubs(columnMismatches),
+        );
+      }
+    }
+
+    return mismatches;
   }
 }

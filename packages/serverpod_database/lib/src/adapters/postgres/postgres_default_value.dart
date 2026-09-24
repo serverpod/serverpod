@@ -75,9 +75,10 @@ String? pgSqlToAbstractDefault(
     literal = literal.substring(1, literal.length - 1);
   }
 
-  // For timestamp without time zone, convert to DateTime.
+  // Normalize timestamp literals, preserving custom SQL expressions used by
+  // manually maintained schemas.
   if (columnType == ColumnType.timestampWithoutTimeZone) {
-    literal = DateTime.parse('${literal}Z').toIso8601String();
+    return DateTime.tryParse('${literal}Z')?.toIso8601String() ?? sql;
   }
 
   return literal;
