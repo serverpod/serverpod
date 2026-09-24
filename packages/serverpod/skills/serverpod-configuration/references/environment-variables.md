@@ -37,7 +37,7 @@ Reference for the [Serverpod Configuration](../SKILL.md) skill. Environment vari
 | | `SERVERPOD_VALIDATE_HEADERS` | validateHeaders |
 | | `SERVERPOD_WEBSOCKET_PING_INTERVAL` | websocketPingInterval / 30s |
 | | `SERVERPOD_FUTURE_CALL_ENABLED` | futureCall.enabled / true |
-| | `SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED` | futureCall.executionEnabled (legacy: futureCallExecutionEnabled) |
+| | `SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED` | futureCall.executionEnabled |
 | | `SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT` | futureCall.concurrencyLimit |
 | | `SERVERPOD_FUTURE_CALL_SCAN_INTERVAL` | futureCall.scanInterval (ms) |
 | | `SERVERPOD_FUTURE_CALL_CHECK_BROKEN_CALLS` | futureCall.checkBrokenCalls |
