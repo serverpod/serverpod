@@ -8,7 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -17,6 +18,7 @@ import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
     as _isg9n5v0;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class LegacySession
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -89,7 +91,7 @@ abstract class LegacySession
   LegacySession copyWith({
     int? id,
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedLegacySession$authUser(),
     Set<String>? scopeNames,
     String? hash,
     String? method,
@@ -142,6 +144,11 @@ abstract class LegacySession
 
 class _Undefined {}
 
+class _UndefinedLegacySession$authUser extends _issu.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedLegacySession$authUser();
+}
+
 class _LegacySessionImpl extends LegacySession {
   _LegacySessionImpl({
     int? id,
@@ -166,7 +173,7 @@ class _LegacySessionImpl extends LegacySession {
   LegacySession copyWith({
     Object? id = _Undefined,
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedLegacySession$authUser(),
     Set<String>? scopeNames,
     String? hash,
     String? method,
@@ -174,9 +181,9 @@ class _LegacySessionImpl extends LegacySession {
     return LegacySession(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _issu.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       hash: hash ?? this.hash,
       method: method ?? this.method,

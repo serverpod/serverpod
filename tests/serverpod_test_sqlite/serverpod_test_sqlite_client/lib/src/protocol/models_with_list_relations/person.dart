@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../models_with_list_relations/organization.dart' as _i0ptycc3;
@@ -73,7 +75,8 @@ abstract class Person
     int? id,
     String? name,
     int? organizationId,
-    _i0ptycc3.Organization? organization,
+    _i0ptycc3.Organization? organization =
+        const _UndefinedPerson$organization(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -130,6 +133,11 @@ abstract class Person
 
 class _Undefined {}
 
+class _UndefinedPerson$organization extends _issu.UndefinedSentinel
+    implements _i0ptycc3.Organization {
+  const _UndefinedPerson$organization();
+}
+
 class _PersonImpl extends Person {
   _PersonImpl({
     int? id,
@@ -151,7 +159,8 @@ class _PersonImpl extends Person {
     Object? id = _Undefined,
     String? name,
     Object? organizationId = _Undefined,
-    Object? organization = _Undefined,
+    _i0ptycc3.Organization? organization =
+        const _UndefinedPerson$organization(),
   }) {
     return PersonImplicit._(
       id: id is int? ? id : this.id,
@@ -159,9 +168,9 @@ class _PersonImpl extends Person {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _i0ptycc3.Organization?
-          ? organization
-          : this.organization?.copyWith(),
+      organization: organization is _issu.UndefinedSentinel
+          ? this.organization?.copyWith()
+          : organization,
       $_cityCitizensCityId: this._cityCitizensCityId,
     );
   }

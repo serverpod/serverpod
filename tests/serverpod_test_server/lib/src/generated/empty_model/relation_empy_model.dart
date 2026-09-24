@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../empty_model/empty_model_relation_item.dart' as _iq60yogb;
 
@@ -57,7 +59,8 @@ abstract class RelationEmptyModel
   @_is.useResult
   RelationEmptyModel copyWith({
     int? id,
-    List<_iq60yogb.EmptyModelRelationItem>? items,
+    List<_iq60yogb.EmptyModelRelationItem>? items =
+        const _issu.$UndefinedList<_iq60yogb.EmptyModelRelationItem>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -125,13 +128,14 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
   @override
   RelationEmptyModel copyWith({
     Object? id = _Undefined,
-    Object? items = _Undefined,
+    List<_iq60yogb.EmptyModelRelationItem>? items =
+        const _issu.$UndefinedList<_iq60yogb.EmptyModelRelationItem>(),
   }) {
     return RelationEmptyModel(
       id: id is int? ? id : this.id,
-      items: items is List<_iq60yogb.EmptyModelRelationItem>?
-          ? items
-          : this.items?.map((e0) => e0.copyWith()).toList(),
+      items: items is _issu.UndefinedSentinel
+          ? this.items?.map((e0) => e0.copyWith()).toList()
+          : items,
     );
   }
 }

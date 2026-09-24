@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
     as _isg9n5v0;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'legacy_authentication_fail_reason.dart' as _ijl7odiy;
 import 'legacy_user_info.dart' as _izh8x5we;
 
@@ -77,7 +79,8 @@ abstract class LegacyAuthenticationResponse
     bool? success,
     String? key,
     int? keyId,
-    _izh8x5we.LegacyUserInfo? userInfo,
+    _izh8x5we.LegacyUserInfo? userInfo =
+        const _UndefinedLegacyAuthenticationResponse$userInfo(),
     _ijl7odiy.LegacyAuthenticationFailReason? failReason,
   });
   @override
@@ -112,6 +115,12 @@ abstract class LegacyAuthenticationResponse
 
 class _Undefined {}
 
+class _UndefinedLegacyAuthenticationResponse$userInfo
+    extends _issu.UndefinedSentinel
+    implements _izh8x5we.LegacyUserInfo {
+  const _UndefinedLegacyAuthenticationResponse$userInfo();
+}
+
 class _LegacyAuthenticationResponseImpl extends LegacyAuthenticationResponse {
   _LegacyAuthenticationResponseImpl({
     required bool success,
@@ -135,16 +144,17 @@ class _LegacyAuthenticationResponseImpl extends LegacyAuthenticationResponse {
     bool? success,
     Object? key = _Undefined,
     Object? keyId = _Undefined,
-    Object? userInfo = _Undefined,
+    _izh8x5we.LegacyUserInfo? userInfo =
+        const _UndefinedLegacyAuthenticationResponse$userInfo(),
     Object? failReason = _Undefined,
   }) {
     return LegacyAuthenticationResponse(
       success: success ?? this.success,
       key: key is String? ? key : this.key,
       keyId: keyId is int? ? keyId : this.keyId,
-      userInfo: userInfo is _izh8x5we.LegacyUserInfo?
-          ? userInfo
-          : this.userInfo?.copyWith(),
+      userInfo: userInfo is _issu.UndefinedSentinel
+          ? this.userInfo?.copyWith()
+          : userInfo,
       failReason: failReason is _ijl7odiy.LegacyAuthenticationFailReason?
           ? failReason
           : this.failReason,

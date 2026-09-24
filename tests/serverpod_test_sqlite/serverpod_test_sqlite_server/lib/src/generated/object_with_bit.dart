@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class ObjectWithBit
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -85,7 +87,7 @@ abstract class ObjectWithBit
   ObjectWithBit copyWith({
     int? id,
     _is.Bit? bit,
-    _is.Bit? bitNullable,
+    _is.Bit? bitNullable = const _issu.$UndefinedBit(),
     _is.Bit? bitIndexedHnsw,
     _is.Bit? bitIndexedHnswWithParams,
     _is.Bit? bitIndexedIvfflat,
@@ -175,7 +177,7 @@ class _ObjectWithBitImpl extends ObjectWithBit {
   ObjectWithBit copyWith({
     Object? id = _Undefined,
     _is.Bit? bit,
-    Object? bitNullable = _Undefined,
+    _is.Bit? bitNullable = const _issu.$UndefinedBit(),
     _is.Bit? bitIndexedHnsw,
     _is.Bit? bitIndexedHnswWithParams,
     _is.Bit? bitIndexedIvfflat,
@@ -184,9 +186,9 @@ class _ObjectWithBitImpl extends ObjectWithBit {
     return ObjectWithBit(
       id: id is int? ? id : this.id,
       bit: bit ?? this.bit.clone(),
-      bitNullable: bitNullable is _is.Bit?
-          ? bitNullable
-          : this.bitNullable?.clone(),
+      bitNullable: bitNullable is _issu.UndefinedSentinel
+          ? this.bitNullable?.clone()
+          : bitNullable,
       bitIndexedHnsw: bitIndexedHnsw ?? this.bitIndexedHnsw.clone(),
       bitIndexedHnswWithParams:
           bitIndexedHnswWithParams ?? this.bitIndexedHnswWithParams.clone(),

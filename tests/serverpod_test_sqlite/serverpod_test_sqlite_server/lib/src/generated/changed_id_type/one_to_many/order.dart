@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
     as _i08l111i;
 import '../../changed_id_type/one_to_many/comment.dart' as _i7e4crca;
@@ -81,8 +83,9 @@ abstract class OrderUuid
     _is.UuidValue? id,
     String? description,
     int? customerId,
-    _iwdajoe0.CustomerInt? customer,
-    List<_i7e4crca.CommentInt>? comments,
+    _iwdajoe0.CustomerInt? customer = const _UndefinedOrderUuid$customer(),
+    List<_i7e4crca.CommentInt>? comments =
+        const _issu.$UndefinedList<_i7e4crca.CommentInt>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -144,7 +147,10 @@ abstract class OrderUuid
   }
 }
 
-class _Undefined {}
+class _UndefinedOrderUuid$customer extends _issu.UndefinedSentinel
+    implements _iwdajoe0.CustomerInt {
+  const _UndefinedOrderUuid$customer();
+}
 
 class _OrderUuidImpl extends OrderUuid {
   _OrderUuidImpl({
@@ -169,19 +175,20 @@ class _OrderUuidImpl extends OrderUuid {
     _is.UuidValue? id,
     String? description,
     int? customerId,
-    Object? customer = _Undefined,
-    Object? comments = _Undefined,
+    _iwdajoe0.CustomerInt? customer = const _UndefinedOrderUuid$customer(),
+    List<_i7e4crca.CommentInt>? comments =
+        const _issu.$UndefinedList<_i7e4crca.CommentInt>(),
   }) {
     return OrderUuid(
       id: id ?? this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer: customer is _iwdajoe0.CustomerInt?
-          ? customer
-          : this.customer?.copyWith(),
-      comments: comments is List<_i7e4crca.CommentInt>?
-          ? comments
-          : this.comments?.map((e0) => e0.copyWith()).toList(),
+      customer: customer is _issu.UndefinedSentinel
+          ? this.customer?.copyWith()
+          : customer,
+      comments: comments is _issu.UndefinedSentinel
+          ? this.comments?.map((e0) => e0.copyWith()).toList()
+          : comments,
     );
   }
 }

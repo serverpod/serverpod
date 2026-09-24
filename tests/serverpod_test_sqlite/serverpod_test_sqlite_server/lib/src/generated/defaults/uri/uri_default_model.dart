@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class UriDefaultModel
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -65,7 +67,7 @@ abstract class UriDefaultModel
   UriDefaultModel copyWith({
     int? id,
     Uri? uriDefaultModel,
-    Uri? uriDefaultModelNull,
+    Uri? uriDefaultModelNull = const _issu.$UndefinedUri(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -137,14 +139,14 @@ class _UriDefaultModelImpl extends UriDefaultModel {
   UriDefaultModel copyWith({
     Object? id = _Undefined,
     Uri? uriDefaultModel,
-    Object? uriDefaultModelNull = _Undefined,
+    Uri? uriDefaultModelNull = const _issu.$UndefinedUri(),
   }) {
     return UriDefaultModel(
       id: id is int? ? id : this.id,
       uriDefaultModel: uriDefaultModel ?? this.uriDefaultModel,
-      uriDefaultModelNull: uriDefaultModelNull is Uri?
-          ? uriDefaultModelNull
-          : this.uriDefaultModelNull,
+      uriDefaultModelNull: uriDefaultModelNull is _issu.UndefinedSentinel
+          ? this.uriDefaultModelNull
+          : uriDefaultModelNull,
     );
   }
 }

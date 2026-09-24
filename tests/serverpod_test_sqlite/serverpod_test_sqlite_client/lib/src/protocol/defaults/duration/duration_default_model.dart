@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class DurationDefaultModel
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
@@ -77,7 +79,7 @@ abstract class DurationDefaultModel
   DurationDefaultModel copyWith({
     int? id,
     Duration? durationDefaultModel,
-    Duration? durationDefaultModelNull,
+    Duration? durationDefaultModelNull = const _issu.$UndefinedDuration(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -127,14 +129,15 @@ class _DurationDefaultModelImpl extends DurationDefaultModel {
   DurationDefaultModel copyWith({
     Object? id = _Undefined,
     Duration? durationDefaultModel,
-    Object? durationDefaultModelNull = _Undefined,
+    Duration? durationDefaultModelNull = const _issu.$UndefinedDuration(),
   }) {
     return DurationDefaultModel(
       id: id is int? ? id : this.id,
       durationDefaultModel: durationDefaultModel ?? this.durationDefaultModel,
-      durationDefaultModelNull: durationDefaultModelNull is Duration?
-          ? durationDefaultModelNull
-          : this.durationDefaultModelNull,
+      durationDefaultModelNull:
+          durationDefaultModelNull is _issu.UndefinedSentinel
+          ? this.durationDefaultModelNull
+          : durationDefaultModelNull,
     );
   }
 }

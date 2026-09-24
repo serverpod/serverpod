@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
     as _i08l111i;
 import '../../changed_id_type/one_to_many/order.dart' as _ivss21qh;
@@ -71,7 +73,7 @@ abstract class CommentInt
     int? id,
     String? description,
     _is.UuidValue? orderId,
-    _ivss21qh.OrderUuid? order,
+    _ivss21qh.OrderUuid? order = const _UndefinedCommentInt$order(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -125,6 +127,11 @@ abstract class CommentInt
 
 class _Undefined {}
 
+class _UndefinedCommentInt$order extends _issu.UndefinedSentinel
+    implements _ivss21qh.OrderUuid {
+  const _UndefinedCommentInt$order();
+}
+
 class _CommentIntImpl extends CommentInt {
   _CommentIntImpl({
     int? id,
@@ -146,13 +153,13 @@ class _CommentIntImpl extends CommentInt {
     Object? id = _Undefined,
     String? description,
     _is.UuidValue? orderId,
-    Object? order = _Undefined,
+    _ivss21qh.OrderUuid? order = const _UndefinedCommentInt$order(),
   }) {
     return CommentInt(
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       orderId: orderId ?? this.orderId,
-      order: order is _ivss21qh.OrderUuid? ? order : this.order?.copyWith(),
+      order: order is _issu.UndefinedSentinel ? this.order?.copyWith() : order,
     );
   }
 }

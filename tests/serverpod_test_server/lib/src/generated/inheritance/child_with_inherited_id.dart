@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../inheritance/child_with_inherited_id.dart' as _id412n1c;
 import '../protocol.dart' as _iv35mfmj;
@@ -85,10 +87,11 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
   ChildWithInheritedId copyWith({
     _is.UuidValue? id,
     String? name,
-    _id412n1c.ChildWithInheritedId? parent,
-    _is.UuidValue? parentId,
-    Object? createdAt,
-    Object? updatedAt,
+    _id412n1c.ChildWithInheritedId? parent =
+        const _UndefinedChildWithInheritedId$parent(),
+    _is.UuidValue? parentId = const _issu.$UndefinedUuidValue(),
+    DateTime? createdAt = const _issu.$UndefinedDateTime(),
+    DateTime? updatedAt = const _issu.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -138,7 +141,10 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
   }
 }
 
-class _Undefined {}
+class _UndefinedChildWithInheritedId$parent extends _issu.UndefinedSentinel
+    implements _id412n1c.ChildWithInheritedId {
+  const _UndefinedChildWithInheritedId$parent();
+}
 
 class _ChildWithInheritedIdImpl extends ChildWithInheritedId {
   _ChildWithInheritedIdImpl({
@@ -164,20 +170,25 @@ class _ChildWithInheritedIdImpl extends ChildWithInheritedId {
   ChildWithInheritedId copyWith({
     _is.UuidValue? id,
     String? name,
-    Object? parent = _Undefined,
-    Object? parentId = _Undefined,
-    Object? createdAt = _Undefined,
-    Object? updatedAt = _Undefined,
+    _id412n1c.ChildWithInheritedId? parent =
+        const _UndefinedChildWithInheritedId$parent(),
+    _is.UuidValue? parentId = const _issu.$UndefinedUuidValue(),
+    DateTime? createdAt = const _issu.$UndefinedDateTime(),
+    DateTime? updatedAt = const _issu.$UndefinedDateTime(),
   }) {
     return ChildWithInheritedId(
       id: id ?? this.id,
       name: name ?? this.name,
-      parent: parent is _id412n1c.ChildWithInheritedId?
-          ? parent
-          : this.parent?.copyWith(),
-      parentId: parentId is _is.UuidValue? ? parentId : this.parentId,
-      createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
-      updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      parent: parent is _issu.UndefinedSentinel
+          ? this.parent?.copyWith()
+          : parent,
+      parentId: parentId is _issu.UndefinedSentinel ? this.parentId : parentId,
+      createdAt: createdAt is _issu.UndefinedSentinel
+          ? this.createdAt
+          : createdAt,
+      updatedAt: updatedAt is _issu.UndefinedSentinel
+          ? this.updatedAt
+          : updatedAt,
     );
   }
 }

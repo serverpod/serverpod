@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart'
     as _ifwxqeej;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// DTO for transferring server-side session information between server and client.
 abstract class ServerSideSessionInfo
@@ -110,8 +112,8 @@ abstract class ServerSideSessionInfo
     Set<String>? scopeNames,
     DateTime? created,
     DateTime? lastUsed,
-    DateTime? expiresAt,
-    Duration? expireAfterUnusedFor,
+    DateTime? expiresAt = const _issu.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _issu.$UndefinedDuration(),
     String? method,
   });
   @override
@@ -152,8 +154,6 @@ abstract class ServerSideSessionInfo
   }
 }
 
-class _Undefined {}
-
 class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
   _ServerSideSessionInfoImpl({
     required _isc.UuidValue id,
@@ -185,8 +185,8 @@ class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
     Set<String>? scopeNames,
     DateTime? created,
     DateTime? lastUsed,
-    Object? expiresAt = _Undefined,
-    Object? expireAfterUnusedFor = _Undefined,
+    DateTime? expiresAt = const _issu.$UndefinedDateTime(),
+    Duration? expireAfterUnusedFor = const _issu.$UndefinedDuration(),
     String? method,
   }) {
     return ServerSideSessionInfo(
@@ -195,10 +195,12 @@ class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       created: created ?? this.created,
       lastUsed: lastUsed ?? this.lastUsed,
-      expiresAt: expiresAt is DateTime? ? expiresAt : this.expiresAt,
-      expireAfterUnusedFor: expireAfterUnusedFor is Duration?
-          ? expireAfterUnusedFor
-          : this.expireAfterUnusedFor,
+      expiresAt: expiresAt is _issu.UndefinedSentinel
+          ? this.expiresAt
+          : expiresAt,
+      expireAfterUnusedFor: expireAfterUnusedFor is _issu.UndefinedSentinel
+          ? this.expireAfterUnusedFor
+          : expireAfterUnusedFor,
       method: method ?? this.method,
     );
   }

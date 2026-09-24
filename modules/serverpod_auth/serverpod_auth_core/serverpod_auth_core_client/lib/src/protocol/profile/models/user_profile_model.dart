@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// DTO for transferring user profile information.
 abstract class UserProfileModel
@@ -70,7 +72,7 @@ abstract class UserProfileModel
     String? userName,
     String? fullName,
     String? email,
-    Uri? imageUrl,
+    Uri? imageUrl = const _issu.$UndefinedUri(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -128,14 +130,14 @@ class _UserProfileModelImpl extends UserProfileModel {
     Object? userName = _Undefined,
     Object? fullName = _Undefined,
     Object? email = _Undefined,
-    Object? imageUrl = _Undefined,
+    Uri? imageUrl = const _issu.$UndefinedUri(),
   }) {
     return UserProfileModel(
       authUserId: authUserId ?? this.authUserId,
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
-      imageUrl: imageUrl is Uri? ? imageUrl : this.imageUrl,
+      imageUrl: imageUrl is _issu.UndefinedSentinel ? this.imageUrl : imageUrl,
     );
   }
 }

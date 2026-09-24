@@ -8,7 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -17,6 +18,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
     as _i99s0abf;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// A fully configured "Sign in with Apple"-based account to be used for logins.
 abstract class AppleAccount
@@ -160,13 +162,13 @@ abstract class AppleAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   AppleAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? userIdentifier,
     String? refreshToken,
     bool? refreshTokenRequestedWithBundleIdentifier,
     DateTime? lastRefreshedAt,
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedAppleAccount$authUser(),
     DateTime? createdAt,
     String? email,
     bool? isEmailVerified,
@@ -230,6 +232,11 @@ abstract class AppleAccount
 
 class _Undefined {}
 
+class _UndefinedAppleAccount$authUser extends _issu.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedAppleAccount$authUser();
+}
+
 class _AppleAccountImpl extends AppleAccount {
   _AppleAccountImpl({
     _is.UuidValue? id,
@@ -267,13 +274,13 @@ class _AppleAccountImpl extends AppleAccount {
   @_is.useResult
   @override
   AppleAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? userIdentifier,
     String? refreshToken,
     bool? refreshTokenRequestedWithBundleIdentifier,
     DateTime? lastRefreshedAt,
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedAppleAccount$authUser(),
     DateTime? createdAt,
     Object? email = _Undefined,
     Object? isEmailVerified = _Undefined,
@@ -282,7 +289,7 @@ class _AppleAccountImpl extends AppleAccount {
     Object? lastName = _Undefined,
   }) {
     return AppleAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       userIdentifier: userIdentifier ?? this.userIdentifier,
       refreshToken: refreshToken ?? this.refreshToken,
       refreshTokenRequestedWithBundleIdentifier:
@@ -290,9 +297,9 @@ class _AppleAccountImpl extends AppleAccount {
           this.refreshTokenRequestedWithBundleIdentifier,
       lastRefreshedAt: lastRefreshedAt ?? this.lastRefreshedAt,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _issu.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       createdAt: createdAt ?? this.createdAt,
       email: email is String? ? email : this.email,
       isEmailVerified: isEmailVerified is bool?

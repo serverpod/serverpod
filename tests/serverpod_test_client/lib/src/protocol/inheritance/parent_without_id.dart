@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../protocol.dart' as _iv35mfmj;
 
 class ParentClassWithoutId extends _iv35mfmj.GrandparentClassWithId
@@ -39,12 +41,12 @@ class ParentClassWithoutId extends _iv35mfmj.GrandparentClassWithId
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ParentClassWithoutId copyWith({
-    Object? id = _Undefined,
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? grandParentField,
     String? parentField,
   }) {
     return ParentClassWithoutId(
-      id: id is _isc.UuidValue? ? id : this.id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       grandParentField: grandParentField ?? this.grandParentField,
       parentField: parentField ?? this.parentField,
     );
@@ -75,5 +77,3 @@ class ParentClassWithoutId extends _iv35mfmj.GrandparentClassWithId
     return _isc.SerializationManager.encode(this);
   }
 }
-
-class _Undefined {}

@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../protocol.dart' as _iv35mfmj;
 
 abstract class ServerOnlyChildClassWithoutId
@@ -50,7 +52,7 @@ abstract class ServerOnlyChildClassWithoutId
   @override
   @_is.useResult
   ServerOnlyChildClassWithoutId copyWith({
-    Object? id,
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? grandParentField,
     String? parentField,
     String? childField,
@@ -77,8 +79,6 @@ abstract class ServerOnlyChildClassWithoutId
   }
 }
 
-class _Undefined {}
-
 class _ServerOnlyChildClassWithoutIdImpl extends ServerOnlyChildClassWithoutId {
   _ServerOnlyChildClassWithoutIdImpl({
     _is.UuidValue? id,
@@ -97,13 +97,13 @@ class _ServerOnlyChildClassWithoutIdImpl extends ServerOnlyChildClassWithoutId {
   @_is.useResult
   @override
   ServerOnlyChildClassWithoutId copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? grandParentField,
     String? parentField,
     String? childField,
   }) {
     return ServerOnlyChildClassWithoutId(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       grandParentField: grandParentField ?? this.grandParentField,
       parentField: parentField ?? this.parentField,
       childField: childField ?? this.childField,

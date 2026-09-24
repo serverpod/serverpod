@@ -8,7 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -17,6 +18,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
     as _ik2mg1i3;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class SessionMetadata
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -91,7 +93,8 @@ abstract class SessionMetadata
   SessionMetadata copyWith({
     int? id,
     _is.UuidValue? serverSideSessionId,
-    _iacs.ServerSideSession? serverSideSession,
+    _iacs.ServerSideSession? serverSideSession =
+        const _UndefinedSessionMetadata$serverSideSession(),
     String? deviceName,
     String? ipAddress,
     String? userAgent,
@@ -149,6 +152,12 @@ abstract class SessionMetadata
 
 class _Undefined {}
 
+class _UndefinedSessionMetadata$serverSideSession
+    extends _issu.UndefinedSentinel
+    implements _iacs.ServerSideSession {
+  const _UndefinedSessionMetadata$serverSideSession();
+}
+
 class _SessionMetadataImpl extends SessionMetadata {
   _SessionMetadataImpl({
     int? id,
@@ -175,7 +184,8 @@ class _SessionMetadataImpl extends SessionMetadata {
   SessionMetadata copyWith({
     Object? id = _Undefined,
     _is.UuidValue? serverSideSessionId,
-    Object? serverSideSession = _Undefined,
+    _iacs.ServerSideSession? serverSideSession =
+        const _UndefinedSessionMetadata$serverSideSession(),
     String? deviceName,
     Object? ipAddress = _Undefined,
     Object? userAgent = _Undefined,
@@ -184,9 +194,9 @@ class _SessionMetadataImpl extends SessionMetadata {
     return SessionMetadata(
       id: id is int? ? id : this.id,
       serverSideSessionId: serverSideSessionId ?? this.serverSideSessionId,
-      serverSideSession: serverSideSession is _iacs.ServerSideSession?
-          ? serverSideSession
-          : this.serverSideSession?.copyWith(),
+      serverSideSession: serverSideSession is _issu.UndefinedSentinel
+          ? this.serverSideSession?.copyWith()
+          : serverSideSession,
       deviceName: deviceName ?? this.deviceName,
       ipAddress: ipAddress is String? ? ipAddress : this.ipAddress,
       userAgent: userAgent is String? ? userAgent : this.userAgent,

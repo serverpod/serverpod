@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i7hzilwf;
 
@@ -70,7 +72,7 @@ abstract class AddressUuid
     _is.UuidValue? id,
     String? street,
     int? inhabitantId,
-    _i7hzilwf.CitizenInt? inhabitant,
+    _i7hzilwf.CitizenInt? inhabitant = const _UndefinedAddressUuid$inhabitant(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -124,6 +126,11 @@ abstract class AddressUuid
 
 class _Undefined {}
 
+class _UndefinedAddressUuid$inhabitant extends _issu.UndefinedSentinel
+    implements _i7hzilwf.CitizenInt {
+  const _UndefinedAddressUuid$inhabitant();
+}
+
 class _AddressUuidImpl extends AddressUuid {
   _AddressUuidImpl({
     _is.UuidValue? id,
@@ -145,15 +152,15 @@ class _AddressUuidImpl extends AddressUuid {
     _is.UuidValue? id,
     String? street,
     Object? inhabitantId = _Undefined,
-    Object? inhabitant = _Undefined,
+    _i7hzilwf.CitizenInt? inhabitant = const _UndefinedAddressUuid$inhabitant(),
   }) {
     return AddressUuid(
       id: id ?? this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _i7hzilwf.CitizenInt?
-          ? inhabitant
-          : this.inhabitant?.copyWith(),
+      inhabitant: inhabitant is _issu.UndefinedSentinel
+          ? this.inhabitant?.copyWith()
+          : inhabitant,
     );
   }
 }

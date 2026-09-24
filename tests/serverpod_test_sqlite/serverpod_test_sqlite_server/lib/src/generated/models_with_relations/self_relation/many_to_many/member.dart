@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
     as _i08l111i;
 import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
@@ -72,8 +74,10 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Member copyWith({
     int? id,
     String? name,
-    List<_iv5rlvod.Blocking>? blocking,
-    List<_iv5rlvod.Blocking>? blockedBy,
+    List<_iv5rlvod.Blocking>? blocking =
+        const _issu.$UndefinedList<_iv5rlvod.Blocking>(),
+    List<_iv5rlvod.Blocking>? blockedBy =
+        const _issu.$UndefinedList<_iv5rlvod.Blocking>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -159,18 +163,20 @@ class _MemberImpl extends Member {
   Member copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? blocking = _Undefined,
-    Object? blockedBy = _Undefined,
+    List<_iv5rlvod.Blocking>? blocking =
+        const _issu.$UndefinedList<_iv5rlvod.Blocking>(),
+    List<_iv5rlvod.Blocking>? blockedBy =
+        const _issu.$UndefinedList<_iv5rlvod.Blocking>(),
   }) {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking: blocking is List<_iv5rlvod.Blocking>?
-          ? blocking
-          : this.blocking?.map((e0) => e0.copyWith()).toList(),
-      blockedBy: blockedBy is List<_iv5rlvod.Blocking>?
-          ? blockedBy
-          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
+      blocking: blocking is _issu.UndefinedSentinel
+          ? this.blocking?.map((e0) => e0.copyWith()).toList()
+          : blocking,
+      blockedBy: blockedBy is _issu.UndefinedSentinel
+          ? this.blockedBy?.map((e0) => e0.copyWith()).toList()
+          : blockedBy,
     );
   }
 }

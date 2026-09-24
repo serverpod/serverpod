@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/fk_relation/fk_relation_company.dart'
     as _ikyus01r;
@@ -62,7 +64,8 @@ abstract class FkRelationOffice
     int? id,
     String? address,
     int? companyId,
-    _ikyus01r.FkRelationCompany? company,
+    _ikyus01r.FkRelationCompany? company =
+        const _UndefinedFkRelationOffice$company(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -94,6 +97,11 @@ abstract class FkRelationOffice
 
 class _Undefined {}
 
+class _UndefinedFkRelationOffice$company extends _issu.UndefinedSentinel
+    implements _ikyus01r.FkRelationCompany {
+  const _UndefinedFkRelationOffice$company();
+}
+
 class _FkRelationOfficeImpl extends FkRelationOffice {
   _FkRelationOfficeImpl({
     int? id,
@@ -115,15 +123,16 @@ class _FkRelationOfficeImpl extends FkRelationOffice {
     Object? id = _Undefined,
     String? address,
     int? companyId,
-    Object? company = _Undefined,
+    _ikyus01r.FkRelationCompany? company =
+        const _UndefinedFkRelationOffice$company(),
   }) {
     return FkRelationOffice(
       id: id is int? ? id : this.id,
       address: address ?? this.address,
       companyId: companyId ?? this.companyId,
-      company: company is _ikyus01r.FkRelationCompany?
-          ? company
-          : this.company?.copyWith(),
+      company: company is _issu.UndefinedSentinel
+          ? this.company?.copyWith()
+          : company,
     );
   }
 }

@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../changed_id_type/many_to_many/course.dart' as _irfj8gqh;
 import '../../changed_id_type/many_to_many/student.dart' as _iu6t4rw4;
@@ -74,9 +76,9 @@ abstract class EnrollmentInt
   EnrollmentInt copyWith({
     int? id,
     _isc.UuidValue? studentId,
-    _iu6t4rw4.StudentUuid? student,
+    _iu6t4rw4.StudentUuid? student = const _UndefinedEnrollmentInt$student(),
     _isc.UuidValue? courseId,
-    _irfj8gqh.CourseUuid? course,
+    _irfj8gqh.CourseUuid? course = const _UndefinedEnrollmentInt$course(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -110,6 +112,16 @@ abstract class EnrollmentInt
 
 class _Undefined {}
 
+class _UndefinedEnrollmentInt$student extends _issu.UndefinedSentinel
+    implements _iu6t4rw4.StudentUuid {
+  const _UndefinedEnrollmentInt$student();
+}
+
+class _UndefinedEnrollmentInt$course extends _issu.UndefinedSentinel
+    implements _irfj8gqh.CourseUuid {
+  const _UndefinedEnrollmentInt$course();
+}
+
 class _EnrollmentIntImpl extends EnrollmentInt {
   _EnrollmentIntImpl({
     int? id,
@@ -132,20 +144,20 @@ class _EnrollmentIntImpl extends EnrollmentInt {
   EnrollmentInt copyWith({
     Object? id = _Undefined,
     _isc.UuidValue? studentId,
-    Object? student = _Undefined,
+    _iu6t4rw4.StudentUuid? student = const _UndefinedEnrollmentInt$student(),
     _isc.UuidValue? courseId,
-    Object? course = _Undefined,
+    _irfj8gqh.CourseUuid? course = const _UndefinedEnrollmentInt$course(),
   }) {
     return EnrollmentInt(
       id: id is int? ? id : this.id,
       studentId: studentId ?? this.studentId,
-      student: student is _iu6t4rw4.StudentUuid?
-          ? student
-          : this.student?.copyWith(),
+      student: student is _issu.UndefinedSentinel
+          ? this.student?.copyWith()
+          : student,
       courseId: courseId ?? this.courseId,
-      course: course is _irfj8gqh.CourseUuid?
-          ? course
-          : this.course?.copyWith(),
+      course: course is _issu.UndefinedSentinel
+          ? this.course?.copyWith()
+          : course,
     );
   }
 }

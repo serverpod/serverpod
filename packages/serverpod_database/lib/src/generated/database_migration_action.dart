@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class DatabaseMigrationAction
     implements _iss.SerializableModel, _iss.ProtocolSerialization {
@@ -64,8 +66,10 @@ abstract class DatabaseMigrationAction
   DatabaseMigrationAction copyWith({
     _isd.DatabaseMigrationActionType? type,
     String? deleteTable,
-    _isd.TableMigration? alterTable,
-    _isd.TableDefinition? createTable,
+    _isd.TableMigration? alterTable =
+        const _UndefinedDatabaseMigrationAction$alterTable(),
+    _isd.TableDefinition? createTable =
+        const _UndefinedDatabaseMigrationAction$createTable(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -97,6 +101,18 @@ abstract class DatabaseMigrationAction
 
 class _Undefined {}
 
+class _UndefinedDatabaseMigrationAction$alterTable
+    extends _issu.UndefinedSentinel
+    implements _isd.TableMigration {
+  const _UndefinedDatabaseMigrationAction$alterTable();
+}
+
+class _UndefinedDatabaseMigrationAction$createTable
+    extends _issu.UndefinedSentinel
+    implements _isd.TableDefinition {
+  const _UndefinedDatabaseMigrationAction$createTable();
+}
+
 class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
   _DatabaseMigrationActionImpl({
     required _isd.DatabaseMigrationActionType type,
@@ -117,18 +133,20 @@ class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
   DatabaseMigrationAction copyWith({
     _isd.DatabaseMigrationActionType? type,
     Object? deleteTable = _Undefined,
-    Object? alterTable = _Undefined,
-    Object? createTable = _Undefined,
+    _isd.TableMigration? alterTable =
+        const _UndefinedDatabaseMigrationAction$alterTable(),
+    _isd.TableDefinition? createTable =
+        const _UndefinedDatabaseMigrationAction$createTable(),
   }) {
     return DatabaseMigrationAction(
       type: type ?? this.type,
       deleteTable: deleteTable is String? ? deleteTable : this.deleteTable,
-      alterTable: alterTable is _isd.TableMigration?
-          ? alterTable
-          : this.alterTable?.copyWith(),
-      createTable: createTable is _isd.TableDefinition?
-          ? createTable
-          : this.createTable?.copyWith(),
+      alterTable: alterTable is _issu.UndefinedSentinel
+          ? this.alterTable?.copyWith()
+          : alterTable,
+      createTable: createTable is _issu.UndefinedSentinel
+          ? this.createTable?.copyWith()
+          : createTable,
     );
   }
 }

@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../models_with_relations/nested_one_to_many/arena.dart' as _iv085ahk;
@@ -80,8 +82,9 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     int? id,
     String? name,
     int? arenaId,
-    _iv085ahk.Arena? arena,
-    List<_i9mhudyy.Player>? players,
+    _iv085ahk.Arena? arena = const _UndefinedTeam$arena(),
+    List<_i9mhudyy.Player>? players =
+        const _issu.$UndefinedList<_i9mhudyy.Player>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -145,6 +148,11 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedTeam$arena extends _issu.UndefinedSentinel
+    implements _iv085ahk.Arena {
+  const _UndefinedTeam$arena();
+}
+
 class _TeamImpl extends Team {
   _TeamImpl({
     int? id,
@@ -168,17 +176,18 @@ class _TeamImpl extends Team {
     Object? id = _Undefined,
     String? name,
     Object? arenaId = _Undefined,
-    Object? arena = _Undefined,
-    Object? players = _Undefined,
+    _iv085ahk.Arena? arena = const _UndefinedTeam$arena(),
+    List<_i9mhudyy.Player>? players =
+        const _issu.$UndefinedList<_i9mhudyy.Player>(),
   }) {
     return Team(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       arenaId: arenaId is int? ? arenaId : this.arenaId,
-      arena: arena is _iv085ahk.Arena? ? arena : this.arena?.copyWith(),
-      players: players is List<_i9mhudyy.Player>?
-          ? players
-          : this.players?.map((e0) => e0.copyWith()).toList(),
+      arena: arena is _issu.UndefinedSentinel ? this.arena?.copyWith() : arena,
+      players: players is _issu.UndefinedSentinel
+          ? this.players?.map((e0) => e0.copyWith()).toList()
+          : players,
     );
   }
 }

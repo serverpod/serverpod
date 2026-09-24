@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _ithd8abs;
@@ -56,7 +58,8 @@ abstract class Book
   Book copyWith({
     int? id,
     String? title,
-    List<_ithd8abs.Chapter>? chapters,
+    List<_ithd8abs.Chapter>? chapters =
+        const _issu.$UndefinedList<_ithd8abs.Chapter>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -106,14 +109,15 @@ class _BookImpl extends Book {
   Book copyWith({
     Object? id = _Undefined,
     String? title,
-    Object? chapters = _Undefined,
+    List<_ithd8abs.Chapter>? chapters =
+        const _issu.$UndefinedList<_ithd8abs.Chapter>(),
   }) {
     return Book(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
-      chapters: chapters is List<_ithd8abs.Chapter>?
-          ? chapters
-          : this.chapters?.map((e0) => e0.copyWith()).toList(),
+      chapters: chapters is _issu.UndefinedSentinel
+          ? this.chapters?.map((e0) => e0.copyWith()).toList()
+          : chapters,
     );
   }
 }

@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/generated_relation_field/generated_relation_company.dart'
     as _ipeijyfj;
@@ -66,7 +68,8 @@ abstract class GeneratedRelationOffice
     int? id,
     String? address,
     int? customCompanyId,
-    _ipeijyfj.GeneratedRelationCompany? company,
+    _ipeijyfj.GeneratedRelationCompany? company =
+        const _UndefinedGeneratedRelationOffice$company(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,6 +101,11 @@ abstract class GeneratedRelationOffice
 
 class _Undefined {}
 
+class _UndefinedGeneratedRelationOffice$company extends _issu.UndefinedSentinel
+    implements _ipeijyfj.GeneratedRelationCompany {
+  const _UndefinedGeneratedRelationOffice$company();
+}
+
 class _GeneratedRelationOfficeImpl extends GeneratedRelationOffice {
   _GeneratedRelationOfficeImpl({
     int? id,
@@ -119,15 +127,16 @@ class _GeneratedRelationOfficeImpl extends GeneratedRelationOffice {
     Object? id = _Undefined,
     String? address,
     int? customCompanyId,
-    Object? company = _Undefined,
+    _ipeijyfj.GeneratedRelationCompany? company =
+        const _UndefinedGeneratedRelationOffice$company(),
   }) {
     return GeneratedRelationOffice(
       id: id is int? ? id : this.id,
       address: address ?? this.address,
       customCompanyId: customCompanyId ?? this.customCompanyId,
-      company: company is _ipeijyfj.GeneratedRelationCompany?
-          ? company
-          : this.company?.copyWith(),
+      company: company is _issu.UndefinedSentinel
+          ? this.company?.copyWith()
+          : company,
     );
   }
 }

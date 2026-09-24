@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../models_with_list_relations/organization.dart' as _i0ptycc3;
 import '../models_with_list_relations/person.dart' as _ijqkgw0m;
@@ -71,8 +73,10 @@ abstract class City implements _is.TableRow<int?>, _is.ProtocolSerialization {
   City copyWith({
     int? id,
     String? name,
-    List<_ijqkgw0m.Person>? citizens,
-    List<_i0ptycc3.Organization>? organizations,
+    List<_ijqkgw0m.Person>? citizens =
+        const _issu.$UndefinedList<_ijqkgw0m.Person>(),
+    List<_i0ptycc3.Organization>? organizations =
+        const _issu.$UndefinedList<_i0ptycc3.Organization>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -158,18 +162,20 @@ class _CityImpl extends City {
   City copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? citizens = _Undefined,
-    Object? organizations = _Undefined,
+    List<_ijqkgw0m.Person>? citizens =
+        const _issu.$UndefinedList<_ijqkgw0m.Person>(),
+    List<_i0ptycc3.Organization>? organizations =
+        const _issu.$UndefinedList<_i0ptycc3.Organization>(),
   }) {
     return City(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      citizens: citizens is List<_ijqkgw0m.Person>?
-          ? citizens
-          : this.citizens?.map((e0) => e0.copyWith()).toList(),
-      organizations: organizations is List<_i0ptycc3.Organization>?
-          ? organizations
-          : this.organizations?.map((e0) => e0.copyWith()).toList(),
+      citizens: citizens is _issu.UndefinedSentinel
+          ? this.citizens?.map((e0) => e0.copyWith()).toList()
+          : citizens,
+      organizations: organizations is _issu.UndefinedSentinel
+          ? this.organizations?.map((e0) => e0.copyWith()).toList()
+          : organizations,
     );
   }
 }

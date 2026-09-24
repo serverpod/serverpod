@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import 'unique_data.dart' as _iufhyrjh;
@@ -69,7 +71,8 @@ abstract class RelatedUniqueData
   RelatedUniqueData copyWith({
     int? id,
     int? uniqueDataId,
-    _iufhyrjh.UniqueData? uniqueData,
+    _iufhyrjh.UniqueData? uniqueData =
+        const _UndefinedRelatedUniqueData$uniqueData(),
     int? number,
   });
   @override
@@ -126,6 +129,11 @@ abstract class RelatedUniqueData
 
 class _Undefined {}
 
+class _UndefinedRelatedUniqueData$uniqueData extends _issu.UndefinedSentinel
+    implements _iufhyrjh.UniqueData {
+  const _UndefinedRelatedUniqueData$uniqueData();
+}
+
 class _RelatedUniqueDataImpl extends RelatedUniqueData {
   _RelatedUniqueDataImpl({
     int? id,
@@ -146,15 +154,16 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   RelatedUniqueData copyWith({
     Object? id = _Undefined,
     int? uniqueDataId,
-    Object? uniqueData = _Undefined,
+    _iufhyrjh.UniqueData? uniqueData =
+        const _UndefinedRelatedUniqueData$uniqueData(),
     int? number,
   }) {
     return RelatedUniqueData(
       id: id is int? ? id : this.id,
       uniqueDataId: uniqueDataId ?? this.uniqueDataId,
-      uniqueData: uniqueData is _iufhyrjh.UniqueData?
-          ? uniqueData
-          : this.uniqueData?.copyWith(),
+      uniqueData: uniqueData is _issu.UndefinedSentinel
+          ? this.uniqueData?.copyWith()
+          : uniqueData,
       number: number ?? this.number,
     );
   }

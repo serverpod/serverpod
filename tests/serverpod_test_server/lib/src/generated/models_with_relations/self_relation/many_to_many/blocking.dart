@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
     as _iubhvl5a;
@@ -77,9 +79,9 @@ abstract class Blocking
   Blocking copyWith({
     int? id,
     int? blockedId,
-    _iubhvl5a.Member? blocked,
+    _iubhvl5a.Member? blocked = const _UndefinedBlocking$blocked(),
     int? blockedById,
-    _iubhvl5a.Member? blockedBy,
+    _iubhvl5a.Member? blockedBy = const _UndefinedBlocking$blocked(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -141,6 +143,11 @@ abstract class Blocking
 
 class _Undefined {}
 
+class _UndefinedBlocking$blocked extends _issu.UndefinedSentinel
+    implements _iubhvl5a.Member {
+  const _UndefinedBlocking$blocked();
+}
+
 class _BlockingImpl extends Blocking {
   _BlockingImpl({
     int? id,
@@ -163,20 +170,20 @@ class _BlockingImpl extends Blocking {
   Blocking copyWith({
     Object? id = _Undefined,
     int? blockedId,
-    Object? blocked = _Undefined,
+    _iubhvl5a.Member? blocked = const _UndefinedBlocking$blocked(),
     int? blockedById,
-    Object? blockedBy = _Undefined,
+    _iubhvl5a.Member? blockedBy = const _UndefinedBlocking$blocked(),
   }) {
     return Blocking(
       id: id is int? ? id : this.id,
       blockedId: blockedId ?? this.blockedId,
-      blocked: blocked is _iubhvl5a.Member?
-          ? blocked
-          : this.blocked?.copyWith(),
+      blocked: blocked is _issu.UndefinedSentinel
+          ? this.blocked?.copyWith()
+          : blocked,
       blockedById: blockedById ?? this.blockedById,
-      blockedBy: blockedBy is _iubhvl5a.Member?
-          ? blockedBy
-          : this.blockedBy?.copyWith(),
+      blockedBy: blockedBy is _issu.UndefinedSentinel
+          ? this.blockedBy?.copyWith()
+          : blockedBy,
     );
   }
 }

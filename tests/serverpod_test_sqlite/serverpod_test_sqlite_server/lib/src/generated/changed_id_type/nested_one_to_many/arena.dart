@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
     as _i08l111i;
 import '../../changed_id_type/nested_one_to_many/team.dart' as _i9bz1am4;
@@ -65,7 +67,7 @@ abstract class ArenaUuid
   ArenaUuid copyWith({
     _is.UuidValue? id,
     String? name,
-    _i9bz1am4.TeamInt? team,
+    _i9bz1am4.TeamInt? team = const _UndefinedArenaUuid$team(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -115,7 +117,10 @@ abstract class ArenaUuid
   }
 }
 
-class _Undefined {}
+class _UndefinedArenaUuid$team extends _issu.UndefinedSentinel
+    implements _i9bz1am4.TeamInt {
+  const _UndefinedArenaUuid$team();
+}
 
 class _ArenaUuidImpl extends ArenaUuid {
   _ArenaUuidImpl({
@@ -135,12 +140,12 @@ class _ArenaUuidImpl extends ArenaUuid {
   ArenaUuid copyWith({
     _is.UuidValue? id,
     String? name,
-    Object? team = _Undefined,
+    _i9bz1am4.TeamInt? team = const _UndefinedArenaUuid$team(),
   }) {
     return ArenaUuid(
       id: id ?? this.id,
       name: name ?? this.name,
-      team: team is _i9bz1am4.TeamInt? ? team : this.team?.copyWith(),
+      team: team is _issu.UndefinedSentinel ? this.team?.copyWith() : team,
     );
   }
 }

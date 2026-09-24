@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 
 abstract class ObjectUser
@@ -68,7 +70,7 @@ abstract class ObjectUser
     int? id,
     String? name,
     int? userInfoId,
-    _i1n3uhu0.UserInfo? userInfo,
+    _i1n3uhu0.UserInfo? userInfo = const _UndefinedObjectUser$userInfo(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -122,6 +124,11 @@ abstract class ObjectUser
 
 class _Undefined {}
 
+class _UndefinedObjectUser$userInfo extends _issu.UndefinedSentinel
+    implements _i1n3uhu0.UserInfo {
+  const _UndefinedObjectUser$userInfo();
+}
+
 class _ObjectUserImpl extends ObjectUser {
   _ObjectUserImpl({
     int? id,
@@ -143,15 +150,15 @@ class _ObjectUserImpl extends ObjectUser {
     Object? id = _Undefined,
     Object? name = _Undefined,
     int? userInfoId,
-    Object? userInfo = _Undefined,
+    _i1n3uhu0.UserInfo? userInfo = const _UndefinedObjectUser$userInfo(),
   }) {
     return ObjectUser(
       id: id is int? ? id : this.id,
       name: name is String? ? name : this.name,
       userInfoId: userInfoId ?? this.userInfoId,
-      userInfo: userInfo is _i1n3uhu0.UserInfo?
-          ? userInfo
-          : this.userInfo?.copyWith(),
+      userInfo: userInfo is _issu.UndefinedSentinel
+          ? this.userInfo?.copyWith()
+          : userInfo,
     );
   }
 }

@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
     as _i08l111i;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i7hzilwf;
@@ -69,7 +71,7 @@ abstract class TownInt
     int? id,
     String? name,
     int? mayorId,
-    _i7hzilwf.CitizenInt? mayor,
+    _i7hzilwf.CitizenInt? mayor = const _UndefinedTownInt$mayor(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -123,6 +125,11 @@ abstract class TownInt
 
 class _Undefined {}
 
+class _UndefinedTownInt$mayor extends _issu.UndefinedSentinel
+    implements _i7hzilwf.CitizenInt {
+  const _UndefinedTownInt$mayor();
+}
+
 class _TownIntImpl extends TownInt {
   _TownIntImpl({
     int? id,
@@ -144,13 +151,13 @@ class _TownIntImpl extends TownInt {
     Object? id = _Undefined,
     String? name,
     Object? mayorId = _Undefined,
-    Object? mayor = _Undefined,
+    _i7hzilwf.CitizenInt? mayor = const _UndefinedTownInt$mayor(),
   }) {
     return TownInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       mayorId: mayorId is int? ? mayorId : this.mayorId,
-      mayor: mayor is _i7hzilwf.CitizenInt? ? mayor : this.mayor?.copyWith(),
+      mayor: mayor is _issu.UndefinedSentinel ? this.mayor?.copyWith() : mayor,
     );
   }
 }

@@ -8,7 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -17,6 +18,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
     as _i99s0abf;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// A fully configured Firebase account to be used for logins.
 abstract class FirebaseAccount
@@ -101,9 +103,9 @@ abstract class FirebaseAccount
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   FirebaseAccount copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedFirebaseAccount$authUser(),
     DateTime? created,
     String? email,
     String? phone,
@@ -158,6 +160,11 @@ abstract class FirebaseAccount
 
 class _Undefined {}
 
+class _UndefinedFirebaseAccount$authUser extends _issu.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedFirebaseAccount$authUser();
+}
+
 class _FirebaseAccountImpl extends FirebaseAccount {
   _FirebaseAccountImpl({
     _is.UuidValue? id,
@@ -182,20 +189,20 @@ class _FirebaseAccountImpl extends FirebaseAccount {
   @_is.useResult
   @override
   FirebaseAccount copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedFirebaseAccount$authUser(),
     DateTime? created,
     Object? email = _Undefined,
     Object? phone = _Undefined,
     String? userIdentifier,
   }) {
     return FirebaseAccount(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _issu.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       created: created ?? this.created,
       email: email is String? ? email : this.email,
       phone: phone is String? ? phone : this.phone,

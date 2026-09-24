@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../scopes/serverOnly/server_only_class.dart' as _i3zqz247;
 
@@ -52,8 +54,10 @@ abstract class ServerOnlyClassField
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ServerOnlyClassField copyWith({
-    List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList,
-    Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap,
+    List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList =
+        const _issu.$UndefinedList<_i3zqz247.ServerOnlyClass>(),
+    Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap =
+        const _issu.$UndefinedMap<String, _i3zqz247.ServerOnlyClass>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -81,8 +85,6 @@ abstract class ServerOnlyClassField
   }
 }
 
-class _Undefined {}
-
 class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
   _ServerOnlyClassFieldImpl({
     List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList,
@@ -97,18 +99,17 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
   @_is.useResult
   @override
   ServerOnlyClassField copyWith({
-    Object? serverOnlyClassList = _Undefined,
-    Object? serverOnlyClassMap = _Undefined,
+    List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList =
+        const _issu.$UndefinedList<_i3zqz247.ServerOnlyClass>(),
+    Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap =
+        const _issu.$UndefinedMap<String, _i3zqz247.ServerOnlyClass>(),
   }) {
     return ServerOnlyClassField(
-      serverOnlyClassList:
-          serverOnlyClassList is List<_i3zqz247.ServerOnlyClass>?
-          ? serverOnlyClassList
-          : this.serverOnlyClassList?.map((e0) => e0.copyWith()).toList(),
-      serverOnlyClassMap:
-          serverOnlyClassMap is Map<String, _i3zqz247.ServerOnlyClass>?
-          ? serverOnlyClassMap
-          : this.serverOnlyClassMap?.map(
+      serverOnlyClassList: serverOnlyClassList is _issu.UndefinedSentinel
+          ? this.serverOnlyClassList?.map((e0) => e0.copyWith()).toList()
+          : serverOnlyClassList,
+      serverOnlyClassMap: serverOnlyClassMap is _issu.UndefinedSentinel
+          ? this.serverOnlyClassMap?.map(
               (
                 key0,
                 value0,
@@ -116,7 +117,8 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
                 key0,
                 value0.copyWith(),
               ),
-            ),
+            )
+          : serverOnlyClassMap,
     );
   }
 }

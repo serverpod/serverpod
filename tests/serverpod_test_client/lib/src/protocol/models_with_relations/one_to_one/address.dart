@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/one_to_one/citizen.dart' as _igho3lba;
 
@@ -61,7 +63,7 @@ abstract class Address
     int? id,
     String? street,
     int? inhabitantId,
-    _igho3lba.Citizen? inhabitant,
+    _igho3lba.Citizen? inhabitant = const _UndefinedAddress$inhabitant(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -93,6 +95,11 @@ abstract class Address
 
 class _Undefined {}
 
+class _UndefinedAddress$inhabitant extends _issu.UndefinedSentinel
+    implements _igho3lba.Citizen {
+  const _UndefinedAddress$inhabitant();
+}
+
 class _AddressImpl extends Address {
   _AddressImpl({
     int? id,
@@ -114,15 +121,15 @@ class _AddressImpl extends Address {
     Object? id = _Undefined,
     String? street,
     Object? inhabitantId = _Undefined,
-    Object? inhabitant = _Undefined,
+    _igho3lba.Citizen? inhabitant = const _UndefinedAddress$inhabitant(),
   }) {
     return Address(
       id: id is int? ? id : this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _igho3lba.Citizen?
-          ? inhabitant
-          : this.inhabitant?.copyWith(),
+      inhabitant: inhabitant is _issu.UndefinedSentinel
+          ? this.inhabitant?.copyWith()
+          : inhabitant,
     );
   }
 }

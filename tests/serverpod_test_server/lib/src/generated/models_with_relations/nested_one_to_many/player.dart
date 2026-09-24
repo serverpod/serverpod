@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _iaks25tn;
 
@@ -67,7 +69,7 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? name,
     int? teamId,
-    _iaks25tn.Team? team,
+    _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -121,6 +123,11 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedPlayer$team extends _issu.UndefinedSentinel
+    implements _iaks25tn.Team {
+  const _UndefinedPlayer$team();
+}
+
 class _PlayerImpl extends Player {
   _PlayerImpl({
     int? id,
@@ -142,13 +149,13 @@ class _PlayerImpl extends Player {
     Object? id = _Undefined,
     String? name,
     Object? teamId = _Undefined,
-    Object? team = _Undefined,
+    _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   }) {
     return Player(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _iaks25tn.Team? ? team : this.team?.copyWith(),
+      team: team is _issu.UndefinedSentinel ? this.team?.copyWith() : team,
     );
   }
 }

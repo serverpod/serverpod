@@ -8,6 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
@@ -15,6 +16,7 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
 import 'package:serverpod_auth_test_client/src/protocol/protocol.dart'
     as _ijeqi8o4;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class UserData
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
@@ -72,7 +74,7 @@ abstract class UserData
   UserData copyWith({
     int? id,
     _isc.UuidValue? authUserId,
-    _iacc.AuthUser? authUser,
+    _iacc.AuthUser? authUser = const _UndefinedUserData$authUser(),
     String? displayName,
     String? bio,
   });
@@ -108,6 +110,11 @@ abstract class UserData
 
 class _Undefined {}
 
+class _UndefinedUserData$authUser extends _issu.UndefinedSentinel
+    implements _iacc.AuthUser {
+  const _UndefinedUserData$authUser();
+}
+
 class _UserDataImpl extends UserData {
   _UserDataImpl({
     int? id,
@@ -130,16 +137,16 @@ class _UserDataImpl extends UserData {
   UserData copyWith({
     Object? id = _Undefined,
     _isc.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacc.AuthUser? authUser = const _UndefinedUserData$authUser(),
     String? displayName,
     Object? bio = _Undefined,
   }) {
     return UserData(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacc.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _issu.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       displayName: displayName ?? this.displayName,
       bio: bio is String? ? bio : this.bio,
     );

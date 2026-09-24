@@ -30,6 +30,11 @@ class SerializableModelLibraryGenerator {
   final bool serverCode;
   final GeneratorConfig config;
 
+  // Each generated class uses the sentinel registry of its Dart library.
+  // Sealed descendants share the registry declared in their top node's file.
+  final _copyWithSentinels =
+      <String, Map<ClassDefinition, ({String name, TypeDefinition type})>>{};
+
   SerializableModelLibraryGenerator({
     required this.serverCode,
     required this.config,
@@ -74,6 +79,17 @@ class SerializableModelLibraryGenerator {
     var codeMap = <String, String>{};
     for (var (:entry, :library) in libraries) {
       var path = entry.model.getFullFilePath(config, serverCode: serverCode);
+      if (entry.allocator.imports.any(
+        (directive) => directive.url == serverpodUndefinedSentinelUrl,
+      )) {
+        // Serverpod's runtime packages provide serialization transitively.
+        // Applications need no direct dependency for generated sentinels.
+        library = library.rebuild(
+          (builder) =>
+              builder.ignoreForFile.add('depend_on_referenced_packages'),
+        );
+      }
+
       codeMap[path] = library.generateCode(
         allocator: entry.allocator,
         formatter: GeneratedDartFormatters.of(path),
@@ -84,6 +100,10 @@ class SerializableModelLibraryGenerator {
   }
 
   Library _generateClassLibrary(ClassDefinition classDefinition) {
+    _copyWithSentinels[classDefinition.className] = _collectCopyWithSentinels(
+      classDefinition.sealedTopNode ?? classDefinition,
+    );
+
     switch (classDefinition) {
       case ExceptionClassDefinition():
         return _generateExceptionLibrary(classDefinition);
@@ -127,6 +147,7 @@ class SerializableModelLibraryGenerator {
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
           if (_shouldCreateUndefinedClass(definition, fields))
             _buildUndefinedClass(),
+          ..._buildTypedUndefinedClasses(definition),
           if (!definition.isParentClass)
             _buildModelImplClass(
               className,
@@ -197,6 +218,7 @@ class SerializableModelLibraryGenerator {
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
           if (_shouldCreateUndefinedClass(classDefinition, fields))
             _buildUndefinedClass(),
+          ..._buildTypedUndefinedClasses(classDefinition),
           if (!classDefinition.isParentClass)
             _buildModelImplClass(
               className,
@@ -658,11 +680,123 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  /// Nullable params and `dynamic` fields use `Object? ... = _Undefined` so
-  /// omitted args differ from explicit `null`.
+  /// Nullable params and `dynamic` fields need to distinguish omission from null.
   bool _fieldUsesUndefinedCopyWithSentinel(
     SerializableModelFieldDefinition field,
   ) => field.type.nullable || field.type.className == 'dynamic';
+
+  bool _hasTypedCopyWithSentinel(TypeDefinition type) =>
+      _hasPrivateCopyWithSentinel(type) ||
+      type.isCollectionType ||
+      type.isVectorType ||
+      type.isGeographyType ||
+      const {
+        'DateTime',
+        'UuidValue',
+        'Duration',
+        'Uri',
+      }.contains(type.className);
+
+  bool _hasPrivateCopyWithSentinel(TypeDefinition type) {
+    if (type.customClass || type.isEnumType) return false;
+
+    final model = type.classDefinition ?? type.projectModelDefinition;
+    // Sentinels live in the consuming library so no public accessor is needed.
+    // Sealed types cannot be implemented there; retain their untyped default.
+    return model is ClassDefinition && !model.isSealed;
+  }
+
+  Map<ClassDefinition, ({String name, TypeDefinition type})>
+  _collectCopyWithSentinels(ClassDefinition libraryRoot) {
+    final sentinels = <ClassDefinition, ({String name, TypeDefinition type})>{};
+    final libraryClasses = [
+      libraryRoot,
+      if (libraryRoot.isSealedTopNode) ...libraryRoot.descendantClasses,
+    ];
+
+    for (final definition in libraryClasses) {
+      for (final field in definition.fieldsIncludingInherited) {
+        if (!field.shouldIncludeField(serverCode) ||
+            !field.type.nullable ||
+            !_hasPrivateCopyWithSentinel(field.type)) {
+          continue;
+        }
+
+        final model =
+            (field.type.classDefinition ?? field.type.projectModelDefinition)
+                as ClassDefinition;
+        sentinels.putIfAbsent(
+          model,
+          () => (
+            name: '_Undefined${definition.className}\$${field.name}',
+            type: field.type,
+          ),
+        );
+      }
+    }
+
+    return sentinels;
+  }
+
+  Iterable<Class> _buildTypedUndefinedClasses(
+    ClassDefinition definition,
+  ) sync* {
+    if (definition.sealedTopNode != null && !definition.isSealedTopNode) {
+      return;
+    }
+
+    for (final sentinel in _copyWithSentinels[definition.className]!.values) {
+      yield Class((c) {
+        c
+          ..name = sentinel.name
+          ..extend = refer('UndefinedSentinel', serverpodUndefinedSentinelUrl)
+          ..implements.add(
+            sentinel.type.reference(
+              serverCode,
+              nullable: false,
+              subDirParts: definition.subDirParts,
+              config: config,
+            ),
+          )
+          ..constructors.add(Constructor((c) => c.constant = true));
+      });
+    }
+  }
+
+  Expression _typedCopyWithSentinel(
+    SerializableModelFieldDefinition field,
+    List<String> subDirParts,
+    String className,
+  ) {
+    final type = field.type;
+    if (_hasPrivateCopyWithSentinel(type)) {
+      final model = type.classDefinition ?? type.projectModelDefinition;
+      final sentinel = _copyWithSentinels[className]![model]!;
+
+      return refer(sentinel.name).constInstance([]);
+    }
+
+    return TypeReference((t) {
+      t
+        ..symbol = '\$Undefined${type.className}'
+        ..url = serverpodUndefinedSentinelUrl
+        ..types.addAll(
+          type.generics.map(
+            (generic) => generic.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+            ),
+          ),
+        );
+    }).constInstance([]);
+  }
+
+  bool _fieldUsesUntypedCopyWithSentinel(
+    SerializableModelFieldDefinition field,
+  ) =>
+      _fieldUsesUndefinedCopyWithSentinel(field) &&
+      !_hasTypedCopyWithSentinel(field.type);
 
   bool _shouldCreateUndefinedClass(
     ClassDefinition classDefinition,
@@ -671,7 +805,7 @@ class SerializableModelLibraryGenerator {
     if (classDefinition.sealedTopNode == null) {
       return fields
           .where((field) => field.shouldIncludeField(serverCode))
-          .any(_fieldUsesUndefinedCopyWithSentinel);
+          .any(_fieldUsesUntypedCopyWithSentinel);
     }
 
     if (!classDefinition.isSealedTopNode) {
@@ -687,7 +821,7 @@ class SerializableModelLibraryGenerator {
 
     return descendantFields
         .where((field) => field.shouldIncludeField(serverCode))
-        .any(_fieldUsesUndefinedCopyWithSentinel);
+        .any(_fieldUsesUntypedCopyWithSentinel);
   }
 
   Class _buildUndefinedClass() {
@@ -924,6 +1058,7 @@ class SerializableModelLibraryGenerator {
         ..optionalParameters.addAll(
           _buildAbstractCopyWithParameters(
             fields,
+            className: className,
             subDirParts: subDirParts,
             inheritedFields: inheritedFields,
             isIdInherited: isIdInherited,
@@ -979,10 +1114,15 @@ class SerializableModelLibraryGenerator {
 
               final usesUndefinedCopyWithDefault =
                   _fieldUsesUndefinedCopyWithSentinel(field);
-              var type = usesUndefinedCopyWithDefault
+              final usesTypedSentinel =
+                  usesUndefinedCopyWithDefault &&
+                  _hasTypedCopyWithSentinel(field.type);
+              var type = usesUndefinedCopyWithDefault && !usesTypedSentinel
                   ? refer('Object?')
                   : fieldType;
-              var defaultValue = usesUndefinedCopyWithDefault
+              var defaultValue = usesTypedSentinel
+                  ? _typedCopyWithSentinel(field, subDirParts, className).code
+                  : usesUndefinedCopyWithDefault
                   ? const Code('_Undefined')
                   : null;
 
@@ -1044,6 +1184,10 @@ class SerializableModelLibraryGenerator {
               refer(field.name),
               assignment,
             );
+      } else if (field.type.nullable && _hasTypedCopyWithSentinel(field.type)) {
+        valueDefinition = refer(field.name)
+            .isA(refer('UndefinedSentinel', serverpodUndefinedSentinelUrl))
+            .conditional(assignment, refer(field.name));
       } else if (field.type.nullable) {
         valueDefinition = refer(field.name)
             .isA(
@@ -2203,6 +2347,7 @@ class SerializableModelLibraryGenerator {
 
   List<Parameter> _buildAbstractCopyWithParameters(
     List<SerializableModelFieldDefinition> fields, {
+    required String className,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
     required bool isIdInherited,
@@ -2221,7 +2366,9 @@ class SerializableModelLibraryGenerator {
           inheritedFields.contains(field) ||
           (field.name == defaultPrimaryKeyName && isIdInherited);
 
-      var type = field.type.nullable && isInheritedField
+      var usesTypedSentinel =
+          field.type.nullable && _hasTypedCopyWithSentinel(field.type);
+      var type = field.type.nullable && isInheritedField && !usesTypedSentinel
           ? refer('Object?')
           : fieldType;
 
@@ -2229,6 +2376,9 @@ class SerializableModelLibraryGenerator {
         (p) => p
           ..named = true
           ..type = type
+          ..defaultTo = usesTypedSentinel
+              ? _typedCopyWithSentinel(field, subDirParts, className).code
+              : null
           ..name = field.name,
       );
     }).toList();

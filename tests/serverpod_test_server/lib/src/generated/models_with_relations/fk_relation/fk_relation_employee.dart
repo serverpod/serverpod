@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/fk_relation/fk_relation_company.dart'
     as _ikyus01r;
@@ -83,9 +85,11 @@ abstract class FkRelationEmployee
     int? id,
     String? name,
     int? companyId,
-    _ikyus01r.FkRelationCompany? company,
+    _ikyus01r.FkRelationCompany? company =
+        const _UndefinedFkRelationEmployee$company(),
     int? previousCompanyId,
-    _ikyus01r.FkRelationCompany? previousCompany,
+    _ikyus01r.FkRelationCompany? previousCompany =
+        const _UndefinedFkRelationEmployee$company(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -150,6 +154,11 @@ abstract class FkRelationEmployee
 
 class _Undefined {}
 
+class _UndefinedFkRelationEmployee$company extends _issu.UndefinedSentinel
+    implements _ikyus01r.FkRelationCompany {
+  const _UndefinedFkRelationEmployee$company();
+}
+
 class _FkRelationEmployeeImpl extends FkRelationEmployee {
   _FkRelationEmployeeImpl({
     int? id,
@@ -175,23 +184,25 @@ class _FkRelationEmployeeImpl extends FkRelationEmployee {
     Object? id = _Undefined,
     String? name,
     int? companyId,
-    Object? company = _Undefined,
+    _ikyus01r.FkRelationCompany? company =
+        const _UndefinedFkRelationEmployee$company(),
     Object? previousCompanyId = _Undefined,
-    Object? previousCompany = _Undefined,
+    _ikyus01r.FkRelationCompany? previousCompany =
+        const _UndefinedFkRelationEmployee$company(),
   }) {
     return FkRelationEmployee(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       companyId: companyId ?? this.companyId,
-      company: company is _ikyus01r.FkRelationCompany?
-          ? company
-          : this.company?.copyWith(),
+      company: company is _issu.UndefinedSentinel
+          ? this.company?.copyWith()
+          : company,
       previousCompanyId: previousCompanyId is int?
           ? previousCompanyId
           : this.previousCompanyId,
-      previousCompany: previousCompany is _ikyus01r.FkRelationCompany?
-          ? previousCompany
-          : this.previousCompany?.copyWith(),
+      previousCompany: previousCompany is _issu.UndefinedSentinel
+          ? this.previousCompany?.copyWith()
+          : previousCompany,
     );
   }
 }

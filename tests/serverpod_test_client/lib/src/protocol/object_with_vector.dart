@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class ObjectWithVector
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
@@ -81,7 +83,7 @@ abstract class ObjectWithVector
   ObjectWithVector copyWith({
     int? id,
     _isc.Vector? vector,
-    _isc.Vector? vectorNullable,
+    _isc.Vector? vectorNullable = const _issu.$UndefinedVector(),
     _isc.Vector? vectorIndexedHnsw,
     _isc.Vector? vectorIndexedHnswWithParams,
     _isc.Vector? vectorIndexedIvfflat,
@@ -149,7 +151,7 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
   ObjectWithVector copyWith({
     Object? id = _Undefined,
     _isc.Vector? vector,
-    Object? vectorNullable = _Undefined,
+    _isc.Vector? vectorNullable = const _issu.$UndefinedVector(),
     _isc.Vector? vectorIndexedHnsw,
     _isc.Vector? vectorIndexedHnswWithParams,
     _isc.Vector? vectorIndexedIvfflat,
@@ -158,9 +160,9 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
     return ObjectWithVector(
       id: id is int? ? id : this.id,
       vector: vector ?? this.vector.clone(),
-      vectorNullable: vectorNullable is _isc.Vector?
-          ? vectorNullable
-          : this.vectorNullable?.clone(),
+      vectorNullable: vectorNullable is _issu.UndefinedSentinel
+          ? this.vectorNullable?.clone()
+          : vectorNullable,
       vectorIndexedHnsw: vectorIndexedHnsw ?? this.vectorIndexedHnsw.clone(),
       vectorIndexedHnswWithParams:
           vectorIndexedHnswWithParams ??

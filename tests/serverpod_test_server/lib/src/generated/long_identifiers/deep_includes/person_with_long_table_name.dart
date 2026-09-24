@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
     as _imc5i9r4;
@@ -77,7 +79,8 @@ abstract class PersonWithLongTableName
     int? id,
     String? name,
     int? organizationId,
-    _imc5i9r4.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization =
+        const _UndefinedPersonWithLongTableName$organization(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -138,6 +141,12 @@ abstract class PersonWithLongTableName
 
 class _Undefined {}
 
+class _UndefinedPersonWithLongTableName$organization
+    extends _issu.UndefinedSentinel
+    implements _imc5i9r4.OrganizationWithLongTableName {
+  const _UndefinedPersonWithLongTableName$organization();
+}
+
 class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
   _PersonWithLongTableNameImpl({
     int? id,
@@ -159,7 +168,8 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     Object? id = _Undefined,
     String? name,
     Object? organizationId = _Undefined,
-    Object? organization = _Undefined,
+    _imc5i9r4.OrganizationWithLongTableName? organization =
+        const _UndefinedPersonWithLongTableName$organization(),
   }) {
     return PersonWithLongTableNameImplicit._(
       id: id is int? ? id : this.id,
@@ -167,9 +177,9 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _imc5i9r4.OrganizationWithLongTableName?
-          ? organization
-          : this.organization?.copyWith(),
+      organization: organization is _issu.UndefinedSentinel
+          ? this.organization?.copyWith()
+          : organization,
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
           this._cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
     );

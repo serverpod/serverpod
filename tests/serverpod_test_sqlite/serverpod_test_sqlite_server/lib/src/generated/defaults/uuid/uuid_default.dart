@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class UuidDefault
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -100,9 +102,9 @@ abstract class UuidDefault
     int? id,
     _is.UuidValue? uuidDefaultRandom,
     _is.UuidValue? uuidDefaultRandomV7,
-    _is.UuidValue? uuidDefaultRandomNull,
+    _is.UuidValue? uuidDefaultRandomNull = const _issu.$UndefinedUuidValue(),
     _is.UuidValue? uuidDefaultStr,
-    _is.UuidValue? uuidDefaultStrNull,
+    _is.UuidValue? uuidDefaultStrNull = const _issu.$UndefinedUuidValue(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -189,21 +191,21 @@ class _UuidDefaultImpl extends UuidDefault {
     Object? id = _Undefined,
     _is.UuidValue? uuidDefaultRandom,
     _is.UuidValue? uuidDefaultRandomV7,
-    Object? uuidDefaultRandomNull = _Undefined,
+    _is.UuidValue? uuidDefaultRandomNull = const _issu.$UndefinedUuidValue(),
     _is.UuidValue? uuidDefaultStr,
-    Object? uuidDefaultStrNull = _Undefined,
+    _is.UuidValue? uuidDefaultStrNull = const _issu.$UndefinedUuidValue(),
   }) {
     return UuidDefault(
       id: id is int? ? id : this.id,
       uuidDefaultRandom: uuidDefaultRandom ?? this.uuidDefaultRandom,
       uuidDefaultRandomV7: uuidDefaultRandomV7 ?? this.uuidDefaultRandomV7,
-      uuidDefaultRandomNull: uuidDefaultRandomNull is _is.UuidValue?
-          ? uuidDefaultRandomNull
-          : this.uuidDefaultRandomNull,
+      uuidDefaultRandomNull: uuidDefaultRandomNull is _issu.UndefinedSentinel
+          ? this.uuidDefaultRandomNull
+          : uuidDefaultRandomNull,
       uuidDefaultStr: uuidDefaultStr ?? this.uuidDefaultStr,
-      uuidDefaultStrNull: uuidDefaultStrNull is _is.UuidValue?
-          ? uuidDefaultStrNull
-          : this.uuidDefaultStrNull,
+      uuidDefaultStrNull: uuidDefaultStrNull is _issu.UndefinedSentinel
+          ? this.uuidDefaultStrNull
+          : uuidDefaultStrNull,
     );
   }
 }

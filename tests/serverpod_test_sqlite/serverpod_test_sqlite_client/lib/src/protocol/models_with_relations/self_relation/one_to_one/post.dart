@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
@@ -78,9 +80,9 @@ abstract class Post implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   Post copyWith({
     int? id,
     String? content,
-    _ittc76ec.Post? previous,
+    _ittc76ec.Post? previous = const _UndefinedPost$previous(),
     int? nextId,
-    _ittc76ec.Post? next,
+    _ittc76ec.Post? next = const _UndefinedPost$previous(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -142,6 +144,11 @@ abstract class Post implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedPost$previous extends _issu.UndefinedSentinel
+    implements _ittc76ec.Post {
+  const _UndefinedPost$previous();
+}
+
 class _PostImpl extends Post {
   _PostImpl({
     int? id,
@@ -164,18 +171,18 @@ class _PostImpl extends Post {
   Post copyWith({
     Object? id = _Undefined,
     String? content,
-    Object? previous = _Undefined,
+    _ittc76ec.Post? previous = const _UndefinedPost$previous(),
     Object? nextId = _Undefined,
-    Object? next = _Undefined,
+    _ittc76ec.Post? next = const _UndefinedPost$previous(),
   }) {
     return Post(
       id: id is int? ? id : this.id,
       content: content ?? this.content,
-      previous: previous is _ittc76ec.Post?
-          ? previous
-          : this.previous?.copyWith(),
+      previous: previous is _issu.UndefinedSentinel
+          ? this.previous?.copyWith()
+          : previous,
       nextId: nextId is int? ? nextId : this.nextId,
-      next: next is _ittc76ec.Post? ? next : this.next?.copyWith(),
+      next: next is _issu.UndefinedSentinel ? this.next?.copyWith() : next,
     );
   }
 }

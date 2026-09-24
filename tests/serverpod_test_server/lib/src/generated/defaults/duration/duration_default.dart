@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class DurationDefault
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -80,7 +82,7 @@ abstract class DurationDefault
   DurationDefault copyWith({
     int? id,
     Duration? durationDefault,
-    Duration? durationDefaultNull,
+    Duration? durationDefaultNull = const _issu.$UndefinedDuration(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -152,14 +154,14 @@ class _DurationDefaultImpl extends DurationDefault {
   DurationDefault copyWith({
     Object? id = _Undefined,
     Duration? durationDefault,
-    Object? durationDefaultNull = _Undefined,
+    Duration? durationDefaultNull = const _issu.$UndefinedDuration(),
   }) {
     return DurationDefault(
       id: id is int? ? id : this.id,
       durationDefault: durationDefault ?? this.durationDefault,
-      durationDefaultNull: durationDefaultNull is Duration?
-          ? durationDefaultNull
-          : this.durationDefaultNull,
+      durationDefaultNull: durationDefaultNull is _issu.UndefinedSentinel
+          ? this.durationDefaultNull
+          : durationDefaultNull,
     );
   }
 }

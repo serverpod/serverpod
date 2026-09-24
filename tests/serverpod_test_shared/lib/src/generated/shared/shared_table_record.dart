@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
 
 abstract class SharedTableRecord
@@ -74,7 +76,8 @@ abstract class SharedTableRecord
     int? id,
     String? name,
     _ilwf0zl1.SharedEnum? sharedEnum,
-    _ilwf0zl1.SharedSubclass? sharedSubclass,
+    _ilwf0zl1.SharedSubclass? sharedSubclass =
+        const _UndefinedSharedTableRecord$sharedSubclass(),
     int? itemCount,
   });
   @override
@@ -132,6 +135,11 @@ abstract class SharedTableRecord
 
 class _Undefined {}
 
+class _UndefinedSharedTableRecord$sharedSubclass extends _issu.UndefinedSentinel
+    implements _ilwf0zl1.SharedSubclass {
+  const _UndefinedSharedTableRecord$sharedSubclass();
+}
+
 class _SharedTableRecordImpl extends SharedTableRecord {
   _SharedTableRecordImpl({
     int? id,
@@ -155,16 +163,17 @@ class _SharedTableRecordImpl extends SharedTableRecord {
     Object? id = _Undefined,
     String? name,
     _ilwf0zl1.SharedEnum? sharedEnum,
-    Object? sharedSubclass = _Undefined,
+    _ilwf0zl1.SharedSubclass? sharedSubclass =
+        const _UndefinedSharedTableRecord$sharedSubclass(),
     int? itemCount,
   }) {
     return SharedTableRecord(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       sharedEnum: sharedEnum ?? this.sharedEnum,
-      sharedSubclass: sharedSubclass is _ilwf0zl1.SharedSubclass?
-          ? sharedSubclass
-          : this.sharedSubclass?.copyWith(),
+      sharedSubclass: sharedSubclass is _issu.UndefinedSentinel
+          ? this.sharedSubclass?.copyWith()
+          : sharedSubclass,
       itemCount: itemCount ?? this.itemCount,
     );
   }
