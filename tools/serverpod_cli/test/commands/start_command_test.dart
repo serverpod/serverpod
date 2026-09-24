@@ -196,19 +196,6 @@ void main() {
     );
 
     test(
-      'when the runner is degraded, '
-      'then reporting it ready fails, since the stack is not up',
-      () {
-        expect(
-          () => reportRunnerReady(
-            starting.copyWith(stage: RunnerStage.degraded),
-          ),
-          throwsA(isA<ExitException>()),
-        );
-      },
-    );
-
-    test(
       'when the runner is running but has not published its addresses, '
       'then a caller that does not attach waits for them',
       () async {
@@ -250,34 +237,6 @@ void main() {
             )
             .writeTo(tempDir.path);
         await up;
-      },
-    );
-
-    test(
-      'when the runner is up with its addresses published, '
-      'then reporting it ready prints them',
-      () async {
-        final writer = TestLogWriter();
-        initializeLoggerWith(ServerpodCliLogger(writer));
-
-        reportRunnerReady(
-          starting.copyWith(
-            stage: RunnerStage.running,
-            servers: const ServerpodAddresses(
-              api: 'http://localhost:8080',
-              web: 'http://localhost:8082',
-            ),
-          ),
-        );
-        await log.flush();
-
-        expect(
-          writer.entries.map((e) => e.message),
-          containsAllInOrder([
-            contains('http://localhost:8080'),
-            contains('http://localhost:8082'),
-          ]),
-        );
       },
     );
 
@@ -367,6 +326,60 @@ void main() {
     );
   });
 
+  group('Given a runner manifest,', () {
+    late RunnerManifest manifest;
+
+    setUp(() {
+      manifest = const RunnerManifest(
+        pid: 4242,
+        stage: RunnerStage.starting,
+        projectId: 'test-project',
+        config: _asked,
+      );
+    });
+
+    test(
+      'when the runner is degraded, '
+      'then reporting it ready fails, since the stack is not up',
+      () {
+        expect(
+          () => reportRunnerReady(
+            manifest.copyWith(stage: RunnerStage.degraded),
+          ),
+          throwsA(isA<ExitException>()),
+        );
+      },
+    );
+
+    test(
+      'when the runner is up with its addresses published, '
+      'then reporting it ready prints them',
+      () async {
+        final writer = TestLogWriter();
+        initializeLoggerWith(ServerpodCliLogger(writer));
+
+        reportRunnerReady(
+          manifest.copyWith(
+            stage: RunnerStage.running,
+            servers: const ServerpodAddresses(
+              api: 'http://localhost:8080',
+              web: 'http://localhost:8082',
+            ),
+          ),
+        );
+        await log.flush();
+
+        expect(
+          writer.entries.map((e) => e.message),
+          containsAllInOrder([
+            contains('http://localhost:8080'),
+            contains('http://localhost:8082'),
+          ]),
+        );
+      },
+    );
+  });
+
   group('Given a spawned runner that died before it published,', () {
     late Directory tempDir;
     late int deadPid;
@@ -380,10 +393,8 @@ void main() {
       deadPid = gone.pid;
     });
 
-    tearDown(() {
-      try {
-        tempDir.deleteSync(recursive: true);
-      } catch (_) {}
+    tearDown(() async {
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     /// Expects [outcome] to still be pending after half a second.
@@ -513,10 +524,8 @@ void main() {
       await logFile.create(recursive: true);
     });
 
-    tearDown(() {
-      try {
-        tempDir.deleteSync(recursive: true);
-      } catch (_) {}
+    tearDown(() async {
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -580,9 +589,7 @@ void main() {
 
     tearDown(() async {
       await socket.close();
-      try {
-        root.deleteSync(recursive: true);
-      } catch (_) {}
+      await root.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -657,10 +664,8 @@ void main() {
       );
     });
 
-    tearDown(() {
-      try {
-        root.deleteSync(recursive: true);
-      } catch (_) {}
+    tearDown(() async {
+      await root.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -760,9 +765,7 @@ void main() {
 
     tearDown(() async {
       await vmService.close(force: true);
-      try {
-        root.deleteSync(recursive: true);
-      } catch (_) {}
+      await root.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -836,10 +839,8 @@ void main() {
       );
     });
 
-    tearDown(() {
-      try {
-        tempDir.deleteSync(recursive: true);
-      } catch (_) {}
+    tearDown(() async {
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(

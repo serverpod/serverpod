@@ -34,9 +34,7 @@ name: ${projectName}_server
   });
 
   tearDown(() async {
-    if (root.existsSync()) {
-      await root.deleteWithRetry(recursive: true);
-    }
+    await root.deleteWithRetry(recursive: true);
   });
 
   void writeSharedTableModel() {

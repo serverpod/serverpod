@@ -77,9 +77,7 @@ development:
         }
         await stdoutSubscription?.cancel();
         await stderrSubscription?.cancel();
-        if (serverDirectory.existsSync()) {
-          await serverDirectory.deleteWithRetry(recursive: true);
-        }
+        await serverDirectory.deleteWithRetry(recursive: true);
       });
 
       test(

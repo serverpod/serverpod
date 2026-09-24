@@ -21,9 +21,7 @@ void main() {
   });
 
   tearDownAll(() async {
-    if (testProjectDirectory.existsSync()) {
-      await testProjectDirectory.deleteWithRetry(recursive: true);
-    }
+    await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
   group('Given a valid future call class when analyzed', () {
