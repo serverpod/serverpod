@@ -763,6 +763,12 @@ class ServerTestToolsGenerator {
         ),
         Parameter(
           (p) => p
+            ..name = 'ephemeralDatabase'
+            ..named = true
+            ..type = refer('bool?'),
+        ),
+        Parameter(
+          (p) => p
             ..name = 'databaseInterceptor'
             ..named = true
             ..type = refer('DatabaseInterceptor?', serverpodUrl(true)),
@@ -821,6 +827,8 @@ class ServerTestToolsGenerator {
                         'applyMigrations': config.isDatabaseEnabled
                             ? refer('applyMigrations')
                             : literalBool(false),
+                        if (config.isDatabaseEnabled)
+                          'ephemeralDatabase': refer('ephemeralDatabase'),
                         'isDatabaseEnabled': literalBool(
                           config.isDatabaseEnabled,
                         ),
