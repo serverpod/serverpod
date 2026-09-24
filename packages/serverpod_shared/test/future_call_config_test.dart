@@ -419,27 +419,6 @@ apiServer:
         );
       },
     );
-
-    test(
-      'when inferring whether future calls are enabled, '
-      'then future calls are enabled.',
-      () {
-        final isEnabled = inferFutureCallEnabledFromConfigMap(configMap);
-        expect(isEnabled, isTrue);
-      },
-    );
-
-    test(
-      'when inferring whether future calls are enabled with SERVERPOD_FUTURE_CALL_ENABLED set to false, '
-      'then future calls are disabled.',
-      () {
-        final isEnabled = inferFutureCallEnabledFromConfigMap(
-          configMap,
-          environment: {'SERVERPOD_FUTURE_CALL_ENABLED': 'false'},
-        );
-        expect(isEnabled, isFalse);
-      },
-    );
   });
 
   group('Given a Serverpod config with futureCall.enabled set to false', () {
@@ -483,27 +462,6 @@ futureCall:
           environment: {'SERVERPOD_FUTURE_CALL_ENABLED': 'true'},
         );
         expect(config.futureCall.enabled, isTrue);
-      },
-    );
-
-    test(
-      'when inferring whether future calls are enabled, '
-      'then future calls are disabled.',
-      () {
-        final isEnabled = inferFutureCallEnabledFromConfigMap(configMap);
-        expect(isEnabled, isFalse);
-      },
-    );
-
-    test(
-      'when inferring whether future calls are enabled with SERVERPOD_FUTURE_CALL_ENABLED set to true, '
-      'then future calls are enabled.',
-      () {
-        final isEnabled = inferFutureCallEnabledFromConfigMap(
-          configMap,
-          environment: {'SERVERPOD_FUTURE_CALL_ENABLED': 'true'},
-        );
-        expect(isEnabled, isTrue);
       },
     );
   });

@@ -1,6 +1,5 @@
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
-import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -101,56 +100,6 @@ void main() {
           ),
         );
       });
-    },
-  );
-
-  group(
-    'Given a server package with future calls and future calls disabled, '
-    'when generating protocol code,',
-    () {
-      late String? serverpodFile;
-      setUpAll(() {
-        var config = GeneratorConfigBuilder()
-            .withName(projectName)
-            .withFutureCallEnabled(false)
-            .build();
-
-        var codeMap = generator.generateProtocolCode(
-          protocolDefinition: ProtocolDefinition(
-            endpoints: [],
-            models: [],
-            futureCalls: [FutureCallDefinitionBuilder().build()],
-          ),
-          config: config,
-        );
-        serverpodFile = codeMap[expectedFileName];
-      });
-
-      test(
-        'then the serverpod file does not export the future calls getter.',
-        () {
-          expect(serverpodFile, isNot(contains("export 'future_calls.dart'")));
-        },
-      );
-    },
-  );
-
-  test(
-    'Given a module package '
-    'when generating protocol code '
-    'then no serverpod file is created.',
-    () {
-      var config = GeneratorConfigBuilder()
-          .withName(projectName)
-          .withPackageType(PackageType.module)
-          .build();
-
-      var codeMap = generator.generateProtocolCode(
-        protocolDefinition: protocolDefinition,
-        config: config,
-      );
-
-      expect(codeMap.keys, isNot(contains(expectedFileName)));
     },
   );
 }

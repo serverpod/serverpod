@@ -1606,26 +1606,6 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
   ]);
 }
 
-/// Infer whether future calls are enabled from one run-mode config map (the
-/// body of `config/<runMode>.yaml`), using the same `futureCall` merging rules
-/// as [ServerpodConfig.loadFromMap].
-///
-/// Returns true when future calls are not explicitly disabled.
-bool inferFutureCallEnabledFromConfigMap(
-  Map<dynamic, dynamic> configMap, {
-  Map<String, String> environment = const {},
-}) {
-  final futureCallConfigJson = _buildFutureCallConfigMap(
-    configMap,
-    environment,
-  );
-  if (futureCallConfigJson == null) return true;
-  return FutureCallConfig._fromJson(
-    futureCallConfigJson,
-    ServerpodConfigMap.futureCall,
-  ).enabled;
-}
-
 Map? _buildAuthCookieConfigMap(Map configMap, Map<String, String> environment) {
   var authCookieConfig = configMap[ServerpodConfigMap.authCookie] ?? {};
 

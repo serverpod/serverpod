@@ -87,7 +87,6 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.isDatabaseEnabled,
     required this.databaseDialect,
-    this.isFutureCallEnabled = true,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
@@ -324,9 +323,6 @@ class GeneratorConfig implements ModelLoadConfig {
   /// The dialect of the database, if enabled. Default is [DatabaseDialect.postgres].
   final DatabaseDialect databaseDialect;
 
-  /// Whether future calls are enabled in the serverpod project.
-  final bool isFutureCallEnabled;
-
   final List<ExperimentalFeature> experimentalFeatures;
 
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
@@ -548,10 +544,6 @@ class GeneratorConfig implements ModelLoadConfig {
       generatorConfig,
     );
 
-    var isFutureCallEnabled = _loadIsFutureCallEnabledFromRunModeFiles(
-      runModeConfigsByFile,
-    );
-
     return GeneratorConfig(
       name: name,
       type: type,
@@ -567,7 +559,6 @@ class GeneratorConfig implements ModelLoadConfig {
       extraClasses: extraClasses,
       isDatabaseEnabled: isDatabaseEnabled,
       databaseDialect: databaseDialect,
-      isFutureCallEnabled: isFutureCallEnabled,
       experimentalFeatures: enabledExperimentalFeatures,
     );
   }
@@ -627,37 +618,6 @@ class GeneratorConfig implements ModelLoadConfig {
             environment: Platform.environment,
           ),
     };
-  }
-
-  /// Future calls are enabled unless the run-mode config files (when they
-  /// exist) disable them through `futureCall.enabled` or the
-  /// `SERVERPOD_FUTURE_CALL_ENABLED` environment variable.
-  static bool _loadIsFutureCallEnabledFromRunModeFiles(
-    Map<String, Map<dynamic, dynamic>?> runModeConfigsByFile,
-  ) {
-    final enabledByFile = <String, bool>{
-      for (final entry in runModeConfigsByFile.entries)
-        entry.key: inferFutureCallEnabledFromConfigMap(
-          entry.value ?? const {},
-          environment: Platform.environment,
-        ),
-    };
-
-    if (enabledByFile.isEmpty) return true;
-
-    final configurations = enabledByFile.values.toSet();
-    if (configurations.length > 1) {
-      final details = enabledByFile.entries
-          .map((e) => '${e.key}: ${e.value ? 'enabled' : 'disabled'}')
-          .sorted()
-          .join(', ');
-      throw StateError(
-        'Inconsistent future call configurations across run-mode config files: $details. '
-        'A Serverpod project must use uniform future call configuration in all run modes.',
-      );
-    }
-
-    return configurations.single;
   }
 
   /// The database is enabled if run-mode config files (when they exist)
