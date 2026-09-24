@@ -1864,12 +1864,20 @@ bool _readApplyRepairMigration(
   return false;
 }
 
+/// The legacy top-level config key for future call execution, still read as a
+/// fallback for `futureCall.executionEnabled` for backwards compatibility.
+const _legacyFutureCallExecutionEnabledKey = 'futureCallExecutionEnabled';
+
 bool _readIsFutureCallExecutionEnabled(
   Map<dynamic, dynamic> configMap,
   Map<String, String> environment,
 ) {
-  var futureCallsExecutionEnabled =
-      configMap[ServerpodEnv.futureCallExecutionEnabled.configKey];
+  var futureCallConfig = configMap[ServerpodConfigMap.futureCall];
+  var futureCallsExecutionEnabled = futureCallConfig is Map
+      ? futureCallConfig[ServerpodEnv.futureCallExecutionEnabled.configKey]
+      : null;
+  futureCallsExecutionEnabled ??=
+      configMap[_legacyFutureCallExecutionEnabledKey];
   futureCallsExecutionEnabled =
       environment[ServerpodEnv.futureCallExecutionEnabled.envVariable] ??
       futureCallsExecutionEnabled;
