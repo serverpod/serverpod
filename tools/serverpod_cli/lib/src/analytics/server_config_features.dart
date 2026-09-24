@@ -51,7 +51,13 @@ class ServerConfigFeatures {
 
       if (yaml['webServer'] is YamlMap) tags.add('web_server');
       if (yaml['insightsServer'] is YamlMap) tags.add('insights_server');
-      if (yaml['futureCallExecutionEnabled'] == false) {
+      // `futureCall.executionEnabled` supersedes the legacy top-level
+      // `futureCallExecutionEnabled`, which is still honored as a fallback.
+      final futureCall = yaml['futureCall'];
+      final futureCallExecutionEnabled =
+          (futureCall is YamlMap ? futureCall['executionEnabled'] : null) ??
+          yaml['futureCallExecutionEnabled'];
+      if (futureCallExecutionEnabled == false) {
         tags.add('future_calls_disabled');
       }
 
