@@ -36,6 +36,7 @@ Reference for the [Serverpod Configuration](../SKILL.md) skill. Environment vari
 | Other | `SERVERPOD_MAX_REQUEST_SIZE` | maxRequestSize / 524288 |
 | | `SERVERPOD_VALIDATE_HEADERS` | validateHeaders |
 | | `SERVERPOD_WEBSOCKET_PING_INTERVAL` | websocketPingInterval / 30s |
+| | `SERVERPOD_FUTURE_CALL_ENABLED` | futureCall.enabled / true |
 | | `SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED` | futureCallExecutionEnabled |
 | | `SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT` | futureCall.concurrencyLimit |
 | | `SERVERPOD_FUTURE_CALL_SCAN_INTERVAL` | futureCall.scanInterval (ms) |
