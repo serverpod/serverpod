@@ -65,9 +65,9 @@ Handle failures inside the call and reschedule if the work must eventually succe
 ## Configuration
 
 ```yaml
-futureCallExecutionEnabled: true  # SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED
 futureCall:
   enabled: true                   # SERVERPOD_FUTURE_CALL_ENABLED (default true)
+  executionEnabled: true          # SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED
   concurrencyLimit: 5             # SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT (default 1, <1 maps to unlimited and is not recommended)
   scanInterval: 2000              # SERVERPOD_FUTURE_CALL_SCAN_INTERVAL (ms, default 5000)
 ```

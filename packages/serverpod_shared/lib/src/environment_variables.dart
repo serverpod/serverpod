@@ -53,6 +53,9 @@ class ServerpodFutureCallConfigMap {
 
   /// Whether future calls are enabled.
   static const String enabled = 'enabled';
+
+  /// Whether future calls are executed by this server.
+  static const String executionEnabled = 'executionEnabled';
 }
 
 /// The default environment variables used by the server.
@@ -275,8 +278,9 @@ enum ServerpodEnv {
         ServerpodFutureCallConfigMap.concurrencyLimit,
       (ServerpodEnv.futureCallScanInterval) =>
         ServerpodFutureCallConfigMap.scanInterval,
-      (ServerpodEnv.futureCallExecutionEnabled) => 'futureCallExecutionEnabled',
       (ServerpodEnv.futureCallEnabled) => ServerpodFutureCallConfigMap.enabled,
+      (ServerpodEnv.futureCallExecutionEnabled) =>
+        ServerpodFutureCallConfigMap.executionEnabled,
       (ServerpodEnv.futureCallCheckBrokenCalls) => 'checkBrokenCalls',
       (ServerpodEnv.futureCallDeleteBrokenCalls) => 'deleteBrokenCalls',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',

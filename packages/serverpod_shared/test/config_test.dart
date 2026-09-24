@@ -2656,4 +2656,141 @@ authCookie:
       );
     },
   );
+
+  group(
+    'Given a Serverpod config with futureCall.executionEnabled set to false',
+    () {
+      late Map configMap;
+
+      setUp(() {
+        configMap = loadYaml('''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCall:
+  executionEnabled: false
+''');
+      });
+
+      group('when loading from Map', () {
+        late ServerpodConfig config;
+
+        setUp(() {
+          config = ServerpodConfig.loadFromMap(
+            runMode,
+            serverId,
+            passwords,
+            configMap,
+          );
+        });
+
+        test('then future call execution is disabled.', () {
+          expect(config.futureCallExecutionEnabled, isFalse);
+        });
+      });
+
+      group(
+        'when loading from Map with SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED set to true',
+        () {
+          late ServerpodConfig config;
+
+          setUp(() {
+            config = ServerpodConfig.loadFromMap(
+              runMode,
+              serverId,
+              passwords,
+              configMap,
+              environment: {'SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED': 'true'},
+            );
+          });
+
+          test('then future call execution is enabled.', () {
+            expect(config.futureCallExecutionEnabled, isTrue);
+          });
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod config with futureCall.executionEnabled set to true and the legacy futureCallExecutionEnabled set to false',
+    () {
+      late Map configMap;
+
+      setUp(() {
+        configMap = loadYaml('''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCallExecutionEnabled: false
+futureCall:
+  executionEnabled: true
+''');
+      });
+
+      group('when loading from Map', () {
+        late ServerpodConfig config;
+
+        setUp(() {
+          config = ServerpodConfig.loadFromMap(
+            runMode,
+            serverId,
+            passwords,
+            configMap,
+          );
+        });
+
+        test(
+          'then futureCall.executionEnabled takes precedence and future call execution is enabled.',
+          () {
+            expect(config.futureCallExecutionEnabled, isTrue);
+          },
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a Serverpod config with a futureCall section without executionEnabled and the legacy futureCallExecutionEnabled set to false',
+    () {
+      late Map configMap;
+
+      setUp(() {
+        configMap = loadYaml('''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCallExecutionEnabled: false
+futureCall:
+  scanInterval: 2000
+''');
+      });
+
+      group('when loading from Map', () {
+        late ServerpodConfig config;
+
+        setUp(() {
+          config = ServerpodConfig.loadFromMap(
+            runMode,
+            serverId,
+            passwords,
+            configMap,
+          );
+        });
+
+        test(
+          'then the legacy key is used and future call execution is disabled.',
+          () {
+            expect(config.futureCallExecutionEnabled, isFalse);
+          },
+        );
+      });
+    },
+  );
 }
