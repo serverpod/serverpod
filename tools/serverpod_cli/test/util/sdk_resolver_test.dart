@@ -329,6 +329,81 @@ void main() {
     });
   });
 
+  group(
+    'Given a parent-pinned project whose pubspec comments out workspace,',
+    () {
+      // `serverpod create` copies the template before it resolves, so the
+      // pubspec is on disk with its workspace lines still commented out.
+      late Directory projectDirectory;
+      late String cachedSdk;
+
+      setUp(() {
+        final temp = _tempDir();
+        cachedSdk = _fakeFlutterSdk(temp, name: 'cached');
+        final parent = Directory(p.join(temp.path, 'workspace'))..createSync();
+        _pinFvmFlutter(parent, cachedSdk);
+        projectDirectory = Directory(p.join(parent.path, 'my_new_app'))
+          ..createSync();
+        File(p.join(projectDirectory.path, 'pubspec.yaml')).writeAsStringSync(
+          'name: my_new_app\n'
+          '\n'
+          '#workspace: #--UNCOMMENT_LINE--#\n'
+          '#  - my_new_app_server #--UNCOMMENT_LINE--#\n',
+        );
+      });
+
+      group('when the Flutter SDK is resolved,', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          resolved = await _resolver(projectDirectory).flutterSdk;
+        });
+
+        test('then it finds the pin in the parent directory', () {
+          expect(resolved?.root, cachedSdk);
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a parent-pinned project holding a workspace pubspec,',
+    () {
+      // The rendered project root, which `serverpod create` resolves against
+      // by the time it runs `flutter create`. docs/design/sdk_resolution.md
+      // says it still inherits the pin from the directory above it.
+      late Directory projectDirectory;
+      late String cachedSdk;
+
+      setUp(() {
+        final temp = _tempDir();
+        cachedSdk = _fakeFlutterSdk(temp, name: 'cached');
+        final parent = Directory(p.join(temp.path, 'workspace'))..createSync();
+        _pinFvmFlutter(parent, cachedSdk);
+        projectDirectory = Directory(p.join(parent.path, 'my_new_app'))
+          ..createSync();
+        File(p.join(projectDirectory.path, 'pubspec.yaml')).writeAsStringSync(
+          'name: my_new_app\n'
+          '\n'
+          'workspace:\n'
+          '  - my_new_app_server\n',
+        );
+      });
+
+      group('when the Flutter SDK is resolved,', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          resolved = await _resolver(projectDirectory).flutterSdk;
+        });
+
+        test('then it finds the pin in the parent directory', () {
+          expect(resolved?.root, cachedSdk);
+        });
+      });
+    },
+  );
+
   group('Given a project without fvm pin and a Flutter SDK on PATH', () {
     late Directory workingDirectory;
     late String sdkOnPath;
