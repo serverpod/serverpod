@@ -10,7 +10,6 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
         final modelType = allocate(
           refer('SerializableModel', serverpodUrl(true)),
         );
-
         final serverpod = allocate(
           refer('Serverpod', serverpodUrl(true)),
         );

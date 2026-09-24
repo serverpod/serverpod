@@ -1,5 +1,6 @@
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -100,6 +101,25 @@ void main() {
           ),
         );
       });
+    },
+  );
+
+  test(
+    'Given a module package '
+    'when generating protocol code '
+    'then no serverpod file is created.',
+    () {
+      var config = GeneratorConfigBuilder()
+          .withName(projectName)
+          .withPackageType(PackageType.module)
+          .build();
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      expect(codeMap.keys, isNot(contains(expectedFileName)));
     },
   );
 }

@@ -525,10 +525,8 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    var runModeConfigsByFile = await _loadRunModeConfigFiles(serverRootDir);
-
-    var databaseConfigsByFile = _loadDatabaseConfigsFromRunModeFiles(
-      runModeConfigsByFile,
+    var databaseConfigsByFile = await _loadDatabaseConfigsFromRunModeFiles(
+      serverRootDir,
     );
 
     var isDatabaseEnabled = _inferDatabaseEnabledFromConfigs(
@@ -578,17 +576,16 @@ class GeneratorConfig implements ModelLoadConfig {
     'test.yaml',
   };
 
-  /// Loads the content of each run-mode config file, keyed by file name. A
-  /// run-mode config file whose content is not a map maps to `null`.
-  static Future<Map<String, Map<dynamic, dynamic>?>> _loadRunModeConfigFiles(
-    String serverRootDir,
-  ) async {
+  /// Loads the database config of each run-mode config file, keyed by file
+  /// name. A run-mode config file without a database section maps to `null`.
+  static Future<Map<String, DatabaseConfig?>>
+  _loadDatabaseConfigsFromRunModeFiles(String serverRootDir) async {
     final configDir = Directory(p.join(serverRootDir, 'config'));
     if (!await configDir.exists()) {
       return {};
     }
 
-    final configsByFile = <String, Map<dynamic, dynamic>?>{};
+    final databaseConfigsByFile = <String, DatabaseConfig?>{};
     await for (final entity in configDir.list(followLinks: false)) {
       if (entity is! File) continue;
       final basename = p.basename(entity.path);
@@ -597,27 +594,15 @@ class GeneratorConfig implements ModelLoadConfig {
       }
 
       final yamlRoot = loadYaml(await entity.readAsString());
-      configsByFile[basename] = yamlRoot is Map
-          ? Map<dynamic, dynamic>.from(yamlRoot)
-          : null;
+      if (yamlRoot == null || yamlRoot is! Map) continue;
+
+      databaseConfigsByFile[basename] = inferDatabaseConfigFromConfigMap(
+        Map<dynamic, dynamic>.from(yamlRoot),
+        environment: Platform.environment,
+      );
     }
 
-    return configsByFile;
-  }
-
-  /// Loads the database config of each run-mode config file, keyed by file
-  /// name. A run-mode config file without a database section maps to `null`.
-  static Map<String, DatabaseConfig?> _loadDatabaseConfigsFromRunModeFiles(
-    Map<String, Map<dynamic, dynamic>?> runModeConfigsByFile,
-  ) {
-    return {
-      for (final entry in runModeConfigsByFile.entries)
-        if (entry.value case final configMap?)
-          entry.key: inferDatabaseConfigFromConfigMap(
-            configMap,
-            environment: Platform.environment,
-          ),
-    };
+    return databaseConfigsByFile;
   }
 
   /// The database is enabled if run-mode config files (when they exist)
