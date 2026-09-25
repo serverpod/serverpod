@@ -30,7 +30,6 @@ import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-const _mixPanelToken = '05e8ab306c393c7482e0f41851a176d8';
 const _postHogApiKey = 'phc_xGBPHgcrTrDuWGtyNX3UJODXgnR684rzRPZjWRlqVxf';
 
 /// The unique user ID for the CLI. If the user ID is not available, we use
@@ -43,15 +42,6 @@ final _postHogAnalytics = PostHogAnalytics(
   version: templateVersion,
   libName: 'serverpod_cli',
 );
-
-final Analytics _analytics = CompoundAnalytics([
-  MixPanelAnalytics(
-    uniqueUserId: _uniqueUserId,
-    projectToken: _mixPanelToken,
-    version: templateVersion,
-  ),
-  _postHogAnalytics,
-]);
 
 void main(List<String> args) async {
   await runZonedGuarded(
@@ -84,7 +74,7 @@ void main(List<String> args) async {
 /// configuration preventing the CLI from writing to the user home directory.
 Future<void> _main(List<String> args) async {
   initializeCliAnalytics(
-    CliAnalytics(analytics: _postHogAnalytics, commandAnalytics: _analytics),
+    CliAnalytics(analytics: _postHogAnalytics),
   );
 
   final resourceManager = ResourceManager();
@@ -119,7 +109,7 @@ Future<void> _main(List<String> args) async {
 ServerpodCommandRunner buildCommandRunner() {
   final version = Version.parse(templateVersion);
   return ServerpodCommandRunner.createCommandRunner(
-    _analytics,
+    _postHogAnalytics,
     productionMode,
     version,
   )..addCommands([
@@ -145,6 +135,6 @@ ServerpodCommandRunner buildCommandRunner() {
 
 Future<void> _preExit() async {
   await flushAnalytics();
-  _analytics.cleanUp();
+  _postHogAnalytics.cleanUp();
   await closeLogger();
 }

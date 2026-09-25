@@ -36,9 +36,9 @@ class CliAnalytics {
 
   /// Waits for metadata preparation and all pending event sends.
   ///
-  /// Command events may use additional providers (such as Mixpanel), while
-  /// rich lifecycle events are sent only to [_analytics]. Both must finish
-  /// before the TUI or the CLI entry point exits the process.
+  /// Command events may use additional providers, while rich lifecycle events
+  /// are sent only to [_analytics]. Both must finish before the TUI or the CLI
+  /// entry point exits the process.
   Future<void> flush() async {
     while (_pendingOperations.isNotEmpty) {
       await Future.wait(_pendingOperations.toList());
