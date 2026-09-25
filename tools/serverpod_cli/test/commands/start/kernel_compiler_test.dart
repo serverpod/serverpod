@@ -48,6 +48,18 @@ void main() {
     });
 
     test(
+      'when its Dart executable is resolved, '
+      'then it is the SDK binary with the extension the platform runs',
+      () {
+        expect(
+          compiler.dartExecutable,
+          endsWith(p.join('bin', Platform.isWindows ? 'dart.exe' : 'dart')),
+        );
+        expect(File(compiler.dartExecutable).existsSync(), isTrue);
+      },
+    );
+
+    test(
       'when compile is called, '
       'then it produces a .dill file with no errors and no compile marker',
       () async {
