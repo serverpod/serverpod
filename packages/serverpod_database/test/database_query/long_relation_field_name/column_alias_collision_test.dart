@@ -17,7 +17,7 @@ import '../../test_util/table_relation_builder.dart';
 /// distinct join aliases (they are genuinely separate joins), but the `id`
 /// column of each truncates to the *same* select alias.
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -39,11 +39,14 @@ void main() {
   group(
     'Given a query selecting columns from two long-named relations to the same table',
     () {
-      var query = SelectQueryBuilder(table: citizenTable).withSelectFields([
-        citizenTable.id,
-        firstRelation.id,
-        secondRelation.id,
-      ]).build();
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(table: citizenTable).withSelectFields([
+          citizenTable.id,
+          firstRelation.id,
+          secondRelation.id,
+        ]).build();
+      });
 
       test('then each selected column has a unique alias.', () {
         var aliases = RegExp(

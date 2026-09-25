@@ -165,4 +165,101 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a unix socket path that fits the platform cap, '
+    'when calling reachableUnixSocketPath, '
+    'then it returns the shortest form of the path.',
+    () {
+      var tmp = Directory.systemTemp.createTempSync('uds_reach_');
+      try {
+        var path = p.join(tmp.path, '.s.PGSQL.5432');
+
+        expect(reachableUnixSocketPath(path), shortestPath(path));
+      } finally {
+        tmp.deleteSync(recursive: true);
+      }
+    },
+  );
+
+  group(
+    'Given a directory too deep for a unix socket path into it',
+    () {
+      late Directory tmp;
+      late String deep;
+
+      setUp(() {
+        tmp = Directory.systemTemp.createTempSync('uds_deep_');
+        deep = tmp.path;
+        while (deep.length <= maxUnixSocketPathBytes() + 20) {
+          deep = p.join(deep, 'aaaaaaaaaaaaaaaaaa');
+        }
+        Directory(deep).createSync(recursive: true);
+      });
+
+      tearDown(() => tmp.deleteSync(recursive: true));
+
+      test(
+        'when binding and connecting through reachableUnixSocketPath, '
+        'then the connection reaches the socket in that directory.',
+        () async {
+          var path = p.join(deep, '.s.PGSQL.5432');
+          var server = await ServerSocket.bind(
+            InternetAddress(
+              reachableUnixSocketPath(path),
+              type: InternetAddressType.unix,
+            ),
+            0,
+          );
+          addTearDown(server.close);
+          server.listen(
+            (client) => client
+              ..write('hi')
+              ..close(),
+          );
+
+          var socket = await Socket.connect(
+            InternetAddress(
+              reachableUnixSocketPath(path),
+              type: InternetAddressType.unix,
+            ),
+            0,
+          );
+          addTearDown(socket.destroy);
+
+          expect(String.fromCharCodes(await socket.first), 'hi');
+          expect(
+            FileSystemEntity.typeSync(path, followLinks: false),
+            FileSystemEntityType.unixDomainSock,
+          );
+        },
+      );
+
+      test(
+        'when calling reachableUnixSocketPath for two sockets in it, '
+        'then both are reached through the same short directory.',
+        () {
+          var first = reachableUnixSocketPath(p.join(deep, 'a.sock'));
+          var second = reachableUnixSocketPath(p.join(deep, 'b.sock'));
+
+          expect(p.dirname(first), p.dirname(second));
+          expect(unixSocketPathFits(first), isTrue);
+        },
+      );
+
+      test(
+        'when calling reachableUnixSocketPath, '
+        'then the link lives in a directory only the current user can access.',
+        () {
+          var linked = reachableUnixSocketPath(p.join(deep, 'a.sock'));
+
+          var linkDir = p.dirname(p.dirname(linked));
+          expect(FileStat.statSync(linkDir).mode & 0x3f, 0);
+        },
+      );
+    },
+    skip: Platform.isWindows
+        ? 'Links to socket directories are only verified on POSIX'
+        : false,
+  );
 }

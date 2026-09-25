@@ -112,9 +112,9 @@ abstract class EmbeddedPostgres {
   Uri get connectionUri;
 
   /// Drop-in for `package:postgres` consumers. For UDS, [pg.Endpoint.host]
-  /// is the socket *file* path (passed through `shortestPath()`), not the
-  /// directory - `package:postgres` does not auto-append `.s.PGSQL.<port>`
-  /// the way libpq does.
+  /// is the socket *file* path (passed through `reachableUnixSocketPath()`),
+  /// not the directory - `package:postgres` does not auto-append
+  /// `.s.PGSQL.<port>` the way libpq does.
   pg.Endpoint get endpoint;
 
   /// Resolved PostgreSQL version (major.minor.patch) backing this handle.

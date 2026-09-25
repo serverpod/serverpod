@@ -1,4 +1,4 @@
-import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -12,7 +12,8 @@ void main() {
     sessionBuilder,
     endpoints,
   ) {
-    var session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
 
     test(
       'when rows with the same null-distinct values and a null are inserted, '
@@ -149,7 +150,8 @@ void main() {
     sessionBuilder,
     endpoints,
   ) {
-    var session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
 
     test(
       'when the PostgreSQL schema is analyzed, '

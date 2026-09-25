@@ -10,10 +10,11 @@ import 'package:test/test.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
   });
 
@@ -25,13 +26,14 @@ void main() {
     'Given an endpoint file with incomplete endpoint class defined when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         // Class is missing closing brackets
@@ -67,13 +69,14 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint file with incomplete endpoint method defined when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         // Class and method are missing closing brackets
@@ -109,13 +112,14 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint method that returns a Future with multiple defined types',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -150,13 +154,14 @@ class ExampleEndpoint extends Endpoint {
 
   group('Given a valid and an invalid endpoint file when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var firstEndpointFile = File(
         path.join(testDirectory.path, 'invalid_endpoint.dart'),
       );
@@ -202,12 +207,13 @@ class ExampleEndpointValid extends Endpoint {
 
   group('Given an invalid dart file without an endpoint definition', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var invalidDartFile = File(
         path.join(testDirectory.path, 'my_class.dart'),
       );
@@ -231,13 +237,14 @@ class InvalidClass {
     'Given an invalid dart file without an endpoint definition and a valid endpoint definition file',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var invalidDartFile = File(
           path.join(testDirectory.path, 'my_class.dart'),
         );

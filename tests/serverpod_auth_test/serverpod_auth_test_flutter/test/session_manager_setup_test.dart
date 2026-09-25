@@ -5,12 +5,18 @@ import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
 void main() {
-  final storage = TestStorage();
+  late TestStorage storage;
+  setUp(() => storage = TestStorage());
 
   group('Given a `Client` declaration', () {
     group('when creating the session manager directly', () {
-      final client = Client('http://localhost:8080/');
-      final authSessionManager = FlutterAuthSessionManager(storage: storage);
+      late Client client;
+      late FlutterAuthSessionManager authSessionManager;
+      setUp(() {
+        client = Client('http://localhost:8080/');
+        authSessionManager = FlutterAuthSessionManager(storage: storage);
+      });
+      tearDown(() => client.close());
 
       test('then accessing `client.auth` throws.', () {
         expect(() => client.auth, throwsStateError);
@@ -26,12 +32,16 @@ void main() {
     });
 
     group('when passing `Caller` to the session manager', () {
-      final client = Client('http://localhost:8080/');
-
-      final authSessionManager = FlutterAuthSessionManager(
-        storage: storage,
-        caller: client.modules.serverpod_auth_core,
-      );
+      late Client client;
+      late FlutterAuthSessionManager authSessionManager;
+      setUp(() {
+        client = Client('http://localhost:8080/');
+        authSessionManager = FlutterAuthSessionManager(
+          storage: storage,
+          caller: client.modules.serverpod_auth_core,
+        );
+      });
+      tearDown(() => client.close());
 
       test('then accessing `client.auth` throws.', () {
         expect(() => client.auth, throwsStateError);
@@ -48,8 +58,12 @@ void main() {
   });
 
   group('when using the `authSessionManager` extension', () {
-    final client = Client('http://localhost:8080/')
-      ..authSessionManager = FlutterAuthSessionManager(storage: storage);
+    late Client client;
+    setUp(() {
+      client = Client('http://localhost:8080/')
+        ..authSessionManager = FlutterAuthSessionManager(storage: storage);
+    });
+    tearDown(() => client.close());
 
     test('then `client.auth` is available.', () {
       expect(client.auth, isNotNull);
@@ -66,12 +80,20 @@ void main() {
   });
 
   group('Given more than one Client sharing the same auth session manager', () {
-    final sharedSessionManager = FlutterAuthSessionManager(storage: storage);
-
-    final client1 = Client('http://localhost:8080/')
-      ..authSessionManager = sharedSessionManager;
-    final client2 = Client('http://localhost:8080/')
-      ..authSessionManager = sharedSessionManager;
+    late FlutterAuthSessionManager sharedSessionManager;
+    late Client client1;
+    late Client client2;
+    setUp(() {
+      sharedSessionManager = FlutterAuthSessionManager(storage: storage);
+      client1 = Client('http://localhost:8080/')
+        ..authSessionManager = sharedSessionManager;
+      client2 = Client('http://localhost:8080/')
+        ..authSessionManager = sharedSessionManager;
+    });
+    tearDown(() {
+      client1.close();
+      client2.close();
+    });
 
     test('when accessing `client.auth` then it is the same instance.', () {
       expect(client1.auth, sharedSessionManager);

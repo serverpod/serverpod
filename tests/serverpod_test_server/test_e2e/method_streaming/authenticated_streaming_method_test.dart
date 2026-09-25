@@ -10,7 +10,13 @@ import 'package:test/test.dart';
 
 void main() {
   var authKeyProvider = TestAuthKeyManager();
-  var client = Client(serverUrl)..authKeyProvider = authKeyProvider;
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl)..authKeyProvider = authKeyProvider;
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   test(
     'Given an unauthenticated user when calling an authenticated streaming method then client exception with forbidden HTTP status code is thrown.',

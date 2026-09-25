@@ -230,13 +230,14 @@ void main() {
     'Given a single method stream connection to an endpoint that has delayed stream response',
     () {
       late Completer<void> delayedStreamIsCanceled;
-      var server = IntegrationTestServer.create();
+      late Serverpod server;
       late WebSocket webSocket;
       var endpoint = 'methodStreaming';
       var method = 'delayedStreamResponse';
       var connectionId = const Uuid().v4obj();
 
       setUp(() async {
+        server = IntegrationTestServer.create();
         delayedStreamIsCanceled = Completer<void>();
 
         var delayedStreamResponseCompleter = Completer<StreamController<int>>();
@@ -304,7 +305,7 @@ void main() {
   group(
     'Given a single method stream connection to an endpoint that has an input stream that is never listened to',
     () {
-      var server = IntegrationTestServer.create();
+      late Serverpod server;
       late WebSocket webSocket;
       var endpoint = 'methodStreaming';
       var method = 'delayedNeverListenedInputStream';
@@ -312,6 +313,7 @@ void main() {
       late Completer endpointSessionIsClosed;
 
       setUp(() async {
+        server = IntegrationTestServer.create();
         var delayedNeverListenedInputStreamCompleter = Completer<Session>();
         MethodStreaming.delayedNeverListenedInputStreamCompleter =
             delayedNeverListenedInputStreamCompleter;
@@ -376,7 +378,7 @@ void main() {
   group(
     'Given a single method stream connection to an endpoint that has an input stream that is paused',
     () {
-      var server = IntegrationTestServer.create();
+      late Serverpod server;
       late WebSocket webSocket;
       var endpoint = 'methodStreaming';
       var method = 'delayedPausedInputStream';
@@ -384,6 +386,7 @@ void main() {
       late Completer endpointSessionIsClosed;
 
       setUp(() async {
+        server = IntegrationTestServer.create();
         var delayedPausedInputStreamCompleter = Completer<Session>();
         MethodStreaming.delayedPausedInputStreamCompleter =
             delayedPausedInputStreamCompleter;

@@ -7,7 +7,7 @@ import '../test_util/many_relation_builder.dart';
 import '../test_util/table_relation_builder.dart';
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -18,9 +18,12 @@ void main() {
 
   group('Given SelectQueryBuilder', () {
     group('when filtering on none many relation', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.none()).build();
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.none()).build();
+      });
       test('then a sub query is created for the filter.', () {
         expect(
           query,
@@ -40,9 +43,12 @@ void main() {
     });
 
     group('when filtering on NOT none many relation', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(~manyRelation.none()).build();
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(~manyRelation.none()).build();
+      });
 
       test('then the outer query negates the subquery membership.', () {
         expect(
@@ -60,9 +66,15 @@ void main() {
     group(
       'when filtering on NOT of a combined scalar and none many relation',
       () {
-        var query = SelectQueryBuilder(
-          table: citizenTable,
-        ).withWhere(~(citizenTable.id.equals(1) & manyRelation.none())).build();
+        late String query;
+        setUp(() {
+          query =
+              SelectQueryBuilder(
+                    table: citizenTable,
+                  )
+                  .withWhere(~(citizenTable.id.equals(1) & manyRelation.none()))
+                  .build();
+        });
 
         test('then the outer query negates the combined filter.', () {
           expect(
@@ -83,9 +95,12 @@ void main() {
     );
 
     group('when filtering on filtered none many relation', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.none((t) => t.id.equals(1))).build();
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.none((t) => t.id.equals(1))).build();
+      });
 
       test('then filter is added with an AND statement.', () {
         expect(
@@ -98,11 +113,14 @@ void main() {
     });
 
     group('when filtering on multiple none many relation', () {
-      var where =
-          manyRelation.none((t) => t.id.equals(1)) & manyRelation.none();
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(where).build();
+      late String query;
+      setUp(() {
+        var where =
+            manyRelation.none((t) => t.id.equals(1)) & manyRelation.none();
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(where).build();
+      });
 
       test('then a sub query is created for the first many relation filter.', () {
         expect(
@@ -147,9 +165,12 @@ void main() {
 
   group('Given DeleteQueryBuilder', () {
     group('when filtering on none many relation', () {
-      var query = DeleteQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.none()).build();
+      late String query;
+      setUp(() {
+        query = DeleteQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.none()).build();
+      });
       test('then a sub query is created for the filter.', () {
         expect(
           query,
@@ -169,9 +190,12 @@ void main() {
     });
 
     group('when filtering on filtered none many relation', () {
-      var query = DeleteQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.none((t) => t.id.equals(1))).build();
+      late String query;
+      setUp(() {
+        query = DeleteQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.none((t) => t.id.equals(1))).build();
+      });
 
       test('then filter is added with an AND statement.', () {
         expect(
@@ -184,11 +208,14 @@ void main() {
     });
 
     group('when filtering on multiple none many relation', () {
-      var where =
-          manyRelation.none((t) => t.id.equals(1)) & manyRelation.none();
-      var query = DeleteQueryBuilder(
-        table: citizenTable,
-      ).withWhere(where).build();
+      late String query;
+      setUp(() {
+        var where =
+            manyRelation.none((t) => t.id.equals(1)) & manyRelation.none();
+        query = DeleteQueryBuilder(
+          table: citizenTable,
+        ).withWhere(where).build();
+      });
 
       test('then a sub query is created for the first many relation filter.', () {
         expect(

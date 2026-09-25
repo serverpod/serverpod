@@ -13,9 +13,9 @@ void main() {
     'Given a named one-to-one relation with fk on one side and a unique index on the generated foreign key, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
-      late final ClassDefinition userDefinition;
-      late final ClassDefinition addressDefinition;
+      late CodeGenerationCollector collector;
+      late ClassDefinition userDefinition;
+      late ClassDefinition addressDefinition;
 
       setUpAll(() {
         var models = [
@@ -89,8 +89,8 @@ void main() {
     'Given a named one-to-one relation with an optional fk, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
-      late final ClassDefinition userDefinition;
+      late CodeGenerationCollector collector;
+      late ClassDefinition userDefinition;
 
       setUpAll(() {
         var models = [
@@ -142,9 +142,9 @@ void main() {
     'Given a named one-to-many relation with fk on the object side, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
-      late final ClassDefinition orderDefinition;
-      late final ClassDefinition customerDefinition;
+      late CodeGenerationCollector collector;
+      late ClassDefinition orderDefinition;
+      late ClassDefinition customerDefinition;
 
       setUpAll(() {
         var models = [
@@ -211,8 +211,8 @@ void main() {
     'Given an optional fk relation with "serverOnly" scope, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
-      late final ClassDefinition commentDefinition;
+      late CodeGenerationCollector collector;
+      late ClassDefinition commentDefinition;
 
       setUpAll(() {
         var models = [
@@ -261,8 +261,8 @@ void main() {
     'of a class with a non-nullable id, while the other side uses fk, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
-      late final ClassDefinition memberDefinition;
+      late CodeGenerationCollector collector;
+      late ClassDefinition memberDefinition;
 
       setUpAll(() {
         var models = [
@@ -320,7 +320,7 @@ void main() {
     'Given a relation that sets both fk and field, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -370,7 +370,7 @@ void main() {
     'Given a list relation with the fk property, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -416,7 +416,7 @@ void main() {
     'Given a named one-to-one relation with fk on both sides, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -472,7 +472,7 @@ void main() {
     'Given a named one-to-one relation with fk on one side without a unique index, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -519,7 +519,7 @@ void main() {
     'Given a non-optional fk relation with "serverOnly" scope, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -565,7 +565,7 @@ void main() {
     'Given an id field relation with the fk property, '
     'when the model is analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [
@@ -611,7 +611,7 @@ void main() {
     'Given a named one-to-one relation with fk on one side and field on the other, '
     'when the models are analyzed,',
     () {
-      late final CodeGenerationCollector collector;
+      late CodeGenerationCollector collector;
 
       setUpAll(() {
         var models = [

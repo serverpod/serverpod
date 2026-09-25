@@ -336,7 +336,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
           '.s.PGSQL.$_pgDefaultPort',
         );
         return pg.Endpoint(
-          host: shortestPath(sockPath),
+          host: reachableUnixSocketPath(sockPath),
           isUnixSocket: true,
           database: _options.databaseName,
           username: _options.username,
@@ -372,7 +372,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
           host: '',
           path: '/${_options.databaseName}',
           queryParameters: {
-            'host': shortestPath(sockPath),
+            'host': reachableUnixSocketPath(sockPath),
             'user': _options.username,
           },
         );
@@ -530,7 +530,7 @@ Future<void> _ensureDatabase({
 }) async {
   var endpoint = switch (transport) {
     UnixTransport() => pg.Endpoint(
-      host: shortestPath(
+      host: reachableUnixSocketPath(
         p.join(runDir.absolute.path, '.s.PGSQL.$_pgDefaultPort'),
       ),
       isUnixSocket: true,

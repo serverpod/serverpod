@@ -9,10 +9,11 @@ import 'package:test/test.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
   });
 
@@ -21,12 +22,13 @@ void main() {
   });
 
   group('Given an empty tracked and analyzed directory', () {
-    var trackedDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory trackedDirectory;
 
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       analyzer = EndpointsAnalyzer(trackedDirectory);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
@@ -91,13 +93,14 @@ class ExampleEndpoint extends Endpoint {
     });
   });
   group('Given a tracked and analyzed directory with valid endpoint file', () {
-    var trackedDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory trackedDirectory;
 
     late File endpointFile;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       endpointFile = File(path.join(trackedDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -185,13 +188,14 @@ class NewEndpoint extends Endpoint {
   group(
     'Given a tracked and analyzed directory with valid non-endpoint file',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File trackedFile;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         trackedFile = File(path.join(trackedDirectory.path, 'tracked.dart'));
         trackedFile.createSync(recursive: true);
         trackedFile.writeAsStringSync('''
@@ -231,13 +235,14 @@ class ExampleEndpoint extends Endpoint {
   group(
     'Given a tracked and analyzed directory with invalid dart endpoint file',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File endpointFile;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         endpointFile = File(path.join(trackedDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         // Class is missing closing brackets
@@ -277,12 +282,13 @@ class ExampleEndpoint extends Endpoint {
   group(
     'Given a tracked and analyzed directory with a persistently invalid dart endpoint file',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(
           path.join(trackedDirectory.path, 'endpoint.dart'),
         );
@@ -327,13 +333,14 @@ class HelperClass {}
   group(
     'Given a tracked and analyzed endpoint file that depends on an invalid dart file',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File invalidDartFile;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(
           path.join(trackedDirectory.path, 'endpoint.dart'),
         );

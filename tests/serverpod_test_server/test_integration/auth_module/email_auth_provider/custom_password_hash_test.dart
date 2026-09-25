@@ -1,35 +1,42 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:test/test.dart';
 
 import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
-  AuthConfig.set(
-    AuthConfig(
-      sendValidationEmail: (session, email, validationCode) async {
-        print('Sending validation email to $email with code $validationCode');
-        return true;
-      },
-      passwordHashValidator:
-          ({
-            required password,
-            required email,
-            required hash,
-            onError,
-            onValidationFailure,
-          }) async =>
-              // Always return true to allow the test to proceed
-              PasswordValidationSuccess(),
-      // Custom password hash generator that does not hash the password
-      passwordHashGenerator: (password) async => password,
-      extraSaltyHash: false,
-    ),
-  );
+  late AuthConfig previousAuthConfig;
+  setUpAll(() {
+    previousAuthConfig = AuthConfig.current;
+    AuthConfig.set(
+      AuthConfig(
+        sendValidationEmail: (session, email, validationCode) async {
+          print('Sending validation email to $email with code $validationCode');
+          return true;
+        },
+        passwordHashValidator:
+            ({
+              required password,
+              required email,
+              required hash,
+              onError,
+              onValidationFailure,
+            }) async =>
+                // Always return true to allow the test to proceed
+                PasswordValidationSuccess(),
+        // Custom password hash generator that does not hash the password
+        passwordHashGenerator: (password) async => password,
+        extraSaltyHash: false,
+      ),
+    );
+  });
+  tearDownAll(() => AuthConfig.set(previousAuthConfig));
 
   withServerpod(
     'Given a custom non-hashing password hash generator and a create account request',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       var userName = 'test';
       var email = 'test8@serverpod.dev';
       var password = 'password';
@@ -66,7 +73,8 @@ void main() async {
   withServerpod(
     'Given a custom always true password hash validator and a created user',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       var userName = 'test';
       var email = 'test8@serverpod.dev';
       var password = 'password';
@@ -97,7 +105,8 @@ void main() async {
   withServerpod(
     'Given custom hash generator and a stored legacy password in the database',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       var userName = 'test';
       var email = 'test@serverpod.dev';
       var password = 'hunter2';
