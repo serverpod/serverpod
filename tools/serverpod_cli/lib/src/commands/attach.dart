@@ -159,7 +159,12 @@ Future<int> attachWithTui(String socketPath, {Duration? waitForRunner}) async {
   try {
     await runTuiApp(
       ServerpodWatchApp(holder: holder),
-      backend: ServerpodTerminalBackend(preExit: (_) => flushAnalytics()),
+      backend: attachTerminalBackend(
+        holder.state.history,
+        runnerExitCode: () => client.exitCode,
+        stoppedBeforeStack: () =>
+            client.stage == RunnerStage.stopping && !hadStack,
+      ),
       onShutdownSignal: requestExit,
     );
   } finally {
@@ -167,22 +172,47 @@ Future<int> attachWithTui(String socketPath, {Duration? waitForRunner}) async {
     await teardown;
   }
 
-  final exitCode = await exitCompleter.future;
-  final stoppedBeforeStack = client.stage == RunnerStage.stopping && !hadStack;
-  if (exitCode != 0 || stoppedBeforeStack) {
-    printLogTail(holder.state.history, stdout);
-  }
-  return exitCode;
+  // Not reached on a real terminal, where the backend exits the process.
+  return exitCompleter.future;
 }
 
 bool _hasStack(RunnerStage stage) =>
     stage == RunnerStage.running || stage == RunnerStage.degraded;
 
+/// The backend of an attach session, which prints the log tail of a failed
+/// exit from `preExit`, the last code to run before the process exits.
+///
+/// [runnerExitCode] is the code the runner announced, null when the
+/// connection was lost instead.
+@visibleForTesting
+ServerpodTerminalBackend attachTerminalBackend(
+  StartLogHistory history, {
+  required int? Function() runnerExitCode,
+  required bool Function() stoppedBeforeStack,
+  IOSink? out,
+}) => ServerpodTerminalBackend(
+  preExit: (exitCode) async {
+    if (exitCode != 0 || stoppedBeforeStack()) {
+      final sink = out ?? stdout;
+      // nocterm leaves an OSC open, and the terminal swallows text until ST.
+      sink.write('\x1b\\');
+      printLogTail(history, sink, runnerExitCode: runnerExitCode());
+    }
+    await flushAnalytics();
+  },
+);
+
 /// Prints the last [lines] of the pod's output in [history] to [out].
 ///
 /// Prefers raw lines, the only place an early crash or compile error shows.
+/// [runnerExitCode] is null when the runner was lost rather than stopped.
 @visibleForTesting
-void printLogTail(StartLogHistory history, IOSink out, {int lines = 20}) {
+void printLogTail(
+  StartLogHistory history,
+  IOSink out, {
+  required int? runnerExitCode,
+  int lines = 20,
+}) {
   final raw = history.serverLines.toList();
   final output = raw.isNotEmpty
       ? raw
@@ -193,6 +223,11 @@ void printLogTail(StartLogHistory history, IOSink out, {int lines = 20}) {
       ? output.sublist(output.length - lines)
       : output;
 
-  out.writeln('--- the runner stopped. Its last output was ---');
+  out.writeln(
+    runnerExitCode == null
+        ? '--- the runner is gone. Its last output was ---'
+        : '--- the runner stopped (exit code $runnerExitCode). '
+              'Its last output was ---',
+  );
   tail.forEach(out.writeln);
 }
