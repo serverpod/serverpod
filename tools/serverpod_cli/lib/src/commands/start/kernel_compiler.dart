@@ -53,7 +53,7 @@ class KernelCompiler {
   bool get isStarted => _started;
 
   /// Exists while the Frontend Server may be writing [outputDill]; left
-  /// behind if the session dies mid-compile.
+  /// behind if compilation fails or the session dies mid-compile.
   String get _compileMarkerPath => '$outputDill.compiling';
 
   /// A cached kernel is only valid for the entrypoint that produced it.
@@ -81,7 +81,7 @@ class KernelCompiler {
 
   /// Returns `true` if [outputDill] exists, is newer than every file under
   /// [watchDirs], is compatible with the current Dart SDK's kernel binary
-  /// format, and the last compile that wrote it completed.
+  /// format, and the last compile that wrote it completed successfully.
   Future<bool> isDillUpToDate(Set<String> watchDirs) async {
     if (File(_compileMarkerPath).existsSync()) return false;
 
@@ -161,6 +161,10 @@ class KernelCompiler {
     final client = await _client;
     final marker = File(_compileMarkerPath)..createSync(recursive: true);
 
+    // Compilation can overwrite the kernel before accept records its target.
+    // Do not let a previous target's stamp validate that new output.
+    await File(_entryPointPath).deleteIfExists();
+
     final CompileResult result;
     if (_needsFullCompile) {
       log.debug('compile: full');
@@ -185,8 +189,10 @@ class KernelCompiler {
       result = await client.compile(invalidatedUris);
     }
 
-    // A null dillOutput means the FES died mid-write; keep the marker.
-    if (result.dillOutput != null) {
+    // FES can write an executable kernel even when compilation reports errors.
+    // Rejecting rolls back compiler state, but does not restore that file.
+    // Keep failed or interrupted outputs ineligible for reuse on the next boot.
+    if (result.dillOutput != null && result.errorCount == 0) {
       try {
         marker.deleteSync();
       } on FileSystemException {

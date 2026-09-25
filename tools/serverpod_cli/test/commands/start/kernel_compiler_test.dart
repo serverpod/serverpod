@@ -6,6 +6,8 @@ import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/file_system_entity_helpers.dart';
+
 void main() {
   setUpAll(() {
     initializeLoggerWith(VoidLogger());
@@ -154,6 +156,72 @@ void main() {
     );
 
     test(
+      'when another entrypoint fails compilation, '
+      'then restarting the original entrypoint executes its own code.',
+      () async {
+        await compiler.start();
+        expect(await compiler.compileIfNeeded({}), isTrue);
+        await compiler.dispose();
+
+        final alternate = File(p.join(tempDir.path, 'bin', 'alternate.dart'));
+        await alternate.writeAsString('''
+void main() { print('alternate'); }
+void unused() { undefinedFunction(); }
+''');
+        final alternateCompiler = KernelCompiler(
+          entryPoint: alternate.path,
+          outputDill: compiler.outputDill,
+          packagesPath: compiler.packagesPath,
+        );
+        try {
+          await alternateCompiler.start();
+          expect(await alternateCompiler.compileIfNeeded({}), isFalse);
+          await alternateCompiler.reject();
+        } finally {
+          await alternateCompiler.dispose();
+        }
+
+        await compiler.start();
+        expect(await compiler.compileIfNeeded({}), isTrue);
+        final execution = await Process.run(compiler.dartExecutable, [
+          compiler.outputDill,
+        ]);
+
+        expect(execution.exitCode, 0);
+        expect(execution.stdout, 'hello\n');
+        expect(execution.stderr, isEmpty);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when another entrypoint compiles but stops before acceptance, '
+      'then its kernel cannot be reused as the original entrypoint.',
+      () async {
+        await compiler.start();
+        expect(await compiler.compileIfNeeded({}), isTrue);
+        await compiler.dispose();
+
+        final alternate = File(p.join(tempDir.path, 'bin', 'alternate.dart'));
+        await alternate.writeAsString("void main() { print('alternate'); }");
+        final alternateCompiler = KernelCompiler(
+          entryPoint: alternate.path,
+          outputDill: compiler.outputDill,
+          packagesPath: compiler.packagesPath,
+        );
+        try {
+          await alternateCompiler.start();
+          expect((await alternateCompiler.compile()).errorCount, 0);
+        } finally {
+          await alternateCompiler.dispose();
+        }
+
+        expect(await compiler.isDillUpToDate({}), isFalse);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
       'when compile is called with changed paths, '
       'then it succeeds incrementally',
       () async {
@@ -216,20 +284,92 @@ void main() {
 
     test(
       'when compile is called, '
-      'then it reports a non-zero error count and still clears the marker',
+      'then it reports a non-zero error count and keeps the cache invalid.',
       () async {
         await compiler.start();
         final result = await compiler.compile();
 
         expect(result.errorCount, greaterThan(0));
-        // The FES finished writing, so the dill state is consistent.
         expect(
-          File('${compiler.outputDill}.compiling').existsSync(),
+          await compiler.isDillUpToDate({}),
           isFalse,
         );
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
+  });
+
+  group('Given a cached kernel overwritten by a failed full compilation,', () {
+    late Directory tempDir;
+    late KernelCompiler compiler;
+    late String mainFile;
+
+    setUpAll(() async {
+      tempDir = await Directory.systemTemp.createTemp('kernel_compiler_test_');
+      await _createMinimalDartProject(tempDir.path);
+      mainFile = p.join(tempDir.path, 'bin', 'main.dart');
+      compiler = KernelCompiler(
+        entryPoint: mainFile,
+        outputDill: p.join(tempDir.path, '.dart_tool', 'server.dill'),
+        packagesPath: p.join(tempDir.path, '.dart_tool', 'package_config.json'),
+      );
+
+      await compiler.start();
+      if (!await compiler.compileIfNeeded({})) {
+        throw StateError('The initial project must compile successfully.');
+      }
+
+      // FES can emit an executable kernel even when an unused function has
+      // errors. Running that kernel would silently execute rejected code.
+      await File(mainFile).writeAsString('''
+void main() { print('rejected code'); }
+void unused() { undefinedFunction(); }
+''');
+      await compiler.reset();
+      final failed = await compiler.compile();
+      if (failed.errorCount == 0 || failed.dillOutput == null) {
+        throw StateError('The failed compile must emit a kernel with errors.');
+      }
+      await compiler.reject();
+      await compiler.dispose();
+    });
+
+    tearDownAll(() async {
+      await compiler.dispose();
+      await tempDir.deleteWithRetry(recursive: true);
+    });
+
+    group('when the source is repaired and a new compiler starts,', () {
+      late bool compiled;
+      late ProcessResult execution;
+
+      setUpAll(() async {
+        await File(mainFile).writeAsString(
+          "void main() { print('repaired code'); }",
+        );
+        compiler = KernelCompiler(
+          entryPoint: mainFile,
+          outputDill: compiler.outputDill,
+          packagesPath: compiler.packagesPath,
+        );
+
+        await compiler.start();
+        compiled = await compiler.compileIfNeeded({});
+        execution = await Process.run(compiler.dartExecutable, [
+          compiler.outputDill,
+        ]);
+      });
+
+      test('then compilation succeeds.', () {
+        expect(compiled, isTrue);
+      });
+
+      test('then the repaired code runs successfully.', () {
+        expect(execution.exitCode, 0);
+        expect(execution.stdout, 'repaired code\n');
+        expect(execution.stderr, isEmpty);
+      });
+    });
   });
 
   group('Given a dependency added to package_config.json', () {
