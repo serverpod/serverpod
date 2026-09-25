@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -61,10 +62,8 @@ class ClusterStore {
   /// machines, no Zonky-locale availability surprises) and seeds the
   /// auth methods so we never need to rewrite `pg_hba.conf`.
   ///
-  /// [password] should be set for fresh clusters so the superuser can
-  /// authenticate over TCP later. Passed via `initdb --pwfile`. UDS
-  /// connections use trust auth and ignore the stored password. Omit only
-  /// when reusing a legacy cluster that was initialized without one.
+  /// [password], when set, seeds the superuser password via
+  /// `initdb --pwfile`. UDS connections use trust auth and ignore it.
   Future<void> ensureInitialized({
     required String username,
     String? password,
@@ -92,18 +91,88 @@ class ClusterStore {
         if (pwFile != null) '--pwfile=${pwFile.path}',
       ];
 
-      var result = await Process.run(initdb, args);
-      if (result.exitCode != 0) {
-        throw InitializeDatabaseException(
-          'initdb exit ${result.exitCode}\n'
-          '--- stdout ---\n${result.stdout}\n'
-          '--- stderr ---\n${result.stderr}',
-        );
-      }
+      await _runOrThrow(initdb, args, what: 'initdb');
     } finally {
       if (pwFile != null && pwFile.existsSync()) {
         pwFile.deleteSync();
       }
+    }
+  }
+
+  /// Sets [username]'s password to [password] with `postgres --single`, before
+  /// any listener starts.
+  ///
+  /// Bounded by [timeout] because single user mode replays WAL first.
+  Future<void> setSuperuserPassword({
+    required String username,
+    required String password,
+    required Duration timeout,
+  }) async {
+    if (password.contains('\n') || password.contains('\r')) {
+      throw ArgumentError.value(
+        password,
+        'password',
+        'must not contain line breaks, since single-user mode reads one '
+            'statement per line',
+      );
+    }
+    // ALTER ROLE doesn't accept parameters, so both are quoted by doubling.
+    var role = username.replaceAll('"', '""');
+    var literal = password.replaceAll("'", "''");
+    await _runOrThrow(
+      binExecutable(installDir, 'postgres'),
+      [
+        '--single',
+        // Single-user mode survives SQL errors and exits 0 without this.
+        '-c', 'exit_on_error=true',
+        // Keeps the failing statement, and so the password, out of stderr.
+        '-c', 'log_min_error_statement=panic',
+        // Keeps backslashes in the literal as written.
+        '-c', 'standard_conforming_strings=on',
+        '-D', dataDir.path,
+        'postgres',
+      ],
+      stdin: 'ALTER ROLE "$role" PASSWORD \'$literal\'\n',
+      what: 'postgres --single (setting the superuser password)',
+      timeout: timeout,
+    );
+  }
+
+  /// Runs [executable] to completion, feeding it [stdin] when given, and
+  /// throws [InitializeDatabaseException] carrying both output streams on a
+  /// non-zero exit or when [timeout] elapses.
+  Future<void> _runOrThrow(
+    String executable,
+    List<String> args, {
+    String? stdin,
+    required String what,
+    Duration? timeout,
+  }) async {
+    var process = await Process.start(executable, args);
+    if (stdin != null) process.stdin.write(stdin);
+    await process.stdin.close();
+    var stdout = process.stdout.transform(utf8.decoder).join();
+    var stderr = process.stderr.transform(utf8.decoder).join();
+
+    var exitCode = process.exitCode;
+    if (timeout != null) {
+      exitCode = exitCode.timeout(
+        timeout,
+        onTimeout: () {
+          process.kill();
+          throw InitializeDatabaseException(
+            '$what did not finish within ${timeout.inSeconds}s',
+          );
+        },
+      );
+    }
+    var code = await exitCode;
+    if (code != 0) {
+      throw InitializeDatabaseException(
+        '$what exit $code\n'
+        '--- stdout ---\n${await stdout}\n'
+        '--- stderr ---\n${await stderr}',
+      );
     }
   }
 
