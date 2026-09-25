@@ -38,13 +38,73 @@ insightsServer:
 
       test(
         'when the configured insights address is read, '
-        'then it names the port the server binds, not the advertised one',
+        'then it uses the advertised public port.',
         () {
           final configInfo = ConfigInfo('development', serverDir: serverDir);
 
           expect(
             configInfo.configuredInsightsAddress,
-            'http://localhost:8081/',
+            'http://localhost:9091/',
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a server package whose insights server binds 8081 behind an HTTPS proxy on 443,',
+    () {
+      late String serverDir;
+
+      setUp(() async {
+        serverDir = await _serverDirWithDevelopmentConfig('''
+insightsServer:
+  port: 8081
+  publicHost: insights.example.com
+  publicPort: 443
+  publicScheme: https
+''');
+      });
+
+      test(
+        'when the configured insights address is read, '
+        'then it uses the public scheme, host, and port.',
+        () {
+          final configInfo = ConfigInfo('development', serverDir: serverDir);
+
+          expect(
+            configInfo.configuredInsightsAddress,
+            'https://insights.example.com:443/',
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a server package whose insights server binds a dynamic port while advertising a proxy on 9091,',
+    () {
+      late String serverDir;
+
+      setUp(() async {
+        serverDir = await _serverDirWithDevelopmentConfig('''
+insightsServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 9091
+  publicScheme: http
+''');
+      });
+
+      test(
+        'when the configured insights address is read, '
+        'then it uses the advertised public port.',
+        () {
+          final configInfo = ConfigInfo('development', serverDir: serverDir);
+
+          expect(
+            configInfo.configuredInsightsAddress,
+            'http://localhost:9091/',
           );
         },
       );
