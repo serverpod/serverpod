@@ -6,6 +6,8 @@ import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/file_system_entity_helpers.dart';
+
 /// Runs a real `dart pub get` in [dir]. Fixtures use only path and workspace
 /// dependencies, so resolution works offline and the tests exercise the actual
 /// `package_graph.json` and `package_config.json` files pub generates.
@@ -69,7 +71,7 @@ void main() {
   });
 
   tearDown(() async {
-    await tempDir.delete(recursive: true);
+    await tempDir.deleteWithRetry(recursive: true);
   });
 
   void write(String path, String contents) {

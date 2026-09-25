@@ -6,6 +6,8 @@ import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/file_system_entity_helpers.dart';
+
 void main() {
   setUpAll(() {
     initializeLoggerWith(VoidLogger());
@@ -42,7 +44,7 @@ void main() {
 
     tearDown(() async {
       await compiler.dispose();
-      await tempDir.delete(recursive: true);
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -184,7 +186,7 @@ void main() {
 
     tearDown(() async {
       await compiler.dispose();
-      await tempDir.delete(recursive: true);
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -242,7 +244,7 @@ void main() {
 
     tearDown(() async {
       await compiler.dispose();
-      await tempDir.delete(recursive: true);
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(

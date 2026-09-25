@@ -10,6 +10,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/file_system_entity_helpers.dart';
 import '../../test_util/wait_for.dart';
 
 /// An IOSink that discards all output.
@@ -87,7 +88,8 @@ void main() {
     });
 
     tearDown(() async {
-      await tempDir.delete(recursive: true);
+      await serverProcess.stop();
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -125,7 +127,8 @@ void main() {
     });
 
     tearDown(() async {
-      await tempDir.delete(recursive: true);
+      await serverProcess.stop();
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -171,7 +174,7 @@ void main() {
 
     tearDown(() async {
       await serverProcess.stop();
-      await tempDir.delete(recursive: true);
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -409,6 +412,22 @@ environment:
       "name": "test_server",
       "rootUri": "..",
       "packageUri": "lib/"
+    }
+  ]
+}
+''');
+
+  // `dart run` needs both files to use this offline package resolution.
+  await File('$dir/.dart_tool/package_graph.json').writeAsString('''
+{
+  "configVersion": 1,
+  "roots": ["test_server"],
+  "packages": [
+    {
+      "name": "test_server",
+      "version": "1.0.0",
+      "dependencies": [],
+      "devDependencies": []
     }
   ]
 }

@@ -27,6 +27,8 @@ import 'package:serverpod_shared/serverpod_shared.dart'
     show hasUnixSocketSupport;
 import 'package:test/test.dart';
 
+import '../test_util/file_system_entity_helpers.dart';
+
 final _testLogger = _TestLogger();
 
 void main() {
@@ -41,8 +43,8 @@ void main() {
   tearDownAll(() async {
     await closeLogger();
     RunnerRegistry.defaultDir = null;
-    await registryDirectory.delete(recursive: true);
-    await _compiledRunnerDirectory?.delete(recursive: true);
+    await registryDirectory.deleteWithRetry(recursive: true);
+    await _compiledRunnerDirectory?.deleteWithRetry(recursive: true);
   });
 
   group('Given a Serverpod project configured with SQLite,', () {
@@ -501,12 +503,17 @@ database:
     skip: !hasUnixSocketSupport(),
     () {
       late ServerConnection connection;
+      late Directory serverDirectory;
+      late String packageConfig;
 
       setUpAll(() async {
         final projectRoot = await _createRunnableTestProject();
-        final serverDirectory = Directory(
+        serverDirectory = Directory(
           p.join(projectRoot.path, 'test_server'),
         );
+        packageConfig = await File(
+          p.join(serverDirectory.path, '.dart_tool', 'package_config.json'),
+        ).readAsString();
         final dillPath = await _compileStartCommandRunner();
         final output = StringBuffer();
         final process = await Process.start(
@@ -559,6 +566,23 @@ database:
         );
         addTearDown(connection.shutdown);
       });
+
+      test(
+        'when the runner starts its pod, '
+        'then startup preserves the supplied package resolution.',
+        () {
+          expect(
+            File(
+              p.join(serverDirectory.path, '.dart_tool', 'package_config.json'),
+            ).readAsStringSync(),
+            packageConfig,
+          );
+          expect(
+            File(p.join(serverDirectory.path, 'pubspec.lock')).existsSync(),
+            isFalse,
+          );
+        },
+      );
 
       test(
         'when tail_server_logs is called, '
@@ -842,6 +866,27 @@ Future<void> main(List<String> arguments) async {
   await Completer<void>().future;
 }
 ''');
+
+  // This pod only imports SDK libraries; the borrowed package config is for
+  // code generation. Without a graph, `dart run` silently invokes pub get
+  // before starting the VM service and can exhaust its startup timeout.
+  await File(
+    p.join(serverDirectory.path, '.dart_tool', 'package_graph.json'),
+  ).writeAsString(
+    jsonEncode({
+      'configVersion': 1,
+      'roots': ['test_server'],
+      'packages': [
+        {
+          'name': 'test_server',
+          'version': '1.0.0',
+          'dependencies': <String>[],
+          'devDependencies': <String>[],
+        },
+      ],
+    }),
+  );
+
   return projectRoot;
 }
 

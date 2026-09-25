@@ -20,7 +20,7 @@ void main() {
 
       tearDownAll(() async {
         await analyzers.close();
-        fixture.dispose();
+        await fixture.dispose();
       });
 
       test(

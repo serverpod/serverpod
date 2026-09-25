@@ -355,6 +355,12 @@ Future<RunnerManifest> awaitStackUp(
                 when staleManifest?.pid == current.pid:
               // A probe can fail while the runner lives on.
               continue;
+            case NoRunner(staleManifest: null)
+                when current.pid != pid && await RunnerLock.isHeld(serverDir):
+              // A manifest read can fail during replacement on Windows.
+              // The known runner's lock still prevents a replacement from
+              // starting. Never probe our own lock: that drops it on POSIX.
+              continue;
             case NoRunner(:final staleManifest):
               await _leaveWithAbortedStart(
                 serverDir,

@@ -6,9 +6,10 @@ import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
-    show FileEx, ServerpodAddresses, bindUnixSocket;
+    show ServerpodAddresses, bindUnixSocket;
 import 'package:test/test.dart';
 
+import '../test_util/file_system_entity_helpers.dart';
 import '../test_util/hold_lock.dart';
 import '../test_util/short_temp_dir.dart';
 
@@ -25,7 +26,8 @@ void main() {
   });
 
   tearDown(() async {
-    await root.deleteIfExists(recursive: true);
+    // Windows can briefly retain file handles after the sibling has exited.
+    await root.deleteWithRetry(recursive: true);
   });
 
   Future<ServerSocket> holdPort([InternetAddress? address]) async {
