@@ -155,7 +155,10 @@ void main() {
         ]);
 
         expect(execution.exitCode, 0);
-        expect(execution.stdout, 'edited\n');
+        expect(
+          (execution.stdout as String).replaceAll('\r\n', '\n'),
+          'edited\n',
+        );
         expect(execution.stderr, isEmpty);
       },
       timeout: const Timeout(Duration(seconds: 60)),
@@ -232,7 +235,10 @@ void unused() { undefinedFunction(); }
         ]);
 
         expect(execution.exitCode, 0);
-        expect(execution.stdout, 'hello\n');
+        expect(
+          (execution.stdout as String).replaceAll('\r\n', '\n'),
+          'hello\n',
+        );
         expect(execution.stderr, isEmpty);
       },
       timeout: const Timeout(Duration(seconds: 60)),
@@ -410,7 +416,10 @@ void unused() { undefinedFunction(); }
 
       test('then the repaired code runs successfully.', () {
         expect(execution.exitCode, 0);
-        expect(execution.stdout, 'repaired code\n');
+        expect(
+          (execution.stdout as String).replaceAll('\r\n', '\n'),
+          'repaired code\n',
+        );
         expect(execution.stderr, isEmpty);
       });
     });

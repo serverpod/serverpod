@@ -131,7 +131,7 @@ void main() {
         await entrypoint.writeAsString("void main() { print('edited'); }");
         final event = await nextEvent.timeout(const Duration(seconds: 5));
 
-        expect(event.dartFiles, {entrypoint.path});
+        expect(event.dartFiles, {p.canonicalize(entrypoint.path)});
         expect(event.modelFiles, isEmpty);
         expect(event.staticFilesChanged, isFalse);
       },
@@ -154,8 +154,8 @@ void main() {
           const Duration(seconds: 5),
         );
 
-        expect(deletion.dartFiles, {entrypoint.path});
-        expect(recreation.dartFiles, {entrypoint.path});
+        expect(deletion.dartFiles, {p.canonicalize(entrypoint.path)});
+        expect(recreation.dartFiles, {p.canonicalize(entrypoint.path)});
       },
     );
   });
@@ -179,7 +179,7 @@ void main() {
       await entrypoint.writeAsString('void main() {}');
       final event = await nextEvent.timeout(const Duration(seconds: 5));
 
-      expect(event.dartFiles, {entrypoint.path});
+      expect(event.dartFiles, {p.canonicalize(entrypoint.path)});
     },
   );
 
