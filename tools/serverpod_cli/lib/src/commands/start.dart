@@ -43,9 +43,11 @@ import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/shutdown_signal.dart';
+import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
+import 'package:serverpod_shared/log.dart' as logging;
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -1174,18 +1176,25 @@ Future<int> _runWithTui({
   // The watch loop fills the history; from here on the TUI renders it.
   holder.state.history.attachHolder(holder);
   var backendStarted = false;
+  var hadStack = false;
 
   // Shared shutdown signal
   final shutdown = ShutdownSignal(listenForSignals: false);
 
-  // Captured on a fatal crash so it can be replayed to the real terminal in
-  // [preExit] when the user quits. The crash is also shown inside the TUI, but
-  // that copy lives in an in-memory log history that is discarded once we leave
-  // the alternate screen - so without this capture it would never reach the
-  // user's scrollback. First crash wins.
-  ({Object error, StackTrace stackTrace})? fatalCrash;
+  // Keep the first crash independently of the bounded, clearable TUI history.
+  // Retain its exact entry so exit replay can omit it from the context tail.
+  ({Object error, StackTrace stackTrace, logging.LogEntry entry})? fatalCrash;
   void recordFatalCrash(Object error, StackTrace stackTrace) {
-    fatalCrash ??= (error: error, stackTrace: stackTrace);
+    final entry = logging.LogEntry(
+      time: DateTime.now(),
+      level: logging.LogLevel.error,
+      message: stripAnsi('$error'),
+      scope: logging.LogScope.root('serverpod'),
+      stackTrace: stackTrace,
+    );
+    fatalCrash ??= (error: error, stackTrace: stackTrace, entry: entry);
+    holder.state.logHistory.add(entry);
+    holder.markDirty();
   }
 
   // Captured so the renderer tear-down listener can wait for the
@@ -1207,29 +1216,8 @@ Future<int> _runWithTui({
       config: config,
       shutdown: shutdown,
       onFatalError: recordFatalCrash,
+      onStackReady: () => hadStack = true,
     ).catchError((Object e, StackTrace st) => recordFatalCrash(e, st));
-  }
-
-  // Runs after the TUI tears down (alternate screen restored) but before the
-  // process exits. Replays any captured crash and server process errors
-  // so they survive in the user's scrollback - mirrors how `serverpod create`
-  // flushes its errors to the terminal on exit.
-  Future<void> preExit(int exitCode) async {
-    var shouldFlushLogs = false;
-
-    final crash = fatalCrash;
-    if (crash != null) {
-      printInternalError(crash.error, crash.stackTrace);
-      shouldFlushLogs = true;
-    }
-
-    if (exitCode != 0 && _serverProcessErrorBuffer.isNotEmpty) {
-      log.error(_serverProcessErrorBuffer.toString());
-      shouldFlushLogs = true;
-    }
-
-    await flushAnalytics();
-    if (shouldFlushLogs) await log.flush();
   }
 
   // Wait for the backend's dispose to finish before calling shutdownTuiApp
@@ -1247,7 +1235,11 @@ Future<int> _runWithTui({
 
   await runTuiApp(
     ServerpodWatchApp(holder: holder, onReady: onReady),
-    backend: ServerpodTerminalBackend(preExit: preExit),
+    backend: startTerminalBackend(
+      holder.state,
+      stoppedBeforeStack: () => !hadStack,
+      fatalCrash: () => fatalCrash,
+    ),
     onShutdownSignal: () => shutdown.complete(0),
   );
 
@@ -1256,10 +1248,84 @@ Future<int> _runWithTui({
   return shutdown.future;
 }
 
-/// Buffer for errors from [ServerProcess] stderr
-/// which will be flushed to the terminal if the TUI
-/// exits with a non-zero exit code.
-final _serverProcessErrorBuffer = StringBuffer();
+/// Prints diagnostics after the TUI is torn down, before the process exits.
+///
+/// Replays [fatalCrash] separately from the log tail, even if its history entry
+/// was evicted or cleared. The same entry is omitted from the tail.
+@visibleForTesting
+ServerpodTerminalBackend startTerminalBackend(
+  ServerWatchState state, {
+  required bool Function() stoppedBeforeStack,
+  ({Object error, StackTrace stackTrace, logging.LogEntry entry})? Function()?
+  fatalCrash,
+  IOSink? out,
+}) => ServerpodTerminalBackend(
+  preExit: (exitCode) async {
+    final crash = fatalCrash?.call();
+    final sink = out ?? stdout;
+    // nocterm leaves an OSC open, and the terminal swallows text until ST.
+    // Close it before either the log tail or additional crash diagnostics.
+    sink.write('\x1b\\');
+    if (exitCode != 0 || stoppedBeforeStack()) {
+      printLogTail(
+        state,
+        sink,
+        exitCode: exitCode,
+        excludedEntry: crash?.entry,
+      );
+    }
+    if (crash != null) {
+      printInternalError(crash.error, crash.stackTrace);
+      await log.flush();
+    }
+    await flushAnalytics();
+  },
+);
+
+/// Prints the last [lines] of the server's output to [out].
+///
+/// Prefers raw stdout/stderr, where early crashes and compile errors appear.
+/// Falls back to CLI entries when the server never printed anything.
+/// [excludedEntry] is reported separately and must not appear in the tail.
+@visibleForTesting
+void printLogTail(
+  ServerWatchState state,
+  IOSink out, {
+  required int exitCode,
+  int lines = 20,
+  logging.LogEntry? excludedEntry,
+}) {
+  final output = state.rawLines.isNotEmpty
+      ? state.rawLines.toList()
+      : state.logHistory
+            .where((entry) => !identical(entry, excludedEntry))
+            .map(_formatHistoryEntry)
+            .toList();
+  if (output.isEmpty) return;
+
+  final tail = output.length > lines
+      ? output.sublist(output.length - lines)
+      : output;
+
+  out.writeln(
+    '--- serverpod start stopped (exit code $exitCode). '
+    'Its last output was ---',
+  );
+  tail.forEach(out.writeln);
+}
+
+String _formatHistoryEntry(Object entry) => switch (entry) {
+  logging.LogEntry() => [
+    '${entry.time.toLocal().toIso8601String()} '
+        '[${entry.level.name.toUpperCase()}] ${entry.message}',
+    if (entry.error != null) '${entry.error}',
+    if (entry.stackTrace != null) '${entry.stackTrace}',
+  ].join('\n'),
+  CompletedOperation() =>
+    '${entry.success ? '✓' : '✗'} ${entry.label} '
+        '(${entry.duration.inMilliseconds}ms)',
+  _ => entry.toString(),
+};
 
 /// Backend logic that runs after the TUI is mounted and ready.
 Future<void> _runTuiBackend({
@@ -1271,6 +1337,7 @@ Future<void> _runTuiBackend({
   required GeneratorConfig config,
   required ShutdownSignal shutdown,
   required void Function(Object error, StackTrace stackTrace) onFatalError,
+  required void Function() onStackReady,
 }) async {
   try {
     // Replace the CLI logger with a TUI-backed logger.
@@ -1284,13 +1351,7 @@ Future<void> _runTuiBackend({
     final argsRef = ServerArgsRef(serverArgs);
 
     final stdoutSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
-    final stderrSink = TuiLogSink(
-      holder,
-      addLine: (line) {
-        _serverProcessErrorBuffer.writeln(line);
-        holder.state.rawLines.add(line);
-      },
-    );
+    final stderrSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
 
     final result = await _setupWatchLoop(
       config: config,
@@ -1393,6 +1454,7 @@ Future<void> _runTuiBackend({
         shutdown.complete(exitCode);
         return;
       case WatchLoopReady(:final ctx):
+        onStackReady();
         // Offer Ctrl+R whenever a Flutter app could run here - even after a
         // `--no-flutter` start, where it acts as a "launch the app" button.
         final apps = ctx.flutterManager.apps.toList();
@@ -1514,7 +1576,6 @@ Future<void> _runTuiBackend({
     // to the terminal in [_runWithTui] when the user quits - the in-TUI copy is
     // lost when we leave the alternate screen.
     holder.state.showSplash = false;
-    log.error('$e', stackTrace: st);
     onFatalError(e, st);
   }
 }
