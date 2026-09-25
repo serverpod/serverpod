@@ -46,9 +46,9 @@ class RunnerCommand extends ServerpodCommand<OptionDefinition> {
 enum RunnerStartOption<V> implements OptionDefinition<V> {
   watch<bool>(runnerWatchOption),
   directory<String>(runnerDirectoryOption),
+  target<String>(runnerTargetOption),
   docker<bool>(runnerDockerOption),
-  flutter<bool>(runnerFlutterOption),
-  ;
+  flutter<bool>(runnerFlutterOption);
 
   const RunnerStartOption(this.option);
 
@@ -93,6 +93,7 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
         watch: commandConfig.value(RunnerStartOption.watch),
         flutter: commandConfig.value(RunnerStartOption.flutter),
         docker: commandConfig.optionalValue(RunnerStartOption.docker),
+        target: commandConfig.value(RunnerStartOption.target),
         serverArgs: argResults?.rest ?? const [],
       ),
       useTui: false,
@@ -107,6 +108,7 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
 enum RunnerServeOption<V> implements OptionDefinition<V> {
   watch<bool>(runnerWatchOption),
   directory<String>(runnerDirectoryOption),
+  target<String>(runnerTargetOption),
   docker<bool>(runnerDockerOption),
   flutter<bool>(runnerFlutterOption),
   detached(
@@ -118,8 +120,7 @@ enum RunnerServeOption<V> implements OptionDefinition<V> {
           'instead of stdout. Passed by `serverpod start`, which spawns the '
           'runner with no stdio to inherit.',
     ),
-  ),
-  ;
+  );
 
   const RunnerServeOption(this.option);
 
@@ -206,6 +207,7 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
         config: config,
         serverDir: serverDir,
         serverArgs: ServerArgsRef(argResults?.rest ?? []),
+        target: commandConfig.value(RunnerServeOption.target),
         watch: commandConfig.value(RunnerServeOption.watch),
         docker: commandConfig.optionalValue(RunnerServeOption.docker),
         launchFlutterApp: commandConfig.value(RunnerServeOption.flutter),

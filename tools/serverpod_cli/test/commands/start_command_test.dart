@@ -937,6 +937,28 @@ void main() {
       command = StartCommand();
     });
 
+    test('when --target is omitted, then bin/main.dart is selected', () {
+      final config = command.resolveConfiguration(command.argParser.parse([]));
+
+      expect(config.value(StartOption.target), 'bin/main.dart');
+    });
+
+    test('when --target is given, then its path is selected', () {
+      final config = command.resolveConfiguration(
+        command.argParser.parse(['--target', 'bin/main_enterprise.dart']),
+      );
+
+      expect(config.value(StartOption.target), 'bin/main_enterprise.dart');
+    });
+
+    test('when -t is given, then its path is selected', () {
+      final config = command.resolveConfiguration(
+        command.argParser.parse(['-t', 'bin/main_enterprise.dart']),
+      );
+
+      expect(config.value(StartOption.target), 'bin/main_enterprise.dart');
+    });
+
     test(
       'when resolving configuration with passthrough args after --, '
       'then it succeeds without errors.',

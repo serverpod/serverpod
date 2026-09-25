@@ -23,6 +23,7 @@ String vmServiceWsUri(String httpUri) {
 /// and optional VM service connection for hot reload.
 class ServerProcess {
   final String _serverDir;
+  final String _target;
   final List<String> _serverArgs;
   final String _dartExecutable;
   final bool _enableVmService;
@@ -62,6 +63,7 @@ class ServerProcess {
 
   ServerProcess({
     required String serverDir,
+    String target = 'bin/main.dart',
     required List<String> serverArgs,
     String? dartExecutable,
     bool enableVmService = false,
@@ -71,6 +73,7 @@ class ServerProcess {
     void Function()? onDispose,
     Map<String, String>? environment,
   }) : _serverDir = serverDir,
+       _target = target,
        _environment = environment,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
@@ -105,7 +108,7 @@ class ServerProcess {
   /// Starts the server subprocess.
   ///
   /// If [dillPath] is provided, the server is started from the compiled
-  /// kernel file. Otherwise, `dart run bin/main.dart` is used.
+  /// kernel file. Otherwise, `dart run` uses the configured target.
   ///
   /// Use [exitCode] to wait for the process to exit.
   Future<void> start({String? dillPath}) async {
@@ -126,7 +129,7 @@ class ServerProcess {
     if (dillPath != null) {
       args.addAll([dillPath, ..._serverArgs]);
     } else {
-      args.addAll(['run', 'bin/main.dart', ..._serverArgs]);
+      args.addAll(['run', _target, ..._serverArgs]);
     }
 
     // Delete any stale service info file from a previous run so that

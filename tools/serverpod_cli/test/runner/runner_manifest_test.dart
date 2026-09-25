@@ -242,6 +242,32 @@ void main() {
     );
 
     test(
+      'when an invocation asks for a different target, then it names it',
+      () {
+        const asked = RunnerConfig(
+          watch: true,
+          flutter: true,
+          target: 'bin/main_enterprise.dart',
+          serverArgs: ['--mode', 'production'],
+        );
+
+        expect(running.differencesFrom(asked), ['--target']);
+      },
+    );
+
+    test('when a custom target is saved, then it survives a round trip', () {
+      const config = RunnerConfig(
+        watch: true,
+        flutter: true,
+        target: 'bin/main_enterprise.dart',
+        serverArgs: [],
+      );
+
+      expect(RunnerConfig.fromJson(config.toJson()).target, config.target);
+      expect(RunnerConfig.fromJson(const {}).target, 'bin/main.dart');
+    });
+
+    test(
       'when an invocation asks for Docker and the runner started without it, '
       'then it names the option',
       () {
@@ -515,6 +541,23 @@ void main() {
   );
 
   group('Given a runner configuration spawning a serve command,', () {
+    test('when a custom target is selected, then it is forwarded', () {
+      const config = RunnerConfig(
+        watch: true,
+        flutter: true,
+        target: 'bin/main_enterprise.dart',
+        serverArgs: [],
+      );
+
+      expect(
+        config.toServeArgs(directory: '/srv'),
+        containsAllInOrder([
+          '--target',
+          'bin/main_enterprise.dart',
+        ]),
+      );
+    });
+
     test(
       'when the arguments are built, '
       'then every stack-shaping option is stated explicitly',

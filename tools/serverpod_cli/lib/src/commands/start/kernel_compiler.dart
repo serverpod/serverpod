@@ -53,8 +53,11 @@ class KernelCompiler {
   bool get isStarted => _started;
 
   /// Exists while the Frontend Server may be writing [outputDill]; left
-  /// behind if the session dies mid-compile.
+  /// behind if compilation fails or the session dies mid-compile.
   String get _compileMarkerPath => '$outputDill.compiling';
+
+  /// A cached kernel is only valid for the entrypoint that produced it.
+  String get _entryPointPath => '$outputDill.entrypoint';
 
   /// Start the Frontend Server process.
   ///
@@ -76,11 +79,19 @@ class KernelCompiler {
     _needsFullCompile = true;
   }
 
-  /// Returns `true` if [outputDill] exists, is newer than every file under
-  /// [watchDirs], is compatible with the current Dart SDK's kernel binary
-  /// format, and the last compile that wrote it completed.
+  /// Returns `true` if [outputDill] exists, is newer than [entryPoint] and every
+  /// file under [watchDirs], is compatible with the current Dart SDK's kernel
+  /// binary format, and the last compile that wrote it completed successfully.
   Future<bool> isDillUpToDate(Set<String> watchDirs) async {
     if (File(_compileMarkerPath).existsSync()) return false;
+
+    try {
+      if (await File(_entryPointPath).readAsString() != entryPoint) {
+        return false;
+      }
+    } on FileSystemException {
+      return false;
+    }
 
     final dillFile = File(outputDill);
     if (!await dillFile.exists()) return false;
@@ -88,6 +99,11 @@ class KernelCompiler {
     if (!_dillHeadersMatch(outputDill, _platformDill)) return false;
 
     final dillMtime = (await dillFile.stat()).modified;
+    final entryPointStat = await File(entryPoint).stat();
+    if (entryPointStat.type != FileSystemEntityType.file ||
+        entryPointStat.modified.isAfter(dillMtime)) {
+      return false;
+    }
 
     for (final watchDir in watchDirs) {
       final dir = Directory(watchDir);
@@ -130,6 +146,7 @@ class KernelCompiler {
     await File(outputDill).deleteIfExists();
     await File('$outputDill.incremental.dill').deleteIfExists();
     await File(_compileMarkerPath).deleteIfExists();
+    await File(_entryPointPath).deleteIfExists();
   }
 
   /// Compile the project.
@@ -148,6 +165,10 @@ class KernelCompiler {
   }) async {
     final client = await _client;
     final marker = File(_compileMarkerPath)..createSync(recursive: true);
+
+    // Compilation can overwrite the kernel before accept records its target.
+    // Do not let a previous target's stamp validate that new output.
+    await File(_entryPointPath).deleteIfExists();
 
     final CompileResult result;
     if (_needsFullCompile) {
@@ -173,8 +194,10 @@ class KernelCompiler {
       result = await client.compile(invalidatedUris);
     }
 
-    // A null dillOutput means the FES died mid-write; keep the marker.
-    if (result.dillOutput != null) {
+    // FES can write an executable kernel even when compilation reports errors.
+    // Rejecting rolls back compiler state, but does not restore that file.
+    // Keep failed or interrupted outputs ineligible for reuse on the next boot.
+    if (result.dillOutput != null && result.errorCount == 0) {
       try {
         marker.deleteSync();
       } on FileSystemException {
@@ -188,7 +211,11 @@ class KernelCompiler {
   ///
   /// Awaitable so callers can order it before disposing or reloading; the
   /// underlying FES `accept` is a fire-and-forget stdin write.
-  Future<void> accept() => _client.then((c) => c.accept());
+  Future<void> accept() async {
+    final client = await _client;
+    client.accept();
+    await File(_entryPointPath).writeAsStringAtomically(entryPoint);
+  }
 
   /// Reject the last compile result.
   Future<void> reject() => _client.then((c) => c.reject());
