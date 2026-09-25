@@ -8,6 +8,7 @@ Reference for the [Serverpod Testing](../SKILL.md) skill. The generated test too
 | `configOverride` | - | Override loaded server config for tests |
 | `databaseInterceptor` | `null` | Replace the default database for each session |
 | `enableSessionLogging` | `false` | Enable session logging |
+| `ephemeralDatabase` | `true` | Own empty database per group, created on start and dropped after. `false` uses the configured database and leaves it in place |
 | `experimentalFeatures` | `null` | Experimental features to enable for the tests |
 | `rollbackDatabase` | `afterEach` | When to rollback (afterEach, afterAll, disabled) |
 | `runMode` | `ServerpodRunMode.test` | Run mode (test, development, etc.) |
