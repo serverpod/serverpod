@@ -76,7 +76,13 @@ class ServerProcess {
        _target = target,
        _environment = environment,
        _serverArgs = serverArgs,
-       _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
+       _dartExecutable =
+           dartExecutable ??
+           p.join(
+             getSdkPath(),
+             'bin',
+             Platform.isWindows ? 'dart.exe' : 'dart',
+           ),
        _enableVmService = enableVmService,
        _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,

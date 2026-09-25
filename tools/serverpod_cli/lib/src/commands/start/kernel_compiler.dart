@@ -47,7 +47,10 @@ class KernelCompiler {
   });
 
   /// The path to the `dart` executable from the SDK used by this compiler.
-  String get dartExecutable => p.join(_sdkRoot, 'bin', 'dart');
+  ///
+  /// Carries the `.exe` on Windows, which hooks_runner requires.
+  String get dartExecutable =>
+      p.join(_sdkRoot, 'bin', Platform.isWindows ? 'dart.exe' : 'dart');
 
   /// Whether [start] has run.
   bool get isStarted => _started;
