@@ -8,11 +8,17 @@ import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
 import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
+import 'utils/test_server.dart';
+
 void main() {
+  withTestServer();
+
   test(
-    'Given a session, when setting it on the `SessionManager`, then the server recognizes the user correctly.',
+    'Given a session, '
+    'when setting it on the `SessionManager`, '
+    'then the server recognizes the user correctly',
     () async {
-      final client = Client('http://localhost:8080/');
+      final client = Client(serverUrl);
 
       final email =
           'test_${DateTime.now().microsecondsSinceEpoch}@serverpod.dev';
@@ -38,7 +44,7 @@ void main() {
         storage: legacyStorage,
       );
 
-      final legacySessionClient = Client('http://localhost:8080/')
+      final legacySessionClient = Client(serverUrl)
         ..authKeyProvider = keyManager;
 
       final legacySessionManager = legacy_auth_flutter.SessionManager(
@@ -85,7 +91,7 @@ void main() {
       );
 
       final newSessionClient = Client(
-        'http://localhost:8080/',
+        serverUrl,
       )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       await newSessionClient.auth.initAndImportLegacySessionIfNeeded(
