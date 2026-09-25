@@ -4,13 +4,17 @@ import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
 import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
+import 'utils/test_server.dart';
+
 void main() {
+  withTestServer();
+
   test(
     'Given a client without authSessionManager set, '
     'when accessing authKeyProvider, '
-    'then it should be null.',
+    'then it should be null',
     () {
-      final client = Client('http://localhost:8080/');
+      final client = Client(serverUrl);
 
       expect(client.authKeyProvider, isNull);
     },
@@ -19,10 +23,10 @@ void main() {
   test(
     'Given a client with authSessionManager set, '
     'when updateSignedInUser is called, '
-    'then the client authKeyProvider provides the correct auth header.',
+    'then the client authKeyProvider provides the correct auth header',
     () async {
       final client = Client(
-        'http://localhost:8080/',
+        serverUrl,
       )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       await client.auth.updateSignedInUser(_authSuccess);
@@ -36,10 +40,10 @@ void main() {
   test(
     'Given a client with authSessionManager set, '
     'when signing out, '
-    'then authKeyProvider should return null.',
+    'then authKeyProvider should return null',
     () async {
       final client = Client(
-        'http://localhost:8080/',
+        serverUrl,
       )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       await client.auth.updateSignedInUser(_authSuccess);
