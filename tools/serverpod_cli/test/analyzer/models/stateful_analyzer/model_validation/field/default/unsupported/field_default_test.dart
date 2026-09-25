@@ -133,5 +133,125 @@ void main() {
         );
       },
     );
+
+    test(
+      'when the field is of an inline "package:" custom type with a default value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          fields:
+            customType: package:my_pkg/src/my_class.dart:MyClass, default=test
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, hasLength(1));
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "default" key is not supported for "MyClass" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an inline "project:" custom type with a default value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          fields:
+            customType: project:src/my_class.dart:MyClass, default=test
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, hasLength(1));
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "default" key is not supported for "MyClass" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of a bare "package:" custom type without a path with a default value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          fields:
+            customType: package:MyClass, default=test
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, hasLength(1));
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "default" key is not supported for "MyClass" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of a bare "project:" custom type without a path with a default value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          fields:
+            customType: project:MyClass, default=test
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, hasLength(1));
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "default" key is not supported for "MyClass" types',
+        );
+      },
+    );
   });
 }
