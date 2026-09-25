@@ -3,14 +3,17 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
+import 'utils/test_server.dart';
+
 /// Raw-HTTP tests against the running test server for the cookie side of
 /// server-side-session (SAS) auth. See `jwt_cookie_auth_test.dart` for why
 /// these are raw HTTP.
-const _apiUrl = 'http://localhost:8080';
 const _authModeHeader = 'x-serverpod-auth-mode';
 const _authCookieName = 'serverpod_auth';
 
 void main() {
+  withTestServer();
+
   test(
     'Given a cookie-mode request '
     'when creating a session '
@@ -196,7 +199,7 @@ Future<http.Response> _call(
   Map<String, String> headers = const {},
 }) {
   return http.post(
-    Uri.parse('$_apiUrl/$endpoint/$method'),
+    Uri.parse('$serverUrl$endpoint/$method'),
     headers: headers,
     body: jsonEncode(args),
   );

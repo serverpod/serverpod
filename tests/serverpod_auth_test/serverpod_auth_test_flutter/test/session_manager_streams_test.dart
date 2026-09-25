@@ -6,14 +6,18 @@ import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
 import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
+import 'utils/test_server.dart';
+
 void main() {
+  withTestServer();
+
   test(
-    'Given a header-mode session manager with an open method stream '
-    'when the signed-in user changes '
-    'then the stream is closed gracefully.',
+    'Given a header-mode session manager with an open method stream, '
+    'when the signed-in user changes, '
+    'then the stream is closed gracefully',
     () async {
       final client = Client(
-        'http://localhost:8080/',
+        serverUrl,
       )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
       addTearDown(client.close);
 
