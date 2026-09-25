@@ -229,12 +229,16 @@ class FileWatcher {
   /// a single entry shared with the server's resolution.
   final Set<String> _packageGraphPaths;
 
+  final Set<String> _persistentFilePaths;
+
   final Duration debounceDelay;
   final Duration missingFilePollingDelay;
 
   /// Creates a file watcher.
   ///
   /// [watchPaths] is the set of directories or files to watch.
+  /// [persistentFilePaths] adds exact files to watch across initial absence,
+  /// deletion, and recreation, such as a server entrypoint outside `lib/`.
   /// [packageConfigPath] and [packageGraphPaths] are the exact pub-artifact
   /// files whose changes map to `packageConfigChanged` / `flutterDependenciesChanged`.
   /// Missing pub artifacts are checked every [missingFilePollingDelay] until
@@ -244,18 +248,22 @@ class FileWatcher {
     required Iterable<String> watchPaths,
     String? packageConfigPath,
     Iterable<String> packageGraphPaths = const [],
+    Iterable<String> persistentFilePaths = const [],
     this.debounceDelay = const Duration(milliseconds: 100),
     this.missingFilePollingDelay = const Duration(milliseconds: 500),
-  }) : _watchPaths = watchPaths.map(p.canonicalize).toSet(),
+  }) : _watchPaths = {
+         ...watchPaths.map(p.canonicalize),
+         ...persistentFilePaths.map(p.canonicalize),
+       },
        _packageConfigPath = packageConfigPath == null
            ? null
            : p.canonicalize(packageConfigPath),
-       _packageGraphPaths = packageGraphPaths.map(p.canonicalize).toSet();
-
-  late final Set<String> _persistentFilePaths = {
-    ?_packageConfigPath,
-    ..._packageGraphPaths,
-  };
+       _packageGraphPaths = packageGraphPaths.map(p.canonicalize).toSet(),
+       _persistentFilePaths = {
+         ...persistentFilePaths.map(p.canonicalize),
+         if (packageConfigPath != null) p.canonicalize(packageConfigPath),
+         ...packageGraphPaths.map(p.canonicalize),
+       };
 
   late final List<w.Watcher> _watchers = [
     for (final watchPath in _watchPaths)

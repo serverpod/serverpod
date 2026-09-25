@@ -1120,8 +1120,8 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     String? serverDartToolDir;
     // Null reloads the pod on every package_config.json change.
     PackageDependencyTracker? serverDependencyTracker;
+    final entryPoint = p.join(serverDir, target);
     if (watch) {
-      final entryPoint = p.join(serverDir, target);
       final initialDill = p.join(serverpodToolDir, 'server.dill');
       // One root for compiler, hooks and watcher. KernelCompiler says why.
       final projectRoot = await discoverProjectRootFrom(serverDir);
@@ -1327,6 +1327,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
           ?flutterManager.packageGraphPathFor(app.id),
       ];
       final watcher = FileWatcher(
+        persistentFilePaths: [entryPoint],
         watchPaths: buildWatchPaths(
           config: config,
           flutterApps: currentApps,

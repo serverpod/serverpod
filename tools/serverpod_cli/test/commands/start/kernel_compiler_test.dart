@@ -132,6 +132,50 @@ void main() {
     );
 
     test(
+      'when the entrypoint is edited outside the watched directories, '
+      'then a new compiler executes the edited source.',
+      () async {
+        await compiler.start();
+        expect(await compiler.compileIfNeeded({}), isTrue);
+        await compiler.dispose();
+
+        final entrypoint = File(compiler.entryPoint);
+        await entrypoint.writeAsString("void main() { print('edited'); }");
+        final cachedModified = (await File(
+          compiler.outputDill,
+        ).stat()).modified;
+        await entrypoint.setLastModified(
+          cachedModified.add(const Duration(seconds: 1)),
+        );
+
+        await compiler.start();
+        expect(await compiler.compileIfNeeded({}), isTrue);
+        final execution = await Process.run(compiler.dartExecutable, [
+          compiler.outputDill,
+        ]);
+
+        expect(execution.exitCode, 0);
+        expect(execution.stdout, 'edited\n');
+        expect(execution.stderr, isEmpty);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when the entrypoint is deleted outside the watched directories, '
+      'then its cached kernel is no longer current.',
+      () async {
+        await compiler.start();
+        expect(await compiler.compileIfNeeded({}), isTrue);
+
+        await File(compiler.entryPoint).delete();
+
+        expect(await compiler.isDillUpToDate({}), isFalse);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
       'when invalidateCachedDill is called, '
       'then the dill, incremental dill, and marker are deleted',
       () async {

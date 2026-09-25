@@ -79,9 +79,9 @@ class KernelCompiler {
     _needsFullCompile = true;
   }
 
-  /// Returns `true` if [outputDill] exists, is newer than every file under
-  /// [watchDirs], is compatible with the current Dart SDK's kernel binary
-  /// format, and the last compile that wrote it completed successfully.
+  /// Returns `true` if [outputDill] exists, is newer than [entryPoint] and every
+  /// file under [watchDirs], is compatible with the current Dart SDK's kernel
+  /// binary format, and the last compile that wrote it completed successfully.
   Future<bool> isDillUpToDate(Set<String> watchDirs) async {
     if (File(_compileMarkerPath).existsSync()) return false;
 
@@ -99,6 +99,11 @@ class KernelCompiler {
     if (!_dillHeadersMatch(outputDill, _platformDill)) return false;
 
     final dillMtime = (await dillFile.stat()).modified;
+    final entryPointStat = await File(entryPoint).stat();
+    if (entryPointStat.type != FileSystemEntityType.file ||
+        entryPointStat.modified.isAfter(dillMtime)) {
+      return false;
+    }
 
     for (final watchDir in watchDirs) {
       final dir = Directory(watchDir);
