@@ -102,12 +102,24 @@ void main() {
         expect(disposeCalls, 1);
       },
     );
+  });
 
-    test('when given a custom target, then it runs that entrypoint', () async {
+  group('Given a ServerProcess with a custom target,', () {
+    late Directory tempDir;
+    late List<String> lines;
+    late ServerProcess serverProcess;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('server_process_test_');
+      await _createMinimalDartProject(tempDir.path);
+      await File(
+        p.join(tempDir.path, 'bin', 'main.dart'),
+      ).writeAsString('void main() { print("hello"); }');
       await File(
         p.join(tempDir.path, 'bin', 'main_enterprise.dart'),
       ).writeAsString('void main() { print("enterprise entrypoint"); }');
-      final lines = <String>[];
+
+      lines = [];
       serverProcess = ServerProcess(
         serverDir: tempDir.path,
         target: 'bin/main_enterprise.dart',
@@ -115,13 +127,23 @@ void main() {
         stdoutSink: LineSink(lines.add),
         stderrSink: _NullIOSink(),
       );
-
-      await serverProcess.start();
-
-      expect(await serverProcess.exitCode, 0);
-      await waitFor(() => lines.isNotEmpty);
-      expect(lines, ['enterprise entrypoint']);
     });
+
+    tearDown(() async {
+      await tempDir.delete(recursive: true);
+    });
+
+    test(
+      'when started, '
+      'then it runs that entrypoint.',
+      () async {
+        await serverProcess.start();
+
+        expect(await serverProcess.exitCode, 0);
+        await waitFor(() => lines.isNotEmpty);
+        expect(lines, ['enterprise entrypoint']);
+      },
+    );
   });
 
   group('Given a ServerProcess whose output ends without a newline,', () {
