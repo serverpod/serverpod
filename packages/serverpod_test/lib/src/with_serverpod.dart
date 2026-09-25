@@ -85,10 +85,10 @@ buildWithServerpod<T extends InternalTestEndpoints>(
   required Duration? maybeServerpodStartTimeout,
   required TestServerOutputMode? maybeTestServerOutputMode,
 }) {
-  // Every group runs against its own database, so `RollbackDatabase` only
-  // decides the transaction strategy within that database: afterEach/afterAll
-  // wrap a transaction that is rolled back; disabled commits for real (the
-  // database is dropped when the group finishes).
+  // `RollbackDatabase` decides the transaction strategy: afterEach/afterAll
+  // wrap a transaction that is rolled back; disabled commits for real. The
+  // default ephemeral database is dropped when the group finishes. Using
+  // `ephemeralDatabase: false` keeps the configured database instead.
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
 
   var rollbacksEnabled = rollbackDatabase != RollbackDatabase.disabled;

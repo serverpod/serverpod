@@ -76,6 +76,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
@@ -119,6 +120,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [ephemeralDatabase] '),
           );
           expect(
             testToolsFile,
@@ -341,6 +346,10 @@ void main() {
             testToolsFile,
             isNot(contains('/// [rollbackDatabase]')),
           );
+          expect(
+            testToolsFile,
+            isNot(contains('/// [ephemeralDatabase]')),
+          );
         },
       );
     },
@@ -386,6 +395,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
@@ -429,6 +439,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [ephemeralDatabase] '),
           );
           expect(
             testToolsFile,
@@ -539,6 +553,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
@@ -582,6 +597,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [ephemeralDatabase] '),
           );
           expect(
             testToolsFile,
@@ -1914,6 +1933,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
@@ -1998,6 +2018,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'

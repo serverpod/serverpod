@@ -151,6 +151,7 @@ withServerpod('Given shared stream', (sessionBuilder, endpoints) {
 The ones that change behavior most often:
 
 - `rollbackDatabase` — `afterEach` (default), `afterAll`, or `disabled`.
+- `ephemeralDatabase` — own empty database per group, `true` by default. Set to `false` to use the configured database, including a previously seeded one. It is not created or dropped, and groups that share it cannot run in parallel.
 - `applyMigrations` — apply pending migrations on start, `true` by default.
 - `runMode` — `ServerpodRunMode.test` by default, so `config/test.yaml` is loaded.
 - `configOverride` — adjust the loaded config, e.g. to point at another database.
