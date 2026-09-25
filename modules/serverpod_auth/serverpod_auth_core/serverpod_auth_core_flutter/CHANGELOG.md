@@ -1,3 +1,15 @@
+## 4.0.3
+
+- fix: Prints the reason why `serverpod start` stopped after the TUI ends with an error.
+- fix: Fixes the CLI using the private port to connect to Insights.
+- fix: Allows opting out of ephemeral database on tests.
+- fix: Stops reporting database integrity errors for unmanaged tables.
+- fix: Defers the profile image foreign key check to commit to fix Postgres dump restore.
+- fix: Standardizes the future call feature flag name to `futureCall.executionEnabled`.
+- fix: Exposes missing `futureCall.enabled` flag to completely disable scheduling future calls.
+- fix: Fixes Windows paths comparison in the endpoint and future call analyzers.
+- perf: Reduces the cost of argon2 usage for a better experience on low-end VMs.
+
 ## 4.0.2
 
 - fix: Adds missing callbacks to `ServerpodCloudEmailIdpConfig` constructor.
