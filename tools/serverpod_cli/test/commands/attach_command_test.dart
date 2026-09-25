@@ -32,7 +32,7 @@ void main() {
         history.addServerLine("bin/main.dart:3:1: Error: Expected ';'.");
         history.addServerLine('Failed to compile.');
 
-        printLogTail(history, out, exitCode: 1);
+        printLogTail(history, out, runnerExitCode: 1);
 
         expect(out.lines, [
           '--- the runner stopped (exit code 1). Its last output was ---',
@@ -55,10 +55,25 @@ void main() {
           ),
         );
 
-        printLogTail(history, out, exitCode: 1);
+        printLogTail(history, out, runnerExitCode: 1);
 
         expect(out.lines, hasLength(2));
         expect(out.lines.last, contains('Docker is not running.'));
+      },
+    );
+
+    test(
+      'when the runner was lost rather than stopped, '
+      'then the header says so instead of inventing an exit code',
+      () {
+        history.addServerLine('Unhandled exception: Out of memory');
+
+        printLogTail(history, out, runnerExitCode: null);
+
+        expect(out.lines, [
+          '--- the runner is gone. Its last output was ---',
+          'Unhandled exception: Out of memory',
+        ]);
       },
     );
 
@@ -70,7 +85,7 @@ void main() {
           history.addServerLine('line $i');
         }
 
-        printLogTail(history, out, exitCode: 1, lines: 3);
+        printLogTail(history, out, runnerExitCode: 1, lines: 3);
 
         expect(out.lines, [
           '--- the runner stopped (exit code 1). Its last output was ---',

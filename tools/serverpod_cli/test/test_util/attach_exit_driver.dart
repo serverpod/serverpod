@@ -8,6 +8,7 @@ void main(List<String> args) {
 
   attachTerminalBackend(
     history,
+    runnerExitCode: () => 1,
     stoppedBeforeStack: () => false,
   ).requestExit(int.parse(args[0]));
 }

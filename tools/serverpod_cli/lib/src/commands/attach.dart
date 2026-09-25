@@ -161,6 +161,7 @@ Future<int> attachWithTui(String socketPath, {Duration? waitForRunner}) async {
       ServerpodWatchApp(holder: holder),
       backend: attachTerminalBackend(
         holder.state.history,
+        runnerExitCode: () => client.exitCode,
         stoppedBeforeStack: () =>
             client.stage == RunnerStage.stopping && !hadStack,
       ),
@@ -180,9 +181,13 @@ bool _hasStack(RunnerStage stage) =>
 
 /// The backend of an attach session, which prints the log tail of a failed
 /// exit from `preExit`, the last code to run before the process exits.
+///
+/// [runnerExitCode] is the code the runner announced, null when the
+/// connection was lost instead.
 @visibleForTesting
 ServerpodTerminalBackend attachTerminalBackend(
   StartLogHistory history, {
+  required int? Function() runnerExitCode,
   required bool Function() stoppedBeforeStack,
   IOSink? out,
 }) => ServerpodTerminalBackend(
@@ -191,7 +196,7 @@ ServerpodTerminalBackend attachTerminalBackend(
       final sink = out ?? stdout;
       // nocterm leaves an OSC open, and the terminal swallows text until ST.
       sink.write('\x1b\\');
-      printLogTail(history, sink, exitCode: exitCode);
+      printLogTail(history, sink, runnerExitCode: runnerExitCode());
     }
     await flushAnalytics();
   },
@@ -200,11 +205,12 @@ ServerpodTerminalBackend attachTerminalBackend(
 /// Prints the last [lines] of the pod's output in [history] to [out].
 ///
 /// Prefers raw lines, the only place an early crash or compile error shows.
+/// [runnerExitCode] is null when the runner was lost rather than stopped.
 @visibleForTesting
 void printLogTail(
   StartLogHistory history,
   IOSink out, {
-  required int exitCode,
+  required int? runnerExitCode,
   int lines = 20,
 }) {
   final raw = history.serverLines.toList();
@@ -218,7 +224,10 @@ void printLogTail(
       : output;
 
   out.writeln(
-    '--- the runner stopped (exit code $exitCode). Its last output was ---',
+    runnerExitCode == null
+        ? '--- the runner is gone. Its last output was ---'
+        : '--- the runner stopped (exit code $runnerExitCode). '
+              'Its last output was ---',
   );
   tail.forEach(out.writeln);
 }
