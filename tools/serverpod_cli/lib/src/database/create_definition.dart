@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/table_name_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
@@ -14,16 +15,19 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   String moduleName,
   List<ModuleConfig> allModules, {
   bool serverCode = true,
+  DatabaseDialect? dialect,
 }) {
+  dialect ??= serverCode ? DatabaseDialect.postgres : DatabaseDialect.sqlite;
+
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
       if (classDefinition is ModelClassDefinition &&
           classDefinition.shouldGenerateTableCode(serverCode))
         TableDefinition(
           module: moduleName,
-          name: classDefinition.tableName!,
+          name: _splitTableName(classDefinition.tableName!, dialect).name,
           dartName: classDefinition.className,
-          schema: 'public',
+          schema: _splitTableName(classDefinition.tableName!, dialect).schema,
           columns: [
             for (var column in classDefinition.fieldsIncludingInherited)
               if (column.shouldPersist)
@@ -43,7 +47,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   vectorDimension: column.type.vectorDimension,
                 ),
           ],
-          foreignKeys: _createForeignKeys(classDefinition),
+          foreignKeys: _createForeignKeys(classDefinition, dialect),
           indexes: [
             for (var index in classDefinition.indexesIncludingInherited)
               IndexDefinition(
@@ -106,23 +110,39 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   );
 }
 
+/// Splits `schema.table` for Postgres. Other dialects have a single schema
+/// and treat the whole name as one identifier.
+({String name, String schema}) _splitTableName(
+  String tableName,
+  DatabaseDialect dialect,
+) {
+  if (dialect != DatabaseDialect.postgres) {
+    return (name: tableName, schema: dialect.defaultSchema);
+  }
+  var (:schema, :name) = parseQualifiedTableName(tableName);
+  return (name: name, schema: schema ?? dialect.defaultSchema);
+}
+
 List<ForeignKeyDefinition> _createForeignKeys(
   ModelClassDefinition classDefinition,
+  DatabaseDialect dialect,
 ) {
   var fields = classDefinition.fields
       .where((field) => field.relation is ForeignRelationDefinition)
       .toList();
+  var tableName = unqualifiedTableName(classDefinition.tableName!);
 
   List<ForeignKeyDefinition> foreignKeys = [];
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
     var relation = field.relation as ForeignRelationDefinition;
+    var reference = _splitTableName(relation.parentTable, dialect);
     foreignKeys.add(
       ForeignKeyDefinition(
-        constraintName: '${classDefinition.tableName!}_fk_$i',
+        constraintName: '${tableName}_fk_$i',
         columns: [field.columnName],
-        referenceTable: relation.parentTable,
-        referenceTableSchema: 'public',
+        referenceTable: reference.name,
+        referenceTableSchema: reference.schema,
         referenceColumns: ['id'],
         onDelete: _onDeleteAction(classDefinition, relation.onDelete),
         onUpdate: relation.onUpdate,
@@ -205,6 +225,9 @@ dynamic _parseColumnDefault(SerializableModelFieldDefinition column) {
 }
 
 void _sortTableDefinitions(List<TableDefinition> tables) {
-  // Sort by name to make sure that we get consistent output
-  tables.sort((a, b) => a.name.compareTo(b.name));
+  // Sort by schema, then name to make sure that we get consistent output
+  tables.sort((a, b) {
+    var bySchema = a.schema.compareTo(b.schema);
+    return bySchema != 0 ? bySchema : a.name.compareTo(b.name);
+  });
 }
