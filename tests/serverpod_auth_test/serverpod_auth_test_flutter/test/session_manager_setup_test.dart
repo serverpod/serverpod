@@ -4,7 +4,11 @@ import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
 import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
+import 'utils/test_server.dart';
+
 void main() {
+  withTestServer();
+
   late TestStorage storage;
   setUp(() => storage = TestStorage());
 
@@ -13,7 +17,7 @@ void main() {
       late Client client;
       late FlutterAuthSessionManager authSessionManager;
       setUp(() {
-        client = Client('http://localhost:8080/');
+        client = Client(serverUrl);
         authSessionManager = FlutterAuthSessionManager(storage: storage);
       });
       tearDown(() => client.close());
@@ -35,7 +39,7 @@ void main() {
       late Client client;
       late FlutterAuthSessionManager authSessionManager;
       setUp(() {
-        client = Client('http://localhost:8080/');
+        client = Client(serverUrl);
         authSessionManager = FlutterAuthSessionManager(
           storage: storage,
           caller: client.modules.serverpod_auth_core,
@@ -60,7 +64,7 @@ void main() {
   group('when using the `authSessionManager` extension,', () {
     late Client client;
     setUp(() {
-      client = Client('http://localhost:8080/')
+      client = Client(serverUrl)
         ..authSessionManager = FlutterAuthSessionManager(storage: storage);
     });
     tearDown(() => client.close());
@@ -87,10 +91,8 @@ void main() {
       late Client client2;
       setUp(() {
         sharedSessionManager = FlutterAuthSessionManager(storage: storage);
-        client1 = Client('http://localhost:8080/')
-          ..authSessionManager = sharedSessionManager;
-        client2 = Client('http://localhost:8080/')
-          ..authSessionManager = sharedSessionManager;
+        client1 = Client(serverUrl)..authSessionManager = sharedSessionManager;
+        client2 = Client(serverUrl)..authSessionManager = sharedSessionManager;
       });
       tearDown(() {
         client1.close();
