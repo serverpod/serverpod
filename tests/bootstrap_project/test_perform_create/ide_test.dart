@@ -22,7 +22,7 @@ void main() {
 
   group(
     'Given a clean state, '
-    'when calling performCreate with a context containing all supported IDEs',
+    'when calling performCreate with a context containing all supported IDEs,',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(ides: TemplateIde.values),
@@ -71,7 +71,9 @@ void main() {
         'then the created project',
         () {
           final serverDirRelative = '${project.name}_server';
-          const antigravityPluginDir = '.agents/plugins/serverpod-local';
+          const loginShellScript =
+              r's=${SHELL:-/bin/sh}; [ -x \"$s\" ] || s=/bin/sh; '
+              r'case $s in *csh) s=/bin/sh;; esac; exec \"$s\" -l -c \"$1\"';
           final genericConfig =
               '''
 {
@@ -92,33 +94,52 @@ void main() {
             'has Serverpod and Dart MCP servers configured for Antigravity',
             () {
               final config = File(
-                p.join(
-                  project.projectRoot,
-                  '$antigravityPluginDir/mcp_config.json',
-                ),
+                p.join(project.projectRoot, '.agents/mcp_config.json'),
               );
               expect(config.existsSync(), isTrue);
               expect(
                 config.readAsStringSync(),
-                genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
-              );
-            },
-          );
-
-          test(
-            'has an Antigravity plugin manifest registering the local plugin',
-            () {
-              final manifest = File(
-                p.join(
-                  project.projectRoot,
-                  '$antigravityPluginDir/plugin.json',
-                ),
-              );
-              expect(manifest.existsSync(), isTrue);
-              expect(
-                manifest.readAsStringSync(),
-                '''{
-  "name": "serverpod-local"
+                Platform.isWindows
+                    ? '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"],
+      "cwd": "."
+    },
+    "dart-mcp-server": {
+      "command": "dart",
+      "args": ["mcp-server"],
+      "cwd": "."
+    }
+  }
+}
+'''
+                    : '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "$loginShellScript",
+        "sh",
+        "exec serverpod mcp-server --server-dir $serverDirRelative"
+      ],
+      "cwd": "."
+    },
+    "dart-mcp-server": {
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "$loginShellScript",
+        "sh",
+        "exec dart mcp-server"
+      ],
+      "cwd": "."
+    }
+  }
 }
 ''',
               );
