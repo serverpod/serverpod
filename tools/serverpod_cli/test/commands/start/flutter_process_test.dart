@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_shared/log.dart' show LogLevel;
 import 'package:test/test.dart';
@@ -22,6 +23,39 @@ String _shimPath(String name) => p.join(
 
 String _dartExecutable() {
   return Platform.resolvedExecutable;
+}
+
+/// [cachePopulated] controls whether `bin/cache/dart-sdk` is present, which is
+/// what distinguishes a warm SDK from a cold `bin/cache`.
+String _fakeFlutterSdkRoot({required bool cachePopulated}) {
+  final dir = Directory.systemTemp.createTempSync('serverpod_fake_flutter');
+  addTearDown(() => dir.deleteSync(recursive: true));
+
+  final root = p.join(dir.path, 'sdk');
+  for (final path in [
+    p.joinAll([
+      root,
+      'packages',
+      'flutter_tools',
+      '.dart_tool',
+      'package_config.json',
+    ]),
+    p.joinAll([
+      root,
+      'packages',
+      'flutter_tools',
+      'bin',
+      'flutter_tools.dart',
+    ]),
+    // Named through the shared helper rather than spelled out: the embedded
+    // binary is `dart.exe` on Windows, and hardcoding `dart` here made the
+    // fast-path guard miss and silently fall back.
+    if (cachePopulated) dartExecutableIn(embeddedDartSdkIn(root)),
+  ]) {
+    File(path).createSync(recursive: true);
+  }
+
+  return root;
 }
 
 /// Minimal WebSocket server that accepts a connect and ignores any RPC.
@@ -150,7 +184,34 @@ Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
 }
 
 void main() {
-  group('Given a FlutterProcess missing the executable', () {
+  group('Given a FlutterProcess whose executable is a name not on PATH', () {
+    late FlutterProcess fp;
+
+    setUp(() {
+      fp = FlutterProcess(
+        flutterPackageDir: Directory.systemTemp.path,
+        device: 'web-server',
+        // A bare name rather than a path, so the spawn is what fails.
+        // Deliberately not `flutter`: the probe runs against the ambient
+        // environment, so a real install would resolve and this would never
+        // reach the fallback.
+        flutterExecutable: 'definitely-not-a-real-flutter',
+      );
+    });
+
+    test(
+      'when calling start, '
+      'then FlutterNotInstalledException is thrown',
+      () async {
+        await expectLater(
+          fp.start,
+          throwsA(isA<FlutterNotInstalledException>()),
+        );
+      },
+    );
+  });
+
+  group('Given a FlutterProcess with a missing executable', () {
     late FlutterProcess fp;
 
     setUp(() {
@@ -163,7 +224,7 @@ void main() {
 
     test(
       'when calling start '
-      'then FlutterNotInstalledException is thrown so the caller can keep going',
+      'then FlutterNotInstalledException is thrown',
       () async {
         await expectLater(
           fp.start,
@@ -171,6 +232,112 @@ void main() {
         );
       },
     );
+  });
+
+  group(
+    'Given a probe that answers with plain text instead of machine JSON',
+    () {
+      group('when the flutter invocation is resolved', () {
+        late FlutterInvocation invocation;
+
+        setUp(() async {
+          invocation = await FlutterProcess.resolveFlutterInvocation(
+            _dartExecutable(),
+            probeArgsPrefixForTesting: [
+              _shimPath('emits_no_machine_json.dart'),
+            ],
+          );
+        });
+
+        test('then it falls back to running the executable verbatim', () {
+          expect(invocation.executable, _dartExecutable());
+        });
+
+        test('then it passes no leading arguments', () {
+          expect(invocation.baseArgs, isEmpty);
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a probe reporting a flutterRoot whose bin/cache is incomplete',
+    () {
+      late String root;
+
+      setUp(() {
+        root = _fakeFlutterSdkRoot(cachePopulated: false);
+      });
+
+      group('when the flutter invocation is resolved', () {
+        late FlutterInvocation invocation;
+
+        setUp(() async {
+          invocation = await FlutterProcess.resolveFlutterInvocation(
+            _dartExecutable(),
+            probeArgsPrefixForTesting: [
+              _shimPath('reports_flutter_root.dart'),
+              '--root=$root',
+            ],
+          );
+        });
+
+        test(
+          'then it falls back instead of launching a dart that is not there',
+          () {
+            expect(invocation.executable, _dartExecutable());
+          },
+        );
+
+        test('then it passes no leading arguments', () {
+          expect(invocation.baseArgs, isEmpty);
+        });
+      });
+    },
+  );
+
+  group('Given a probe reporting a complete flutterRoot', () {
+    late String root;
+
+    setUp(() {
+      root = _fakeFlutterSdkRoot(cachePopulated: true);
+    });
+
+    group('when the flutter invocation is resolved', () {
+      late FlutterInvocation invocation;
+
+      setUp(() async {
+        invocation = await FlutterProcess.resolveFlutterInvocation(
+          _dartExecutable(),
+          probeArgsPrefixForTesting: [
+            _shimPath('reports_flutter_root.dart'),
+            '--root=$root',
+          ],
+        );
+      });
+
+      test("then it runs on the SDK's embedded dart", () {
+        expect(
+          invocation.executable,
+          dartExecutableIn(embeddedDartSdkIn(root)),
+        );
+      });
+
+      test('then it passes the flutter_tools entrypoint', () {
+        expect(
+          invocation.baseArgs,
+          contains(
+            p.join(
+              root,
+              'packages',
+              'flutter_tools',
+              'bin',
+              'flutter_tools.dart',
+            ),
+          ),
+        );
+      });
+    });
   });
 
   group('Given a FlutterProcess running', () {

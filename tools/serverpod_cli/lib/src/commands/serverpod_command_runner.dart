@@ -10,8 +10,8 @@ import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
-import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../generated/completion_script_carapace.dart';
@@ -19,18 +19,23 @@ import 'upgrade.dart' show UpgradeCommand;
 import 'version.dart' show VersionCommand;
 
 Future<void> _preCommandEnvironmentChecks() async {
-  if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
+  try {
+    await sdkResolver.dartSdk;
+  } on SdkResolutionException {
     log.error(
       'Failed to run serverpod. You need to have dart installed and in your \$PATH',
     );
     throw ExitException.error();
   }
-  if (!ci.isCI &&
-      !await CommandLineTools.existsCommand('flutter', ['--version'])) {
+  if (!ci.isCI && !await sdkResolver.isFlutterInstalled) {
     log.error(
       'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
     );
     throw ExitException.error();
+  }
+
+  if (log.logLevel == LogLevel.debug) {
+    log.debug(await sdkResolver.describeResolution());
   }
 }
 
@@ -77,6 +82,11 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     // call site reads it from the singleton instead of taking a flag. Set
     // before the `--version` early return so the state is never stale.
     cliAnalytics.enabled = analyticsEnabled();
+
+    // Installed before any command runs so every call site reads one answer.
+    // Resolution itself is lazy, so a command that never touches an SDK never
+    // pays for looking one up.
+    initializeSdkResolver();
 
     if (globalConfiguration.value(GlobalOption.version)) {
       await commands['version']?.run();
