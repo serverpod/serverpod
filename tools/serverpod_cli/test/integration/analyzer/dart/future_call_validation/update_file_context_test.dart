@@ -215,15 +215,15 @@ class HelperClass {}
   );
 
   group(
-    'Given an analyzed future call file cached under its real-cased path',
+    'Given an analyzed future call file cached under its real-cased path,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory trackedDirectory;
       late File futureCallFile;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         futureCallFile = File(
           path.join(trackedDirectory.path, 'future_call.dart'),
         );
@@ -237,7 +237,10 @@ class ExampleFutureCall extends FutureCall {
   }
 }
 ''');
-        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: trackedDirectory,
+          collection: collection,
+        );
         await analyzer.analyze(
           collector: CodeGenerationCollector(),
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
