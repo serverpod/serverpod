@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,7 +18,9 @@ void main() {
   setUpAll(() async {
     testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
-    collection = createAnalysisContextCollection(testProjectDirectory);
+    collection = await createCachedAnalysisContextCollection(
+      testProjectDirectory,
+    );
   });
 
   tearDownAll(() async {
