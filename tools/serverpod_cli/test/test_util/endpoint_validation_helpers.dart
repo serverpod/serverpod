@@ -1,7 +1,39 @@
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/analysis/file_byte_store.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_shared/process_io.dart';
+
+const _analysisCacheMaxSizeBytes = 512 * 1024 * 1024;
+
+/// Creates an [AnalysisContextCollection] for [directory] whose resolution
+/// cache lives on disk and is shared by all test files, so only the first
+/// one to resolve `package:serverpod` pays for it.
+Future<AnalysisContextCollection> createCachedAnalysisContextCollection(
+  Directory directory,
+) async {
+  final root = await resolveServerpodRoot();
+  // The byte store fails every write silently when its directory is missing.
+  final cacheDirectory = Directory(
+    path.join(root, '.dart_tool', 'serverpod_cli_test', 'analysis_cache'),
+  )..createSync(recursive: true);
+
+  return AnalysisContextCollectionImpl(
+    includedPaths: [directory.absolute.path],
+    resourceProvider: PhysicalResourceProvider.INSTANCE,
+    sdkPath: getSdkPath(),
+    byteStore: EvictingFileByteStore(
+      cacheDirectory.path,
+      _analysisCacheMaxSizeBytes,
+    ),
+  );
+}
 
 /// Resolves the absolute path to the serverpod monorepo root via the test
 /// isolate's package config. The previous `Directory('../..')` approach
