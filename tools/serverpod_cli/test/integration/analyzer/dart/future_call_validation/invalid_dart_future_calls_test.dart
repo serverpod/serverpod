@@ -1,9 +1,12 @@
 import 'dart:io';
+
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_calls_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
@@ -13,19 +16,23 @@ import '../../../../test_util/file_system_entity_helpers.dart';
 
 final config = GeneratorConfigBuilder().build();
 late Directory testProjectDirectory;
+late AnalysisContextCollection collection;
 
 void main() {
   setUpAll(() async {
     testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
+    collection = createAnalysisContextCollection(testProjectDirectory);
   });
 
   tearDownAll(() async {
+    await collection.dispose();
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
   group(
-    'Given a future call file with incomplete future call class defined when analyzed',
+    'Given a future call file with incomplete future call class defined, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -48,7 +55,10 @@ class ExampleFutureCall extends FutureCall {
 
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -73,7 +83,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call file with incomplete future call method defined when analyzed',
+    'Given a future call file with incomplete future call method defined, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -96,7 +107,10 @@ class ExampleFutureCall extends FutureCall {
   Future<void> hello(Session session, String name) async {
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -121,7 +135,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method that returns a Future with multiple defined types',
+    'Given a future call method that returns a Future with multiple defined types,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -146,7 +160,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -170,7 +187,7 @@ class ExampleFutureCall extends FutureCall {
     },
   );
 
-  group('Given a valid and an invalid future call file when analyzed', () {
+  group('Given a valid and an invalid future call file, when analyzed,', () {
     var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
@@ -204,7 +221,10 @@ class ExampleFutureCallValid extends FutureCall {
 }
 ''');
 
-      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      analyzer = FutureCallsAnalyzer(
+        directory: testDirectory,
+        collection: collection,
+      );
       futureCallDefinitions = await analyzer.analyze(
         collector: collector,
         analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -227,7 +247,7 @@ class ExampleFutureCallValid extends FutureCall {
     });
   });
 
-  group('Given an invalid dart file without an future call definition', () {
+  group('Given an invalid dart file without an future call definition,', () {
     var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
@@ -247,7 +267,10 @@ class InvalidClass {
 
 ''');
 
-      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      analyzer = FutureCallsAnalyzer(
+        directory: testDirectory,
+        collection: collection,
+      );
       await analyzer.analyze(
         collector: collector,
         analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -260,7 +283,7 @@ class InvalidClass {
   });
 
   group(
-    'Given an invalid dart file without an future call definition and a valid future call definition file',
+    'Given an invalid dart file without an future call definition and a valid future call definition file,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -294,7 +317,10 @@ class ExampleFutureCallValid extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
