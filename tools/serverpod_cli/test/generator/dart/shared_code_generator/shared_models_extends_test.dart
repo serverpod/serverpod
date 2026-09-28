@@ -241,7 +241,7 @@ void main() {
   );
 
   group(
-    'Given a project model with a field that references a shared model',
+    'Given a project model with a field that references a shared model,',
     () {
       const sharedModelClassName = 'SharedModel';
       const sharedModelFileName = 'shared_model';
@@ -315,7 +315,7 @@ void main() {
         );
       });
 
-      group('when generating the server package code', () {
+      group('when generating the server package code,', () {
         setUpAll(() {
           codeMap = const DartServerCodeGenerator()
               .generateSerializableModelsCode(
@@ -323,36 +323,36 @@ void main() {
                 config: config,
               );
         });
+
+        late var modelExpectedFilePath = projectModel.getFullFilePath(
+          config,
+          serverCode: true,
+        );
+
+        late var modelCode = codeMap[modelExpectedFilePath]!;
+
+        test(
+          'then the field type references the shared model class',
+          () {
+            expect(modelCode, contains(sharedModelClassName));
+          },
+        );
+
+        test(
+          'then the project model file imports the shared model class from the shared package',
+          () {
+            expect(
+              modelCode,
+              contains('package:$sharedPackageName/$sharedPackageName.dart'),
+            );
+          },
+        );
       });
-
-      late var modelExpectedFilePath = projectModel.getFullFilePath(
-        config,
-        serverCode: true,
-      );
-
-      late var modelCode = codeMap[modelExpectedFilePath]!;
-
-      test(
-        'then the field type references the shared model class.',
-        () {
-          expect(modelCode, contains(sharedModelClassName));
-        },
-      );
-
-      test(
-        'then the project model file imports the shared model class from the shared package.',
-        () {
-          expect(
-            modelCode,
-            contains('package:$sharedPackageName/$sharedPackageName.dart'),
-          );
-        },
-      );
     },
   );
 
   group(
-    'Given a project model with a field that references an enum in a shared package',
+    'Given a project model with a field that references an enum in a shared package,',
     () {
       const sharedEnumClassName = 'SharedEnum';
       const sharedEnumFileName = 'shared_enum';
@@ -429,7 +429,7 @@ void main() {
         );
       });
 
-      group('when generating the server package code', () {
+      group('when generating the server package code,', () {
         setUpAll(() {
           codeMap = const DartServerCodeGenerator()
               .generateSerializableModelsCode(
@@ -437,31 +437,31 @@ void main() {
                 config: config,
               );
         });
+
+        late var modelExpectedFilePath = projectModel.getFullFilePath(
+          config,
+          serverCode: true,
+        );
+
+        late var modelCode = codeMap[modelExpectedFilePath]!;
+
+        test(
+          'then the field type references the shared enum class',
+          () {
+            expect(modelCode, contains(sharedEnumClassName));
+          },
+        );
+
+        test(
+          'then the project model file imports the shared enum class from the shared package',
+          () {
+            expect(
+              modelCode,
+              contains('package:$sharedPackageName/$sharedPackageName.dart'),
+            );
+          },
+        );
       });
-
-      late var modelExpectedFilePath = projectModel.getFullFilePath(
-        config,
-        serverCode: true,
-      );
-
-      late var modelCode = codeMap[modelExpectedFilePath]!;
-
-      test(
-        'then the field type references the shared enum class.',
-        () {
-          expect(modelCode, contains(sharedEnumClassName));
-        },
-      );
-
-      test(
-        'then the project model file imports the shared enum class from the shared package.',
-        () {
-          expect(
-            modelCode,
-            contains('package:$sharedPackageName/$sharedPackageName.dart'),
-          );
-        },
-      );
     },
   );
 }
