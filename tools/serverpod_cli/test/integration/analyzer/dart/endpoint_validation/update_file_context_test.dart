@@ -392,15 +392,15 @@ class InvalidClass {}
   );
 
   group(
-    'Given an analyzed endpoint file cached under its real-cased path',
+    'Given an analyzed endpoint file cached under its real-cased path,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory trackedDirectory;
       late File endpointFile;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         endpointFile = File(path.join(trackedDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -412,7 +412,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(trackedDirectory);
+        analyzer = EndpointsAnalyzer(trackedDirectory, collection: collection);
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 
