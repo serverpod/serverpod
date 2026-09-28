@@ -1,9 +1,12 @@
 import 'dart:io';
+
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
@@ -14,18 +17,21 @@ import '../../../../test_util/file_system_entity_helpers.dart';
 
 final config = GeneratorConfigBuilder().build();
 late Directory testProjectDirectory;
+late AnalysisContextCollection collection;
 
 void main() {
   setUpAll(() async {
     testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
+    collection = createAnalysisContextCollection(testProjectDirectory);
   });
 
   tearDownAll(() async {
+    await collection.dispose();
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
-  group('Given a valid future call with a method when analyzed', () {
+  group('Given a valid future call with a method, when analyzed,', () {
     var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
@@ -49,7 +55,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      analyzer = FutureCallsAnalyzer(
+        directory: testDirectory,
+        collection: collection,
+      );
       futureCallDefinitions = await analyzer.analyze(
         collector: collector,
         analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -90,7 +99,8 @@ class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a valid future call method with a first positional nullable `Session` parameter when analyzed',
+    'Given a valid future call method with a first positional nullable `Session` parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -115,7 +125,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -169,8 +182,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call with a method that has a second positional parameter'
-    'of type `Session` when analyzed',
+    'Given a future call with a method that has a second positional parameter of type `Session`, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -195,7 +208,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -210,7 +226,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call with a method that has a `Session` as required named parameter when analyzed',
+    'Given a future call with a method that has a `Session` as required named parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -237,7 +254,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -252,7 +272,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method without a first positional `Session` parameter',
+    'Given a future call method without a first positional `Session` parameter,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -277,7 +297,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -303,8 +326,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method without a first positional `Session` parameter'
-    'and the first parameter instead contains a named `Session` parameter when analyzed',
+    'Given a future call method without a first positional `Session` parameter and the first parameter instead contains a named `Session` parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -329,7 +352,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -355,8 +381,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method without a first positional `Session` parameter'
-    'and the first parameter instead contains an optional `Session` parameter when analyzed',
+    'Given a future call method without a first positional `Session` parameter and the first parameter instead contains an optional `Session` parameter, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -381,7 +407,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -407,7 +436,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method that without a Future<void> return type when analyzed',
+    'Given a future call method that without a Future<void> return type, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -431,7 +461,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -464,7 +497,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method that returns a Future with non void type when analyzed',
+    'Given a future call method that returns a Future with non void type, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -488,7 +522,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -520,7 +557,7 @@ class ExampleFutureCall extends FutureCall {
     },
   );
 
-  group('Given a valid future call with private method when analyzed', () {
+  group('Given a valid future call with private method, when analyzed,', () {
     var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
@@ -544,7 +581,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      analyzer = FutureCallsAnalyzer(
+        directory: testDirectory,
+        collection: collection,
+      );
       futureCallDefinitions = await analyzer.analyze(
         collector: collector,
         analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -566,7 +606,7 @@ class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a valid future call with multiple methods defined when analyzed',
+    'Given a valid future call with multiple methods defined, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -594,7 +634,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -623,7 +666,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call method with documentation when analyzed',
+    'Given a valid future call method with documentation, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -648,7 +691,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -678,7 +724,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call method with "@Deprecated(<string literal>)" annotation',
+    'Given a valid future call method with "@Deprecated(<string literal>)" annotation,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -703,7 +749,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -733,7 +782,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call method with "@Deprecated(<string const expr>)" annotation',
+    'Given a valid future call method with "@Deprecated(<string const expr>)" annotation,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -760,7 +809,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -789,7 +841,7 @@ class ExampleFutureCall extends FutureCall {
     },
   );
 
-  group('Given a valid future call method with "@deprecated" annotation', () {
+  group('Given a valid future call method with "@deprecated" annotation,', () {
     var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
@@ -814,7 +866,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      analyzer = FutureCallsAnalyzer(
+        directory: testDirectory,
+        collection: collection,
+      );
       futureCallDefinitions = await analyzer.analyze(
         collector: collector,
         analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -843,7 +898,7 @@ class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a valid future call with a method that has serializable parameters after the first positional Session parameter',
+    'Given a valid future call with a method that has serializable parameters after the first positional Session parameter,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -867,7 +922,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -924,7 +982,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call with a method that has a SerializableModel parameter after the Session parameter',
+    'Given a valid future call with a method that has a SerializableModel parameter after the Session parameter,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -948,7 +1006,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -1017,7 +1078,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, [
@@ -1093,7 +1157,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, [
@@ -1197,7 +1264,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, [
@@ -1285,7 +1355,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call with a method that has non serializable parameters after the first positional Session parameter',
+    'Given a valid future call with a method that has non serializable parameters after the first positional Session parameter,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -1309,7 +1379,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -1342,7 +1415,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call with a method that has a positional `Session` parameter only',
+    'Given a future call with a method that has a positional `Session` parameter only,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -1367,7 +1440,10 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
