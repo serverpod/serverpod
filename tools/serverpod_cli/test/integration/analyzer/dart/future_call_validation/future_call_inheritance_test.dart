@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_calls_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,14 +16,17 @@ import '../../../../test_util/file_system_entity_helpers.dart';
 
 final config = GeneratorConfigBuilder().build();
 late Directory testProjectDirectory;
+late AnalysisContextCollection collection;
 
 void main() {
   setUpAll(() async {
     testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
+    collection = createAnalysisContextCollection(testProjectDirectory);
   });
 
   tearDownAll(() async {
+    await collection.dispose();
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
@@ -58,7 +63,10 @@ class SubclassFutureCall extends BaseFutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -127,7 +135,10 @@ class SubclassFutureCall extends BaseFutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -203,7 +214,10 @@ class ConcreteSubclassFutureCall extends AbstractSubclassFutureCall {
 }
 ''');
 
-        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          collection: collection,
+        );
         futureCallDefinitions = await analyzer.analyze(
           collector: collector,
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),

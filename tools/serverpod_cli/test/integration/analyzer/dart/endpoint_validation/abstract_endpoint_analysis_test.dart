@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,14 +13,17 @@ import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
 late Directory testProjectDirectory;
+late AnalysisContextCollection collection;
 
 void main() {
   setUpAll(() async {
     testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
+    collection = createAnalysisContextCollection(testProjectDirectory);
   });
 
   tearDownAll(() async {
+    await collection.dispose();
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
@@ -45,7 +50,7 @@ abstract class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
@@ -92,7 +97,7 @@ class ConcreteEndpoint extends BaseEndpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -165,7 +170,7 @@ class ConcreteEndpoint extends BaseEndpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -230,7 +235,7 @@ class ConcreteEndpoint extends BaseEndpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -302,7 +307,7 @@ class ConcreteImplementationEndpoint extends HiddenBaseEndpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
