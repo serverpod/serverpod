@@ -12,6 +12,15 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'auth_user/models/account_already_linked_exception.dart' as _icr3dozn;
+import 'auth_user/models/account_link_conflict.dart' as _i6fa6f87;
+import 'auth_user/models/account_link_request_not_found_exception.dart'
+    as _i7xs5pmh;
+import 'auth_user/models/account_link_result.dart' as _iyrwiokw;
+import 'auth_user/models/account_link_status.dart' as _ihnh8hzn;
+import 'auth_user/models/account_merge_failed_exception.dart' as _ilyubg10;
+import 'auth_user/models/account_merge_not_configured_exception.dart'
+    as _ig2rugwn;
 import 'auth_user/models/auth_user.dart' as _iwlenhk6;
 import 'auth_user/models/auth_user_blocked_exception.dart' as _idjlnenv;
 import 'auth_user/models/auth_user_model.dart' as _ievhec41;
@@ -30,6 +39,13 @@ import 'profile/models/user_profile_data.dart' as _isbbac0p;
 import 'profile/models/user_profile_image.dart' as _iu5nhigv;
 import 'profile/models/user_profile_model.dart' as _iw6ug6lb;
 import 'session/models/server_side_session_info.dart' as _izgso6n0;
+export 'auth_user/models/account_already_linked_exception.dart';
+export 'auth_user/models/account_link_conflict.dart';
+export 'auth_user/models/account_link_request_not_found_exception.dart';
+export 'auth_user/models/account_link_result.dart';
+export 'auth_user/models/account_link_status.dart';
+export 'auth_user/models/account_merge_failed_exception.dart';
+export 'auth_user/models/account_merge_not_configured_exception.dart';
 export 'auth_user/models/auth_user.dart';
 export 'auth_user/models/auth_user_blocked_exception.dart';
 export 'auth_user/models/auth_user_model.dart';
@@ -95,6 +111,27 @@ class Protocol extends _isc.SerializationManager {
       }
     }
 
+    if (t == _icr3dozn.AccountAlreadyLinkedException) {
+      return _icr3dozn.AccountAlreadyLinkedException.fromJson(data) as T;
+    }
+    if (t == _i6fa6f87.AccountLinkConflict) {
+      return _i6fa6f87.AccountLinkConflict.fromJson(data) as T;
+    }
+    if (t == _i7xs5pmh.AccountLinkRequestNotFoundException) {
+      return _i7xs5pmh.AccountLinkRequestNotFoundException.fromJson(data) as T;
+    }
+    if (t == _iyrwiokw.AccountLinkResult) {
+      return _iyrwiokw.AccountLinkResult.fromJson(data) as T;
+    }
+    if (t == _ihnh8hzn.AccountLinkStatus) {
+      return _ihnh8hzn.AccountLinkStatus.fromJson(data) as T;
+    }
+    if (t == _ilyubg10.AccountMergeFailedException) {
+      return _ilyubg10.AccountMergeFailedException.fromJson(data) as T;
+    }
+    if (t == _ig2rugwn.AccountMergeNotConfiguredException) {
+      return _ig2rugwn.AccountMergeNotConfiguredException.fromJson(data) as T;
+    }
     if (t == _iwlenhk6.AuthUser) {
       return _iwlenhk6.AuthUser.fromJson(data) as T;
     }
@@ -148,6 +185,44 @@ class Protocol extends _isc.SerializationManager {
     }
     if (t == _izgso6n0.ServerSideSessionInfo) {
       return _izgso6n0.ServerSideSessionInfo.fromJson(data) as T;
+    }
+    if (t == _isc.getType<_icr3dozn.AccountAlreadyLinkedException?>()) {
+      return (data != null
+              ? _icr3dozn.AccountAlreadyLinkedException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i6fa6f87.AccountLinkConflict?>()) {
+      return (data != null
+              ? _i6fa6f87.AccountLinkConflict.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i7xs5pmh.AccountLinkRequestNotFoundException?>()) {
+      return (data != null
+              ? _i7xs5pmh.AccountLinkRequestNotFoundException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iyrwiokw.AccountLinkResult?>()) {
+      return (data != null ? _iyrwiokw.AccountLinkResult.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ihnh8hzn.AccountLinkStatus?>()) {
+      return (data != null ? _ihnh8hzn.AccountLinkStatus.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ilyubg10.AccountMergeFailedException?>()) {
+      return (data != null
+              ? _ilyubg10.AccountMergeFailedException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ig2rugwn.AccountMergeNotConfiguredException?>()) {
+      return (data != null
+              ? _ig2rugwn.AccountMergeNotConfiguredException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _isc.getType<_iwlenhk6.AuthUser?>()) {
       return (data != null ? _iwlenhk6.AuthUser.fromJson(data) : null) as T;
@@ -239,6 +314,16 @@ class Protocol extends _isc.SerializationManager {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
+      _icr3dozn.AccountAlreadyLinkedException =>
+        'AccountAlreadyLinkedException',
+      _i6fa6f87.AccountLinkConflict => 'AccountLinkConflict',
+      _i7xs5pmh.AccountLinkRequestNotFoundException =>
+        'AccountLinkRequestNotFoundException',
+      _iyrwiokw.AccountLinkResult => 'AccountLinkResult',
+      _ihnh8hzn.AccountLinkStatus => 'AccountLinkStatus',
+      _ilyubg10.AccountMergeFailedException => 'AccountMergeFailedException',
+      _ig2rugwn.AccountMergeNotConfiguredException =>
+        'AccountMergeNotConfiguredException',
       _iwlenhk6.AuthUser => 'AuthUser',
       _idjlnenv.AuthUserBlockedException => 'AuthUserBlockedException',
       _ievhec41.AuthUserModel => 'AuthUserModel',
@@ -278,6 +363,20 @@ class Protocol extends _isc.SerializationManager {
     }
 
     switch (data) {
+      case _icr3dozn.AccountAlreadyLinkedException():
+        return 'AccountAlreadyLinkedException';
+      case _i6fa6f87.AccountLinkConflict():
+        return 'AccountLinkConflict';
+      case _i7xs5pmh.AccountLinkRequestNotFoundException():
+        return 'AccountLinkRequestNotFoundException';
+      case _iyrwiokw.AccountLinkResult():
+        return 'AccountLinkResult';
+      case _ihnh8hzn.AccountLinkStatus():
+        return 'AccountLinkStatus';
+      case _ilyubg10.AccountMergeFailedException():
+        return 'AccountMergeFailedException';
+      case _ig2rugwn.AccountMergeNotConfiguredException():
+        return 'AccountMergeNotConfiguredException';
       case _iwlenhk6.AuthUser():
         return 'AuthUser';
       case _idjlnenv.AuthUserBlockedException():
@@ -323,6 +422,31 @@ class Protocol extends _isc.SerializationManager {
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'AccountAlreadyLinkedException') {
+      return deserialize<_icr3dozn.AccountAlreadyLinkedException>(data['data']);
+    }
+    if (dataClassName == 'AccountLinkConflict') {
+      return deserialize<_i6fa6f87.AccountLinkConflict>(data['data']);
+    }
+    if (dataClassName == 'AccountLinkRequestNotFoundException') {
+      return deserialize<_i7xs5pmh.AccountLinkRequestNotFoundException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'AccountLinkResult') {
+      return deserialize<_iyrwiokw.AccountLinkResult>(data['data']);
+    }
+    if (dataClassName == 'AccountLinkStatus') {
+      return deserialize<_ihnh8hzn.AccountLinkStatus>(data['data']);
+    }
+    if (dataClassName == 'AccountMergeFailedException') {
+      return deserialize<_ilyubg10.AccountMergeFailedException>(data['data']);
+    }
+    if (dataClassName == 'AccountMergeNotConfiguredException') {
+      return deserialize<_ig2rugwn.AccountMergeNotConfiguredException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'AuthUser') {
       return deserialize<_iwlenhk6.AuthUser>(data['data']);

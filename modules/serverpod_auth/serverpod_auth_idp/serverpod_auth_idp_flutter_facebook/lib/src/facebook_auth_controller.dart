@@ -47,6 +47,16 @@ class FacebookAuthController extends ChangeNotifier {
   /// log, but not passed to the callback.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Used by account linking, where the signed-in user stays signed in and the
+  /// new sign-in only proves ownership of the account being linked.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// Permissions to request from Facebook.
   ///
   /// The default permissions are [`email`, `public_profile`], which will give
@@ -60,6 +70,8 @@ class FacebookAuthController extends ChangeNotifier {
     required this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     this.permissions = defaultPermissions,
   }) {
     unawaited(_initialize());
@@ -125,6 +137,12 @@ class FacebookAuthController extends ChangeNotifier {
         _state == FacebookAuthState.initializing) {
       return;
     }
+
+    if (accountLinking != null) {
+      await accountLinking!.start();
+      if (accountLinking!.state != AccountLinkingState.awaitingSignIn) return;
+    }
+
     _setState(FacebookAuthState.loading);
 
     try {
@@ -151,10 +169,19 @@ class FacebookAuthController extends ChangeNotifier {
       final endpoint = client.getEndpointOfType<EndpointFacebookIdpBase>();
       final authSuccess = await endpoint.login(accessToken: accessToken);
 
-      await client.auth.updateSignedInUser(authSuccess);
+      final didSignIn = await completeSignIn(
+        client,
+        authSuccess,
+        accountLinking: accountLinking,
+        onAuthSuccess: onAuthSuccess,
+      );
 
-      _setState(FacebookAuthState.authenticated);
-      onAuthenticated?.call();
+      if (didSignIn) {
+        _setState(FacebookAuthState.authenticated);
+        onAuthenticated?.call();
+      } else {
+        _setState(FacebookAuthState.idle);
+      }
     } catch (error) {
       _error = error;
       _setState(FacebookAuthState.error);

@@ -4,8 +4,10 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'microsoft_auth_controller.dart';
 import 'microsoft_sign_in_button.dart';
 import 'microsoft_sign_in_style.dart';
+import '../common/account_linking_controller.dart';
 import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
+import '../common/sign_in_completion.dart';
 
 export 'microsoft_sign_in_button.dart';
 export 'microsoft_sign_in_style.dart';
@@ -60,6 +62,17 @@ class MicrosoftSignInWidget extends StatefulWidget {
   /// Ignored when [controller] is provided.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  ///
+  /// Ignored when [controller] is provided.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Ignored when [controller] is provided.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// Scopes to request from Microsoft.
   ///
   /// The default scopes are `openid`, `profile`, `email`, `offline_access`, and `https://graph.microsoft.com/User.Read`, which will give access to
@@ -100,6 +113,8 @@ class MicrosoftSignInWidget extends StatefulWidget {
     this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     this.scopes = MicrosoftAuthController.defaultScopes,
     this.style = MicrosoftButtonStyle.light,
     this.size = SignInButtonSize.large,
@@ -135,6 +150,8 @@ class _MicrosoftSignInWidgetState extends State<MicrosoftSignInWidget> {
           client: widget.client!,
           onAuthenticated: widget.onAuthenticated,
           onError: widget.onError,
+          accountLinking: widget.accountLinking,
+          onAuthSuccess: widget.onAuthSuccess,
           scopes: widget.scopes,
         );
     _controller.addListener(_onControllerStateChanged);

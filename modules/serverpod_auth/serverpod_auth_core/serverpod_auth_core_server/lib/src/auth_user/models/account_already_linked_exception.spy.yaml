@@ -1,0 +1,3 @@
+### Exception thrown when the sign-in method a user tried to link already
+### belongs to the account they are signed in to.
+exception: AccountAlreadyLinkedException

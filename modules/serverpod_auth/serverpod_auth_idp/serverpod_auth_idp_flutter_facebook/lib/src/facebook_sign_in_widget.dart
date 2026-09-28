@@ -60,6 +60,17 @@ class FacebookSignInWidget extends StatefulWidget {
   /// Ignored when [controller] is provided.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  ///
+  /// Ignored when [controller] is provided.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Ignored when [controller] is provided.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// Permissions to request from Facebook.
   ///
   /// The default permissions are `email` and `public_profile`, which will give
@@ -100,6 +111,8 @@ class FacebookSignInWidget extends StatefulWidget {
     this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     this.permissions = FacebookAuthController.defaultPermissions,
     this.text = SignInButtonTextVariant.continueWith,
     this.style = FacebookButtonStyle.blue,
@@ -135,6 +148,8 @@ class _FacebookSignInWidgetState extends State<FacebookSignInWidget> {
           client: widget.client!,
           onAuthenticated: widget.onAuthenticated,
           onError: widget.onError,
+          accountLinking: widget.accountLinking,
+          onAuthSuccess: widget.onAuthSuccess,
           permissions: widget.permissions,
         );
     _controller.addListener(_onControllerStateChanged);

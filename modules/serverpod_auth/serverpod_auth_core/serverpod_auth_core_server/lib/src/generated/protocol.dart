@@ -13,6 +13,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/protocol.dart' as _isp;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'auth_user/models/account_already_linked_exception.dart' as _icr3dozn;
+import 'auth_user/models/account_link_conflict.dart' as _i6fa6f87;
+import 'auth_user/models/account_link_request.dart' as _i51mbyak;
+import 'auth_user/models/account_link_request_not_found_exception.dart'
+    as _i7xs5pmh;
+import 'auth_user/models/account_link_result.dart' as _iyrwiokw;
+import 'auth_user/models/account_link_status.dart' as _ihnh8hzn;
+import 'auth_user/models/account_merge_failed_exception.dart' as _ilyubg10;
+import 'auth_user/models/account_merge_not_configured_exception.dart'
+    as _ig2rugwn;
 import 'auth_user/models/auth_user.dart' as _iwlenhk6;
 import 'auth_user/models/auth_user_blocked_exception.dart' as _idjlnenv;
 import 'auth_user/models/auth_user_model.dart' as _ievhec41;
@@ -33,6 +43,14 @@ import 'profile/models/user_profile_image.dart' as _iu5nhigv;
 import 'profile/models/user_profile_model.dart' as _iw6ug6lb;
 import 'session/models/server_side_session.dart' as _ioukntxo;
 import 'session/models/server_side_session_info.dart' as _izgso6n0;
+export 'auth_user/models/account_already_linked_exception.dart';
+export 'auth_user/models/account_link_conflict.dart';
+export 'auth_user/models/account_link_request.dart';
+export 'auth_user/models/account_link_request_not_found_exception.dart';
+export 'auth_user/models/account_link_result.dart';
+export 'auth_user/models/account_link_status.dart';
+export 'auth_user/models/account_merge_failed_exception.dart';
+export 'auth_user/models/account_merge_not_configured_exception.dart';
 export 'auth_user/models/auth_user.dart';
 export 'auth_user/models/auth_user_blocked_exception.dart';
 export 'auth_user/models/auth_user_model.dart';
@@ -64,6 +82,92 @@ class Protocol extends _is.DatabaseSerializationManager {
   final Set<_is.SerializationManager> _hostProtocols = {};
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
+    _isp.TableDefinition(
+      name: 'serverpod_auth_core_account_link_request',
+      dartName: 'AccountLinkRequest',
+      schema: 'public',
+      module: 'serverpod_auth_core',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'random_v7',
+        ),
+        _isp.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _isp.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _isp.ColumnDefinition(
+          name: 'authId',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'linkedAuthUserId',
+          columnType: _isp.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+        _isp.ColumnDefinition(
+          name: 'linkedMethod',
+          columnType: _isp.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _isp.ColumnDefinition(
+          name: 'linkedAccountWasCreated',
+          columnType: _isp.ColumnType.boolean,
+          isNullable: true,
+          dartType: 'bool?',
+        ),
+        _isp.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'now',
+        ),
+        _isp.ColumnDefinition(
+          name: 'expiresAt',
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_core_account_link_request_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _isp.IndexDefinition(
+          indexName: 'serverpod_auth_core_account_link_request_auth_user_id',
+          tableSpace: null,
+          elements: [
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'authUserId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     _isp.TableDefinition(
       name: 'serverpod_auth_core_jwt_refresh_token',
       dartName: 'RefreshToken',
@@ -466,6 +570,30 @@ class Protocol extends _is.DatabaseSerializationManager {
       }
     }
 
+    if (t == _icr3dozn.AccountAlreadyLinkedException) {
+      return _icr3dozn.AccountAlreadyLinkedException.fromJson(data) as T;
+    }
+    if (t == _i6fa6f87.AccountLinkConflict) {
+      return _i6fa6f87.AccountLinkConflict.fromJson(data) as T;
+    }
+    if (t == _i51mbyak.AccountLinkRequest) {
+      return _i51mbyak.AccountLinkRequest.fromJson(data) as T;
+    }
+    if (t == _i7xs5pmh.AccountLinkRequestNotFoundException) {
+      return _i7xs5pmh.AccountLinkRequestNotFoundException.fromJson(data) as T;
+    }
+    if (t == _iyrwiokw.AccountLinkResult) {
+      return _iyrwiokw.AccountLinkResult.fromJson(data) as T;
+    }
+    if (t == _ihnh8hzn.AccountLinkStatus) {
+      return _ihnh8hzn.AccountLinkStatus.fromJson(data) as T;
+    }
+    if (t == _ilyubg10.AccountMergeFailedException) {
+      return _ilyubg10.AccountMergeFailedException.fromJson(data) as T;
+    }
+    if (t == _ig2rugwn.AccountMergeNotConfiguredException) {
+      return _ig2rugwn.AccountMergeNotConfiguredException.fromJson(data) as T;
+    }
     if (t == _iwlenhk6.AuthUser) {
       return _iwlenhk6.AuthUser.fromJson(data) as T;
     }
@@ -525,6 +653,48 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (t == _izgso6n0.ServerSideSessionInfo) {
       return _izgso6n0.ServerSideSessionInfo.fromJson(data) as T;
+    }
+    if (t == _is.getType<_icr3dozn.AccountAlreadyLinkedException?>()) {
+      return (data != null
+              ? _icr3dozn.AccountAlreadyLinkedException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_i6fa6f87.AccountLinkConflict?>()) {
+      return (data != null
+              ? _i6fa6f87.AccountLinkConflict.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_i51mbyak.AccountLinkRequest?>()) {
+      return (data != null ? _i51mbyak.AccountLinkRequest.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_i7xs5pmh.AccountLinkRequestNotFoundException?>()) {
+      return (data != null
+              ? _i7xs5pmh.AccountLinkRequestNotFoundException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_iyrwiokw.AccountLinkResult?>()) {
+      return (data != null ? _iyrwiokw.AccountLinkResult.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_ihnh8hzn.AccountLinkStatus?>()) {
+      return (data != null ? _ihnh8hzn.AccountLinkStatus.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_ilyubg10.AccountMergeFailedException?>()) {
+      return (data != null
+              ? _ilyubg10.AccountMergeFailedException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ig2rugwn.AccountMergeNotConfiguredException?>()) {
+      return (data != null
+              ? _ig2rugwn.AccountMergeNotConfiguredException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _is.getType<_iwlenhk6.AuthUser?>()) {
       return (data != null ? _iwlenhk6.AuthUser.fromJson(data) : null) as T;
@@ -626,6 +796,17 @@ class Protocol extends _is.DatabaseSerializationManager {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
+      _icr3dozn.AccountAlreadyLinkedException =>
+        'AccountAlreadyLinkedException',
+      _i6fa6f87.AccountLinkConflict => 'AccountLinkConflict',
+      _i51mbyak.AccountLinkRequest => 'AccountLinkRequest',
+      _i7xs5pmh.AccountLinkRequestNotFoundException =>
+        'AccountLinkRequestNotFoundException',
+      _iyrwiokw.AccountLinkResult => 'AccountLinkResult',
+      _ihnh8hzn.AccountLinkStatus => 'AccountLinkStatus',
+      _ilyubg10.AccountMergeFailedException => 'AccountMergeFailedException',
+      _ig2rugwn.AccountMergeNotConfiguredException =>
+        'AccountMergeNotConfiguredException',
       _iwlenhk6.AuthUser => 'AuthUser',
       _idjlnenv.AuthUserBlockedException => 'AuthUserBlockedException',
       _ievhec41.AuthUserModel => 'AuthUserModel',
@@ -667,6 +848,22 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
 
     switch (data) {
+      case _icr3dozn.AccountAlreadyLinkedException():
+        return 'AccountAlreadyLinkedException';
+      case _i6fa6f87.AccountLinkConflict():
+        return 'AccountLinkConflict';
+      case _i51mbyak.AccountLinkRequest():
+        return 'AccountLinkRequest';
+      case _i7xs5pmh.AccountLinkRequestNotFoundException():
+        return 'AccountLinkRequestNotFoundException';
+      case _iyrwiokw.AccountLinkResult():
+        return 'AccountLinkResult';
+      case _ihnh8hzn.AccountLinkStatus():
+        return 'AccountLinkStatus';
+      case _ilyubg10.AccountMergeFailedException():
+        return 'AccountMergeFailedException';
+      case _ig2rugwn.AccountMergeNotConfiguredException():
+        return 'AccountMergeNotConfiguredException';
       case _iwlenhk6.AuthUser():
         return 'AuthUser';
       case _idjlnenv.AuthUserBlockedException():
@@ -720,6 +917,34 @@ class Protocol extends _is.DatabaseSerializationManager {
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'AccountAlreadyLinkedException') {
+      return deserialize<_icr3dozn.AccountAlreadyLinkedException>(data['data']);
+    }
+    if (dataClassName == 'AccountLinkConflict') {
+      return deserialize<_i6fa6f87.AccountLinkConflict>(data['data']);
+    }
+    if (dataClassName == 'AccountLinkRequest') {
+      return deserialize<_i51mbyak.AccountLinkRequest>(data['data']);
+    }
+    if (dataClassName == 'AccountLinkRequestNotFoundException') {
+      return deserialize<_i7xs5pmh.AccountLinkRequestNotFoundException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'AccountLinkResult') {
+      return deserialize<_iyrwiokw.AccountLinkResult>(data['data']);
+    }
+    if (dataClassName == 'AccountLinkStatus') {
+      return deserialize<_ihnh8hzn.AccountLinkStatus>(data['data']);
+    }
+    if (dataClassName == 'AccountMergeFailedException') {
+      return deserialize<_ilyubg10.AccountMergeFailedException>(data['data']);
+    }
+    if (dataClassName == 'AccountMergeNotConfiguredException') {
+      return deserialize<_ig2rugwn.AccountMergeNotConfiguredException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'AuthUser') {
       return deserialize<_iwlenhk6.AuthUser>(data['data']);
@@ -862,6 +1087,8 @@ class Protocol extends _is.DatabaseSerializationManager {
       }
     }
     switch (t) {
+      case _i51mbyak.AccountLinkRequest:
+        return _i51mbyak.AccountLinkRequest.t;
       case _iwlenhk6.AuthUser:
         return _iwlenhk6.AuthUser.t;
       case _i3ujynqb.RefreshToken:
