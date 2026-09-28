@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
@@ -14,14 +16,17 @@ import '../../../../test_util/file_system_entity_helpers.dart';
 final config = GeneratorConfigBuilder().build();
 
 late Directory testProjectDirectory;
+late AnalysisContextCollection collection;
 
 void main() {
   setUpAll(() async {
     testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
+    collection = createAnalysisContextCollection(testProjectDirectory);
   });
 
   tearDownAll(() async {
+    await collection.dispose();
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
@@ -48,7 +53,10 @@ class ExampleFutureCall extends FutureCall {
     session.log('Hello \$name');
   }
 ''');
-        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: trackedDirectory,
+          collection: collection,
+        );
         await analyzer.analyze(
           collector: CodeGenerationCollector(),
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -103,7 +111,10 @@ class ExampleFutureCall extends FutureCall {
     session.log('Hello \$name');
   }
 ''');
-        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: trackedDirectory,
+          collection: collection,
+        );
         await analyzer.analyze(
           collector: CodeGenerationCollector(),
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -157,7 +168,10 @@ class ExampleFutureCall extends FutureCall {
   }
 }
 ''');
-        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: trackedDirectory,
+          collection: collection,
+        );
         // Analyzed without models: the file is cached as pending full
         // analysis (hadErrors), the state a fresh up-to-date watch session
         // starts in before any generation has run.
