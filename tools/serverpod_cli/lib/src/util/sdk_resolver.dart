@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/process_io.dart';
 
@@ -84,8 +83,8 @@ bool isDartSdk(String root) => File(dartExecutableIn(root)).existsSync();
 /// pays for looking for one.
 ///
 /// The resolution chain:
-/// project pin (`.fvm/flutter_sdk`), `$PATH`, a global fvm install via
-/// `fvm flutter`, and - for Dart only - the SDK running this CLI.
+/// `fvm flutter` (the project's fvm pin, else the global fvm version), `$PATH`,
+/// and - for Dart only - the SDK running this CLI.
 /// Dart is derived from the resolved Flutter SDK whenever one
 /// was found, so the server and the Flutter app are built by matching SDKs.
 class SdkResolver {
@@ -96,12 +95,15 @@ class SdkResolver {
   /// PATH tier.
   final Future<String?> Function()? _probePathFlutterRoot;
 
-  /// The `flutter` the PATH tier probes.
-  final String _flutterExecutable;
+  /// The command the PATH tier probes.
+  final List<String> _flutterCommand;
 
   /// Overrides the `fvm flutter --version --machine` probe used for the
-  /// global fvm tier.
+  /// fvm tier.
   final Future<String?> Function()? _probeFvmFlutterRoot;
+
+  /// The command the fvm tier probes.
+  final List<String> _fvmCommand;
 
   /// Overrides the last-resort lookup of the SDK running this CLI.
   final String Function()? _runningSdkRoot;
@@ -109,12 +111,14 @@ class SdkResolver {
   SdkResolver({
     required this.baseDirectory,
     @visibleForTesting Future<String?> Function()? probePathFlutterRoot,
-    @visibleForTesting String flutterExecutable = 'flutter',
+    @visibleForTesting List<String> flutterCommand = const ['flutter'],
     @visibleForTesting Future<String?> Function()? probeFvmFlutterRoot,
+    @visibleForTesting List<String> fvmCommand = const ['fvm', 'flutter'],
     @visibleForTesting String Function()? runningSdkRoot,
   }) : _probePathFlutterRoot = probePathFlutterRoot,
-       _flutterExecutable = flutterExecutable,
+       _flutterCommand = flutterCommand,
        _probeFvmFlutterRoot = probeFvmFlutterRoot,
+       _fvmCommand = fvmCommand,
        _runningSdkRoot = runningSdkRoot;
 
   Future<ResolvedSdk?>? _flutter;
@@ -128,33 +132,31 @@ class SdkResolver {
   Future<ResolvedSdk> get dartSdk => _dart ??= _resolveDart();
 
   Future<ResolvedSdk?> _resolveFlutter() async {
-    final pinned = _findFvmProjectPin();
-    if (pinned != null) return pinned;
+    // Ask fvm first. `fvm flutter` finds the project's pin by walking up from
+    // the project directory, and falls back to the version set with
+    // `fvm global`, so the CLI and fvm always pick the same Flutter SDK.
+    final probeFvm =
+        _probeFvmFlutterRoot ??
+        () => _probeFlutterRoot(_fvmCommand, _probeDirectory);
+    final fvmSdk = await probeFvm();
+    if (fvmSdk != null && isFlutterSdk(fvmSdk)) {
+      return ResolvedSdk(
+        root: p.normalize(fvmSdk),
+        origin: 'fvm flutter',
+      );
+    }
 
-    // Ask the `flutter` on PATH where it lives. This and the fvm tier below
-    // cost a subprocess, so they run after the pin lookup rather than before.
-    // Going through the executable rather than reading $PATH directly is what
-    // makes shim-based managers (asdf, mise, puro) report their real root.
+    // Then ask the `flutter` on PATH where it lives. Going through the
+    // executable rather than reading $PATH directly is what makes shim-based
+    // managers (asdf, mise, puro) report their real root.
     final probePath =
-        _probePathFlutterRoot ?? () => _probeFlutterRoot([_flutterExecutable]);
+        _probePathFlutterRoot ??
+        () => _probeFlutterRoot(_flutterCommand, _probeDirectory);
     final flutterOnPath = await probePath();
     if (flutterOnPath != null && isFlutterSdk(flutterOnPath)) {
       return ResolvedSdk(
         root: p.normalize(flutterOnPath),
         origin: 'flutter on PATH',
-      );
-    }
-
-    // Last, a global fvm install. `fvm flutter` runs the version set with
-    // `fvm global`, which covers fvm users who never pin per project and have
-    // no `flutter` of their own on PATH.
-    final probeFvmPath =
-        _probeFvmFlutterRoot ?? () => _probeFlutterRoot(['fvm', 'flutter']);
-    final fvmOnPath = await probeFvmPath();
-    if (fvmOnPath != null && isFlutterSdk(fvmOnPath)) {
-      return ResolvedSdk(
-        root: p.normalize(fvmOnPath),
-        origin: 'fvm flutter',
       );
     }
 
@@ -197,45 +199,17 @@ class SdkResolver {
     }
   }
 
-  /// Walks up from [baseDirectory] looking for `.fvm/flutter_sdk`.
+  /// The directory the probes run in, so version managers that bind an SDK to
+  /// a directory report the project's SDK.
   ///
-  /// The walk stops after the first repository boundary so it never escapes
-  /// the project and picks up an unrelated pin from a parent checkout.
-  ResolvedSdk? _findFvmProjectPin() {
+  /// `serverpod create` resolves against a directory it has not created yet,
+  /// so this is the nearest ancestor of [baseDirectory] that exists.
+  String get _probeDirectory {
     var dir = baseDirectory.absolute;
-    while (true) {
-      final link = p.join(dir.path, '.fvm', 'flutter_sdk');
-      if (Directory(link).existsSync() || Link(link).existsSync()) {
-        // Resolve through the symlink so the recorded root is the real cache
-        // directory. That keeps diagnostics honest about which version is in
-        // play, and survives `fvm use` pointing the link somewhere else.
-        String resolved;
-        try {
-          resolved = Directory(link).resolveSymbolicLinksSync();
-        } on FileSystemException catch (e) {
-          log.debug('Ignoring unusable Flutter pin at $link: ${e.message}');
-          return null;
-        }
-
-        if (!isFlutterSdk(resolved)) {
-          log.debug(
-            'Ignoring Flutter pin at $link: $resolved is not a Flutter SDK.',
-          );
-          return null;
-        }
-
-        return ResolvedSdk(
-          root: resolved,
-          origin: '.fvm/flutter_sdk in ${dir.path}',
-        );
-      }
-
-      if (ServerDirectoryFinder.isRepositoryBoundary(dir)) return null;
-
-      final parent = dir.parent;
-      if (parent.path == dir.path) return null;
-      dir = parent;
+    while (!dir.existsSync() && dir.parent.path != dir.path) {
+      dir = dir.parent;
     }
+    return dir.path;
   }
 
   /// Whether `flutter` is installed.
@@ -253,23 +227,52 @@ class SdkResolver {
     }
   }
 
-  /// Runs [command] with `--version --machine` and returns the `flutterRoot`
-  /// it reports.
-  static Future<String?> _probeFlutterRoot(List<String> command) async {
+  /// Runs [command] with `--version --machine` in [workingDirectory] and
+  /// returns the `flutterRoot` it reports.
+  static Future<String?> _probeFlutterRoot(
+    List<String> command,
+    String workingDirectory,
+  ) async {
     try {
       final result = await Process.run(
         command.first,
         [...command.skip(1), '--version', '--machine'],
+        workingDirectory: workingDirectory,
         runInShell: Platform.isWindows,
       );
       if (result.exitCode != 0) return null;
-      final decoded = jsonDecode(result.stdout as String);
-      if (decoded is! Map || decoded['flutterRoot'] is! String) return null;
-      return decoded['flutterRoot'] as String;
+      return _flutterRootIn(result.stdout as String);
     } catch (_) {
-      // Nothing to spawn, or it answered with something unparseable.
+      // Nothing to spawn.
       return null;
     }
+  }
+
+  /// The `flutterRoot` reported in [stdout], the output of
+  /// `--version --machine`.
+  ///
+  /// Wrappers such as fvm and puro can print notices around the machine JSON,
+  /// and a notice can be JSON itself. So every run of whole lines that could
+  /// be a JSON object is decoded, and the first one that reports a
+  /// `flutterRoot` wins.
+  static String? _flutterRootIn(String stdout) {
+    final lines = const LineSplitter().convert(stdout);
+    for (var start = 0; start < lines.length; start++) {
+      if (!lines[start].trimLeft().startsWith('{')) continue;
+      for (var end = start; end < lines.length; end++) {
+        if (!lines[end].trimRight().endsWith('}')) continue;
+        final Object? decoded;
+        try {
+          decoded = jsonDecode(lines.sublist(start, end + 1).join('\n'));
+        } on FormatException {
+          continue;
+        }
+        if (decoded is Map && decoded['flutterRoot'] is String) {
+          return decoded['flutterRoot'] as String;
+        }
+      }
+    }
+    return null;
   }
 
   /// Describes the resolved SDKs and their resolution origin.

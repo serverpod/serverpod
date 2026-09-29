@@ -67,18 +67,17 @@ first tier that yields an SDK that actually exists on disk:
 
 | # | Tier | Flutter | Dart |
 | --- | ------ | --------- | ------ |
-| 1 | Project pin | `.fvm/flutter_sdk`, found by walking up | derived from the Flutter root |
+| 1 | fvm | `fvm flutter` | derived from the Flutter root |
 | 2 | PATH | `flutter` | `dart` |
-| 3 | Global fvm | `fvm flutter` | derived from the Flutter root |
-| 4 | Running SDK | — | `getSdkPath()` |
+| 3 | Running SDK | — | `getSdkPath()` |
 
-Tier 1 is the one that makes fvm work with no user action. Tier 3 covers fvm
-users who set a version with `fvm global` instead of pinning each project. It is
-only reached when no `flutter` on `$PATH` reports an SDK root. Tier 4 exists only for
-Dart as a last resort, it is what the CLI does today.
+Tier 1 is the one that makes fvm work with no user action. `fvm flutter` reports
+the project's pin, or the version set with `fvm global` for fvm users who don't
+pin each project. Tier 3 exists only for Dart as a last resort, it is what the
+CLI does today.
 
 **Dart is derived from Flutter, not resolved separately.** Whenever a Flutter
-root is resolved at tier 1, 2 or 3, the Dart SDK is taken from
+root is resolved at tier 1 or 2, the Dart SDK is taken from
 `<flutterRoot>/bin/cache/dart-sdk` rather than resolved independently. A project
 pinned to Flutter 3.32 gets Dart 3.8, which is what `pub` in that project
 expects.
@@ -94,12 +93,10 @@ resolved relative to a **base directory** that depends on the command:
 - Every other command — the resolved server directory, falling back to the
   current working directory.
 
-The upward walk stops at the same repository boundaries
-`ServerpodDirectoryFinder` already uses (`.git`, `melos.yaml`, a workspace
-`pubspec.yaml`, the home directory), so it never escapes the project and never
-picks up an unrelated `.fvm` from a parent checkout.
+`fvm flutter` runs in the base directory and finds the pin the way fvm itself
+does, so the CLI and fvm always pick the same version for a project.
 
-For a multi-app workspace, the walk starts at each Flutter app's own directory,
+For a multi-app workspace, fvm is asked from each Flutter app's own directory,
 so apps pinned to different Flutter versions each get their own SDK.
 
 ### Behaviour of the environment checks
@@ -108,8 +105,8 @@ so apps pinned to different Flutter versions each get their own SDK.
 either is missing. That requirement is kept. What changes is what it
 consults.
 
-**The check asks the resolver, not `$PATH`.** A project with a
-`.fvm/flutter_sdk` pin satisfies the Flutter requirement with no `flutter` on
+**The check asks the resolver, not `$PATH`.** A project pinned with fvm
+satisfies the Flutter requirement with no `flutter` on
 `$PATH` at all.
 
 The pre-command check runs before command-specific project discovery, using
@@ -169,7 +166,7 @@ on `$PATH`.
 
 **The server may be compiled by a different SDK than before.** On a machine where
 `flutter` on `$PATH` embeds a different Dart than the one running the CLI, tier 2
-now wins over tier 4 and the server is built by the Flutter-embedded Dart.
+now wins over tier 3 and the server is built by the Flutter-embedded Dart.
 
 ## Design decisions
 

@@ -35,11 +35,13 @@ String _fakeFlutterSdk(
   return root;
 }
 
-/// Points `<project>/.fvm/flutter_sdk` at [sdkRoot], the way `fvm use` does.
+/// Pins [project] to [sdkRoot] for the `fvm_reports_pinned_flutter_root.dart`
+/// shim.
+///
+/// Real fvm writes a version into `.fvmrc` and maps it to its cache. The shim
+/// reads the SDK root straight from the file.
 void _pinFvmFlutter(Directory project, String sdkRoot) {
-  final fvmDir = Directory(p.join(project.path, '.fvm'))
-    ..createSync(recursive: true);
-  Link(p.join(fvmDir.path, 'flutter_sdk')).createSync(sdkRoot);
+  File(p.join(project.path, '.fvmrc')).writeAsStringSync(sdkRoot);
 }
 
 /// A resolver that never falls through to a real `flutter` or `fvm` on PATH,
@@ -58,217 +60,136 @@ SdkResolver _resolver(
   );
 }
 
-/// Shims are shell scripts.
-const _platformsWithShellShims = '!windows';
+/// The command that runs the Dart shim [name] under `test/util/sdk_shims/`,
+/// followed by [args].
+List<String> _shimCommand(String name, [List<String> args = const []]) => [
+  Platform.resolvedExecutable,
+  p.join(Directory.current.path, 'test', 'util', 'sdk_shims', name),
+  ...args,
+];
 
-/// Writes an executable `flutter` [script] under [parent] and returns its
-/// path.
-String _flutterShim(Directory parent, String script) {
-  final shim = p.join(parent.path, 'shim_bin', 'flutter');
-  File(shim)
-    ..createSync(recursive: true)
-    ..writeAsStringSync(script);
-  Process.runSync('chmod', ['755', shim]);
-  return shim;
-}
-
-/// A resolver whose PATH tier runs [flutterShim] for real, with the global fvm
-/// tier disabled.
-SdkResolver _shimResolver(Directory baseDirectory, String flutterShim) {
+/// A resolver whose fvm tier runs `fvm_reports_pinned_flutter_root.dart` for
+/// real, reporting [globalSdk] where there is no pin, with the PATH tier
+/// disabled.
+SdkResolver _fvmShimResolver(Directory baseDirectory, {String? globalSdk}) {
   return SdkResolver(
     baseDirectory: baseDirectory,
-    flutterExecutable: flutterShim,
+    fvmCommand: _shimCommand('fvm_reports_pinned_flutter_root.dart', [
+      if (globalSdk != null) '--global=$globalSdk',
+    ]),
+    probePathFlutterRoot: () async => null,
+  );
+}
+
+/// A resolver whose PATH tier runs [flutterCommand] for real, with the fvm
+/// tier disabled.
+SdkResolver _shimResolver(
+  Directory baseDirectory,
+  List<String> flutterCommand,
+) {
+  return SdkResolver(
+    baseDirectory: baseDirectory,
+    flutterCommand: flutterCommand,
     probeFvmFlutterRoot: () async => null,
   );
 }
 
 void main() {
-  group('Given a project pinned with fvm', () {
-    late Directory temp;
-    late String cachedSdk;
-    late Directory project;
-
-    setUp(() {
-      temp = _tempDir();
-      cachedSdk = _fakeFlutterSdk(temp, name: 'cached-3.32.0');
-      project = Directory(p.join(temp.path, 'project'))..createSync();
-      _pinFvmFlutter(project, cachedSdk);
-    });
-
-    group('when the Flutter SDK is resolved from the pinned directory', () {
-      late ResolvedSdk? resolved;
-
-      setUp(() async {
-        resolved = await _resolver(project).flutterSdk;
-      });
-
-      test('then it resolves through the symlink to the cached SDK', () {
-        expect(resolved?.root, cachedSdk);
-      });
-
-      test('then it names the pin it followed as the origin', () {
-        expect(resolved?.origin, contains('.fvm/flutter_sdk'));
-      });
-    });
-
-    group('when the Flutter SDK is resolved from a nested subdirectory', () {
-      late ResolvedSdk? resolved;
-
-      setUp(() async {
-        final nested = Directory(p.join(project.path, 'apps', 'admin'))
-          ..createSync(recursive: true);
-        resolved = await _resolver(nested).flutterSdk;
-      });
-
-      test('then it finds the same pinned SDK', () {
-        expect(resolved?.root, cachedSdk);
-      });
-
-      test('then it names the pin it followed as the origin', () {
-        expect(resolved?.origin, contains('.fvm/flutter_sdk'));
-      });
-    });
-
-    group('when the resolution is described', () {
-      late String description;
-
-      setUp(() async {
-        description = await _resolver(project).describeResolution();
-      });
-
-      test('then it names the resolved Flutter SDK', () {
-        expect(description, contains(cachedSdk));
-      });
-
-      test('then it names the pin the Flutter SDK came from', () {
-        expect(description, contains('.fvm/flutter_sdk'));
-      });
-
-      test('then it names the Dart SDK derived from it', () {
-        expect(description, contains(embeddedDartSdkIn(cachedSdk)));
-      });
-
-      test('then it says the Dart SDK came from the Flutter SDK', () {
-        expect(description, contains('the resolved Flutter SDK'));
-      });
-    });
-  });
-
   group(
-    'Given a project with fvm pin that sits above a repository boundary',
+    'Given a project pinned with fvm and a global fvm version,',
     () {
-      late Directory insideRepository;
+      late Directory temp;
+      late String pinnedSdk;
+      late String globalSdk;
+      late Directory project;
 
       setUp(() {
-        final temp = _tempDir();
-        final outer = Directory(p.join(temp.path, 'outer'))..createSync();
-        _pinFvmFlutter(outer, _fakeFlutterSdk(temp, name: 'outer-cached'));
-        // An unrelated repository checked out inside the pinned directory.
-        insideRepository = Directory(p.join(outer.path, 'inner'))..createSync();
-        Directory(p.join(insideRepository.path, '.git')).createSync();
+        temp = _tempDir();
+        pinnedSdk = _fakeFlutterSdk(temp, name: 'pinned-3.32.0');
+        globalSdk = _fakeFlutterSdk(temp, name: 'global');
+        project = Directory(p.join(temp.path, 'project'))..createSync();
+        _pinFvmFlutter(project, pinnedSdk);
       });
 
-      group('when the Flutter SDK is resolved from inside the repository', () {
+      group('when the Flutter SDK is resolved from the pinned directory,', () {
         late ResolvedSdk? resolved;
 
         setUp(() async {
-          resolved = await _resolver(insideRepository).flutterSdk;
+          resolved = await _fvmShimResolver(
+            project,
+            globalSdk: globalSdk,
+          ).flutterSdk;
         });
 
-        test('then it returns null', () {
-          expect(resolved, isNull);
+        test('then it resolves the pinned SDK', () {
+          expect(resolved?.root, pinnedSdk);
+        });
+
+        test('then it names fvm as the origin', () {
+          expect(resolved?.origin, contains('fvm flutter'));
+        });
+      });
+
+      group('when the Flutter SDK is resolved from a nested subdirectory,', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          final nested = Directory(p.join(project.path, 'apps', 'admin'))
+            ..createSync(recursive: true);
+          resolved = await _fvmShimResolver(
+            nested,
+            globalSdk: globalSdk,
+          ).flutterSdk;
+        });
+
+        test('then it resolves the same pinned SDK', () {
+          expect(resolved?.root, pinnedSdk);
+        });
+      });
+
+      group('when the Flutter SDK is resolved from an unpinned directory,', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          final unpinned = Directory(p.join(temp.path, 'other'))..createSync();
+          resolved = await _fvmShimResolver(
+            unpinned,
+            globalSdk: globalSdk,
+          ).flutterSdk;
+        });
+
+        test('then it resolves the global fvm version', () {
+          expect(resolved?.root, globalSdk);
         });
       });
     },
   );
 
   group(
-    'Given a project with fvm pin above a linked-worktree boundary',
-    () {
-      late Directory insideRepository;
-
-      setUp(() {
-        final temp = _tempDir();
-        final outer = Directory(p.join(temp.path, 'outer'))..createSync();
-        _pinFvmFlutter(outer, _fakeFlutterSdk(temp, name: 'outer-cached'));
-        insideRepository = Directory(p.join(outer.path, 'worktree'))
-          ..createSync();
-        File(
-          p.join(insideRepository.path, '.git'),
-        ).writeAsStringSync('gitdir: ../.git/worktrees/example\n');
-      });
-
-      test(
-        'when resolving Flutter then it does not escape the worktree',
-        () async {
-          final resolved = await _resolver(insideRepository).flutterSdk;
-
-          expect(resolved, isNull);
-        },
-      );
-    },
-  );
-
-  group('Given a project whose fvm pin is a dangling symlink', () {
-    late Directory project;
-    late String sdkOnPath;
-
-    setUp(() {
-      final temp = _tempDir();
-      project = Directory(p.join(temp.path, 'project'))..createSync();
-      _pinFvmFlutter(project, p.join(temp.path, 'was-removed'));
-      sdkOnPath = _fakeFlutterSdk(temp, name: 'on-path');
-    });
-
-    group('when the Flutter SDK is resolved', () {
-      late ResolvedSdk? resolved;
-
-      setUp(() async {
-        resolved = await _resolver(
-          project,
-          pathFlutterRoot: sdkOnPath,
-        ).flutterSdk;
-      });
-
-      test('then it falls through to PATH instead of failing', () {
-        expect(resolved?.root, sdkOnPath);
-      });
-
-      test('then it names PATH as the origin', () {
-        expect(resolved?.origin, contains('PATH'));
-      });
-    });
-  });
-
-  group(
-    'Given a base directory that does not exist yet, pinned by its parent',
+    'Given a base directory that does not exist yet, pinned by its parent,',
     () {
       // `serverpod create` resolves against the directory it is about to
       // create, so the pin has to be found from a path with nothing at it.
       late Directory notYetCreated;
-      late String cachedSdk;
+      late String pinnedSdk;
 
       setUp(() {
         final temp = _tempDir();
-        cachedSdk = _fakeFlutterSdk(temp, name: 'cached');
+        pinnedSdk = _fakeFlutterSdk(temp, name: 'pinned');
         final parent = Directory(p.join(temp.path, 'workspace'))..createSync();
-        _pinFvmFlutter(parent, cachedSdk);
+        _pinFvmFlutter(parent, pinnedSdk);
         notYetCreated = Directory(p.join(parent.path, 'my_new_app'));
       });
 
-      group('when the Flutter SDK is resolved', () {
+      group('when the Flutter SDK is resolved,', () {
         late ResolvedSdk? resolved;
 
         setUp(() async {
-          resolved = await _resolver(notYetCreated).flutterSdk;
+          resolved = await _fvmShimResolver(notYetCreated).flutterSdk;
         });
 
-        test('then it finds the pinned SDK', () {
-          expect(resolved?.root, cachedSdk);
-        });
-
-        test('then it names the pin it followed as the origin', () {
-          expect(resolved?.origin, contains('.fvm/flutter_sdk'));
+        test('then it resolves the pinned SDK', () {
+          expect(resolved?.root, pinnedSdk);
         });
 
         test('then the base directory was never created to make that work', () {
@@ -277,57 +198,6 @@ void main() {
       });
     },
   );
-
-  group(
-    'Given a base directory that does not exist yet pinned further up',
-    () {
-      late Directory notYetCreated;
-      late String cachedSdk;
-
-      setUp(() {
-        final temp = _tempDir();
-        cachedSdk = _fakeFlutterSdk(temp, name: 'cached');
-        final root = Directory(p.join(temp.path, 'workspace'))..createSync();
-        _pinFvmFlutter(root, cachedSdk);
-        final nested = Directory(p.join(root.path, 'apps'))..createSync();
-        notYetCreated = Directory(p.join(nested.path, 'my_new_app'));
-      });
-
-      group('when the Flutter SDK is resolved', () {
-        late ResolvedSdk? resolved;
-
-        setUp(() async {
-          resolved = await _resolver(notYetCreated).flutterSdk;
-        });
-
-        test('then it finds the pinned SDK', () {
-          expect(resolved?.root, cachedSdk);
-        });
-      });
-    },
-  );
-
-  group('Given a base directory whose parent does not exist either', () {
-    late Directory deeplyMissing;
-
-    setUp(() {
-      final temp = _tempDir();
-      _pinFvmFlutter(temp, _fakeFlutterSdk(temp, name: 'cached'));
-      deeplyMissing = Directory(p.join(temp.path, 'missing', 'my_new_app'));
-    });
-
-    group('when the Flutter SDK is resolved', () {
-      late ResolvedSdk? resolved;
-
-      setUp(() async {
-        resolved = await _resolver(deeplyMissing).flutterSdk;
-      });
-
-      test('then it returns null', () {
-        expect(resolved, isNull);
-      });
-    });
-  });
 
   group(
     'Given a parent-pinned project whose pubspec comments out workspace,',
@@ -356,7 +226,7 @@ void main() {
         late ResolvedSdk? resolved;
 
         setUp(() async {
-          resolved = await _resolver(projectDirectory).flutterSdk;
+          resolved = await _fvmShimResolver(projectDirectory).flutterSdk;
         });
 
         test('then it finds the pin in the parent directory', () {
@@ -394,11 +264,44 @@ void main() {
         late ResolvedSdk? resolved;
 
         setUp(() async {
-          resolved = await _resolver(projectDirectory).flutterSdk;
+          resolved = await _fvmShimResolver(projectDirectory).flutterSdk;
         });
 
         test('then it finds the pin in the parent directory', () {
           expect(resolved?.root, cachedSdk);
+        });
+      });
+    },
+  );
+
+  group(
+    'Given fvm reports a root that is not a Flutter SDK, and a Flutter SDK on PATH',
+    () {
+      late Directory workingDirectory;
+      late String sdkOnPath;
+
+      setUp(() {
+        workingDirectory = _tempDir();
+        sdkOnPath = _fakeFlutterSdk(workingDirectory, name: 'on-path');
+      });
+
+      group('when the Flutter SDK is resolved', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          resolved = await _resolver(
+            workingDirectory,
+            fvmFlutterRoot: p.join(workingDirectory.path, 'was-removed'),
+            pathFlutterRoot: sdkOnPath,
+          ).flutterSdk;
+        });
+
+        test('then it falls through to PATH instead of failing', () {
+          expect(resolved?.root, sdkOnPath);
+        });
+
+        test('then it names PATH as the origin', () {
+          expect(resolved?.origin, contains('PATH'));
         });
       });
     },
@@ -497,6 +400,33 @@ void main() {
           expect(resolved.root, embeddedDartSdkIn(fvmGlobalSdk));
         });
       });
+
+      group('when the resolution is described', () {
+        late String description;
+
+        setUp(() async {
+          description = await _resolver(
+            workingDirectory,
+            fvmFlutterRoot: fvmGlobalSdk,
+          ).describeResolution();
+        });
+
+        test('then it names the resolved Flutter SDK', () {
+          expect(description, contains(fvmGlobalSdk));
+        });
+
+        test('then it names fvm as where the Flutter SDK came from', () {
+          expect(description, contains('fvm flutter'));
+        });
+
+        test('then it names the Dart SDK derived from it', () {
+          expect(description, contains(embeddedDartSdkIn(fvmGlobalSdk)));
+        });
+
+        test('then it says the Dart SDK came from the Flutter SDK', () {
+          expect(description, contains('the resolved Flutter SDK'));
+        });
+      });
     },
   );
 
@@ -522,8 +452,8 @@ void main() {
         ).flutterSdk;
       });
 
-      test('then PATH wins', () {
-        expect(resolved?.root, sdkOnPath);
+      test('then fvm wins', () {
+        expect(resolved?.root, fvmGlobalSdk);
       });
     });
   });
@@ -644,11 +574,10 @@ void main() {
   group(
     'Given a flutter shim that reports the SDK a directory is bound to, '
     'and another SDK in unbound directories,',
-    testOn: _platformsWithShellShims,
     () {
       late Directory project;
       late String projectSdk;
-      late String flutterShim;
+      late List<String> flutterCommand;
 
       setUp(() {
         final temp = _tempDir();
@@ -659,20 +588,16 @@ void main() {
         File(
           p.join(project.path, '.flutter_env'),
         ).writeAsStringSync(projectSdk);
-        flutterShim = _flutterShim(
-          temp,
-          '#!/bin/sh\n'
-          'root="$unboundSdk"\n'
-          'if [ -f .flutter_env ]; then read -r root < .flutter_env; fi\n'
-          'printf \'{"flutterRoot": "%s"}\\n\' "\$root"\n',
-        );
+        flutterCommand = _shimCommand('reports_bound_flutter_root.dart', [
+          '--unbound=$unboundSdk',
+        ]);
       });
 
       group('when the Flutter SDK is resolved for a bound project,', () {
         late ResolvedSdk? resolved;
 
         setUp(() async {
-          resolved = await _shimResolver(project, flutterShim).flutterSdk;
+          resolved = await _shimResolver(project, flutterCommand).flutterSdk;
         });
 
         test('then it resolves the SDK the project is bound to', () {
@@ -684,21 +609,21 @@ void main() {
 
   group(
     'Given a flutter wrapper that prints a notice before its machine JSON,',
-    testOn: _platformsWithShellShims,
     () {
       late Directory project;
       late String sdkOnPath;
-      late String flutterShim;
+      late List<String> flutterCommand;
 
       setUp(() {
         final temp = _tempDir();
         sdkOnPath = _fakeFlutterSdk(temp, name: 'on-path');
         project = Directory(p.join(temp.path, 'project'))..createSync();
-        flutterShim = _flutterShim(
-          temp,
-          '#!/bin/sh\n'
-          'echo "A new version of puro is available."\n'
-          'echo \'{"flutterRoot": "$sdkOnPath"}\'\n',
+        flutterCommand = _shimCommand(
+          'prints_notices_around_machine_json.dart',
+          [
+            '--root=$sdkOnPath',
+            '--before=A new version of puro is available.',
+          ],
         );
       });
 
@@ -706,7 +631,110 @@ void main() {
         late ResolvedSdk? resolved;
 
         setUp(() async {
-          resolved = await _shimResolver(project, flutterShim).flutterSdk;
+          resolved = await _shimResolver(project, flutterCommand).flutterSdk;
+        });
+
+        test('then it resolves the SDK the wrapper reported', () {
+          expect(resolved?.root, sdkOnPath);
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a flutter wrapper that prints a JSON notice before its machine JSON,',
+    () {
+      late Directory project;
+      late String sdkOnPath;
+      late List<String> flutterCommand;
+
+      setUp(() {
+        final temp = _tempDir();
+        sdkOnPath = _fakeFlutterSdk(temp, name: 'on-path');
+        project = Directory(p.join(temp.path, 'project'))..createSync();
+        flutterCommand = _shimCommand(
+          'prints_notices_around_machine_json.dart',
+          [
+            '--root=$sdkOnPath',
+            '--before={"notice": "A new version of puro is available."}',
+          ],
+        );
+      });
+
+      group('when the Flutter SDK is resolved,', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          resolved = await _shimResolver(project, flutterCommand).flutterSdk;
+        });
+
+        test('then it resolves the SDK the wrapper reported', () {
+          expect(resolved?.root, sdkOnPath);
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a flutter wrapper that prints a JSON notice after its machine JSON,',
+    () {
+      late Directory project;
+      late String sdkOnPath;
+      late List<String> flutterCommand;
+
+      setUp(() {
+        final temp = _tempDir();
+        sdkOnPath = _fakeFlutterSdk(temp, name: 'on-path');
+        project = Directory(p.join(temp.path, 'project'))..createSync();
+        flutterCommand = _shimCommand(
+          'prints_notices_around_machine_json.dart',
+          [
+            '--root=$sdkOnPath',
+            '--after={"notice": "A new version of puro is available."}',
+          ],
+        );
+      });
+
+      group('when the Flutter SDK is resolved,', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          resolved = await _shimResolver(project, flutterCommand).flutterSdk;
+        });
+
+        test('then it resolves the SDK the wrapper reported', () {
+          expect(resolved?.root, sdkOnPath);
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a flutter wrapper that prints notices with stray braces around its machine JSON,',
+    () {
+      late Directory project;
+      late String sdkOnPath;
+      late List<String> flutterCommand;
+
+      setUp(() {
+        final temp = _tempDir();
+        sdkOnPath = _fakeFlutterSdk(temp, name: 'on-path');
+        project = Directory(p.join(temp.path, 'project'))..createSync();
+        flutterCommand = _shimCommand(
+          'prints_notices_around_machine_json.dart',
+          [
+            '--root=$sdkOnPath',
+            '--before=Run `puro upgrade` {to update',
+            '--after=} was not closed',
+          ],
+        );
+      });
+
+      group('when the Flutter SDK is resolved,', () {
+        late ResolvedSdk? resolved;
+
+        setUp(() async {
+          resolved = await _shimResolver(project, flutterCommand).flutterSdk;
         });
 
         test('then it resolves the SDK the wrapper reported', () {
