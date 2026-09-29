@@ -122,6 +122,8 @@ void main() {
         port: redis.port,
         requireSsl: false,
         password: 'password',
+        // Keep AUTH pending beyond the separate subscription deadline.
+        connectTimeout: const Duration(seconds: 30),
       );
       await controller.start();
       redis.holdConfirmations = true;

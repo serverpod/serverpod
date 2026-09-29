@@ -11,6 +11,19 @@ import 'dart:io';
 class FakeRedisServer {
   final ServerSocket _socketServer;
   final List<Socket> _connections = [];
+  final Map<Socket, FakeRedisConnection> _peers = {};
+
+  /// Accepted connections, including closed ones, for checking retry identity.
+  final List<FakeRedisConnection> connections = [];
+  final _authentications =
+      StreamController<FakeRedisAuthentication>.broadcast();
+
+  /// Register before initiating the operation which sends AUTH.
+  Future<FakeRedisAuthentication> get nextAuthentication =>
+      _authentications.stream.first;
+
+  /// RESP reply used for AUTH when replies are not held.
+  String authenticationReply = '+OK\r\n';
   final List<_HeldConfirmation> _held = [];
   final List<Socket> _heldAuthentications = [];
   final Set<Socket> _pubSubConnections = {};
@@ -107,10 +120,23 @@ class FakeRedisServer {
     await dropConnections();
     await _socketServer.close();
     await _commands.close();
+    await _authentications.close();
   }
 
   void _handleConnection(Socket socket) {
     _connections.add(socket);
+    var peer = FakeRedisConnection._(connections.length, socket);
+    connections.add(peer);
+    _peers[socket] = peer;
+    // Socket sink failures belong to the synthetic peer, not the controller.
+    unawaited(
+      socket.done.then<void>(
+        (_) {},
+        onError: (Object error) {
+          peer.socketErrors.add(error);
+        },
+      ),
+    );
 
     var buffer = <int>[];
     socket.listen(
@@ -125,8 +151,16 @@ class FakeRedisServer {
           _handleCommand(socket, command);
         }
       },
-      onDone: () => _removeConnection(socket),
-      onError: (_) => _removeConnection(socket),
+      onDone: () {
+        peer._eof.complete();
+        _removeConnection(socket);
+        socket.destroy();
+      },
+      onError: (Object error) {
+        peer.socketErrors.add(error);
+        _removeConnection(socket);
+        socket.destroy();
+      },
       cancelOnError: true,
     );
   }
@@ -148,10 +182,17 @@ class FakeRedisServer {
     var name = command.first.toUpperCase();
     switch (name) {
       case 'AUTH':
+        _authentications.add(
+          FakeRedisAuthentication._(
+            _peers[socket]!,
+            command,
+            () => _heldAuthentications.remove(socket),
+          ),
+        );
         if (holdAuthentications) {
           _heldAuthentications.add(socket);
         } else {
-          socket.add(utf8.encode('+OK\r\n'));
+          socket.add(utf8.encode(authenticationReply));
         }
       case 'SUBSCRIBE':
       case 'UNSUBSCRIBE':
@@ -235,4 +276,32 @@ class _HeldConfirmation {
   final String channel;
 
   _HeldConfirmation(this.socket, this.kind, this.channel);
+}
+
+/// A real loopback connection observed by the fake server.
+class FakeRedisConnection {
+  final int id;
+  final Socket _socket;
+  final _eof = Completer<void>();
+  final List<Object> socketErrors = [];
+
+  FakeRedisConnection._(this.id, this._socket);
+
+  /// Inbound EOF, never completed by the fixture's own cleanup.
+  Future<void> get peerEof => _eof.future;
+}
+
+class FakeRedisAuthentication {
+  final FakeRedisConnection connection;
+  final List<String> arguments;
+
+  final void Function() _release;
+
+  FakeRedisAuthentication._(this.connection, this.arguments, this._release);
+
+  /// Attempts a controlled RESP reply, including after the client has closed.
+  void reply(String response) {
+    _release();
+    connection._socket.add(utf8.encode(response));
+  }
 }
