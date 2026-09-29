@@ -35,11 +35,12 @@ class RedisController {
   /// require ssl
   final bool requireSsl;
 
-  /// Maximum time to wait while opening the TCP/TLS connection to Redis.
+  /// Maximum time to wait while connecting to Redis, covering the TCP connect,
+  /// the TLS handshake, and authentication.
   ///
   /// After this duration, the attempt fails with [TimeoutException] instead of
   /// relying on OS-level connect timeouts (which can be very long when traffic
-  /// is dropped).
+  /// is dropped) or waiting on a server that never answers.
   final Duration connectTimeout;
 
   final Map<String, RedisSubscriptionCallback> _subscriptions = {};
@@ -78,7 +79,7 @@ class RedisController {
   /// until [stop] is called.
   ///
   /// If [connectTimeout] is set, it overrides [RedisController.connectTimeout]
-  /// for the TCP/TLS connections opened during this [start] call only.
+  /// for the connections opened during this [start] call only.
   Future<void> start({
     bool Function(Exception e)? handleError,
     Duration? connectTimeout,
@@ -115,8 +116,7 @@ class RedisController {
     await pubSubCommand?.get_connection().close();
   }
 
-  Future<Socket> _openRedisSocket([Duration? connectTimeoutOverride]) async {
-    final timeout = connectTimeoutOverride ?? connectTimeout;
+  Future<Socket> _openRedisSocket(Duration timeout) async {
     if (requireSsl) {
       return SecureSocket.connect(host, port, timeout: timeout);
     }
@@ -131,22 +131,34 @@ class RedisController {
     bool Function(Exception e)? handleError,
     Duration? connectTimeoutOverride,
   }) async {
+    final timeout = connectTimeoutOverride ?? connectTimeout;
+    Socket? socket;
     try {
-      final socket = await _openRedisSocket(connectTimeoutOverride);
-      var connection = RedisConnection();
-      var command = await connection.connectWithSocket(socket);
+      // One deadline for TCP, TLS and AUTH, since a server that accepts the
+      // connection but never answers would otherwise stall it forever.
+      final command = await () async {
+        socket = await _openRedisSocket(timeout);
+        var command = await RedisConnection().connectWithSocket(socket!);
 
-      if (password != null) {
-        dynamic result = switch (user) {
-          String user => await command.send_object(['AUTH', user, password]),
-          null => await command.send_object(['AUTH', password]),
-        };
+        if (password != null) {
+          dynamic result = switch (user) {
+            String user => await command.send_object(['AUTH', user, password]),
+            null => await command.send_object(['AUTH', password]),
+          };
 
-        if (result != 'OK') return null;
+          if (result != 'OK') return null;
+        }
+        return command;
+      }().timeout(timeout);
+
+      if (command == null) {
+        socket?.destroy();
+        return null;
       }
       _connectFailureLogged = false;
       return command;
     } catch (e) {
+      socket?.destroy();
       if (handleError != null && e is Exception && handleError(e)) {
         return null;
       }
