@@ -57,7 +57,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
 
   group('Given an address', () {
     late List<CitizenInt> citizens;

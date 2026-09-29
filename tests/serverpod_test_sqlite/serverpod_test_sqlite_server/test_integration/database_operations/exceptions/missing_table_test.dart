@@ -7,7 +7,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
   test(
     'Given that a table does not exist in the database when querying that table then the database exception prompt the user to check if a migration was applied.',
     () async {
