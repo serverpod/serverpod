@@ -67,6 +67,65 @@ void main() {
     );
 
     test(
+      'when a foreign key is added in the target table then mismatches include added foreign key',
+      () {
+        var tableA = TableDefinition(
+          name: 'test_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'user_id',
+              columnType: ColumnType.integer,
+              isNullable: false,
+              dartType: 'int',
+            ),
+          ],
+          foreignKeys: [],
+          indexes: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'test_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'user_id',
+              columnType: ColumnType.integer,
+              isNullable: false,
+              dartType: 'int',
+            ),
+          ],
+          foreignKeys: [
+            ForeignKeyDefinition(
+              constraintName: 'fk_user',
+              columns: ['user_id'],
+              referenceTable: 'users',
+              referenceTableSchema: 'public',
+              referenceColumns: ['id'],
+              onUpdate: ForeignKeyAction.noAction,
+              onDelete: ForeignKeyAction.noAction,
+              matchType: null,
+            ),
+          ],
+          indexes: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first.subs, isEmpty);
+        expect(mismatches.first, isA<ForeignKeyComparisonWarning>());
+        expect(mismatches.first.expected, isNull);
+        expect(mismatches.first.found, equals('fk_user'));
+        expect(mismatches.first.isMissing, isFalse);
+        expect(mismatches.first.isAdded, isTrue);
+        expect(mismatches.first.isMismatch, isFalse);
+      },
+    );
+
+    test(
       'when foreign keys have different definitions then mismatches include foreign key mismatch',
       () {
         var tableA = TableDefinition(
