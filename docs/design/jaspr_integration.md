@@ -1,10 +1,10 @@
-# Serverpod + Jaspr Development Integration
+# Serverpod + Jaspr Integration
 
 ## Goal
 
 Allow a Serverpod project to use Jaspr for its web frontend while keeping `serverpod start` as the single development entry point.
 
-Developers should not need to run `jaspr serve` separately or manage independent frontend/server processes.
+Developers should not need to run `jaspr serve` separately or manage independent frontend/server processes. In production, the built Jaspr applications ship with the Serverpod server, and Serverpod remains the public entry point.
 
 ## Project structure
 
@@ -27,7 +27,7 @@ The Jaspr application remains an independent Dart package with its normal Jaspr 
 
 ## Project configuration
 
-Jaspr applications are declared under `jaspr_apps`, following the existing `flutter_apps` convention:
+The Jaspr applications that `serverpod start` runs are declared under `jaspr_apps`, following the existing `flutter_apps` convention:
 
 ```yaml
 serverpod:
@@ -55,9 +55,39 @@ serverpod:
       auto_launch: false
 ```
 
-`jaspr_apps` is preferred over a generic `web_apps` abstraction because Serverpod is managing a specific development toolchain, just as `flutter_apps` represents applications managed through Flutter.
+`path` identifies the application package relative to the server package. `auto_launch` controls whether `serverpod start` launches the application on startup. The identifier connects the entry to the application's route in `server.dart`.
 
-A broader unified `apps` abstraction may be introduced later if Serverpod gains additional managed application types. It is not required for Jaspr integration.
+`jaspr_apps` only configures development. Where an application is served is defined by its route, which is the same in development and production.
+
+## Serving Jaspr applications
+
+The `serverpod_jaspr` package, added to the server package, provides the route that exposes a Jaspr application on Serverpod's web server. Each application is registered in `server.dart` with its identifier, its rendering mode and the path it is served at:
+
+```dart
+import 'package:serverpod_jaspr/serverpod_jaspr.dart';
+
+pod.webServer.addRoute(JasprRoute('website', mode: JasprMode.server), '/');
+pod.webServer.addRoute(JasprRoute('admin', mode: JasprMode.client), '/admin/');
+```
+
+> An extension method on `Serverpod` can provide a cleaner UX, but this spec shows the route directly for simplicity. Implementation can improve it.
+
+The API names are illustrative. The route behaves the same from the browser's perspective in both environments:
+
+- Under `serverpod start`, it forwards requests to the application's Jaspr development server.
+- Otherwise, it serves the application's build output from the server's `web/<app-id>/` directory. In server mode, `serverpod_jaspr` also runs the built Jaspr server. See [Production](#production).
+
+In development, Serverpod verifies and reports in case a route points to:
+
+- An identifier that is not declared in `jaspr_apps`.
+- A declared application without a route.
+- A route whose mode does not match the application's Jaspr configuration.
+
+The path is the application's mount: `/` for the root application, or a prefix such as `/admin/`. Mounts follow Serverpod's existing route rules. `/admin/` owns its subtree, while `/administrator` belongs to the root application, and more specific Serverpod routes take precedence over an application's catch-all route. Requests to a prefix without its trailing slash redirect to it.
+
+An application mounted at the root works unchanged. An application mounted under a prefix sets that prefix as its own base path: `Document.base` in server and static modes, or `<base href>` in `web/index.html` in client mode. Serverpod does not rewrite links or asset URLs.
+
+**Prefix-mount blocker:** Jaspr 0.23.5 loses the mount prefix from its live-reload URL behind Serverpod. Root mounts work. Prefix mounts, including the `/admin/` example above, remain unsupported until Jaspr preserves the prefix and two mounted applications have been verified to refresh independently through Serverpod.
 
 ## Development workflow
 
@@ -79,11 +109,15 @@ serverpod start
 
 For each enabled Jaspr application, Serverpod launches and supervises its normal Jaspr development environment.
 
-The developer does not need to start, stop, or restart Jaspr independently.
+The developer does not need to run a separate Jaspr command. With `auto_launch: false`, the application stays stopped until launched from its tab in the `serverpod start` interface.
+
+Until an application is ready, its route returns `503 Service Unavailable` naming the application and its state: stopped, starting or failed. A stopped application's page includes a hint to start it from its tab. Requests never launch the application or fall through to another route. The 503 page reloads itself once the application is ready, including across a Serverpod restart. Healthy Jaspr pages use only Jaspr's own refresh.
+
+Like the page Serverpod's Flutter web template serves when the app hasn't been built, the 503 page stands in for the application. Unlike it, the 503 page follows the application's live state and reloads by itself.
 
 ## Development bridge
 
-Jaspr retains its existing development behavior through `jaspr serve`, including:
+Jaspr retains its existing development behavior through `jaspr serve`, according to the selected rendering mode. For server mode this includes:
 
 - SSR
 - client compilation
@@ -91,11 +125,9 @@ Jaspr retains its existing development behavior through `jaspr serve`, including
 - file watching
 - browser refresh
 
-Serverpod exposes each Jaspr application through its own web server and transparently forwards that application's requests to its managed Jaspr development server.
+Serverpod forwards each application's requests, including assets and browser-refresh traffic, from its route to the application's Jaspr development server.
 
-From the browser's perspective, Serverpod remains the application's public entry point, including for Jaspr's automatic browser refresh.
-
-Each exposed Jaspr application needs its own mount point on the Serverpod web server. An application mounted at the root works unchanged. An application mounted under a path prefix must be configured for that base path, because its own links and asset URLs are not rewritten. How mount points are configured is still open.
+From the browser's perspective, Serverpod remains the application's public entry point, including for Jaspr's automatic browser refresh. Opening the application through a LAN address, a Codespaces URL or a tunnel works the same as through `localhost`.
 
 ```text
 Browser
@@ -106,6 +138,8 @@ Jaspr development server
 ```
 
 The internal Jaspr development server is an implementation detail and does not need to be accessed directly by the developer.
+
+Only server-mode development has been validated, using a stand-in forwarding proxy. Static and client modes behind the route remain untested. They are part of the intended design, not validated support.
 
 ## Development experience
 
@@ -120,23 +154,57 @@ Changes should preserve the normal expectations of both frameworks:
 
 From the developer's perspective, the project behaves as a single managed development environment.
 
-Two differences from running Jaspr standalone:
-
-- During development, Jaspr's server-side rendering runs in the Jaspr application's own process, not in the Serverpod server. SSR code reaches Serverpod through its API, like any other client.
-- Debugging browser-side Dart code, which requires Jaspr to launch and control its own browser, is not part of the integrated workflow.
+One difference from running Jaspr standalone is browser-side Dart debugging: it requires Jaspr to launch and control its own browser and is not part of the integrated workflow.
 
 ## Commands
 
 `serverpod start` is the canonical development command.
 
-`jaspr serve` remains the underlying Jaspr development command, but is launched and managed automatically by Serverpod.
+`jaspr serve` remains the underlying Jaspr development command, launched and managed automatically by Serverpod. `jaspr build` produces the production output; see [Production](#production).
 
 Jaspr commands remain available for standalone development and diagnostics when needed. Jaspr's default development port is 8080, the same as Serverpod's default API port, so running `jaspr serve` standalone next to a running Serverpod server requires choosing another port.
 
+## API access and authentication
+
+Jaspr's server-side rendering runs in its own process, in both development and production, and reaches Serverpod through its API like any other client. It cannot rely on in-process Serverpod sessions or endpoint objects.
+
+Serverpod passes the address of its local API listener to the Jaspr server as `SERVERPOD_API_URL`, so SSR calls do not go through the public load balancer. This internal address is server-only: it is never compiled into browser code or rendered into the page.
+
+Browser code gets the public API URL from the page itself. The route adds it as a `<meta>` tag to every HTML page it serves, in all three rendering modes, so the browser can create its client without an extra request. Serverpod takes the URL from the API server's public scheme, host and port in its configuration when serving the page, so one build works in every environment. That URL must be reachable from the browser. When using LAN devices or tunnels, configure and expose the API server accordingly; exposing the web server alone does not expose the API.
+
+The integration scaffold provides a client provider that components use in both environments. On the server, it creates a request-scoped client from `SERVERPOD_API_URL`. In the browser, it creates a client from the URL in the page, with the application's authentication provider.
+
+In development, a Jaspr application starts once the Serverpod API is up, so Jaspr's first build, around 40 seconds, begins after the server has started. Starting both in parallel is a later optimization.
+
+Static generation runs at build time, when no Serverpod API is assumed to be running. Applications that fetch API data while generating must configure an available service for that build.
+
+The initial scaffold makes anonymous SSR API calls. Signed-in content loads after hydration, using the browser's authenticated client. A token stored only in browser storage is not available to SSR. Applications needing authenticated SSR must arrange for credentials to accompany the page request and use a request-scoped client; that flow is outside the initial scaffold.
+
 ## Production
 
-Serverpod remains the deployed server application. How the Jaspr frontend is built and exposed in production is still open.
+Production uses the same routes as development. Before building the server, build each Jaspr application with `jaspr build` and place its output in the server's `web/<app-id>/` directory:
 
-In development, Jaspr's server-side rendering runs in its own process behind Serverpod. Production can either keep that arrangement, with Serverpod forwarding requests to the built Jaspr server, or run Jaspr's rendering inside the Serverpod server. If production runs it inside Serverpod, development and production behave differently. For example, SSR code that relies on in-process access to Serverpod would work in production but not in development. The choice needs to be made before this part of the experience is specified.
+```bash
+cd my_project_web
+jaspr build
+rm -rf ../my_project_server/web/website
+cp -R build/jaspr ../my_project_server/web/website
+```
+
+The server template's Dockerfile already copies `web/` into the image, so it needs no Jaspr-specific steps.
+
+| Jaspr mode | Output in `web/<app-id>/` | How the route serves it |
+|---|---|---|
+| `server` | The `app` executable and its adjacent `web/` assets. | `serverpod_jaspr` runs the executable on an internal port and forwards the application's requests to it. |
+| `static` | Pre-rendered pages and assets. | Serves the files, resolving pages such as `/about/` to `about/index.html`. |
+| `client` | `index.html` and assets. | Serves the files, falling back to `index.html` for client-side navigation. |
+
+In server mode, the output is a compiled executable for the platform it was built on. Build it for the deployment platform with `--target-os` and `--target-arch`, for example `jaspr build --target-os linux --target-arch x64` on a Mac. Do not serve the whole `web/` directory with a `StaticRoute`, which would make the executable downloadable.
+
+In server mode, `serverpod_jaspr` starts the Jaspr server together with the web server and stops it on shutdown. It runs only in roles that start the web server, so a maintenance run of the same image does not start it. The server reports ready only once the Jaspr server is ready. If the Jaspr server exits unexpectedly, the Serverpod server shuts down with an error so that the deployment platform restarts the instance.
+
+Static and client modes need no Jaspr server process in production.
+
+The Jaspr server-mode release build has been validated on its own: the copied executable and assets served SSR HTML and compiled JavaScript without Dart or Jaspr on `PATH`. `serverpod_jaspr` is not implemented yet.
 
 Implementation feasibility and known limitations are tracked in [jaspr_integration_feasibility.md](jaspr_integration_feasibility.md).

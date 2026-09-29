@@ -8,12 +8,14 @@ This is an internal companion to the user-facing spec. It records what was verif
 
 ## Summary
 
-The integration is feasible today by supervising `jaspr serve --verbose`, as long as Serverpod owns shutdown of the whole Jaspr process tree.
+The root-mounted, server-mode development integration is feasible today by supervising `jaspr serve --verbose`, as long as Serverpod owns shutdown of the whole Jaspr process tree. Prefix mounts need the additional Jaspr fix described below.
 
 - **Logs:** `--verbose` disables the progress spinner, so piped output is newline-delimited, tagged (`[CLI]`, `[BUILDER]`, `[SERVER]`) and free of ANSI codes. It can be forwarded to the TUI without a machine protocol.
-- **Public origin:** when the forwarding route sets `X-Forwarded-Host` and `X-Forwarded-Proto`, Jaspr's live-reload channel uses Serverpod's public origin. The browser never contacts Jaspr's internal ports, and no JavaScript has to be rewritten.
-- **Shutdown:** this is the real gap. Signaling only the `jaspr serve` process orphans its SSR server. A crashed supervisor orphans it too, in every mode tested. Serverpod has to terminate the process tree itself, and a robust fix needs Jaspr changes.
+- **Public origin:** for root mounts, when the forwarding route sets `X-Forwarded-Host` and `X-Forwarded-Proto`, Jaspr's live-reload channel uses Serverpod's public origin. The browser never contacts Jaspr's internal ports, and no JavaScript has to be rewritten.
+- **Shutdown:** signaling only the `jaspr serve` process orphans its SSR server. A crashed supervisor orphans it too, in every mode tested. Serverpod has to terminate the process tree itself, and a robust fix needs Jaspr changes.
+- **Mount prefix:** with forwarded public-origin headers, the live-reload URL loses a configured prefix such as `/admin/`. This was reproduced with both the document base and server handler mounted at that prefix. Prefix mounts remain blocked pending a Jaspr fix and independent multi-app refresh validation.
 - **`jaspr daemon`:** the hidden machine mode is not usable as-is. With `--no-launch-in-chrome` it crashes the first time a browser connects. Its default mode launches Jaspr's own Chrome at the internal port instead.
+- **Production:** a `serverpod_jaspr` route serves the build output from the server's `web/<app-id>/` directory and, in server mode, runs the compiled Jaspr server. `jaspr build` can cross-compile that server for the deployment platform. Serverpod's existing lifecycle hooks can run it, with two gaps: start hooks are synchronous and run before the API listener binds, and readiness indicators can only be registered at construction.
 
 Running `jaspr serve` as a child keeps the promise of not duplicating Jaspr tooling. Serverpod adds a forwarding route and process supervision; building, SSR, file watching and reload stay in Jaspr.
 
@@ -21,18 +23,22 @@ Running `jaspr serve` as a child keeps the promise of not duplicating Jaspr tool
 
 - `jaspr_cli` 0.23.5 and `jaspr` 0.23.5, the latest release at the time of writing (published 2026-09-25).
 - Dart SDK 3.12.2, Linux.
-- A `jaspr.mode: server` app with `jaspr_router`, run with custom ports so it could not collide with Serverpod defaults.
+- A `jaspr.mode: server` app with `jaspr_router`, run with custom ports so it could not collide with Serverpod defaults. Static and client modes behind the forwarding route have not been tested; their behavior below is a design requirement informed by source inspection, not validated support.
 - Process, port and protocol behavior was probed from the shell.
 - Browser behavior was validated separately in an isolated Chromium, both directly and through a small HTTP forwarding proxy that stands in for a Serverpod route. No Serverpod route has been implemented.
+- A separate prefix probe mounted a server-mode app at `/admin/`, set `Document(base: '/admin/')`, and inspected the bootstrap with and without forwarded headers. It did not validate browser refresh under that prefix.
+- `jaspr build --verbose` succeeded for a server-mode app. Its executable and adjacent assets were copied to a separate directory and served SSR HTML and compiled JavaScript with neither Dart nor Jaspr on `PATH`. This validates the Jaspr release artifact, not a Serverpod deployment image.
 
 ## Recommended mechanism
+
+The following command and forwarding path were validated for server mode:
 
 ```bash
 jaspr serve --verbose --port <ssr-port> --proxy-port <proxy-port>
 ```
 
-- Serverpod allocates `--port` and `--proxy-port` per configured Jaspr app.
-- The Serverpod forwarding route sends requests to `<ssr-port>` with `X-Forwarded-Host` and `X-Forwarded-Proto` set to the public origin, and streams responses.
+- Serverpod allocates `--port` and `--proxy-port` per server/static app. In client mode, Jaspr puts its development proxy on `--port` and does not start an SSR server; the forwarding target is that port (`dev_command.dart:110-140`).
+- In server mode, the forwarding route sends requests to `<ssr-port>` with `X-Forwarded-Host` and `X-Forwarded-Proto` derived from the incoming request's effective public origin, and streams responses. Honor upstream forwarded headers from trusted proxies; do not substitute the configured browser-launch URL.
 - Serverpod starts the child so that its whole process tree can be signaled, and stops it by signaling that tree (see [Shutdown](#shutdown)).
 
 ### Log format
@@ -86,6 +92,8 @@ window.$dwdsDevHandlerPath = "https://serverpod.example.test:8082/$dwdsSseHandle
 
 Jaspr's own bootstrap rewrite (`jaspr_cli lib/src/helpers/proxy_helper.dart:63`) only replaces `http://localhost:<proxy-port>/`, so it leaves a forwarded origin alone.
 
+The route must derive those header values per request, retaining any public port and honoring trusted upstream forwarding. The configured public URL is only the TUI/browser-launch default. A request made through a LAN address or tunnel must retain that origin even if configuration says `localhost:8082`. This request-origin policy also applies in production. The fixed header values in the probe demonstrate how Jaspr handles them; they are not a proposed fixed-origin configuration.
+
 In the browser validation through the proxy:
 
 - The live-reload stream (`GET $dwdsSseHandler`) and its messages (`POST $dwdsSseHandler`) went through the public port and returned 200.
@@ -135,32 +143,96 @@ The SSR server's VM service uses the default port 8181 (`--enable-vm-service` wi
 | 5 | The SSR server's VM service is fixed at port 8181. A second Jaspr app loses its SSR debugger and logs a spurious `[ERROR]`. | Downgrade that specific error in the TUI. | Use `--enable-vm-service=0`, as Serverpod already does for its own server (`tools/serverpod_cli/lib/src/commands/start/server_process.dart:120`). |
 | 6 | Port defaults collide. `--port` defaults to 8080, the Serverpod API port. `--proxy-port` defaults to 5567 for every app. `--web-port` is declared but never read (`dev_command.dart:50`). Embedded Flutter mode hardcodes 5678 (`lib/src/project.dart:298`), so two `jaspr.flutter: embedded` apps cannot run together. | Always pass `--port` and `--proxy-port`, allocated per app. | Make the embedded Flutter port configurable, and remove or wire up `--web-port`. |
 | 7 | Browser-side Dart debugging needs Jaspr to launch Chrome itself, at its internal port. | Serverpod opens the browser at its own URL, as it does for Flutter web. Browser-side debugging is not available. | Allow debugging with an externally opened browser, or accept a launch URL. |
+| 8 | The live-reload URL loses the mount prefix when forwarded public-origin headers are present. | Keep prefix mounts unsupported until fixed; root mounts retain the validated behavior. | Preserve both the forwarded origin and the server handler's mount prefix when constructing the DWDS endpoint. |
 
-Gaps 1 and 2 decide whether the integration is robust: a developer should never find a stale Jaspr server holding a port after `serverpod start` exits. Gap 3 blocks adopting daemon mode, and gap 4 is the long-term interface question. Gaps 5–7 concern debugging and additional application configurations.
+Gaps 1 and 2 decide whether the integration is robust: a developer should never find a stale Jaspr server holding a port after `serverpod start` exits. Gap 3 blocks adopting daemon mode, and gap 4 is the long-term interface question. Gaps 5–7 concern debugging and additional application configurations. Gap 8 blocks prefix mounts, including the spec's `/admin/` example.
 
 ## Serverpod-side work
 
-- **Configuration.** `jaspr_apps` can mirror `tools/serverpod_cli/lib/src/config/flutter_app_config.dart`: app id keys, `path`, `displayName`, `auto_launch`, and non-reserved keys forwarded as CLI arguments. Include the fingerprinting used to detect config changes.
+- **Configuration.** `jaspr_apps` can mirror `tools/serverpod_cli/lib/src/config/flutter_app_config.dart`: app id keys, `path`, `displayName`, `auto_launch`, and non-reserved keys forwarded as CLI arguments. Include the fingerprinting used to detect config changes. The runner reads each app's rendering mode from `jaspr.mode` in its pubspec. Mounts are not part of `jaspr_apps`; they are the route paths in `server.dart`.
 - **Process supervision.**
   - A `JasprAppManager` and `JasprProcess` modeled on `FlutterAppManager` and `FlutterProcess`.
-  - Readiness comes from the `[SERVER] Serving at` line or a TCP probe on the assigned port.
+  - Readiness must probe the assigned upstream and account for the mode. Server mode logs `[SERVER] Serving at`; client mode logs `[CLI] Serving at` and has no SSR child. The client-mode path remains untested.
+  - With `auto_launch: false`, do not start Jaspr until the user launches it from the TUI. The route returns a state-appropriate 503 meanwhile. Do not launch on incoming requests.
   - Stop by signaling the process group, wait, then kill the group.
   - Clean up stale children from a previous crashed session.
   - How to put the child in its own process group from Dart (for example `ProcessStartMode.detachedWithStdio`, or a `setsid` wrapper) and what to do on Windows still need to be validated. A detached child does not report an exit code. Its output streams closing proves neither that it exited nor that its descendants were cleaned up, so detached mode needs a separately validated way to detect termination.
 - **TUI.** `AppLogTab` (`tools/serverpod_cli/lib/src/commands/start/tui/tab_model.dart`) is keyed by app id and has run state, URL and a device label, so Jaspr apps fit into the apps area. Map `[TAG]` prefixes and the stdout/stderr split to log levels.
 - **Runner API.** `RunnerSnapshot` is Flutter-specific (`flutterApps`, `flutterLines`, `runningFlutterApps`, ...). Its decoder defaults missing fields, so Jaspr fields can be added without breaking `serverpod attach`, MCP or the VS Code extension. The alternative is generalizing to kind-tagged apps.
+- **Runner-to-server state.** Allocate app ports once per runner session, pass each app's id, mode and upstream URL through `ServerProcess.environment`, and publish live states through a development-only `ext.serverpod.setJasprAppStates` service extension. Replay the complete snapshot after every server restart or reconnection; details below.
+- **`serverpod_jaspr` package.** A package added to the server package, so Serverpod core only gains what the package cannot do on its own.
+  - `JasprRoute` forwards to the development server when the runner's app data is present. Otherwise it serves `web/<app-id>/` according to its declared mode, or returns a 503 explaining how to start the app when there is no build output, for example when the server is launched from an IDE outside `serverpod start`.
+  - In development, the server compares its Jaspr routes with the runner's app data and reports undeclared ids, declared apps without a route, and a route mode that differs from the app's `jaspr.mode`.
+  - Static mode: Relic's static handler returns 404 for a directory instead of serving its `index.html` (`relic_io lib/src/io/static/static_handler.dart:230-231`), while Jaspr writes extensionless generated routes to `<route>/index.html` (`jaspr_cli lib/src/commands/build_command.dart:327-336`). The route needs index-file resolution; missing pages keep a 404.
+  - Client mode: Serverpod's `SpaRoute` (`packages/serverpod/lib/src/web_server/routes/spa_route.dart`) already provides the `index.html` fallback.
+  - Server mode: runs the compiled Jaspr server; see [Running the Jaspr server](#running-the-jaspr-server).
+  - Insert the public API URL as a `<meta>` tag into every HTML response the route serves or forwards, in both environments. `WebServer._devHtmlInjection` (`packages/serverpod/lib/src/web_server/web_server.dart:237-258`) already rewrites HTML responses by reading the body and rebuilding it. The route does the same for HTML only: it should request identity encoding from the upstream so it never has to decompress, and every other response, including the live-reload stream, stays streamed.
+  - Reserve `__serverpod/status` below each mount in development. It takes precedence over the app's catch-all and over forwarding.
 - **Web server forwarding.**
-  - Relic 2 has streaming bodies (`Body.fromDataStream`), `Hijack` and `WebSocketUpgrade`, but no reverse-proxy helper, so Serverpod needs a development forwarding route.
-  - The route must set `X-Forwarded-Host` and `X-Forwarded-Proto`.
+  - Relic 2 has streaming bodies (`Body.fromDataStream`), `Hijack` and `WebSocketUpgrade`, but no reverse-proxy helper, so `serverpod_jaspr` needs its own forwarding.
+  - The route must set `X-Forwarded-Host` and `X-Forwarded-Proto` from the incoming request, honoring trusted upstream forwarded headers and preserving the public port. The configured browser-launch URL must not override them.
+  - Preserve the prefix for a mounted server/static development handler. Strip it for the root-based client-mode proxy, retaining the query string in both cases. Client-mode reload must still advertise the public prefix; stripping alone does not solve gap 8.
   - It must forward request bodies, which the live-reload `POST`s need.
   - It must stream responses without buffering, because the live-reload channel is a long-lived event stream.
-- **Dev HTML injection.** `WebServer._devHtmlInjection` (`packages/serverpod/lib/src/web_server/web_server.dart:237`) injects Serverpod's `/__dev/version` polling script into HTML responses in dev mode. Forwarded Jaspr responses should be excluded, so pages are not driven by two reload mechanisms.
+- **Development recovery page.** `WebServer._devHtmlInjection` (`packages/serverpod/lib/src/web_server/web_server.dart:237`) only injects the existing `/__dev/version` polling script into HTML 200 responses, so a 503 does not gain recovery automatically. Explicitly embed a polling script in the route's HTML 503 page. It polls `GET __serverpod/status` below the app's mount every 500 ms and reloads when the synchronized app state is `ready`, even on the first poll. Failed requests keep polling across a server restart. Use the same polling pattern as `devAutoRefreshScript`, with app readiness as the condition; the existing global static-file counter does not represent per-app state. Exclude healthy forwarded Jaspr responses from Serverpod's refresh-script injection so they use only Jaspr refresh; they still receive the route's API URL tag.
+- **API clients.** Pass the local listener URL as the server-only runtime variable `SERVERPOD_API_URL`, and insert the public API URL into the HTML pages each route serves, for browser clients. A scaffold provider chooses the appropriate client implementation. The initial scaffold uses anonymous SSR calls; authenticated SSR needs an application-owned request credential bridge and request-scoped clients.
 
-## Open questions for the spec
+### Development registration and state synchronization
 
-### Where SSR runs in production
+`ServerProcess` already accepts an environment map and supports VM-service calls (`tools/serverpod_cli/lib/src/commands/start/server_process.dart:72-84`, `:142`, `:271`). The detached runner, not the attached TUI, owns the proposed Jaspr manager and this state channel.
 
-In the recommended development setup, SSR runs in Jaspr's own process behind Serverpod. The spec records the production setup as an open decision. If production runs Jaspr SSR inside the Serverpod process, development and production diverge: SSR code that uses Serverpod sessions or endpoints in-process would work in production but not in development.
+1. Allocate upstream ports once per runner session, including stopped apps. Pass `SERVERPOD_JASPR_APPS` as JSON containing a session id and each app's identifier, mode and loopback upstream URL to every Serverpod process. Routes in `server.dart` look up their app by identifier. Keep assignments stable across server and Jaspr restarts. Changes to the app set restart the Serverpod child with fresh startup data.
+2. Register a development-only `ext.serverpod.setJasprAppStates` VM-service extension. The runner sends a complete snapshot with the session id, a monotonically increasing revision and each app's state (`stopped`, `starting`, `ready`, or `failed`). The server validates app ids against startup data, rejects older revisions or a different session, updates its registry and acknowledges the applied revision. Replaying the same revision is idempotent and returns the acknowledgement again. The runner marks `ready` only after its upstream readiness probe succeeds.
+3. Enable the VM service for managed Jaspr development even if file watching is disabled. On a new server process or connection, wait for extension registration and resend the latest complete snapshot; retry until acknowledged. A replacement server begins unsynchronized and returns a generic unavailable 503 until replay, rather than guessing a state from an open port. A missing extension must surface as a runner/server version error.
+4. Forwarding routes read this registry. An unreachable upstream despite a `ready` snapshot returns a generic unavailable 503. `GET __serverpod/status` below the app's mount reads the same registry, returns its current state with no caching, and is available only in development. The recovery page polls for current readiness, avoiding a missed-change race between rendering the 503 and its first poll.
+
+`ext.serverpod.addresses` is an existing server-to-runner extension event, not a callable RPC. Its `api` field describes the public URL (`packages/serverpod_shared/lib/src/serverpod_addresses.dart`). Extend that publication with a separate `internalApi` field derived from the bound local listener, for the runner's `SERVERPOD_API_URL` handoff. Do not use the public field for SSR. Address publication must precede waiting for Jaspr readiness, so the two processes do not wait on each other. State synchronization uses the new RPC in the opposite direction. In production, `serverpod_jaspr` runs inside the server process, reads the bound API port directly and supervises its own child, so it needs no VM service.
+
+This environment schema, address-event addition, service extension, status endpoint and replay behavior are proposed implementation work. Acceptance tests must cover stopped-to-ready recovery, ready-before-first-poll, delayed extension registration, independent server restarts, stale revisions and two apps changing state independently.
+
+## Production
+
+The spec keeps SSR in a separate process in both development and production. Production uses the same `server.dart` routes as development, and there is no Serverpod build step.
+
+### Build output and packaging
+
+The developer, or CI, runs `jaspr build` in each Jaspr package and copies `build/jaspr/` to the server's `web/<app-id>/` before building the server image.
+
+- The template Dockerfile copies the whole server package into its build stage and `web/` into the final image (`templates/serverpod_templates/projectname_server/Dockerfile:10`, `:46`). The template has no `.dockerignore`, so the build output reaches the image without Dockerfile changes.
+- **Server mode:** `jaspr build` compiles `app` with release flags, with assets in an adjacent `web/` (`jaspr_cli lib/src/commands/build_command.dart:136-137`, `:208-223`). Compiled Jaspr resolves assets relative to the executable (`jaspr lib/src/server/server_handler.dart:20-27`), so both stay together under `web/<app-id>/`.
+- `jaspr build` accepts `--target-os` and `--target-arch` for the `exe` and `aot-snapshot` targets (`build_command.dart:44-49`, `:186-201`), so the executable can be cross-compiled for the image. The final image is Alpine with the Dart runtime libraries copied in (`Dockerfile:29`, `:39`), as for the Serverpod executable. A cross-compiled Jaspr executable has not been run there.
+- A `StaticRoute.directory` over all of `web/` would serve the executable. The template registers no web routes, but projects that add such a route must exclude `web/<app-id>/`.
+- Static and client output only need the file-serving behavior described under [Serverpod-side work](#serverpod-side-work).
+
+### Running the Jaspr server
+
+In server mode, `serverpod_jaspr` runs the executable within the Serverpod process's lifecycle. Existing hooks cover most of it:
+
+- `pod.experimental.registerStartHook` (`packages/serverpod/lib/src/server/serverpod.dart:1594`) can start the child. The hook is synchronous and experimental. It runs again after every hot reload (`:1662`, `packages/serverpod/lib/src/server/server.dart:140`), and it runs before the servers start (`serverpod.dart:793`, servers at `:886`). The package must start the child at most once, and wait for the API listener to bind before launching it with `PORT` and `SERVERPOD_API_URL`.
+- `pod.experimental.shutdownTasks` (`serverpod.dart:1611`) can stop the child. Shutdown tasks run after the API, web and Insights servers close.
+- Start the child only in roles that start the web server: `monolith` or `serverless`, with the web server enabled (`serverpod.dart:862-863`, `_startUserFacingServers`). A `maintenance` run of the same image then does not start Jaspr.
+- `/readyz` indicators are only taken from `HealthConfig` at construction (`packages/serverpod/lib/src/server/health/health_check_service.dart:42-46`). Either the developer adds the package's indicator to `HealthConfig`, or Serverpod adds a way to register indicators later.
+- If the child exits unexpectedly, shut the pod down with an error so the deployment platform restarts the instance. In a container, the child ends with the container, so orphaned Jaspr servers are mainly a development concern.
+
+None of this is implemented. The release-build probe validated the executable on its own, not inside a Serverpod image or under `serverpod_jaspr`.
+
+## SSR API address and authentication
+
+The integration passes `SERVERPOD_API_URL` as a runtime environment variable to the Jaspr server in both development and server-mode production. It identifies the local Serverpod API listener, normally `http://127.0.0.1:<bound-api-port>/`, using its actual transport and bound port rather than `publicHost`/`publicPort`. SSR uses a generated Serverpod client at this address. It must be established after the API listener binds, and changes must restart the child. In development, the runner reads the bound listener from `ext.serverpod.addresses` and passes it to `jaspr serve`. In production, `serverpod_jaspr` reads the bound API port in-process and passes it to the executable. Jaspr passes the parent environment to the SSR process (`jaspr_cli lib/src/process_runner.dart`, `includeParentEnvironment: true`), and `dev_command.dart:173-181` forwards Dart defines as `-D` flags. These source checks support the environment handoff, but not the full Serverpod integration.
+
+The initial startup deliberately waits for API binding before launching `jaspr serve`, including its roughly 40-second first build. A fixed port such as 8080 could permit parallel compilation, but that optimization is deferred in favor of one startup sequence for fixed and dynamic ports. Listener binding/address publication must not wait for the Jaspr child to be ready.
+
+For browsers, each `JasprRoute` inserts the public API URL into the HTML it serves, in development and production, as a `<meta>` tag in `<head>`. The value comes from the resolved public API configuration (`apiServer.publicScheme`, `publicHost`, `publicPort`) at serve time, so a single build works in every environment, including static and client artifacts. Flutter web apps fetch a `config.json` for the same purpose because they have no server rendering. Jaspr pages always pass through the route, so the URL can travel with the page instead, without an extra request. The tag never contains `SERVERPOD_API_URL` or credentials; a public API host of `localhost` remains valid for browsers on the development machine. LAN/tunnel deployments must configure a public API URL reachable from that browser and expose that API; the integration does not infer a separate API port from the web origin.
+
+A scaffold client provider uses conditional imports: on the server it constructs a request-scoped generated `Client` from `SERVERPOD_API_URL`; in the browser it reads the `<meta>` tag and constructs a browser client with the app's authentication provider. Both sides are synchronous. Components use the provider in either environment; client instances and internal URLs are never serialized as hydration data. A missing tag surfaces as a client-initialization error, rather than silently choosing a localhost fallback. The injection and provider still need implementation and validation.
+
+Static generation at build time does not imply that a Serverpod API is running; any API data source needed during generation must be configured explicitly for that build. The internal-address handoff and static build-time fetching have not been exercised here.
+
+The initial scaffold performs anonymous SSR calls and loads signed-in content after browser hydration. No automatic authentication-cookie bridge is included. The generated client sends credentials supplied by its `authKeyProvider` (`packages/serverpod_client/lib/src/serverpod_client_shared.dart`); it cannot recover a browser-storage token from an ordinary page request. Application-specific authenticated SSR requires credentials on the incoming request and a request-scoped client, without changing shared-client credentials. That flow remains outside the scaffold and unvalidated.
+
+## In-process SSR alternative
+
+Hosting SSR inside Serverpod is not the selected design. It would require changing development as well to preserve parity; otherwise SSR code using Serverpod sessions or endpoints in-process would work only in production.
 
 Jaspr's `--skip-server` flag would let Serverpod host the SSR handler itself, with `JASPR_PROXY_PORT` set. Jaspr's server handler already forwards assets and the live-reload stream to the proxy port (`jaspr lib/src/server/server_handler.dart:17`, `:146`). Today it is blocked or unvalidated:
 
@@ -174,11 +246,34 @@ Other costs of hosting SSR in Serverpod:
 - SSR reloads move from Jaspr's hotreloader to Serverpod's reload workflow.
 - The Serverpod server package depends on the Jaspr app package.
 
-With forwarded headers the public origin works in either setup, so the case for this alternative is development/production parity.
+The selected design preserves the same process boundary in both environments without depending on this alternative or on `--skip-server`.
 
-### Which routes are forwarded
+## Mount contract and confirmed prefix blocker
 
-The spec gives each Jaspr app its own mount point on the Serverpod web server, but how mount points are configured is still open. Mounting the Jaspr app at `/` is straightforward. Mounting it under a path prefix is a separate concern: forwarded host and scheme headers do not cover it, and the Jaspr app's own links and asset URLs need base-path support as well. Only the live-reload channel honors the existing `jaspr_base_path` header.
+Each app's mount is the path of its route in `server.dart`, used in both development and production. Mounts follow Serverpod's existing route specificity and conflict rules. Prefixes match path segments: `/admin/` owns that subtree, while `/administrator` remains with the root app. The document base and, where applicable, the server-side routing context must agree with the mount; app links and asset URLs are not rewritten.
+
+Because the mount is defined in the server, the runner does not know it, and each app configures its own base path. If prefix mounts become supported, the server could publish its mounts to the runner, which would pass them to Jaspr as a Dart define; both `serve` and `build` accept `--dart-define` (`jaspr_cli lib/src/helpers/dart_define_helpers.dart`).
+
+- **Server/static modes:** the app sets `Document.base` to the mount. Jaspr's server rendering derives its routing base from the shelf request's `handlerPath` (`jaspr lib/src/server/render_functions.dart:27-30`), so mount the handler too and preserve the prefix when forwarding. This also applies to server-mode production. Stripping the prefix before forwarding to an unchanged root handler loses that routing context.
+- **Client development:** the developer keeps the static `web/index.html` `<base>` in sync with the mount, following [Jaspr's client-mode base setup](https://docs.jaspr.site/dev/deploying). Defines cannot modify HTML before its script loads. Jaspr serves this mode directly through its root-based dev proxy, with fallback to `/` for unknown extensionless paths (`dev_command.dart:110-140`, `proxy_helper.dart:82-92`), so strip the mount prefix before forwarding. Its public refresh endpoint still needs the prefix, and this complete flow is untested.
+- **Static production generation:** Jaspr starts a temporary server, requests `/` initially and generates app-relative routes. A development handler mounted only at `/admin/` cannot simply be reused unchanged for that build. The scaffold must preserve the public base in generated HTML and links while supporting app-relative generation and output paths. This mode and its mounted build behavior remain unvalidated.
+
+Only server-mode development was exercised through a forwarding proxy. Static/client development and their production routing need separate acceptance tests; their source-level similarity does not establish support.
+
+In the prefix probe, the app had `Document(base: '/admin/')` and middleware that mounted its handler using `request.change(path: 'admin/')`. Requesting `/admin/main.client.dart.bootstrap.js` produced:
+
+```text
+Without forwarded headers:
+window.$dwdsDevHandlerPath = "http://localhost:38480/admin/$dwdsSseHandler";
+
+With X-Forwarded-Host: serverpod.example.test:8082
+and X-Forwarded-Proto: https:
+window.$dwdsDevHandlerPath = "https://serverpod.example.test:8082/$dwdsSseHandler";
+```
+
+The second URL is missing `/admin/`. Jaspr's bootstrap rewrite uses `jaspr_base_path`, but only when replacing `http://localhost:<proxy-port>/` (`jaspr_cli lib/src/helpers/proxy_helper.dart:58-63`). Once DWDS emits the forwarded public origin, that replacement does not run. This is separate from public-origin support, which works for root mounts.
+
+Prefix support requires Jaspr to preserve both origin and prefix. Before enabling it, verify two mounted apps through a real Serverpod route: nested-page requests, links, assets, and each app's live-reload GET/POST traffic must reach the correct app, and edits must refresh the apps independently. The mount contract is decided; this acceptance gate remains open.
 
 ## Reproduction
 
