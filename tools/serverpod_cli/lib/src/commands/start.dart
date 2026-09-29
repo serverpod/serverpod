@@ -1162,12 +1162,26 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         return const WatchLoopAborted(1);
       }
 
+      // Built now, so the first package_config.json change has a baseline.
+      final serverResolutionDartTool =
+          PackageDependencyTracker.resolveDartToolDir(
+            serverDir,
+            packageName: config.serverPackage,
+          );
+      serverDependencyTracker = serverResolutionDartTool == null
+          ? null
+          : PackageDependencyTracker(
+              dartToolDir: serverResolutionDartTool,
+              packageName: config.serverPackage,
+            );
+
       await localCompiler.start();
 
       if (buildOk) {
-        if (!await localCompiler.compileIfNeeded(
-          config.watchPaths(includeWeb: true, includeClientPackage: true),
-        )) {
+        if (!await localCompiler.compileIfNeeded({
+          ...config.watchPaths(includeWeb: true, includeClientPackage: true),
+          ...?serverDependencyTracker?.localPackageLibDirs(),
+        })) {
           // Back to the empty state, so recovery does a full compile.
           await localCompiler.reject();
           log.error('Initial compilation failed.');
@@ -1183,19 +1197,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       compiler = localCompiler;
       nativeAssetsBuilder = localBuilder;
       dartExecutable = localCompiler.dartExecutable;
-
-      // Built now, so the first package_config.json change has a baseline.
-      final serverResolutionDartTool =
-          PackageDependencyTracker.resolveDartToolDir(
-            serverDir,
-            packageName: config.serverPackage,
-          );
-      serverDependencyTracker = serverResolutionDartTool == null
-          ? null
-          : PackageDependencyTracker(
-              dartToolDir: serverResolutionDartTool,
-              packageName: config.serverPackage,
-            );
     }
 
     // Initialized even without `--flutter`, for the apps' IDE info files.
