@@ -81,7 +81,7 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
     }
 
     // Determine if we should search upward/outward
-    var atBoundary = ServerDirectoryFinder.isRepositoryBoundary(start);
+    var atBoundary = ServerDirectoryFinder._isRepositoryBoundary(start);
 
     if (!atBoundary) {
       // 3. Check for standard naming pattern siblings
@@ -103,7 +103,7 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
           candidates.add(current);
         }
 
-        var isAtBoundary = ServerDirectoryFinder.isRepositoryBoundary(current);
+        var isAtBoundary = ServerDirectoryFinder._isRepositoryBoundary(current);
 
         // At boundaries (like .git), search deeper to find nested servers
         var searchDepth = isAtBoundary ? 2 : 1;
@@ -302,16 +302,10 @@ class ServerDirectoryFinder {
   ///
   /// This prevents the search from escaping the project and accessing
   /// system directories that may trigger permission prompts.
-  static bool isRepositoryBoundary(Directory dir) {
+  static bool _isRepositoryBoundary(Directory dir) {
     try {
-      final gitEntry = p.join(dir.path, '.git');
-      // Linked worktrees and submodules use a `.git` file containing a
-      // `gitdir:` pointer, while ordinary checkouts use a directory.
-      if (Directory(gitEntry).existsSync() ||
-          File(gitEntry).existsSync() ||
-          Link(gitEntry).existsSync()) {
-        return true;
-      }
+      var gitDir = Directory(p.join(dir.path, '.git'));
+      if (gitDir.existsSync()) return true;
 
       var pubspecFile = File(p.join(dir.path, 'pubspec.yaml'));
       if (pubspecFile.existsSync()) {
