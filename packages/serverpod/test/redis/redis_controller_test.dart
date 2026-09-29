@@ -142,6 +142,21 @@ void main() {
           expect(await controller.ping(), isTrue);
         },
       );
+
+      test(
+        'when the start error handler throws, '
+        'then the next ping still reconnects.',
+        () async {
+          await expectLater(
+            controller.start(handleError: (_) => throw StateError('handler')),
+            throwsStateError,
+          );
+
+          redis.holdAuthentications = false;
+
+          expect(await controller.ping(), isTrue);
+        },
+      );
     },
   );
 

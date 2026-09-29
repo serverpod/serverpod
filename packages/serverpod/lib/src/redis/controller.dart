@@ -182,12 +182,16 @@ class RedisController {
     }
     _connecting = true;
 
-    _command = await _createAndAuthCommand(
-      handleError: handleError,
-      connectTimeoutOverride: connectTimeoutOverride,
-    );
-    _connecting = false;
-    return _command != null;
+    try {
+      _command = await _createAndAuthCommand(
+        handleError: handleError,
+        connectTimeoutOverride: connectTimeoutOverride,
+      );
+      return _command != null;
+    } finally {
+      // A throwing handleError must not leave later calls locked out.
+      _connecting = false;
+    }
   }
 
   Future<void> _keepAlive() async {
