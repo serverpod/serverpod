@@ -11,7 +11,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
 
   /**
    * The structure of the data used in this test is as follows:

@@ -86,7 +86,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
 
   group(
     'Given models with relations when filtering on relation attributes',

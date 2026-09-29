@@ -8,7 +8,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
 
   group(
     'Given a simple data object in database when fetching with unsafe query',
