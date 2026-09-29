@@ -97,9 +97,7 @@ String reachableUnixSocketPath(String path) {
 
   final socketDir = p.canonicalize(p.dirname(path));
   final link = _socketDirLinks.putIfAbsent(socketDir, () {
-    final linkDir = _socketLinkDir ??= Directory.systemTemp.createTempSync(
-      'sp',
-    );
+    final linkDir = _socketLinkDir ??= _createPrivateTempDir('sp');
     return Link(
       p.join(linkDir.path, '${_socketDirLinks.length}'),
     )..createSync(socketDir);
@@ -110,6 +108,26 @@ String reachableUnixSocketPath(String path) {
 }
 
 Directory? _socketLinkDir;
+
+/// A new directory under the system temp directory that only the current
+/// user can access.
+///
+/// `createTempSync` leaves the mode to the platform: 0700 on macOS, but 0777
+/// minus the umask on Linux.
+Directory _createPrivateTempDir(String prefix) {
+  final dir = Directory.systemTemp.createTempSync(prefix);
+  if (Platform.isWindows) return dir;
+  final result = Process.runSync('chmod', ['700', dir.path]);
+  if (result.exitCode != 0) {
+    dir.deleteSync();
+    throw FileSystemException(
+      'Could not restrict access: ${result.stderr}',
+      dir.path,
+    );
+  }
+  return dir;
+}
+
 final _socketDirLinks = <String, Link>{};
 
 /// The bytes [shortestPath] of [path] takes in `sun_path`, NUL included.
