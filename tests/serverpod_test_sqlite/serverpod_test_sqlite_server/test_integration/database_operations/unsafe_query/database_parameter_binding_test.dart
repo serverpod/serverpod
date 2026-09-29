@@ -8,7 +8,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
 
   group('Given two simple data objects in database', () {
     group('when querying using positional arguments', () {

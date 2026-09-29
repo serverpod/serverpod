@@ -8,7 +8,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
 
   group('Given a class with "default" Duration fields,', () {
     tearDownAll(

@@ -10,7 +10,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
 
   group('Given a committed simple data row with num 1, ', () {
     late SimpleData row;

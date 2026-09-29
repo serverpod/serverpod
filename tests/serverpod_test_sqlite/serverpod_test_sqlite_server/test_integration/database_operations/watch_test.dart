@@ -10,7 +10,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
 
   group('Given a simple data row in the SQLite database, ', () {
     setUp(() async {
