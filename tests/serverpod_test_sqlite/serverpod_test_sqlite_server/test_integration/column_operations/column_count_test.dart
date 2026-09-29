@@ -9,7 +9,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
   tearDown(() async {
     await Order.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     await Customer.db.deleteWhere(
