@@ -198,8 +198,8 @@ class FlutterProcess {
 
     final root = _flutterSdkRoot;
     final invocation = root != null
-        ? _invocationForSdkRoot(root)
-        : await resolveFlutterInvocation(_flutterExecutable);
+        ? invocationForSdkRoot(root)
+        : (executable: _flutterExecutable, baseArgs: <String>[]);
 
     // A missing absolute executable is checked rather than left to the spawn:
     // a Windows batch wrapper goes through `cmd.exe`, which starts whether or
@@ -1010,17 +1010,13 @@ class FlutterProcess {
   /// app's SDK to all of them.
   static final Map<String, FlutterInvocation> _cachedInvocationsByRoot = {};
 
-  /// Fast-path invocations from the probe, keyed by the command probed. The
-  /// prefix is part of the key so two probes of the same executable through
-  /// different test shims cannot be confused for one another.
-  static final Map<String, FlutterInvocation> _cachedInvocationsByProbe = {};
-
   /// Builds the invocation for an already-resolved Flutter SDK [root].
   ///
   /// Prefers `flutter_tools.dart` on the SDK's embedded Dart so `kill` reaches
   /// the daemon rather than a wrapper script. Falls back to the SDK's own
   /// `bin/flutter` when `bin/cache` is cold or partially populated.
-  static FlutterInvocation _invocationForSdkRoot(String root) {
+  @visibleForTesting
+  static FlutterInvocation invocationForSdkRoot(String root) {
     final cached = _cachedInvocationsByRoot[root];
     if (cached != null) return cached;
 
@@ -1068,73 +1064,6 @@ class FlutterProcess {
       executable: dartBin,
       baseArgs: ['--disable-dart-dev', '--packages=$packages', entry],
     );
-  }
-
-  /// Probe `flutter --version --machine` for `flutterRoot`, then return
-  /// `dart <flutterRoot>/.../flutter_tools.dart` so signals bypass
-  /// puro/fvm/asdf wrappers and reach the daemon. Falls back to
-  /// invoking [flutterExecutable] verbatim if the SDK paths are missing.
-  @visibleForTesting
-  static Future<FlutterInvocation> resolveFlutterInvocation(
-    String flutterExecutable, {
-    @visibleForTesting List<String> probeArgsPrefixForTesting = const [],
-  }) async {
-    final probeKey = [
-      flutterExecutable,
-      ...probeArgsPrefixForTesting,
-    ].join('\u0000');
-    final cached = _cachedInvocationsByProbe[probeKey];
-    if (cached != null) return cached;
-
-    // Don't cache the fallback: a fake-executable test probe would
-    // poison the cache for later real callers.
-    final fallback = (executable: flutterExecutable, baseArgs: <String>[]);
-    try {
-      final result = await Process.run(
-        flutterExecutable,
-        [...probeArgsPrefixForTesting, '--version', '--machine'],
-        runInShell: Platform.isWindows,
-      );
-      if (result.exitCode != 0) return fallback;
-      final decoded = jsonDecode(result.stdout as String);
-      if (decoded is! Map || decoded['flutterRoot'] is! String) {
-        return fallback;
-      }
-      final root = decoded['flutterRoot'] as String;
-      final dartBin = p.join(
-        root,
-        'bin',
-        'cache',
-        'dart-sdk',
-        'bin',
-        Platform.isWindows ? 'dart.exe' : 'dart',
-      );
-      final packages = p.join(
-        root,
-        'packages',
-        'flutter_tools',
-        '.dart_tool',
-        'package_config.json',
-      );
-      final entry = p.join(
-        root,
-        'packages',
-        'flutter_tools',
-        'bin',
-        'flutter_tools.dart',
-      );
-      if (!File(dartBin).existsSync() ||
-          !File(packages).existsSync() ||
-          !File(entry).existsSync()) {
-        return fallback;
-      }
-      return _cachedInvocationsByProbe[probeKey] = (
-        executable: dartBin,
-        baseArgs: ['--disable-dart-dev', '--packages=$packages', entry],
-      );
-    } catch (_) {
-      return fallback;
-    }
   }
 
   /// `ws://host:port/ws` -> `http://host:port` (also wss -> https).

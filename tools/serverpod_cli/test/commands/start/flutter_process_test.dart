@@ -234,86 +234,45 @@ void main() {
     );
   });
 
-  group(
-    'Given a probe that answers with plain text instead of machine JSON',
-    () {
-      group('when the flutter invocation is resolved', () {
-        late FlutterInvocation invocation;
+  group('Given a Flutter SDK root whose bin/cache is incomplete', () {
+    late String root;
 
-        setUp(() async {
-          invocation = await FlutterProcess.resolveFlutterInvocation(
-            _dartExecutable(),
-            probeArgsPrefixForTesting: [
-              _shimPath('emits_no_machine_json.dart'),
-            ],
-          );
-        });
+    setUp(() {
+      root = _fakeFlutterSdkRoot(cachePopulated: false);
+    });
 
-        test('then it falls back to running the executable verbatim', () {
-          expect(invocation.executable, _dartExecutable());
-        });
-
-        test('then it passes no leading arguments', () {
-          expect(invocation.baseArgs, isEmpty);
-        });
-      });
-    },
-  );
-
-  group(
-    'Given a probe reporting a flutterRoot whose bin/cache is incomplete',
-    () {
-      late String root;
+    group('when the flutter invocation is built', () {
+      late FlutterInvocation invocation;
 
       setUp(() {
-        root = _fakeFlutterSdkRoot(cachePopulated: false);
+        invocation = FlutterProcess.invocationForSdkRoot(root);
       });
 
-      group('when the flutter invocation is resolved', () {
-        late FlutterInvocation invocation;
+      test(
+        "then it falls back to the SDK's flutter instead of launching a dart that is not there",
+        () {
+          expect(invocation.executable, flutterExecutableIn(root));
+        },
+      );
 
-        setUp(() async {
-          invocation = await FlutterProcess.resolveFlutterInvocation(
-            _dartExecutable(),
-            probeArgsPrefixForTesting: [
-              _shimPath('reports_flutter_root.dart'),
-              '--root=$root',
-            ],
-          );
-        });
-
-        test(
-          'then it falls back instead of launching a dart that is not there',
-          () {
-            expect(invocation.executable, _dartExecutable());
-          },
-        );
-
-        test('then it passes no leading arguments', () {
-          expect(invocation.baseArgs, isEmpty);
-        });
+      test('then it passes no leading arguments', () {
+        expect(invocation.baseArgs, isEmpty);
       });
-    },
-  );
+    });
+  });
 
-  group('Given a probe reporting a complete flutterRoot', () {
+  group('Given a Flutter SDK root with a populated bin/cache', () {
     late String root;
 
     setUp(() {
       root = _fakeFlutterSdkRoot(cachePopulated: true);
     });
 
-    group('when the flutter invocation is resolved', () {
+    group('when the flutter invocation is built', () {
       late FlutterInvocation invocation;
 
-      setUp(() async {
-        invocation = await FlutterProcess.resolveFlutterInvocation(
-          _dartExecutable(),
-          probeArgsPrefixForTesting: [
-            _shimPath('reports_flutter_root.dart'),
-            '--root=$root',
-          ],
-        );
+      setUp(() {
+        invocation = FlutterProcess.invocationForSdkRoot(root);
       });
 
       test("then it runs on the SDK's embedded dart", () {
