@@ -9,7 +9,7 @@ void main() {
   setUpAll(() async {
     session = await IntegrationTestServer().session();
   });
-  tearDownAll(() => session.close());
+  tearDownAll(() => closeTestSession(session));
 
   group('Given a model with a list relation to model with max length named fields', () {
     tearDown(() async {

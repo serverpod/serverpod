@@ -82,3 +82,12 @@ class TestServerpod {
     return _session;
   }
 }
+
+/// Closes [session] and shuts down the server it belongs to.
+///
+/// Declare it as a file's first `tearDownAll`, so it runs after the file's
+/// other `tearDownAll` callbacks, which may still use the database.
+Future<void> closeTestSession(Session session) async {
+  await session.close();
+  await session.serverpod.shutdown(exitProcess: false);
+}
