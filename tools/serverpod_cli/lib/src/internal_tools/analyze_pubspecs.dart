@@ -65,10 +65,22 @@ Future<bool> pubspecDependenciesMatch({
   log.info('Dependencies match.');
 
   if (checkLatestVersion != null) {
+    Map<String, Version> currentReleasePackages;
+    try {
+      currentReleasePackages = checkLatestVersion.ignoreServerpodPackages
+          ? _loadCurrentReleasePackageVersions(directory)
+          : const {};
+    } catch (e) {
+      log.error('Failed to load Serverpod release package metadata.');
+      log.error(e.toString());
+      return false;
+    }
+
     return await _checkLatestVersion(
       dependencies,
       onlyMajorUpdate: checkLatestVersion.onlyMajorUpdate,
       ignoreServerpodPackages: checkLatestVersion.ignoreServerpodPackages,
+      currentReleasePackages: currentReleasePackages,
     );
   }
 
@@ -79,6 +91,7 @@ Future<bool> _checkLatestVersion(
   Map<String, List<_ServerpodDependency>> dependencies, {
   required bool onlyMajorUpdate,
   required bool ignoreServerpodPackages,
+  required Map<String, Version> currentReleasePackages,
 }) async {
   bool latestVersionMatch = true;
   log.info('Checking latest pub versions.');
@@ -86,6 +99,15 @@ Future<bool> _checkLatestVersion(
     var pub = PubApiClient();
     for (var depName in dependencies.keys) {
       var deps = dependencies[depName]!;
+      if (ignoreServerpodPackages &&
+          _isCurrentReleasePin(
+            depName,
+            deps,
+            currentReleasePackages,
+          )) {
+        continue;
+      }
+
       Version? latestPubVersion;
       try {
         latestPubVersion = await pub.tryFetchLatestStableVersion(depName);
@@ -93,13 +115,6 @@ Future<bool> _checkLatestVersion(
         log.error(e.message);
       } on VersionParseException catch (e) {
         log.error(e.message);
-      }
-
-      // Crude way to ignore serverpod packages when checking for latest version.
-      // This might cause unintentionally exclusion of external packages.
-      // TODO: Improve this, tracking issue: https://github.com/serverpod/serverpod/issues/2603
-      if (ignoreServerpodPackages && depName.startsWith('serverpod')) {
-        continue;
       }
 
       if (latestPubVersion == null) {
@@ -119,10 +134,7 @@ Future<bool> _checkLatestVersion(
         log.info('pub:   ^$latestPubVersion');
         log.info('found in:');
         for (var dep in deps) {
-          log.info(
-            dep.serverpodPackage,
-            type: TextLogType.bullet,
-          );
+          log.info(dep.serverpodPackage, type: TextLogType.bullet);
         }
       }
     }
@@ -141,10 +153,7 @@ void _printMismatchedDependencies(
 ) {
   log.error('Found mismatched dependencies:');
   for (var depName in mismatchedDeps) {
-    log.error(
-      depName,
-      type: const RawLogType(),
-    );
+    log.error(depName, type: const RawLogType());
     var deps = dependencies[depName]!;
     for (var dep in deps) {
       log.error(
@@ -153,6 +162,65 @@ void _printMismatchedDependencies(
       );
     }
   }
+}
+
+/// Release package names whose pubspecs match the current Serverpod version.
+/// A package missing from `PUBLISHABLE_PACKAGES` or at another version remains
+/// subject to the normal latest-version check.
+Map<String, Version> _loadCurrentReleasePackageVersions(Directory directory) {
+  var serverpodPubspec = parsePubspec(
+    File(p.join(directory.path, 'packages', 'serverpod', 'pubspec.yaml')),
+  );
+  var serverpodVersion = serverpodPubspec.version;
+  if (serverpodPubspec.name != 'serverpod' || serverpodVersion == null) {
+    throw const FormatException('Invalid packages/serverpod/pubspec.yaml');
+  }
+
+  var manifest = File(p.join(directory.path, 'PUBLISHABLE_PACKAGES'));
+  var packagePaths = manifest
+      .readAsLinesSync()
+      .map((line) => line.trim())
+      .where((line) => line.isNotEmpty && !line.startsWith('#'))
+      .toList();
+  if (!packagePaths.contains('packages/serverpod')) {
+    throw const FormatException(
+      'PUBLISHABLE_PACKAGES must include packages/serverpod',
+    );
+  }
+
+  var versions = <String, Version>{};
+  for (var packagePath in packagePaths) {
+    var pubspec = parsePubspec(
+      File(p.join(directory.path, packagePath, 'pubspec.yaml')),
+    );
+    if (pubspec.version == null) {
+      throw FormatException('Missing version for $packagePath');
+    }
+    if (pubspec.version == serverpodVersion) {
+      if (versions.containsKey(pubspec.name)) {
+        throw FormatException('Duplicate release package: ${pubspec.name}');
+      }
+      versions[pubspec.name] = serverpodVersion;
+    }
+  }
+  return versions;
+}
+
+bool _isCurrentReleasePin(
+  String dependencyName,
+  List<_ServerpodDependency> dependencies,
+  Map<String, Version> currentReleasePackages,
+) {
+  var serverpodVersion = currentReleasePackages[dependencyName];
+  if (serverpodVersion == null) return false;
+
+  return dependencies.every((dependency) {
+    try {
+      return VersionConstraint.parse(dependency.version) == serverpodVersion;
+    } catch (_) {
+      return false;
+    }
+  });
 }
 
 Set<String> _loadIgnoredPackages(Directory directory) {

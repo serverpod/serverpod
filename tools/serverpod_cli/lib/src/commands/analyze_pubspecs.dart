@@ -23,10 +23,11 @@ enum AnalyzePubspecsOption<V> implements OptionDefinition<V> {
     FlagOption(
       argName: 'ignore-serverpod',
       defaultsTo: false,
-      helpText: 'Ignore serverpod packages when checking for latest version.',
+      helpText:
+          'Ignore current Serverpod release packages pinned to the Serverpod '
+          'version when checking for latest version.',
     ),
-  ),
-  ;
+  );
 
   const AnalyzePubspecsOption(this.option);
 
