@@ -1,6 +1,5 @@
 ## 4.1.0-beta.1
 
-- fix: Checks non-release `serverpod_*` dependencies for updates when `--ignore-serverpod` is set.
 - feat: Adds `serverpod runner` command with `start`, `attach`, `status` and `stop` subcommands.
 - feat: Allows `serverpod start` and `serverpod mcp-server` to attach to an already running server.
 - feat: Exposes `Model.db.watch` for reactive ORM operations on the client.
