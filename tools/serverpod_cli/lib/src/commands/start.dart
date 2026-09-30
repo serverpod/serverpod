@@ -661,6 +661,22 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       return const WatchLoopAborted(1);
     }
 
+    // Seed the closure baseline now (before any file event) so the first
+    // package_config.json change computes a real delta. resolveDartToolDir
+    // validates the resolution lists the server package; a null disables the
+    // gate. Reads the same `.dart_tool` the FES resolves, so no extra watch.
+    final serverResolutionDartTool =
+        PackageDependencyTracker.resolveDartToolDir(
+          serverDir,
+          packageName: config.serverPackage,
+        );
+    serverDependencyTracker = serverResolutionDartTool == null
+        ? null
+        : PackageDependencyTracker(
+            dartToolDir: serverResolutionDartTool,
+            packageName: config.serverPackage,
+          );
+
     await localCompiler.start();
 
     // Compile if the cached dill is stale. The FES starts in the background
@@ -672,9 +688,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     // fresh post-start state, ready for the watch session to compile from
     // scratch once the project is fixed.
     if (buildOk) {
-      if (!await localCompiler.compileIfNeeded(
-        config.watchPaths(includeWeb: true, includeClientPackage: true),
-      )) {
+      if (!await localCompiler.compileIfNeeded({
+        ...config.watchPaths(includeWeb: true, includeClientPackage: true),
+        ...?serverDependencyTracker?.localPackageLibDirs(),
+      })) {
         // Reject the failed compile so the FES returns to its last accepted
         // (empty) state, leaving it ready for a clean full compile on recovery.
         await localCompiler.reject();
@@ -691,22 +708,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     compiler = localCompiler;
     nativeAssetsBuilder = localBuilder;
     dartExecutable = localCompiler.dartExecutable;
-
-    // Seed the closure baseline now (before any file event) so the first
-    // package_config.json change computes a real delta. resolveDartToolDir
-    // validates the resolution lists the server package; a null disables the
-    // gate. Reads the same `.dart_tool` the FES resolves, so no extra watch.
-    final serverResolutionDartTool =
-        PackageDependencyTracker.resolveDartToolDir(
-          serverDir,
-          packageName: config.serverPackage,
-        );
-    serverDependencyTracker = serverResolutionDartTool == null
-        ? null
-        : PackageDependencyTracker(
-            dartToolDir: serverResolutionDartTool,
-            packageName: config.serverPackage,
-          );
   }
 
   // IDE-facing Flutter VM-service proxies. Bound now so info files exist at
