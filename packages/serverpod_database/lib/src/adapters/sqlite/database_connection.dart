@@ -335,7 +335,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             ),
           ];
         } else {
-          returned = await _executeStatementBatch(session, statements, tx!);
+          returned = await _executeStatementBatch(
+            session,
+            statements,
+            tx!,
+            discardResults: noReturn && !rejectDuplicateTargets,
+          );
         }
 
         for (var index = 0; index < returned.length; index++) {
@@ -418,18 +423,34 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   Future<List<ResultSet>> _executeStatementBatch(
     DatabaseSession session,
     List<SqliteBatchStatement> statements,
-    Transaction transaction,
-  ) async {
+    Transaction transaction, {
+    required bool discardResults,
+  }) async {
     final sqliteTx = _castToSqliteTransaction(transaction)!;
     if (sqliteTx._isCancelled) {
       return [for (final _ in statements) ResultSet([], null, [])];
     }
     final stopwatch = Stopwatch()..start();
-    final sql = statements.map((statement) => statement.sql).join(';\n');
+    final uniformNoReturn =
+        discardResults &&
+        statements.every((statement) => statement.sql == statements.first.sql);
+    final sql = uniformNoReturn
+        ? statements.first.sql
+        : statements.map((statement) => statement.sql).join(';\n');
     poolManager.lastDatabaseOperationTime = DateTime.now();
 
     try {
-      final result = await executeSqliteBatch(sqliteTx._ctx, statements);
+      final List<ResultSet> result;
+      if (uniformNoReturn) {
+        // Keep the driver's lean path when there are no result slots to
+        // correlate. Mixed shapes still use one ordered worker exchange.
+        await sqliteTx._ctx.executeBatch(sql, [
+          for (final statement in statements) statement.parameters,
+        ]);
+        result = const [];
+      } else {
+        result = await executeSqliteBatch(sqliteTx._ctx, statements);
+      }
       _logQuery(
         session,
         sql,
