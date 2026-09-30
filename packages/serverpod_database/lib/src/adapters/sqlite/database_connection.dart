@@ -26,9 +26,11 @@ import '../../interface/database_connection.dart';
 import '../../util/column_alias_resolver.dart';
 import '../../util/query_result_parser.dart';
 import '../postgres/sql_query_builder.dart';
+import 'sqlite_batch_executor.dart';
 import 'sqlite_database_result.dart';
 import 'sqlite_pool_manager.dart';
 import 'sqlite_query_parameters.dart';
+import 'sqlite_statement_batch.dart';
 import 'watch_trigger_tables.dart';
 
 /// A connection to the SQLite database.
@@ -183,86 +185,16 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
-    if (rows.isEmpty) return [];
-    if (rows.length > 1) {
-      if (noReturn) {
-        await _executeNoReturnBatch(
-          session,
-          rows.map((row) => _parameterizedInsert(row, ignoreConflicts)),
-          transaction,
-        );
-        return [];
-      }
-      return DatabaseUtil.runInTransactionOrSavepoint(
-        session.db,
-        transaction,
-        (tx) async => [
-          for (var row in rows)
-            await insert<T>(
-              session,
-              [row],
-              transaction: tx,
-              ignoreConflicts: ignoreConflicts,
-              noReturn: noReturn,
-            ).then((results) => results.firstOrNull),
-        ].whereType<T>().toList(),
-      );
-    }
-
-    final allMaps = [
-      for (final withIdNull in [true, false])
-        ...await _runInsert(
-          session,
-          rows,
-          ignoreConflicts,
-          withIdNull,
-          transaction,
-          noReturn,
-        ),
-    ];
-
-    var merged = _mergeResultsWithNonPersistedFields(rows)(allMaps);
-    return merged.map(poolManager.serializationManager.deserialize<T>).toList();
+    return _executeRowWrites(
+      session,
+      rows,
+      (row) => _parameterizedInsert(row, ignoreConflicts, noReturn: noReturn),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
   }
 
-  Future<List<Map<String, dynamic>>> _runInsert<T extends TableRow>(
-    DatabaseSession session,
-    List<T> rows,
-    bool ignoreConflicts,
-    bool withIdNull,
-    Transaction? transaction,
-    bool noReturn,
-  ) async {
-    var filteredRows = rows
-        .where((r) => withIdNull ? r.id == null : r.id != null)
-        .toList();
-
-    if (filteredRows.isEmpty) return [];
-    if (filteredRows.length > 1 && transaction == null) {
-      throw StateError('Transaction is required for batch inserts');
-    }
-
-    final results = <Map<String, dynamic>>[];
-    for (final row in filteredRows) {
-      final statement = _parameterizedInsert(
-        row,
-        ignoreConflicts,
-        noReturn: noReturn,
-      );
-      results.addAll(
-        await _mappedResultsQuery(
-          session,
-          statement.sql,
-          parameters: statement.parameters,
-          transaction: transaction,
-          table: row.table,
-        ),
-      );
-    }
-    return results;
-  }
-
-  _ParameterizedStatement _parameterizedInsert(
+  SqliteBatchStatement _parameterizedInsert(
     TableRow row,
     bool ignoreConflicts, {
     bool noReturn = true,
@@ -273,7 +205,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       if (column.columnName == 'id' && row.id == null) return false;
       return json[column.columnName] != null || !column.hasDefault;
     }).toList();
-    return _ParameterizedStatement(
+    return SqliteBatchStatement(
       _buildSqlSingleRowInsert(
         table: table,
         columns: columns,
@@ -291,7 +223,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     );
   }
 
-  _ParameterizedStatement _parameterizedUpdate(
+  SqliteBatchStatement _parameterizedUpdate(
     TableRow row,
     List<Column>? columns, {
     bool noReturn = true,
@@ -305,7 +237,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     // Preserve updates that deliberately select only the id column.
     if (selected.isEmpty) selected.add(table.id);
     final json = row.toJsonForDatabase() as Map<String, dynamic>;
-    return _ParameterizedStatement(
+    return SqliteBatchStatement(
       _buildSqlUpdateWhereId(
         table: table,
         setClause: selected
@@ -331,52 +263,147 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   static String _columnPlaceholder(Column column) =>
       column is ColumnStructured ? 'jsonb(?)' : '?';
 
-  Future<void> _executeNoReturnBatch(
+  Future<List<T>> _executeRowWrites<T extends TableRow>(
     DatabaseSession session,
-    Iterable<_ParameterizedStatement> statements,
+    List<T> rows,
+    SqliteBatchStatement Function(T row) statementForRow, {
     Transaction? transaction,
-  ) {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      tx,
-    ) async {
-      final sqliteTx = _castToSqliteTransaction(tx)!;
-      String? sql;
-      var parameters = <List<Object?>>[];
+    required bool noReturn,
+    bool rejectDuplicateTargets = false,
+  }) async {
+    if (rows.isEmpty) return [];
+
+    Future<List<T>> run(Transaction? tx) async {
+      final results = <T>[];
+      final affectedIds = <Object?>{};
+      var affectedCount = 0;
+      var offset = 0;
+      var statements = <SqliteBatchStatement>[];
+      var bytes = 0;
 
       Future<void> flush() async {
-        if (parameters.isEmpty) return;
-        final stopwatch = Stopwatch()..start();
-        poolManager.lastDatabaseOperationTime = DateTime.now();
-        try {
-          if (!sqliteTx._isCancelled) {
-            await sqliteTx._ctx.executeBatch(sql!, parameters);
-          }
-          _logQuery(session, sql!, stopwatch);
-        } catch (error, trace) {
-          final exception = error is DatabaseQueryException
-              ? error
-              : _queryExceptionFromSqliteException(error);
-          _logQuery(
-            session,
-            sql!,
-            stopwatch,
-            exception: exception,
-            trace: trace,
-          );
-          Error.throwWithStackTrace(exception, trace);
+        if (statements.isEmpty) return;
+        final List<ResultSet> returned;
+        if (rows.length == 1) {
+          final statement = statements.single;
+          returned = [
+            await _runGeneratedQuery(
+              session,
+              statement.sql,
+              parameters: statement.parameters,
+              transaction: tx,
+            ),
+          ];
+        } else {
+          returned = await _executeStatementBatch(session, statements, tx!);
         }
-        parameters = [];
+
+        for (var index = 0; index < returned.length; index++) {
+          final input = rows[offset + index];
+          for (final row in returned[index]) {
+            final normalized = _normalizeQueryResultRow(
+              Map<String, dynamic>.from(row),
+              input.table,
+            );
+            if (rejectDuplicateTargets) {
+              affectedIds.add(normalized[input.table.id.fieldName]);
+              affectedCount++;
+            }
+            if (!noReturn) {
+              results.add(
+                poolManager.serializationManager.deserialize<T>(
+                  <String, dynamic>{
+                    ...input.toJson(),
+                    ...normalized,
+                  },
+                ),
+              );
+            }
+          }
+        }
+        offset += statements.length;
+        statements = [];
+        bytes = 0;
       }
 
-      for (final statement in statements) {
-        // Only batch consecutive shapes: reordering writes can change conflict,
-        // foreign-key, trigger, and generated-id behavior. Bound each transfer.
-        if (sql != statement.sql || parameters.length == 256) await flush();
-        sql = statement.sql;
-        parameters.add(statement.parameters);
+      for (final row in rows) {
+        final statement = statementForRow(row);
+        final statementBytes =
+            statement.sql.length * 2 +
+            statement.parameters.fold<int>(
+              0,
+              (total, value) =>
+                  total +
+                  switch (value) {
+                    String() => value.length * 2,
+                    List<int>() => value.length,
+                    _ => 8,
+                  },
+            );
+        // Bound input transport and preparation memory. An individual large
+        // row still travels alone; result slots always retain the input order.
+        if (statements.length == 256 ||
+            (statements.isNotEmpty && bytes + statementBytes > 1024 * 1024)) {
+          await flush();
+        }
+        statements.add(statement);
+        bytes += statementBytes;
       }
       await flush();
-    });
+
+      if (rejectDuplicateTargets && affectedIds.length != affectedCount) {
+        throw DatabaseQueryException(
+          'ON CONFLICT DO UPDATE command cannot affect row a second time',
+          code: SqliteErrorCode.integrityConstraintViolation,
+          hint:
+              'Ensure that no rows proposed for insertion within the '
+              'same command have duplicate constrained values.',
+        );
+      }
+      return results;
+    }
+
+    return rows.length == 1
+        ? run(transaction)
+        : DatabaseUtil.runInTransactionOrSavepoint(
+            session.db,
+            transaction,
+            run,
+          );
+  }
+
+  Future<List<ResultSet>> _executeStatementBatch(
+    DatabaseSession session,
+    List<SqliteBatchStatement> statements,
+    Transaction transaction,
+  ) async {
+    final sqliteTx = _castToSqliteTransaction(transaction)!;
+    if (sqliteTx._isCancelled) {
+      return [for (final _ in statements) ResultSet([], null, [])];
+    }
+    final stopwatch = Stopwatch()..start();
+    final sql = statements.map((statement) => statement.sql).join(';\n');
+    poolManager.lastDatabaseOperationTime = DateTime.now();
+
+    try {
+      final result = await executeSqliteBatch(sqliteTx._ctx, statements);
+      _logQuery(
+        session,
+        sql,
+        stopwatch,
+        numRowsAffected: result.fold<int>(
+          0,
+          (total, rows) => total + rows.length,
+        ),
+      );
+      return result;
+    } catch (error, trace) {
+      final exception = error is DatabaseQueryException
+          ? error
+          : _queryExceptionFromSqliteException(error);
+      _logQuery(session, sql, stopwatch, exception: exception, trace: trace);
+      Error.throwWithStackTrace(exception, trace);
+    }
   }
 
   @override
@@ -533,52 +560,16 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Transaction? transaction,
     bool noReturn = false,
   }) async {
-    if (rows.isEmpty) return [];
-    if (rows.any((r) => r.id == null)) {
+    if (rows.any((row) => row.id == null)) {
       throw ArgumentError.notNull('row.id');
     }
-
-    if (rows.length > 1) {
-      if (noReturn) {
-        await _executeNoReturnBatch(
-          session,
-          rows.map((row) => _parameterizedUpdate(row, columns)),
-          transaction,
-        );
-        return [];
-      }
-      return DatabaseUtil.runInTransactionOrSavepoint(
-        session.db,
-        transaction,
-        (tx) async => [
-          for (var row in rows)
-            await update<T>(
-              session,
-              [row],
-              columns: columns,
-              transaction: tx,
-              noReturn: noReturn,
-            ).then((r) => r.firstOrNull),
-        ].whereType<T>().toList(),
-      );
-    }
-
-    var results = <Map<String, dynamic>>[];
-    for (final row in rows) {
-      final statement = _parameterizedUpdate(row, columns, noReturn: noReturn);
-      results.addAll(
-        await _mappedResultsQuery(
-          session,
-          statement.sql,
-          parameters: statement.parameters,
-          transaction: transaction,
-          table: row.table,
-        ),
-      );
-    }
-
-    var merged = _mergeResultsWithNonPersistedFields(rows)(results);
-    return merged.map(poolManager.serializationManager.deserialize<T>).toList();
+    return _executeRowWrites(
+      session,
+      rows,
+      (row) => _parameterizedUpdate(row, columns, noReturn: noReturn),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
   }
 
   @override
@@ -1873,13 +1864,6 @@ int _rowCountFromChanges(ResultSet changesResult) {
   if (changesResult.isEmpty) return 0;
   final n = changesResult.first.columnAt(0);
   return n is int ? n : int.tryParse(n.toString()) ?? 0;
-}
-
-class _ParameterizedStatement {
-  final String sql;
-  final List<Object?> parameters;
-
-  _ParameterizedStatement(this.sql, this.parameters);
 }
 
 class _SqliteSavepoint implements Savepoint {

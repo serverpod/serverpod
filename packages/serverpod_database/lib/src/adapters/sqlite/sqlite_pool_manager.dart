@@ -7,6 +7,7 @@ import 'package:sqlite_async/sqlite_async.dart';
 
 import '../../interface/database_pool_manager.dart';
 import '../../interface/serialization_manager.dart';
+import 'sqlite_batch_executor.dart';
 import 'value_encoder.dart';
 
 /// Configuration for connecting to a SQLite database.
@@ -83,9 +84,9 @@ class SqlitePoolManager implements DatabasePoolManager {
     if (_databaseStopped) {
       throw StateError('Database stopped. Call `start()` again to restart.');
     }
-    final db = SqliteDatabase(
-      path: config.filePath,
-      options: SqliteOptions(
+    final db = openSqliteDatabase(
+      config.filePath,
+      SqliteOptions(
         preparedStatementCacheSize: config.preparedStatementCacheSize,
         maxReaders:
             config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
