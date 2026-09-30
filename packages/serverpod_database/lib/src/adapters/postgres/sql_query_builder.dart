@@ -545,7 +545,7 @@ class InsertQueryBuilder {
         })
         .join(', ');
 
-    var onConflict = _buildOnConflictClause(selectedColumns);
+    var onConflict = buildOnConflictClause(selectedColumns);
     var returning = switch (_returning) {
       Returning.none => '',
       Returning.id => ' RETURNING "${_table.id.columnName}"',
@@ -557,7 +557,9 @@ class InsertQueryBuilder {
         : 'INSERT INTO ${_table.aliasedTableName} ($columnNames) VALUES $values$onConflict$returning';
   }
 
-  String _buildOnConflictClause(Iterable<Column<dynamic>> selectedColumns) {
+  /// Builds the conflict action independently of the inserted column list.
+  /// SQLite can omit defaulted columns while still updating them from EXCLUDED.
+  String buildOnConflictClause(Iterable<Column<dynamic>> selectedColumns) {
     if (_ignoreConflicts) {
       return ' ON CONFLICT DO NOTHING';
     }
