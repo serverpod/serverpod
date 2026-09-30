@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
@@ -435,6 +436,98 @@ void unused() { undefinedFunction(); }
         expect(execution.stderr, isEmpty);
       });
     });
+  });
+
+  group('Given a cached kernel that imports a local package,', () {
+    late Directory tempDir;
+    late KernelCompiler compiler;
+    late PackageDependencyTracker tracker;
+    late File depFile;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('kernel_compiler_test_');
+      await _createMinimalDartProject(tempDir.path);
+      final dartToolDir = p.join(tempDir.path, '.dart_tool');
+
+      depFile = File(p.join(tempDir.path, 'dep', 'lib', 'dep.dart'))
+        ..createSync(recursive: true)
+        ..writeAsStringSync("String greeting() => 'original';");
+      await File(p.join(tempDir.path, 'bin', 'main.dart')).writeAsString(
+        "import 'package:dep/dep.dart';\n"
+        'void main() => print(greeting());',
+      );
+      await File(p.join(dartToolDir, 'package_config.json')).writeAsString('''
+{
+  "configVersion": 2,
+  "packages": [
+    { "name": "test_server", "rootUri": "..", "packageUri": "lib/" },
+    { "name": "dep", "rootUri": "../dep", "packageUri": "lib/" }
+  ]
+}
+''');
+      await File(p.join(dartToolDir, 'package_graph.json')).writeAsString('''
+{
+  "configVersion": 1,
+  "roots": ["test_server"],
+  "packages": [
+    { "name": "test_server", "version": "1.0.0", "dependencies": ["dep"] },
+    { "name": "dep", "version": "1.0.0", "dependencies": [] }
+  ]
+}
+''');
+
+      compiler = KernelCompiler(
+        entryPoint: p.join(tempDir.path, 'bin', 'main.dart'),
+        outputDill: p.join(dartToolDir, 'serverpod', 'server.dill'),
+        packagesPath: p.join(dartToolDir, 'package_config.json'),
+      );
+      tracker = PackageDependencyTracker(
+        dartToolDir: dartToolDir,
+        packageName: 'test_server',
+      );
+
+      await compiler.start();
+      if (!await compiler.compileIfNeeded(tracker.localPackageLibDirs())) {
+        throw StateError('The initial project must compile successfully.');
+      }
+      await compiler.dispose();
+    });
+
+    tearDown(() async {
+      await compiler.dispose();
+      await tempDir.deleteWithRetry(recursive: true);
+    });
+
+    test(
+      'when the package is edited before a new compiler starts, '
+      'then the edited package code runs.',
+      () async {
+        await depFile.writeAsString("String greeting() => 'edited';");
+        final cachedModified = (await File(
+          compiler.outputDill,
+        ).stat()).modified;
+        await depFile.setLastModified(
+          cachedModified.add(const Duration(seconds: 1)),
+        );
+
+        await compiler.start();
+        expect(
+          await compiler.compileIfNeeded(tracker.localPackageLibDirs()),
+          isTrue,
+        );
+        final execution = await Process.run(compiler.dartExecutable, [
+          compiler.outputDill,
+        ]);
+
+        expect(execution.exitCode, 0);
+        expect(
+          (execution.stdout as String).replaceAll('\r\n', '\n'),
+          'edited\n',
+        );
+        expect(execution.stderr, isEmpty);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
   });
 
   group('Given a dependency added to package_config.json', () {
