@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/util/dart_install.dart';
 import 'package:yaml/yaml.dart';
 
 /// How a package's resolved dependency closure changed, ordered by the severity
@@ -152,22 +151,6 @@ class PackageDependencyTracker {
     return hasNative
         ? PackageDependencyChange.native
         : PackageDependencyChange.dartOnly;
-  }
-
-  /// The `lib/` directories of closure packages outside the pub cache, whose
-  /// sources can change without a version change.
-  Set<String> localPackageLibDirs() {
-    final closure = _computeClosureVersions();
-    if (closure == null) return const {};
-
-    final packageRoots = _readPackageRoots() ?? const {};
-    final pubCache = pubCacheDirectory;
-    return {
-      for (final name in closure.keys)
-        if (packageRoots[name] case final root?
-            when pubCache == null || !p.isWithin(pubCache, root))
-          p.join(root, 'lib'),
-    };
   }
 
   /// Computes [packageName]'s transitive dependency closure as a
