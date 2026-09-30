@@ -1,0 +1,1579 @@
+{
+  "metadata": {
+    "sqlite_version": "3.45.1",
+    "sqlite_source_id": "2024-01-30 16:01:20 e876e51a0ed5c5b3126f52e532044363a014bc594cfefa87ffb5b82257ccalt1",
+    "compile_options": [
+      "ATOMIC_INTRINSICS=1",
+      "COMPILER=gcc-13.3.0",
+      "DEFAULT_AUTOVACUUM",
+      "DEFAULT_CACHE_SIZE=-2000",
+      "DEFAULT_FILE_FORMAT=4",
+      "DEFAULT_JOURNAL_SIZE_LIMIT=-1",
+      "DEFAULT_MMAP_SIZE=0",
+      "DEFAULT_PAGE_SIZE=4096",
+      "DEFAULT_PCACHE_INITSZ=20",
+      "DEFAULT_RECURSIVE_TRIGGERS",
+      "DEFAULT_SECTOR_SIZE=4096",
+      "DEFAULT_SYNCHRONOUS=2",
+      "DEFAULT_WAL_AUTOCHECKPOINT=1000",
+      "DEFAULT_WAL_SYNCHRONOUS=2",
+      "DEFAULT_WORKER_THREADS=0",
+      "DIRECT_OVERFLOW_READ",
+      "ENABLE_COLUMN_METADATA",
+      "ENABLE_DBSTAT_VTAB",
+      "ENABLE_FTS3",
+      "ENABLE_FTS3_PARENTHESIS",
+      "ENABLE_FTS3_TOKENIZER",
+      "ENABLE_FTS4",
+      "ENABLE_FTS5",
+      "ENABLE_LOAD_EXTENSION",
+      "ENABLE_MATH_FUNCTIONS",
+      "ENABLE_PREUPDATE_HOOK",
+      "ENABLE_RTREE",
+      "ENABLE_SESSION",
+      "ENABLE_STMTVTAB",
+      "ENABLE_UNLOCK_NOTIFY",
+      "ENABLE_UPDATE_DELETE_LIMIT",
+      "HAVE_ISNAN",
+      "LIKE_DOESNT_MATCH_BLOBS",
+      "MALLOC_SOFT_LIMIT=1024",
+      "MAX_ATTACHED=10",
+      "MAX_COLUMN=2000",
+      "MAX_COMPOUND_SELECT=500",
+      "MAX_DEFAULT_PAGE_SIZE=32768",
+      "MAX_EXPR_DEPTH=1000",
+      "MAX_FUNCTION_ARG=127",
+      "MAX_LENGTH=1000000000",
+      "MAX_LIKE_PATTERN_LENGTH=50000",
+      "MAX_MMAP_SIZE=0x7fff0000",
+      "MAX_PAGE_COUNT=0xfffffffe",
+      "MAX_PAGE_SIZE=65536",
+      "MAX_SCHEMA_RETRY=25",
+      "MAX_SQL_LENGTH=1000000000",
+      "MAX_TRIGGER_DEPTH=1000",
+      "MAX_VARIABLE_NUMBER=250000",
+      "MAX_VDBE_OP=250000000",
+      "MAX_WORKER_THREADS=8",
+      "MUTEX_PTHREADS",
+      "SECURE_DELETE",
+      "SOUNDEX",
+      "SYSTEM_MALLOC",
+      "TEMP_STORE=1",
+      "THREADSAFE=1",
+      "USE_URI"
+    ]
+  },
+  "passed": 23,
+  "probes": [
+    {
+      "name": "Inline DEFAULT and writable CTEs are rejected",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT DEFAULT 'db')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(v) VALUES(DEFAULT) RETURNING *",
+          "parameters": [],
+          "error": "near \"DEFAULT\": syntax error"
+        },
+        {
+          "sql": "UPDATE t SET v=DEFAULT RETURNING *",
+          "parameters": [],
+          "error": "near \"DEFAULT\": syntax error"
+        },
+        {
+          "sql": "WITH x AS (INSERT INTO t DEFAULT VALUES RETURNING *) SELECT * FROM x",
+          "parameters": [],
+          "error": "near \"INSERT\": syntax error"
+        },
+        {
+          "sql": "INSERT INTO t DEFAULT VALUES ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [],
+          "error": "near \"ON\": syntax error"
+        },
+        {
+          "sql": "INSERT INTO t(v) VALUES(default(v)) RETURNING *",
+          "parameters": [],
+          "error": "near \"default\": syntax error"
+        }
+      ],
+      "result": [
+        {
+          "rejected_sql": "INSERT INTO t(v) VALUES(DEFAULT) RETURNING *",
+          "error": "near \"DEFAULT\": syntax error"
+        },
+        {
+          "rejected_sql": "UPDATE t SET v=DEFAULT RETURNING *",
+          "error": "near \"DEFAULT\": syntax error"
+        },
+        {
+          "rejected_sql": "WITH x AS (INSERT INTO t DEFAULT VALUES RETURNING *) SELECT * FROM x",
+          "error": "near \"INSERT\": syntax error"
+        },
+        {
+          "rejected_sql": "INSERT INTO t DEFAULT VALUES ON CONFLICT DO NOTHING RETURNING *",
+          "error": "near \"ON\": syntax error"
+        },
+        {
+          "rejected_sql": "INSERT INTO t(v) VALUES(default(v)) RETURNING *",
+          "error": "near \"default\": syntax error"
+        }
+      ]
+    },
+    {
+      "name": "Multi-row omission invokes per-row defaults and mixed integer IDs",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT DEFAULT 'db', token BLOB DEFAULT(randomblob(16)))",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(id) VALUES(NULL),(50),(NULL) RETURNING id,v,length(token),hex(token)",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "db",
+              16,
+              "66921C9E6DA87902D6CE155E00EB24A2"
+            ],
+            [
+              50,
+              "db",
+              16,
+              "272F92762E3BEB8BEF9F6696908BDD90"
+            ],
+            [
+              51,
+              "db",
+              16,
+              "C3C547876DBC5E17917780CB5231BE01"
+            ]
+          ]
+        }
+      ],
+      "result": [
+        [
+          1,
+          "db",
+          16,
+          "66921C9E6DA87902D6CE155E00EB24A2"
+        ],
+        [
+          50,
+          "db",
+          16,
+          "272F92762E3BEB8BEF9F6696908BDD90"
+        ],
+        [
+          51,
+          "db",
+          16,
+          "C3C547876DBC5E17917780CB5231BE01"
+        ]
+      ]
+    },
+    {
+      "name": "Schema default SQL can be inlined with explicit null preserved",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "function": "next_value",
+          "argument_count": 0
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v INTEGER DEFAULT(next_value()))",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "SELECT dflt_value FROM pragma_table_xinfo('t') WHERE name='v'",
+          "parameters": [],
+          "rows": [
+            [
+              "next_value()"
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(v) VALUES((next_value())),(?),(NULL),((next_value())) RETURNING *",
+          "parameters": [
+            99
+          ],
+          "rows": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              99
+            ],
+            [
+              3,
+              null
+            ],
+            [
+              4,
+              2
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(v) VALUES(CASE WHEN ? THEN (next_value()) ELSE ? END),(CASE WHEN ? THEN (next_value()) ELSE ? END) RETURNING v",
+          "parameters": [
+            0,
+            77,
+            1,
+            null
+          ],
+          "rows": [
+            [
+              77
+            ],
+            [
+              3
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "schema_expression": "next_value()",
+        "values": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            99
+          ],
+          [
+            3,
+            null
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "case_values": [
+          [
+            77
+          ],
+          [
+            3
+          ]
+        ],
+        "calls": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "name": "Reading dflt_value returns text rather than evaluating SQL",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(v TEXT DEFAULT 'actual')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(v) SELECT dflt_value FROM pragma_table_xinfo('t') WHERE name='v' RETURNING v",
+          "parameters": [],
+          "rows": [
+            [
+              "'actual'"
+            ]
+          ]
+        }
+      ],
+      "result": [
+        [
+          "'actual'"
+        ]
+      ]
+    },
+    {
+      "name": "A scalar subquery can collapse per-row default evaluation",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "function": "next_value",
+          "argument_count": 0
+        },
+        {
+          "sql": "CREATE TABLE t(v INTEGER)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "WITH input(x) AS (VALUES(1),(2),(3)) INSERT INTO t SELECT next_value() FROM input RETURNING v",
+          "parameters": [],
+          "rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ]
+        },
+        {
+          "sql": "WITH input(x) AS (VALUES(1),(2),(3)) INSERT INTO t SELECT (SELECT next_value()) FROM input RETURNING v",
+          "parameters": [],
+          "rows": [
+            [
+              4
+            ],
+            [
+              4
+            ],
+            [
+              4
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "direct_expression": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ],
+        "uncorrelated_subquery": [
+          [
+            4
+          ],
+          [
+            4
+          ],
+          [
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "name": "NULL and REPLACE do not mean DEFAULT for nullable columns",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT DEFAULT 'db', required TEXT NOT NULL DEFAULT 'required')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(v) VALUES(NULL) RETURNING v,required",
+          "parameters": [],
+          "rows": [
+            [
+              null,
+              "required"
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT OR REPLACE INTO t(v,required) VALUES(NULL,NULL) RETURNING v,required",
+          "parameters": [],
+          "rows": [
+            [
+              null,
+              "required"
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "explicit_null": [
+          [
+            null,
+            "required"
+          ]
+        ],
+        "replace_cannot_default_nullable_column": [
+          [
+            null,
+            "required"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Omitted upsert columns are available through excluded",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, k TEXT UNIQUE, v TEXT DEFAULT 'db')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k,v) VALUES('a','old')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k) VALUES('a'),('b') ON CONFLICT(k) DO UPDATE SET v=excluded.v RETURNING id,k,v",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "a",
+              "db"
+            ],
+            [
+              2,
+              "b",
+              "db"
+            ]
+          ]
+        }
+      ],
+      "result": [
+        [
+          1,
+          "a",
+          "db"
+        ],
+        [
+          2,
+          "b",
+          "db"
+        ]
+      ]
+    },
+    {
+      "name": "SQLite allows repeated upsert targets and reports only affected rows",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, k TEXT UNIQUE, v INTEGER)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k,v) VALUES('a',0)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k,v) VALUES('a',1),('a',2),('b',3) ON CONFLICT(k) DO UPDATE SET v=excluded.v RETURNING id,k,v",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "a",
+              1
+            ],
+            [
+              1,
+              "a",
+              2
+            ],
+            [
+              2,
+              "b",
+              3
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(k,v) VALUES('a',4),('a',5) ON CONFLICT(k) DO UPDATE SET v=excluded.v WHERE excluded.v<5 RETURNING id,k,v",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "a",
+              4
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "duplicate_target_is_allowed_by_sqlite": [
+          [
+            1,
+            "a",
+            1
+          ],
+          [
+            1,
+            "a",
+            2
+          ],
+          [
+            2,
+            "b",
+            3
+          ]
+        ],
+        "only_actual_changes_return": [
+          [
+            1,
+            "a",
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "name": "UPDATE FROM works but does not return input order or source ordinal",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t VALUES(1,'old'),(2,'old'),(3,'old')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "WITH input(ord,id,v) AS (VALUES(0,3,'c'),(1,1,'a'),(2,2,NULL)) UPDATE t SET v=input.v FROM input WHERE t.id=input.id RETURNING id,v",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "a"
+            ],
+            [
+              2,
+              null
+            ],
+            [
+              3,
+              "c"
+            ]
+          ]
+        },
+        {
+          "sql": "WITH input(ord,id,v) AS (VALUES(0,1,'a')) UPDATE t SET v=input.v FROM input WHERE t.id=input.id RETURNING input.ord,t.id",
+          "parameters": [],
+          "error": "no such column: input.ord"
+        }
+      ],
+      "result": {
+        "input_ids": [
+          3,
+          1,
+          2
+        ],
+        "returned": [
+          [
+            1,
+            "a"
+          ],
+          [
+            2,
+            null
+          ],
+          [
+            3,
+            "c"
+          ]
+        ],
+        "source_ordinal": {
+          "rejected_sql": "WITH input(ord,id,v) AS (VALUES(0,1,'a')) UPDATE t SET v=input.v FROM input WHERE t.id=input.id RETURNING input.ord,t.id",
+          "error": "no such column: input.ord"
+        }
+      }
+    },
+    {
+      "name": "UPDATE FROM collapses duplicate targets",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t VALUES(1,'old')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "UPDATE t SET v='first' WHERE id=1 RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "first"
+            ]
+          ]
+        },
+        {
+          "sql": "UPDATE t SET v='second' WHERE id=1 RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "second"
+            ]
+          ]
+        },
+        {
+          "sql": "WITH input(id,v) AS (VALUES(1,'first'),(1,'second')) UPDATE t SET v=input.v FROM input WHERE t.id=input.id RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "second"
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "sequential": [
+          [
+            1,
+            "first"
+          ],
+          [
+            1,
+            "second"
+          ]
+        ],
+        "update_from": [
+          [
+            1,
+            "second"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "UPDATE FROM changes uniqueness-sensitive update order",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT UNIQUE)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t VALUES(1,'a'),(2,'b')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "UPDATE t SET v='c' WHERE id=2 RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              2,
+              "c"
+            ]
+          ]
+        },
+        {
+          "sql": "UPDATE t SET v='b' WHERE id=1 RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "b"
+            ]
+          ]
+        },
+        {
+          "sql": "SELECT * FROM t ORDER BY id",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "b"
+            ],
+            [
+              2,
+              "c"
+            ]
+          ]
+        },
+        {
+          "sql": "DELETE FROM t",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t VALUES(1,'a'),(2,'b')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "WITH input(id,v) AS (VALUES(2,'c'),(1,'b')) UPDATE t SET v=input.v FROM input WHERE t.id=input.id RETURNING *",
+          "parameters": [],
+          "error": "UNIQUE constraint failed: t.v"
+        }
+      ],
+      "result": {
+        "sequential_success": [
+          [
+            1,
+            "b"
+          ],
+          [
+            2,
+            "c"
+          ]
+        ],
+        "update_from_failure": {
+          "rejected_sql": "WITH input(id,v) AS (VALUES(2,'c'),(1,'b')) UPDATE t SET v=input.v FROM input WHERE t.id=input.id RETURNING *",
+          "error": "UNIQUE constraint failed: t.v"
+        }
+      }
+    },
+    {
+      "name": "INSERT RETURNING cannot directly reference source ordinal",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "WITH input(ord,v) AS (VALUES(0,'same'),(1,'same')) INSERT INTO t(v) SELECT v FROM input RETURNING id,input.ord",
+          "parameters": [],
+          "error": "no such column: input.ord"
+        },
+        {
+          "sql": "INSERT INTO t(v) VALUES(?) RETURNING ?,id,v",
+          "parameters": [
+            "same",
+            7
+          ],
+          "rows": [
+            [
+              7,
+              1,
+              "same"
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "multi_row_source_ordinal": {
+          "rejected_sql": "WITH input(ord,v) AS (VALUES(0,'same'),(1,'same')) INSERT INTO t(v) SELECT v FROM input RETURNING id,input.ord",
+          "error": "no such column: input.ord"
+        },
+        "single_row_bound_ordinal": [
+          [
+            7,
+            1,
+            "same"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Post-write SELECT differs from RETURNING with AFTER triggers",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TRIGGER after_insert AFTER INSERT ON t BEGIN UPDATE t SET v='after' WHERE id=NEW.id; END",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(v) VALUES('before') RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "before"
+            ]
+          ]
+        },
+        {
+          "sql": "SELECT * FROM t",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "after"
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "returning": [
+          [
+            1,
+            "before"
+          ]
+        ],
+        "later_select": [
+          [
+            1,
+            "after"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Skipped conflicts create holes in generated IDs",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY AUTOINCREMENT, k TEXT UNIQUE)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k) VALUES('a'),('a'),('b') ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "a"
+            ],
+            [
+              3,
+              "b"
+            ]
+          ]
+        },
+        {
+          "sql": "SELECT last_insert_rowid()",
+          "parameters": [],
+          "rows": [
+            [
+              3
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "returned": [
+          [
+            1,
+            "a"
+          ],
+          [
+            3,
+            "b"
+          ]
+        ],
+        "last_insert_rowid": [
+          [
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Global grouping by column shape changes conflict winners",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, k TEXT UNIQUE, v TEXT DEFAULT 'db')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k) VALUES(?) ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [
+            "a"
+          ],
+          "rows": [
+            [
+              1,
+              "a",
+              "db"
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(k,v) VALUES(?,?) ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [
+            "b",
+            "explicit"
+          ],
+          "rows": [
+            [
+              2,
+              "b",
+              "explicit"
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(k) VALUES(?) ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [
+            "b"
+          ],
+          "rows": []
+        },
+        {
+          "sql": "DELETE FROM t",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k) VALUES(?) ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [
+            "a"
+          ],
+          "rows": [
+            [
+              1,
+              "a",
+              "db"
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(k) VALUES(?) ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [
+            "b"
+          ],
+          "rows": [
+            [
+              2,
+              "b",
+              "db"
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(k,v) VALUES(?,?) ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [
+            "b",
+            "explicit"
+          ],
+          "rows": []
+        }
+      ],
+      "result": {
+        "original_order": [
+          [
+            1,
+            "a",
+            "db"
+          ],
+          [
+            2,
+            "b",
+            "explicit"
+          ]
+        ],
+        "regrouped_by_shape": [
+          [
+            1,
+            "a",
+            "db"
+          ],
+          [
+            2,
+            "b",
+            "db"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Multi-row inserts change immediate self foreign key boundaries",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, parent INTEGER REFERENCES t(id))",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t VALUES(2,1) RETURNING *",
+          "parameters": [],
+          "error": "FOREIGN KEY constraint failed"
+        },
+        {
+          "sql": "INSERT INTO t VALUES(2,1),(1,NULL) RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              2,
+              1
+            ],
+            [
+              1,
+              null
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "individual_statement": {
+          "rejected_sql": "INSERT INTO t VALUES(2,1) RETURNING *",
+          "error": "FOREIGN KEY constraint failed"
+        },
+        "multi_row_statement": [
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Ordered result sets retain skipped inputs and savepoint rollback",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, k TEXT UNIQUE, v TEXT DEFAULT 'db')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "BEGIN",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k) VALUES('outer')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "SAVEPOINT batch",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k) VALUES(?) RETURNING *",
+          "parameters": [
+            "a"
+          ],
+          "rows": [
+            [
+              2,
+              "a",
+              "db"
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(k,v) VALUES(?,?) ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [
+            "a",
+            "skip"
+          ],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(k,v) VALUES(?,?) RETURNING *",
+          "parameters": [
+            "b",
+            null
+          ],
+          "rows": [
+            [
+              3,
+              "b",
+              null
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(k) VALUES(?) RETURNING *",
+          "parameters": [
+            "b"
+          ],
+          "error": "UNIQUE constraint failed: t.k"
+        },
+        {
+          "sql": "ROLLBACK TO batch",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "RELEASE batch",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "SELECT * FROM t",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "outer",
+              "db"
+            ]
+          ]
+        },
+        {
+          "sql": "COMMIT",
+          "parameters": [],
+          "rows": []
+        }
+      ],
+      "result": {
+        "per_input_results_before_failure": [
+          [
+            [
+              2,
+              "a",
+              "db"
+            ]
+          ],
+          [],
+          [
+            [
+              3,
+              "b",
+              null
+            ]
+          ]
+        ],
+        "after_rollback": [
+          [
+            1,
+            "outer",
+            "db"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "UPDATE FROM can use schema expressions for explicit reset-to-default",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT DEFAULT 'db')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t VALUES(1,'old'),(2,'old')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "SELECT dflt_value FROM pragma_table_xinfo('t') WHERE name='v'",
+          "parameters": [],
+          "rows": [
+            [
+              "'db'"
+            ]
+          ]
+        },
+        {
+          "sql": "WITH input(id,use_default,v) AS (VALUES(1,1,NULL),(2,0,NULL)) UPDATE t SET v=CASE WHEN input.use_default THEN ('db') ELSE input.v END FROM input WHERE t.id=input.id RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              "db"
+            ],
+            [
+              2,
+              null
+            ]
+          ]
+        }
+      ],
+      "result": [
+        [
+          1,
+          "db"
+        ],
+        [
+          2,
+          null
+        ]
+      ]
+    },
+    {
+      "name": "BLOB primary key defaults differ from INTEGER PRIMARY KEY",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id BLOB PRIMARY KEY NOT NULL DEFAULT(randomblob(16)), v TEXT)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(v) VALUES('a'),('b') RETURNING length(id),hex(id),v",
+          "parameters": [],
+          "rows": [
+            [
+              16,
+              "441E7361A99E3BBE04A96A5C857AA441",
+              "a"
+            ],
+            [
+              16,
+              "58C3EB72DC245E942B482261D1481161",
+              "b"
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(id,v) VALUES(NULL,'c') RETURNING *",
+          "parameters": [],
+          "error": "NOT NULL constraint failed: t.id"
+        }
+      ],
+      "result": {
+        "generated_blob_ids": [
+          [
+            16,
+            "441E7361A99E3BBE04A96A5C857AA441",
+            "a"
+          ],
+          [
+            16,
+            "58C3EB72DC245E942B482261D1481161",
+            "b"
+          ]
+        ],
+        "null_is_not_default": {
+          "rejected_sql": "INSERT INTO t(id,v) VALUES(NULL,'c') RETURNING *",
+          "error": "NOT NULL constraint failed: t.id"
+        }
+      }
+    },
+    {
+      "name": "Triggers cannot collect RETURNING results directly",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE VIEW input AS SELECT id FROM t",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TRIGGER input_insert INSTEAD OF INSERT ON input BEGIN INSERT INTO t VALUES(NEW.id) RETURNING *; END",
+          "parameters": [],
+          "error": "cannot use RETURNING in a trigger"
+        }
+      ],
+      "result": {
+        "rejected_sql": "CREATE TRIGGER input_insert INSTEAD OF INSERT ON input BEGIN INSERT INTO t VALUES(NEW.id) RETURNING *; END",
+        "error": "cannot use RETURNING in a trigger"
+      }
+    },
+    {
+      "name": "Known unique keys allow correlation through a materialized input CTE",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT)",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t VALUES(1,'old'),(2,'old'),(3,'old')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "WITH input(ord,id,v) AS MATERIALIZED (VALUES(0,3,'c'),(1,1,'a'),(2,2,'b')) UPDATE t SET v=input.v FROM input WHERE t.id=input.id RETURNING (SELECT ord FROM input WHERE input.id=t.id),id,v",
+          "parameters": [],
+          "rows": [
+            [
+              1,
+              1,
+              "a"
+            ],
+            [
+              2,
+              2,
+              "b"
+            ],
+            [
+              0,
+              3,
+              "c"
+            ]
+          ]
+        },
+        {
+          "sql": "WITH input(ord,id,v) AS MATERIALIZED (VALUES(0,9,'z'),(1,8,'y')) INSERT INTO t(id,v) SELECT id,v FROM input RETURNING (SELECT ord FROM input WHERE input.id=t.id),id,v",
+          "parameters": [],
+          "rows": [
+            [
+              0,
+              9,
+              "z"
+            ],
+            [
+              1,
+              8,
+              "y"
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "correlated_update": [
+          [
+            1,
+            1,
+            "a"
+          ],
+          [
+            2,
+            2,
+            "b"
+          ],
+          [
+            0,
+            3,
+            "c"
+          ]
+        ],
+        "correlated_insert": [
+          [
+            0,
+            9,
+            "z"
+          ],
+          [
+            1,
+            8,
+            "y"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Staging defaults does not solve destination generated ID correlation",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT DEFAULT 'db')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t VALUES(1,'existing')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TEMP TABLE stage(ord INTEGER, id INTEGER PRIMARY KEY, v TEXT DEFAULT 'db')",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO stage(ord) VALUES(0),(1) RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              0,
+              1,
+              "db"
+            ],
+            [
+              1,
+              2,
+              "db"
+            ]
+          ]
+        },
+        {
+          "sql": "INSERT INTO t(id,v) SELECT id,v FROM stage RETURNING *",
+          "parameters": [],
+          "error": "UNIQUE constraint failed: t.id"
+        },
+        {
+          "sql": "INSERT INTO t(v) SELECT v FROM stage ORDER BY ord RETURNING *",
+          "parameters": [],
+          "rows": [
+            [
+              2,
+              "db"
+            ],
+            [
+              3,
+              "db"
+            ]
+          ]
+        }
+      ],
+      "result": {
+        "staged_defaults": [
+          [
+            0,
+            1,
+            "db"
+          ],
+          [
+            1,
+            2,
+            "db"
+          ]
+        ],
+        "copy_ids_fails": {
+          "rejected_sql": "INSERT INTO t(id,v) SELECT id,v FROM stage RETURNING *",
+          "error": "UNIQUE constraint failed: t.id"
+        },
+        "regenerated_ids_lose_ordinal": [
+          [
+            2,
+            "db"
+          ],
+          [
+            3,
+            "db"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "INSERT OR IGNORE is broader than ON CONFLICT DO NOTHING",
+      "events": [
+        {
+          "sql": "PRAGMA foreign_keys = ON",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT NOT NULL DEFAULT 'db', n INTEGER CHECK(n>0))",
+          "parameters": [],
+          "rows": []
+        },
+        {
+          "sql": "INSERT INTO t(n) VALUES(-1) ON CONFLICT DO NOTHING RETURNING *",
+          "parameters": [],
+          "error": "CHECK constraint failed: n>0"
+        },
+        {
+          "sql": "INSERT OR IGNORE INTO t(n) VALUES(-1) RETURNING *",
+          "parameters": [],
+          "rows": []
+        }
+      ],
+      "result": {
+        "do_nothing_preserves_check_error": {
+          "rejected_sql": "INSERT INTO t(n) VALUES(-1) ON CONFLICT DO NOTHING RETURNING *",
+          "error": "CHECK constraint failed: n>0"
+        },
+        "or_ignore_swallows_check_error": []
+      }
+    }
+  ]
+}

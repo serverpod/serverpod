@@ -148,3 +148,218 @@ Remaining trade-offs: opting into caching can retain large literal SQL values,
 and shutdown can wait for active maintenance, including up to one second per
 reader lease attempt. Both are documented rather than hidden by the timing
 results.
+
+## Returning write investigation
+
+Investigated on September 30, 2026, at `f3bcd20f8`. The artifacts under
+[returning_writes](returning_writes/) are executable research and recorded
+results. This investigation changes no production code.
+
+**Recommendation:** add ordered execution batches that return one result set
+per input statement. Prepare and execute those statements beside SQLite, inside
+the existing transaction or savepoint. This removes the per-row asynchronous
+driver exchange while retaining database defaults, input order, skipped rows,
+and each statement's returned values. SQLite still executes individual writes.
+The experiments support this as the general solution for the current behavior;
+set-based SQL is a separate optimization with narrower applicability.
+
+### Dialect results
+
+[dialect_probe.py](returning_writes/dialect_probe.py) runs 23 isolated experiments
+against system SQLite 3.45.1 and records every bound SQL call, result, and expected
+error in [dialect_results.json](returning_writes/dialect_results.json).
+[driver_probe.dart](returning_writes/driver_probe.dart) replays those calls with
+the repository's resolved SQLite 3.53.4 and checks the same outcomes. Random
+16-byte hex values are normalized for replay comparison; their values are not
+expected to match across runs. Versions, source IDs, and compile options are in
+the result files.
+
+| Alternative | Observed SQLite behavior | Consequence |
+| --- | --- | --- |
+| Inline `DEFAULT`, `SET v=DEFAULT`, or `default(v)` | Syntax errors on both versions | No hidden equivalent of PostgreSQL's keyword was found. |
+| Omit columns in a multi-row `INSERT` | Database defaults apply; random defaults are evaluated per row | Works when all rows share the omitted columns. |
+| Inline the schema's default expression | Mixed defaults, supplied values, and explicit NULL work in one statement | A valid SQL option, requiring actual default SQL and input correlation. |
+| Read `pragma_table_xinfo.dflt_value` as a value | Stores SQL text, such as the quoted string `'actual'` | Introspection does not evaluate the expression. |
+| Evaluate a default through an uncorrelated scalar subquery | A counting function runs once for three rows | Keep the expression in the per-row expression position. |
+| `NULL` or `OR REPLACE` as a default convention | Explicit NULL remains NULL for nullable columns; REPLACE only substitutes a default for a NOT NULL violation | These cannot generally preserve the distinction between NULL and DEFAULT. |
+| Omit a column on upsert, then use `excluded.v` | Both inserted and conflict-updated rows receive the database default | The update column list must remain independent of the insert column list. |
+| `WITH input AS (VALUES ...) UPDATE ... FROM input` | Works for distinct IDs; output order differs from input; repeated IDs update once | ID correlation fixes return ordering only. It does not restore repeated-update semantics. |
+| Set-based update with distinct IDs and UNIQUE values | Updating ID 2 from `b` to `c`, then ID 1 from `a` to `b` succeeds sequentially; the combined statement fails | Distinct IDs alone are insufficient to establish equivalent write semantics. |
+| Multi-row upsert with repeated conflict keys | SQLite returns two changes to the same row; an `updateWhere` skip returns nothing | Serverpod must retain its duplicate-affected-ID check. |
+| Return `input.ord` directly | Rejected for INSERT and UPDATE FROM | Source-only metadata cannot directly accompany generated IDs. |
+| Correlated subquery against a materialized input CTE | Returns the correct ordinal when a unique, known target ID is available | Useful for restricted set-based paths, including explicit-ID inserts. |
+| Select rows after the batch | An AFTER trigger changes `before` to `after`, whereas RETURNING reports `before` | Readback is not equivalent to collecting RETURNING. |
+| Infer generated IDs from a contiguous range | Ignoring a duplicate produces IDs 1 and 3 under AUTOINCREMENT | Neither a range nor `last_insert_rowid()` identifies every successful input. |
+| Regroup all inputs by SQL shape | A different input wins a unique conflict | Preserve the entire input sequence, even across alternating shapes. |
+| Stage rows in a temporary table with defaults | Stage IDs conflict with existing destination IDs; regenerating destination IDs loses the stage ordinal | Staging alone does not solve generated-ID correlation. |
+| Writable CTEs or RETURNING inside a trigger | Rejected | PostgreSQL-style chaining cannot collect the result sets. |
+| Combine a child-before-parent self-reference into one INSERT | Combined statement succeeds; the first individual write fails its immediate FK | Combining statements also changes constraint-check boundaries. |
+
+SQLite documents these boundaries in its [INSERT syntax](https://www.sqlite.org/lang_insert.html),
+[default evaluation rules](https://www.sqlite.org/lang_createtable.html#the_default_clause),
+[UPDATE FROM rules](https://www.sqlite.org/lang_update.html#update_from), and
+[RETURNING limitations](https://www.sqlite.org/lang_returning.html#limitations_and_caveats).
+The returned row order is explicitly unspecified, including for INSERT. Observing
+insertion order in these probes is not a guarantee that an ORM can rely on.
+
+The viable expression substitution looks like this:
+
+```sql
+-- Suppose the live schema declares v DEFAULT 'db'.
+INSERT INTO t(k, v)
+VALUES (?, 'db'), (?, ?), (?, NULL)
+RETURNING *;
+
+-- A fixed expression shape can distinguish default from explicit NULL.
+INSERT INTO t(k, v)
+VALUES (?, CASE WHEN ? THEN 'db' ELSE ? END)
+RETURNING *;
+```
+
+An implementation must use the actual schema expression, bind application data,
+and retain SQLite evaluation of volatile expressions. `Column.hasDefault` is
+only a boolean; it does not provide the expression. Loading and invalidating
+schema metadata would be additional work. This syntax resolves the varying
+column-set issue, but not the independent identity and write-order issues.
+
+For an all-default integer-rowid model, `INSERT INTO t(id) VALUES(NULL),(NULL)`
+is viable. A BLOB primary key with a default behaves differently: explicit NULL
+fails its NOT NULL constraint. Also, `DEFAULT VALUES ON CONFLICT DO NOTHING` is
+invalid. Substituting `INSERT OR IGNORE` is broader: a separate probe shows it
+silently skips a CHECK violation which `ON CONFLICT DO NOTHING` rejects.
+
+### Native driver measurements
+
+The driver prototype executes up to 256 ordered statements in one
+`SqliteWriteContext.computeWithDatabase` callback. It keeps a prepared statement
+per SQL shape within the chunk, binds each input in order, collects each
+`select()` result separately, and closes every prepared statement. Alternating
+shapes therefore require no additional driver exchanges.
+
+Final measurements use Dart 3.12.2, `sqlite_async` 0.14.5, `sqlite3` 3.5.2,
+SQLite 3.53.4, a temporary disk database, WAL, synchronous NORMAL, and driver
+statement caching disabled. Each workload has three warmups and seven measured
+samples, rotating method order. Database setup is outside timing; transaction
+execution and returned rows are inside it. All methods verify 1,000 returned
+rows, unique keys, and expected values after timing.
+
+| 1,000 rows returning three columns | Await each statement | Ordered worker batches | Set-based chunks |
+| --- | ---: | ---: | ---: |
+| Insert | 138.800 ms | 8.286 ms | 3.791 ms |
+| Insert with alternating default column omission | 108.786 ms | 5.673 ms | 3.216 ms |
+| Update | 105.372 ms | 4.832 ms | 3.398 ms |
+| Upsert existing rows | 92.553 ms | 8.667 ms | 4.038 ms |
+
+Raw samples are in [driver_results.json](returning_writes/driver_results.json).
+The set-based mixed insert uses the known literal schema default; it does not
+measure schema introspection. These simple, narrow fixtures have no triggers or
+duplicate inputs. They establish the available execution gain, not general
+semantic equivalence. Host load is uncontrolled; an earlier run was faster, so
+do not treat these timings as fixed latency guarantees. These are driver-level
+measurements, excluding ORM model serialization, normalization, and hydration.
+
+Separate native behavior checks verify mixed shapes, skipped inserts, missing
+update targets, repeated update snapshots, values returned before an AFTER
+trigger's modifications, savepoint rollback preserving an outer write, and
+returned duplicate upsert IDs. They also exercise native 64-bit integer
+precision, BLOB parameters and results, and JSONB.
+
+### Mapping to the current implementation
+
+Source inspection confirms that ordinary `update` already has a fixed selected
+column set and binds NULL as NULL. Its remaining per-row loop is an execution
+issue, not a DEFAULT syntax issue. Returning insert and update recurse once per
+row; no-return insert and update call `executeBatch` for consecutive SQL shapes.
+Upsert still loops in both modes and uses the shared `InsertQueryBuilder`.
+
+The proposed changes are:
+
+1. Introduce an ordered statement plan carrying SQL, typed bound parameters,
+   input position, and return projection (`none`, `id`, or full row). A transport
+   can send a dictionary of SQL shapes plus an ordered list of references and
+   parameter sets. Never reorder the executions to group matching shapes.
+2. Retain `_parameterizedInsert`'s omission of defaulted columns and generated
+   IDs. Retain `_parameterizedUpdate`'s selected columns and NULL semantics.
+   Add a parameterized SQLite upsert builder using the same insert omission
+   rules, an independent conflict/update clause, and `excluded` references.
+   Handle zero-column/default-only inserts explicitly. No schema-default cache
+   is needed for this general solution.
+3. Replace the recursive returning paths with a common batch executor under
+   `DatabaseUtil.runInTransactionOrSavepoint`. Bound transfer size by rows and
+   payload bytes; keep preparation caches local and bounded. Preserve error
+   translation, cancellation checks, query logging, and operation timestamps.
+4. Return a result slot for every input, including an empty slot for skipped
+   conflicts or missing updates. Normalize returned fields using the existing
+   column mapping and encoder, then merge non-persisted fields from that slot's
+   input model. Flatten only after this association. Do not zip a shortened
+   returned-row list with the original input list.
+5. For upsert, collect actual affected IDs across every chunk, including with
+   `noReturn`, and perform the existing duplicate-ID rejection before releasing
+   the transaction/savepoint. Decode UUID/BLOB IDs for value equality; object
+   identity on raw byte buffers is insufficient. Skips do not count.
+
+There is also a reproduced current correctness defect, independent of batching:
+[builder_probe.dart](returning_writes/builder_probe.dart) exercises the production
+`InsertQueryBuilder` with the SQLite encoder and a defaulted nullable field.
+It emits `VALUES (1, DEFAULT)` and SQLite rejects it. The equivalent upsert
+omitting that field returns its declared default. The exact generated SQL and
+error are in [builder_results.json](returning_writes/builder_results.json).
+The ORM currently treats null on an insert-default column as a request for its
+default; the dialect's ability to express explicit NULL does not create a new
+model API for distinguishing those intentions.
+
+### Driver work and validation still needed for implementation
+
+The native prototype works through the installed public driver API. However,
+`sqlite_async` 0.14.5's web `_UnscopedContext.computeWithDatabase` explicitly
+throws `UnimplementedError`. Its web `executeBatch` sends a `RunBatchRequest`
+to `AsyncSqliteDatabase.handleCustomRequest`, where the worker prepares one SQL
+statement and calls `executeWith` per parameter set, discarding returned rows.
+These web findings are source inspection, not browser execution evidence.
+
+The complete platform solution therefore needs a driver operation for ordered
+statements with result sets, implemented in both the native worker and the web
+request/response protocol. The current web request already supplies lock and
+transaction checks and typed parameter encoding; an extension must preserve
+those mechanisms and encode typed results. A native-only `computeWithDatabase`
+change would leave web performance unresolved. No dependency was modified or
+published during this investigation.
+
+Before production adoption, run the real ORM CRUD suites on native and web,
+including model defaults, column aliases, non-persisted fields after skipped
+inputs, UUID IDs, watches, cancellation, conflict predicates, duplicate targets
+across chunks, late constraint failures, and nested savepoints. The probes here
+validate the dialect and native executor design; they do not replace that
+adapter/driver integration validation.
+
+Set-based paths can be considered subsequently where the API accepts their
+statement semantics and output correlation is provable. Use actual keys rather
+than returned-row position, respect bind-variable limits, and bound RETURNING
+memory. The observed additional speed does not justify silently changing the
+general operation's behavior.
+
+### Reproducing the investigation
+
+Run from the repository root with the resolved package configuration and native
+assets available:
+
+```sh
+python3 docs/design/sqlite_performance/returning_writes/dialect_probe.py \
+  > /tmp/sqlite-dialect-results.json
+
+/home/msoares/fvm/versions/3.44.4/bin/cache/dart-sdk/bin/dart \
+  --packages=.dart_tool/package_config.json --enable-experiment=native-assets \
+  docs/design/sqlite_performance/returning_writes/driver_probe.dart \
+  /tmp/sqlite-dialect-results.json > /tmp/sqlite-driver-results.json
+
+/home/msoares/fvm/versions/3.44.4/bin/cache/dart-sdk/bin/dart \
+  --packages=.dart_tool/package_config.json --enable-experiment=native-assets \
+  docs/design/sqlite_performance/returning_writes/builder_probe.dart \
+  > /tmp/sqlite-builder-results.json
+```
+
+The Python process deliberately uses the system SQLite library. Preloading the
+repository's native library into Python segfaulted on connection creation, so
+the resolved build was validated through Dart instead. Both successful routes
+report their actual SQLite version. The final Dart probes passed static analysis
+and formatting checks.
