@@ -64,17 +64,11 @@ RETURNING *''').rows;
     }
 
     print(
-      const JsonEncoder.withIndent('  ').convert({
-        'sqlite_version': db
-            .select('SELECT sqlite_version()')
-            .rows
-            .single
-            .single,
-        'production_builder_sql': sql,
-        'production_builder_error': rejected.message,
-        'omitted_column_upsert': omitted,
-      }),
+      'SQLite ${db.select('SELECT sqlite_version()').single.values.single}',
     );
+    print('Generic builder SQL: $sql');
+    print('Expected dialect rejection: ${rejected.message}');
+    print('Omitting the defaulted column returns: $omitted');
   } finally {
     db.close();
   }

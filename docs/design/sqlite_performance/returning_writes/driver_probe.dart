@@ -8,74 +8,10 @@ import 'package:sqlite3/common.dart' show CommonPreparedStatement;
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
+import 'dialect_probe.dart' show runDialectChecks;
+
 void require(bool condition, String description) {
   if (!condition) throw StateError(description);
-}
-
-Object? normalize(Object? value) {
-  if (value is String && RegExp(r'^[0-9A-F]{32}$').hasMatch(value)) {
-    return '<random 16-byte hex>';
-  }
-  if (value is List) return value.map(normalize).toList();
-  return value;
-}
-
-Map<String, Object?> replayDialect(String path) {
-  final source = jsonDecode(File(path).readAsStringSync()) as Map;
-  final outcomes = <Object?>[];
-
-  for (final probe in source['probes'] as List) {
-    final db = sqlite3.openInMemory();
-    var calls = 0;
-    var checked = 0;
-
-    try {
-      for (final event in probe['events'] as List) {
-        if (event['function'] != null) {
-          require(event['function'] == 'next_value', 'Unknown probe function');
-          db.createFunction(
-            functionName: 'next_value',
-            argumentCount: const AllowedArgumentCount(0),
-            function: (_) => ++calls,
-          );
-          continue;
-        }
-
-        final sql = event['sql'] as String;
-        final parameters = List<Object?>.from(event['parameters'] as List);
-        List<List<Object?>>? actual;
-        SqliteException? failure;
-
-        try {
-          actual = db.select(sql, parameters).rows;
-        } on SqliteException catch (error) {
-          failure = error;
-        }
-
-        if (event['error'] != null) {
-          require(failure != null, 'Expected rejection: $sql');
-          require(
-            failure!.message == event['error'],
-            'Different failure for $sql: ${failure.message}',
-          );
-        } else {
-          require(failure == null, 'Unexpected failure: $sql: $failure');
-          require(
-            jsonEncode(normalize(actual)) ==
-                jsonEncode(normalize(event['rows'])),
-            'Different result: $sql: $actual != ${event['rows']}',
-          );
-        }
-        checked++;
-      }
-
-      outcomes.add({'name': probe['name'], 'checked_sql_calls': checked});
-    } finally {
-      db.close();
-    }
-  }
-
-  return {'passed': outcomes.length, 'probes': outcomes};
 }
 
 typedef BoundStatement = ({String sql, List<Object?> parameters});
@@ -434,18 +370,30 @@ Future<void> main(List<String> args) async {
         'PRAGMA compile_options',
       )).map((row) => row.values.single).toList(),
     };
-    final dialect = replayDialect(args.single);
-    final behavior = await verifyOrdered(db);
-    final measurements = await measure(db);
+    final dialect = runDialectChecks();
+    await verifyOrdered(db);
 
+    stdout.writeln('Dart ${metadata['dart']}');
     stdout.writeln(
-      const JsonEncoder.withIndent('  ').convert({
-        'metadata': metadata,
-        'dialect_replay': dialect,
-        'ordered_driver_behavior': behavior,
-        'measurements': measurements,
-      }),
+      'SQLite ${metadata['sqlite']}; WAL=${metadata['journal_mode']}; synchronous=${metadata['synchronous']}',
     );
+    stdout.writeln(
+      '$dialect dialect checks and ordered driver behavior checks passed.\n',
+    );
+    if (args.contains('--verify-only')) return;
+
+    final measurements = await measure(db);
+    stdout.writeln('| Workload | Method | Median ms | Samples ms |');
+    stdout.writeln('| --- | --- | ---: | --- |');
+    final workloads = measurements['workloads'] as Map<String, Object?>;
+    for (final workload in workloads.entries) {
+      for (final method in (workload.value as Map<String, Object?>).entries) {
+        final stats = method.value as Map<String, Object?>;
+        stdout.writeln(
+          '| ${workload.key} | ${method.key} | ${stats['median_ms']} | ${stats['samples_ms']} |',
+        );
+      }
+    }
   } finally {
     await db.close();
     await directory.delete(recursive: true);
