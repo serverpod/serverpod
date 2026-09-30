@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:serverpod_database/serverpod_database.dart';
@@ -8,6 +9,33 @@ import '../test_util.dart';
 
 void main() {
   initTestClientSession();
+
+  test(
+    'Given an active query watch on an empty table, '
+    'when a returning insert batch commits, '
+    'then the watch receives the complete persisted batch.',
+    () async {
+      final watch = StreamIterator(
+        SimpleData.db.watch(session, orderBy: (table) => table.id),
+      );
+      addTearDown(watch.cancel);
+      expect(await watch.moveNext(), isTrue);
+      expect(watch.current, isEmpty);
+      final changed = watch.moveNext();
+
+      final returned = await SimpleData.db.insert(session, [
+        for (var index = 0; index < 300; index++) SimpleData(num: index),
+      ]);
+      final emitted = await changed.timeout(const Duration(seconds: 10));
+
+      expect(emitted, isTrue);
+      expect(
+        watch.current.map((row) => (row.id, row.num)),
+        returned.map((row) => (row.id, row.num)),
+      );
+      expect(watch.current, hasLength(300));
+    },
+  );
 
   test(
     'Given interleaved explicit and generated IDs across a batch boundary, '

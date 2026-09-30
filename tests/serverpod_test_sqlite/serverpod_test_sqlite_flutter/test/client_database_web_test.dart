@@ -65,6 +65,15 @@ class _CounterAppState extends State<_CounterApp> {
     setState(() => _entries = entries);
   }
 
+  Future<void> addEntries(List<int> numbers) async {
+    var session = _session!;
+    var entries = await SimpleData.db.insert(session, [
+      for (final number in numbers) SimpleData(num: number),
+    ]);
+    if (!mounted) return;
+    setState(() => _entries = [..._entries, ...entries]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -111,6 +120,11 @@ void main() {
         await _pumpUntilFound(tester, find.text('entries: 1'));
         expect(find.text('entry 42'), findsOneWidget);
 
+        await appKey.currentState!.addEntries([43, 44]);
+        await _pumpUntilFound(tester, find.text('entries: 3'));
+        expect(find.text('entry 43'), findsOneWidget);
+        expect(find.text('entry 44'), findsOneWidget);
+
         // Tear the app down and start it again against the same database, the
         // way a page reload would.
         await tester.pumpWidget(const SizedBox.shrink());
@@ -119,8 +133,10 @@ void main() {
         await tester.pumpWidget(
           _CounterApp(databasePath: databasePath, key: GlobalKey()),
         );
-        await _pumpUntilFound(tester, find.text('entries: 1'));
+        await _pumpUntilFound(tester, find.text('entries: 3'));
         expect(find.text('entry 42'), findsOneWidget);
+        expect(find.text('entry 43'), findsOneWidget);
+        expect(find.text('entry 44'), findsOneWidget);
       });
     },
   );
