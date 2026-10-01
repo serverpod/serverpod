@@ -401,6 +401,138 @@ void main() {
   });
 
   test(
+    'Given a managed table missing a declared column, '
+    'when verifying database integrity, '
+    'then verification fails and reports the missing column.',
+    () async {
+      final table = _table('example', managed: true);
+      serializationManager.tables.add(
+        table.copyWith(
+          columns: [
+            ...table.columns,
+            ColumnDefinition(
+              name: 'age',
+              columnType: ColumnType.bigint,
+              isNullable: false,
+            ),
+          ],
+        ),
+      );
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name text NOT NULL);',
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isFalse);
+      expect(
+        logWriter.entries.single.message,
+        contains('Column "age"'),
+      );
+    },
+  );
+
+  test(
+    'Given a managed table missing a declared index, '
+    'when verifying database integrity, '
+    'then verification fails and reports the missing index.',
+    () async {
+      serializationManager.tables.add(
+        _table(
+          'example',
+          managed: true,
+        ).copyWith(indexes: [_index('example_name_idx', column: 'name')]),
+      );
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name text NOT NULL);',
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isFalse);
+      expect(
+        logWriter.entries.single.message,
+        contains('Index "example_name_idx"'),
+      );
+    },
+  );
+
+  test(
+    'Given a managed table with its declared index, '
+    'when verifying database integrity, '
+    'then verification succeeds without warnings.',
+    () async {
+      serializationManager.tables.add(
+        _table(
+          'example',
+          managed: true,
+        ).copyWith(indexes: [_index('example_name_idx', column: 'name')]),
+      );
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name text NOT NULL);',
+      );
+      await session.db.unsafeExecute(
+        'CREATE INDEX example_name_idx ON example (name);',
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isTrue);
+      expect(logWriter.entries, isEmpty);
+    },
+  );
+
+  test(
+    'Given a managed table missing a declared foreign key, '
+    'when verifying database integrity, '
+    'then verification fails and reports the missing foreign key.',
+    () async {
+      serializationManager.tables.add(_tableWithForeignKey());
+      await session.db.unsafeExecute(
+        'CREATE TABLE managed (id bigserial PRIMARY KEY);',
+      );
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name text NOT NULL, "managedId" bigint NOT NULL);',
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isFalse);
+      expect(
+        logWriter.entries.single.message,
+        contains('Foreign key "example_fk_0"'),
+      );
+    },
+  );
+
+  test(
+    'Given a managed table with its declared foreign key, '
+    'when verifying database integrity, '
+    'then verification succeeds without warnings.',
+    () async {
+      serializationManager.tables.add(_tableWithForeignKey());
+      await session.db.unsafeExecute(
+        'CREATE TABLE managed (id bigserial PRIMARY KEY);',
+      );
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name text NOT NULL, "managedId" bigint NOT NULL, '
+        'CONSTRAINT example_fk_0 FOREIGN KEY ("managedId") '
+        'REFERENCES managed (id));',
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isTrue);
+      expect(logWriter.entries, isEmpty);
+    },
+  );
+
+  test(
     'Given a table with an unspecified managed flag and a column type mismatch, '
     'when verifying database integrity, '
     'then verification fails and reports the mismatch.',
@@ -494,6 +626,46 @@ TableDefinition _table(
   indexes: [],
   managed: managed,
 );
+
+IndexDefinition _index(String name, {required String column}) =>
+    IndexDefinition(
+      indexName: name,
+      elements: [
+        IndexElementDefinition(
+          type: IndexElementDefinitionType.column,
+          definition: column,
+        ),
+      ],
+      type: 'btree',
+      isUnique: false,
+      isPrimary: false,
+    );
+
+TableDefinition _tableWithForeignKey() {
+  final table = _table('example', managed: true);
+  return table.copyWith(
+    columns: [
+      ...table.columns,
+      ColumnDefinition(
+        name: 'managedId',
+        columnType: ColumnType.bigint,
+        isNullable: false,
+      ),
+    ],
+    foreignKeys: [
+      ForeignKeyDefinition(
+        constraintName: 'example_fk_0',
+        columns: ['managedId'],
+        referenceTable: 'managed',
+        referenceTableSchema: 'public',
+        referenceColumns: ['id'],
+        onUpdate: ForeignKeyAction.noAction,
+        onDelete: ForeignKeyAction.noAction,
+        matchType: null,
+      ),
+    ],
+  );
+}
 
 class _TestSerializationManager extends DatabaseSerializationManager {
   final tables = <TableDefinition>[];

@@ -99,6 +99,106 @@ void main() {
     );
 
     test(
+      'when an index is added in the target table then mismatches include added index',
+      () {
+        var tableA = TableDefinition(
+          name: 'test_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'id',
+              columnType: ColumnType.integer,
+              isNullable: false,
+              dartType: 'int',
+            ),
+          ],
+          indexes: [],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'test_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'id',
+              columnType: ColumnType.integer,
+              isNullable: false,
+              dartType: 'int',
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_id',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'id',
+                ),
+              ],
+              type: 'btree',
+              isUnique: false,
+              isPrimary: false,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs, isEmpty);
+        expect(mismatches.first.expected, isNull);
+        expect(mismatches.first.found, equals('idx_id'));
+        expect(mismatches.first.isAdded, isTrue);
+      },
+    );
+
+    test(
+      'when index names only differ in casing then mismatches are empty',
+      () {
+        TableDefinition tableWithIndexNamed(String indexName) =>
+            TableDefinition(
+              name: 'test_table',
+              schema: 'public',
+              columns: [
+                ColumnDefinition(
+                  name: 'id',
+                  columnType: ColumnType.integer,
+                  isNullable: false,
+                  dartType: 'int',
+                ),
+              ],
+              indexes: [
+                IndexDefinition(
+                  indexName: indexName,
+                  elements: [
+                    IndexElementDefinition(
+                      type: IndexElementDefinitionType.column,
+                      definition: 'id',
+                    ),
+                  ],
+                  type: 'btree',
+                  isUnique: false,
+                  isPrimary: false,
+                ),
+              ],
+              foreignKeys: [],
+              managed: true,
+            );
+
+        var mismatches = tableWithIndexNamed(
+          'idx_ID',
+        ).like(tableWithIndexNamed('idx_id'));
+
+        expect(mismatches, isEmpty);
+      },
+    );
+
+    test(
       'when indexes have different types then mismatches include index type mismatch',
       () {
         var tableA = TableDefinition(
