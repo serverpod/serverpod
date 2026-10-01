@@ -169,7 +169,7 @@ The SSR server's VM service uses the default port 8181 (`--enable-vm-service` wi
 | 7 | Debugging launches Jaspr's controlled Chrome at its internal URL. | Opt in to `serve --launch-in-chrome`, navigate that tab to the public URL, and attach to the reported client VM service. A Dart breakpoint/resume passed through the proxy. | Accept a public launch URL so the navigation step can be automatic. |
 | 8 | The live-reload URL loses the mount prefix when forwarded public-origin headers are present. | Keep prefix mounts unsupported until fixed; root mounts retain the validated behavior. | Preserve both the forwarded origin and the server handler's mount prefix when constructing the DWDS endpoint. |
 
-Gaps 1 and 2 decide whether the integration is robust: a developer should never find a stale Jaspr server holding a port after `serverpod start` exits. Gap 3 blocks adopting daemon mode, and gap 4 is the long-term interface question. Gaps 5–7 concern debugging and additional application configurations. Gap 8 blocks prefix mounts, including the spec's `/admin/` example.
+Gaps 1 and 2 decide whether the integration is robust: a developer should never find a stale Jaspr server holding a port after `serverpod start` exits. Gap 3 blocks adopting daemon mode, and gap 4 is the long-term interface question. Gaps 5–7 concern debugging and additional application configurations. Gap 8 blocks prefix mounts, including the spec's `/admin/` example. A maintainer-facing summary of these asks is in [jaspr_upstream_requests.md](jaspr_upstream_requests.md).
 
 ## Serverpod-side work
 
