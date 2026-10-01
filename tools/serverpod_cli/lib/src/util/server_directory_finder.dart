@@ -5,6 +5,8 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/cli_tools_select.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_cli/src/util/yaml_util.dart';
+import 'package:source_span/source_span.dart';
 
 /// A function that finds a directory based on a starting point.
 typedef DirectoryFinder<T> = Directory? Function(T arg);
@@ -311,7 +313,7 @@ class ServerDirectoryFinder {
       if (pubspecFile.existsSync()) {
         try {
           var content = pubspecFile.readAsStringSync();
-          if (content.contains('workspace:')) return true;
+          if (_declaresWorkspace(content)) return true;
         } on FileSystemException catch (_) {
           // skip files that cannot be read
         }
@@ -337,6 +339,19 @@ class ServerDirectoryFinder {
       return false;
     } on FileSystemException catch (_) {
       return true;
+    }
+  }
+
+  /// Returns whether [content] is a pubspec with an active top-level
+  /// `workspace` key. Commented declarations and unreadable YAML are not
+  /// workspace boundaries.
+  static bool _declaresWorkspace(String content) {
+    try {
+      return loadYamlMap(content).containsKey('workspace');
+    } on FormatException {
+      return false;
+    } on SourceSpanException {
+      return false;
     }
   }
 }
