@@ -174,15 +174,13 @@ Jaspr's server-side rendering runs in its own process, in both development and p
 
 Serverpod passes the address of its local API listener to the Jaspr server as `SERVERPOD_API_URL`, so SSR calls do not go through the public load balancer. This internal address is server-only: it is never compiled into browser code or rendered into the page.
 
-Both environments use the project's existing generated `Client`. It already supports Dart on the server and in the browser; the integration only supplies its URL and makes the instance available through normal Jaspr component context. SSR creates a request-scoped client from `SERVERPOD_API_URL`. The browser uses the application's authentication provider.
+Components use the project's generated `Client` in both environments, available through Jaspr's component context. During SSR it connects to `SERVERPOD_API_URL`. In the browser it connects to the public API URL and uses the application's authentication provider.
 
-Browser initialization follows Serverpod's existing `config.json` pattern. Each Jaspr route serves `config.json` below its mount, containing `{"apiUrl": "https://api.example.com/"}`, in development and production and in all three modes. This reserved path takes precedence over files, SPA fallback and forwarding. Serverpod derives the value from the resolved public API configuration at request time and returns it with `Cache-Control: no-store`, so one build works in every environment. The internal API address and credentials never appear in this response.
-
-The scaffold fetches this JSON once before starting the browser app and constructs `Client(apiUrl)`. Resolve `config.json` against the document's base URL, not the current page path; client-mode scaffolds also need `<base href="/">` for a root mount. A failed or invalid response produces an initialization error with a retry action. The existing `getServerUrl()` helper cannot be imported unchanged because it depends on Flutter's asset bundle; Jaspr needs a small HTTP loader.
+The browser gets the public API URL from `config.json`, as Serverpod's Flutter web apps do. Serverpod serves it below the application's mount, using the API server's public address from its configuration, so one build works in every environment. If it cannot be loaded, the application shows an initialization error with a retry action.
 
 The public API URL must be reachable from the browser. When using LAN devices or tunnels, configure and expose the API server accordingly; exposing the web server alone does not expose the API.
 
-In development, Jaspr uses the same app-launch trigger and session queue as Flutter. Auto-launch waits for the development UI to attach and for Serverpod to publish its bound internal API address, then starts `jaspr serve` with `SERVERPOD_API_URL`. Manual launches use the same queue and address requirement. This applies to both fixed and ephemeral ports; Jaspr's first build begins after the address is available. The route reports the app ready once its upstream readiness probe succeeds. A changed API address requires restarting Jaspr with the new environment.
+In development, a Jaspr application starts once the Serverpod API is up, whether it launches automatically or from its tab. Jaspr's first build, around 40 seconds, therefore begins after the server has started. If the API address changes, Serverpod restarts the application.
 
 Static generation runs at build time, when no Serverpod API is assumed to be running. Applications that fetch API data while generating must configure an available service for that build.
 
