@@ -612,9 +612,16 @@ final class ClientMethodStreamManager {
           _webSocketConnector?.call(_webSocketHost) ??
           WebSocketChannel.connect(_webSocketHost);
 
-      await webSocket.ready.onError((e, s) {
-        throw WebSocketConnectException(e, s);
-      });
+      await webSocket.ready
+          .onError((e, s) => throw WebSocketConnectException(e, s))
+          .timeout(
+            _connectionTimeout,
+            onTimeout: () {
+              // Not awaited: the close future never completes before `ready`.
+              unawaited(webSocket.sink.close());
+              throw const ConnectionAttemptTimedOutException();
+            },
+          );
 
       webSocket.sink.add(PingCommand.buildMessage());
       _connectionTimer = Timer(_connectionTimeout, () {
