@@ -83,6 +83,8 @@ class FlutterProcess {
   /// Test-only override for [BrowserLauncher.openUrl].
   final Future<bool> Function(Uri url)? _openBrowserForTesting;
 
+  final Duration _heartbeatInterval;
+
   Process? _process;
   StreamSubscription<ProcessSignal>? _sigtermSub;
   StreamSubscription<String>? _stdoutLinesSub;
@@ -129,6 +131,7 @@ class FlutterProcess {
     List<String>? machineArgsOverride,
     @visibleForTesting List<String>? argsOverrideForTesting,
     @visibleForTesting Future<bool> Function(Uri url)? openBrowserForTesting,
+    @visibleForTesting Duration? heartbeatIntervalForTesting,
   }) : _flutterPackageDir = flutterPackageDir,
        _flutterExecutable = flutterExecutable,
        _device = device,
@@ -142,7 +145,9 @@ class FlutterProcess {
        _launchBrowser = device == flutterDeviceWebServerWithBrowser,
        _machineArgsOverride = machineArgsOverride,
        _argsOverrideForTesting = argsOverrideForTesting,
-       _openBrowserForTesting = openBrowserForTesting;
+       _openBrowserForTesting = openBrowserForTesting,
+       _heartbeatInterval =
+           heartbeatIntervalForTesting ?? const Duration(seconds: 2);
 
   /// True between [start] and [stop]/exit.
   bool get isRunning => _process != null;
@@ -330,24 +335,26 @@ class FlutterProcess {
   void _startVmServiceHeartbeat(VmService vm) {
     _vmServiceHeartbeat?.cancel();
     // Tight loop because DWDS won't tell us when a browser tab
-    // detaches (its keep-alive is hardcoded to ~3000 days). 2s
-    // interval + 1s timeout lets us notice within ~3s.
+    // detaches (its keep-alive is hardcoded to ~3000 days).
     //
     // Both paths need two consecutive bad reads before tearing down
     // (~4s at 2s interval): a hot restart briefly empties the isolate
-    // list, and a one-off getVM() failure - blip, GC pause - shouldn't
-    // race-kill a live app.
+    // list, and a one-off getVM() failure shouldn't race-kill a live app.
+    //
+    // No reply timeout: log streams share this socket, so a slow reply
+    // means queue delay, not a dead app.
     var emptyReads = 0;
     var failedReads = 0;
-    _vmServiceHeartbeat = Timer.periodic(const Duration(seconds: 2), (
-      timer,
-    ) async {
+    var polling = false;
+    _vmServiceHeartbeat = Timer.periodic(_heartbeatInterval, (timer) async {
       if (_vmService != vm) {
         timer.cancel();
         return;
       }
+      if (polling) return;
+      polling = true;
       try {
-        final vmInfo = await vm.getVM().timeout(const Duration(seconds: 1));
+        final vmInfo = await vm.getVM();
         // A successful read means the connection is alive; clear failures.
         failedReads = 0;
         if (vmInfo.isolates?.isEmpty ?? true) {
@@ -369,6 +376,8 @@ class FlutterProcess {
           log.info('Flutter heartbeat failed ($e); tearing down.');
           await _onAppStop();
         }
+      } finally {
+        polling = false;
       }
     });
   }
