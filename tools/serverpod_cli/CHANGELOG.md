@@ -4,6 +4,7 @@
 - feat: Allows `serverpod start` and `serverpod mcp-server` to attach to an already running server.
 - feat: Exposes `Model.db.watch` for reactive ORM operations on the client.
 - fix: Reports a missing Flutter app package when launching from `serverpod start`.
+- fix: Reports an error when a relation uses `SetNull` on a non-nullable foreign key or `SetDefault` on a foreign key without a database default.
 
 ## 4.0.2
 
