@@ -460,6 +460,32 @@ void main() {
   );
 
   test(
+    'Given a managed table with its declared index, '
+    'when verifying database integrity, '
+    'then verification succeeds without warnings.',
+    () async {
+      serializationManager.tables.add(
+        _table(
+          'example',
+          managed: true,
+        ).copyWith(indexes: [_index('example_name_idx', column: 'name')]),
+      );
+      await session.db.unsafeExecute(
+        'CREATE TABLE example (name text NOT NULL);',
+      );
+      await session.db.unsafeExecute(
+        'CREATE INDEX example_name_idx ON example (name);',
+      );
+
+      final matches = await MigrationManager.verifyDatabaseIntegrity(session);
+      await shared.log.flush();
+
+      expect(matches, isTrue);
+      expect(logWriter.entries, isEmpty);
+    },
+  );
+
+  test(
     'Given a managed table missing a declared foreign key, '
     'when verifying database integrity, '
     'then verification fails and reports the missing foreign key.',
