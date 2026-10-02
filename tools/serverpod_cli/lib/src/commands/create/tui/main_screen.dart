@@ -31,7 +31,7 @@ class MainScreen extends StatelessComponent {
     void onSubmit() {
       final canCreate =
           (state.form.hasSingleScreen || state.form.isSummary) &&
-          state.canCreate;
+          state.form.canAdvance;
 
       if (canCreate) {
         state.markCreatingProject();
@@ -107,7 +107,7 @@ class MainScreen extends StatelessComponent {
           const Spacer(),
           if (showHint)
             Text(
-              '💡 Click to select',
+              '💡 Space or click to select · Enter to continue',
               style: TextStyle(
                 color: theme.brightText,
                 fontWeight: FontWeight.bold,
@@ -127,7 +127,6 @@ class MainScreen extends StatelessComponent {
     final isFirstScreen = state.form.currentScreenIndex == 0;
     final isSummary = state.form.isSummary;
     final hasSingleScreen = state.form.hasSingleScreen;
-    final createEnabled = !isSummary || state.canCreate;
     final enterButtonLabel = switch (hasSingleScreen || isSummary) {
       true => isUpgrade ? 'Upgrade Project' : 'Create Project',
       false => 'Next',
@@ -149,9 +148,7 @@ class MainScreen extends StatelessComponent {
               holder.markDirty();
             }
           },
-          enabled:
-              (hasSingleScreen ? state.canCreate : createEnabled) &&
-              !creatingProject,
+          enabled: state.form.canAdvance && !creatingProject,
         ),
         if (!hasSingleScreen)
           Button(
