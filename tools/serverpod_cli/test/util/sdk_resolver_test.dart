@@ -643,7 +643,7 @@ void main() {
 
     setUp(() {
       resolver = SdkResolver(
-        baseDirectory: _tempDir(),
+        baseDirectory: Directory.systemTemp,
         flutterCommand: _shimCommand('never_answers.dart'),
         probeTimeout: timeout,
       );
@@ -710,18 +710,14 @@ void main() {
   });
 
   group(
-    'Given a flutter on PATH that hangs the first time it is run and answers the next,',
+    'Given a flutter on PATH that hangs on the probe and answers a plain --version,',
     () {
       late SdkResolver resolver;
 
       setUp(() {
-        final temp = _tempDir();
         resolver = SdkResolver(
-          baseDirectory: temp,
-          flutterCommand: _shimCommand('hangs_on_first_run.dart', [
-            '--state=${p.join(temp.path, 'has_run')}',
-          ]),
-          // Long enough for the first run to start and note that it ran.
+          baseDirectory: Directory.systemTemp,
+          flutterCommand: _shimCommand('hangs_on_machine_flag.dart'),
           probeTimeout: const Duration(seconds: 1),
         );
       });
