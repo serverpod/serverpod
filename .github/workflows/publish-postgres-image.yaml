@@ -195,7 +195,7 @@ jobs:
       # the smoke test can run it. QEMU runs arm64 on the amd64 Actions runner;
       # the multi-arch publish build below reuses both sets of layers.
       - name: Build (amd64, for the smoke test)
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: docker/postgres
           platforms: linux/amd64
@@ -211,7 +211,7 @@ jobs:
         run: docker/postgres/smoke.sh "$LOCAL_TAG_AMD64" linux/amd64
 
       - name: Build (arm64, for the smoke test)
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: docker/postgres
           platforms: linux/arm64
@@ -231,7 +231,7 @@ jobs:
 
       - name: Build and push
         id: publish
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: docker/postgres
           platforms: ${{ env.PLATFORMS }}
