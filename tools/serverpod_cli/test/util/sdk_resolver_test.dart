@@ -67,6 +67,9 @@ List<String> _shimCommand(String name, [List<String> args = const []]) => [
 ];
 
 /// A resolver whose PATH tier runs [flutterCommand] for real.
+///
+/// A shim is a Dart script compiled on every run, which can take longer than
+/// the resolver's own timeout on a slow machine, so these get a generous one.
 SdkResolver _shimResolver(
   Directory baseDirectory,
   List<String> flutterCommand,
@@ -74,6 +77,7 @@ SdkResolver _shimResolver(
   return SdkResolver(
     baseDirectory: baseDirectory,
     flutterCommand: flutterCommand,
+    probeTimeout: const Duration(minutes: 1),
   );
 }
 
@@ -91,8 +95,7 @@ SdkResolver _fvmShimResolver(Directory baseDirectory, {String? globalSdk}) {
 
 void main() {
   group(
-    'Given a flutter on PATH that runs fvm, a project pinned with fvm and a '
-    'global fvm version,',
+    'Given a flutter on PATH that runs fvm, a project pinned with fvm and a global fvm version,',
     () {
       late Directory temp;
       late String pinnedSdk;
@@ -627,6 +630,192 @@ void main() {
 
         test('then it resolves the SDK the wrapper reported.', () {
           expect(resolved, sdkOnPath);
+        });
+      });
+    },
+  );
+
+  group('Given a flutter on PATH that never answers,', () {
+    const timeout = Duration(milliseconds: 500);
+    // Well short of how long the shim hangs for.
+    const upperBound = Duration(seconds: 2);
+    late SdkResolver resolver;
+
+    setUp(() {
+      resolver = SdkResolver(
+        baseDirectory: _tempDir(),
+        flutterCommand: _shimCommand('never_answers.dart'),
+        probeTimeout: timeout,
+      );
+    });
+
+    group('when the Flutter SDK is resolved,', () {
+      late String? resolved;
+      late Duration elapsed;
+
+      setUp(() async {
+        final stopwatch = Stopwatch()..start();
+        resolved = await resolver.flutterSdk;
+        elapsed = stopwatch.elapsed;
+      });
+
+      test('then no Flutter SDK is reported.', () {
+        expect(resolved, isNull);
+      });
+
+      test('then it gives up once the timeout has passed.', () {
+        expect(elapsed, greaterThanOrEqualTo(timeout));
+        expect(elapsed, lessThan(upperBound));
+      });
+    });
+
+    group('when the Dart SDK is resolved,', () {
+      late Object? error;
+      late Duration elapsed;
+
+      setUp(() async {
+        final stopwatch = Stopwatch()..start();
+        try {
+          await resolver.dartSdk;
+          error = null;
+        } catch (e) {
+          error = e;
+        }
+        elapsed = stopwatch.elapsed;
+      });
+
+      test('then it throws a SdkResolutionTimeoutException.', () {
+        expect(error, isA<SdkResolutionTimeoutException>());
+      });
+
+      test(
+        'then it gives up once the timeout has passed.',
+        () {
+          expect(elapsed, greaterThanOrEqualTo(timeout));
+          expect(elapsed, lessThan(upperBound));
+        },
+      );
+    });
+
+    test(
+      'when checking whether flutter is installed, '
+      'then it throws a SdkResolutionTimeoutException.',
+      () async {
+        await expectLater(
+          () => resolver.isFlutterInstalled,
+          throwsA(isA<SdkResolutionTimeoutException>()),
+        );
+      },
+    );
+  });
+
+  group(
+    'Given a flutter on PATH that hangs the first time it is run and answers the next,',
+    () {
+      late SdkResolver resolver;
+
+      setUp(() {
+        final temp = _tempDir();
+        resolver = SdkResolver(
+          baseDirectory: temp,
+          flutterCommand: _shimCommand('hangs_on_first_run.dart', [
+            '--state=${p.join(temp.path, 'has_run')}',
+          ]),
+          // Long enough for the first run to start and note that it ran.
+          probeTimeout: const Duration(seconds: 1),
+        );
+      });
+
+      test(
+        'when checking whether flutter is installed, '
+        'then it is reported as installed.',
+        () async {
+          final installed = await resolver.isFlutterInstalled;
+
+          expect(installed, isTrue);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a flutter on PATH that reports no SDK root and hangs on a plain --version,',
+    () {
+      const timeout = Duration(milliseconds: 500);
+      late SdkResolver resolver;
+
+      setUp(() {
+        resolver = SdkResolver(
+          baseDirectory: _tempDir(),
+          // The probe is stubbed to report no root, so only the fallback
+          // check runs the shim.
+          probePathFlutterRoot: () async => null,
+          flutterCommand: _shimCommand('never_answers.dart'),
+          probeTimeout: timeout,
+        );
+      });
+
+      group('when checking whether flutter is installed,', () {
+        late Object? error;
+        late Duration elapsed;
+
+        setUp(() async {
+          final stopwatch = Stopwatch()..start();
+          try {
+            await resolver.isFlutterInstalled;
+            error = null;
+          } catch (e) {
+            error = e;
+          }
+          elapsed = stopwatch.elapsed;
+        });
+
+        test('then it throws a SdkResolutionTimeoutException.', () {
+          expect(error, isA<SdkResolutionTimeoutException>());
+        });
+
+        test('then it gives up once the timeout has passed.', () {
+          expect(elapsed, greaterThanOrEqualTo(timeout));
+          expect(elapsed, lessThan(const Duration(seconds: 5)));
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a flutter wrapper that exits while a child keeps its output open,',
+    () {
+      late String sdkOnPath;
+      late SdkResolver resolver;
+
+      setUp(() {
+        final temp = _tempDir();
+        sdkOnPath = _fakeFlutterSdk(temp, name: 'on-path');
+        resolver = _shimResolver(
+          temp,
+          _shimCommand('exits_with_stdout_held_open.dart', [
+            '--root=$sdkOnPath',
+          ]),
+        );
+      });
+
+      group('when the Flutter SDK is resolved,', () {
+        late String? resolved;
+        late Duration elapsed;
+
+        setUp(() async {
+          final stopwatch = Stopwatch()..start();
+          resolved = await resolver.flutterSdk;
+          elapsed = stopwatch.elapsed;
+        });
+
+        test('then it resolves the SDK the wrapper reported.', () {
+          expect(resolved, sdkOnPath);
+        });
+
+        test('then it does not wait for the child to let go.', () {
+          // The child holds the output open for 30 seconds.
+          expect(elapsed, lessThan(const Duration(seconds: 5)));
         });
       });
     },

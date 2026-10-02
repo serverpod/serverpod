@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -46,6 +47,16 @@ class SdkResolutionException implements Exception {
   String toString() => message;
 }
 
+/// Thrown when `flutter` is there to run but did not answer in time.
+class SdkResolutionTimeoutException implements Exception {
+  final String message;
+
+  const SdkResolutionTimeoutException(this.message);
+
+  @override
+  String toString() => message;
+}
+
 /// The `flutter` executable inside [root].
 String flutterExecutableIn(String root) =>
     p.join(root, 'bin', Platform.isWindows ? 'flutter.bat' : 'flutter');
@@ -86,6 +97,9 @@ class SdkResolver {
   /// The command the PATH tier probes.
   final List<String> _flutterCommand;
 
+  /// How long [_flutterCommand] gets to answer.
+  final Duration _probeTimeout;
+
   /// Overrides the last-resort lookup of the SDK running this CLI.
   final String Function()? _runningSdkRoot;
 
@@ -93,19 +107,23 @@ class SdkResolver {
     required this.baseDirectory,
     @visibleForTesting Future<String?> Function()? probePathFlutterRoot,
     @visibleForTesting List<String> flutterCommand = const ['flutter'],
+    @visibleForTesting Duration probeTimeout = const Duration(seconds: 30),
     @visibleForTesting String Function()? runningSdkRoot,
   }) : _probePathFlutterRoot = probePathFlutterRoot,
        _flutterCommand = flutterCommand,
+       _probeTimeout = probeTimeout,
        _runningSdkRoot = runningSdkRoot;
 
   Future<String?>? _flutter;
   Future<String>? _dart;
+  bool _flutterTimedOut = false;
 
   /// The Flutter SDK to use, or `null` when none could be found.
   Future<String?> get flutterSdk => _flutter ??= _resolveFlutter();
 
   /// The Dart SDK to use.
-  /// Throws [SdkResolutionException] when the chain is exhausted.
+  /// Throws [SdkResolutionException] when the chain is exhausted, and
+  /// [SdkResolutionTimeoutException] when `flutter` did not answer in time.
   Future<String> get dartSdk => _dart ??= _resolveDart();
 
   Future<String?> _resolveFlutter() async {
@@ -114,10 +132,7 @@ class SdkResolver {
     // makes version managers that shim `flutter` (asdf, mise, puro, or fvm
     // behind a `flutter` that runs `fvm flutter`) report the SDK they picked
     // for the project.
-    final probePath =
-        _probePathFlutterRoot ??
-        () => _probeFlutterRoot(_flutterCommand, _probeDirectory);
-    final flutterOnPath = await probePath();
+    final flutterOnPath = await (_probePathFlutterRoot ?? _probeFlutterRoot)();
     if (flutterOnPath != null && isFlutterSdk(flutterOnPath)) {
       return p.normalize(flutterOnPath);
     }
@@ -141,6 +156,11 @@ class SdkResolver {
         'install`) against it once to set it up.',
       );
     }
+
+    // Dart is derived from Flutter, so a `flutter` that did not answer leaves
+    // the project's Dart unknown. Falling back here would build the project
+    // with the wrong SDK.
+    if (_flutterTimedOut) throw _flutterTimeout();
 
     // Last resort: the SDK running this CLI.
     try {
@@ -167,39 +187,106 @@ class SdkResolver {
   }
 
   /// Whether `flutter` is installed.
+  /// Throws [SdkResolutionTimeoutException] when `flutter` did not answer in
+  /// time.
   Future<bool> get isFlutterInstalled async {
     if (await flutterSdk != null) return true;
-    try {
-      final result = await Process.run(
-        'flutter',
-        ['--version'],
-        runInShell: Platform.isWindows,
-      );
-      return result.exitCode == 0;
-    } catch (_) {
-      return false;
-    }
+    final result = await _runFlutter(['--version']);
+    if (result != null && result.exitCode == null) throw _flutterTimeout();
+    return result?.exitCode == 0;
   }
 
-  /// Runs [command] with `--version --machine` in [workingDirectory] and
-  /// returns the `flutterRoot` it reports.
-  static Future<String?> _probeFlutterRoot(
-    List<String> command,
-    String workingDirectory,
-  ) async {
+  SdkResolutionTimeoutException _flutterTimeout() =>
+      SdkResolutionTimeoutException(
+        '`flutter` is in your \$PATH but did not answer within '
+        '${_probeTimeout.inSeconds} seconds. Run `flutter --version` to see '
+        'what it is waiting for.',
+      );
+
+  /// Runs `flutter --version --machine` in [_probeDirectory] and returns the
+  /// `flutterRoot` it reports.
+  Future<String?> _probeFlutterRoot() async {
+    final result = await _runFlutter([
+      '--version',
+      '--machine',
+    ], workingDirectory: _probeDirectory);
+    if (result == null || result.exitCode != 0) return null;
+    return _flutterRootIn(result.stdout);
+  }
+
+  /// Runs [_flutterCommand] with [arguments], giving it [_probeTimeout].
+  ///
+  /// Returns `null` when there is nothing to spawn. An `exitCode` of `null`
+  /// means it did not answer in time and was stopped.
+  Future<({int? exitCode, String stdout})?> _runFlutter(
+    List<String> arguments, {
+    String? workingDirectory,
+  }) async {
+    final command = [..._flutterCommand, ...arguments];
+    final result = await _runWithDeadline(
+      command,
+      workingDirectory: workingDirectory,
+      timeout: _probeTimeout,
+    );
+    if (result != null && result.exitCode == null) {
+      _flutterTimedOut = true;
+      log.warning(
+        '`${command.join(' ')}` did not answer within '
+        '${_probeTimeout.inSeconds} seconds and was stopped, so no Flutter '
+        'SDK was resolved.',
+      );
+    }
+    return result;
+  }
+
+  /// Runs [command] and collects its stdout. The process gets [timeout] to
+  /// exit, and its output a moment more to close, so the whole run is bounded.
+  ///
+  /// Returns `null` when there is nothing to spawn. An `exitCode` of `null`
+  /// means the process was still running at the deadline and was killed.
+  static Future<({int? exitCode, String stdout})?> _runWithDeadline(
+    List<String> command, {
+    String? workingDirectory,
+    required Duration timeout,
+  }) async {
+    final Process process;
     try {
-      final result = await Process.run(
+      process = await Process.start(
         command.first,
-        [...command.skip(1), '--version', '--machine'],
+        command.skip(1).toList(),
         workingDirectory: workingDirectory,
         runInShell: Platform.isWindows,
       );
-      if (result.exitCode != 0) return null;
-      return _flutterRootIn(result.stdout as String);
     } catch (_) {
-      // Nothing to spawn.
       return null;
     }
+
+    final stdout = StringBuffer();
+    final stdoutClosed = Completer<void>();
+    final stdoutSubscription = process.stdout
+        .transform(systemEncoding.decoder)
+        .listen(
+          stdout.write,
+          onError: (Object _) {},
+          onDone: stdoutClosed.complete,
+        );
+    // Drained so a command that fills the pipe cannot stall.
+    final stderrSubscription = process.stderr.listen((_) {});
+
+    int? exitCode;
+    try {
+      exitCode = await process.exitCode.timeout(timeout);
+      // Output normally closes with the process. A child of its own can hold
+      // it open, and what the process wrote before exiting is already here.
+      await stdoutClosed.future.timeout(const Duration(seconds: 1));
+    } on TimeoutException {
+      if (exitCode == null) process.kill();
+    } finally {
+      unawaited(stdoutSubscription.cancel());
+      unawaited(stderrSubscription.cancel());
+    }
+
+    return (exitCode: exitCode, stdout: stdout.toString());
   }
 
   /// The `flutterRoot` reported in [stdout], the output of
