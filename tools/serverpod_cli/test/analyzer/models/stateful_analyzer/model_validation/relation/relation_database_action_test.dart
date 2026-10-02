@@ -20,12 +20,12 @@ void main() {
     return collector;
   }
 
+  // SetNull and SetDefault constrain the foreign key field and are covered by
+  // their own tests below.
   var databaseActions = [
     'Cascade',
     'NoAction',
     'Restrict',
-    'SetNull',
-    'SetDefault',
   ];
 
   for (var action in databaseActions) {
@@ -38,8 +38,7 @@ void main() {
         class: Example
         table: example
         fields:
-          exampleId: int?, default=1
-          example: Example?, relation(field=exampleId, onUpdate=$action)
+          example: Example?, relation(onUpdate=$action)
         ''',
           ).build(),
         ];
@@ -83,8 +82,7 @@ void main() {
         class: Example
         table: example
         fields:
-          exampleId: int?, default=1
-          example: Example?, relation(field=exampleId, onDelete=$action)
+          example: Example?, relation(onDelete=$action)
         ''',
           ).build(),
         ];
@@ -222,6 +220,22 @@ fields:
   );
 
   test(
+    'Given an optional object relation with onUpdate=SetNull and a generated foreign key field, '
+    'when validating, '
+    'then no errors are generated.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  example: Example?, relation(optional, onUpdate=SetNull)
+''');
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
     'Given an object relation with onDelete=SetDefault and a foreign key field without a default, '
     'when validating, '
     'then an error is generated on the onDelete value.',
@@ -332,6 +346,23 @@ fields:
         '"field=exampleId".',
       );
       expect(collector.errors.first.span?.text, 'SetDefault');
+    },
+  );
+
+  test(
+    'Given an object relation with onUpdate=SetDefault and a foreign key field with a persist default, '
+    'when validating, '
+    'then no errors are generated.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  exampleId: int?, defaultPersist=1
+  example: Example?, relation(field=exampleId, onUpdate=SetDefault)
+''');
+
+      expect(collector.errors, isEmpty);
     },
   );
 
