@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 ///
 /// Adds the following headers required for SharedArrayBuffer and WASM
 /// multi-threading:
-/// - `Cross-Origin-Opener-Policy: same-origin`
+/// - `Cross-Origin-Opener-Policy` (defaults to `same-origin`)
 /// - `Cross-Origin-Embedder-Policy: require-corp`
 ///
 /// These headers enable Flutter web apps to use WebAssembly multi-threading
@@ -27,14 +27,36 @@ import 'package:serverpod/serverpod.dart';
 /// pod.webServer.addMiddleware(WasmHeadersMiddleware(), '/app');
 /// ```
 ///
+/// ## Cross-Origin-Opener-Policy and popup-based sign-in flows
+///
+/// The default `same-origin` policy achieves full cross-origin isolation,
+/// which is required for `SharedArrayBuffer`/WASM multi-threading, but it
+/// also prevents `window.postMessage`-based popup flows (such as
+/// "Sign in with Google") from communicating back with the opening window.
+///
+/// If your app needs those popup-based flows, set
+/// [crossOriginOpenerPolicy] to
+/// [CrossOriginOpenerPolicyHeader.sameOriginAllowPopups]. This keeps
+/// `SharedArrayBuffer` and other cross-origin-isolation-only APIs disabled,
+/// so only do this if your app does not rely on WASM multi-threading.
+///
 /// ## How It Works
 ///
 /// The middleware intercepts all Response objects and adds COOP/COEP headers.
 /// Other Result types (Hijack, WebSocketUpgrade) pass through unchanged.
 /// Existing headers are preserved.
 class WasmHeadersMiddleware extends MiddlewareObject {
+  /// The `Cross-Origin-Opener-Policy` header value to add to responses.
+  ///
+  /// Defaults to [CrossOriginOpenerPolicyHeader.sameOrigin], which is
+  /// required for full cross-origin isolation (`SharedArrayBuffer`/WASM
+  /// multi-threading) but blocks popup-based sign-in flows.
+  final CrossOriginOpenerPolicyHeader crossOriginOpenerPolicy;
+
   /// Creates a new WasmHeadersMiddleware
-  const WasmHeadersMiddleware();
+  const WasmHeadersMiddleware({
+    this.crossOriginOpenerPolicy = CrossOriginOpenerPolicyHeader.sameOrigin,
+  });
 
   @override
   Handler call(Handler next) {
@@ -45,8 +67,7 @@ class WasmHeadersMiddleware extends MiddlewareObject {
       if (result is Response) {
         return result.copyWith(
           headers: result.headers.transform((mh) {
-            mh.crossOriginOpenerPolicy =
-                CrossOriginOpenerPolicyHeader.sameOrigin;
+            mh.crossOriginOpenerPolicy = crossOriginOpenerPolicy;
             mh.crossOriginEmbedderPolicy =
                 CrossOriginEmbedderPolicyHeader.requireCorp;
           }),
