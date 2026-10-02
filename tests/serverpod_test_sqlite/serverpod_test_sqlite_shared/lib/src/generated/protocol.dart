@@ -35,7 +35,7 @@ class Protocol extends _isd.DatabaseSerializationManager {
     _isd.TableDefinition(
       name: 'shared_table_record',
       dartName: 'SharedTableRecord',
-      schema: 'public',
+      schema: 'main',
       module: 'serverpod_test_sqlite',
       columns: [
         _isd.ColumnDefinition(
