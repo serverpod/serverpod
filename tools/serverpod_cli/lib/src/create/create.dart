@@ -1457,7 +1457,7 @@ Future<bool> _runGenerate(
     return await GenerateFiles.generateFiles(
       Directory(serverDirPath),
       interactive: interactive,
-      dartSdkPath: (await sdkResolver.dartSdk).root,
+      dartSdkPath: await sdkResolver.dartSdk,
     );
   });
 }

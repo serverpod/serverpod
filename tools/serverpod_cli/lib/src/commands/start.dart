@@ -1149,7 +1149,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     final analyzersFuture = IsolatedAnalyzers.create(
       config,
       prime: false,
-      dartSdkPath: resolvedDartSdk.root,
+      dartSdkPath: resolvedDartSdk,
     );
     Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
@@ -1193,7 +1193,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     NativeAssetsBuilder? nativeAssetsBuilder;
     // Seeded for `--no-watch`; watch mode takes the compiler's, from the same
     // SDK root.
-    String? dartExecutable = dartExecutableIn(resolvedDartSdk.root);
+    String? dartExecutable = dartExecutableIn(resolvedDartSdk);
     String? serverDartToolDir;
     // Null reloads the pod on every package_config.json change.
     PackageDependencyTracker? serverDependencyTracker;
@@ -1211,7 +1211,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         entryPoint: entryPoint,
         outputDill: initialDill,
         packagesPath: packageConfigPath,
-        sdkRoot: resolvedDartSdk.root,
+        sdkRoot: resolvedDartSdk,
       );
       rollback = ({int exitCode = 1}) async {
         await localCompiler.dispose();

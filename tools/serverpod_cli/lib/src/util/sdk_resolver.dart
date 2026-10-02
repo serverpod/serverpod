@@ -35,14 +35,6 @@ void rescopeSdkResolver(Directory baseDirectory) {
 SdkResolver get sdkResolver =>
     _resolver ??= SdkResolver(baseDirectory: Directory.current);
 
-/// A resolved SDK root.
-class ResolvedSdk {
-  /// Absolute path to the SDK root - the directory holding `bin/`.
-  final String root;
-
-  const ResolvedSdk({required this.root});
-}
-
 /// Thrown when the Dart chain is exhausted - no Flutter SDK to derive from,
 /// and the SDK running this CLI cannot be located either.
 class SdkResolutionException implements Exception {
@@ -106,17 +98,17 @@ class SdkResolver {
        _flutterCommand = flutterCommand,
        _runningSdkRoot = runningSdkRoot;
 
-  Future<ResolvedSdk?>? _flutter;
-  Future<ResolvedSdk>? _dart;
+  Future<String?>? _flutter;
+  Future<String>? _dart;
 
   /// The Flutter SDK to use, or `null` when none could be found.
-  Future<ResolvedSdk?> get flutterSdk => _flutter ??= _resolveFlutter();
+  Future<String?> get flutterSdk => _flutter ??= _resolveFlutter();
 
   /// The Dart SDK to use.
   /// Throws [SdkResolutionException] when the chain is exhausted.
-  Future<ResolvedSdk> get dartSdk => _dart ??= _resolveDart();
+  Future<String> get dartSdk => _dart ??= _resolveDart();
 
-  Future<ResolvedSdk?> _resolveFlutter() async {
+  Future<String?> _resolveFlutter() async {
     // Ask the `flutter` on PATH where it lives, from the project directory.
     // Going through the executable rather than reading $PATH directly is what
     // makes version managers that shim `flutter` (asdf, mise, puro, or fvm
@@ -127,25 +119,23 @@ class SdkResolver {
         () => _probeFlutterRoot(_flutterCommand, _probeDirectory);
     final flutterOnPath = await probePath();
     if (flutterOnPath != null && isFlutterSdk(flutterOnPath)) {
-      return ResolvedSdk(root: p.normalize(flutterOnPath));
+      return p.normalize(flutterOnPath);
     }
 
     log.debug('No Flutter SDK found.');
     return null;
   }
 
-  Future<ResolvedSdk> _resolveDart() async {
+  Future<String> _resolveDart() async {
     // Derived from Flutter whenever one was found, so `pub` resolves against
     // the Dart the project's Flutter actually embeds.
     final flutter = await flutterSdk;
     if (flutter != null) {
-      final embedded = embeddedDartSdkIn(flutter.root);
-      if (isDartSdk(embedded)) {
-        return ResolvedSdk(root: embedded);
-      }
+      final embedded = embeddedDartSdkIn(flutter);
+      if (isDartSdk(embedded)) return embedded;
       // A cold `bin/cache` has no embedded Dart yet.
       log.warning(
-        'The Flutter SDK at ${flutter.root} has no populated bin/cache, so '
+        'The Flutter SDK at $flutter has no populated bin/cache, so '
         'this project will build against the Dart SDK running this CLI '
         'instead of the one it pins. Run `flutter --version` (or `fvm '
         'install`) against it once to set it up.',
@@ -154,7 +144,7 @@ class SdkResolver {
 
     // Last resort: the SDK running this CLI.
     try {
-      return ResolvedSdk(root: (_runningSdkRoot ?? getSdkPath)());
+      return (_runningSdkRoot ?? getSdkPath)();
     } catch (e) {
       throw SdkResolutionException(
         'Could not locate a Dart SDK. You need to have dart installed '
@@ -248,9 +238,9 @@ class SdkResolver {
     if (flutter == null) {
       buffer.writeln('Flutter SDK  not found');
     } else {
-      buffer.writeln('Flutter SDK ${flutter.root}');
+      buffer.writeln('Flutter SDK $flutter');
     }
-    buffer.writeln('Dart SDK ${dart.root}');
+    buffer.writeln('Dart SDK $dart');
     return buffer.toString();
   }
 }
