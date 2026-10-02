@@ -12,6 +12,7 @@ bool shouldReportEmbeddedPostgresFailure(Object error) => switch (error) {
   UnsupportedPlatformException() ||
   UnsupportedVersionException() ||
   PostmasterLockBusyException() ||
+  PortInUseException() ||
   StaleClusterException() ||
   AttachException() => false,
   _ => true,
@@ -33,6 +34,13 @@ String formatEmbeddedPostgresFailure(Object error) {
     PostmasterLockBusyException() =>
       'Another process is using the local database. Stop other Serverpod or '
           'database processes for this project, then try again.',
+    PortInUseException(:final port) =>
+      'Port $port is already in use, so the local database cannot accept TCP '
+          'connections there. Stop the other service on that port (for '
+          'example a Docker database from an earlier setup), change '
+          '`database.port` in the relevant file in `config/`, or remove the '
+          'database password from `config/passwords.yaml` to serve the local '
+          'database over its Unix socket only.',
     StaleClusterException(:final existingMajor, :final requestedMajor) =>
       'The local database was created with PostgreSQL $existingMajor, but '
           'this Serverpod version uses PostgreSQL $requestedMajor. If the '
