@@ -4,15 +4,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
 import 'utils/test_auth_key_manager.dart';
+import 'utils/test_server.dart';
 
 void main() {
+  withTestServer();
+
   late Client client;
   late TestAuthKeyProvider authKeyManager;
 
   setUp(() {
     authKeyManager = TestAuthKeyProvider();
     client = Client(
-      'http://localhost:8080/',
+      serverUrl,
     )..authKeyProvider = authKeyManager;
   });
 

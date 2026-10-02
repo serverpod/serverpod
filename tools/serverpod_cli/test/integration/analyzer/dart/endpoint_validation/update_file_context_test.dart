@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -9,25 +10,32 @@ import 'package:test/test.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
+late AnalysisContextCollection collection;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
+    collection = await createCachedAnalysisContextCollection(
+      testProjectDirectory,
+    );
   });
 
   tearDownAll(() async {
+    await collection.dispose();
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
-  group('Given an empty tracked and analyzed directory', () {
-    var trackedDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+  group('Given an empty tracked and analyzed directory,', () {
+    late Directory trackedDirectory;
 
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
-      analyzer = EndpointsAnalyzer(trackedDirectory);
+      trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+      analyzer = EndpointsAnalyzer(trackedDirectory, collection: collection);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
@@ -90,14 +98,15 @@ class ExampleEndpoint extends Endpoint {
       );
     });
   });
-  group('Given a tracked and analyzed directory with valid endpoint file', () {
-    var trackedDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+  group('Given a tracked and analyzed directory with valid endpoint file,', () {
+    late Directory trackedDirectory;
 
     late File endpointFile;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       endpointFile = File(path.join(trackedDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -109,7 +118,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(trackedDirectory);
+      analyzer = EndpointsAnalyzer(trackedDirectory, collection: collection);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
@@ -183,15 +192,16 @@ class NewEndpoint extends Endpoint {
   });
 
   group(
-    'Given a tracked and analyzed directory with valid non-endpoint file',
+    'Given a tracked and analyzed directory with valid non-endpoint file,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File trackedFile;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         trackedFile = File(path.join(trackedDirectory.path, 'tracked.dart'));
         trackedFile.createSync(recursive: true);
         trackedFile.writeAsStringSync('''
@@ -203,7 +213,7 @@ class ExampleClass {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(trackedDirectory);
+        analyzer = EndpointsAnalyzer(trackedDirectory, collection: collection);
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 
@@ -229,15 +239,16 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a tracked and analyzed directory with invalid dart endpoint file',
+    'Given a tracked and analyzed directory with invalid dart endpoint file,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File endpointFile;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         endpointFile = File(path.join(trackedDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         // Class is missing closing brackets
@@ -249,7 +260,7 @@ class ExampleEndpoint extends Endpoint {
     return 'Hello \$name';
   }
 ''');
-        analyzer = EndpointsAnalyzer(trackedDirectory);
+        analyzer = EndpointsAnalyzer(trackedDirectory, collection: collection);
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 
@@ -275,14 +286,15 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given a tracked and analyzed directory with a persistently invalid dart endpoint file',
+    'Given a tracked and analyzed directory with a persistently invalid dart endpoint file,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(
           path.join(trackedDirectory.path, 'endpoint.dart'),
         );
@@ -296,7 +308,7 @@ class ExampleEndpoint extends Endpoint {
     return 'Hello \$name';
   }
 ''');
-        analyzer = EndpointsAnalyzer(trackedDirectory);
+        analyzer = EndpointsAnalyzer(trackedDirectory, collection: collection);
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 
@@ -325,15 +337,16 @@ class HelperClass {}
   );
 
   group(
-    'Given a tracked and analyzed endpoint file that depends on an invalid dart file',
+    'Given a tracked and analyzed endpoint file that depends on an invalid dart file,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File invalidDartFile;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(
           path.join(trackedDirectory.path, 'endpoint.dart'),
         );
@@ -357,7 +370,7 @@ class ExampleClass extends Endpoint {
         invalidDartFile.writeAsStringSync('''
 classInvalidClass {}
 ''');
-        analyzer = EndpointsAnalyzer(trackedDirectory);
+        analyzer = EndpointsAnalyzer(trackedDirectory, collection: collection);
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 
@@ -379,15 +392,15 @@ class InvalidClass {}
   );
 
   group(
-    'Given an analyzed endpoint file cached under its real-cased path',
+    'Given an analyzed endpoint file cached under its real-cased path,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory trackedDirectory;
       late File endpointFile;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         endpointFile = File(path.join(trackedDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -399,7 +412,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(trackedDirectory);
+        analyzer = EndpointsAnalyzer(trackedDirectory, collection: collection);
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 

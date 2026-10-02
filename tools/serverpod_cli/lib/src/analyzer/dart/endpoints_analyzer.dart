@@ -295,13 +295,14 @@ class EndpointsAnalyzer {
     return endpointDefs;
   }
 
-  /// Returns all Dart file paths known to the analysis context, sorted and
-  /// excluding test files.
+  /// Returns all Dart file paths known to the analysis context within the
+  /// analyzed directory, sorted and excluding test files.
   Iterable<String> get _allAnalyzedDartFiles sync* {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
       yield* analyzedFiles
+          .where((path) => p.isWithin(absoluteIncludedPaths, path))
           .where((path) => path.endsWith('.dart'))
           .where((path) => !path.endsWith('_test.dart'))
           .where((path) => !isUnrenderedTemplatePath(path));

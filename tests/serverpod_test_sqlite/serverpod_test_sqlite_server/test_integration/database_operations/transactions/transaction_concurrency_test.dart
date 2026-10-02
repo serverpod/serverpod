@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -7,11 +8,12 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a write transaction and a read operation made concurrently without a transaction from the same zone',
+    'Given a write transaction and a read operation made concurrently without a transaction from the same zone,',
     // Rollbacks must be disabled or SQLite will have the test transaction.
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       late Future<void> writeTransaction;
       late Completer<void> finishedWriting;

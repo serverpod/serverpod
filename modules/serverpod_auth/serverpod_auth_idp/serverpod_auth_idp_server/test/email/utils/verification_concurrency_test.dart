@@ -9,22 +9,19 @@ import '../../test_tools/serverpod_test_tools.dart';
 import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
-  late Session Function() buildSession;
   late Session session;
   late EmailIdpTestFixture fixture;
 
-  setUpAll(() {
-    session = buildSession();
-  });
-
   withServerpod(
-    '[Email verification concurrency]',
+    '[Email verification concurrency],',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
-      buildSession = sessionBuilder.build;
+      setUpAll(() {
+        session = sessionBuilder.build();
+      });
 
       group(
-        'Given an unverified registration request allowing two verification attempts, ',
+        'Given an unverified registration request allowing two verification attempts,',
         () {
           const verificationCode = '12345678';
           late UuidValue requestId;
@@ -52,7 +49,7 @@ void main() {
             await fixture.tearDown(session);
           });
 
-          group('when two sessions concurrently verify the correct code, ', () {
+          group('when two sessions concurrently verify the correct code,', () {
             late List<Object> results;
             late EmailAccountRequest request;
             late List<SecretChallenge> challenges;
@@ -61,7 +58,10 @@ void main() {
 
             setUpAll(() async {
               results = await Future.wait<Object>([
-                for (final attemptSession in [buildSession(), buildSession()])
+                for (final attemptSession in [
+                  sessionBuilder.build(),
+                  sessionBuilder.build(),
+                ])
                   () async {
                     try {
                       return await attemptSession.db.transaction(
@@ -133,7 +133,7 @@ void main() {
       );
 
       group(
-        'Given an unverified password reset request allowing two verification attempts, ',
+        'Given an unverified password reset request allowing two verification attempts,',
         () {
           const verificationCode = '12345678';
           const email = 'password-reset-race@serverpod.dev';
@@ -172,7 +172,7 @@ void main() {
             await fixture.tearDown(session);
           });
 
-          group('when two sessions concurrently verify the correct code, ', () {
+          group('when two sessions concurrently verify the correct code,', () {
             late List<Object> results;
             late EmailAccountPasswordResetRequest request;
             late List<SecretChallenge> challenges;
@@ -181,7 +181,10 @@ void main() {
 
             setUpAll(() async {
               results = await Future.wait<Object>([
-                for (final attemptSession in [buildSession(), buildSession()])
+                for (final attemptSession in [
+                  sessionBuilder.build(),
+                  sessionBuilder.build(),
+                ])
                   () async {
                     try {
                       return await attemptSession.db.transaction(

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
+import 'utils/test_server.dart';
+
 /// Raw-HTTP tests against the running test server for the cookie side of JWT
 /// auth. `Set-Cookie` is invisible to in-browser clients, so the browser
 /// integration tests cannot assert on it; these tests craft the cookie-mode
@@ -10,12 +12,13 @@ import 'package:http/http.dart' as http;
 ///
 /// The header names and values are spelled out literally to pin the wire
 /// protocol independently of the client-side constants.
-const _apiUrl = 'http://localhost:8080';
 const _authModeHeader = 'x-serverpod-auth-mode';
 const _basePathHeader = 'x-serverpod-base-path';
 const _refreshCookieName = 'serverpod_auth_refresh';
 
 void main() {
+  withTestServer();
+
   test(
     'Given a cookie-mode request '
     'when creating a JWT token '
@@ -281,7 +284,7 @@ Future<http.Response> _call(
   Map<String, String> headers = const {},
 }) {
   return http.post(
-    Uri.parse('$_apiUrl/$endpoint/$method'),
+    Uri.parse('$serverUrl$endpoint/$method'),
     headers: headers,
     body: jsonEncode(args),
   );

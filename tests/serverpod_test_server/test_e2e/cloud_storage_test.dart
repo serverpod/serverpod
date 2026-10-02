@@ -41,7 +41,13 @@ bool verifyByteData(ByteData byteData) {
 }
 
 void main() {
-  final client = Client(serverUrl);
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   group('Given the database cloud storage with no stored files', () {
     setUp(() async {

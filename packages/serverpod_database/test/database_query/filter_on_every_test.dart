@@ -7,7 +7,7 @@ import '../test_util/many_relation_builder.dart';
 import '../test_util/table_relation_builder.dart';
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -16,11 +16,14 @@ void main() {
   ]).build();
   var manyRelation = ManyRelationBuilder(relationTable).build();
 
-  group('Given SelectQueryBuilder', () {
-    group('when filtering on filtered every many relation', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
+  group('Given SelectQueryBuilder,', () {
+    group('when filtering on filtered every many relation,', () {
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
+      });
       test('then a sub query is created for the filter.', () {
         expect(
           query,
@@ -39,10 +42,15 @@ void main() {
       });
     });
 
-    group('when filtering on advanced filtered every many relation', () {
-      var query = SelectQueryBuilder(table: citizenTable)
-          .withWhere(manyRelation.every((t) => t.id.equals(1) | t.id.equals(2)))
-          .build();
+    group('when filtering on advanced filtered every many relation,', () {
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(table: citizenTable)
+            .withWhere(
+              manyRelation.every((t) => t.id.equals(1) | t.id.equals(2)),
+            )
+            .build();
+      });
       test('then a sub query is created for the filter.', () {
         expect(
           query,
@@ -61,13 +69,16 @@ void main() {
       });
     });
 
-    group('when filtering on multiple every many relation', () {
-      var where =
-          manyRelation.every((t) => t.id.equals(1)) |
-          manyRelation.every((t) => t.id.equals(2));
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withWhere(where).build();
+    group('when filtering on multiple every many relation,', () {
+      late String query;
+      setUp(() {
+        var where =
+            manyRelation.every((t) => t.id.equals(1)) |
+            manyRelation.every((t) => t.id.equals(2));
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withWhere(where).build();
+      });
 
       test('then a sub query is created for the first many relation filter.', () {
         expect(
@@ -110,11 +121,14 @@ void main() {
     });
   });
 
-  group('Given DeleteQueryBuilder', () {
-    group('when filtering on filtered every many relation', () {
-      var query = DeleteQueryBuilder(
-        table: citizenTable,
-      ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
+  group('Given DeleteQueryBuilder,', () {
+    group('when filtering on filtered every many relation,', () {
+      late String query;
+      setUp(() {
+        query = DeleteQueryBuilder(
+          table: citizenTable,
+        ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
+      });
       test('then a sub query is created for the filter.', () {
         expect(
           query,
@@ -133,10 +147,15 @@ void main() {
       });
     });
 
-    group('when filtering on advanced filtered every many relation', () {
-      var query = DeleteQueryBuilder(table: citizenTable)
-          .withWhere(manyRelation.every((t) => t.id.equals(1) | t.id.equals(2)))
-          .build();
+    group('when filtering on advanced filtered every many relation,', () {
+      late String query;
+      setUp(() {
+        query = DeleteQueryBuilder(table: citizenTable)
+            .withWhere(
+              manyRelation.every((t) => t.id.equals(1) | t.id.equals(2)),
+            )
+            .build();
+      });
       test('then a sub query is created for the filter.', () {
         expect(
           query,
@@ -155,13 +174,16 @@ void main() {
       });
     });
 
-    group('when filtering on multiple every many relation', () {
-      var where =
-          manyRelation.every((t) => t.id.equals(1)) |
-          manyRelation.every((t) => t.id.equals(2));
-      var query = DeleteQueryBuilder(
-        table: citizenTable,
-      ).withWhere(where).build();
+    group('when filtering on multiple every many relation,', () {
+      late String query;
+      setUp(() {
+        var where =
+            manyRelation.every((t) => t.id.equals(1)) |
+            manyRelation.every((t) => t.id.equals(2));
+        query = DeleteQueryBuilder(
+          table: citizenTable,
+        ).withWhere(where).build();
+      });
 
       test('then a sub query is created for the first many relation filter.', () {
         expect(

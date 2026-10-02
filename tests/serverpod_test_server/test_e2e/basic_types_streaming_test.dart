@@ -5,7 +5,13 @@ import 'package:test/test.dart';
 import '../test/serialization_legacy_test.dart' show createByteData;
 
 void main() {
-  var client = Client(serverUrl);
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   test(
     'Given the test server, when an int stream is sent to the server, then it is returned verbatim',
