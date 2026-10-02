@@ -35,16 +35,12 @@ void rescopeSdkResolver(Directory baseDirectory) {
 SdkResolver get sdkResolver =>
     _resolver ??= SdkResolver(baseDirectory: Directory.current);
 
-/// An SDK root, and where it was resolved from.
+/// A resolved SDK root.
 class ResolvedSdk {
   /// Absolute path to the SDK root - the directory holding `bin/`.
   final String root;
 
-  /// Human-readable account of where [root] came from, for diagnostics.
-  /// Names the specific file the chain followed rather than just the tier.
-  final String origin;
-
-  const ResolvedSdk({required this.root, required this.origin});
+  const ResolvedSdk({required this.root});
 }
 
 /// Thrown when the Dart chain is exhausted - no Flutter SDK to derive from,
@@ -83,8 +79,8 @@ bool isDartSdk(String root) => File(dartExecutableIn(root)).existsSync();
 /// pays for looking for one.
 ///
 /// The resolution chain:
-/// `fvm flutter` (the project's fvm pin, else the global fvm version), `$PATH`,
-/// and - for Dart only - the SDK running this CLI.
+/// the `flutter` on `$PATH`, asked from the project directory, and - for Dart
+/// only - the SDK running this CLI.
 /// Dart is derived from the resolved Flutter SDK whenever one
 /// was found, so the server and the Flutter app are built by matching SDKs.
 class SdkResolver {
@@ -98,13 +94,6 @@ class SdkResolver {
   /// The command the PATH tier probes.
   final List<String> _flutterCommand;
 
-  /// Overrides the `fvm flutter --version --machine` probe used for the
-  /// fvm tier.
-  final Future<String?> Function()? _probeFvmFlutterRoot;
-
-  /// The command the fvm tier probes.
-  final List<String> _fvmCommand;
-
   /// Overrides the last-resort lookup of the SDK running this CLI.
   final String Function()? _runningSdkRoot;
 
@@ -112,13 +101,9 @@ class SdkResolver {
     required this.baseDirectory,
     @visibleForTesting Future<String?> Function()? probePathFlutterRoot,
     @visibleForTesting List<String> flutterCommand = const ['flutter'],
-    @visibleForTesting Future<String?> Function()? probeFvmFlutterRoot,
-    @visibleForTesting List<String> fvmCommand = const ['fvm', 'flutter'],
     @visibleForTesting String Function()? runningSdkRoot,
   }) : _probePathFlutterRoot = probePathFlutterRoot,
        _flutterCommand = flutterCommand,
-       _probeFvmFlutterRoot = probeFvmFlutterRoot,
-       _fvmCommand = fvmCommand,
        _runningSdkRoot = runningSdkRoot;
 
   Future<ResolvedSdk?>? _flutter;
@@ -132,32 +117,17 @@ class SdkResolver {
   Future<ResolvedSdk> get dartSdk => _dart ??= _resolveDart();
 
   Future<ResolvedSdk?> _resolveFlutter() async {
-    // Ask fvm first. `fvm flutter` finds the project's pin by walking up from
-    // the project directory, and falls back to the version set with
-    // `fvm global`, so the CLI and fvm always pick the same Flutter SDK.
-    final probeFvm =
-        _probeFvmFlutterRoot ??
-        () => _probeFlutterRoot(_fvmCommand, _probeDirectory);
-    final fvmSdk = await probeFvm();
-    if (fvmSdk != null && isFlutterSdk(fvmSdk)) {
-      return ResolvedSdk(
-        root: p.normalize(fvmSdk),
-        origin: 'fvm flutter',
-      );
-    }
-
-    // Then ask the `flutter` on PATH where it lives. Going through the
-    // executable rather than reading $PATH directly is what makes shim-based
-    // managers (asdf, mise, puro) report their real root.
+    // Ask the `flutter` on PATH where it lives, from the project directory.
+    // Going through the executable rather than reading $PATH directly is what
+    // makes version managers that shim `flutter` (asdf, mise, puro, or fvm
+    // behind a `flutter` that runs `fvm flutter`) report the SDK they picked
+    // for the project.
     final probePath =
         _probePathFlutterRoot ??
         () => _probeFlutterRoot(_flutterCommand, _probeDirectory);
     final flutterOnPath = await probePath();
     if (flutterOnPath != null && isFlutterSdk(flutterOnPath)) {
-      return ResolvedSdk(
-        root: p.normalize(flutterOnPath),
-        origin: 'flutter on PATH',
-      );
+      return ResolvedSdk(root: p.normalize(flutterOnPath));
     }
 
     log.debug('No Flutter SDK found.');
@@ -171,10 +141,7 @@ class SdkResolver {
     if (flutter != null) {
       final embedded = embeddedDartSdkIn(flutter.root);
       if (isDartSdk(embedded)) {
-        return ResolvedSdk(
-          root: embedded,
-          origin: 'the resolved Flutter SDK',
-        );
+        return ResolvedSdk(root: embedded);
       }
       // A cold `bin/cache` has no embedded Dart yet.
       log.warning(
@@ -187,10 +154,7 @@ class SdkResolver {
 
     // Last resort: the SDK running this CLI.
     try {
-      return ResolvedSdk(
-        root: (_runningSdkRoot ?? getSdkPath)(),
-        origin: 'the Dart SDK running this CLI',
-      );
+      return ResolvedSdk(root: (_runningSdkRoot ?? getSdkPath)());
     } catch (e) {
       throw SdkResolutionException(
         'Could not locate a Dart SDK. You need to have dart installed '
@@ -275,7 +239,7 @@ class SdkResolver {
     return null;
   }
 
-  /// Describes the resolved SDKs and their resolution origin.
+  /// Describes the resolved SDKs.
   Future<String> describeResolution() async {
     final flutter = await flutterSdk;
     final dart = await dartSdk;
@@ -284,9 +248,9 @@ class SdkResolver {
     if (flutter == null) {
       buffer.writeln('Flutter SDK  not found');
     } else {
-      buffer.writeln('Flutter SDK ${flutter.root} from ${flutter.origin}');
+      buffer.writeln('Flutter SDK ${flutter.root}');
     }
-    buffer.writeln('Dart SDK ${dart.root} from ${dart.origin}');
+    buffer.writeln('Dart SDK ${dart.root}');
     return buffer.toString();
   }
 }

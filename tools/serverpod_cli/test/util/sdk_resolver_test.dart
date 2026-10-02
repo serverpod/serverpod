@@ -44,18 +44,16 @@ void _pinFvmFlutter(Directory project, String sdkRoot) {
   File(p.join(project.path, '.fvmrc')).writeAsStringSync(sdkRoot);
 }
 
-/// A resolver that never falls through to a real `flutter` or `fvm` on PATH,
-/// so the host machine's own install cannot influence the result.
+/// A resolver that never falls through to a real `flutter` on PATH, so the
+/// host machine's own install cannot influence the result.
 SdkResolver _resolver(
   Directory baseDirectory, {
   String? pathFlutterRoot,
-  String? fvmFlutterRoot,
   String Function()? runningSdkRoot,
 }) {
   return SdkResolver(
     baseDirectory: baseDirectory,
     probePathFlutterRoot: () async => pathFlutterRoot,
-    probeFvmFlutterRoot: () async => fvmFlutterRoot,
     runningSdkRoot: runningSdkRoot,
   );
 }
@@ -68,21 +66,7 @@ List<String> _shimCommand(String name, [List<String> args = const []]) => [
   ...args,
 ];
 
-/// A resolver whose fvm tier runs `fvm_reports_pinned_flutter_root.dart` for
-/// real, reporting [globalSdk] where there is no pin, with the PATH tier
-/// disabled.
-SdkResolver _fvmShimResolver(Directory baseDirectory, {String? globalSdk}) {
-  return SdkResolver(
-    baseDirectory: baseDirectory,
-    fvmCommand: _shimCommand('fvm_reports_pinned_flutter_root.dart', [
-      if (globalSdk != null) '--global=$globalSdk',
-    ]),
-    probePathFlutterRoot: () async => null,
-  );
-}
-
-/// A resolver whose PATH tier runs [flutterCommand] for real, with the fvm
-/// tier disabled.
+/// A resolver whose PATH tier runs [flutterCommand] for real.
 SdkResolver _shimResolver(
   Directory baseDirectory,
   List<String> flutterCommand,
@@ -90,13 +74,25 @@ SdkResolver _shimResolver(
   return SdkResolver(
     baseDirectory: baseDirectory,
     flutterCommand: flutterCommand,
-    probeFvmFlutterRoot: () async => null,
+  );
+}
+
+/// A resolver whose PATH tier runs `fvm_reports_pinned_flutter_root.dart` for
+/// real, the way a `flutter` on PATH that runs `fvm flutter` would answer,
+/// reporting [globalSdk] where there is no pin.
+SdkResolver _fvmShimResolver(Directory baseDirectory, {String? globalSdk}) {
+  return _shimResolver(
+    baseDirectory,
+    _shimCommand('fvm_reports_pinned_flutter_root.dart', [
+      if (globalSdk != null) '--global=$globalSdk',
+    ]),
   );
 }
 
 void main() {
   group(
-    'Given a project pinned with fvm and a global fvm version,',
+    'Given a flutter on PATH that runs fvm, a project pinned with fvm and a '
+    'global fvm version,',
     () {
       late Directory temp;
       late String pinnedSdk;
@@ -123,10 +119,6 @@ void main() {
 
         test('then it resolves the pinned SDK.', () {
           expect(resolved?.root, pinnedSdk);
-        });
-
-        test('then it names fvm as the origin.', () {
-          expect(resolved?.origin, contains('fvm flutter'));
         });
       });
 
@@ -278,14 +270,12 @@ void main() {
   );
 
   group(
-    'Given a Flutter SDK on PATH and fvm reports a root that is not a Flutter SDK,',
+    'Given a flutter on PATH that reports a root that is not a Flutter SDK,',
     () {
       late Directory workingDirectory;
-      late String sdkOnPath;
 
       setUp(() {
         workingDirectory = _tempDir();
-        sdkOnPath = _fakeFlutterSdk(workingDirectory, name: 'on-path');
       });
 
       group('when the Flutter SDK is resolved,', () {
@@ -294,23 +284,18 @@ void main() {
         setUp(() async {
           resolved = await _resolver(
             workingDirectory,
-            fvmFlutterRoot: p.join(workingDirectory.path, 'was-removed'),
-            pathFlutterRoot: sdkOnPath,
+            pathFlutterRoot: p.join(workingDirectory.path, 'was-removed'),
           ).flutterSdk;
         });
 
-        test('then it falls through to PATH instead of failing.', () {
-          expect(resolved?.root, sdkOnPath);
-        });
-
-        test('then it names PATH as the origin.', () {
-          expect(resolved?.origin, contains('PATH'));
+        test('then no Flutter SDK is reported.', () {
+          expect(resolved, isNull);
         });
       });
     },
   );
 
-  group('Given a project without fvm pin and a Flutter SDK on PATH,', () {
+  group('Given a Flutter SDK on PATH,', () {
     late Directory workingDirectory;
     late String sdkOnPath;
 
@@ -332,10 +317,6 @@ void main() {
       test('then it resolves to the SDK that PATH reported.', () {
         expect(resolved?.root, sdkOnPath);
       });
-
-      test('then it names PATH as the origin.', () {
-        expect(resolved?.origin, contains('PATH'));
-      });
     });
 
     group('when the Dart SDK is resolved,', () {
@@ -351,111 +332,24 @@ void main() {
       test('then it comes from the SDK the Flutter SDK embeds.', () {
         expect(resolved.root, embeddedDartSdkIn(sdkOnPath));
       });
-
-      test('then it names the Flutter SDK as the origin.', () {
-        expect(resolved.origin, contains('the resolved Flutter SDK'));
-      });
-    });
-  });
-
-  group(
-    'Given a project with a a global fvm version, no fvm pin and no Flutter on PATH,',
-    () {
-      late Directory workingDirectory;
-      late String fvmGlobalSdk;
-
-      setUp(() {
-        workingDirectory = _tempDir();
-        fvmGlobalSdk = _fakeFlutterSdk(workingDirectory, name: 'fvm-global');
-      });
-
-      group('when the Flutter SDK is resolved,', () {
-        late ResolvedSdk? resolved;
-
-        setUp(() async {
-          resolved = await _resolver(
-            workingDirectory,
-            fvmFlutterRoot: fvmGlobalSdk,
-          ).flutterSdk;
-        });
-
-        test('then it resolves to the SDK that fvm reported.', () {
-          expect(resolved?.root, fvmGlobalSdk);
-        });
-
-        test('then it names fvm as the origin.', () {
-          expect(resolved?.origin, contains('fvm flutter'));
-        });
-      });
-
-      group('when the Dart SDK is resolved,', () {
-        late ResolvedSdk resolved;
-
-        setUp(() async {
-          resolved = await _resolver(
-            workingDirectory,
-            fvmFlutterRoot: fvmGlobalSdk,
-          ).dartSdk;
-        });
-
-        test('then it comes from the SDK the fvm version embeds.', () {
-          expect(resolved.root, embeddedDartSdkIn(fvmGlobalSdk));
-        });
-      });
-
-      group('when the resolution is described,', () {
-        late String description;
-
-        setUp(() async {
-          description = await _resolver(
-            workingDirectory,
-            fvmFlutterRoot: fvmGlobalSdk,
-          ).describeResolution();
-        });
-
-        test('then it names the resolved Flutter SDK.', () {
-          expect(description, contains(fvmGlobalSdk));
-        });
-
-        test('then it names fvm as where the Flutter SDK came from.', () {
-          expect(description, contains('fvm flutter'));
-        });
-
-        test('then it names the Dart SDK derived from it.', () {
-          expect(description, contains(embeddedDartSdkIn(fvmGlobalSdk)));
-        });
-
-        test('then it says the Dart SDK came from the Flutter SDK.', () {
-          expect(description, contains('the resolved Flutter SDK'));
-        });
-      });
-    },
-  );
-
-  group('Given both a Flutter SDK on PATH and a global fvm version,', () {
-    late Directory workingDirectory;
-    late String sdkOnPath;
-    late String fvmGlobalSdk;
-
-    setUp(() {
-      workingDirectory = _tempDir();
-      sdkOnPath = _fakeFlutterSdk(workingDirectory, name: 'on-path');
-      fvmGlobalSdk = _fakeFlutterSdk(workingDirectory, name: 'fvm-global');
     });
 
-    group('when the Flutter SDK is resolved,', () {
-      late ResolvedSdk? resolved;
+    group('when the resolution is described,', () {
+      late String description;
 
       setUp(() async {
-        resolved = await _resolver(
+        description = await _resolver(
           workingDirectory,
           pathFlutterRoot: sdkOnPath,
-          fvmFlutterRoot: fvmGlobalSdk,
-        ).flutterSdk;
+        ).describeResolution();
       });
 
-      test('then fvm wins.', () {
-        expect(resolved?.root, fvmGlobalSdk);
+      test('then it names the resolved Flutter SDK.', () {
+        expect(description, contains(sdkOnPath));
+      });
+
+      test('then it names the Dart SDK derived from it.', () {
+        expect(description, contains(embeddedDartSdkIn(sdkOnPath)));
       });
     });
   });
@@ -481,10 +375,6 @@ void main() {
 
       test('then it falls back to the SDK running the CLI.', () {
         expect(resolved.root, getSdkPath());
-      });
-
-      test('then it names the running SDK as the origin.', () {
-        expect(resolved.origin, contains('running this CLI'));
       });
     });
   });
@@ -517,10 +407,6 @@ void main() {
 
       test('then it falls back to the SDK running the CLI.', () {
         expect(resolved.root, getSdkPath());
-      });
-
-      test('then it names the running SDK as the origin.', () {
-        expect(resolved.origin, contains('running this CLI'));
       });
     });
 

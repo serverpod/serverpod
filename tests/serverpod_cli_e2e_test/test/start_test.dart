@@ -734,28 +734,16 @@ Future<void> _createFakeFlutterSdk(String root) async {
   File(
     path.join(bin, 'version.json'),
   ).writeAsStringSync(jsonEncode({'flutterRoot': root}));
-  // serverpod asks `fvm flutter` before the `flutter` on PATH. The failing
-  // `fvm` here shadows any fvm installed on the host, so resolution falls
-  // through to the fake `flutter`.
   if (Platform.isWindows) {
     File(
       path.join(bin, 'flutter.bat'),
     ).writeAsStringSync('@type "%~dp0version.json"\r\n');
-    File(path.join(bin, 'fvm.bat')).writeAsStringSync('@exit /b 1\r\n');
   } else {
     final flutter = path.join(bin, 'flutter');
     File(
       flutter,
     ).writeAsStringSync('#!/bin/sh\ncat "\$(dirname "\$0")/version.json"\n');
-    final fvm = path.join(bin, 'fvm');
-    File(fvm).writeAsStringSync('#!/bin/sh\nexit 1\n');
-    for (final executable in [flutter, fvm]) {
-      final chmod = await Process.run('chmod', ['+x', executable]);
-      expect(
-        chmod.exitCode,
-        0,
-        reason: 'Could not make $executable executable.',
-      );
-    }
+    final chmod = await Process.run('chmod', ['+x', flutter]);
+    expect(chmod.exitCode, 0, reason: 'Could not make $flutter executable.');
   }
 }
