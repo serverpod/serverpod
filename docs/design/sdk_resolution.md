@@ -5,12 +5,12 @@ SDK to use when it runs `pub get`, `flutter create`, `flutter run`, and when it
 compiles and runs the server. Today that decision is made independently at
 different call sites using two different and sometimes conflicting strategies.
 This proposes a single resolution chain — **`SdkResolver`** — that every call
-site consults, and which understands project-pinned SDKs (fvm) without any
-configuration from the user.
+site consults, and which follows the SDK a version manager picks for the
+project.
 
-The user-visible goal: a developer who pins Flutter with fvm should be able to
-run `serverpod create` and `serverpod start` and have them work, with the
-project's pinned SDK, without setting anything up.
+The user-visible goal: a developer who pins Flutter with a version manager
+should be able to run `serverpod create` and `serverpod start` and have them
+work, with the project's pinned SDK. For fvm this takes a one-time setup (see [fvm](#fvm)).
 
 ## Current state
 
@@ -67,17 +67,17 @@ first tier that yields an SDK that actually exists on disk:
 
 | # | Tier | Flutter | Dart |
 | --- | ------ | --------- | ------ |
-| 1 | fvm | `fvm flutter` | derived from the Flutter root |
-| 2 | PATH | `flutter` | `dart` |
-| 3 | Running SDK | — | `getSdkPath()` |
+| 1 | PATH | `flutter` | `dart` |
+| 2 | Running SDK | — | `getSdkPath()` |
 
-Tier 1 is the one that makes fvm work with no user action. `fvm flutter` reports
-the project's pin, or the version set with `fvm global` for fvm users who don't
-pin each project. Tier 3 exists only for Dart as a last resort, it is what the
-CLI does today.
+Tier 1 asks the `flutter` on `$PATH` where its SDK lives. Version managers that
+put a `flutter` shim on `$PATH` (asdf, mise, puro) answer with the SDK they
+picked for the project, so the CLI uses the same SDK the developer's terminal
+does. Tier 2 exists only for Dart as a last resort, it is what the CLI does
+today.
 
 **Dart is derived from Flutter, not resolved separately.** Whenever a Flutter
-root is resolved at tier 1 or 2, the Dart SDK is taken from
+root is resolved at tier 1, the Dart SDK is taken from
 `<flutterRoot>/bin/cache/dart-sdk` rather than resolved independently. A project
 pinned to Flutter 3.32 gets Dart 3.8, which is what `pub` in that project
 expects.
@@ -93,11 +93,38 @@ resolved relative to a **base directory** that depends on the command:
 - Every other command — the resolved server directory, falling back to the
   current working directory.
 
-`fvm flutter` runs in the base directory and finds the pin the way fvm itself
-does, so the CLI and fvm always pick the same version for a project.
+`flutter` runs in the base directory, so a version manager that binds an SDK to
+a directory reports the project's SDK, the same one it picks in the
+developer's terminal.
 
-For a multi-app workspace, fvm is asked from each Flutter app's own directory,
-so apps pinned to different Flutter versions each get their own SDK.
+For a multi-app workspace, `flutter` is asked from each Flutter app's own
+directory, so apps pinned to different Flutter versions each get their own SDK.
+
+### fvm
+
+fvm does not put a `flutter` on `$PATH` for pinned projects, and the CLI does
+not special-case it. `flutter` can be rerouted to `fvm flutter` with a
+script on `$PATH`, and with that in place fvm is resolved like any other
+version manager:
+
+```sh
+#!/bin/sh
+exec fvm flutter "$@"
+```
+
+On Windows, the same is a `flutter.bat` on `%PATH%`:
+
+```bat
+@fvm flutter %*
+```
+
+Two things follow from `fvm flutter`'s own behaviour:
+
+- A project pinned to a version that is not installed yet gets it installed the
+  first time the CLI asks `flutter` for its SDK, as it would in the terminal.
+- With no project pin and no `fvm global` version, `fvm flutter` falls back to
+  the `flutter` on `$PATH`, which is the script itself. Setting a global version
+  avoids the loop.
 
 ### Behaviour of the environment checks
 
@@ -105,9 +132,9 @@ so apps pinned to different Flutter versions each get their own SDK.
 either is missing. That requirement is kept. What changes is what it
 consults.
 
-**The check asks the resolver, not `$PATH`.** A project pinned with fvm
-satisfies the Flutter requirement with no `flutter` on
-`$PATH` at all.
+**The check asks the resolver.** It still needs a `flutter` on `$PATH`, and
+takes the SDK that `flutter` reports for the project. When there is none, the
+error says how to put fvm behind a `flutter` on `$PATH`.
 
 The pre-command check runs before command-specific project discovery, using
 the resolver's initial current-directory scope. After `start` and `generate`
@@ -125,8 +152,9 @@ releases the app's TUI tab.
 
 ### Diagnostics
 
-Resolution is traceable. `serverpod version --verbose` reports what was resolved
-and which tier it came from:
+Resolution is traceable. `serverpod version --verbose` reports the Flutter and
+Dart SDK roots that were resolved. A Dart SDK under the Flutter root's
+`bin/cache` was derived from it; any other is the SDK running the CLI.
 
 The same two lines are logged at debug level on every command, so a bug report
 that includes `--verbose` output answers "which SDK built this?" without a
@@ -156,17 +184,17 @@ project SDK here would install the CLI into the wrong place.
 ## Backwards compatibility
 
 For a developer with a single system Flutter on `$PATH` and no fvm, resolution
-lands on tier 2 and behaviour is unchanged.
+lands on tier 1 and behaviour is unchanged.
 
 Two behaviour changes are deliberate and affect existing users:
 
-**Commands work in a project pinned with fvm.** Previously-failing invocations
-now succeed: the up-front check resolves the pin instead of requiring `flutter`
-on `$PATH`.
+**Commands use the project's pinned SDK.** With a version manager behind
+`flutter`, including fvm set up as above, the server and the Flutter app are
+built by the SDK the project pins.
 
 **The server may be compiled by a different SDK than before.** On a machine where
-`flutter` on `$PATH` embeds a different Dart than the one running the CLI, tier 2
-now wins over tier 3 and the server is built by the Flutter-embedded Dart.
+`flutter` on `$PATH` embeds a different Dart than the one running the CLI, tier 1
+now wins over tier 2 and the server is built by the Flutter-embedded Dart.
 
 ## Design decisions
 

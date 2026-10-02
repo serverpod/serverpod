@@ -1,5 +1,6 @@
-// Test shim: stands in for `fvm flutter --version --machine`. Like fvm, it
-// walks up from the directory it runs in to the filesystem root looking for a
+// Test shim: stands in for a `flutter` on PATH that runs `fvm flutter`,
+// answering `--version --machine`. Like fvm, it walks up from the
+// directory it runs in to the filesystem root looking for a
 // `.fvmrc` pin, and reports the `flutterRoot` it holds. Real fvm stores a
 // version there instead. With no pin it reports the root given by
 // `--global=<path>`, or fails when there is none.
