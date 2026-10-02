@@ -295,7 +295,7 @@ class FlutterAppManager {
     String? sdkRoot;
     if (flutterExecutableForTesting == null) {
       final appResolver = SdkResolver(baseDirectory: Directory(appDir));
-      sdkRoot = (await appResolver.flutterSdk)?.root;
+      sdkRoot = await appResolver.flutterSdk;
     }
 
     late final FlutterProcess process;

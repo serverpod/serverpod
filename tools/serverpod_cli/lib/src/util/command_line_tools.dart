@@ -41,7 +41,7 @@ class CommandLineTools {
 
     final dart = await sdkResolver.dartSdk;
     var exitCode = await _runProcessWithDefaultLogger(
-      executable: dartExecutableIn(dart.root),
+      executable: dartExecutableIn(dart),
       arguments: ['pub', 'get'],
       workingDirectory: dir.path,
     );
@@ -98,7 +98,7 @@ class CommandLineTools {
   /// Flutter SDK could be found.
   static Future<String?> _flutterExecutableOrReport(String step) async {
     final flutter = await sdkResolver.flutterSdk;
-    if (flutter != null) return flutterExecutableIn(flutter.root);
+    if (flutter != null) return flutterExecutableIn(flutter);
 
     _logError(
       'Cannot run `flutter $step`: no Flutter SDK found.',

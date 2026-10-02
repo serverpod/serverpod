@@ -108,7 +108,7 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved from the pinned directory,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _fvmShimResolver(
@@ -118,12 +118,12 @@ void main() {
         });
 
         test('then it resolves the pinned SDK.', () {
-          expect(resolved?.root, pinnedSdk);
+          expect(resolved, pinnedSdk);
         });
       });
 
       group('when the Flutter SDK is resolved from a nested subdirectory,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           final nested = Directory(p.join(project.path, 'apps', 'admin'))
@@ -135,12 +135,12 @@ void main() {
         });
 
         test('then it resolves the same pinned SDK.', () {
-          expect(resolved?.root, pinnedSdk);
+          expect(resolved, pinnedSdk);
         });
       });
 
       group('when the Flutter SDK is resolved from an unpinned directory,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           final unpinned = Directory(p.join(temp.path, 'other'))..createSync();
@@ -151,7 +151,7 @@ void main() {
         });
 
         test('then it resolves the global fvm version.', () {
-          expect(resolved?.root, globalSdk);
+          expect(resolved, globalSdk);
         });
       });
     },
@@ -174,14 +174,14 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _fvmShimResolver(notYetCreated).flutterSdk;
         });
 
         test('then it resolves the pinned SDK.', () {
-          expect(resolved?.root, pinnedSdk);
+          expect(resolved, pinnedSdk);
         });
 
         test(
@@ -218,14 +218,14 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _fvmShimResolver(projectDirectory).flutterSdk;
         });
 
         test('then it finds the pin in the parent directory.', () {
-          expect(resolved?.root, cachedSdk);
+          expect(resolved, cachedSdk);
         });
       });
     },
@@ -256,14 +256,14 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _fvmShimResolver(projectDirectory).flutterSdk;
         });
 
         test('then it finds the pin in the parent directory.', () {
-          expect(resolved?.root, cachedSdk);
+          expect(resolved, cachedSdk);
         });
       });
     },
@@ -279,7 +279,7 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _resolver(
@@ -305,7 +305,7 @@ void main() {
     });
 
     group('when the Flutter SDK is resolved,', () {
-      late ResolvedSdk? resolved;
+      late String? resolved;
 
       setUp(() async {
         resolved = await _resolver(
@@ -315,12 +315,12 @@ void main() {
       });
 
       test('then it resolves to the SDK that PATH reported.', () {
-        expect(resolved?.root, sdkOnPath);
+        expect(resolved, sdkOnPath);
       });
     });
 
     group('when the Dart SDK is resolved,', () {
-      late ResolvedSdk resolved;
+      late String resolved;
 
       setUp(() async {
         resolved = await _resolver(
@@ -330,7 +330,7 @@ void main() {
       });
 
       test('then it comes from the SDK the Flutter SDK embeds.', () {
-        expect(resolved.root, embeddedDartSdkIn(sdkOnPath));
+        expect(resolved, embeddedDartSdkIn(sdkOnPath));
       });
     });
 
@@ -364,7 +364,7 @@ void main() {
     });
 
     group('when the Dart SDK is resolved,', () {
-      late ResolvedSdk resolved;
+      late String resolved;
 
       setUp(() async {
         resolved = await _resolver(
@@ -374,7 +374,7 @@ void main() {
       });
 
       test('then it falls back to the SDK running the CLI.', () {
-        expect(resolved.root, getSdkPath());
+        expect(resolved, getSdkPath());
       });
     });
   });
@@ -387,7 +387,7 @@ void main() {
     });
 
     group('when the Flutter SDK is resolved,', () {
-      late ResolvedSdk? resolved;
+      late String? resolved;
 
       setUp(() async {
         resolved = await _resolver(workingDirectory).flutterSdk;
@@ -399,14 +399,14 @@ void main() {
     });
 
     group('when the Dart SDK is resolved,', () {
-      late ResolvedSdk resolved;
+      late String resolved;
 
       setUp(() async {
         resolved = await _resolver(workingDirectory).dartSdk;
       });
 
       test('then it falls back to the SDK running the CLI.', () {
-        expect(resolved.root, getSdkPath());
+        expect(resolved, getSdkPath());
       });
     });
 
@@ -482,14 +482,14 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved for a bound project,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _shimResolver(project, flutterCommand).flutterSdk;
         });
 
         test('then it resolves the SDK the project is bound to.', () {
-          expect(resolved?.root, projectSdk);
+          expect(resolved, projectSdk);
         });
       });
     },
@@ -516,14 +516,14 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _shimResolver(project, flutterCommand).flutterSdk;
         });
 
         test('then it resolves the SDK the wrapper reported.', () {
-          expect(resolved?.root, sdkOnPath);
+          expect(resolved, sdkOnPath);
         });
       });
     },
@@ -550,14 +550,14 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _shimResolver(project, flutterCommand).flutterSdk;
         });
 
         test('then it resolves the SDK the wrapper reported.', () {
-          expect(resolved?.root, sdkOnPath);
+          expect(resolved, sdkOnPath);
         });
       });
     },
@@ -584,14 +584,14 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _shimResolver(project, flutterCommand).flutterSdk;
         });
 
         test('then it resolves the SDK the wrapper reported.', () {
-          expect(resolved?.root, sdkOnPath);
+          expect(resolved, sdkOnPath);
         });
       });
     },
@@ -619,14 +619,14 @@ void main() {
       });
 
       group('when the Flutter SDK is resolved,', () {
-        late ResolvedSdk? resolved;
+        late String? resolved;
 
         setUp(() async {
           resolved = await _shimResolver(project, flutterCommand).flutterSdk;
         });
 
         test('then it resolves the SDK the wrapper reported.', () {
-          expect(resolved?.root, sdkOnPath);
+          expect(resolved, sdkOnPath);
         });
       });
     },

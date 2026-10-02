@@ -236,7 +236,7 @@ Future<bool> performOneShotGenerate({
     config: config,
     createAnalyzers: () async => Analyzers.create(
       config,
-      dartSdkPath: (await sdkResolver.dartSdk).root,
+      dartSdkPath: await sdkResolver.dartSdk,
     ),
     force: force,
   );
@@ -348,7 +348,7 @@ Future<bool> _performGenerateWatch({
       // In-process is fine here; only start's TUI needs the isolate offload.
       final activeAnalyzers = await Analyzers.create(
         config,
-        dartSdkPath: (await sdkResolver.dartSdk).root,
+        dartSdkPath: await sdkResolver.dartSdk,
       );
       analyzers = activeAnalyzers;
       final initialResult = await generateIfStale(
