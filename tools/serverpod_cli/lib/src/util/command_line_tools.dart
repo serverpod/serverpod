@@ -94,6 +94,17 @@ class CommandLineTools {
     return true;
   }
 
+  static Future<bool> existsCommand(
+    String command, [
+    List<String> arguments = const [],
+  ]) async {
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: command,
+      arguments: arguments,
+    );
+    return exitCode == 0;
+  }
+
   /// The resolved `flutter` executable, or `null` after reporting that no
   /// Flutter SDK could be found.
   static Future<String?> _flutterExecutableOrReport(String step) async {
