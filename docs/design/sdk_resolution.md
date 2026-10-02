@@ -112,11 +112,21 @@ version manager:
 exec fvm flutter "$@"
 ```
 
-On Windows, the same is a `flutter.bat` on `%PATH%`:
+On macOS/Linux, the script lives in a directory of its own, such as
+`~/.fvm_shim`, at the front of `$PATH`.
+
+On Windows, the equivalent is a `flutter.bat` file in a dedicated directory,
+such as `%USERPROFILE%\.fvm_shim`, containing:
 
 ```bat
 @fvm flutter %*
 ```
+
+That directory sits at the front of the PATH environment variable.
+
+Keeping the script in its own directory avoids overwriting another `flutter`.
+It takes precedence when its directory comes before other Flutter directories
+on PATH.
 
 Two things follow from `fvm flutter`'s own behaviour:
 
