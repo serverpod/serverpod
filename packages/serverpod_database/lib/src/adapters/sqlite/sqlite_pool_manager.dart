@@ -87,7 +87,9 @@ class SqlitePoolManager implements DatabasePoolManager {
     final db = openSqliteDatabase(
       config.filePath,
       SqliteOptions(
-        preparedStatementCacheSize: config.preparedStatementCacheSize,
+        // Reuse statements only within bounded batches, avoiding retention of
+        // literal-bearing SQL across operations.
+        preparedStatementCacheSize: 0,
         maxReaders:
             config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
       ),

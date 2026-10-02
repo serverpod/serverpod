@@ -17,7 +17,6 @@ void main() {
       SqliteDatabaseConfig(
         filePath: '${directory.path}/db',
         maxConnectionCount: 2,
-        preparedStatementCacheSize: 100,
       ),
       optimizationInterval: const Duration(milliseconds: 20),
     );
@@ -29,7 +28,7 @@ void main() {
   });
 
   test(
-    'Given cached reader plans for newly indexed data, '
+    'Given reader connections with outdated planner statistics, '
     'when periodic planner maintenance runs, '
     'then every reader uses refreshed statistics with schema writes disabled.',
     () async {

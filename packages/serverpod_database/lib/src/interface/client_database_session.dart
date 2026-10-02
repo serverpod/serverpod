@@ -27,24 +27,16 @@ class ClientDatabaseSession implements DatabaseSession {
   /// database integrity will be verified after the migrations are applied to
   /// provide feedback of possible issues. On a Flutter application, this should
   /// be set to [kDebugMode].
-  /// [preparedStatementCacheSize] bounds the per-connection statement cache;
-  /// it is disabled by default. SQL containing large literals can retain large
-  /// amounts of memory when caching is enabled.
   static Future<ClientDatabaseSession> open(
     String path,
     DatabaseSerializationManager serializationManager, {
     List<MigrationVersionSql> clientMigrations = const [],
     bool runMigrations = true,
     bool isDebugMode = false,
-    int preparedStatementCacheSize =
-        SqliteDatabaseConfig.defaultPreparedStatementCacheSize,
   }) async {
     final poolManager = SqlitePoolManager(
       serializationManager,
-      SqliteDatabaseConfig(
-        filePath: path,
-        preparedStatementCacheSize: preparedStatementCacheSize,
-      ),
+      SqliteDatabaseConfig(filePath: path),
     )..start();
     await poolManager.started;
     final session = ClientDatabaseSession._(poolManager);
