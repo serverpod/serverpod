@@ -76,6 +76,13 @@ picked for the project, so the CLI uses the same SDK the developer's terminal
 does. Tier 2 exists only for Dart as a last resort, it is what the CLI does
 today.
 
+`flutter` gets 30 seconds to answer, enough for one that is rebuilding its tool,
+downloading SDK components, or waiting for its startup lock. One that has not
+answered by then is stopped with a warning. Dart is
+not resolved either: it is derived from Flutter, so falling back to the SDK
+running the CLI would build the project with the wrong one. The command fails
+saying that `flutter` did not answer, not that it is missing.
+
 **Dart is derived from Flutter, not resolved separately.** Whenever a Flutter
 root is resolved at tier 1, the Dart SDK is taken from
 `<flutterRoot>/bin/cache/dart-sdk` rather than resolved independently. A project

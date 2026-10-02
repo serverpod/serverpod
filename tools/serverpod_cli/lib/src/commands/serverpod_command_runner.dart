@@ -21,26 +21,31 @@ import 'version.dart' show VersionCommand;
 
 Future<void> _preCommandEnvironmentChecks() async {
   try {
-    await sdkResolver.dartSdk;
-  } on SdkResolutionException {
-    log.error(
-      'Failed to run serverpod. You need to have dart installed and in your \$PATH',
-    );
-    throw ExitException.error();
-  }
-  if (!ci.isCI && !await sdkResolver.isFlutterInstalled) {
-    log.error(
-      'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
-    );
-    if (await CommandLineTools.existsCommand('fvm', ['--version'])) {
-      // Raw, so text wrapping never breaks a command across lines.
-      log.error('\n${_fvmShimInstructions()}\n', type: const RawLogType());
+    try {
+      await sdkResolver.dartSdk;
+    } on SdkResolutionException {
+      log.error(
+        'Failed to run serverpod. You need to have dart installed and in your \$PATH',
+      );
+      throw ExitException.error();
     }
-    throw ExitException.error();
-  }
+    if (!ci.isCI && !await sdkResolver.isFlutterInstalled) {
+      log.error(
+        'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
+      );
+      if (await CommandLineTools.existsCommand('fvm', ['--version'])) {
+        // Raw, so text wrapping never breaks a command across lines.
+        log.error('\n${_fvmShimInstructions()}\n', type: const RawLogType());
+      }
+      throw ExitException.error();
+    }
 
-  if (log.logLevel == LogLevel.debug) {
-    log.debug(await sdkResolver.describeResolution());
+    if (log.logLevel == LogLevel.debug) {
+      log.debug(await sdkResolver.describeResolution());
+    }
+  } on SdkResolutionTimeoutException catch (e) {
+    log.error('Failed to run serverpod. ${e.message}');
+    throw ExitException.error();
   }
 }
 
