@@ -863,10 +863,9 @@ void main() async {
           expect(agentsMd.readAsStringSync(), isNotEmpty);
         });
 
-        test('has CLAUDE.md', () {
+        test('does not have CLAUDE.md', () {
           final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
-          expect(claudeMd.existsSync(), isTrue);
-          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+          expect(claudeMd.existsSync(), isFalse);
         });
 
         test('has agent skills installed', () {
