@@ -7,8 +7,10 @@ import 'common/style.dart';
 import 'google_auth_controller.dart';
 import 'google_web_sign_in_service.dart';
 import 'native/button.dart';
+import '../common/account_linking_controller.dart';
 import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
+import '../common/sign_in_completion.dart';
 
 export 'common/style.dart';
 export 'native/button.dart';
@@ -71,6 +73,17 @@ class GoogleSignInWidget extends StatefulWidget {
   /// Ignored when [controller] is provided.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  ///
+  /// Ignored when [controller] is provided.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Ignored when [controller] is provided.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// Whether to attempt to authenticate the user automatically using the
   /// `attemptLightweightAuthentication` method after the widget is initialized.
   ///
@@ -123,6 +136,8 @@ class GoogleSignInWidget extends StatefulWidget {
     this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     this.attemptLightweightSignIn = false,
     this.scopes = GoogleAuthController.defaultScopes,
     this.style = GoogleButtonStyle.outline,
@@ -164,6 +179,8 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
           client: widget.client!,
           onAuthenticated: widget.onAuthenticated,
           onError: widget.onError,
+          accountLinking: widget.accountLinking,
+          onAuthSuccess: widget.onAuthSuccess,
           attemptLightweightSignIn: widget.attemptLightweightSignIn,
           scopes: widget.scopes,
         );

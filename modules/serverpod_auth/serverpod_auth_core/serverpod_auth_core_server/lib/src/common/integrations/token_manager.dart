@@ -5,6 +5,8 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 
+import '../../auth_user/business/account_link_requests.dart';
+import '../../auth_user/util/authentication_info_extension.dart';
 import 'cookie_auth_success.dart';
 
 /// Information about an authentication token.
@@ -56,6 +58,12 @@ abstract class TokenIssuer {
   /// (switching users requires a sign-out first). To mint a token on behalf
   /// of another user (e.g. an admin flow), call [createToken] directly.
   ///
+  /// The one exception is account linking: if the caller has an account link
+  /// request that this user has been attached to, the token is issued so that
+  /// the client can prove ownership of the account it is linking. Such a token
+  /// is always returned in the response body, never installed as a cookie,
+  /// since the caller stays signed in as themself throughout.
+  ///
   /// On a cookie-mode web request the issued secrets are set as `HttpOnly`
   /// cookies and hidden from the response body: a refresh token moves to the
   /// refresh cookie, otherwise a non-empty token moves to the auth cookie.
@@ -69,9 +77,21 @@ abstract class TokenIssuer {
     final Set<Scope>? scopes,
     final Transaction? transaction,
   }) async {
-    final callerIdentifier = session.authenticated?.userIdentifier;
-    if (callerIdentifier != null && callerIdentifier != authUserId.toString()) {
-      throw SignInWhileAuthenticatedException();
+    final authentication = session.authenticated;
+    var isAccountLinking = false;
+    if (authentication != null &&
+        authentication.userIdentifier != authUserId.toString()) {
+      isAccountLinking = await AccountLinkRequests.hasActiveAttachedRequest(
+        session,
+        authUserId: authentication.authUserId,
+        authId: authentication.authId,
+        linkedAuthUserId: authUserId,
+        transaction: transaction,
+      );
+
+      if (!isAccountLinking) {
+        throw SignInWhileAuthenticatedException();
+      }
     }
 
     final authSuccess = await createToken(
@@ -81,6 +101,10 @@ abstract class TokenIssuer {
       scopes: scopes,
       transaction: transaction,
     );
+    // The caller remains signed in as themself, so this token must not take
+    // over their auth cookie. It is handed back for them to prove ownership of
+    // the account they are linking.
+    if (isAccountLinking) return authSuccess;
     if (!session.isWebAuthCookieRequest) return authSuccess;
 
     final refreshToken = authSuccess.refreshToken;

@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
+import '../auth_user/endpoints/account_linking_endpoint.dart' as _is0pusjq;
 import '../common/endpoints/status_endpoint.dart' as _id66yt13;
 import '../profile/endpoints/user_profile_base_endpoint.dart' as _ijdx9s01;
 
@@ -18,6 +19,12 @@ class Endpoints extends _is.EndpointDispatch {
   @override
   void initializeEndpoints(_is.Server server) {
     var endpoints = <String, _is.Endpoint>{
+      'accountLinking': _is0pusjq.AccountLinkingEndpoint()
+        ..initialize(
+          server,
+          'accountLinking',
+          'serverpod_auth_core',
+        ),
       'status': _id66yt13.StatusEndpoint()
         ..initialize(
           server,
@@ -31,6 +38,63 @@ class Endpoints extends _is.EndpointDispatch {
           'serverpod_auth_core',
         ),
     };
+    connectors['accountLinking'] = _is.EndpointConnector(
+      name: 'accountLinking',
+      endpoint: endpoints['accountLinking']!,
+      methodConnectors: {
+        'createLinkRequest': _is.MethodConnector(
+          name: 'createLinkRequest',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['accountLinking']
+                          as _is0pusjq.AccountLinkingEndpoint)
+                      .createLinkRequest(session),
+        ),
+        'cancelLinkRequest': _is.MethodConnector(
+          name: 'cancelLinkRequest',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['accountLinking']
+                          as _is0pusjq.AccountLinkingEndpoint)
+                      .cancelLinkRequest(session),
+        ),
+        'executeLinkRequest': _is.MethodConnector(
+          name: 'executeLinkRequest',
+          params: {
+            'proofToken': _is.ParameterDescription(
+              name: 'proofToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'approveMerge': _is.ParameterDescription(
+              name: 'approveMerge',
+              type: _is.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['accountLinking']
+                          as _is0pusjq.AccountLinkingEndpoint)
+                      .executeLinkRequest(
+                        session,
+                        proofToken: params['proofToken'],
+                        approveMerge: params['approveMerge'],
+                      ),
+        ),
+      },
+    );
     connectors['status'] = _is.EndpointConnector(
       name: 'status',
       endpoint: endpoints['status']!,

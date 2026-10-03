@@ -1,3 +1,7 @@
+accountLinking:
+  - createLinkRequest:
+  - cancelLinkRequest:
+  - executeLinkRequest:
 status:
   - isSignedIn:
   - signOutDevice:

@@ -236,10 +236,19 @@ void _registerFacebookIdpWidget() {
   }
 
   ExternalIdpRegistry.instance.register<EndpointFacebookIdpBase>(
-    (context, client, onAuthenticated, onError) => FacebookSignInWidget(
+    (
+      context,
+      client,
+      onAuthenticated,
+      onError, [
+      accountLinking,
+      onAuthSuccess,
+    ]) => FacebookSignInWidget(
       client: client,
       onAuthenticated: onAuthenticated,
       onError: onError,
+      accountLinking: accountLinking,
+      onAuthSuccess: onAuthSuccess,
     ),
   );
 }
