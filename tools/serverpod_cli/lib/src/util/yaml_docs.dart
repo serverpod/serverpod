@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:source_span/source_span.dart';
 
 class YamlDocumentationExtractor {
   final List<String> lines;
 
-  YamlDocumentationExtractor(String yaml) : lines = yaml.split('\n');
+  /// Splits on LF, CR, and CRLF — the same line break set `package:yaml`
+  /// (via `source_span`) uses for the line numbers in [SourceLocation],
+  /// keeping the scan index-aligned for any line ending style.
+  YamlDocumentationExtractor(String yaml)
+    : lines = const LineSplitter().convert(yaml);
 
   List<String>? getDocumentation(SourceLocation keyStart) {
     var documentation = <String>[];
@@ -13,7 +19,11 @@ class YamlDocumentationExtractor {
       var match = docStartExp.firstMatch(line);
       if (match != null) {
         documentation.insert(0, '///${match.group(1) ?? ''}');
-      } else if (line.isNotEmpty && RegExp(r'^\ *?[^#]*$').hasMatch(line)) {
+      }
+      // Blank and whitespace-only lines continue the scan; any other
+      // line that is not part of a comment ends it.
+      else if (line.trim().isNotEmpty &&
+          RegExp(r'^\ *?[^#]*$').hasMatch(line)) {
         break;
       }
     }
