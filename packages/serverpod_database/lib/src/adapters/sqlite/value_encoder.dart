@@ -15,6 +15,10 @@ class SqliteValueEncoder implements ValueEncoder {
   /// Creates a new [SqliteValueEncoder].
   const SqliteValueEncoder();
 
+  /// SQLite has no schemas, so a `schema.table` name is one identifier.
+  @override
+  String quoteTableName(String tableName) => '"$tableName"';
+
   @override
   String convert(
     dynamic input, {

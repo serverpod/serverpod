@@ -161,8 +161,7 @@ class FutureCallsAnalyzer {
       _cachedAnalyzedModels = analyzedModels;
     }
 
-    changedFiles ??= {};
-    await refreshAnalysisContext(collection, changedFiles);
+    changedFiles = await refreshAnalysisContext(collection, changedFiles ?? {});
 
     // On the first run, mark every Dart file as changed so the single
     // code path handles both first and subsequent runs.
@@ -377,7 +376,7 @@ class FutureCallsAnalyzer {
   }
 
   bool _isFutureCallFile(File file) {
-    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
+    if (!p.isWithin(absoluteIncludedPaths, file.absolute.path)) return false;
     if (!file.path.endsWith('.dart')) return false;
     if (isUnrenderedTemplatePath(file.path)) return false;
     if (!file.existsSync()) return false;

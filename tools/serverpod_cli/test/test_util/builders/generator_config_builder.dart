@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -21,7 +20,7 @@ class GeneratorConfigBuilder {
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
   bool _serializeAsJsonbByDefault;
-  List<ServerpodFeature> _enabledFeatures;
+  bool _isDatabaseEnabled;
   DatabaseDialect _databaseDialect;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
@@ -53,7 +52,7 @@ class GeneratorConfigBuilder {
       ],
       _extraClasses = [],
       _serializeAsJsonbByDefault = false,
-      _enabledFeatures = [ServerpodFeature.database],
+      _isDatabaseEnabled = true,
       _databaseDialect = DatabaseDialect.postgres,
       _enabledExperimentalFeatures = [];
 
@@ -136,8 +135,8 @@ class GeneratorConfigBuilder {
     return this;
   }
 
-  GeneratorConfigBuilder withEnabledFeatures(List<ServerpodFeature> features) {
-    _enabledFeatures = features;
+  GeneratorConfigBuilder withDatabaseEnabled(bool isDatabaseEnabled) {
+    _isDatabaseEnabled = isDatabaseEnabled;
     return this;
   }
 
@@ -173,7 +172,7 @@ class GeneratorConfigBuilder {
       modules: _modules,
       extraClasses: _extraClasses,
       serializeAsJsonbByDefault: _serializeAsJsonbByDefault,
-      enabledFeatures: _enabledFeatures,
+      isDatabaseEnabled: _isDatabaseEnabled,
       databaseDialect: _databaseDialect,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,

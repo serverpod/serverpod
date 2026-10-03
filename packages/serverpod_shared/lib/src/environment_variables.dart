@@ -50,6 +50,12 @@ class ServerpodFutureCallConfigMap {
 
   /// The delay for the future call queue.
   static const String scanInterval = 'scanInterval';
+
+  /// Whether future calls are enabled.
+  static const String enabled = 'enabled';
+
+  /// Whether future calls are executed by this server.
+  static const String executionEnabled = 'executionEnabled';
 }
 
 /// The default environment variables used by the server.
@@ -155,6 +161,9 @@ enum ServerpodEnv {
 
   /// Toggle to disable future call execution.
   futureCallExecutionEnabled,
+
+  /// Toggle to disable future calls entirely, including scheduling.
+  futureCallEnabled,
 
   /// If true, the server will check for broken future calls on startup.
   futureCallCheckBrokenCalls,
@@ -269,7 +278,9 @@ enum ServerpodEnv {
         ServerpodFutureCallConfigMap.concurrencyLimit,
       (ServerpodEnv.futureCallScanInterval) =>
         ServerpodFutureCallConfigMap.scanInterval,
-      (ServerpodEnv.futureCallExecutionEnabled) => 'futureCallExecutionEnabled',
+      (ServerpodEnv.futureCallEnabled) => ServerpodFutureCallConfigMap.enabled,
+      (ServerpodEnv.futureCallExecutionEnabled) =>
+        ServerpodFutureCallConfigMap.executionEnabled,
       (ServerpodEnv.futureCallCheckBrokenCalls) => 'checkBrokenCalls',
       (ServerpodEnv.futureCallDeleteBrokenCalls) => 'deleteBrokenCalls',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
@@ -341,6 +352,7 @@ enum ServerpodEnv {
         'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL',
       (ServerpodEnv.futureCallExecutionEnabled) =>
         'SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED',
+      (ServerpodEnv.futureCallEnabled) => 'SERVERPOD_FUTURE_CALL_ENABLED',
       (ServerpodEnv.futureCallCheckBrokenCalls) =>
         'SERVERPOD_FUTURE_CALL_CHECK_BROKEN_CALLS',
       (ServerpodEnv.futureCallDeleteBrokenCalls) =>

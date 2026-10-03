@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart' hide LogLevel;
 import 'package:serverpod_database/embedded.dart';
@@ -9,11 +10,11 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/src/server/log_manager/session_log.dart';
 import 'package:serverpod/src/server/log_manager/serverpod_logging.dart';
-import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/vm_service_addresses.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_cleanup.dart';
@@ -223,6 +224,7 @@ class Serverpod {
   /// Storage. E.g. see the serverpod_cloud_storage_s3 pub package.
   void addCloudStorage(CloudStorage cloudStorage) {
     storage[cloudStorage.storageId] = cloudStorage;
+    cloudStorage.onRegistered(this);
   }
 
   internal.RuntimeSettings _defaultRuntimeSettings(String runMode) {
@@ -648,10 +650,8 @@ class Serverpod {
     }
 
     if (Features.enableDatabase) {
-      storage.addAll({
-        'public': DatabaseCloudStorage('public'),
-        'private': DatabaseCloudStorage('private'),
-      });
+      addCloudStorage(DatabaseCloudStorage('public'));
+      addCloudStorage(DatabaseCloudStorage('private'));
     }
 
     // Setup Redis
@@ -790,14 +790,7 @@ class Serverpod {
   }
 
   Future<void> _unguardedStart() async {
-    // Register cloud store endpoint if we're using the database cloud store
-    var hasDatabaseStorage = storage.entries.any(
-      (storage) => storage.value is DatabaseCloudStorage,
-    );
-
-    if (hasDatabaseStorage) {
-      CloudStoragePublicEndpoint().register(this);
-    }
+    runStartHooks();
 
     // Ensure the database pool manager has started.
     // The call to start() is necessary in case this method is being invoked
@@ -870,9 +863,15 @@ class Serverpod {
         config.role == ServerpodRole.serverless) {
       var serversStarted = true;
 
-      ProcessSignal.sigint.watch().listen(_onInterruptSignal);
+      // Guard against registering duplicate watchers if start() is called
+      // again on the same instance.
+      _sigintSubscription ??= _signalStreamFactory(
+        ProcessSignal.sigint,
+      ).listen(_onInterruptSignal);
       if (!Platform.isWindows) {
-        ProcessSignal.sigterm.watch().listen(_onShutdownSignal);
+        _sigtermSubscription ??= _signalStreamFactory(
+          ProcessSignal.sigterm,
+        ).listen(_onShutdownSignal);
       }
 
       // Serverpod Insights.
@@ -892,6 +891,8 @@ class Serverpod {
           'Failed to start the Serverpod servers, see logs for details.',
         );
       }
+
+      _publishResolvedAddresses();
 
       _internalLogVerbose('All servers started.');
     }
@@ -979,9 +980,18 @@ class Serverpod {
     }
 
     final verified = result?.databaseMatchesTargetState ?? false;
-    if (!verified && config.runMode == ServerpodRunMode.development) {
+    if (verified) return;
+
+    if (config.runMode == ServerpodRunMode.development) {
       throw ExitException(1);
     }
+
+    // A maintenance migration run only reports its result through the exit
+    // code, other roles keep starting outside development.
+    final isMigrationRun =
+        config.role == ServerpodRole.maintenance &&
+        (applyMigrations || applyRepairMigration);
+    if (isMigrationRun) _exitCode = 1;
   }
 
   Future<void> _loadRuntimeSettings() async {
@@ -1083,6 +1093,28 @@ class Serverpod {
       ', time: ${DateTime.now().toUtc()}',
     );
     shutdown(exitProcess: true, signalNumber: signal.signalNumber);
+  }
+
+  StreamSubscription<ProcessSignal>? _sigintSubscription;
+  StreamSubscription<ProcessSignal>? _sigtermSubscription;
+
+  Stream<ProcessSignal> Function(ProcessSignal signal) _signalStreamFactory =
+      (signal) => signal.watch();
+
+  /// Cancels the SIGINT/SIGTERM watchers registered by [start].
+  ///
+  /// The signal socket pairs that back them stay open for as long as a
+  /// subscription is alive, so leaving them behind leaks file descriptors and
+  /// keeps a shut down Serverpod handling signals on behalf of the process.
+  Future<void> _cancelSignalWatchers() async {
+    var sigintSubscription = _sigintSubscription;
+    var sigtermSubscription = _sigtermSubscription;
+    _sigintSubscription = null;
+    _sigtermSubscription = null;
+    _interruptSignalSent = false;
+
+    await sigintSubscription?.cancel();
+    await sigtermSubscription?.cancel();
   }
 
   bool _interruptSignalSent = false;
@@ -1203,11 +1235,26 @@ class Serverpod {
   ) async {
     await server.shutdown();
     await _webServer?.stop();
+    final T result;
     try {
-      return await action();
-    } finally {
-      await _startUserFacingServers();
+      result = await action();
+    } catch (_) {
+      // The action's error is the one to report.
+      await _resumeRequestHandling();
+      rethrow;
     }
+    if (!await _resumeRequestHandling()) {
+      throw StateError(
+        'Failed to resume the Serverpod servers, see logs for details.',
+      );
+    }
+    return result;
+  }
+
+  Future<bool> _resumeRequestHandling() async {
+    final resumed = await _startUserFacingServers();
+    if (resumed) _publishResolvedAddresses();
+    return resumed;
   }
 
   /// Starts the API server and, if configured, the web server.
@@ -1229,6 +1276,35 @@ class Serverpod {
     return ok;
   }
 
+  /// Folds the bound ports into [config] and posts the resulting addresses.
+  void _publishResolvedAddresses() {
+    final api = config.apiServer.withResolvedPort(server.port);
+    final insights = _insightsServer == null
+        ? null
+        : config.insightsServer?.withResolvedPort(_insightsServer!.port);
+    final webPort = Features.enableWebServer(_webServer)
+        ? webServer.port
+        : null;
+    final web = webPort == null
+        ? null
+        : config.webServer?.withResolvedPort(webPort);
+
+    config = config.copyWith(
+      apiServer: api,
+      insightsServer: insights,
+      webServer: web,
+    );
+
+    postServerpodAddresses(
+      api: _publicUrl(api),
+      insights: insights == null ? null : _publicUrl(insights),
+      web: web == null ? null : _publicUrl(web),
+    );
+  }
+
+  static String _publicUrl(ServerConfig server) =>
+      '${server.publicScheme}://${server.publicHost}:${server.publicPort}';
+
   /// Shuts down the Serverpod and all associated servers.
   /// If [exitProcess] is set to false, the process will not exit at the end of
   /// the shutdown.
@@ -1242,64 +1318,83 @@ class Serverpod {
 
     Object? shutdownError;
 
-    await _requestReceivingShutdownTasks.executeTasks(
-      onTaskError: (error, stack, id) {
-        shutdownError = error;
-        _reportException(
-          error,
-          stack,
-          message: 'Error in request receiving shutdown "$id"',
-        );
-      },
-    );
-
-    await experimental._shutdownTasks.executeTasks(
-      onTaskError: (error, stack, id) {
-        shutdownError = error;
-        _reportException(error, stack, message: 'Error in shutdown task "$id"');
-      },
-    );
-
-    await _internalServicesShutdownTasks.executeTasks(
-      onTaskError: (error, stack, id) {
-        shutdownError = error;
-        _reportException(
-          error,
-          stack,
-          message: 'Error in service shutdown "$id"',
-        );
-      },
-    );
-
-    // Drain the database log writer before tearing the pool down so its
-    // in-flight close rows reach the database instead of racing pool.stop().
-    // Dispose is idempotent; if the caller owns the log setup and later
-    // closes it, the duplicate dispose is a no-op.
     try {
-      final dbWriter = _loggingSetup.databaseWriter;
-      if (dbWriter != null) {
-        sessionLogWriter.remove(dbWriter);
-        await dbWriter.dispose();
+      await _requestReceivingShutdownTasks.executeTasks(
+        onTaskError: (error, stack, id) {
+          shutdownError = error;
+          _reportException(
+            error,
+            stack,
+            message: 'Error in request receiving shutdown "$id"',
+          );
+        },
+      );
+
+      await experimental._shutdownTasks.executeTasks(
+        onTaskError: (error, stack, id) {
+          shutdownError = error;
+          _reportException(
+            error,
+            stack,
+            message: 'Error in shutdown task "$id"',
+          );
+        },
+      );
+
+      await _internalServicesShutdownTasks.executeTasks(
+        onTaskError: (error, stack, id) {
+          shutdownError = error;
+          _reportException(
+            error,
+            stack,
+            message: 'Error in service shutdown "$id"',
+          );
+        },
+      );
+
+      // Drain the database log writer before tearing the pool down so its
+      // in-flight close rows reach the database instead of racing pool.stop().
+      // Dispose is idempotent; if the caller owns the log setup and later
+      // closes it, the duplicate dispose is a no-op.
+      try {
+        final dbWriter = _loggingSetup.databaseWriter;
+        if (dbWriter != null) {
+          sessionLogWriter.remove(dbWriter);
+          await dbWriter.dispose();
+        }
+      } catch (e, stackTrace) {
+        shutdownError = e;
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Error draining database log writer',
+        );
       }
-    } catch (e, stackTrace) {
-      shutdownError = e;
-      _reportException(
-        e,
-        stackTrace,
-        message: 'Error draining database log writer',
-      );
-    }
 
-    // This needs to be closed last as it is used by the other services.
-    try {
-      await _databasePoolManager?.stop();
-    } catch (e, stackTrace) {
-      shutdownError = e;
-      _reportException(
-        e,
-        stackTrace,
-        message: 'Error in database pool manager shutdown',
-      );
+      // This needs to be closed last as it is used by the other services.
+      try {
+        await _databasePoolManager?.stop();
+      } catch (e, stackTrace) {
+        shutdownError = e;
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Error in database pool manager shutdown',
+        );
+      }
+    } finally {
+      // Released last so that a second SIGINT during the shutdown above still
+      // reaches [_onInterruptSignal] and forces an immediate exit.
+      try {
+        await _cancelSignalWatchers();
+      } catch (e, stackTrace) {
+        shutdownError = e;
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Error cancelling signal watchers',
+        );
+      }
     }
 
     _writeLifecycleMessage(
@@ -1492,6 +1587,19 @@ class ExperimentalApi {
 
   final TaskManagerImpl _shutdownTasks;
 
+  final _startHooks = <void Function(Serverpod pod)>{};
+
+  /// Registers a hook that runs when the server starts. In development it
+  /// also runs after every hot reload, so hooks must be safe to run repeatedly.
+  void registerStartHook(void Function(Serverpod pod) hook) {
+    _startHooks.add(hook);
+  }
+
+  /// Removes a hook previously added with [registerStartHook].
+  void unregisterStartHook(void Function(Serverpod pod) hook) {
+    _startHooks.remove(hook);
+  }
+
   /// Shutdown tasks can be used to perform cleanup operations before the server
   /// is shut down. The tasks will be executed asynchronously after the server
   /// has received the shutdown signal.
@@ -1549,6 +1657,14 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod for logging.
   Session get internalLoggingSession => _internalLoggingSession;
 
+  /// Runs the hooks added with [ExperimentalApi.registerStartHook]. Called at
+  /// start and again when hot reload rebuilds the endpoint dispatch.
+  void runStartHooks() {
+    for (final hook in _experimental._startHooks) {
+      hook(this);
+    }
+  }
+
   /// Submits an event to registered event handlers.
   /// They will execute asynchronously.
   /// This method is for internal framework use only.
@@ -1562,5 +1678,19 @@ extension ServerpodInternalMethods on Serverpod {
       space: space,
       context: context,
     );
+  }
+
+  /// Overrides how the SIGINT/SIGTERM streams watched by [Serverpod.start] are
+  /// created.
+  ///
+  /// This allows tests to observe the signal subscription lifecycle without
+  /// installing handlers for real process signals, which would be shared with
+  /// every other test running in the same process. Must be called before
+  /// [Serverpod.start].
+  @visibleForTesting
+  void setSignalStreamFactoryForTesting(
+    Stream<ProcessSignal> Function(ProcessSignal signal) signalStreamFactory,
+  ) {
+    _signalStreamFactory = signalStreamFactory;
   }
 }

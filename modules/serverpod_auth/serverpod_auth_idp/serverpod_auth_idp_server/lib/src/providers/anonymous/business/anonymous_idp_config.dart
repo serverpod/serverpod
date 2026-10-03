@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/src/providers/anonymous/business/anonymous_idp.dart';
 
 import '../../../../../core.dart';

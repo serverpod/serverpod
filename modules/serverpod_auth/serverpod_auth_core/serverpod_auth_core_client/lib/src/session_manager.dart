@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
@@ -141,6 +142,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
       await validateAuthentication(timeout: timeout);
       return true;
     } on ServerpodClientException catch (_) {
+      return false;
+    } on TimeoutException catch (_) {
       return false;
     }
   }

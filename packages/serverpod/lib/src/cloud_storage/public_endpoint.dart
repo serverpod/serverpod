@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
+import 'dart:io' show HttpStatus;
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
@@ -67,7 +67,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
   }
 
   /// Uploads a file to the public database cloud storage.
-  Future<bool> upload(
+  Future<Response> upload(
     MethodCallSession session,
     String storageId,
     String path,
@@ -84,24 +84,45 @@ class CloudStoragePublicEndpoint extends Endpoint {
     if (uploadInfo == null ||
         uploadInfo.authKey != key ||
         !uploadInfo.expiration.isAfter(DateTime.now().toUtc())) {
-      return false;
+      return _rejectUpload(
+        session,
+        HttpStatus.forbidden,
+        'Upload authorization is invalid or has expired.',
+      );
     }
 
-    var body = await _readBinaryBody(
-      session.request,
-      min(uploadInfo.maxFileSize, server.serverpod.config.maxRequestSize),
-    );
-    if (body == null) return false;
+    var storage = server.serverpod.storage[storageId];
+    if (storage is! DatabaseCloudStorage) {
+      return _rejectUpload(
+        session,
+        HttpStatus.notFound,
+        'Storage "$storageId" does not accept uploads through the server.',
+      );
+    }
+
+    // The upload was authorized with its own size limit, so the request size
+    // limit of the server does not apply.
+    var body = await _readBinaryBody(session.request, uploadInfo.maxFileSize);
+    if (body == null) {
+      return _rejectUpload(
+        session,
+        HttpStatus.requestEntityTooLarge,
+        'File exceeds the maximum allowed size of ${uploadInfo.maxFileSize} '
+        'bytes.',
+      );
+    }
 
     if (uploadInfo.contentLength != null &&
         body.length != uploadInfo.contentLength) {
-      return false;
+      return _rejectUpload(
+        session,
+        HttpStatus.badRequest,
+        'File size (${body.length} bytes) does not match the expected '
+        'content length (${uploadInfo.contentLength} bytes).',
+      );
     }
 
     var byteData = ByteData.sublistView(body);
-
-    var storage = server.serverpod.storage[storageId];
-    if (storage is! DatabaseCloudStorage) return false;
 
     try {
       await storage.storeUnverifiedFile(
@@ -120,12 +141,21 @@ class CloudStoragePublicEndpoint extends Endpoint {
         ),
       );
     } on CloudStorageFileAlreadyExistsException {
-      return false;
+      return _rejectUpload(
+        session,
+        HttpStatus.conflict,
+        'A file already exists at "$path".',
+      );
     }
 
     await CloudStorageDirectUploadEntry.db.deleteRow(session, uploadInfo);
 
-    return true;
+    return Response.ok(body: Body.fromString('true'));
+  }
+
+  Response _rejectUpload(Session session, int statusCode, String reason) {
+    session.log('Upload rejected: $reason', level: LogLevel.warning);
+    return Response(statusCode, body: Body.fromString(reason));
   }
 
   Future<Uint8List?> _readBinaryBody(Request request, int maxFileSize) async {
@@ -134,10 +164,15 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     await for (var chunk in request.read()) {
       len += chunk.length;
-      if (len > maxFileSize) return null;
+      // Keep draining an oversized body. Cancelling the read resets the
+      // connection before the client receives the response.
+      if (len > maxFileSize) {
+        builder.clear();
+        continue;
+      }
       builder.add(chunk);
     }
-    return builder.takeBytes();
+    return len > maxFileSize ? null : builder.takeBytes();
   }
 
   Future<Response> _fileResponse(

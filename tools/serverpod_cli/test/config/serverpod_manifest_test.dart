@@ -58,6 +58,54 @@ shared_packages:
   );
 
   test(
+    'Given Serverpod manifest metadata with sync tables, '
+    'when serializing it, '
+    'then the YAML contains the sync tables flag.',
+    () {
+      var manifest = ServerpodManifest(sharedPackages: [], syncTables: true);
+
+      expect(manifest.toYaml(), '''
+version: 1
+shared_packages: []
+sync_tables: true
+''');
+    },
+  );
+
+  test(
+    'Given a Serverpod manifest with the sync tables flag, '
+    'when loading it, '
+    'then sync tables is true.',
+    () {
+      manifestFile.writeAsStringSync('''
+version: 1
+shared_packages: []
+sync_tables: true
+''');
+
+      var manifest = ServerpodManifest.tryLoadSync(manifestFile);
+
+      expect(manifest?.syncTables, isTrue);
+    },
+  );
+
+  test(
+    'Given a Serverpod manifest without the sync tables key, '
+    'when loading it, '
+    'then sync tables is false.',
+    () {
+      manifestFile.writeAsStringSync('''
+version: 1
+shared_packages: []
+''');
+
+      var manifest = ServerpodManifest.tryLoadSync(manifestFile);
+
+      expect(manifest?.syncTables, isFalse);
+    },
+  );
+
+  test(
     'Given a Serverpod manifest without shared package metadata, '
     'when loading it, '
     'then its shared package list is empty.',

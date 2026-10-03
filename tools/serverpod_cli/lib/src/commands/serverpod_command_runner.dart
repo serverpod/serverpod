@@ -1,0 +1,194 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:args/args.dart';
+import 'package:ci/ci.dart' as ci;
+import 'package:cli_tools/cli_tools.dart';
+import 'package:config/config.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/commands/language_server.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
+import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+
+import '../generated/completion_script_carapace.dart';
+import 'upgrade.dart' show UpgradeCommand;
+import 'version.dart' show VersionCommand;
+
+Future<void> _preCommandEnvironmentChecks() async {
+  if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
+    log.error(
+      'Failed to run serverpod. You need to have dart installed and in your \$PATH',
+    );
+    throw ExitException.error();
+  }
+  if (!ci.isCI &&
+      !await CommandLineTools.existsCommand('flutter', ['--version'])) {
+    log.error(
+      'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
+    );
+    throw ExitException.error();
+  }
+}
+
+Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
+  if (!runner._productionMode) {
+    log.debug('Development mode.');
+    return;
+  }
+
+  if (runner._invokedCommandName == UpgradeCommand.commandName) return;
+
+  await promptToUpdateIfNeeded(runner._cliVersion);
+}
+
+Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
+  await _preCommandEnvironmentChecks();
+  await _preCommandPrints(runner as ServerpodCommandRunner);
+}
+
+class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
+  final bool _productionMode;
+  final Version _cliVersion;
+  String? _invokedCommandName;
+
+  ServerpodCommandRunner(
+    super.executableName,
+    super.description, {
+    required bool productionMode,
+    required Version cliVersion,
+    super.messageOutput,
+    super.onBeforeRunCommand,
+    super.setLogLevel,
+    super.onAnalyticsEvent,
+    super.enableCompletionCommand,
+    super.embeddedCompletions,
+  }) : _productionMode = productionMode,
+       _cliVersion = cliVersion,
+       super(globalOptions: GlobalOption.values);
+
+  @override
+  Future<void> runCommand(ArgResults topLevelResults) async {
+    // `--no-analytics` is resolved by [BetterCommandRunner.run] before this
+    // point, so this is the one place the opt-out state is final. Every `cli.*`
+    // call site reads it from the singleton instead of taking a flag. Set
+    // before the `--version` early return so the state is never stale.
+    cliAnalytics.enabled = analyticsEnabled();
+
+    if (globalConfiguration.value(GlobalOption.version)) {
+      await commands['version']?.run();
+      return; // Exit early to prevent showing help text
+    }
+
+    var experimentalFeatures = globalConfiguration.value(
+      GlobalOption.experimentalFeatures,
+    );
+
+    for (var feature in experimentalFeatures) {
+      log.info('Enabling experimental feature: ${feature.name}.');
+    }
+    CommandLineExperimentalFeatures.initialize(experimentalFeatures);
+
+    // Counted straight off the registered command list, so a renamed or newly
+    // added command is picked up without touching the analytics code.
+    final commandName = _invokedCommandName = topLevelResults.command?.name;
+    if (commandName != null &&
+        commands.containsKey(commandName) &&
+        cliAnalytics.enabled) {
+      final serverDir = findServerDirectory(Directory.current);
+      if (serverDir != null) {
+        unawaited(
+          cliAnalytics.recordCommandInvocation(
+            serverDir: serverDir.path,
+            commandName: commandName,
+          ),
+        );
+      }
+    }
+
+    await super.runCommand(topLevelResults);
+  }
+
+  static ServerpodCommandRunner createCommandRunner(
+    Analytics analytics,
+    bool productionMode,
+    Version cliVersion, {
+    OnBeforeRunCommand onBeforeRunCommand = _serverpodOnBeforeRunCommand,
+  }) {
+    return ServerpodCommandRunner(
+      'serverpod',
+      'Manage your serverpod app development',
+      enableCompletionCommand: true,
+      embeddedCompletions: [completionScriptCarapace],
+      messageOutput: MessageOutput(
+        usageLogger: log.info,
+      ),
+      setLogLevel: _configureLogLevel,
+      onBeforeRunCommand: onBeforeRunCommand,
+      onAnalyticsEvent: (event, properties) => analytics.track(
+        event: event,
+        properties: properties,
+      ),
+      productionMode: productionMode,
+      cliVersion: cliVersion,
+    );
+  }
+
+  static void _configureLogLevel({
+    required CommandRunnerLogLevel parsedLogLevel,
+    String? commandName,
+  }) {
+    var logLevel = LogLevel.info;
+
+    if (parsedLogLevel == CommandRunnerLogLevel.verbose) {
+      logLevel = LogLevel.debug;
+    } else if (parsedLogLevel == CommandRunnerLogLevel.quiet) {
+      logLevel = LogLevel.nothing;
+    } else if (commandName == LanguageServerCommand.commandName) {
+      logLevel = LogLevel.nothing;
+    }
+
+    log.logLevel = logLevel;
+  }
+}
+
+/// The options every command accepts.
+enum GlobalOption<V> implements OptionDefinition<V> {
+  quiet(BetterCommandRunnerFlags.quietOption),
+  verbose(BetterCommandRunnerFlags.verboseOption),
+  analytics(BetterCommandRunnerFlags.analyticsOption),
+  interactive(
+    FlagOption(
+      argName: 'interactive',
+      negatable: true,
+      helpText:
+          'Enable interactive prompts. Automatically disabled in CI environments.',
+    ),
+  ),
+  version(
+    FlagOption(
+      argName: 'version',
+      helpText: VersionCommand.usageDescription,
+      negatable: false,
+      defaultsTo: false,
+    ),
+  ),
+  experimentalFeatures(
+    MultiOption<ExperimentalFeature>(
+      multiParser: MultiParser(EnumParser(ExperimentalFeature.values)),
+      argName: 'experimental-features',
+      defaultsTo: [],
+      helpText:
+          'Enable experimental features. Experimental features might be removed at any time.',
+    ),
+  ),
+  ;
+
+  const GlobalOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}

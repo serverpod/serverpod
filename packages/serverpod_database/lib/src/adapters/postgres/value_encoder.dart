@@ -5,12 +5,20 @@ import 'package:postgres/src/types/text_codec.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../../concepts/columns.dart';
+import '../../concepts/table.dart';
 import '../../interface/value_encoder.dart';
 
 /// Overrides the [PostgresTextEncoder] to add support for [ByteData].
 class PostgresValueEncoder extends PostgresTextEncoder implements ValueEncoder {
   /// Creates a new [PostgresValueEncoder].
   const PostgresValueEncoder();
+
+  @override
+  String quoteTableName(String tableName) {
+    var (:schema, :name) = parseQualifiedTableName(tableName);
+    if (schema == null) return '"$name"';
+    return '"$schema"."$name"';
+  }
 
   @override
   String convert(

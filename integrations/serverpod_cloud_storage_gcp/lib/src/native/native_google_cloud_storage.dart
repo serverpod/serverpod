@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+// Version 17 deprecated this library in favor of `package:google_cloud_storage`
+// ignore: deprecated_member_use
 import 'package:googleapis/storage/v1.dart' as gcs;
 import 'package:googleapis_auth/auth_io.dart' as gcs;
 import 'package:http/http.dart' as http;
@@ -275,7 +277,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
         object,
         bucket,
         uploadMedia: media,
-        predefinedAcl: public ? 'publicRead' : null,
         ifGenerationMatch: options.preventOverwrite ? '0' : null,
       );
     } on gcs.DetailedApiRequestError catch (error) {
@@ -452,7 +453,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
         'application/octet-stream';
     final headers = <String, String>{
       'Content-Type': contentType,
-      if (public) 'x-goog-acl': 'public-read',
       'x-goog-content-length-range': options.contentLength == null
           ? '0,${options.maxFileSize}'
           : '${options.contentLength},${options.contentLength}',

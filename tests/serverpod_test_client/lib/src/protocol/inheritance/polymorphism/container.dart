@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../inheritance/polymorphism/child.dart' as _ipp4ou13;
 
@@ -89,7 +91,8 @@ abstract class PolymorphicChildContainer
   @_isc.useResult
   PolymorphicChildContainer copyWith({
     _ipp4ou13.PolymorphicChild? child,
-    _ipp4ou13.PolymorphicChild? nullableChild,
+    _ipp4ou13.PolymorphicChild? nullableChild =
+        const _UndefinedPolymorphicChildContainer$nullableChild(),
     List<_ipp4ou13.PolymorphicChild>? childrenList,
     List<_ipp4ou13.PolymorphicChild?>? nullableChildrenList,
     Map<String, _ipp4ou13.PolymorphicChild>? childrenMap,
@@ -140,7 +143,11 @@ abstract class PolymorphicChildContainer
   }
 }
 
-class _Undefined {}
+class _UndefinedPolymorphicChildContainer$nullableChild
+    extends _issu.UndefinedSentinel
+    implements _ipp4ou13.PolymorphicChild {
+  const _UndefinedPolymorphicChildContainer$nullableChild();
+}
 
 class _PolymorphicChildContainerImpl extends PolymorphicChildContainer {
   _PolymorphicChildContainerImpl({
@@ -165,7 +172,8 @@ class _PolymorphicChildContainerImpl extends PolymorphicChildContainer {
   @override
   PolymorphicChildContainer copyWith({
     _ipp4ou13.PolymorphicChild? child,
-    Object? nullableChild = _Undefined,
+    _ipp4ou13.PolymorphicChild? nullableChild =
+        const _UndefinedPolymorphicChildContainer$nullableChild(),
     List<_ipp4ou13.PolymorphicChild>? childrenList,
     List<_ipp4ou13.PolymorphicChild?>? nullableChildrenList,
     Map<String, _ipp4ou13.PolymorphicChild>? childrenMap,
@@ -173,9 +181,9 @@ class _PolymorphicChildContainerImpl extends PolymorphicChildContainer {
   }) {
     return PolymorphicChildContainer(
       child: child ?? this.child.copyWith(),
-      nullableChild: nullableChild is _ipp4ou13.PolymorphicChild?
-          ? nullableChild
-          : this.nullableChild?.copyWith(),
+      nullableChild: nullableChild is _issu.UndefinedSentinel
+          ? this.nullableChild?.copyWith()
+          : nullableChild,
       childrenList:
           childrenList ?? this.childrenList.map((e0) => e0.copyWith()).toList(),
       nullableChildrenList:

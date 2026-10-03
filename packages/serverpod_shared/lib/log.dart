@@ -5,3 +5,5 @@
 library;
 
 export 'package:serverpod_logging/serverpod_logging.dart';
+
+export 'src/log_entry_codec.dart';

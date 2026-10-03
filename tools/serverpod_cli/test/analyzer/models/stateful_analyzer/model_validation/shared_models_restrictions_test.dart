@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
@@ -10,8 +11,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a shared package model when the model has a table property with "database: all" '
-    'when analyzing model '
+    'Given a shared package model with a table property with "database: all", '
+    'when analyzing model, '
     'then no error is collected.',
     () {
       var models = <ModelSource>[
@@ -46,8 +47,8 @@ fields:
   );
 
   test(
-    'Given a shared package model when the model has a table property without "database: all" '
-    'when analyzing model '
+    'Given a shared package model with a table property without "database: all", '
+    'when analyzing model, '
     'then an error is collected that the table requires "database: all".',
     () {
       var models = <ModelSource>[
@@ -80,14 +81,55 @@ fields:
       expect(
         collector.errors.first.message,
         'The "table" property in shared packages requires the "database" '
-        'property to be set to "all".',
+        'property to be set to "all" or "sync".',
       );
     },
   );
 
   test(
-    'Given a shared package model when the model has a serverOnly property '
-    'when analyzing model '
+    'Given a shared package model with a table property and "database: sync", '
+    'when analyzing model, '
+    'then no error is collected.',
+    () {
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+        ExperimentalFeature.databaseSync,
+      ]).build();
+
+      var models = <ModelSource>[
+        ModelSourceBuilder().withOfflineSyncSpaceModel().build(),
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withYaml('''
+class: SharedExample
+table: shared_example
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  spaceId: int?, relation(parent=offline_sync_spaces, onDelete=Cascade)
+  name: String
+''')
+            .build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors to be collected',
+      );
+    },
+  );
+
+  test(
+    'Given a shared package model with a serverOnly property, '
+    'when analyzing model, '
     'then an error is collected that serverOnly is not allowed in shared packages.',
     () {
       var models = <ModelSource>[
@@ -125,8 +167,8 @@ fields:
   );
 
   test(
-    'Given a shared package model when the model has a field with scope serverOnly '
-    'when analyzing model '
+    'Given a shared package model with a field with scope serverOnly, '
+    'when analyzing model, '
     'then an error is collected that field is part of a shared model and can not have scope defined to "serverOnly".',
     () {
       var models = <ModelSource>[
@@ -167,8 +209,8 @@ fields:
   );
 
   test(
-    'Given a sealed shared package model and a subclass on the same shared package '
-    'when analyzing model '
+    'Given a sealed shared package model and a subclass on the same shared package, '
+    'when analyzing model, '
     'then no error is collected.',
     () {
       var models = <ModelSource>[
@@ -267,8 +309,8 @@ fields:
   );
 
   test(
-    'Given a sealed shared package model and a subclass on the project package '
-    'when analyzing model '
+    'Given a sealed shared package model and a subclass on the project package, '
+    'when analyzing model, '
     'then an error is collected that sealed models can not be inherited from.',
     () {
       var models = <ModelSource>[

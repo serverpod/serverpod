@@ -8,15 +8,18 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_migration_server/src/generated/protocol.dart'
     as _i5lht1r8;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class MigratedUser
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -82,9 +85,9 @@ abstract class MigratedUser
   MigratedUser copyWith({
     int? id,
     int? oldUserId,
-    _i1n3uhu0.UserInfo? oldUser,
+    _i1n3uhu0.UserInfo? oldUser = const _UndefinedMigratedUser$oldUser(),
     _is.UuidValue? newAuthUserId,
-    _iacs.AuthUser? newAuthUser,
+    _iacs.AuthUser? newAuthUser = const _UndefinedMigratedUser$newAuthUser(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -139,6 +142,16 @@ abstract class MigratedUser
 
 class _Undefined {}
 
+class _UndefinedMigratedUser$oldUser extends _issu.UndefinedSentinel
+    implements _i1n3uhu0.UserInfo {
+  const _UndefinedMigratedUser$oldUser();
+}
+
+class _UndefinedMigratedUser$newAuthUser extends _issu.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedMigratedUser$newAuthUser();
+}
+
 class _MigratedUserImpl extends MigratedUser {
   _MigratedUserImpl({
     int? id,
@@ -161,20 +174,20 @@ class _MigratedUserImpl extends MigratedUser {
   MigratedUser copyWith({
     Object? id = _Undefined,
     int? oldUserId,
-    Object? oldUser = _Undefined,
+    _i1n3uhu0.UserInfo? oldUser = const _UndefinedMigratedUser$oldUser(),
     _is.UuidValue? newAuthUserId,
-    Object? newAuthUser = _Undefined,
+    _iacs.AuthUser? newAuthUser = const _UndefinedMigratedUser$newAuthUser(),
   }) {
     return MigratedUser(
       id: id is int? ? id : this.id,
       oldUserId: oldUserId ?? this.oldUserId,
-      oldUser: oldUser is _i1n3uhu0.UserInfo?
-          ? oldUser
-          : this.oldUser?.copyWith(),
+      oldUser: oldUser is _issu.UndefinedSentinel
+          ? this.oldUser?.copyWith()
+          : oldUser,
       newAuthUserId: newAuthUserId ?? this.newAuthUserId,
-      newAuthUser: newAuthUser is _iacs.AuthUser?
-          ? newAuthUser
-          : this.newAuthUser?.copyWith(),
+      newAuthUser: newAuthUser is _issu.UndefinedSentinel
+          ? this.newAuthUser?.copyWith()
+          : newAuthUser,
     );
   }
 }
@@ -357,6 +370,71 @@ class MigratedUserRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [MigratedUser]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `MigratedUser.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<MigratedUser>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
+    MigratedUserInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<MigratedUser>(
+      where: where?.call(MigratedUser.t),
+      orderBy: orderBy?.call(MigratedUser.t),
+      orderByList: orderByList?.call(MigratedUser.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

@@ -68,6 +68,18 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
     /// emailed (staging/production). Defaults to `Serverpod.instance.runMode`;
     /// primarily an override for testing.
     final String? runMode,
+
+    /// Callback to be invoked after a password reset is successfully completed.
+    ///
+    /// This can be used to perform additional cleanup tasks, such as clearing
+    /// legacy passwords during migration scenarios.
+    final OnPasswordResetCompletedFunction? onPasswordResetCompleted,
+
+    /// Callback to be invoked after a new email account has been created.
+    ///
+    /// This can be used to perform additional setup tasks, such as creating a
+    /// user profile or sending a welcome email.
+    final AfterAccountCreatedFunction? onAfterAccountCreated,
   }) {
     final resolvedRunMode = runMode ?? Serverpod.instance.runMode;
     final isDevelopment =
@@ -97,6 +109,8 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
           logLabel: 'Password reset',
         ),
       ),
+      onPasswordResetCompleted: onPasswordResetCompleted,
+      onAfterAccountCreated: onAfterAccountCreated,
     );
   }
 
@@ -104,6 +118,8 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
   ServerpodCloudEmailIdpConfig._({
     required super.sendRegistrationVerificationCode,
     required super.sendPasswordResetVerificationCode,
+    super.onPasswordResetCompleted,
+    super.onAfterAccountCreated,
   });
 
   /// Builds the shared verification-code sender.

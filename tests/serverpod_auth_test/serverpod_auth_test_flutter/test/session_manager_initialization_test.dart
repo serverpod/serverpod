@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
@@ -375,6 +377,58 @@ void main() {
           expect(result, isFalse);
           expect(client.auth.isAuthenticated, isTrue);
           // On web, returns immediately due to client identifying unreachable host.
+          expect(elapsed.inSeconds, lessThanOrEqualTo(2));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a `ClientAuthSessionManager` with a valid token in storage and a server that never responds',
+    () {
+      late ServerSocket hangingServer;
+      final sockets = <Socket>[];
+
+      setUp(() async {
+        final tempClient = Client('http://localhost:8080/');
+        final testUser = await tempClient.authTest.createTestUser();
+        authSuccess = await tempClient.authTest.createSasToken(testUser);
+
+        storage = TestStorage();
+        await storage.set(authSuccess);
+
+        // Accepts connections but never answers, so only the timeout can fire.
+        hangingServer = await ServerSocket.bind(
+          InternetAddress.loopbackIPv4,
+          0,
+        );
+        hangingServer.listen(sockets.add);
+
+        client = Client(
+          'http://localhost:${hangingServer.port}/',
+          connectionTimeout: const Duration(seconds: 20),
+        )..authSessionManager = FlutterAuthSessionManager(storage: storage);
+      });
+
+      tearDown(() async {
+        client.close();
+        for (final socket in sockets) {
+          socket.destroy();
+        }
+        sockets.clear();
+        await hangingServer.close();
+      });
+
+      test(
+        'when calling `initialize` with a timeout '
+        'then it returns false after the timeout and user is not signed out.',
+        () async {
+          final (result, elapsed) = await Stopwatch().timeElapsed(
+            client.auth.initialize(timeout: const Duration(seconds: 1)),
+          );
+
+          expect(result, isFalse);
+          expect(client.auth.isAuthenticated, isTrue);
           expect(elapsed.inSeconds, lessThanOrEqualTo(2));
         },
       );

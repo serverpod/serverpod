@@ -100,6 +100,37 @@ void main() {
     },
   );
 
+  group('Given an unknown class name,', () {
+    test(
+      'when deserializing by class name, '
+      'then a class-name-not-found format exception is thrown.',
+      () {
+        expect(
+          () => protocol.deserializeByClassName({
+            'className': 'UnknownClass',
+            'data': const {},
+          }),
+          throwsA(
+            allOf(
+              isA<FormatException>(),
+              isA<DeserializationClassNameNotFoundException>()
+                  .having(
+                    (exception) => exception.className,
+                    'className',
+                    'UnknownClass',
+                  )
+                  .having(
+                    (exception) => exception.message,
+                    'message',
+                    'No deserialization found for type named UnknownClass',
+                  ),
+            ),
+          ),
+        );
+      },
+    );
+  });
+
   group(
     'Given a dynamic field containing nested maps with dynamic keys, ',
     () {

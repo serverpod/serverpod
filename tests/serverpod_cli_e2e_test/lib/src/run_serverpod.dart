@@ -93,3 +93,19 @@ Future<Process> startServerpod(
     environment: {'SERVERPOD_HOME': serverpodHome, ...environment},
   );
 }
+
+/// Stops the runner serving [serverDirPath], if one is still up.
+///
+/// Killing `serverpod start` only detaches it, leaving the runner behind.
+Future<void> stopRunner(String serverDirPath) async {
+  var result = await runServerpod(
+    ['runner', 'stop'],
+    workingDirectory: serverDirPath,
+  );
+  if (result.exitCode != 0) {
+    throw StateError(
+      'Could not stop the runner for $serverDirPath, so it would outlive '
+      'this test:\n${result.stdout}\n${result.stderr}',
+    );
+  }
+}

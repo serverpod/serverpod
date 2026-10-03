@@ -8,10 +8,12 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_server/src/generated/protocol.dart' as _i4k4nnr6;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'authentication_fail_reason.dart' as _ika0ufek;
 import 'user_info.dart' as _iliwsvmu;
 
@@ -78,7 +80,8 @@ abstract class AuthenticationResponse
     bool? success,
     String? key,
     int? keyId,
-    _iliwsvmu.UserInfo? userInfo,
+    _iliwsvmu.UserInfo? userInfo =
+        const _UndefinedAuthenticationResponse$userInfo(),
     _ika0ufek.AuthenticationFailReason? failReason,
   });
   @override
@@ -113,6 +116,11 @@ abstract class AuthenticationResponse
 
 class _Undefined {}
 
+class _UndefinedAuthenticationResponse$userInfo extends _issu.UndefinedSentinel
+    implements _iliwsvmu.UserInfo {
+  const _UndefinedAuthenticationResponse$userInfo();
+}
+
 class _AuthenticationResponseImpl extends AuthenticationResponse {
   _AuthenticationResponseImpl({
     required bool success,
@@ -136,16 +144,17 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
     bool? success,
     Object? key = _Undefined,
     Object? keyId = _Undefined,
-    Object? userInfo = _Undefined,
+    _iliwsvmu.UserInfo? userInfo =
+        const _UndefinedAuthenticationResponse$userInfo(),
     Object? failReason = _Undefined,
   }) {
     return AuthenticationResponse(
       success: success ?? this.success,
       key: key is String? ? key : this.key,
       keyId: keyId is int? ? keyId : this.keyId,
-      userInfo: userInfo is _iliwsvmu.UserInfo?
-          ? userInfo
-          : this.userInfo?.copyWith(),
+      userInfo: userInfo is _issu.UndefinedSentinel
+          ? this.userInfo?.copyWith()
+          : userInfo,
       failReason: failReason is _ika0ufek.AuthenticationFailReason?
           ? failReason
           : this.failReason,

@@ -18,15 +18,6 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/src/error_listener.dart';
 import 'package:yaml/yaml.dart';
 
-String _transformFileNameWithoutPathOrExtension(Uri path) {
-  var fileName = path.pathSegments.last;
-
-  for (var ext in modelFileExtensions) {
-    fileName = fileName.replaceAll(ext, '');
-  }
-  return fileName;
-}
-
 /// Used to analyze a singe yaml model file.
 class SerializableModelAnalyzer {
   static const Set<String> _modelClassTypes = {
@@ -40,7 +31,7 @@ class SerializableModelAnalyzer {
     ModelSource modelSource,
     GeneratorConfig config,
   ) {
-    var outFileName = _transformFileNameWithoutPathOrExtension(
+    var outFileName = ModelHelper.modelFileNameWithoutExtension(
       modelSource.yamlSourceUri,
     );
     var yamlErrorCollector = ErrorCollector();

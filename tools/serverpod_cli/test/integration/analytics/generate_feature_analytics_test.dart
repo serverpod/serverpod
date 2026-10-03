@@ -27,9 +27,9 @@ void main() {
         event = recording.eventNamed('cli.generate');
       });
 
-      tearDownAll(() {
+      tearDownAll(() async {
         initializeCliAnalytics(CliAnalytics.disabled());
-        fixture.dispose();
+        await fixture.dispose();
       });
 
       test(

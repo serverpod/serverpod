@@ -48,7 +48,7 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
     final payloadBytes = Uint8List.sublistView(data);
     final payloadHash = sha256.convert(payloadBytes).toString();
 
-    final host = bucketUri.host;
+    final host = _buildHostHeader(bucketUri);
 
     // Build headers that need to be signed
     final signedHeaderMap = <String, String>{
@@ -207,7 +207,7 @@ $payloadHash''';
     final datetime = SigV4.generateDatetime();
     final credentialScope = SigV4.buildCredentialScope(datetime, region, 's3');
 
-    final host = bucketUri.host;
+    final host = _buildHostHeader(bucketUri);
 
     // Build canonical headers (must be sorted by lowercase key)
     final allHeaders = {
@@ -269,6 +269,19 @@ UNSIGNED-PAYLOAD''';
     );
 
     return uri.toString();
+  }
+
+  /// Builds the host header value, including port for non-standard ports.
+  String _buildHostHeader(Uri uri) {
+    final isStandardPort =
+        (uri.scheme == 'https' && uri.port == 443) ||
+        (uri.scheme == 'http' && uri.port == 80) ||
+        uri.port == 0;
+
+    if (isStandardPort) {
+      return uri.host;
+    }
+    return '${uri.host}:${uri.port}';
   }
 
   static Map<String, String> _metadataHeaders(

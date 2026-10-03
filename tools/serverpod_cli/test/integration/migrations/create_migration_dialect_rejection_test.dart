@@ -52,7 +52,8 @@ name: ${projectName}_server
     var hostModelsDir = Directory(
       path.join(serverDirectory.path, 'lib', 'src', 'models'),
     )..createSync(recursive: true);
-    File(path.join(hostModelsDir.path, 'example.yaml')).writeAsStringSync('''
+    File(path.join(hostModelsDir.path, 'example.spy.yaml')).writeAsStringSync(
+      '''
 class: Example
 table: example
 database: all
@@ -63,20 +64,23 @@ indexes:
     fields: name
     unique: true
     nulls_distinct: $nullsDistinct
-''');
+''',
+    );
   }
 
   void writeClientTableModelWithSerial({required bool includeSerial}) {
     var hostModelsDir = Directory(
       path.join(serverDirectory.path, 'lib', 'src', 'models'),
     )..createSync(recursive: true);
-    File(path.join(hostModelsDir.path, 'example.yaml')).writeAsStringSync('''
+    File(path.join(hostModelsDir.path, 'example.spy.yaml')).writeAsStringSync(
+      '''
 class: Example
 table: example
 database: all
 fields:
   name: String${includeSerial ? '\n  syncVersion: int?, defaultPersist=serial' : ''}
-''');
+''',
+    );
   }
 
   void writeSqliteServerAndClientModels({
@@ -87,7 +91,9 @@ fields:
       path.join(serverDirectory.path, 'lib', 'src', 'models'),
     )..createSync(recursive: true);
 
-    File(path.join(hostModelsDir.path, 'server_only.yaml')).writeAsStringSync(
+    File(
+      path.join(hostModelsDir.path, 'server_only.spy.yaml'),
+    ).writeAsStringSync(
       '''
 class: ServerOnly
 table: server_only
@@ -102,7 +108,9 @@ indexes:
 ''',
     );
 
-    File(path.join(hostModelsDir.path, 'client_host.yaml')).writeAsStringSync(
+    File(
+      path.join(hostModelsDir.path, 'client_host.spy.yaml'),
+    ).writeAsStringSync(
       '''
 class: ClientHost
 table: client_host
@@ -445,7 +453,7 @@ fields:
             'lib',
             'src',
             'models',
-            'example.yaml',
+            'example.spy.yaml',
           ),
         ).writeAsStringSync('''
 class: Example

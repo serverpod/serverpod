@@ -5,10 +5,12 @@ COPY . .
 
 # Install dependencies and compile the server executable
 RUN dart pub get
-RUN dart compile exe bin/main.dart -o bin/server
+RUN dart build cli --target bin/main.dart --output build
+RUN mv build/bundle/bin/main build/bundle/bin/server
 
 # Final stage
 FROM alpine:latest
+WORKDIR /app
 
 # Environment variables
 ENV runmode=production
@@ -19,8 +21,8 @@ ENV role=monolith
 # Copy runtime dependencies
 COPY --from=build /runtime/ /
 
-# Copy compiled server executable
-COPY --from=build /app/bin/server server
+# Copy compiled server executable and native libraries
+COPY --from=build /app/build/bundle/ ./
 
 # Copy configuration files and resources
 COPY --from=build /app/config/ config/
@@ -36,4 +38,4 @@ EXPOSE 8081
 EXPOSE 8082
 
 # Define the entrypoint command
-ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role
+ENTRYPOINT ./bin/server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role

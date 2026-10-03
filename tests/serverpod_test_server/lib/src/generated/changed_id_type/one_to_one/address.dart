@@ -8,10 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i7hzilwf;
 
@@ -69,7 +72,7 @@ abstract class AddressUuid
     _is.UuidValue? id,
     String? street,
     int? inhabitantId,
-    _i7hzilwf.CitizenInt? inhabitant,
+    _i7hzilwf.CitizenInt? inhabitant = const _UndefinedAddressUuid$inhabitant(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -123,6 +126,11 @@ abstract class AddressUuid
 
 class _Undefined {}
 
+class _UndefinedAddressUuid$inhabitant extends _issu.UndefinedSentinel
+    implements _i7hzilwf.CitizenInt {
+  const _UndefinedAddressUuid$inhabitant();
+}
+
 class _AddressUuidImpl extends AddressUuid {
   _AddressUuidImpl({
     _is.UuidValue? id,
@@ -144,15 +152,15 @@ class _AddressUuidImpl extends AddressUuid {
     _is.UuidValue? id,
     String? street,
     Object? inhabitantId = _Undefined,
-    Object? inhabitant = _Undefined,
+    _i7hzilwf.CitizenInt? inhabitant = const _UndefinedAddressUuid$inhabitant(),
   }) {
     return AddressUuid(
       id: id ?? this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _i7hzilwf.CitizenInt?
-          ? inhabitant
-          : this.inhabitant?.copyWith(),
+      inhabitant: inhabitant is _issu.UndefinedSentinel
+          ? this.inhabitant?.copyWith()
+          : inhabitant,
     );
   }
 }
@@ -305,6 +313,71 @@ class AddressUuidRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [AddressUuid]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `AddressUuid.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<AddressUuid>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AddressUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AddressUuidTable>? orderBy,
+    _is.OrderByListBuilder<AddressUuidTable>? orderByList,
+    AddressUuidInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<AddressUuid>(
+      where: where?.call(AddressUuid.t),
+      orderBy: orderBy?.call(AddressUuid.t),
+      orderByList: orderByList?.call(AddressUuid.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

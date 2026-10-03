@@ -1,14 +1,13 @@
-import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/runner.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 enum QuickstartOption<V> implements OptionDefinition<V> {
@@ -133,7 +132,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 
-    final useTui = (interactive ?? true) && !ci.isCI;
+    final useTui = shouldUseCreateTui(interactive);
 
     if (useTui) {
       await performCreateWithTui(

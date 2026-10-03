@@ -4,11 +4,11 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/endpoint_validation_helpers.dart';
+import '../../test_util/file_system_entity_helpers.dart';
 
 const _protocolBackupMarker = 'UNIQUE_PROTOCOL_BACKUP_MARKER';
 
@@ -21,7 +21,7 @@ void main() {
       late Analyzers analyzers;
       late File protocolFile;
 
-      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+      tearDownAll(() => projectDir.deleteWithRetry(recursive: true));
 
       setUpAll(() async {
         projectDir = Directory.systemTemp.createTempSync('cli_test_');

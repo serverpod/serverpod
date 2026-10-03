@@ -29,3 +29,7 @@ linter:
 
 formatter:
   trailing_commas: preserve
+analyzer:
+  exclude:
+    - build/**
+    - web/**

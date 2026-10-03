@@ -5,9 +5,13 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
+import 'package:serverpod_cli/src/runner/line_sink.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
+
+import '../../test_util/file_system_entity_helpers.dart';
+import '../../test_util/wait_for.dart';
 
 /// An IOSink that discards all output.
 class _NullIOSink implements IOSink {
@@ -84,7 +88,8 @@ void main() {
     });
 
     tearDown(() async {
-      await tempDir.delete(recursive: true);
+      await serverProcess.stop();
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -97,6 +102,86 @@ void main() {
         expect(exitCode, 0);
         expect(serverProcess.isRunning, isFalse);
         expect(disposeCalls, 1);
+      },
+    );
+  });
+
+  group('Given a ServerProcess with a custom target,', () {
+    late Directory tempDir;
+    late List<String> lines;
+    late ServerProcess serverProcess;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('server_process_test_');
+      await _createMinimalDartProject(tempDir.path);
+      await File(
+        p.join(tempDir.path, 'bin', 'main.dart'),
+      ).writeAsString('void main() { print("hello"); }');
+      await File(
+        p.join(tempDir.path, 'bin', 'main_enterprise.dart'),
+      ).writeAsString('void main() { print("enterprise entrypoint"); }');
+
+      lines = [];
+      serverProcess = ServerProcess(
+        serverDir: tempDir.path,
+        target: 'bin/main_enterprise.dart',
+        serverArgs: [],
+        stdoutSink: LineSink(lines.add),
+        stderrSink: _NullIOSink(),
+      );
+    });
+
+    tearDown(() async {
+      await tempDir.delete(recursive: true);
+    });
+
+    test(
+      'when started, '
+      'then it runs that entrypoint.',
+      () async {
+        await serverProcess.start();
+
+        expect(await serverProcess.exitCode, 0);
+        await waitFor(() => lines.isNotEmpty);
+        expect(lines, ['enterprise entrypoint']);
+      },
+    );
+  });
+
+  group('Given a ServerProcess whose output ends without a newline,', () {
+    late Directory tempDir;
+    late List<String> lines;
+    late ServerProcess serverProcess;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('server_process_test_');
+      await _createMinimalDartProject(tempDir.path);
+      await File('${tempDir.path}/bin/main.dart').writeAsString(
+        'import "dart:io"; void main() { stdout.write("Applying migration"); }',
+      );
+      lines = [];
+      serverProcess = ServerProcess(
+        serverDir: tempDir.path,
+        serverArgs: [],
+        stdoutSink: LineSink(lines.add),
+        stderrSink: _NullIOSink(),
+      );
+    });
+
+    tearDown(() async {
+      await serverProcess.stop();
+      await tempDir.deleteWithRetry(recursive: true);
+    });
+
+    test(
+      'when the process exits, '
+      'then the unfinished line is its own, not held for the next process',
+      () async {
+        await serverProcess.start();
+        await serverProcess.exitCode;
+
+        await waitFor(() => lines.isNotEmpty);
+        expect(lines, ['Applying migration']);
       },
     );
   });
@@ -131,7 +216,7 @@ void main() {
 
     tearDown(() async {
       await serverProcess.stop();
-      await tempDir.delete(recursive: true);
+      await tempDir.deleteWithRetry(recursive: true);
     });
 
     test(
@@ -369,6 +454,22 @@ environment:
       "name": "test_server",
       "rootUri": "..",
       "packageUri": "lib/"
+    }
+  ]
+}
+''');
+
+  // `dart run` needs both files to use this offline package resolution.
+  await File('$dir/.dart_tool/package_graph.json').writeAsString('''
+{
+  "configVersion": 1,
+  "roots": ["test_server"],
+  "packages": [
+    {
+      "name": "test_server",
+      "version": "1.0.0",
+      "dependencies": [],
+      "devDependencies": []
     }
   ]
 }

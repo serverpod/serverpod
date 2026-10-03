@@ -8,6 +8,7 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_shared/process_io.dart' show StaleLockPolicy;
 import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
 
 import '../exceptions.dart';
@@ -32,9 +33,9 @@ import 'serverpod_bundle.dart';
 /// failed because `fcntl(F_SETLK)` is per-process and does not serialize
 /// isolates that share a process (e.g. `dart test`'s parallel runners).
 ///
-/// If the winner crashes mid-extract its claim sits stale; losers detect
-/// this via the claim file's mtime (set atomically by `createSync`) and
-/// steal it after [_staleAfter]. A hard ceiling of [_hardTimeout] turns
+/// If the winner dies mid-extract its claim sits stale; losers steal it as
+/// soon as the PID recorded in the claim is gone, or once the claim's mtime
+/// is older than [_staleAfter]. A hard ceiling of [_hardTimeout] turns
 /// runaway claims into actionable failures rather than CI hangs.
 class BinaryStore {
   /// Cache root, e.g. `~/Library/Caches/serverpod/pg-binaries`.
@@ -50,7 +51,8 @@ class BinaryStore {
   final bool _ownsHttp;
 
   /// How long a claim must sit untouched before a waiting loser treats it
-  /// as crashed-and-abandoned, deletes it, and re-races for ownership.
+  /// as abandoned while its owning process is still alive. The loser then
+  /// deletes it and re-races for ownership.
   ///
   /// Sized for ~10x a slow CI cold extract (~30s real-world); tightening
   /// this risks false-positive steals on a legitimately-slow winner.
@@ -203,6 +205,7 @@ class BinaryStore {
     while (true) {
       try {
         claim.createSync(exclusive: true);
+        claim.writeAsStringSync('$pid');
       } on PathExistsException {
         // Someone else is extracting (or crashed mid-extract). Wait for
         // them, or steal a stale claim and retry.
@@ -243,8 +246,8 @@ class BinaryStore {
     }
   }
 
-  /// Loser branch: poll for the winner's meta to appear, or steal the
-  /// claim if it's older than [_staleAfter] (winner presumed crashed).
+  /// Loser branch: polls for the winner's meta to appear, or steals the
+  /// claim once [_isStale] holds.
   Future<_LoserOutcome> _awaitOrSteal(
     File claim,
     File meta,
@@ -265,14 +268,24 @@ class BinaryStore {
     return _LoserOutcome.timedOut;
   }
 
-  /// True when the claim is missing or its mtime is older than
-  /// [_staleAfter]. Using mtime (set atomically by `createSync(exclusive:
-  /// true)`) means a winner that hasn't started extracting yet still has
-  /// a fresh-enough timestamp to not be mis-stolen.
+  /// Whether the claim is missing, records a PID that is no longer running,
+  /// or has an mtime older than [staleAfter].
+  ///
+  /// A claim read before its winner has written the PID falls back to the
+  /// mtime, which `createSync(exclusive: true)` sets fresh.
   bool _isStale(File claim, Duration staleAfter) {
     var stat = claim.statSync();
     if (stat.type == FileSystemEntityType.notFound) return true;
-    return DateTime.now().difference(stat.modified) > staleAfter;
+    String owner;
+    try {
+      owner = claim.readAsStringSync();
+    } on FileSystemException {
+      // The winner released the claim between the stat and the read.
+      return true;
+    }
+    return StaleLockPolicy.processLiveness(
+      staleAfter: staleAfter,
+    ).isStale(stat, owner);
   }
 
   /// Human-readable claim age for diagnostics. "age 3 s" / "age 2 min" /

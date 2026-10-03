@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 class ParentWithChangedId
     implements _is.SerializableModel, _is.ProtocolSerialization {
@@ -45,13 +47,17 @@ class ParentWithChangedId
   @_is.useResult
   ParentWithChangedId copyWith({
     _is.UuidValue? id,
-    Object? createdAt = _Undefined,
-    Object? updatedAt = _Undefined,
+    DateTime? createdAt = const _issu.$UndefinedDateTime(),
+    DateTime? updatedAt = const _issu.$UndefinedDateTime(),
   }) {
     return ParentWithChangedId(
       id: id ?? this.id,
-      createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
-      updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      createdAt: createdAt is _issu.UndefinedSentinel
+          ? this.createdAt
+          : createdAt,
+      updatedAt: updatedAt is _issu.UndefinedSentinel
+          ? this.updatedAt
+          : updatedAt,
     );
   }
 
@@ -75,5 +81,3 @@ class ParentWithChangedId
     return _is.SerializationManager.encode(this);
   }
 }
-
-class _Undefined {}

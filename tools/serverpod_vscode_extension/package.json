@@ -8,7 +8,7 @@
     "color": "#020E24",
     "theme": "dark"
   },
-  "version": "1.4.0",
+  "version": "1.6.0",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -17,9 +17,9 @@
     "Linters"
   ],
   "activationEvents": [
-    "onLanguage:yaml",
     "onLanguage:serverpod",
-    "onDebugResolve:dart"
+    "onDebugResolve:dart",
+    "workspaceContains:**/config/generator.yaml"
   ],
   "pricing": "Free",
   "homepage": "https://serverpod.dev",
@@ -58,6 +58,36 @@
         "scopeName": "source.serverpod",
         "path": "./syntaxes/serverpod.tmLanguage.json"
       }
+    ],
+    "commands": [
+      {
+        "command": "serverpod.goToModelDefinition",
+        "title": "Go to Model Definition",
+        "category": "Serverpod"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "serverpod.goToModelDefinition",
+          "when": "serverpod.modelNavigationEnabled"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "serverpod.goToModelDefinition",
+          "when": "serverpod.modelNavigationEnabled && editorLangId == dart",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "serverpod.goToModelDefinition",
+        "key": "ctrl+alt+f12",
+        "mac": "cmd+alt+f12",
+        "when": "serverpod.modelNavigationEnabled && editorTextFocus && editorLangId == dart"
+      }
     ]
   },
   "scripts": {
@@ -80,7 +110,7 @@
   "devDependencies": {
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.1",
-    "@types/node": "25.0.3",
+    "@types/node": "26.5.1",
     "@types/semver": "^7.7.1",
     "@types/sinon": "^22.0.0",
     "@types/vscode": "^1.75.1",

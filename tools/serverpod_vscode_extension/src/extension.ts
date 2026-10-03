@@ -10,6 +10,7 @@ import {
 import { execSync } from 'child_process';
 import { satisfies, coerce } from 'semver';
 import { resolveServerpodFlutterAttach } from './flutter_device_selection';
+import { registerModelNavigation } from './model_navigation';
 
 let client: LanguageClient;
 
@@ -52,8 +53,6 @@ export function activate(context: ExtensionContext) {
 	const clientOptions: LanguageClientOptions = {
 		revealOutputChannelOn: RevealOutputChannelOn.Info,
 		documentSelector: [
-			{ scheme: 'file', language: 'yaml', pattern: '**/protocol/**/*.yaml' },
-			{ scheme: 'file', language: 'yaml', pattern: '**/models/**/*.yaml' },
 			{ scheme: 'file', pattern: '**/*.spy.yaml' },
 			{ scheme: 'file', pattern: '**/*.spy.yml' },
 			{ scheme: 'file', pattern: '**/*.spy' },
@@ -66,6 +65,8 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
+
+	registerModelNavigation(context, client);
 
 	client.start();
 }

@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
-import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import '../../test_tools/serverpod_test_tools.dart';
@@ -140,7 +139,7 @@ void main() {
           // Change the stored login attempt to simulate a different IP address.
           await RateLimitedRequestAttempt.db.updateRow(
             session,
-            loggedAttempt!.copyWith(nonce: 'different-ip-address'),
+            loggedAttempt!.copyWith(key: 'different-ip-address'),
             transaction: transaction,
           );
         });

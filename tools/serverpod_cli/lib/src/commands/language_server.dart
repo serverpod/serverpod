@@ -1,6 +1,6 @@
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 
 enum LanguageServerOption<V> implements OptionDefinition<V> {
   // This option has no effect! Kept for possible backwards compatibility.

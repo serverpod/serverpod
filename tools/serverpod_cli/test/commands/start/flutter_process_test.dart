@@ -40,20 +40,36 @@ Future<({HttpServer server, String wsUri})> _startFakeVmService() async {
   );
 }
 
+/// [getVmIsolates] supplies the isolate refs of each `getVM` reply.
 Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
   int? loggingLevel = 800,
   List<List<int>> stdoutChunks = const [],
   Duration stdoutChunkInterval = Duration.zero,
+  FutureOr<List<Map<String, Object?>>> Function()? getVmIsolates,
+  void Function(WebSocket socket)? onConnected,
 }) async {
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   server.transform(WebSocketTransformer()).listen((socket) {
-    socket.listen((data) {
+    onConnected?.call(socket);
+    socket.listen((data) async {
       if (data is! String) return;
       final request = jsonDecode(data);
       if (request is! Map<String, dynamic>) return;
 
       final id = request['id'];
       if (id == null) return;
+      if (request['method'] == 'getVM' && getVmIsolates != null) {
+        final isolates = await getVmIsolates();
+        if (socket.readyState != WebSocket.open) return;
+        socket.add(
+          jsonEncode({
+            'jsonrpc': '2.0',
+            'id': id,
+            'result': {'type': 'VM', 'isolates': isolates},
+          }),
+        );
+        return;
+      }
       socket.add(
         jsonEncode({
           'jsonrpc': '2.0',
@@ -148,6 +164,20 @@ Future<({HttpServer server, String wsUri})> _startFakeLoggingVmService({
     wsUri: 'ws://127.0.0.1:${server.port}/ws',
   );
 }
+
+const _isolateRef = {'type': '@Isolate', 'id': 'isolates/1', 'name': 'main'};
+
+/// A web-server app attached to [wsUri] with a fast heartbeat.
+FlutterProcess _heartbeatProcess(String wsUri) => FlutterProcess(
+  flutterPackageDir: Directory.current.path,
+  device: 'web-server',
+  flutterExecutable: _dartExecutable(),
+  argsOverrideForTesting: [
+    _shimPath('emits_machine_events.dart'),
+    '--ws=$wsUri',
+  ],
+  heartbeatIntervalForTesting: const Duration(milliseconds: 100),
+);
 
 void main() {
   group('Given a FlutterProcess missing the executable', () {
@@ -1441,4 +1471,102 @@ The key [GlobalKey#1d408] was used by multiple widgets.''';
       );
     },
   );
+
+  group(
+    'Given a connected Flutter app whose VM service answers getVM '
+    'slower than one heartbeat interval,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(
+          getVmIsolates: () => Future.delayed(
+            const Duration(milliseconds: 1200),
+            () => [_isolateRef],
+          ),
+        );
+        fp = _heartbeatProcess(fake.wsUri);
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+      });
+
+      test(
+        'when several heartbeat intervals elapse '
+        'then the app is still running',
+        () async {
+          await Future<void>.delayed(const Duration(milliseconds: 1500));
+          expect(fp.isRunning, isTrue);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a connected Flutter app whose VM service reports no isolates,',
+    () {
+      late FlutterProcess fp;
+      late ({HttpServer server, String wsUri}) fake;
+
+      setUp(() async {
+        fake = await _startFakeLoggingVmService(getVmIsolates: () => []);
+        fp = _heartbeatProcess(fake.wsUri);
+        await fp.start();
+        await fp.launched;
+        await fp.connectToVmService();
+      });
+
+      tearDown(() async {
+        await fp.stop(timeout: const Duration(milliseconds: 100));
+        await fake.server.close(force: true);
+      });
+
+      test(
+        'when two heartbeat intervals elapse '
+        'then the app is torn down',
+        () async {
+          await fp.exitCode.timeout(const Duration(seconds: 5));
+          expect(fp.isRunning, isFalse);
+        },
+      );
+    },
+  );
+
+  group('Given a connected Flutter app whose VM service is healthy,', () {
+    late FlutterProcess fp;
+    late ({HttpServer server, String wsUri}) fake;
+    late WebSocket vmSocket;
+
+    setUp(() async {
+      fake = await _startFakeLoggingVmService(
+        getVmIsolates: () => [_isolateRef],
+        onConnected: (socket) => vmSocket = socket,
+      );
+      fp = _heartbeatProcess(fake.wsUri);
+      await fp.start();
+      await fp.launched;
+      await fp.connectToVmService();
+    });
+
+    tearDown(() async {
+      await fp.stop(timeout: const Duration(milliseconds: 100));
+      await fake.server.close(force: true);
+    });
+
+    test(
+      'when the VM service connection closes '
+      'then the app is torn down',
+      () async {
+        await vmSocket.close();
+        await fp.exitCode.timeout(const Duration(seconds: 5));
+        expect(fp.isRunning, isFalse);
+      },
+    );
+  });
 }

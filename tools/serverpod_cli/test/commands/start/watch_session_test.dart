@@ -229,7 +229,7 @@ serverpod:
   final process = flutter ?? _FakeFlutter();
   final manager = FlutterAppManager(
     projectName: 'project',
-    launchFlutterApp: false,
+    autoLaunchArmed: false,
     serverPubspecFile: serverPubspecFile,
     serverPackageDirectoryPathParts: p.split(serverDir.path),
     serverpodToolDir: p.join(tempDir.path, '.serverpod'),
@@ -239,7 +239,6 @@ serverpod:
     onStart: (_, _) async {},
     onStop: (_) {},
     onLaunchFailed: (_) {},
-    onEnsureAppTab: (_) {},
     onLog: (_, _) {},
     stdoutSinkFor: (_) => stdout,
     stderrSinkFor: (_) => stderr,
@@ -289,7 +288,7 @@ serverpod:
   final processB = _FakeFlutter();
   final manager = FlutterAppManager(
     projectName: 'project',
-    launchFlutterApp: false,
+    autoLaunchArmed: false,
     runMode: 'development',
     serverPubspecFile: serverPubspecFile,
     serverpodToolDir: p.join(tempDir.path, '.serverpod'),
@@ -299,7 +298,6 @@ serverpod:
     onStart: (_, _) async {},
     onStop: (_) {},
     onLaunchFailed: (_) {},
-    onEnsureAppTab: (_) {},
     onLog: (_, _) {},
     stdoutSinkFor: (_) => stdout,
     stderrSinkFor: (_) => stderr,
@@ -359,6 +357,7 @@ void main() {
     PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
     FlutterAppsLoader? flutterAppsLoader,
+    bool servesWeb = true,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -388,6 +387,7 @@ void main() {
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterManager: flutterManager,
       flutterAppsLoader: flutterAppsLoader,
+      servesWeb: () => servesWeb,
     );
   }
 
@@ -403,6 +403,25 @@ void main() {
 
     session = buildSession(compiler: compiler, initialServer: server);
   });
+
+  test(
+    'Given a project that serves no web, '
+    'when static files change, '
+    'then no browser refresh is attempted',
+    () async {
+      final webless = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        servesWeb: false,
+      );
+
+      await webless.handleFileChange(
+        FileChangeEvent(dartFiles: {}, staticFilesChanged: true),
+      );
+
+      expect(server.calls, isEmpty);
+    },
+  );
 
   group('Given static-only file changes and VM service connected', () {
     test(
@@ -1121,7 +1140,7 @@ void main() {
     );
   });
 
-  group('Given applyMigration is called with an in-place action', () {
+  group('Given applyMigration is called with an in-place action,', () {
     late void Function() migrationRunner;
     late int actionCalls;
     late Completer<void>? gate;
@@ -1231,6 +1250,26 @@ void main() {
         await secondCall;
 
         expect(actionCalls, 2);
+      },
+    );
+
+    test(
+      'when other work is queued behind an apply, '
+      'then it runs after the apply finishes',
+      () async {
+        gate = Completer<void>();
+        final apply = inPlaceSession.applyMigration();
+        var ran = false;
+        final queued = inPlaceSession.runSerialized(() async => ran = true);
+
+        await Future<void>.delayed(Duration.zero);
+        expect(ran, isFalse, reason: 'queued work must wait for the apply');
+
+        gate!.complete();
+        await apply;
+        await queued;
+
+        expect(ran, isTrue);
       },
     );
   });

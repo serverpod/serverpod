@@ -82,7 +82,7 @@ class DartSharedCodeGenerator extends CodeGenerator {
               .skip(config.serverPackageDirectoryPathParts.length)
               .toList(),
           extraClasses: [],
-          enabledFeatures: config.enabledFeatures,
+          isDatabaseEnabled: config.isDatabaseEnabled,
           modules: [],
           databaseDialect: config.databaseDialect,
           experimentalFeatures: config.experimentalFeatures,

@@ -7,6 +7,7 @@ class ModuleConfigBuilder {
   List<String> _migrationVersions;
   List<String> _serverPackageDirectoryPathParts;
   Map<String, List<String>> _sharedPackageRootPathParts;
+  bool _hasSyncTables = false;
 
   ModuleConfigBuilder(String name, [String? nickname])
     : _name = name,
@@ -50,6 +51,11 @@ class ModuleConfigBuilder {
     return this;
   }
 
+  ModuleConfigBuilder withHasSyncTables(bool hasSyncTables) {
+    _hasSyncTables = hasSyncTables;
+    return this;
+  }
+
   ModuleConfig build() {
     return ModuleConfig(
       type: _type,
@@ -58,6 +64,7 @@ class ModuleConfigBuilder {
       migrationVersions: _migrationVersions,
       serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
       sharedPackageRootPathParts: _sharedPackageRootPathParts,
+      hasSyncTables: _hasSyncTables,
     );
   }
 }

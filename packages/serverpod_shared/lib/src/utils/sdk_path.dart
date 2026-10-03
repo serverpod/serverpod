@@ -21,7 +21,7 @@ String? _cachedSdkPath;
 /// lifetime.
 ///
 /// Tries in order:
-/// 1. DART_SDK environment variable
+/// 1. DART_SDK environment variable, when it holds an SDK
 /// 2. Platform.resolvedExecutable (reliable when running via `dart`)
 /// 3. Shell out to `dart` to resolve its executable path (when AOT-compiled)
 String getSdkPath() => _cachedSdkPath ??= _resolveSdkPath();
@@ -30,12 +30,17 @@ String getSdkPath() => _cachedSdkPath ??= _resolveSdkPath();
 /// through version-manager shims (puro/fvm/asdf). Spawn subprocesses with
 /// this rather than a PATH `dart` when they must receive signals: shell shims
 /// do not forward them.
-String get dartExecutablePath =>
-    p.join(getSdkPath(), 'bin', Platform.isWindows ? 'dart.exe' : 'dart');
+String get dartExecutablePath => _dartInSdk(getSdkPath());
+
+/// The `dart` executable inside [sdkPath], whether or not it exists.
+String _dartInSdk(String sdkPath) =>
+    p.join(sdkPath, 'bin', Platform.isWindows ? 'dart.exe' : 'dart');
 
 String _resolveSdkPath() {
   final dartSdkEnv = Platform.environment['DART_SDK'];
-  if (dartSdkEnv != null && dartSdkEnv.isNotEmpty) {
+  if (dartSdkEnv != null &&
+      dartSdkEnv.isNotEmpty &&
+      File(_dartInSdk(dartSdkEnv)).existsSync()) {
     return dartSdkEnv;
   }
 
@@ -54,10 +59,16 @@ String _resolveSdkPath() {
     script.writeAsStringSync(
       'import "dart:io"; void main() => print(Platform.resolvedExecutable);',
     );
-    final result = Process.runSync('dart', [script.path]);
+    final result = Process.runSync(
+      'dart',
+      [script.path],
+      runInShell: Platform.isWindows,
+    );
     if (result.exitCode == 0) {
       return _sdkFromExe((result.stdout as String).trim());
     }
+  } on ProcessException catch (_) {
+    // No `dart` to spawn, so report it the same way as a failed probe.
   } finally {
     try {
       tempDir.deleteSync(recursive: true);

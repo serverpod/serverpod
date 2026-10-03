@@ -30,6 +30,7 @@ void main() async {
     group('when creating a new project', () {
       late File serverFile;
       late File mainFile;
+      late File clientFile;
 
       setUpAll(() async {
         var process = await startServerpodCli(
@@ -55,6 +56,9 @@ void main() async {
         );
         mainFile = File(
           path.join(d.sandbox, flutterDir, 'lib', 'main.dart'),
+        );
+        clientFile = File(
+          path.join(d.sandbox, flutterDir, 'lib', 'client.dart'),
         );
       });
 
@@ -116,8 +120,8 @@ void main() async {
         expect(content, contains('JwtConfigFromPasswords'));
       });
 
-      test('then the flutter main.dart contains auth imports', () {
-        final content = mainFile.readAsStringSync();
+      test('then the flutter client.dart contains auth imports', () {
+        final content = clientFile.readAsStringSync();
         expect(content, contains('serverpod_auth_idp_flutter'));
       });
 
@@ -126,10 +130,13 @@ void main() async {
         expect(content, contains('SignInScreen'));
       });
 
-      test('then the flutter main.dart contains FlutterAuthSessionManager', () {
-        final content = mainFile.readAsStringSync();
-        expect(content, contains('FlutterAuthSessionManager'));
-      });
+      test(
+        'then the flutter client.dart contains FlutterAuthSessionManager',
+        () {
+          final content = clientFile.readAsStringSync();
+          expect(content, contains('FlutterAuthSessionManager'));
+        },
+      );
     });
   });
 }

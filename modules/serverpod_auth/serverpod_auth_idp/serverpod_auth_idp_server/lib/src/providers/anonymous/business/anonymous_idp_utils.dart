@@ -6,7 +6,7 @@ import 'anonymous_idp_config.dart';
 
 /// Anonymous account management functions.
 class AnonymousIdpUtils {
-  final DatabaseRateLimitedRequestAttemptUtil<String>? _rateLimitUtil;
+  final DatabaseRateLimiter? _rateLimitUtil;
 
   /// {@macro anonymous_idp_config}
   final AnonymousIdpConfig config;
@@ -20,18 +20,12 @@ class AnonymousIdpUtils {
     final AuthUsers authUsers = const AuthUsers(),
   }) : _authUsers = authUsers,
        _rateLimitUtil = config.perIpAddressRateLimit != null
-           ? DatabaseRateLimitedRequestAttemptUtil(
-               RateLimitedRequestAttemptConfig(
+           ? DatabaseRateLimiter(
+               RateLimiterConfig(
                  domain: 'anonymous',
                  source: 'account_creation',
-                 maxAttempts: config.perIpAddressRateLimit?.maxAttempts,
-                 timeframe: config.perIpAddressRateLimit?.timeframe,
-                 onRateLimitExceeded: (final session, final nonce) {
-                   throw AnonymousAccountBlockedException(
-                     reason:
-                         AnonymousAccountBlockedExceptionReason.tooManyAttempts,
-                   );
-                 },
+                 maxAttempts: config.perIpAddressRateLimit!.maxAttempts,
+                 timeframe: config.perIpAddressRateLimit!.timeframe,
                ),
              )
            : null;
@@ -43,11 +37,15 @@ class AnonymousIdpUtils {
     final Session session, {
     final Transaction? transaction,
   }) async {
-    // Check rate limit and either throw or proceed.
-    await _rateLimitUtil?.hasTooManyAttempts(
-      session,
-      nonce: session.remoteIpAddress.toString(),
-    );
+    if (_rateLimitUtil != null &&
+        !await _rateLimitUtil.tryRecordAttempt(
+          session,
+          key: session.remoteIpAddress.toString(),
+        )) {
+      throw AnonymousAccountBlockedException(
+        reason: AnonymousAccountBlockedExceptionReason.tooManyAttempts,
+      );
+    }
 
     final newUser = await _authUsers.create(
       session,

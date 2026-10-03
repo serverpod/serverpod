@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class ObjectWithUuid
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
@@ -53,7 +55,7 @@ abstract class ObjectWithUuid
   ObjectWithUuid copyWith({
     int? id,
     _isc.UuidValue? uuid,
-    _isc.UuidValue? uuidNullable,
+    _isc.UuidValue? uuidNullable = const _issu.$UndefinedUuidValue(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -101,14 +103,14 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
   ObjectWithUuid copyWith({
     Object? id = _Undefined,
     _isc.UuidValue? uuid,
-    Object? uuidNullable = _Undefined,
+    _isc.UuidValue? uuidNullable = const _issu.$UndefinedUuidValue(),
   }) {
     return ObjectWithUuid(
       id: id is int? ? id : this.id,
       uuid: uuid ?? this.uuid,
-      uuidNullable: uuidNullable is _isc.UuidValue?
-          ? uuidNullable
-          : this.uuidNullable,
+      uuidNullable: uuidNullable is _issu.UndefinedSentinel
+          ? this.uuidNullable
+          : uuidNullable,
     );
   }
 }

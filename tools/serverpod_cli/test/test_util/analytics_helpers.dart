@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import 'builders/generator_config_builder.dart';
 import 'endpoint_validation_helpers.dart';
+import 'file_system_entity_helpers.dart';
 
 GeneratorConfig buildAnalyticsTestConfig(String serverDir) {
   return GeneratorConfig(
@@ -22,7 +22,7 @@ GeneratorConfig buildAnalyticsTestConfig(String serverDir) {
     relativeDartClientPackagePathParts: const ['..', 'myapp_client'],
     modules: const [],
     extraClasses: const [],
-    enabledFeatures: const [ServerpodFeature.database],
+    isDatabaseEnabled: true,
     databaseDialect: DatabaseDialect.postgres,
   );
 }
@@ -99,7 +99,7 @@ class GenerateAnalyticsFixture {
     );
   }
 
-  void dispose() => projectDir.deleteIfExists(recursive: true);
+  Future<void> dispose() => projectDir.deleteWithRetry(recursive: true);
 }
 
 void _writeDevelopmentConfig(Directory projectDir) {
@@ -242,7 +242,7 @@ void _writeSharedModel(Directory projectDir) {
         'lib',
         'src',
         'models',
-        'shared_record.yaml',
+        'shared_record.spy.yaml',
       ),
     )
     ..createSync(recursive: true)

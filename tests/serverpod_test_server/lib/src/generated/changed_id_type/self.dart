@@ -8,10 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../changed_id_type/self.dart' as _iqjmn1nu;
 
@@ -102,14 +105,18 @@ abstract class ChangedIdTypeSelf
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ChangedIdTypeSelf copyWith({
-    _is.UuidValue? id,
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
-    _iqjmn1nu.ChangedIdTypeSelf? previous,
-    _is.UuidValue? nextId,
-    _iqjmn1nu.ChangedIdTypeSelf? next,
-    _is.UuidValue? parentId,
-    _iqjmn1nu.ChangedIdTypeSelf? parent,
-    List<_iqjmn1nu.ChangedIdTypeSelf>? children,
+    _iqjmn1nu.ChangedIdTypeSelf? previous =
+        const _UndefinedChangedIdTypeSelf$previous(),
+    _is.UuidValue? nextId = const _issu.$UndefinedUuidValue(),
+    _iqjmn1nu.ChangedIdTypeSelf? next =
+        const _UndefinedChangedIdTypeSelf$previous(),
+    _is.UuidValue? parentId = const _issu.$UndefinedUuidValue(),
+    _iqjmn1nu.ChangedIdTypeSelf? parent =
+        const _UndefinedChangedIdTypeSelf$previous(),
+    List<_iqjmn1nu.ChangedIdTypeSelf>? children =
+        const _issu.$UndefinedList<_iqjmn1nu.ChangedIdTypeSelf>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -181,7 +188,10 @@ abstract class ChangedIdTypeSelf
   }
 }
 
-class _Undefined {}
+class _UndefinedChangedIdTypeSelf$previous extends _issu.UndefinedSentinel
+    implements _iqjmn1nu.ChangedIdTypeSelf {
+  const _UndefinedChangedIdTypeSelf$previous();
+}
 
 class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   _ChangedIdTypeSelfImpl({
@@ -209,30 +219,34 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   @_is.useResult
   @override
   ChangedIdTypeSelf copyWith({
-    Object? id = _Undefined,
+    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
-    Object? previous = _Undefined,
-    Object? nextId = _Undefined,
-    Object? next = _Undefined,
-    Object? parentId = _Undefined,
-    Object? parent = _Undefined,
-    Object? children = _Undefined,
+    _iqjmn1nu.ChangedIdTypeSelf? previous =
+        const _UndefinedChangedIdTypeSelf$previous(),
+    _is.UuidValue? nextId = const _issu.$UndefinedUuidValue(),
+    _iqjmn1nu.ChangedIdTypeSelf? next =
+        const _UndefinedChangedIdTypeSelf$previous(),
+    _is.UuidValue? parentId = const _issu.$UndefinedUuidValue(),
+    _iqjmn1nu.ChangedIdTypeSelf? parent =
+        const _UndefinedChangedIdTypeSelf$previous(),
+    List<_iqjmn1nu.ChangedIdTypeSelf>? children =
+        const _issu.$UndefinedList<_iqjmn1nu.ChangedIdTypeSelf>(),
   }) {
     return ChangedIdTypeSelf(
-      id: id is _is.UuidValue? ? id : this.id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
-      previous: previous is _iqjmn1nu.ChangedIdTypeSelf?
-          ? previous
-          : this.previous?.copyWith(),
-      nextId: nextId is _is.UuidValue? ? nextId : this.nextId,
-      next: next is _iqjmn1nu.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
-      parentId: parentId is _is.UuidValue? ? parentId : this.parentId,
-      parent: parent is _iqjmn1nu.ChangedIdTypeSelf?
-          ? parent
-          : this.parent?.copyWith(),
-      children: children is List<_iqjmn1nu.ChangedIdTypeSelf>?
-          ? children
-          : this.children?.map((e0) => e0.copyWith()).toList(),
+      previous: previous is _issu.UndefinedSentinel
+          ? this.previous?.copyWith()
+          : previous,
+      nextId: nextId is _issu.UndefinedSentinel ? this.nextId : nextId,
+      next: next is _issu.UndefinedSentinel ? this.next?.copyWith() : next,
+      parentId: parentId is _issu.UndefinedSentinel ? this.parentId : parentId,
+      parent: parent is _issu.UndefinedSentinel
+          ? this.parent?.copyWith()
+          : parent,
+      children: children is _issu.UndefinedSentinel
+          ? this.children?.map((e0) => e0.copyWith()).toList()
+          : children,
     );
   }
 }
@@ -500,6 +514,71 @@ class ChangedIdTypeSelfRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [ChangedIdTypeSelf]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `ChangedIdTypeSelf.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<ChangedIdTypeSelf>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    ChangedIdTypeSelfInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<ChangedIdTypeSelf>(
+      where: where?.call(ChangedIdTypeSelf.t),
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

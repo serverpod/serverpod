@@ -69,7 +69,8 @@ class DatabaseBulkData {
 
     List<List<dynamic>> data;
     var query =
-        'SELECT ${columnSelects.join(', ')} FROM "$table" '
+        'SELECT ${columnSelects.join(', ')} '
+        'FROM "${liveTableDefinition.schema}"."${liveTableDefinition.name}" '
         'WHERE id > $strLastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
       data = await database.unsafeQuery(query);
@@ -101,7 +102,8 @@ class DatabaseBulkData {
     var query =
         'SELECT reltuples::bigint AS estimate FROM pg_class '
         'JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace '
-        'WHERE relname = \'$table\' AND nspname = \'public\'';
+        'WHERE relname = \'${tableDefinition.name}\' '
+        'AND nspname = \'${tableDefinition.schema}\'';
 
     var result = await database.unsafeQuery(query);
 
@@ -155,9 +157,10 @@ class DatabaseBulkData {
     String table,
   ) async {
     var tableDefinitions = database.analyzer.getTargetTableDefinitions();
+    var (:schema, :name) = parseQualifiedTableName(table);
 
     var tableDefinition = tableDefinitions.firstWhereOrNull(
-      (e) => e.name == table,
+      (e) => e.name == name && (schema == null || e.schema == schema),
     );
 
     return tableDefinition;
@@ -168,12 +171,9 @@ class DatabaseBulkData {
     String table,
   ) async {
     var databaseDefinition = await _getLiveDatabaseDefinition(database);
+    var (:schema, :name) = parseQualifiedTableName(table);
 
-    var tableDefinition = databaseDefinition.tables.firstWhereOrNull(
-      (e) => e.name == table,
-    );
-
-    return tableDefinition;
+    return databaseDefinition.findTableNamed(name, schema: schema);
   }
 
   static DatabaseDefinition? _cachedDatabaseDefinition;

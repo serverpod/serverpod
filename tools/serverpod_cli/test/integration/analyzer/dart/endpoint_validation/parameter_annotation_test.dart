@@ -8,6 +8,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
 import '../../../../test_util/endpoint_validation_helpers.dart';
+import '../../../../test_util/file_system_entity_helpers.dart';
 
 var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
@@ -16,8 +17,8 @@ void main() {
     await createTestEnvironment(testProjectDirectory);
   });
 
-  tearDownAll(() {
-    testProjectDirectory.deleteSync(recursive: true);
+  tearDownAll(() async {
+    await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
   group(

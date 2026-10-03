@@ -45,18 +45,14 @@ class FileChangeEvent {
   });
 }
 
-bool _isModelFile(String filePath) {
-  return spyModelFileExtensions.any((ext) => filePath.endsWith(ext));
-}
-
 bool _isWithinDartTool(String filePath) {
   return p.split(filePath).contains('.dart_tool');
 }
 
 /// Watches one file across initial absence, deletion, and recreation.
 ///
-/// While the file exists, the platform [w.FileWatcher] provides native events.
-/// If it is absent, only that exact path is polled until it appears, avoiding a
+/// While the file exists, a [w.FileWatcher] reports changes to it. If it is
+/// absent, only that exact path is polled until it appears, avoiding a
 /// recursive watch of its potentially large and frequently changing parent.
 class _PersistentFileWatcher implements w.Watcher {
   @override
@@ -106,7 +102,7 @@ class _PersistentFileWatcher implements w.Watcher {
     }
 
     try {
-      final fileWatcher = w.FileWatcher(path);
+      final fileWatcher = w.FileWatcher(path, pollingDelay: pollingDelay);
       late final StreamSubscription<w.WatchEvent> subscription;
       subscription = fileWatcher.events.listen(
         (event) {
@@ -153,10 +149,18 @@ class _PersistentFileWatcher implements w.Watcher {
       _pollTimer?.cancel();
       _pollTimer = null;
 
-      // The underlying watcher cannot report a creation that happened while
-      // the path was absent, so synthesize the change before reattaching it.
-      _eventsController.add(w.WatchEvent(w.ChangeType.MODIFY, path));
+      // Reattach before announcing the reappearance, so the new watcher's
+      // baseline is the file as it is now. Emitting first would leave a window
+      // in which a listener reacts to the event and writes to the file before
+      // the watcher has read its baseline, folding that write into the
+      // baseline instead of reporting it as a change.
       await _watchOrPoll();
+
+      // The underlying watcher cannot report a creation that happened while
+      // the path was absent, so synthesize it here.
+      if (_isListening) {
+        _eventsController.add(w.WatchEvent(w.ChangeType.MODIFY, path));
+      }
     } finally {
       _isCheckingForFile = false;
     }
@@ -225,32 +229,41 @@ class FileWatcher {
   /// a single entry shared with the server's resolution.
   final Set<String> _packageGraphPaths;
 
+  final Set<String> _persistentFilePaths;
+
   final Duration debounceDelay;
   final Duration missingFilePollingDelay;
 
   /// Creates a file watcher.
   ///
   /// [watchPaths] is the set of directories or files to watch.
+  /// [persistentFilePaths] adds exact files to watch across initial absence,
+  /// deletion, and recreation, such as a server entrypoint outside `lib/`.
   /// [packageConfigPath] and [packageGraphPaths] are the exact pub-artifact
   /// files whose changes map to `packageConfigChanged` / `flutterDependenciesChanged`.
   /// Missing pub artifacts are checked every [missingFilePollingDelay] until
-  /// they appear, then watched natively.
+  /// they appear, then watched directly. The same delay is the polling cadence
+  /// on platforms without native single-file watching.
   FileWatcher({
     required Iterable<String> watchPaths,
     String? packageConfigPath,
     Iterable<String> packageGraphPaths = const [],
+    Iterable<String> persistentFilePaths = const [],
     this.debounceDelay = const Duration(milliseconds: 100),
     this.missingFilePollingDelay = const Duration(milliseconds: 500),
-  }) : _watchPaths = watchPaths.map(p.canonicalize).toSet(),
+  }) : _watchPaths = {
+         ...watchPaths.map(p.canonicalize),
+         ...persistentFilePaths.map(p.canonicalize),
+       },
        _packageConfigPath = packageConfigPath == null
            ? null
            : p.canonicalize(packageConfigPath),
-       _packageGraphPaths = packageGraphPaths.map(p.canonicalize).toSet();
-
-  late final Set<String> _persistentFilePaths = {
-    ?_packageConfigPath,
-    ..._packageGraphPaths,
-  };
+       _packageGraphPaths = packageGraphPaths.map(p.canonicalize).toSet(),
+       _persistentFilePaths = {
+         ...persistentFilePaths.map(p.canonicalize),
+         if (packageConfigPath != null) p.canonicalize(packageConfigPath),
+         ...packageGraphPaths.map(p.canonicalize),
+       };
 
   late final List<w.Watcher> _watchers = [
     for (final watchPath in _watchPaths)
@@ -320,7 +333,7 @@ class FileWatcher {
             } else if (_isWithinDartTool(filePath)) {
               // Any other .dart_tool churn (build artifacts, the output dill,
               // a sibling resolution's pub artifacts) is ignored.
-            } else if (_isModelFile(filePath)) {
+            } else if (ModelHelper.isModelFile(filePath)) {
               modelFiles.add(filePath);
             } else if (p.extension(filePath) == '.dart') {
               dartFiles.add(filePath);

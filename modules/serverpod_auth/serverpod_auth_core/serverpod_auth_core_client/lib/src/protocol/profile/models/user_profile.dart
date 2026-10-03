@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart'
     as _ifwxqeej;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../../auth_user/models/auth_user.dart' as _ivyervu7;
 import '../../profile/models/user_profile_image.dart' as _i7y29ltp;
 
@@ -112,15 +114,15 @@ abstract class UserProfile
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UserProfile copyWith({
-    _isc.UuidValue? id,
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _isc.UuidValue? authUserId,
-    _ivyervu7.AuthUser? authUser,
+    _ivyervu7.AuthUser? authUser = const _UndefinedUserProfile$authUser(),
     String? userName,
     String? fullName,
     String? email,
     DateTime? createdAt,
-    _isc.UuidValue? imageId,
-    _i7y29ltp.UserProfileImage? image,
+    _isc.UuidValue? imageId = const _issu.$UndefinedUuidValue(),
+    _i7y29ltp.UserProfileImage? image = const _UndefinedUserProfile$image(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -162,6 +164,16 @@ abstract class UserProfile
 
 class _Undefined {}
 
+class _UndefinedUserProfile$authUser extends _issu.UndefinedSentinel
+    implements _ivyervu7.AuthUser {
+  const _UndefinedUserProfile$authUser();
+}
+
+class _UndefinedUserProfile$image extends _issu.UndefinedSentinel
+    implements _i7y29ltp.UserProfileImage {
+  const _UndefinedUserProfile$image();
+}
+
 class _UserProfileImpl extends UserProfile {
   _UserProfileImpl({
     _isc.UuidValue? id,
@@ -190,30 +202,28 @@ class _UserProfileImpl extends UserProfile {
   @_isc.useResult
   @override
   UserProfile copyWith({
-    Object? id = _Undefined,
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     _isc.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _ivyervu7.AuthUser? authUser = const _UndefinedUserProfile$authUser(),
     Object? userName = _Undefined,
     Object? fullName = _Undefined,
     Object? email = _Undefined,
     DateTime? createdAt,
-    Object? imageId = _Undefined,
-    Object? image = _Undefined,
+    _isc.UuidValue? imageId = const _issu.$UndefinedUuidValue(),
+    _i7y29ltp.UserProfileImage? image = const _UndefinedUserProfile$image(),
   }) {
     return UserProfile(
-      id: id is _isc.UuidValue? ? id : this.id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _ivyervu7.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _issu.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
       createdAt: createdAt ?? this.createdAt,
-      imageId: imageId is _isc.UuidValue? ? imageId : this.imageId,
-      image: image is _i7y29ltp.UserProfileImage?
-          ? image
-          : this.image?.copyWith(),
+      imageId: imageId is _issu.UndefinedSentinel ? this.imageId : imageId,
+      image: image is _issu.UndefinedSentinel ? this.image?.copyWith() : image,
     );
   }
 }

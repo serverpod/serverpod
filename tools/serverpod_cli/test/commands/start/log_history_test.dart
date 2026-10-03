@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
+import 'package:serverpod_cli/src/runner/runner_event.dart';
+import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
@@ -33,6 +36,169 @@ void main() {
     history = StartLogHistory();
   });
 
+  group('Given a client history mirroring a runner history,', () {
+    late StartLogHistory client;
+
+    setUp(() async {
+      client = StartLogHistory();
+      history.events.listen(client.applyEvent);
+
+      history.addServerLine('booting');
+      history.recordServerLogEvent(
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'Server started',
+          'time': '2026-04-10T12:00:00.000Z',
+        }),
+      );
+      for (final id in ['done', 'dropped']) {
+        history.recordServerLogEvent(
+          _logEvent({'type': 'scope_start', 'id': id, 'label': 'GET /$id'}),
+        );
+      }
+      history.recordServerLogEvent(
+        _logEvent({'type': 'scope_end', 'id': 'done', 'duration': 0.1}),
+      );
+      history.discardActiveServerScopes();
+      history.startCliOperation('failed', 'Generating code');
+      history.completeCliOperation(
+        'failed',
+        success: false,
+        duration: const Duration(seconds: 1),
+        error: 'boom',
+      );
+      history.startCliOperation('open', 'Hot reload');
+      history.addFlutterLine('app', 'flutter: hello');
+      history.recordFlutterExtensionEvent(
+        'app',
+        _flutterErrorEvent({'renderedErrorText': 'overflow'}),
+      );
+      history.recordFlutterLogEvent(
+        'app',
+        FlutterLogEvent(
+          time: DateTime.utc(2026, 4, 10),
+          level: LogLevel.info,
+          message: 'already printed',
+          source: FlutterLogSource.appLog,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+    });
+
+    void expectMirrored(StartLogHistory mirror) {
+      expect(mirror.serverLines, history.serverLines);
+      expect(mirror.serverEntries, history.serverEntries);
+      expect(mirror.activeOperations, history.activeOperations);
+      expect(mirror.operationStartTimes, history.operationStartTimes);
+      expect(mirror.flutterLines, history.flutterLines);
+    }
+
+    test(
+      'when the client applies every event the runner emitted, '
+      'then its buffers match the runner\'s',
+      () {
+        expect(history.activeOperations.keys, ['open']);
+        expectMirrored(client);
+      },
+    );
+
+    test(
+      'when a stale client applies the runner\'s snapshot, '
+      'then its buffers match the runner\'s and nothing stale is left',
+      () {
+        final stale = StartLogHistory()
+          ..addServerLine('stale')
+          ..addFlutterLine('gone', 'stale')
+          ..startCliOperation('stale', 'Stale');
+
+        stale.applySnapshot(
+          RunnerSnapshot.from(
+            history: history,
+            stage: RunnerStage.running,
+            isRunning: true,
+            watchModeEnabled: true,
+            canLaunchFlutterApps: true,
+            flutterApps: const [
+              FlutterAppConfig(
+                id: 'app',
+                name: 'app',
+                relativePathParts: [],
+                serverPackageDirectoryPathParts: [],
+              ),
+            ],
+            runningFlutterApps: const {},
+            launchingFlutterApps: const {},
+          ),
+        );
+
+        expectMirrored(stale);
+      },
+    );
+  });
+
+  group('Given a log history with a listener on its events,', () {
+    late List<RunnerEvent> events;
+
+    setUp(() {
+      events = [];
+      history = StartLogHistory()..events.listen(events.add);
+    });
+
+    test(
+      'when an entry arrives as a raw line and as the structured event, '
+      'then the entry says a line carries it and the line stands on its own',
+      () async {
+        history.addServerLine('Server started');
+        history.recordServerLogEvent(
+          _logEvent({
+            'type': 'log',
+            'level': 'info',
+            'message': 'Server started',
+            'time': '2026-04-10T12:00:00.000Z',
+          }),
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        expect(history.serverLines, ['Server started']);
+        expect(history.serverEntries.single, isA<LogEntry>());
+        expect(events, [
+          isA<ServerLineEvent>().having(
+            (e) => e.line,
+            'line',
+            'Server started',
+          ),
+          isA<ServerLogEvent>().having(
+            (e) => e.duplicatesLine,
+            'duplicatesLine',
+            isTrue,
+          ),
+        ]);
+      },
+    );
+
+    test(
+      'when the runner records an entry of its own, '
+      'then the event says no line carries it',
+      () async {
+        history.recordCliLogEntry(
+          LogEntry(
+            time: DateTime.utc(2026, 4, 10),
+            level: LogLevel.info,
+            message: 'Starting server',
+            scope: LogScope.root('serverpod'),
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          events.whereType<ServerLogEvent>().single.duplicatesLine,
+          isFalse,
+        );
+      },
+    );
+  });
+
   group('Given a log event, when it is recorded,', () {
     setUp(() {
       history.recordServerLogEvent(
@@ -40,7 +206,7 @@ void main() {
           'type': 'log',
           'level': 'info',
           'message': 'Server started',
-          'timestamp': '2026-04-10T12:00:00.000Z',
+          'time': '2026-04-10T12:00:00.000Z',
         }),
       );
     });
@@ -53,6 +219,45 @@ void main() {
       expect(entry.time, DateTime.parse('2026-04-10T12:00:00.000Z'));
     });
   });
+
+  test(
+    'Given a log event from a pod session, '
+    'when it is recorded, '
+    'then the session id that correlates it survives the hop',
+    () {
+      history.recordServerLogEvent(
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'Handled greeting.',
+          'time': '2026-04-10T12:00:00.000Z',
+          'scope': {'id': 'session-42', 'label': 'greeting'},
+        }),
+      );
+
+      final entry = history.serverEntries.single as LogEntry;
+      expect(entry.scope.id, 'session-42');
+      expect(entry.scope.label, 'greeting');
+    },
+  );
+
+  test(
+    'Given a log event that carries no scope, '
+    'when it is recorded, '
+    'then the entry is still labelled as the server\'s',
+    () {
+      history.recordServerLogEvent(
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'No scope here.',
+          'time': '2026-04-10T12:00:00.000Z',
+        }),
+      );
+
+      expect((history.serverEntries.single as LogEntry).scope.label, 'server');
+    },
+  );
 
   group(
     'Given a warning log event, '
@@ -242,6 +447,47 @@ void main() {
     );
   });
 
+  group('Given a started CLI operation,', () {
+    setUp(() {
+      history.startCliOperation('gen_1', 'Generating code');
+    });
+
+    test(
+      'when it is completed with the error it failed on, '
+      'then the reason follows it into the history',
+      () {
+        history.completeCliOperation(
+          'gen_1',
+          success: false,
+          duration: const Duration(milliseconds: 1234),
+          error: 'protocol.yaml is not valid',
+          stackTrace: StackTrace.fromString('#0 main'),
+        );
+
+        final operation = history.serverEntries.first as CompletedOperation;
+        expect(operation.success, isFalse);
+        final entry = history.serverEntries.last as LogEntry;
+        expect(entry.level, LogLevel.error);
+        expect(entry.error, 'protocol.yaml is not valid');
+        expect(entry.stackTrace.toString(), contains('#0 main'));
+      },
+    );
+
+    test(
+      'when it is completed without an error, '
+      'then nothing is added beyond the completed operation',
+      () {
+        history.completeCliOperation(
+          'gen_1',
+          success: true,
+          duration: const Duration(milliseconds: 12),
+        );
+
+        expect(history.serverEntries.single, isA<CompletedOperation>());
+      },
+    );
+  });
+
   group(
     'Given an extension event from another publisher, '
     'when it is recorded as a server event,',
@@ -339,6 +585,31 @@ void main() {
 
         expect(changeNotifications, 1);
       });
+    },
+  );
+
+  test(
+    'Given open server scopes, '
+    'when they are discarded, '
+    'then attached clients are told which, since no scope_end will follow',
+    () async {
+      history.recordServerLogEvent(
+        _logEvent({
+          'type': 'scope_start',
+          'id': 'scope_1',
+          'label': 'GET /api/stream-one',
+        }),
+      );
+      final events = <RunnerEvent>[];
+      final sub = history.events.listen(events.add);
+      addTearDown(sub.cancel);
+
+      history.discardActiveServerScopes();
+      await pumpEventQueue();
+
+      final discarded = events.whereType<OperationsDiscardedEvent>().single;
+      expect(discarded.ids, ['scope_1']);
+      expect(history.operationStartTimes, isNot(contains('scope_1')));
     },
   );
 
@@ -471,7 +742,7 @@ void main() {
             'type': 'log',
             'level': 'warning',
             'message': 'Application warning',
-            'timestamp': '2026-07-14T03:00:00.000Z',
+            'time': '2026-07-14T03:00:00.000Z',
           }),
         );
       });
@@ -561,6 +832,75 @@ void main() {
 
         expect(history.flutterLinesFor('serverpod-app'), ['app one']);
         expect(history.flutterLinesFor('other-app'), ['app two']);
+      },
+    );
+  });
+
+  group('Given an output sink for the pod that also echoes lines,', () {
+    late List<String> echoed;
+    late IOSink podStdout;
+
+    setUp(() {
+      echoed = [];
+      podStdout = history.serverOutputSink(echoLine: echoed.add);
+    });
+
+    test(
+      'when complete lines are written, '
+      'then each is echoed as it is retained',
+      () {
+        podStdout.writeln('Server listening on port 8080.');
+
+        expect(echoed, ['Server listening on port 8080.']);
+      },
+    );
+
+    test(
+      'when the pod exits without terminating its last line, '
+      'then that line is echoed too',
+      () async {
+        podStdout.writeln('Booting.');
+        podStdout.write('Unhandled exception');
+
+        await podStdout.close();
+
+        expect(echoed, ['Booting.', 'Unhandled exception']);
+      },
+    );
+  });
+
+  group('Given an output sink for a Flutter app that also echoes lines,', () {
+    late List<String> echoed;
+    late IOSink appStdout;
+
+    setUp(() {
+      echoed = [];
+      appStdout = history.flutterOutputSink(
+        'serverpod-app',
+        echoLine: echoed.add,
+      );
+    });
+
+    test(
+      'when complete lines are written, '
+      'then each is echoed as it is retained',
+      () {
+        appStdout.writeln('Launching lib/main.dart');
+
+        expect(echoed, ['Launching lib/main.dart']);
+      },
+    );
+
+    test(
+      'when the app exits without terminating its last line, '
+      'then that line is echoed too',
+      () async {
+        appStdout.writeln('Reloaded 1 library');
+        appStdout.write('Lost connection to device');
+
+        await appStdout.close();
+
+        expect(echoed, ['Reloaded 1 library', 'Lost connection to device']);
       },
     );
   });

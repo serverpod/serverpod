@@ -2,7 +2,6 @@ import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/doc_comments/with_serverpod_doc_comment.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
@@ -749,7 +748,7 @@ class ServerTestToolsGenerator {
           ..named = true
           ..type = refer('Directory?', 'dart:io'),
       ),
-      if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
+      if (config.isDatabaseEnabled) ...[
         Parameter(
           (p) => p
             ..name = 'rollbackDatabase'
@@ -759,6 +758,12 @@ class ServerTestToolsGenerator {
         Parameter(
           (p) => p
             ..name = 'applyMigrations'
+            ..named = true
+            ..type = refer('bool?'),
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'ephemeralDatabase'
             ..named = true
             ..type = refer('bool?'),
         ),
@@ -819,30 +824,30 @@ class ServerTestToolsGenerator {
                           'Protocol',
                         ).newInstance([]),
                         'runMode': refer('runMode'),
-                        'applyMigrations':
-                            config.isFeatureEnabled(ServerpodFeature.database)
+                        'applyMigrations': config.isDatabaseEnabled
                             ? refer('applyMigrations')
                             : literalBool(false),
+                        if (config.isDatabaseEnabled)
+                          'ephemeralDatabase': refer('ephemeralDatabase'),
                         'isDatabaseEnabled': literalBool(
-                          config.isFeatureEnabled(ServerpodFeature.database),
+                          config.isDatabaseEnabled,
                         ),
                         'serverpodLoggingMode': refer('serverpodLoggingMode'),
                         'testServerOutputMode': refer('testServerOutputMode'),
                         'serverDirectory': refer('serverDirectory'),
                         'experimentalFeatures': refer('experimentalFeatures'),
                         'configOverride': refer('configOverride'),
-                        if (config.isFeatureEnabled(ServerpodFeature.database))
+                        if (config.isDatabaseEnabled)
                           'runtimeParametersBuilder': refer(
                             'runtimeParametersBuilder',
                           ),
-                        if (config.isFeatureEnabled(ServerpodFeature.database))
+                        if (config.isDatabaseEnabled)
                           'databaseInterceptor': refer('databaseInterceptor'),
                       },
                     ),
                   ],
                   {
-                    'maybeRollbackDatabase':
-                        config.isFeatureEnabled(ServerpodFeature.database)
+                    'maybeRollbackDatabase': config.isDatabaseEnabled
                         ? refer('rollbackDatabase')
                         : refer(
                             'RollbackDatabase',

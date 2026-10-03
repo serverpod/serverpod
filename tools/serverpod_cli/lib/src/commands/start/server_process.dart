@@ -23,14 +23,17 @@ String vmServiceWsUri(String httpUri) {
 /// and optional VM service connection for hot reload.
 class ServerProcess {
   final String _serverDir;
+  final String _target;
   final List<String> _serverArgs;
   final String _dartExecutable;
   final bool _enableVmService;
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Called at most once after a started process and its VM-service resources
-  /// have been discarded, whether it stopped normally or exited unexpectedly.
+  /// Called at most once as a started process is discarded.
+  ///
+  /// Fires before teardown. Told later, a listener would read the last output
+  /// as coming from a live process.
   final void Function()? _onDispose;
 
   /// Path to write the VM service info JSON file to. When set, passed
@@ -43,6 +46,8 @@ class ServerProcess {
   StreamSubscription? _sigtermSub;
   StreamSubscription? _stdoutSub;
   StreamSubscription? _stderrSub;
+
+  Future<void> _outputDrained = Future.value();
 
   VmService? _vmService;
   String? _mainIsolateId;
@@ -58,6 +63,7 @@ class ServerProcess {
 
   ServerProcess({
     required String serverDir,
+    String target = 'bin/main.dart',
     required List<String> serverArgs,
     String? dartExecutable,
     bool enableVmService = false,
@@ -65,14 +71,26 @@ class ServerProcess {
     IOSink? stdoutSink,
     IOSink? stderrSink,
     void Function()? onDispose,
+    Map<String, String>? environment,
   }) : _serverDir = serverDir,
+       _target = target,
+       _environment = environment,
        _serverArgs = serverArgs,
-       _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
+       _dartExecutable =
+           dartExecutable ??
+           p.join(
+             getSdkPath(),
+             'bin',
+             Platform.isWindows ? 'dart.exe' : 'dart',
+           ),
        _enableVmService = enableVmService,
        _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _onDispose = onDispose;
+
+  /// Extra environment for the pod, merged over the inherited one.
+  final Map<String, String>? _environment;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -96,7 +114,7 @@ class ServerProcess {
   /// Starts the server subprocess.
   ///
   /// If [dillPath] is provided, the server is started from the compiled
-  /// kernel file. Otherwise, `dart run bin/main.dart` is used.
+  /// kernel file. Otherwise, `dart run` uses the configured target.
   ///
   /// Use [exitCode] to wait for the process to exit.
   Future<void> start({String? dillPath}) async {
@@ -117,7 +135,7 @@ class ServerProcess {
     if (dillPath != null) {
       args.addAll([dillPath, ..._serverArgs]);
     } else {
-      args.addAll(['run', 'bin/main.dart', ..._serverArgs]);
+      args.addAll(['run', _target, ..._serverArgs]);
     }
 
     // Delete any stale service info file from a previous run so that
@@ -130,6 +148,7 @@ class ServerProcess {
       _dartExecutable,
       args,
       workingDirectory: _serverDir,
+      environment: _environment,
     );
     _process = process;
 
@@ -149,8 +168,14 @@ class ServerProcess {
 
     // Forward process output without exclusively binding the sinks,
     // so that the CLI logger can still write to stdout/stderr.
-    _stdoutSub = process.stdout.listen(_stdout.add);
-    _stderrSub = process.stderr.listen(_stderr.add);
+    final stdoutSub = process.stdout.listen(_stdout.add);
+    final stderrSub = process.stderr.listen(_stderr.add);
+    _stdoutSub = stdoutSub;
+    _stderrSub = stderrSub;
+    _outputDrained = Future.wait<void>([
+      stdoutSub.asFuture<void>().catchError((_) {}),
+      stderrSub.asFuture<void>().catchError((_) {}),
+    ]).then((_) {});
 
     // Handle process exit asynchronously.
     unawaited(
@@ -314,7 +339,7 @@ class ServerProcess {
           final uri = json['uri'] as String?;
           if (uri != null) return uri;
         } on FormatException {
-          // File may be partially written; retry.
+          // File may be partially written, so retry.
         }
       }
       await Future<void>.delayed(delay);
@@ -334,19 +359,27 @@ class ServerProcess {
     final completer = Completer<void>();
     _cleanupCompleter = completer;
 
-    unawaited(completer.future.whenComplete(() => _onDispose?.call()));
+    _onDispose?.call();
 
     try {
       _process = null;
       await _vmService?.dispose();
       _vmService = null;
       _mainIsolateId = null;
+      // Bounded, since a grandchild that inherited a pipe keeps it open.
+      await _outputDrained.timeout(
+        const Duration(seconds: 2),
+        onTimeout: () {},
+      );
       await _stdoutSub?.cancel();
       await _stderrSub?.cancel();
       await _sigtermSub?.cancel();
       _stdoutSub = null;
       _stderrSub = null;
       _sigtermSub = null;
+      // The sinks outlive this process, so end its unfinished line here.
+      await _stdout.flush();
+      await _stderr.flush();
 
       // Clean up the service info file so stale URIs are not picked up.
       if (_vmServiceInfoFile != null) {

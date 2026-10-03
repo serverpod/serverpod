@@ -104,6 +104,18 @@ void main() {
         name: '${testClassName}Repository',
       );
 
+      test('then the watch method takes an include param', () {
+        var watchMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'watch',
+        );
+
+        expect(
+          watchMethod?.parameters?.toSource(),
+          contains('${testClassName}Include? include'),
+        );
+      });
+
       group(
         'then the class name ${testClassName}Repository',
         () {

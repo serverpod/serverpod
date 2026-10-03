@@ -115,7 +115,7 @@ void main() async {
 
         // Add a model with a table
         var modelFile = File(
-          path.join(serverDir, 'lib', 'src', 'protocol', 'example.yaml'),
+          path.join(serverDir, 'lib', 'src', 'protocol', 'example.spy.yaml'),
         );
         modelFile.parent.createSync(recursive: true);
         modelFile.writeAsStringSync('''

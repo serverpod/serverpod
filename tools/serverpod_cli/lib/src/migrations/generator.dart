@@ -210,6 +210,7 @@ class MigrationGenerator {
     required String runMode,
     required DatabaseDialect dialect,
     String? targetMigrationVersion,
+    required String insightsAddress,
   }) async {
     var migrationVersion =
         targetMigrationVersion ??
@@ -231,10 +232,11 @@ class MigrationGenerator {
       logWarnings: log.warning,
     );
 
-    var client = ConfigInfo(
+    var configInfo = ConfigInfo(
       runMode,
       serverDir: path.normalize(path.absolute(directory.path)),
-    ).createServiceClient();
+    );
+    var client = configInfo.createServiceClientFor(insightsAddress);
     DatabaseDefinition liveDatabase;
     try {
       liveDatabase = normalizeDefinitionToV2(

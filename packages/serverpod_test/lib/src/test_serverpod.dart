@@ -114,12 +114,21 @@ class TestServerpod<T extends InternalTestEndpoints> {
   Serverpod get _serverpod => _serverpodInstance ??= _constructServerpod();
 
   /// This group's own database; retained to drop it on [shutdown].
+  ///
+  /// Null when [ephemeralDatabase] is false, or when the project has no
+  /// database. Shutdown then leaves the configured database in place.
   EphemeralTestDatabase? _ephemeralDatabase;
 
-  /// The per-group database name, decided eagerly in the constructor. It is
-  /// baked into the server configuration up front (see [_constructServerpod])
-  /// so the single, test-configured server instance is the one that runs -
-  /// only the database's creation is deferred to [start].
+  /// Whether this group gets its own empty database. When false, the server
+  /// connects to the database configured for the run mode.
+  final bool ephemeralDatabase;
+
+  /// The per-group database name, decided on first use. It is baked into the
+  /// server configuration up front (see [_constructServerpod]) so the single,
+  /// test-configured server instance is the one that runs - only the
+  /// database's creation is deferred to [start].
+  ///
+  /// Unused when [ephemeralDatabase] is false, so no name is generated then.
   late final String _targetDatabaseName =
       TestDatabaseManager.generateDatabaseName();
 
@@ -144,6 +153,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     DatabaseInterceptor? databaseInterceptor,
     ServerpodConfig Function(ServerpodConfig)? configOverride,
+    bool? ephemeralDatabase,
   }) : _applyMigrations = applyMigrations,
        _endpoints = endpoints,
        _serializationManager = serializationManager,
@@ -154,14 +164,16 @@ class TestServerpod<T extends InternalTestEndpoints> {
        _runtimeParametersBuilder = runtimeParametersBuilder,
        _databaseInterceptor = databaseInterceptor,
        _configOverride = configOverride,
+       ephemeralDatabase = ephemeralDatabase ?? true,
        testServerOutputMode =
            testServerOutputMode ?? TestServerOutputMode.normal {
     testEndpoints.initialize(serializationManager, endpoints);
   }
 
-  /// Constructs a [Serverpod] whose configured database is this group's own: a
-  /// PostgreSQL database named [_targetDatabaseName], or a SQLite file derived
-  /// from it.
+  /// Constructs a [Serverpod]. When [ephemeralDatabase] is true, its configured
+  /// database is this group's own: a PostgreSQL database named
+  /// [_targetDatabaseName], or a SQLite file derived from it. Otherwise the
+  /// database from the run-mode config (after [_configOverride]) is kept.
   Serverpod _constructServerpod() {
     // Ignore output from the Serverpod constructor to avoid spamming the
     // console. Tracked in https://github.com/serverpod/serverpod/issues/2847
@@ -178,6 +190,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
           serverDirectory: _serverDirectory,
           configOverride: (config) {
             var resolved = _configOverride?.call(config) ?? config;
+            if (!ephemeralDatabase) return resolved;
             final db = resolved.database;
             if (db is PostgresDatabaseConfig) {
               resolved = resolved.copyWith(
@@ -237,18 +250,21 @@ class TestServerpod<T extends InternalTestEndpoints> {
         // Provision this group's database before the server connects.
         // PostgreSQL: CREATE DATABASE on the shared postmaster. SQLite: a
         // drop-handle for the per-group file (created when migrations run).
-        try {
-          _ephemeralDatabase = await EphemeralTestDatabase.create(
-            runMode: _runMode ?? ServerpodRunMode.test,
-            databaseName: _targetDatabaseName,
-            serverDirectory: _serverpod.serverDirectory,
-            configOverride: _configOverride,
-          );
-        } catch (e) {
-          throw InitializationException(
-            'Failed to set up the test database. Ensure the database is '
-            'running and reachable. Error: $e',
-          );
+        // Skipped when the caller opted into the configured database.
+        if (ephemeralDatabase) {
+          try {
+            _ephemeralDatabase = await EphemeralTestDatabase.create(
+              runMode: _runMode ?? ServerpodRunMode.test,
+              databaseName: _targetDatabaseName,
+              serverDirectory: _serverpod.serverDirectory,
+              configOverride: _configOverride,
+            );
+          } catch (e) {
+            throw InitializationException(
+              'Failed to set up the test database. Ensure the database is '
+              'running and reachable. Error: $e',
+            );
+          }
         }
 
         try {

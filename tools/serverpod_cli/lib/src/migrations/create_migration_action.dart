@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_database/serverpod_database.dart';
@@ -85,7 +84,7 @@ Future<CreateMigrationOutcome> createMigrationAction({
   bool empty = false,
   bool force = false,
 }) async {
-  if (!config.isFeatureEnabled(ServerpodFeature.database)) {
+  if (!config.isDatabaseEnabled) {
     return const CreateMigrationFailed(
       'The database feature is not enabled in this project. '
       'Migrations cannot be created.',

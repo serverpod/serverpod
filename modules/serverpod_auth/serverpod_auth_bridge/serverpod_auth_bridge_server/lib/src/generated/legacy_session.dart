@@ -8,14 +8,17 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
     as _isg9n5v0;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class LegacySession
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -88,7 +91,7 @@ abstract class LegacySession
   LegacySession copyWith({
     int? id,
     _is.UuidValue? authUserId,
-    _iacs.AuthUser? authUser,
+    _iacs.AuthUser? authUser = const _UndefinedLegacySession$authUser(),
     Set<String>? scopeNames,
     String? hash,
     String? method,
@@ -141,6 +144,11 @@ abstract class LegacySession
 
 class _Undefined {}
 
+class _UndefinedLegacySession$authUser extends _issu.UndefinedSentinel
+    implements _iacs.AuthUser {
+  const _UndefinedLegacySession$authUser();
+}
+
 class _LegacySessionImpl extends LegacySession {
   _LegacySessionImpl({
     int? id,
@@ -165,7 +173,7 @@ class _LegacySessionImpl extends LegacySession {
   LegacySession copyWith({
     Object? id = _Undefined,
     _is.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _iacs.AuthUser? authUser = const _UndefinedLegacySession$authUser(),
     Set<String>? scopeNames,
     String? hash,
     String? method,
@@ -173,9 +181,9 @@ class _LegacySessionImpl extends LegacySession {
     return LegacySession(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _iacs.AuthUser?
-          ? authUser
-          : this.authUser?.copyWith(),
+      authUser: authUser is _issu.UndefinedSentinel
+          ? this.authUser?.copyWith()
+          : authUser,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       hash: hash ?? this.hash,
       method: method ?? this.method,
@@ -363,6 +371,71 @@ class LegacySessionRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [LegacySession]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `LegacySession.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<LegacySession>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacySessionTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LegacySessionTable>? orderBy,
+    _is.OrderByListBuilder<LegacySessionTable>? orderByList,
+    LegacySessionInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<LegacySession>(
+      where: where?.call(LegacySession.t),
+      orderBy: orderBy?.call(LegacySession.t),
+      orderByList: orderByList?.call(LegacySession.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

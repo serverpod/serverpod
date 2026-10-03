@@ -5,7 +5,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
-import 'package:serverpod_cli/src/analytics/generate_tracker.dart';
+import 'package:serverpod_cli/src/analytics/flush_analytics.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/cloud.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
@@ -19,17 +19,17 @@ import 'package:serverpod_cli/src/commands/mcp.dart';
 import 'package:serverpod_cli/src/commands/migrate.dart';
 import 'package:serverpod_cli/src/commands/quickstart.dart';
 import 'package:serverpod_cli/src/commands/run.dart';
+import 'package:serverpod_cli/src/commands/runner.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-const _mixPanelToken = '05e8ab306c393c7482e0f41851a176d8';
 const _postHogApiKey = 'phc_xGBPHgcrTrDuWGtyNX3UJODXgnR684rzRPZjWRlqVxf';
 
 /// The unique user ID for the CLI. If the user ID is not available, we use
@@ -42,15 +42,6 @@ final _postHogAnalytics = PostHogAnalytics(
   version: templateVersion,
   libName: 'serverpod_cli',
 );
-
-final Analytics _analytics = CompoundAnalytics([
-  MixPanelAnalytics(
-    uniqueUserId: _uniqueUserId,
-    projectToken: _mixPanelToken,
-    version: templateVersion,
-  ),
-  _postHogAnalytics,
-]);
 
 void main(List<String> args) async {
   await runZonedGuarded(
@@ -82,7 +73,9 @@ void main(List<String> args) async {
 /// avoid invoking the webpage every time the CLI is run if there is any
 /// configuration preventing the CLI from writing to the user home directory.
 Future<void> _main(List<String> args) async {
-  initializeCliAnalytics(CliAnalytics(analytics: _postHogAnalytics));
+  initializeCliAnalytics(
+    CliAnalytics(analytics: _postHogAnalytics),
+  );
 
   final resourceManager = ResourceManager();
   final runCount = resourceManager.runCount;
@@ -116,7 +109,7 @@ Future<void> _main(List<String> args) async {
 ServerpodCommandRunner buildCommandRunner() {
   final version = Version.parse(templateVersion);
   return ServerpodCommandRunner.createCommandRunner(
-    _analytics,
+    _postHogAnalytics,
     productionMode,
     version,
   )..addCommands([
@@ -133,6 +126,7 @@ ServerpodCommandRunner buildCommandRunner() {
     CreateRepairMigrationCommand(),
     MigrateCommand(),
     RunCommand(),
+    RunnerCommand(),
     StartCommand(),
     UpgradeCommand(),
     VersionCommand(version),
@@ -140,10 +134,7 @@ ServerpodCommandRunner buildCommandRunner() {
 }
 
 Future<void> _preExit() async {
-  // Emit the watch-mode burst still sitting on its debounce timer before the
-  // send queue is drained, so ending a session does not drop its last runs.
-  await generateTracker.flushPending();
-  await _analytics.flush();
-  _analytics.cleanUp();
+  await flushAnalytics();
+  _postHogAnalytics.cleanUp();
   await closeLogger();
 }

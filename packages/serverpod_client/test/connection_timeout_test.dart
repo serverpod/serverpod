@@ -6,13 +6,11 @@ class TestSerializationManager extends SerializationManager {}
 class TestServerpodClient extends ServerpodClientShared {
   TestServerpodClient({
     required Uri host,
-    Duration? connectionTimeout,
-    Duration? streamingConnectionTimeout,
+    super.connectionTimeout,
+    super.streamingConnectionTimeout,
   }) : super(
          '${host.toString()}/',
          TestSerializationManager(),
-         streamingConnectionTimeout: streamingConnectionTimeout,
-         connectionTimeout: connectionTimeout,
        );
 
   @override

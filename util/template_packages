@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# The `templates/serverpod_templates` packages that are resolved on their own,
+# outside the pub workspace.
+#
+# A template is the source of a package that gets created on a user's machine,
+# so it cannot join the workspace: its `resolution: workspace` line is commented
+# out with a `#--UNCOMMENT_LINE--#` marker and only uncommented by
+# `serverpod create`. That leaves `dart pub get` inside a template resolving
+# against pub.dev, while the templates pin the version currently in development
+# (SERVERPOD_VERSION). Between a version bump and the matching pub.dev release
+# those pins do not exist yet, so the resolution fails with
+# "depends on serverpod_test <version> which doesn't match any versions".
+#
+# util/pub_get_templates writes a `pubspec_overrides.yaml` for each of these to
+# point every Serverpod dependency back at the local package. It has to be that
+# file rather than a `dependency_overrides` block in the pubspec: `create`
+# uncomments `resolution: workspace`, and a workspace member may not carry
+# overrides of its own -- the generated project's root already declares them.
+# Copier ignores `pubspec_overrides.yaml`, so it never reaches a created
+# project.
+#
+# `modulename` and `projectname` are absent on purpose: they are the generated
+# project's workspace root, which is the one place overrides are allowed, and
+# they carry them in the committed pubspec.yaml. `projectname_server_upgrade` is
+# absent because util/generate_templates copies `projectname_server`'s pubspec
+# and `.dart_tool` into it. `projectname_flutter` is absent because it needs
+# `flutter pub get`, and nothing resolves it standalone.
+#
+# This file is meant to be sourced, not executed.
+
+declare -a TEMPLATE_PACKAGE_PATHS=(
+    "templates/serverpod_templates/modulename_server"
+    "templates/serverpod_templates/modulename_client"
+    "templates/serverpod_templates/projectname_server"
+    "templates/serverpod_templates/projectname_client"
+)

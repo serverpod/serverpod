@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
+import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
 import 'package:test/test.dart';
 
 /// Validates the detach + attach round-trip: a postmaster started with
@@ -20,7 +21,7 @@ void main() {
   });
 
   tearDown(() async {
-    await _deleteTemporaryDirectory(tmpRoot);
+    await tmpRoot.deleteBestEffort(recursive: true);
   });
 
   test(
@@ -234,17 +235,4 @@ void main() {
       );
     },
   );
-}
-
-Future<void> _deleteTemporaryDirectory(Directory directory) async {
-  final deadline = DateTime.now().add(const Duration(seconds: 5));
-  while (directory.existsSync()) {
-    try {
-      directory.deleteSync(recursive: true);
-      return;
-    } on FileSystemException {
-      if (!Platform.isWindows || DateTime.now().isAfter(deadline)) rethrow;
-      await Future<void>.delayed(const Duration(milliseconds: 50));
-    }
-  }
 }

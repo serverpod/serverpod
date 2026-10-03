@@ -8,10 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_shared/serverpod_test_sqlite_shared.dart'
     as _iqfgygbv;
 
@@ -74,7 +77,8 @@ abstract class SharedTableRecord
     int? id,
     String? name,
     _iqfgygbv.SharedEnum? sharedEnum,
-    _iqfgygbv.SharedSubclass? sharedSubclass,
+    _iqfgygbv.SharedSubclass? sharedSubclass =
+        const _UndefinedSharedTableRecord$sharedSubclass(),
     int? itemCount,
   });
   @override
@@ -132,6 +136,11 @@ abstract class SharedTableRecord
 
 class _Undefined {}
 
+class _UndefinedSharedTableRecord$sharedSubclass extends _issu.UndefinedSentinel
+    implements _iqfgygbv.SharedSubclass {
+  const _UndefinedSharedTableRecord$sharedSubclass();
+}
+
 class _SharedTableRecordImpl extends SharedTableRecord {
   _SharedTableRecordImpl({
     int? id,
@@ -155,16 +164,17 @@ class _SharedTableRecordImpl extends SharedTableRecord {
     Object? id = _Undefined,
     String? name,
     _iqfgygbv.SharedEnum? sharedEnum,
-    Object? sharedSubclass = _Undefined,
+    _iqfgygbv.SharedSubclass? sharedSubclass =
+        const _UndefinedSharedTableRecord$sharedSubclass(),
     int? itemCount,
   }) {
     return SharedTableRecord(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       sharedEnum: sharedEnum ?? this.sharedEnum,
-      sharedSubclass: sharedSubclass is _iqfgygbv.SharedSubclass?
-          ? sharedSubclass
-          : this.sharedSubclass?.copyWith(),
+      sharedSubclass: sharedSubclass is _issu.UndefinedSentinel
+          ? this.sharedSubclass?.copyWith()
+          : sharedSubclass,
       itemCount: itemCount ?? this.itemCount,
     );
   }
@@ -316,6 +326,69 @@ class SharedTableRecordRepository {
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [SharedTableRecord]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `SharedTableRecord.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<SharedTableRecord>> watch(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_isd.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<SharedTableRecord>(
+      where: where?.call(SharedTableRecord.t),
+      orderBy: orderBy?.call(SharedTableRecord.t),
+      orderByList: orderByList?.call(SharedTableRecord.t),
+      limit: limit,
+      offset: offset,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

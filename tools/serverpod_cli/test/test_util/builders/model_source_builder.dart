@@ -12,7 +12,7 @@ class ModelSourceBuilder {
   String fileExtension;
 
   ModelSourceBuilder()
-    : fileExtension = '.yaml',
+    : fileExtension = '.spy.yaml',
       subDirPathParts = [],
       fileName = 'example',
       yamlSourcePathParts = ['lib', 'src', 'model'],
@@ -62,6 +62,19 @@ class ModelSourceBuilder {
   ModelSourceBuilder withIsSharedModel(bool isSharedModel) {
     this.isSharedModel = isSharedModel;
     return this;
+  }
+
+  ModelSourceBuilder withOfflineSyncSpaceModel() {
+    return withIsSharedModel(true)
+        .withModuleAlias('serverpod_offline_sync')
+        .withFileName('offline_sync_space')
+        .withYaml('''
+class: OfflineSyncSpace
+table: offline_sync_spaces
+database: all
+fields:
+  name: String
+''');
   }
 
   ModelSource build() {

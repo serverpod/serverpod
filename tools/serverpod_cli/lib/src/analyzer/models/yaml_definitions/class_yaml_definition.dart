@@ -4,6 +4,8 @@ import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/foreign_key_action.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/on_delete.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -128,6 +130,9 @@ class ClassYamlDefinition {
                     keyRestriction: restrictions.validateDatabaseActionKey,
                     valueRestriction: EnumValueRestriction(
                       enums: ForeignKeyAction.values,
+                      additionalRestriction: ForeignKeyActionValueRestriction(
+                        restrictions: restrictions,
+                      ),
                     ).validate,
                   ),
                   ValidateNode(
@@ -135,17 +140,20 @@ class ClassYamlDefinition {
                     keyRestriction: restrictions.validateDatabaseActionKey,
                     valueRestriction: EnumValueRestriction(
                       enums: ForeignKeyAction.values,
+                      additionalRestriction: OnDeleteValueRestriction(
+                        restrictions: restrictions,
+                      ),
                     ).validate,
                   ),
                   ValidateNode(
                     Keyword.deferrable,
                     keyRestriction: restrictions.validateDatabaseActionKey,
-                    valueRestriction: BooleanValueRestriction().validate,
+                    valueRestriction: restrictions.validateDeferrableValue,
                   ),
                   ValidateNode(
                     Keyword.deferred,
                     keyRestriction: restrictions.validateDatabaseActionKey,
-                    valueRestriction: BooleanValueRestriction().validate,
+                    valueRestriction: restrictions.validateDeferredValue,
                     mutuallyExclusiveKeys: {
                       Keyword.deferrable,
                     },

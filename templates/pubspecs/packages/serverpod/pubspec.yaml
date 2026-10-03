@@ -28,7 +28,7 @@ dependencies:
   http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
   path: ^1.8.3
-  postgres: ^3.4.0
+  postgres: ^3.5.16
   redis: ^4.0.0
   relic: ^2.0.0-rc.1
   serverpod_database: SERVERPOD_VERSION

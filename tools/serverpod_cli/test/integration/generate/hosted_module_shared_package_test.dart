@@ -12,6 +12,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/endpoint_validation_helpers.dart';
+import '../../test_util/file_system_entity_helpers.dart';
 
 const _moduleName = 'hosted_module';
 const _moduleServerPackage = '${_moduleName}_server';
@@ -63,7 +64,7 @@ void main() {
 
       tearDownAll(() async {
         await analyzers?.close();
-        await temporaryDirectory.deleteIfExists(recursive: true);
+        await temporaryDirectory.deleteWithRetry(recursive: true);
       });
 
       group('when generating code and migrations,', () {

@@ -24,6 +24,19 @@ class DeserializationTypeNotFoundException implements Exception {
   String toString() => message;
 }
 
+/// Exception thrown when no deserialization handler exists for a class name.
+///
+/// This extends [FormatException] to preserve compatibility with callers that
+/// treated an unknown class name as malformed serialized data.
+class DeserializationClassNameNotFoundException extends FormatException {
+  /// The class name for which no deserialization handler was found.
+  final Object? className;
+
+  /// Creates a new [DeserializationClassNameNotFoundException].
+  DeserializationClassNameNotFoundException({required this.className})
+    : super('No deserialization found for type named $className');
+}
+
 /// The [SerializableModel] is the base interface for all serializable objects in
 /// Serverpod, except primitives.
 abstract interface class SerializableModel {
@@ -242,7 +255,7 @@ abstract class SerializationManager {
           ),
         );
     }
-    throw FormatException('No deserialization found for type named $className');
+    throw DeserializationClassNameNotFoundException(className: className);
   }
 
   /// Decodes a value for a `dynamic` model field: a JSON object ([Map]) with

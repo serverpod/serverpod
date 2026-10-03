@@ -10,12 +10,22 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
+  CodeGenerationCollector analyze(String yaml) {
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(
+      config,
+      [ModelSourceBuilder().withYaml(yaml).build()],
+      onErrorsCollector(collector),
+    ).validateAll();
+    return collector;
+  }
+
+  // SetNull and SetDefault constrain the foreign key field and are covered by
+  // their own tests below.
   var databaseActions = [
     'Cascade',
     'NoAction',
     'Restrict',
-    'SetNull',
-    'SetDefault',
   ];
 
   for (var action in databaseActions) {
@@ -104,6 +114,257 @@ void main() {
       },
     );
   }
+
+  test(
+    'Given an object relation with onDelete=SetNull and a non-nullable foreign key field, '
+    'when validating, '
+    'then an error is generated on the onDelete value.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  exampleId: int
+  example: Example?, relation(field=exampleId, onDelete=SetNull)
+''');
+
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.first.message,
+        'The "SetNull" action requires the foreign key field "exampleId" to be '
+        'nullable.',
+      );
+      expect(collector.errors.first.span?.text, 'SetNull');
+    },
+  );
+
+  test(
+    'Given a non-optional object relation with onDelete=SetNull and a generated foreign key field, '
+    'when validating, '
+    'then an error is generated for the generated foreign key field.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  example: Example?, relation(onDelete=SetNull)
+''');
+
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.first.message,
+        'The "SetNull" action requires the foreign key field "exampleId" to be '
+        'nullable.',
+      );
+    },
+  );
+
+  test(
+    'Given an optional object relation with onDelete=SetNull and a generated foreign key field, '
+    'when validating, '
+    'then no errors are generated.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  example: Example?, relation(optional, onDelete=SetNull)
+''');
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given an id relation with onDelete=SetNull on a non-nullable field, '
+    'when validating, '
+    'then an error is generated.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  parentId: int, relation(parent=example, onDelete=SetNull)
+''');
+
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.first.message,
+        'The "SetNull" action requires the foreign key field "parentId" to be '
+        'nullable.',
+      );
+    },
+  );
+
+  test(
+    'Given an object relation with onUpdate=SetNull and a non-nullable foreign key field, '
+    'when validating, '
+    'then an error is generated on the onUpdate value.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  exampleId: int
+  example: Example?, relation(field=exampleId, onUpdate=SetNull)
+''');
+
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.first.message,
+        'The "SetNull" action requires the foreign key field "exampleId" to be '
+        'nullable.',
+      );
+      expect(collector.errors.first.span?.text, 'SetNull');
+    },
+  );
+
+  test(
+    'Given an optional object relation with onUpdate=SetNull and a generated foreign key field, '
+    'when validating, '
+    'then no errors are generated.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  example: Example?, relation(optional, onUpdate=SetNull)
+''');
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given an object relation with onDelete=SetDefault and a foreign key field without a default, '
+    'when validating, '
+    'then an error is generated on the onDelete value.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  exampleId: int
+  example: Example?, relation(field=exampleId, onDelete=SetDefault)
+''');
+
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.first.message,
+        'The "SetDefault" action requires the foreign key field "exampleId" to '
+        'have a database default. Declare the field with "default" or '
+        '"defaultPersist" and reference it from an object relation with '
+        '"field=exampleId".',
+      );
+      expect(collector.errors.first.span?.text, 'SetDefault');
+    },
+  );
+
+  test(
+    'Given an object relation with onDelete=SetDefault and a foreign key field with only a model default, '
+    'when validating, '
+    'then an error is generated.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  exampleId: int, defaultModel=1
+  example: Example?, relation(field=exampleId, onDelete=SetDefault)
+''');
+
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.first.message,
+        'The "SetDefault" action requires the foreign key field "exampleId" to '
+        'have a database default. Declare the field with "default" or '
+        '"defaultPersist" and reference it from an object relation with '
+        '"field=exampleId".',
+      );
+    },
+  );
+
+  test(
+    'Given an object relation with onDelete=SetDefault and a foreign key field with a persist default, '
+    'when validating, '
+    'then no errors are generated.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  exampleId: int?, defaultPersist=1
+  example: Example?, relation(field=exampleId, onDelete=SetDefault)
+''');
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given an id relation with onDelete=SetDefault, '
+    'when validating, '
+    'then an error is generated.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  parentId: int?, relation(parent=example, onDelete=SetDefault)
+''');
+
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.first.message,
+        'The "SetDefault" action requires the foreign key field "parentId" to '
+        'have a database default. Declare the field with "default" or '
+        '"defaultPersist" and reference it from an object relation with '
+        '"field=parentId".',
+      );
+    },
+  );
+
+  test(
+    'Given an object relation with onUpdate=SetDefault and a foreign key field without a default, '
+    'when validating, '
+    'then an error is generated on the onUpdate value.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  exampleId: int
+  example: Example?, relation(field=exampleId, onUpdate=SetDefault)
+''');
+
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.first.message,
+        'The "SetDefault" action requires the foreign key field "exampleId" to '
+        'have a database default. Declare the field with "default" or '
+        '"defaultPersist" and reference it from an object relation with '
+        '"field=exampleId".',
+      );
+      expect(collector.errors.first.span?.text, 'SetDefault');
+    },
+  );
+
+  test(
+    'Given an object relation with onUpdate=SetDefault and a foreign key field with a persist default, '
+    'when validating, '
+    'then no errors are generated.',
+    () {
+      var collector = analyze('''
+class: Example
+table: example
+fields:
+  exampleId: int?, defaultPersist=1
+  example: Example?, relation(field=exampleId, onUpdate=SetDefault)
+''');
+
+      expect(collector.errors, isEmpty);
+    },
+  );
 
   group('Given a class with no database action explicitly set', () {
     var models = [

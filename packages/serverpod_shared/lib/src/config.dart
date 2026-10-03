@@ -534,6 +534,16 @@ class ServerConfig {
     );
   }
 
+  /// A copy of this configuration with [resolvedPort] as the bind port.
+  ///
+  /// A [publicPort] of 0 follows it. A proxy's non-zero [publicPort] stays.
+  ServerConfig withResolvedPort(int resolvedPort) => ServerConfig(
+    port: resolvedPort,
+    publicScheme: publicScheme,
+    publicHost: publicHost,
+    publicPort: publicPort == 0 ? resolvedPort : publicPort,
+  ).._name = _name;
+
   @override
   String toString() {
     var str = '';
@@ -1007,6 +1017,10 @@ class FutureCallConfig {
   /// If true, the server will delete broken future calls on startup.
   final bool deleteBrokenCalls;
 
+  /// Whether future calls are enabled. If false, future calls can neither
+  /// be scheduled nor executed. Defaults to true.
+  final bool enabled;
+
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
     this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
@@ -1015,6 +1029,7 @@ class FutureCallConfig {
     ),
     this.checkBrokenCalls,
     this.deleteBrokenCalls = false,
+    this.enabled = true,
   });
 
   /// The default concurrency limit for future calls.
@@ -1051,6 +1066,9 @@ class FutureCallConfig {
             .futureCallDeleteBrokenCalls
             .configKey];
 
+    final enabled =
+        futureCallConfigJson[ServerpodEnv.futureCallEnabled.configKey];
+
     return FutureCallConfig(
       // If the user did not configure the concurrency limit, use the default
       concurrencyLimit: hasConcurrencyLimitKey
@@ -1061,6 +1079,7 @@ class FutureCallConfig {
       ),
       checkBrokenCalls: checkBrokenCalls,
       deleteBrokenCalls: deleteBrokenCalls ?? false,
+      enabled: enabled ?? true,
     );
   }
 
@@ -1073,6 +1092,7 @@ class FutureCallConfig {
     );
     output.writeln('check broken future calls: $checkBrokenCalls');
     output.writeln('delete broken future calls: $deleteBrokenCalls');
+    output.writeln('future calls enabled: $enabled');
     return output.toString();
   }
 }
@@ -1491,6 +1511,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
 /// merging environment variables. Uses a placeholder password so PostgreSQL
 /// configs can be parsed without a `passwords.yaml` file (for example in the
 /// CLI).
+@Deprecated('Use inferDatabaseConfigFromConfigMap instead')
 DatabaseDialect? inferDatabaseDialectFromConfigMap(
   Map<dynamic, dynamic> configMap, {
   Map<String, String> environment = const {},
@@ -1502,6 +1523,27 @@ DatabaseDialect? inferDatabaseDialectFromConfigMap(
     {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
     ServerpodConfigMap.database,
   ).dialect;
+}
+
+/// Infer the database config from one run-mode config map (the body of
+/// `config/<runMode>.yaml`), using the same `database` merging rules as
+/// [ServerpodConfig.loadFromMap].
+///
+/// Returns `null` when there is no database section or it is empty after
+/// merging environment variables. Uses a placeholder password so PostgreSQL
+/// configs can be parsed without a `passwords.yaml` file (for example in the
+/// CLI).
+DatabaseConfig? inferDatabaseConfigFromConfigMap(
+  Map<dynamic, dynamic> configMap, {
+  Map<String, String> environment = const {},
+}) {
+  final dbSetup = _databaseConfigMap(configMap, environment);
+  if (dbSetup == null) return null;
+  return DatabaseConfig._fromJson(
+    dbSetup,
+    {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
+    ServerpodConfigMap.database,
+  );
 }
 
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
@@ -1560,6 +1602,7 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.futureCallScanInterval, int.parse),
     (ServerpodEnv.futureCallCheckBrokenCalls, bool.parse),
     (ServerpodEnv.futureCallDeleteBrokenCalls, bool.parse),
+    (ServerpodEnv.futureCallEnabled, bool.parse),
   ]);
 }
 
@@ -1831,12 +1874,20 @@ bool _readApplyRepairMigration(
   return false;
 }
 
+/// The legacy top-level config key for future call execution, still read as a
+/// fallback for `futureCall.executionEnabled` for backwards compatibility.
+const _legacyFutureCallExecutionEnabledKey = 'futureCallExecutionEnabled';
+
 bool _readIsFutureCallExecutionEnabled(
   Map<dynamic, dynamic> configMap,
   Map<String, String> environment,
 ) {
-  var futureCallsExecutionEnabled =
-      configMap[ServerpodEnv.futureCallExecutionEnabled.configKey];
+  var futureCallConfig = configMap[ServerpodConfigMap.futureCall];
+  var futureCallsExecutionEnabled = futureCallConfig is Map
+      ? futureCallConfig[ServerpodEnv.futureCallExecutionEnabled.configKey]
+      : null;
+  futureCallsExecutionEnabled ??=
+      configMap[_legacyFutureCallExecutionEnabledKey];
   futureCallsExecutionEnabled =
       environment[ServerpodEnv.futureCallExecutionEnabled.envVariable] ??
       futureCallsExecutionEnabled;

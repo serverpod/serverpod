@@ -64,6 +64,16 @@ class DartServerCodeGenerator extends CodeGenerator {
       ),
     };
 
+    var syncTables = serverClassGenerator.generateSyncTables();
+    if (syncTables != null) {
+      var syncTablesPath = p.joinAll(
+        config.generatedServerSyncTablesFilePathParts,
+      );
+      codeMap[syncTablesPath] = syncTables.generateCode(
+        formatter: GeneratedDartFormatters.of(syncTablesPath),
+      );
+    }
+
     // Modules are never booted on their own, so only server packages get the
     // pre-wired Serverpod entry point.
     if (config.type == PackageType.server) {

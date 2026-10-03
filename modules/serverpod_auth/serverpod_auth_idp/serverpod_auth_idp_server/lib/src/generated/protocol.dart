@@ -986,7 +986,7 @@ class Protocol extends _is.DatabaseSerializationManager {
           dartType: 'String',
         ),
         _isp.ColumnDefinition(
-          name: 'nonce',
+          name: 'key',
           columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
@@ -1027,7 +1027,7 @@ class Protocol extends _is.DatabaseSerializationManager {
             ),
             _isp.IndexElementDefinition(
               type: _isp.IndexElementDefinitionType.column,
-              definition: 'nonce',
+              definition: 'key',
             ),
             _isp.IndexElementDefinition(
               type: _isp.IndexElementDefinitionType.column,
@@ -1097,7 +1097,7 @@ class Protocol extends _is.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _is.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
@@ -1763,7 +1763,7 @@ class Protocol extends _is.DatabaseSerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on FormatException catch (_) {}
+        } on _is.DeserializationClassNameNotFoundException catch (_) {}
       }
     }
     return deserializeByClassName(value);

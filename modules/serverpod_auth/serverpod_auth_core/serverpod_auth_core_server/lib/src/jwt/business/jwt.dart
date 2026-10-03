@@ -43,7 +43,7 @@ class Jwt {
          algorithm: config.algorithm,
          fallbackVerificationAlgorithms: config.fallbackVerificationAlgorithms,
        ),
-       refreshTokenSecretHash = Argon2HashUtil(
+       refreshTokenSecretHash = Argon2HashUtil.forRandomSecrets(
          hashPepper: config.refreshTokenHashPepper,
          fallbackHashPeppers: config.fallbackRefreshTokenHashPeppers,
          hashSaltLength: config.refreshTokenRotatingSecretSaltLength,
@@ -57,7 +57,7 @@ class Jwt {
            fallbackVerificationAlgorithms:
                config.fallbackVerificationAlgorithms,
          ),
-         refreshTokenSecretHash: Argon2HashUtil(
+         refreshTokenSecretHash: Argon2HashUtil.forRandomSecrets(
            hashPepper: config.refreshTokenHashPepper,
            fallbackHashPeppers: config.fallbackRefreshTokenHashPeppers,
            hashSaltLength: config.refreshTokenRotatingSecretSaltLength,

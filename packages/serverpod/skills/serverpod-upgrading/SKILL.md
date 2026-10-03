@@ -35,7 +35,7 @@ After following the regular upgrade process, address the following breaking chan
 
 **Web server:** The deprecated widget classes and legacy static directory classes are removed. Use `WebWidget`, `TemplateWidget`, `ListWidget`, `JsonWidget`, `RedirectWidget` and `StaticRoute.directory(...)`. `WidgetRoute.build` now returns `Future<WebWidget?>`, where `null` responds with 404.
 
-**Auth:** The `authenticationKeyManager` client parameter is removed; use `authSessionManager` (Flutter) or `authKeyProvider`. The native Google Sign-In web implementation is replaced by OAuth2, and dead email exceptions are removed.
+**Auth:** The `authenticationKeyManager` client parameter is removed; use `authSessionManager` (Flutter) or `authKeyProvider`. The native Google Sign-In web implementation is replaced by OAuth2, and dead email exceptions are removed. `flutter_secure_storage` must be 10.0.0 or newer. On Android, upgrading from 9.x directly to 11.x signs users out; go through 10.x first. 11.x also needs `compileSdk` 37.
 
 **Server:** `SerializationManagerServer` is replaced by `DatabaseSerializationManager`. Generated projects now import `src/generated/serverpod.dart` and create the server with `Serverpod(args)`; the `Serverpod(args, Protocol(), Endpoints())` form still works, but prefer the new simpler form.
 

@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../changed_id_type/many_to_many/enrollment.dart' as _ih6xbg05;
 
@@ -55,9 +57,10 @@ abstract class StudentUuid
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   StudentUuid copyWith({
-    _isc.UuidValue? id,
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
-    List<_ih6xbg05.EnrollmentInt>? enrollments,
+    List<_ih6xbg05.EnrollmentInt>? enrollments =
+        const _issu.$UndefinedList<_ih6xbg05.EnrollmentInt>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -89,8 +92,6 @@ abstract class StudentUuid
   }
 }
 
-class _Undefined {}
-
 class _StudentUuidImpl extends StudentUuid {
   _StudentUuidImpl({
     _isc.UuidValue? id,
@@ -107,16 +108,17 @@ class _StudentUuidImpl extends StudentUuid {
   @_isc.useResult
   @override
   StudentUuid copyWith({
-    Object? id = _Undefined,
+    _isc.UuidValue? id = const _issu.$UndefinedUuidValue(),
     String? name,
-    Object? enrollments = _Undefined,
+    List<_ih6xbg05.EnrollmentInt>? enrollments =
+        const _issu.$UndefinedList<_ih6xbg05.EnrollmentInt>(),
   }) {
     return StudentUuid(
-      id: id is _isc.UuidValue? ? id : this.id,
+      id: id is _issu.UndefinedSentinel ? this.id : id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_ih6xbg05.EnrollmentInt>?
-          ? enrollments
-          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+      enrollments: enrollments is _issu.UndefinedSentinel
+          ? this.enrollments?.map((e0) => e0.copyWith()).toList()
+          : enrollments,
     );
   }
 }

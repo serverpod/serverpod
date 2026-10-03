@@ -131,24 +131,69 @@ commands:
     exclusiveFlags:
       - [list, no-list]
 
+  - name: runner
+
+    commands:
+      - name: start
+        flags:
+          -w, --watch: "Watch files and use the Frontend Server."
+          --no-watch: "Watch files and use the Frontend Server."
+          -d, --directory=: "The server directory."
+          -t, --target=: "The server entrypoint, relative to the server directory."
+          --docker: "Start Docker Compose services if a compose file exists."
+          --no-docker: "Start Docker Compose services if a compose file exists."
+          --flutter: "Auto-launch companion Flutter apps on the first UI attach."
+          --no-flutter: "Auto-launch companion Flutter apps on the first UI attach."
+        exclusiveFlags:
+          - [watch, no-watch]
+          - [docker, no-docker]
+          - [flutter, no-flutter]
+
+      - name: attach
+        flags:
+          -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
+          --tui: "Show the interactive terminal UI."
+          --no-tui: "Show the interactive terminal UI."
+        exclusiveFlags:
+          - [tui, no-tui]
+
+      - name: status
+        flags:
+          -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
+
+      - name: stop
+        flags:
+          -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
+
   - name: start
     flags:
-      -w, --watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
-      --no-watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
-      -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
-      --docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL on localhost without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
-      --no-docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL on localhost without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
-      --tui: "Show interactive terminal UI."
-      --no-tui: "Show interactive terminal UI."
-      --flutter: "Auto-launch the companion Flutter apps as configured on the server pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable auto-launch. Apps can still be started on demand from the TUI."
-      --no-flutter: "Auto-launch the companion Flutter apps as configured on the server pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable auto-launch. Apps can still be started on demand from the TUI."
+      -w, --watch: "Watch files and use the Frontend Server."
+      --no-watch: "Watch files and use the Frontend Server."
+      -d, --directory=: "The server directory."
+      -t, --target=: "The server entrypoint, relative to the server directory."
+      --docker: "Start Docker Compose services if a compose file exists."
+      --no-docker: "Start Docker Compose services if a compose file exists."
+      --attach: "Attach a UI once the stack is up. With --no-attach the runner is brought up, its address is printed, and the command returns."
+      --no-attach: "Attach a UI once the stack is up. With --no-attach the runner is brought up, its address is printed, and the command returns."
+      --tui: "Show the interactive terminal UI when attaching. Ignored with --no-attach, since nothing renders."
+      --no-tui: "Show the interactive terminal UI when attaching. Ignored with --no-attach, since nothing renders."
+      --flutter: "Auto-launch companion Flutter apps on the first UI attach."
+      --no-flutter: "Auto-launch companion Flutter apps on the first UI attach."
     exclusiveFlags:
       - [watch, no-watch]
       - [docker, no-docker]
+      - [attach, no-attach]
       - [tui, no-tui]
       - [flutter, no-flutter]
 
   - name: upgrade
+    flags:
+      --channel=: "Which published versions to consider. Defaults to following prereleases when a prerelease is installed, and stable releases otherwise."
+      --version=: "Install a specific version instead of the newest one in the channel. This is the only way to move the installation backwards."
+      -f, --force: "Install even when the installed version is already the target, or when the CLI being run is not the one that would be replaced."
+    completion:
+      flag:
+        channel: ["stable", "any"]
 
   - name: version
 

@@ -1,2 +1,5 @@
+analyzer:
+  exclude:
+    - build/**
 formatter:
   trailing_commas: preserve

@@ -56,7 +56,7 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'File path collision detected: This model and "module/protocol/lib/src/protocol/example.yaml" would generate files at the same location. Please modify the path or filename to ensure each model generates to a unique location.',
+          'File path collision detected: This model and "module/protocol/lib/src/protocol/example.spy.yaml" would generate files at the same location. Please modify the path or filename to ensure each model generates to a unique location.',
         );
       },
     );

@@ -8,10 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/nested_one_to_many/arena.dart' as _iv085ahk;
 import '../../models_with_relations/nested_one_to_many/player.dart'
@@ -77,8 +80,9 @@ abstract class Team implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? name,
     int? arenaId,
-    _iv085ahk.Arena? arena,
-    List<_i9mhudyy.Player>? players,
+    _iv085ahk.Arena? arena = const _UndefinedTeam$arena(),
+    List<_i9mhudyy.Player>? players =
+        const _issu.$UndefinedList<_i9mhudyy.Player>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -142,6 +146,11 @@ abstract class Team implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedTeam$arena extends _issu.UndefinedSentinel
+    implements _iv085ahk.Arena {
+  const _UndefinedTeam$arena();
+}
+
 class _TeamImpl extends Team {
   _TeamImpl({
     int? id,
@@ -165,17 +174,18 @@ class _TeamImpl extends Team {
     Object? id = _Undefined,
     String? name,
     Object? arenaId = _Undefined,
-    Object? arena = _Undefined,
-    Object? players = _Undefined,
+    _iv085ahk.Arena? arena = const _UndefinedTeam$arena(),
+    List<_i9mhudyy.Player>? players =
+        const _issu.$UndefinedList<_i9mhudyy.Player>(),
   }) {
     return Team(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       arenaId: arenaId is int? ? arenaId : this.arenaId,
-      arena: arena is _iv085ahk.Arena? ? arena : this.arena?.copyWith(),
-      players: players is List<_i9mhudyy.Player>?
-          ? players
-          : this.players?.map((e0) => e0.copyWith()).toList(),
+      arena: arena is _issu.UndefinedSentinel ? this.arena?.copyWith() : arena,
+      players: players is _issu.UndefinedSentinel
+          ? this.players?.map((e0) => e0.copyWith()).toList()
+          : players,
     );
   }
 }
@@ -380,6 +390,71 @@ class TeamRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [Team]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `Team.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<Team>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TeamTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TeamTable>? orderBy,
+    _is.OrderByListBuilder<TeamTable>? orderByList,
+    TeamInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<Team>(
+      where: where?.call(Team.t),
+      orderBy: orderBy?.call(Team.t),
+      orderByList: orderByList?.call(Team.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

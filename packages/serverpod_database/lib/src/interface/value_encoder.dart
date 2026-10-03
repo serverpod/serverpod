@@ -38,4 +38,8 @@ abstract interface class ValueEncoder {
     dynamic value, {
     bool hasDefaults = false,
   });
+
+  /// Quotes a table name for use as a SQL identifier. A `schema.table` name is
+  /// qualified where the dialect supports schemas.
+  String quoteTableName(String tableName);
 }

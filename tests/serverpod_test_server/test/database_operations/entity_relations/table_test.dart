@@ -137,7 +137,7 @@ void expectTableRelationWith({
     reason: 'Relation query alias is wrong.',
   );
   expect(
-    actualTableRelation.foreignTableName,
+    actualTableRelation.foreignTable.tableName,
     expectedLastForeignTableName,
     reason: 'Last foreign table name is wrong.',
   );

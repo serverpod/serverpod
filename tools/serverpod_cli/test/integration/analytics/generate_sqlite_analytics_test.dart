@@ -9,6 +9,7 @@ import 'package:test/test.dart';
 import '../../test_util/analytics_helpers.dart';
 import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/endpoint_validation_helpers.dart';
+import '../../test_util/file_system_entity_helpers.dart';
 
 void main() {
   test(
@@ -19,7 +20,7 @@ void main() {
       final projectDir = Directory.systemTemp.createTempSync(
         'cli_analytics_sqlite_',
       );
-      addTearDown(() => projectDir.deleteIfExists(recursive: true));
+      addTearDown(() => projectDir.deleteWithRetry(recursive: true));
       addTearDown(() => initializeCliAnalytics(CliAnalytics.disabled()));
 
       await createTestEnvironment(projectDir);

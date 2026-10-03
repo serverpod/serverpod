@@ -8,10 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
     as _iayhscrz;
@@ -76,8 +79,8 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? name,
     int? motherId,
-    _iayhscrz.Cat? mother,
-    List<_iayhscrz.Cat>? kittens,
+    _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
+    List<_iayhscrz.Cat>? kittens = const _issu.$UndefinedList<_iayhscrz.Cat>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -141,6 +144,11 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedCat$mother extends _issu.UndefinedSentinel
+    implements _iayhscrz.Cat {
+  const _UndefinedCat$mother();
+}
+
 class _CatImpl extends Cat {
   _CatImpl({
     int? id,
@@ -164,17 +172,19 @@ class _CatImpl extends Cat {
     Object? id = _Undefined,
     String? name,
     Object? motherId = _Undefined,
-    Object? mother = _Undefined,
-    Object? kittens = _Undefined,
+    _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
+    List<_iayhscrz.Cat>? kittens = const _issu.$UndefinedList<_iayhscrz.Cat>(),
   }) {
     return Cat(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
-      mother: mother is _iayhscrz.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_iayhscrz.Cat>?
-          ? kittens
-          : this.kittens?.map((e0) => e0.copyWith()).toList(),
+      mother: mother is _issu.UndefinedSentinel
+          ? this.mother?.copyWith()
+          : mother,
+      kittens: kittens is _issu.UndefinedSentinel
+          ? this.kittens?.map((e0) => e0.copyWith()).toList()
+          : kittens,
     );
   }
 }
@@ -379,6 +389,71 @@ class CatRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [Cat]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `Cat.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<Cat>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CatTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CatTable>? orderBy,
+    _is.OrderByListBuilder<CatTable>? orderByList,
+    CatInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<Cat>(
+      where: where?.call(Cat.t),
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

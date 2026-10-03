@@ -8,10 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
     as _i08l111i;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
@@ -77,7 +80,8 @@ abstract class PersonWithLongTableName
     int? id,
     String? name,
     int? organizationId,
-    _imc5i9r4.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization =
+        const _UndefinedPersonWithLongTableName$organization(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -138,6 +142,12 @@ abstract class PersonWithLongTableName
 
 class _Undefined {}
 
+class _UndefinedPersonWithLongTableName$organization
+    extends _issu.UndefinedSentinel
+    implements _imc5i9r4.OrganizationWithLongTableName {
+  const _UndefinedPersonWithLongTableName$organization();
+}
+
 class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
   _PersonWithLongTableNameImpl({
     int? id,
@@ -159,7 +169,8 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     Object? id = _Undefined,
     String? name,
     Object? organizationId = _Undefined,
-    Object? organization = _Undefined,
+    _imc5i9r4.OrganizationWithLongTableName? organization =
+        const _UndefinedPersonWithLongTableName$organization(),
   }) {
     return PersonWithLongTableNameImplicit._(
       id: id is int? ? id : this.id,
@@ -167,9 +178,9 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _imc5i9r4.OrganizationWithLongTableName?
-          ? organization
-          : this.organization?.copyWith(),
+      organization: organization is _issu.UndefinedSentinel
+          ? this.organization?.copyWith()
+          : organization,
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
           this._cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
     );
@@ -388,6 +399,71 @@ class PersonWithLongTableNameRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [PersonWithLongTableName]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `PersonWithLongTableName.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<PersonWithLongTableName>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    PersonWithLongTableNameInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<PersonWithLongTableName>(
+      where: where?.call(PersonWithLongTableName.t),
+      orderBy: orderBy?.call(PersonWithLongTableName.t),
+      orderByList: orderByList?.call(PersonWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

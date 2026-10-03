@@ -51,7 +51,7 @@ void main() async {
   );
 
   test(
-    'Given that withServerpod can find the database and has a timeout set to 4 seconds '
+    'Given that withServerpod can find the database and has a timeout that covers startup '
     'when running the test '
     'then should pass',
     () async {

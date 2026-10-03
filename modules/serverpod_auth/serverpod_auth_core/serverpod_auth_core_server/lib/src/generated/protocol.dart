@@ -332,6 +332,7 @@ class Protocol extends _is.DatabaseSerializationManager {
           onUpdate: _isp.ForeignKeyAction.noAction,
           onDelete: _isp.ForeignKeyAction.noAction,
           matchType: null,
+          deferrable: _isp.DeferrableConstraint.initiallyDeferred,
         ),
       ],
       indexes: [
@@ -563,7 +564,7 @@ class Protocol extends _is.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _is.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
@@ -1072,7 +1073,7 @@ class Protocol extends _is.DatabaseSerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on FormatException catch (_) {}
+        } on _is.DeserializationClassNameNotFoundException catch (_) {}
       }
     }
     return deserializeByClassName(value);

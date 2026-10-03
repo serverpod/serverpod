@@ -8,10 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
     as _i08l111i;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _iaks25tn;
@@ -67,7 +70,7 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? id,
     String? name,
     int? teamId,
-    _iaks25tn.Team? team,
+    _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -121,6 +124,11 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
 class _Undefined {}
 
+class _UndefinedPlayer$team extends _issu.UndefinedSentinel
+    implements _iaks25tn.Team {
+  const _UndefinedPlayer$team();
+}
+
 class _PlayerImpl extends Player {
   _PlayerImpl({
     int? id,
@@ -142,13 +150,13 @@ class _PlayerImpl extends Player {
     Object? id = _Undefined,
     String? name,
     Object? teamId = _Undefined,
-    Object? team = _Undefined,
+    _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   }) {
     return Player(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _iaks25tn.Team? ? team : this.team?.copyWith(),
+      team: team is _issu.UndefinedSentinel ? this.team?.copyWith() : team,
     );
   }
 }
@@ -301,6 +309,71 @@ class PlayerRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [Player]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `Player.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<Player>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PlayerTable>? orderBy,
+    _is.OrderByListBuilder<PlayerTable>? orderByList,
+    PlayerInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<Player>(
+      where: where?.call(Player.t),
+      orderBy: orderBy?.call(Player.t),
+      orderByList: orderByList?.call(Player.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

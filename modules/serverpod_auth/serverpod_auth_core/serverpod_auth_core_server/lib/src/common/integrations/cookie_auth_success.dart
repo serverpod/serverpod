@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/undefined_sentinel.dart';
 
 import '../../generated/protocol.dart';
 
@@ -51,7 +52,7 @@ class CookieAuthSuccess implements AuthSuccess {
   CookieAuthSuccess copyWith({
     final String? authStrategy,
     final String? token,
-    final Object? tokenExpiresAt = _Undefined,
+    final DateTime? tokenExpiresAt = const $UndefinedDateTime(),
     final Object? refreshToken = _Undefined,
     final UuidValue? authUserId,
     final Set<String>? scopeNames,
@@ -60,9 +61,11 @@ class CookieAuthSuccess implements AuthSuccess {
       AuthSuccess(
         authStrategy: authStrategy ?? this.authStrategy,
         token: token ?? this.token,
-        tokenExpiresAt: tokenExpiresAt is DateTime?
-            ? tokenExpiresAt
-            : this.tokenExpiresAt,
+        // Match the generated AuthSuccess.copyWith omission handling.
+        // ignore: invalid_use_of_internal_member
+        tokenExpiresAt: tokenExpiresAt is UndefinedSentinel
+            ? this.tokenExpiresAt
+            : tokenExpiresAt,
         refreshToken: refreshToken is String?
             ? refreshToken
             : this.refreshToken,

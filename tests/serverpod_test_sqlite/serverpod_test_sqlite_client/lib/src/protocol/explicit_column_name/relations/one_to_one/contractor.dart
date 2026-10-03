@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../../explicit_column_name/relations/one_to_one/service.dart'
@@ -63,7 +65,7 @@ abstract class Contractor
     int? id,
     String? name,
     int? serviceIdField,
-    _iml73r3x.Service? service,
+    _iml73r3x.Service? service = const _UndefinedContractor$service(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,6 +97,11 @@ abstract class Contractor
 
 class _Undefined {}
 
+class _UndefinedContractor$service extends _issu.UndefinedSentinel
+    implements _iml73r3x.Service {
+  const _UndefinedContractor$service();
+}
+
 class _ContractorImpl extends Contractor {
   _ContractorImpl({
     int? id,
@@ -116,7 +123,7 @@ class _ContractorImpl extends Contractor {
     Object? id = _Undefined,
     String? name,
     Object? serviceIdField = _Undefined,
-    Object? service = _Undefined,
+    _iml73r3x.Service? service = const _UndefinedContractor$service(),
   }) {
     return Contractor(
       id: id is int? ? id : this.id,
@@ -124,9 +131,9 @@ class _ContractorImpl extends Contractor {
       serviceIdField: serviceIdField is int?
           ? serviceIdField
           : this.serviceIdField,
-      service: service is _iml73r3x.Service?
-          ? service
-          : this.service?.copyWith(),
+      service: service is _issu.UndefinedSentinel
+          ? this.service?.copyWith()
+          : service,
     );
   }
 }

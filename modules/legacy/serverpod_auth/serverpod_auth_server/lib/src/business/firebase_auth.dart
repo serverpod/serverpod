@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_auth_server/src/firebase/exceptions/firebase_exception.dart';
@@ -47,4 +48,10 @@ class FirebaseAuth {
     _authManager = authManager;
     return authManager;
   }
+
+  /// Replaces the manager returned by [authManager], so tests can drive the
+  /// Firebase endpoints without a service account. Pass null to restore it.
+  @visibleForTesting
+  static set authManagerOverride(FirebaseAuthManager? authManager) =>
+      _authManager = authManager;
 }

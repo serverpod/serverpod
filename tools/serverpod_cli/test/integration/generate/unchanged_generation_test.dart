@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/endpoint_validation_helpers.dart';
+import '../../test_util/file_system_entity_helpers.dart';
 
 void main() {
   group('Given a project whose code generation already ran,', () {
@@ -22,8 +22,8 @@ void main() {
     // is detectable regardless of file system timestamp granularity.
     final mtimeSentinel = DateTime.utc(2020, 1, 1);
 
-    tearDownAll(() {
-      projectDir.deleteIfExists(recursive: true);
+    tearDownAll(() async {
+      await projectDir.deleteWithRetry(recursive: true);
     });
 
     setUpAll(() async {

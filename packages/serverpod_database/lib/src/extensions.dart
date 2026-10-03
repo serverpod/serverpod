@@ -6,13 +6,20 @@ import 'migrations/table_comparison_warning.dart';
 /// Utility methods for [DatabaseDefinition].
 extension DatabaseDefinitionUtils on DatabaseDefinition {
   /// Returns true if the database contains a table with the given [tableName].
-  bool containsTableNamed(String tableName) {
-    return (findTableNamed(tableName) != null);
+  bool containsTableNamed(String tableName, {String? schema}) {
+    return (findTableNamed(tableName, schema: schema) != null);
   }
 
   /// Finds a table by its name, or returns null if no table with the given name.
-  TableDefinition? findTableNamed(String tableName) {
-    return tables.firstWhereOrNull((table) => table.name == tableName);
+  ///
+  /// A [schema] of `public` is the unspecified default and falls back to
+  /// matching on name alone.
+  TableDefinition? findTableNamed(String tableName, {String? schema}) {
+    var candidates = tables.where((table) => table.name == tableName);
+    if (schema == null) return candidates.firstOrNull;
+
+    return candidates.singleWhereOrNull((table) => table.schema == schema) ??
+        (schema == 'public' ? candidates.firstOrNull : null);
   }
 }
 
@@ -63,6 +70,10 @@ extension TableDefinitionUtils on TableDefinition {
 /// Comparison methods for [TableDefinition].
 extension TableComparisons on TableDefinition {
   /// Compares this table definition with [other], returning a list of mismatches.
+  ///
+  /// This definition is the expected one and [other] the one found. Columns,
+  /// indexes and foreign keys that only exist in this definition are reported
+  /// as missing, and those that only exist in [other] are reported as added.
   List<ComparisonWarning> like(TableDefinition other) {
     List<ComparisonWarning> mismatches = [];
 
@@ -118,6 +129,18 @@ extension TableComparisons on TableDefinition {
       }
     }
 
+    for (var otherColumn in other.columns) {
+      if (!containsColumnNamed(otherColumn.name)) {
+        mismatches.add(
+          ColumnComparisonWarning(
+            name: otherColumn.name,
+            expected: null,
+            found: otherColumn.name,
+          ),
+        );
+      }
+    }
+
     for (var index in indexes) {
       var otherIndex = other.findIndexNamed(index.indexName, ignoreCase: true);
       if (otherIndex == null) {
@@ -137,6 +160,18 @@ extension TableComparisons on TableDefinition {
             ).addSubs(indexMismatches),
           );
         }
+      }
+    }
+
+    for (var otherIndex in other.indexes) {
+      if (findIndexNamed(otherIndex.indexName, ignoreCase: true) == null) {
+        mismatches.add(
+          IndexComparisonWarning(
+            name: otherIndex.indexName,
+            expected: null,
+            found: otherIndex.indexName,
+          ),
+        );
       }
     }
 
@@ -168,6 +203,22 @@ extension TableComparisons on TableDefinition {
       }
     }
 
+    for (var otherForeignKey in other.foreignKeys) {
+      var foreignKey = findForeignKeyDefinitionNamed(
+        otherForeignKey.constraintName,
+        ignoreCase: true,
+      );
+      if (foreignKey == null) {
+        mismatches.add(
+          ForeignKeyComparisonWarning(
+            name: otherForeignKey.constraintName,
+            expected: null,
+            found: otherForeignKey.constraintName,
+          ),
+        );
+      }
+    }
+
     return mismatches;
   }
 }
@@ -178,7 +229,13 @@ extension ColumnComparisons on ColumnDefinition {
   bool get isPrimary => name == defaultPrimaryKeyName;
 
   /// Compares this column definition with [other], returning a list of mismatches.
-  List<ColumnComparisonWarning> like(ColumnDefinition other) {
+  ///
+  /// Set [ignoreDefault] when comparing columns whose defaults are maintained
+  /// outside Serverpod's migrations.
+  List<ColumnComparisonWarning> like(
+    ColumnDefinition other, {
+    bool ignoreDefault = false,
+  }) {
     List<ColumnComparisonWarning> mismatches = [];
 
     if (name != other.name) {
@@ -211,7 +268,7 @@ extension ColumnComparisons on ColumnDefinition {
       );
     }
 
-    if (columnDefault != other.columnDefault) {
+    if (!ignoreDefault && columnDefault != other.columnDefault) {
       mismatches.add(
         ColumnComparisonWarning(
           name: 'default value',

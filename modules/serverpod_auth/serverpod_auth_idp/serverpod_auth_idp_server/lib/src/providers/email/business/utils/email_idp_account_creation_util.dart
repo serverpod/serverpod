@@ -29,13 +29,16 @@ class EmailIdpAccountCreationUtil {
     required final EmailIdpAccountCreationUtilsConfig config,
     required final Argon2HashUtil passwordHashUtils,
     required final AuthUsers authUsers,
+    final Argon2HashUtil? verificationCodeHash,
+    final Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _authUsers = authUsers,
        _hashUtils = passwordHashUtils {
     _challengeUtil = SecretChallengeUtil(
       verificationConfig: _getVerificationConfig(),
       completionConfig: _getCompletionConfig(),
-      hashUtil: passwordHashUtils,
+      hashUtil: verificationCodeHash ?? passwordHashUtils,
+      completionTokenHash: completionTokenHash,
     );
   }
 
@@ -346,12 +349,13 @@ class EmailIdpAccountCreationUtil {
   SecretChallengeVerificationConfig<EmailAccountRequest>
   _getVerificationConfig() {
     return SecretChallengeVerificationConfig(
-      rateLimiter: DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
-        RateLimitedRequestAttemptConfig(
+      rateLimiter: DatabaseRateLimiter(
+        RateLimiterConfig(
           domain: 'email',
           source: 'account_creation_verification',
           maxAttempts: _config.registrationVerificationCodeAllowedAttempts,
-          onRateLimitExceeded: _onRateLimitExceeded,
+          onRateLimitExceeded: (final session, final key) =>
+              _onRateLimitExceeded(session, UuidValue.withValidation(key)),
         ),
       ),
       getRequest: _getAccountRequest,

@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -24,9 +23,9 @@ class RepairMigrationException implements Exception {
 /// command, the TUI's "Repair Migration" button, and the
 /// `create_repair_migration` MCP tool.
 ///
-/// Connects to the running server (in [runMode]) to fetch the live database
-/// schema, diffs it against the target migration version, and writes a repair
-/// migration if drift is found.
+/// Connects to the running server (in [runMode]) at [insightsAddress] to fetch
+/// the live database schema, diffs it against the target migration version, and
+/// writes a repair migration if drift is found.
 ///
 /// Returns the generated `.sql` file, or `null` when no schema drift is
 /// detected (override with [force]).
@@ -45,8 +44,9 @@ Future<File?> createRepairMigrationAction({
   String? tag,
   bool force = false,
   String? targetMigrationVersion,
+  required String insightsAddress,
 }) async {
-  if (!config.isFeatureEnabled(ServerpodFeature.database)) {
+  if (!config.isDatabaseEnabled) {
     throw const RepairMigrationException(
       'The database feature is not enabled in this project. '
       'Repair migrations cannot be created.',
@@ -74,6 +74,7 @@ Future<File?> createRepairMigrationAction({
         runMode: runMode,
         dialect: config.databaseDialect,
         targetMigrationVersion: targetMigrationVersion,
+        insightsAddress: insightsAddress,
       );
 
   // Hooked here rather than in the callers so the `create-repair-migration`

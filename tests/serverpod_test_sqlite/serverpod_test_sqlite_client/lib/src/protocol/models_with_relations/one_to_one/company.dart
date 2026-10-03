@@ -8,11 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../models_with_relations/one_to_one/town.dart' as _i59ly1gg;
@@ -69,7 +72,7 @@ abstract class Company
     int? id,
     String? name,
     int? townId,
-    _i59ly1gg.Town? town,
+    _i59ly1gg.Town? town = const _UndefinedCompany$town(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -123,6 +126,11 @@ abstract class Company
 
 class _Undefined {}
 
+class _UndefinedCompany$town extends _issu.UndefinedSentinel
+    implements _i59ly1gg.Town {
+  const _UndefinedCompany$town();
+}
+
 class _CompanyImpl extends Company {
   _CompanyImpl({
     int? id,
@@ -144,13 +152,13 @@ class _CompanyImpl extends Company {
     Object? id = _Undefined,
     String? name,
     int? townId,
-    Object? town = _Undefined,
+    _i59ly1gg.Town? town = const _UndefinedCompany$town(),
   }) {
     return Company(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _i59ly1gg.Town? ? town : this.town?.copyWith(),
+      town: town is _issu.UndefinedSentinel ? this.town?.copyWith() : town,
     );
   }
 }
@@ -301,6 +309,71 @@ class CompanyRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [Company]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `Company.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<Company>> watch(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CompanyTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CompanyTable>? orderBy,
+    _isd.OrderByListBuilder<CompanyTable>? orderByList,
+    CompanyInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_isd.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<Company>(
+      where: where?.call(Company.t),
+      orderBy: orderBy?.call(Company.t),
+      orderByList: orderByList?.call(Company.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

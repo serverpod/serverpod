@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class ObjectWithHalfVector
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
@@ -85,7 +87,7 @@ abstract class ObjectWithHalfVector
   ObjectWithHalfVector copyWith({
     int? id,
     _isc.HalfVector? halfVector,
-    _isc.HalfVector? halfVectorNullable,
+    _isc.HalfVector? halfVectorNullable = const _issu.$UndefinedHalfVector(),
     _isc.HalfVector? halfVectorIndexedHnsw,
     _isc.HalfVector? halfVectorIndexedHnswWithParams,
     _isc.HalfVector? halfVectorIndexedIvfflat,
@@ -159,7 +161,7 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
   ObjectWithHalfVector copyWith({
     Object? id = _Undefined,
     _isc.HalfVector? halfVector,
-    Object? halfVectorNullable = _Undefined,
+    _isc.HalfVector? halfVectorNullable = const _issu.$UndefinedHalfVector(),
     _isc.HalfVector? halfVectorIndexedHnsw,
     _isc.HalfVector? halfVectorIndexedHnswWithParams,
     _isc.HalfVector? halfVectorIndexedIvfflat,
@@ -168,9 +170,9 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
     return ObjectWithHalfVector(
       id: id is int? ? id : this.id,
       halfVector: halfVector ?? this.halfVector.clone(),
-      halfVectorNullable: halfVectorNullable is _isc.HalfVector?
-          ? halfVectorNullable
-          : this.halfVectorNullable?.clone(),
+      halfVectorNullable: halfVectorNullable is _issu.UndefinedSentinel
+          ? this.halfVectorNullable?.clone()
+          : halfVectorNullable,
       halfVectorIndexedHnsw:
           halfVectorIndexedHnsw ?? this.halfVectorIndexedHnsw.clone(),
       halfVectorIndexedHnswWithParams:

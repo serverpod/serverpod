@@ -75,7 +75,7 @@ class SecretChallengeVerificationConfig<T> {
   ///
   /// If provided, rate limiting will be handled internally by [SecretChallengeUtil].
   /// If not provided, no rate limiting will be applied.
-  final RateLimitedRequestAttemptUtil<UuidValue>? rateLimiter;
+  final RateLimiter? rateLimiter;
 
   /// Creates a new [SecretChallengeVerificationConfig].
   SecretChallengeVerificationConfig({
@@ -122,7 +122,7 @@ class SecretChallengeCompletionConfig<T> {
   ///
   /// If provided, rate limiting will be handled internally by [SecretChallengeUtil].
   /// If not provided, no rate limiting will be applied.
-  final RateLimitedRequestAttemptUtil<UuidValue>? rateLimiter;
+  final RateLimiter? rateLimiter;
 
   /// Creates a new [SecretChallengeCompletionConfig].
   SecretChallengeCompletionConfig({
@@ -137,41 +137,41 @@ class SecretChallengeCompletionConfig<T> {
 /// Extension methods for [SecretChallengeVerificationConfig].
 extension SecretChallengeVerificationConfigExtension<T>
     on SecretChallengeVerificationConfig<T> {
-  /// Records an attempts and checks if the request has too many attempts.
+  /// Attempts to admit and record a request.
   ///
-  /// Returns `true` if the request has too many attempts, `false` otherwise.
-  /// If no rate limiter is provided, returns `false`.
-  Future<bool> hasTooManyAttempts(
+  /// Returns `true` if admitted, `false` if rate limited.
+  /// If no rate limiter is provided, returns `true`.
+  Future<bool> tryRecordAttempt(
     final Session session, {
-    required final UuidValue nonce,
+    required final UuidValue requestId,
     final Map<String, String>? extraData,
   }) async {
-    return await rateLimiter?.hasTooManyAttempts(
+    return await rateLimiter?.tryRecordAttempt(
           session,
-          nonce: nonce,
+          key: requestId.uuid,
           extraData: extraData,
         ) ??
-        false;
+        true;
   }
 }
 
 /// Extension methods for [SecretChallengeCompletionConfig].
 extension SecretChallengeCompletionConfigExtension<T>
     on SecretChallengeCompletionConfig<T> {
-  /// Records an attempts and checks if the request has too many attempts.
+  /// Attempts to admit and record a request.
   ///
-  /// Returns `true` if the request has too many attempts, `false` otherwise.
-  /// If no rate limiter is provided, returns `false`.
-  Future<bool> hasTooManyAttempts(
+  /// Returns `true` if admitted, `false` if rate limited.
+  /// If no rate limiter is provided, returns `true`.
+  Future<bool> tryRecordAttempt(
     final Session session, {
-    required final UuidValue nonce,
+    required final UuidValue requestId,
     final Map<String, String>? extraData,
   }) async {
-    return await rateLimiter?.hasTooManyAttempts(
+    return await rateLimiter?.tryRecordAttempt(
           session,
-          nonce: nonce,
+          key: requestId.uuid,
           extraData: extraData,
         ) ??
-        false;
+        true;
   }
 }

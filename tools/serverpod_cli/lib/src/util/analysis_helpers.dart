@@ -6,17 +6,30 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_shared/process_io.dart';
 
-/// Notifies the [collection] that the given [files] have been created or
+/// Notifies the [collection] that the given [changedFiles] have been created or
 /// modified on disk, so subsequent analysis calls resolve updated content.
-Future<void> refreshAnalysisContext(
+///
+/// Returns [changedFiles] spelled as the context spells them, so a path that
+/// differs only in case (the file watcher lowercases paths on Windows) is not
+/// treated as a second file.
+Future<Set<String>> refreshAnalysisContext(
   AnalysisContextCollection collection,
   Iterable<String> changedFiles,
 ) async {
   final context = collection.contexts.single; // current invariant
-  for (final changedFile in changedFiles) {
-    context.changeFile(p.normalize(File(changedFile).absolute.path));
+  final known = context.contextRoot.analyzedFiles().toList();
+  final resolved = {
+    for (final changedFile in changedFiles)
+      known.firstWhere(
+        (path) => p.equals(path, changedFile),
+        orElse: () => p.normalize(File(changedFile).absolute.path),
+      ),
+  };
+  for (final path in resolved) {
+    context.changeFile(path);
   }
   await context.applyPendingFileChanges();
+  return resolved;
 }
 
 /// Creates an [AnalysisContextCollection] for the given [directory].

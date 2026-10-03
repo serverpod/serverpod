@@ -8,14 +8,17 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
     as _ik2mg1i3;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class TokenMetadata
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -90,7 +93,8 @@ abstract class TokenMetadata
   TokenMetadata copyWith({
     int? id,
     _is.UuidValue? refreshTokenId,
-    _iacs.RefreshToken? refreshToken,
+    _iacs.RefreshToken? refreshToken =
+        const _UndefinedTokenMetadata$refreshToken(),
     String? deviceName,
     String? ipAddress,
     String? userAgent,
@@ -147,6 +151,11 @@ abstract class TokenMetadata
 
 class _Undefined {}
 
+class _UndefinedTokenMetadata$refreshToken extends _issu.UndefinedSentinel
+    implements _iacs.RefreshToken {
+  const _UndefinedTokenMetadata$refreshToken();
+}
+
 class _TokenMetadataImpl extends TokenMetadata {
   _TokenMetadataImpl({
     int? id,
@@ -173,7 +182,8 @@ class _TokenMetadataImpl extends TokenMetadata {
   TokenMetadata copyWith({
     Object? id = _Undefined,
     _is.UuidValue? refreshTokenId,
-    Object? refreshToken = _Undefined,
+    _iacs.RefreshToken? refreshToken =
+        const _UndefinedTokenMetadata$refreshToken(),
     String? deviceName,
     Object? ipAddress = _Undefined,
     Object? userAgent = _Undefined,
@@ -182,9 +192,9 @@ class _TokenMetadataImpl extends TokenMetadata {
     return TokenMetadata(
       id: id is int? ? id : this.id,
       refreshTokenId: refreshTokenId ?? this.refreshTokenId,
-      refreshToken: refreshToken is _iacs.RefreshToken?
-          ? refreshToken
-          : this.refreshToken?.copyWith(),
+      refreshToken: refreshToken is _issu.UndefinedSentinel
+          ? this.refreshToken?.copyWith()
+          : refreshToken,
       deviceName: deviceName ?? this.deviceName,
       ipAddress: ipAddress is String? ? ipAddress : this.ipAddress,
       userAgent: userAgent is String? ? userAgent : this.userAgent,
@@ -383,6 +393,71 @@ class TokenMetadataRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [TokenMetadata]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `TokenMetadata.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<TokenMetadata>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    TokenMetadataInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<TokenMetadata>(
+      where: where?.call(TokenMetadata.t),
+      orderBy: orderBy?.call(TokenMetadata.t),
+      orderByList: orderByList?.call(TokenMetadata.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

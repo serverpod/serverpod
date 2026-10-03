@@ -92,7 +92,7 @@ abstract class MigrationTestUtils {
       var protocolFile = File(
         path.join(
           _migrationProtocolTestDirectory().path,
-          '$fileName.yaml',
+          '$fileName.spy.yaml',
         ),
       );
 

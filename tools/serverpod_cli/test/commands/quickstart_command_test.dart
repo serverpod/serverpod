@@ -1,7 +1,7 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/quickstart.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -8,9 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../protocol.dart' as _iv35mfmj;
 import '../scopes/scope_server_only_field.dart' as _ijcqyoxk;
@@ -55,8 +57,10 @@ abstract class ScopeServerOnlyFieldChild extends _iv35mfmj.ScopeServerOnlyField
   @override
   @_isc.useResult
   ScopeServerOnlyFieldChild copyWith({
-    Object? allScope,
-    Object? nested,
+    _ih2vh47j.Types? allScope =
+        const _UndefinedScopeServerOnlyFieldChild$allScope(),
+    _ijcqyoxk.ScopeServerOnlyField? nested =
+        const _UndefinedScopeServerOnlyFieldChild$nested(),
     String? childFoo,
   });
   @override
@@ -85,7 +89,16 @@ abstract class ScopeServerOnlyFieldChild extends _iv35mfmj.ScopeServerOnlyField
   }
 }
 
-class _Undefined {}
+class _UndefinedScopeServerOnlyFieldChild$allScope
+    extends _issu.UndefinedSentinel
+    implements _ih2vh47j.Types {
+  const _UndefinedScopeServerOnlyFieldChild$allScope();
+}
+
+class _UndefinedScopeServerOnlyFieldChild$nested extends _issu.UndefinedSentinel
+    implements _ijcqyoxk.ScopeServerOnlyField {
+  const _UndefinedScopeServerOnlyFieldChild$nested();
+}
 
 class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
   _ScopeServerOnlyFieldChildImpl({
@@ -103,17 +116,19 @@ class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
   @_isc.useResult
   @override
   ScopeServerOnlyFieldChild copyWith({
-    Object? allScope = _Undefined,
-    Object? nested = _Undefined,
+    _ih2vh47j.Types? allScope =
+        const _UndefinedScopeServerOnlyFieldChild$allScope(),
+    _ijcqyoxk.ScopeServerOnlyField? nested =
+        const _UndefinedScopeServerOnlyFieldChild$nested(),
     String? childFoo,
   }) {
     return ScopeServerOnlyFieldChild(
-      allScope: allScope is _ih2vh47j.Types?
-          ? allScope
-          : this.allScope?.copyWith(),
-      nested: nested is _ijcqyoxk.ScopeServerOnlyField?
-          ? nested
-          : this.nested?.copyWith(),
+      allScope: allScope is _issu.UndefinedSentinel
+          ? this.allScope?.copyWith()
+          : allScope,
+      nested: nested is _issu.UndefinedSentinel
+          ? this.nested?.copyWith()
+          : nested,
       childFoo: childFoo ?? this.childFoo,
     );
   }

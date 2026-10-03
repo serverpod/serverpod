@@ -11,7 +11,7 @@ const kAppsArea = 'apps';
 /// A view hosted in some area. Declares which area it is pinned to and owns
 /// its scroll position.
 abstract class PaneTab {
-  /// The area this tab is pinned to; routes the tab on insert.
+  /// The area this tab is pinned to, which routes the tab on insert.
   String get areaId;
 
   /// Tab label shown in the strip when an area has multiple tabs.
@@ -37,6 +37,17 @@ class ServerLogTab implements PaneTab {
   final InspectableScrollController scrollController;
 }
 
+/// Where a Flutter app is in its lifecycle, as a tab renders it.
+enum AppRunState {
+  /// Spawned but not yet ready.
+  launching,
+
+  ready,
+
+  /// Never launched, stopped, or failed to launch.
+  stopped,
+}
+
 /// Flutter app log view pinned to [kAppsArea].
 class AppLogTab implements PaneTab {
   /// Creates an [AppLogTab].
@@ -46,8 +57,7 @@ class AppLogTab implements PaneTab {
     BoundedQueueList<String>? lines,
     BoundedQueueList<Object>? logHistory,
     InspectableScrollController? scrollController,
-    this.ready = false,
-    this.stopped = false,
+    this.runState = AppRunState.stopped,
     this.url,
     this.device,
     this.startupStage,
@@ -64,13 +74,13 @@ class AppLogTab implements PaneTab {
   @override
   final String label;
 
-  /// Whether the Flutter app is running and a URL has been published.
-  bool ready;
+  AppRunState runState;
 
-  /// Whether the Flutter app stopped.
-  /// This can be from user quitting the app
-  /// or from app launch failing.
-  bool stopped;
+  bool get ready => runState == AppRunState.ready;
+
+  bool get stopped => runState == AppRunState.stopped;
+
+  bool get launching => runState == AppRunState.launching;
 
   /// HTTP URL the Flutter app is served at.
   String? url;

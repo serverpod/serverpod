@@ -8,10 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
+// ignore_for_file: dead_code, depend_on_referenced_packages
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/generated_relation_field/generated_relation_company.dart'
     as _ipeijyfj;
@@ -72,7 +75,8 @@ abstract class GeneratedRelationOffice
     int? id,
     String? address,
     int? customCompanyId,
-    _ipeijyfj.GeneratedRelationCompany? company,
+    _ipeijyfj.GeneratedRelationCompany? company =
+        const _UndefinedGeneratedRelationOffice$company(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -128,6 +132,11 @@ abstract class GeneratedRelationOffice
 
 class _Undefined {}
 
+class _UndefinedGeneratedRelationOffice$company extends _issu.UndefinedSentinel
+    implements _ipeijyfj.GeneratedRelationCompany {
+  const _UndefinedGeneratedRelationOffice$company();
+}
+
 class _GeneratedRelationOfficeImpl extends GeneratedRelationOffice {
   _GeneratedRelationOfficeImpl({
     int? id,
@@ -149,15 +158,16 @@ class _GeneratedRelationOfficeImpl extends GeneratedRelationOffice {
     Object? id = _Undefined,
     String? address,
     int? customCompanyId,
-    Object? company = _Undefined,
+    _ipeijyfj.GeneratedRelationCompany? company =
+        const _UndefinedGeneratedRelationOffice$company(),
   }) {
     return GeneratedRelationOffice(
       id: id is int? ? id : this.id,
       address: address ?? this.address,
       customCompanyId: customCompanyId ?? this.customCompanyId,
-      company: company is _ipeijyfj.GeneratedRelationCompany?
-          ? company
-          : this.company?.copyWith(),
+      company: company is _issu.UndefinedSentinel
+          ? this.company?.copyWith()
+          : company,
     );
   }
 }
@@ -315,6 +325,71 @@ class GeneratedRelationOfficeRepository {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Emits [GeneratedRelationOffice]s matching the given query parameters every time the
+  /// source tables are modified.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// Use [throttle] to specify the minimum interval between queries. It can
+  /// also be set to `null`, in which case the stream will only be throttled
+  /// when its subscription is paused.
+  ///
+  /// Source tables are collected from the queried table, [where], [orderBy],
+  /// [orderByList], and the [include] graph. [alsoTriggerOnTables] is added
+  /// to that set. Pass [Table] instances such as `GeneratedRelationOffice.t`.
+  ///
+  /// Raw [Expression] SQL is not inspected. Tables referenced only in raw
+  /// SQL must be passed via [alsoTriggerOnTables].
+  ///
+  /// The stream always reads committed state and never joins an ambient
+  /// [Transaction]. Emissions for a write fire after that write commits.
+  ///
+  /// Currently only supported on SQLite. Calling this method on PostgreSQL
+  /// throws an [UnsupportedError].
+  ///
+  /// ```dart
+  /// var subscription = Persons.db.watch(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// ).listen((persons) {
+  ///   // Handle the latest matching rows.
+  /// });
+  /// ```
+  _ida.Stream<List<GeneratedRelationOffice>> watch(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GeneratedRelationOfficeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GeneratedRelationOfficeTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationOfficeTable>? orderByList,
+    GeneratedRelationOfficeInclude? include,
+    Duration? throttle = const Duration(milliseconds: 30),
+    Iterable<_is.Table>? alsoTriggerOnTables,
+  }) {
+    return session.db.watch<GeneratedRelationOffice>(
+      where: where?.call(GeneratedRelationOffice.t),
+      orderBy: orderBy?.call(GeneratedRelationOffice.t),
+      orderByList: orderByList?.call(GeneratedRelationOffice.t),
+      limit: limit,
+      offset: offset,
+      include: include,
+      throttle: throttle,
+      alsoTriggerOnTables: alsoTriggerOnTables,
     );
   }
 

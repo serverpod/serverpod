@@ -60,8 +60,12 @@ String? sqliteSqlToAbstractDefault(
       if (sql == _sqliteNowExpression) {
         return defaultDateTimeValueNow;
       }
+      // Manually maintained schemas can use custom SQL expressions.
+      final milliseconds = int.tryParse(sql);
+      if (milliseconds == null) return sql;
+
       return DateTime.fromMillisecondsSinceEpoch(
-        int.parse(sql),
+        milliseconds,
         isUtc: true,
       ).toIso8601String();
     case ColumnType.uuid:
