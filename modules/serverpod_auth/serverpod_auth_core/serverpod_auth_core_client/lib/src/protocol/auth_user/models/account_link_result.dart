@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart'
     as _ifwxqeej;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../../auth_user/models/account_link_conflict.dart' as _ij0lqicu;
 import '../../auth_user/models/account_link_status.dart' as _i5gmp6jk;
 
@@ -58,7 +60,8 @@ abstract class AccountLinkResult
   @_isc.useResult
   AccountLinkResult copyWith({
     _i5gmp6jk.AccountLinkStatus? status,
-    _ij0lqicu.AccountLinkConflict? conflict,
+    _ij0lqicu.AccountLinkConflict? conflict =
+        const _UndefinedAccountLinkResult$conflict(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -84,7 +87,10 @@ abstract class AccountLinkResult
   }
 }
 
-class _Undefined {}
+class _UndefinedAccountLinkResult$conflict extends _issu.UndefinedSentinel
+    implements _ij0lqicu.AccountLinkConflict {
+  const _UndefinedAccountLinkResult$conflict();
+}
 
 class _AccountLinkResultImpl extends AccountLinkResult {
   _AccountLinkResultImpl({
@@ -101,13 +107,14 @@ class _AccountLinkResultImpl extends AccountLinkResult {
   @override
   AccountLinkResult copyWith({
     _i5gmp6jk.AccountLinkStatus? status,
-    Object? conflict = _Undefined,
+    _ij0lqicu.AccountLinkConflict? conflict =
+        const _UndefinedAccountLinkResult$conflict(),
   }) {
     return AccountLinkResult(
       status: status ?? this.status,
-      conflict: conflict is _ij0lqicu.AccountLinkConflict?
-          ? conflict
-          : this.conflict?.copyWith(),
+      conflict: conflict is _issu.UndefinedSentinel
+          ? this.conflict?.copyWith()
+          : conflict,
     );
   }
 }

@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
     as _i8reeoob;
+import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../../profile/models/user_profile_model.dart' as _ifks8d43;
 
 /// Describes the pre-existing account that owns the sign-in method a user is
@@ -70,7 +72,8 @@ abstract class AccountLinkConflict
   @_is.useResult
   AccountLinkConflict copyWith({
     _is.UuidValue? authUserId,
-    _ifks8d43.UserProfileModel? profile,
+    _ifks8d43.UserProfileModel? profile =
+        const _UndefinedAccountLinkConflict$profile(),
     DateTime? createdAt,
     String? method,
   });
@@ -102,7 +105,10 @@ abstract class AccountLinkConflict
   }
 }
 
-class _Undefined {}
+class _UndefinedAccountLinkConflict$profile extends _issu.UndefinedSentinel
+    implements _ifks8d43.UserProfileModel {
+  const _UndefinedAccountLinkConflict$profile();
+}
 
 class _AccountLinkConflictImpl extends AccountLinkConflict {
   _AccountLinkConflictImpl({
@@ -123,15 +129,16 @@ class _AccountLinkConflictImpl extends AccountLinkConflict {
   @override
   AccountLinkConflict copyWith({
     _is.UuidValue? authUserId,
-    Object? profile = _Undefined,
+    _ifks8d43.UserProfileModel? profile =
+        const _UndefinedAccountLinkConflict$profile(),
     DateTime? createdAt,
     String? method,
   }) {
     return AccountLinkConflict(
       authUserId: authUserId ?? this.authUserId,
-      profile: profile is _ifks8d43.UserProfileModel?
-          ? profile
-          : this.profile?.copyWith(),
+      profile: profile is _issu.UndefinedSentinel
+          ? this.profile?.copyWith()
+          : profile,
       createdAt: createdAt ?? this.createdAt,
       method: method ?? this.method,
     );
