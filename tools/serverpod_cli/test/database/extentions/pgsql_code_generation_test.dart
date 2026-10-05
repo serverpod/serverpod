@@ -1098,4 +1098,29 @@ END
       );
     },
   );
+
+  test(
+    'Given a foreign key with multiple columns, '
+    'when toPgSql is called, '
+    'then each column is quoted separately.',
+    () {
+      var foreignKey = ForeignKeyDefinition(
+        constraintName: 'child_fk_0',
+        columns: ['tenantId', 'parentId'],
+        referenceTable: 'parent',
+        referenceTableSchema: 'public',
+        referenceColumns: ['tenantId', 'id'],
+      );
+
+      var pgsql = foreignKey.toPgSql(tableName: 'child');
+
+      expect(
+        pgsql,
+        contains(
+          '    FOREIGN KEY("tenantId", "parentId")\n'
+          '    REFERENCES "parent"("tenantId", "id")',
+        ),
+      );
+    },
+  );
 }
