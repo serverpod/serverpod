@@ -97,16 +97,14 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
   }
 
   @override
-  Future<bool> update({
+  Future<GenerationRequirements> update({
     required GeneratorConfig config,
     required Set<String> affectedPaths,
-    GenerationRequirements requirements = GenerationRequirements.full,
   }) {
     return evaluate(
       (analyzers) => analyzers.update(
         config: config,
         affectedPaths: affectedPaths,
-        requirements: requirements,
       ),
     );
   }

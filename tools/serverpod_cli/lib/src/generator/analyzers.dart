@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/protocol_feature_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
-    show FutureCallDefinition;
+    show FutureCallDefinition, futureCallModelsDirectoryName;
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
@@ -106,55 +106,56 @@ class Analyzers {
   /// Refreshes the Dart analysis context for endpoints and future calls,
   /// and updates the model analyzer for changed or removed model files.
   ///
-  /// The [requirements] parameter controls which analyzers to update.
-  /// When [GenerationRequirements.generateModels] is `false`, the model
-  /// analyzer is not updated (saving time when only Dart files changed).
-  ///
-  /// Returns `true` if any of the changes are relevant for code generation
-  /// (endpoint, future call, or model changes), `false` otherwise.
-  Future<bool> update({
+  /// Returns the parts of the generation pipeline the changes call for, as
+  /// recognized by the analyzers: model generation when a model file changed,
+  /// future call model generation when a future call file changed, and
+  /// protocol generation when any of those or an endpoint file changed.
+  /// [GenerationRequirements.none] when no change is relevant for code
+  /// generation.
+  Future<GenerationRequirements> update({
     required GeneratorConfig config,
     required Set<String> affectedPaths,
-    GenerationRequirements requirements = GenerationRequirements.full,
   }) async {
-    var shouldGenerate = false;
+    final endpointsChanged = await _endpoints.updateFileContexts(
+      affectedPaths,
+    );
+    final futureCallsChanged = await _futureCalls.updateFileContexts(
+      affectedPaths,
+    );
 
-    if (requirements.generateProtocol) {
-      shouldGenerate |= await _endpoints.updateFileContexts(
-        affectedPaths,
-      );
-      shouldGenerate |= await _futureCalls.updateFileContexts(
-        affectedPaths,
-      );
-    }
-
-    if (requirements.generateModels) {
-      for (final path in affectedPaths) {
-        if (ModelHelper.isModelFile(path)) {
-          shouldGenerate = true;
-          final file = File(path);
-          if (file.existsSync()) {
-            _models.addYamlModel(
-              ModelHelper.createModelSourceForPath(
-                config,
-                path,
-                file.readAsStringSync(),
-              ),
-            );
-          } else {
-            _models.removeYamlModel(Uri.file(p.absolute(path)));
-          }
+    var modelsChanged = false;
+    for (final path in affectedPaths) {
+      if (ModelHelper.isModelFile(path)) {
+        modelsChanged = true;
+        final file = File(path);
+        if (file.existsSync()) {
+          _models.addYamlModel(
+            ModelHelper.createModelSourceForPath(
+              config,
+              path,
+              file.readAsStringSync(),
+            ),
+          );
+        } else {
+          _models.removeYamlModel(Uri.file(p.absolute(path)));
         }
       }
     }
-    return shouldGenerate;
+
+    return GenerationRequirements(
+      generateModels: modelsChanged,
+      generateProtocol: endpointsChanged || futureCallsChanged || modelsChanged,
+      generateFutureCallModels: futureCallsChanged,
+    );
   }
 
   /// Analyze the server package and generate the code.
   ///
   /// When [requirements] is provided, only generates the specified parts.
   /// This allows watch mode to skip expensive model generation when only
-  /// Dart files (endpoints/future calls) changed.
+  /// Dart files (endpoints/future calls) changed. Future call parameter
+  /// models are still generated when
+  /// [GenerationRequirements.generateFutureCallModels] is set.
   ///
   /// When [affectedPaths] is non-null, model validation only prints hint/info
   /// issues for files in that set (see [StatefulAnalyzer.validateAll]).
@@ -264,6 +265,17 @@ class Analyzers {
               models: allModels,
               config: config,
             );
+      } else if (requirements.generateFutureCallModels &&
+          futureCallModels.isNotEmpty) {
+        // A future call file changed without any model file changing. Its
+        // parameter models come from the Dart file, so they must be written
+        // for the protocol generated below to resolve.
+        log.debug('Generating files for future call parameter models.');
+        generatedModelFiles =
+            await ServerpodCodeGenerator.generateSerializableModels(
+              models: futureCallModels,
+              config: config,
+            );
       }
 
       if (!requirements.generateProtocol) {
@@ -274,9 +286,7 @@ class Analyzers {
         );
       }
 
-      final changedFiles = requirements.generateModels
-          ? {...?affectedPaths, ...generatedModelFiles}
-          : {...?affectedPaths};
+      final changedFiles = {...?affectedPaths, ...generatedModelFiles};
 
       log.debug('Analyzing the future calls.');
       var futureCallsAnalyzerCollector = CodeGenerationCollector();
@@ -363,9 +373,17 @@ class Analyzers {
 
         // Keep previous model files so they don't get deleted.
         final previousFiles = readGenerationStamp(config);
-        final previousModelFiles = previousFiles.where(
+        var previousModelFiles = previousFiles.where(
           (f) => previouslyGeneratedModelsDirs.any((dir) => p.isWithin(dir, f)),
         );
+
+        // When future call parameter models are regenerated, the ones
+        // left over from the previous run are stale and should be cleaned.
+        if (requirements.generateFutureCallModels) {
+          previousModelFiles = previousModelFiles.where(
+            (f) => !p.split(f).contains(futureCallModelsDirectoryName),
+          );
+        }
 
         allGeneratedFiles.addAll(previousModelFiles);
         log.debug(
