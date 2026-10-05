@@ -70,9 +70,9 @@ class EndpointsAnalyzer {
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
   /// Refreshes the Dart analysis context for the changed files and returns
-  /// `true` if any of them are (or were) endpoint files, meaning code
-  /// generation should run. The actual full analysis is deferred to the
-  /// next [analyze] call.
+  /// `true` if the analysis recognizes any of them as (or as having been)
+  /// endpoint files, meaning code generation should run. The actual full
+  /// analysis is deferred to the next [analyze] call.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     // Only consider files within the tracked directory.
     final relevantPaths = filePaths
@@ -106,13 +106,10 @@ class EndpointsAnalyzer {
     // Editing methods on an existing endpoint does not add/remove cache keys,
     // but generated protocol must still be refreshed (otherwise stale
     // generated Dart can break analysis/compile before the next generate).
-    for (final path in relevantPaths) {
-      if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
-      if (_fileCache.containsKey(path)) return true;
-      if (_isEndpointFile(File(path))) return true;
-    }
-
-    return false;
+    // The cache only holds files the analysis recognized as endpoint files.
+    return relevantPaths.any(
+      (path) => keysAfter.any((key) => p.equals(key, path)),
+    );
   }
 
   /// Analyze files in the [AnalysisContextCollection].
@@ -409,19 +406,6 @@ class EndpointsAnalyzer {
     }
 
     return endpointDefinitions;
-  }
-
-  /// Returns `true` if [file] appears to define an Endpoint subclass.
-  ///
-  /// Quick content check (no full analysis). Used with [_fileCache] so saves
-  /// to newly added endpoint files still trigger generation when the cache
-  /// has not yet been updated for other reasons.
-  bool _isEndpointFile(File file) {
-    if (!p.isWithin(absoluteIncludedPaths, file.absolute.path)) return false;
-    if (!file.path.endsWith('.dart')) return false;
-    if (isUnrenderedTemplatePath(file.path)) return false;
-    if (!file.existsSync()) return false;
-    return file.readAsStringSync().contains('extends Endpoint');
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
