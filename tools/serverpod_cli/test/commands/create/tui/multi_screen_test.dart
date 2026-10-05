@@ -1,11 +1,10 @@
 import 'package:nocterm/nocterm.dart';
 import 'package:serverpod_cli/src/commands/create/tui/app.dart';
+import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:test/test.dart';
-
-const _selectHint = '💡 Space or click to select · Enter to continue';
 
 Future<void> _sendKeyAndPump(NoctermTester tester, LogicalKey key) async {
   await tester.sendKey(key);
@@ -51,13 +50,18 @@ void main() {
 
     test(
       'when the first screen is shown, '
-      'then it is the editor selection with the select and continue hint',
+      'then it is the editor selection with the step counter',
       () {
         expect(
           tester.terminalState.containsText('Code editors & AI agents'),
           isTrue,
         );
-        expect(tester.terminalState.containsText(_selectHint), isTrue);
+        expect(
+          tester.terminalState.containsText(
+            'Step 1 of ${state.form.configScreenCount}',
+          ),
+          isTrue,
+        );
       },
     );
 
@@ -75,14 +79,29 @@ void main() {
       'when the None option is selected and Enter is pressed, '
       'then the next screen is shown',
       () async {
-        // None is the last option, one step left of the first.
-        await _sendKeyAndPump(tester, LogicalKey.arrowLeft);
+        // None is the last option, one step up from the first.
+        await _sendKeyAndPump(tester, LogicalKey.arrowUp);
         await _sendKeyAndPump(tester, LogicalKey.space);
         // Rebuilds are throttled, wait for the selection to be rendered.
         await tester.pump(const Duration(milliseconds: 100));
         await _sendKeyAndPump(tester, LogicalKey.enter);
 
         expect(state.form.currentScreenIndex, 1);
+      },
+    );
+
+    test(
+      'when the cursor is moved on the project type screen and Enter is pressed, '
+      'then the project type under the cursor is selected',
+      () async {
+        await _sendKeyAndPump(tester, LogicalKey.space);
+        await _sendKeyAndPump(tester, LogicalKey.enter);
+        expect(state.form.currentConfig, ServerpodCreateConfig.template);
+
+        await _sendKeyAndPump(tester, LogicalKey.arrowDown);
+        await _sendKeyAndPump(tester, LogicalKey.enter);
+
+        expect(state.template, ServerpodTemplateType.module);
       },
     );
 
@@ -105,13 +124,15 @@ void main() {
 
     test(
       'when the summary screen is shown, '
-      'then the select and continue hint is not shown',
+      'then every answer is listed and the step counter is not shown',
       () async {
         await _navigateToSummary(tester, state);
         await tester.pump(const Duration(milliseconds: 100));
 
         expect(state.form.isSummary, isTrue);
-        expect(tester.terminalState.containsText(_selectHint), isFalse);
+        expect(tester.terminalState.containsText('Antigravity'), isTrue);
+        expect(tester.terminalState.containsText('Server only'), isTrue);
+        expect(tester.terminalState.containsText('Step '), isFalse);
       },
     );
 
@@ -132,14 +153,14 @@ void main() {
 
     test(
       'when project creation starts, '
-      'then the select and continue hint is not shown',
+      'then the step counter is not shown',
       () async {
         await _navigateToSummary(tester, state);
         await _sendKeyAndPump(tester, LogicalKey.enter);
         await tester.pump(const Duration(milliseconds: 100));
 
         expect(state.creatingProject, isTrue);
-        expect(tester.terminalState.containsText(_selectHint), isFalse);
+        expect(tester.terminalState.containsText('Step '), isFalse);
       },
     );
   });
