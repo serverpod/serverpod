@@ -66,8 +66,8 @@ class FutureCallsAnalyzer {
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
   /// Refreshes the Dart analysis context for the changed files and returns
-  /// `true` if any of them are (or were) future call files, meaning code
-  /// generation should run.
+  /// `true` if the analysis recognizes any of them as (or as having been)
+  /// future call files, meaning code generation should run.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     // Only consider files within the tracked directory.
     final relevantPaths = filePaths
@@ -99,13 +99,10 @@ class FutureCallsAnalyzer {
       return true;
     }
 
-    for (final path in relevantPaths) {
-      if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
-      if (_fileCache.containsKey(path)) return true;
-      if (_isFutureCallFile(File(path))) return true;
-    }
-
-    return false;
+    // The cache only holds files the analysis recognized as future call files.
+    return relevantPaths.any(
+      (path) => keysAfter.any((key) => p.equals(key, path)),
+    );
   }
 
   /// Analyze all files in the [AnalysisContextCollection] for
@@ -373,14 +370,6 @@ class FutureCallsAnalyzer {
     }
 
     return futureCallDefinitions;
-  }
-
-  bool _isFutureCallFile(File file) {
-    if (!p.isWithin(absoluteIncludedPaths, file.absolute.path)) return false;
-    if (!file.path.endsWith('.dart')) return false;
-    if (isUnrenderedTemplatePath(file.path)) return false;
-    if (!file.existsSync()) return false;
-    return file.readAsStringSync().contains('extends FutureCall');
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
