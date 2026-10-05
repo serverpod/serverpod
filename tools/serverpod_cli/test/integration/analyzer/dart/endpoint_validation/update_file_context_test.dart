@@ -447,4 +447,97 @@ class ExampleEndpoint extends Endpoint {
       );
     },
   );
+
+  group(
+    'Given a tracked and analyzed directory with a base class extending Endpoint',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        var baseFile = File(path.join(trackedDirectory.path, 'base.dart'));
+        baseFile.createSync(recursive: true);
+        baseFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+abstract class BaseApi extends Endpoint {}
+''');
+        analyzer = EndpointsAnalyzer(trackedDirectory);
+        await analyzer.analyze(collector: CodeGenerationCollector());
+      });
+
+      test(
+        'when the file context is updated with a new file whose class only extends the base class '
+        'then true is returned.',
+        () async {
+          var endpointFile = File(
+            path.join(trackedDirectory.path, 'indirect_endpoint.dart'),
+          );
+          endpointFile.createSync(recursive: true);
+          endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+import 'base.dart';
+
+class IndirectApi extends BaseApi {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+
+          await expectLater(
+            analyzer.updateFileContexts({endpointFile.path}),
+            completion(true),
+          );
+        },
+      );
+
+      test(
+        'when the file context is updated with a new file that only mentions extending the base class in a comment '
+        'then false is returned.',
+        () async {
+          var commentFile = File(
+            path.join(trackedDirectory.path, 'base_comment.dart'),
+          );
+          commentFile.createSync(recursive: true);
+          commentFile.writeAsStringSync('''
+import 'base.dart';
+
+// class CommentedApi extends BaseApi {}
+
+/// Helper for a class that extends BaseApi, see [BaseApi].
+class HelperClass {}
+''');
+
+          await expectLater(
+            analyzer.updateFileContexts({commentFile.path}),
+            completion(false),
+          );
+        },
+      );
+
+      test(
+        'when the file context is updated with a new file that only mentions extending Endpoint in a comment '
+        'then false is returned.',
+        () async {
+          var commentFile = File(
+            path.join(trackedDirectory.path, 'comment.dart'),
+          );
+          commentFile.createSync(recursive: true);
+          commentFile.writeAsStringSync('''
+/// Helper for a class that extends Endpoint.
+class HelperClass {}
+''');
+
+          await expectLater(
+            analyzer.updateFileContexts({commentFile.path}),
+            completion(false),
+          );
+        },
+      );
+    },
+  );
 }
