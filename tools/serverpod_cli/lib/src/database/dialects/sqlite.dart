@@ -239,11 +239,12 @@ extension SqliteForeignKeyDefinitionSqlGeneration on ForeignKeyDefinition {
   /// SQLite requires inline constraints for "CREATE TABLE".
   /// It does NOT support "ALTER TABLE ADD CONSTRAINT".
   String toInlineSql() {
+    var columnsFmt = columns.map((e) => '"$e"');
     var refColumnsFmt = referenceColumns.map((e) => '"$e"');
 
     var out =
         'CONSTRAINT "$constraintName" '
-        'FOREIGN KEY ("${columns.join(', ')}") '
+        'FOREIGN KEY (${columnsFmt.join(', ')}) '
         'REFERENCES "$referenceTable" (${refColumnsFmt.join(', ')})';
 
     if (onDelete != null) {
