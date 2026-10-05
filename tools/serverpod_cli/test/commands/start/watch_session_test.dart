@@ -352,7 +352,6 @@ void main() {
     GenerateAction? generate,
     FullGenerateAction? fullGenerate,
     ApplyMigrationsAction? applyMigrationsAction,
-    ProtocolChangeClassifier? classifyProtocolChange,
     NativeAssetsApplier? nativeAssetsBuilder,
     PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
@@ -365,7 +364,7 @@ void main() {
       serverDependencyTracker: serverDependencyTracker,
       generate:
           generate ??
-          (affectedPaths, requirements) async {
+          (affectedPaths) async {
             generateCalls.add(affectedPaths);
             return (
               success: generateSuccess,
@@ -383,8 +382,6 @@ void main() {
       initialServer: initialServer,
       generatedDirPaths: {'/generated'},
       applyMigrationsAction: applyMigrationsAction ?? () async {},
-      classifyProtocolChange:
-          classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterManager: flutterManager,
       flutterAppsLoader: flutterAppsLoader,
       servesWeb: () => servesWeb,
@@ -1436,8 +1433,6 @@ void main() {
         compiler: compiler,
         initialServer: server,
         flutterManager: flutterManager,
-        // The changed file lives in a Flutter package, not the server protocol.
-        classifyProtocolChange: (_) async => false,
       );
     });
 
@@ -2303,48 +2298,49 @@ serverpod:
   });
 
   group(
-    'Given a watch session where no dart change is protocol-relevant',
+    'Given a watch session where generation finds nothing to generate',
     () {
-      late _FakeCompiler classifierCompiler;
-      late _FakeServer classifierServer;
-      late List<Set<String>> classifierGenerateCalls;
-      late WatchSession classifierSession;
+      late _FakeCompiler compiler;
+      late _FakeServer server;
+      late List<Set<String>> generateCalls;
+      late WatchSession session;
 
       setUp(() {
-        classifierCompiler = _FakeCompiler();
-        classifierServer = _FakeServer();
-        classifierGenerateCalls = [];
+        compiler = _FakeCompiler();
+        server = _FakeServer();
+        generateCalls = [];
 
-        classifierSession = buildSession(
-          compiler: classifierCompiler,
-          initialServer: classifierServer,
-          generate: (affectedPaths, requirements) async {
-            classifierGenerateCalls.add(affectedPaths);
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          generate: (affectedPaths) async {
+            generateCalls.add(affectedPaths);
             return (
               success: true,
               generatedFiles: <String>{},
               protocolAnalyticsSnapshot: null,
             );
           },
-          createServer: (String? dillPath) async => classifierServer,
-          classifyProtocolChange: (_) async => false,
+          createServer: (String? dillPath) async => server,
         );
       });
 
       test(
         'when only a dart file changes, '
-        'then code generation is skipped and only compile + reload run',
+        'then the file is handed to generation and only compile + reload run',
         () async {
           final event = FileChangeEvent(dartFiles: {'/lib/helper.dart'});
 
-          await classifierSession.handleFileChange(event);
+          await session.handleFileChange(event);
 
-          expect(classifierGenerateCalls, isEmpty);
-          expect(classifierCompiler.calls, [
+          expect(generateCalls, [
+            {'/lib/helper.dart'},
+          ]);
+          expect(compiler.calls, [
             'compile(changed):[/lib/helper.dart]',
             'accept',
           ]);
-          expect(classifierServer.calls, [
+          expect(server.calls, [
             'reload:/out.dill',
             'notifyStaticChange',
           ]);
@@ -2353,164 +2349,36 @@ serverpod:
 
       test(
         'when a model file changes alongside a dart file, '
-        'then code generation still runs because model changes always force regeneration',
+        'then both files are handed to generation',
         () async {
           final event = FileChangeEvent(
             dartFiles: {'/lib/helper.dart'},
             modelFiles: {'/lib/src/models/user.spy.yaml'},
           );
 
-          await classifierSession.handleFileChange(event);
+          await session.handleFileChange(event);
 
-          expect(classifierGenerateCalls, hasLength(1));
-          expect(
-            classifierGenerateCalls.first,
-            containsAll(<String>{'/lib/src/models/user.spy.yaml'}),
-          );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given a watch session where every dart change is protocol-relevant',
-    () {
-      late _FakeCompiler classifierCompiler;
-      late _FakeServer classifierServer;
-      late List<Set<String>> classifierGenerateCalls;
-      late WatchSession classifierSession;
-
-      setUp(() {
-        classifierCompiler = _FakeCompiler();
-        classifierServer = _FakeServer();
-        classifierGenerateCalls = [];
-
-        classifierSession = buildSession(
-          compiler: classifierCompiler,
-          initialServer: classifierServer,
-          generate: (affectedPaths, requirements) async {
-            classifierGenerateCalls.add(affectedPaths);
-            return (
-              success: true,
-              generatedFiles: <String>{},
-              protocolAnalyticsSnapshot: null,
-            );
-          },
-          createServer: (String? dillPath) async => classifierServer,
-          classifyProtocolChange: (_) async => true,
-        );
-      });
-
-      test(
-        'when a dart file changes, '
-        'then code generation runs and the changed file is included in '
-        'the regenerated paths',
-        () async {
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/endpoints/user.dart'},
-          );
-
-          await classifierSession.handleFileChange(event);
-
-          expect(classifierGenerateCalls, hasLength(1));
-          expect(classifierGenerateCalls.first, {'/lib/endpoints/user.dart'});
-          expect(classifierCompiler.calls, [
-            'compile(changed):[/lib/endpoints/user.dart]',
-            'accept',
+          expect(generateCalls, [
+            {'/lib/helper.dart', '/lib/src/models/user.spy.yaml'},
           ]);
         },
       );
+
+      test(
+        'when only a generated dart file changes, '
+        'then generation is not run',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/generated/protocol.dart'},
+          );
+
+          await session.handleFileChange(event);
+
+          expect(generateCalls, isEmpty);
+        },
+      );
     },
   );
-
-  group('Given defaultProtocolChangeClassifier', () {
-    test(
-      'when the file does not exist, '
-      'then it returns true (conservative default for deletes)',
-      () async {
-        final result = await defaultProtocolChangeClassifier(
-          '/nonexistent/path/that/does/not/exist.dart',
-        );
-
-        expect(result, isTrue);
-      },
-    );
-
-    test(
-      'when the file contains extends Endpoint, '
-      'then it returns true',
-      () async {
-        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
-        addTearDown(() => tempDir.delete(recursive: true));
-        final file = File('${tempDir.path}/endpoint.dart');
-        await file.writeAsString('''
-import 'package:serverpod/serverpod.dart';
-class MyEndpoint extends Endpoint {
-  Future<String> hello(Session session) async => 'hi';
-}
-''');
-
-        final result = await defaultProtocolChangeClassifier(file.path);
-
-        expect(result, isTrue);
-      },
-    );
-
-    test(
-      'when the file contains extends StreamingEndpoint, '
-      'then it returns true',
-      () async {
-        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
-        addTearDown(() => tempDir.delete(recursive: true));
-        final file = File('${tempDir.path}/stream.dart');
-        await file.writeAsString(
-          'class S extends StreamingEndpoint { }',
-        );
-
-        final result = await defaultProtocolChangeClassifier(file.path);
-
-        expect(result, isTrue);
-      },
-    );
-
-    test(
-      'when the file contains extends FutureCall, '
-      'then it returns true',
-      () async {
-        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
-        addTearDown(() => tempDir.delete(recursive: true));
-        final file = File('${tempDir.path}/fcall.dart');
-        await file.writeAsString(
-          'class F extends FutureCall<MyModel> { }',
-        );
-
-        final result = await defaultProtocolChangeClassifier(file.path);
-
-        expect(result, isTrue);
-      },
-    );
-
-    test(
-      'when the file is pure helper code with no endpoint markers, '
-      'then it returns false',
-      () async {
-        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
-        addTearDown(() => tempDir.delete(recursive: true));
-        final file = File('${tempDir.path}/helper.dart');
-        await file.writeAsString('''
-String greet(String name) => 'Hello, \$name';
-class Counter {
-  int value = 0;
-  void increment() => value++;
-}
-''');
-
-        final result = await defaultProtocolChangeClassifier(file.path);
-
-        expect(result, isFalse);
-      },
-    );
-  });
 
   group('Given a watch session with no compiler', () {
     late _FakeServer noCompilerServer;
@@ -2528,7 +2396,7 @@ class Counter {
       noCompilerGeneratedFiles = {};
 
       noCompilerSession = WatchSession(
-        generate: (affectedPaths, requirements) async {
+        generate: (affectedPaths) async {
           noCompilerGenerateCalls.add(affectedPaths);
           return (
             success: true,
@@ -2662,7 +2530,7 @@ class Counter {
     setUp(() {
       noFactoryServer = _FakeServer();
       noFactorySession = WatchSession(
-        generate: (affectedPaths, requirements) async => (
+        generate: (affectedPaths) async => (
           success: true,
           generatedFiles: <String>{},
           protocolAnalyticsSnapshot: null,

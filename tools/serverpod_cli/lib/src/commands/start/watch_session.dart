@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
@@ -19,10 +17,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 /// Returns a [GenerateResult] with success status and the set of files
 /// written by code generation.
 typedef GenerateAction =
-    Future<GenerateResult> Function(
-      Set<String> affectedPaths,
-      GenerationRequirements requirements,
-    );
+    Future<GenerateResult> Function(Set<String> affectedPaths);
 
 /// Reloads the companion Flutter app configuration from the server's pubspec.
 typedef FlutterAppsLoader = Future<void> Function();
@@ -60,34 +55,6 @@ enum SessionState {
   disposed,
 }
 
-/// Decides whether a source `.dart` file change may have altered the protocol
-/// (endpoint or future call class). Used by [WatchSession] to skip generation
-/// when the change is in a pure helper file.
-typedef ProtocolChangeClassifier = Future<bool> Function(String path);
-
-/// Default classifier. Reads the file and looks for endpoint / future-call
-/// class declarations.
-///
-/// Conservative: missing files and I/O errors default to `true` so a deleted
-/// endpoint file still triggers regen to drop stale generated code.
-Future<bool> defaultProtocolChangeClassifier(String path) async {
-  try {
-    final file = File(path);
-    if (!await file.exists()) return true;
-    final contents = await file.readAsString();
-    return _endpointOrFutureCallRegex.hasMatch(contents);
-  } catch (_) {
-    return true;
-  }
-}
-
-/// Matches `extends X` where `X` is any `*Endpoint` class or `FutureCall`/
-/// `FutureCall<...>`-shaped base. Covers user-defined bases like
-/// `BaseEndpoint` so subclassing hierarchies still regen correctly.
-final _endpointOrFutureCallRegex = RegExp(
-  r'\bextends\s+(?:\w*Endpoint|FutureCall)\b',
-);
-
 /// Action invoked by [WatchSession.applyMigration].
 typedef ApplyMigrationsAction = Future<void> Function();
 
@@ -122,7 +89,6 @@ class WatchSession {
   final FullGenerateAction? _fullGenerate;
   final ServerProcessFactory? _createServer;
   final Set<String> _generatedDirPaths;
-  final ProtocolChangeClassifier _classifyProtocolChange;
   final ApplyMigrationsAction _applyMigrationsAction;
 
   /// Tracks the server package's own dependency closure so a shared-resolution
@@ -216,8 +182,6 @@ class WatchSession {
     ServerProcessFactory? createServer,
     ServerProcess? initialServer,
     required Set<String> generatedDirPaths,
-    ProtocolChangeClassifier classifyProtocolChange =
-        defaultProtocolChangeClassifier,
     required ApplyMigrationsAction applyMigrationsAction,
     PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
@@ -231,7 +195,6 @@ class WatchSession {
        _createServer = createServer,
        _server = initialServer,
        _generatedDirPaths = generatedDirPaths,
-       _classifyProtocolChange = classifyProtocolChange,
        _applyMigrationsAction = applyMigrationsAction,
        _serverDependencyTracker = serverDependencyTracker,
        _flutterManager = flutterManager,
@@ -326,32 +289,18 @@ class WatchSession {
     if (event.modelFiles.isNotEmpty) log.debug('  .spy: ${event.modelFiles}');
     if (serverDepsChanged) log.debug('  package_config.json changed');
 
-    // Narrow source files to those that may affect the generated protocol.
-    // Helper files and pure business logic that don't declare endpoints or
-    // future calls can skip the regen step - compile alone picks up their
-    // changes.
-    final protocolSourceFiles = <String>{};
-    for (final f in sourceDartFiles) {
-      if (await _classifyProtocolChange(f)) protocolSourceFiles.add(f);
-    }
-
-    final needsGeneration =
-        protocolSourceFiles.isNotEmpty || event.modelFiles.isNotEmpty;
+    // Hand every changed source file to generation. Its analysis of the
+    // files decides whether they affect the generated code: helper files and
+    // pure business logic that don't declare endpoints or future calls
+    // generate nothing - compile alone picks up their changes.
+    final affectedPaths = {
+      ...sourceDartFiles,
+      ...event.modelFiles,
+    };
 
     Set<String> genOutputFiles = const {};
-    if (needsGeneration) {
-      final affectedPaths = {
-        ...protocolSourceFiles,
-        ...event.modelFiles,
-      };
-
-      final genRequirements = GenerationRequirements(
-        generateModels: event.modelFiles.isNotEmpty,
-        generateProtocol:
-            protocolSourceFiles.isNotEmpty || event.modelFiles.isNotEmpty,
-      );
-
-      final genResult = await _generate(affectedPaths, genRequirements);
+    if (affectedPaths.isNotEmpty) {
+      final genResult = await _generate(affectedPaths);
       if (!genResult.success) {
         log.error('Code generation failed. Server not reloaded.');
         return;
