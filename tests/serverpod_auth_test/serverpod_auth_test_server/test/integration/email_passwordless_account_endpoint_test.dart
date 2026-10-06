@@ -107,6 +107,56 @@ void main() {
       );
 
       test(
+        'when calling startLogin twice within the resend cooldown, '
+        'then the second call throws a resendCooldown EmailPasswordlessLoginException.',
+        () async {
+          AuthServices.set(
+            tokenManagerBuilders: [tokenManagerConfig],
+            identityProviderBuilders: [
+              EmailPasswordlessIdpConfig(
+                secretHashPepper: 'test',
+                sendSignUpVerificationCode:
+                    (
+                      final session, {
+                      required final email,
+                      required final loginRequestId,
+                      required final verificationCode,
+                      required final transaction,
+                    }) {},
+                sendSignInVerificationCode:
+                    (
+                      final session, {
+                      required final email,
+                      required final loginRequestId,
+                      required final verificationCode,
+                      required final transaction,
+                    }) {},
+              ),
+            ],
+          );
+
+          await endpoints.emailPasswordlessAccount.startLogin(
+            sessionBuilder,
+            email: 'new@serverpod.dev',
+          );
+
+          await expectLater(
+            endpoints.emailPasswordlessAccount.startLogin(
+              sessionBuilder,
+              email: 'new@serverpod.dev',
+            ),
+            throwsA(
+              isA<EmailPasswordlessLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailPasswordlessLoginExceptionReason.resendCooldown,
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
         'when calling finishLogin with a wrong code, '
         'then an invalid EmailPasswordlessLoginException is thrown.',
         () async {
