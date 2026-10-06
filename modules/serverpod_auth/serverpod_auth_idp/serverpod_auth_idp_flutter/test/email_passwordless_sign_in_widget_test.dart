@@ -326,4 +326,127 @@ void main() {
       expect(find.text('Back to sign in'), findsOneWidget);
     },
   );
+  for (final (name, config) in <(String, VerificationCodeConfig?)>[
+    ('the default config', null),
+    ('a config without a pattern', const VerificationCodeConfig(length: 6)),
+    ('numbersOnly', VerificationCodeConfig.numbersOnly(length: 6)),
+  ]) {
+    testWidgets(
+      'Given $name, '
+      'when a code with zeros is typed, '
+      'then the controller receives it intact.',
+      (tester) async {
+        final client = PasswordlessTestClient();
+        final controller = EmailPasswordlessAuthController(client: client);
+        addTearDown(controller.dispose);
+        await tester.pumpWidget(
+          _host(
+            EmailPasswordlessSignInWidget(
+              controller: controller,
+              verificationCodeConfig: config,
+            ),
+          ),
+        );
+        await _startLogin(tester);
+
+        await tester.enterText(find.byType(EditableText).first, '012340');
+        await tester.pumpAndSettle();
+
+        expect(controller.verificationCodeController.text, '012340');
+        expect(client.passwordless!.finishedRequests.single.code, '012340');
+      },
+    );
+  }
+
+  testWidgets(
+    'Given a config whose pattern does not allow zeros, '
+    'when the widget is built, '
+    'then a debug message warns about it.',
+    (tester) async {
+      final messages = <String>[];
+      final originalDebugPrint = debugPrint;
+      debugPrint = (message, {wrapWidth}) => messages.add(message ?? '');
+      try {
+        await tester.pumpWidget(
+          _host(
+            EmailPasswordlessSignInWidget(
+              client: PasswordlessTestClient(),
+              verificationCodeConfig: VerificationCodeConfig(
+                length: 6,
+                allowedCharactersPattern: RegExp(r'[1-9]'),
+              ),
+            ),
+          ),
+        );
+      } finally {
+        debugPrint = originalDebugPrint;
+      }
+
+      expect(
+        messages.where((m) => m.contains('does not allow "0"')),
+        hasLength(1),
+      );
+    },
+  );
+
+  testWidgets(
+    'Given the server refuses a new code within its resend cooldown, '
+    'when the code is resent, '
+    'then the verification form shows the localized cooldown message.',
+    (tester) async {
+      final client = PasswordlessTestClient();
+      final controller = EmailPasswordlessAuthController(client: client);
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        _host(
+          const SizedBox(),
+          localization: SignInLocalizationProvider(
+            emailPasswordless: EmailPasswordlessSignInTexts.defaults.copyWith(
+              resendCooldownMessage: 'W_COOLDOWN',
+            ),
+            child: EmailPasswordlessSignInWidget(controller: controller),
+          ),
+        ),
+      );
+      await _startLogin(tester);
+      expect(find.text('W_COOLDOWN'), findsNothing);
+
+      client.passwordless!.startError = idp.EmailPasswordlessLoginException(
+        reason: idp.EmailPasswordlessLoginExceptionReason.resendCooldown,
+      );
+      await controller.resendVerificationCode();
+      await tester.pumpAndSettle();
+
+      expect(find.text('W_COOLDOWN'), findsOneWidget);
+      expect(find.byType(VerificationForm), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Given the server refuses a code for another email within its cooldown, '
+    'when the continue button is tapped, '
+    'then the email form stays and shows the localized cooldown message.',
+    (tester) async {
+      final client = PasswordlessTestClient();
+      client.passwordless!.startError = idp.EmailPasswordlessLoginException(
+        reason: idp.EmailPasswordlessLoginExceptionReason.resendCooldown,
+      );
+      await tester.pumpWidget(
+        _host(
+          const SizedBox(),
+          localization: SignInLocalizationProvider(
+            emailPasswordless: EmailPasswordlessSignInTexts.defaults.copyWith(
+              resendCooldownMessage: 'W_COOLDOWN',
+            ),
+            child: EmailPasswordlessSignInWidget(client: client),
+          ),
+        ),
+      );
+
+      await _startLogin(tester);
+
+      expect(find.text('W_COOLDOWN'), findsOneWidget);
+      expect(find.text('Continue with email'), findsOneWidget);
+    },
+  );
 }

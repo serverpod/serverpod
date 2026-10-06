@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
@@ -234,7 +236,7 @@ void main() {
   test(
     'Given the verify screen, '
     'when navigating to the start screen, '
-    'then the pending request is discarded and the code is cleared.',
+    'then the code is cleared and the login can not be finished from there.',
     () async {
       controller.emailController.text = 'user@example.com';
       await controller.startLogin();
@@ -306,6 +308,312 @@ void main() {
     () {
       expect(controller, isA<EmailCodeFormController>());
       expect(controller, isA<Listenable>());
+    },
+  );
+  group('Given the server refuses a new code within its resend cooldown', () {
+    final cooldown = idp.EmailPasswordlessLoginException(
+      reason: idp.EmailPasswordlessLoginExceptionReason.resendCooldown,
+    );
+    final firstId = UuidValue.fromString(
+      '00000000-0000-4000-8000-0000000000aa',
+    );
+
+    setUp(() async {
+      controller.emailController.text = 'user@example.com';
+      await controller.startLogin();
+      client.passwordless!.startError = cooldown;
+    });
+
+    test(
+      'when resending the code, '
+      'then the stored request id is kept, the verify screen stays, and the '
+      'cooldown is not reported as an error.',
+      () async {
+        await controller.resendVerificationCode();
+
+        expect(controller.currentScreen, EmailPasswordlessFlowScreen.verify);
+        expect(controller.state, EmailAuthState.idle);
+        expect(controller.resendCooldownActive, isTrue);
+        expect(errors, isEmpty);
+
+        client.passwordless!.startError = null;
+        controller.verificationCodeController.text = '123456';
+        await controller.finishLogin();
+        expect(client.passwordless!.finishedRequests.single.id, firstId);
+      },
+    );
+
+    test(
+      'when the same email is entered again on the start screen, '
+      'then the verify screen is shown and finishing uses the earlier id.',
+      () async {
+        controller.navigateToStart();
+
+        await controller.startLogin();
+
+        expect(controller.currentScreen, EmailPasswordlessFlowScreen.verify);
+        expect(controller.resendCooldownActive, isTrue);
+        expect(errors, isEmpty);
+
+        client.passwordless!.startError = null;
+        controller.verificationCodeController.text = '123456';
+        await controller.finishLogin();
+        expect(client.passwordless!.finishedRequests.single.id, firstId);
+      },
+    );
+
+    test(
+      'when the same email is entered in another case with spaces, '
+      'then it is still the same email address.',
+      () async {
+        controller.navigateToStart();
+        controller.emailController.text = ' User@Example.com ';
+
+        await controller.startLogin();
+
+        expect(controller.currentScreen, EmailPasswordlessFlowScreen.verify);
+      },
+    );
+
+    test(
+      'when another email is entered on the start screen, '
+      'then the start screen stays with the cooldown notice, without an error '
+      'and without replacing the stored id.',
+      () async {
+        controller.navigateToStart();
+        controller.emailController.text = 'other@example.com';
+
+        await controller.startLogin();
+
+        expect(controller.currentScreen, EmailPasswordlessFlowScreen.start);
+        expect(controller.state, EmailAuthState.idle);
+        expect(controller.resendCooldownActive, isTrue);
+        expect(errors, isEmpty);
+
+        controller.emailController.text = 'other2@example.com';
+        expect(controller.resendCooldownActive, isFalse);
+      },
+    );
+
+    test(
+      'when the next request succeeds, '
+      'then the notice is gone and the new id replaces the stored one.',
+      () async {
+        await controller.resendVerificationCode();
+        final newId = UuidValue.fromString(
+          '00000000-0000-4000-8000-0000000000dd',
+        );
+        client.passwordless!
+          ..startError = null
+          ..nextRequestId = newId;
+
+        await controller.resendVerificationCode();
+        controller.verificationCodeController.text = '123456';
+        await controller.finishLogin();
+
+        expect(controller.resendCooldownActive, isFalse);
+        expect(client.passwordless!.finishedRequests.single.id, newId);
+      },
+    );
+  });
+
+  test(
+    'Given a stored request, '
+    'when a later request fails with another error, '
+    'then the stored request id is kept.',
+    () async {
+      controller.emailController.text = 'user@example.com';
+      await controller.startLogin();
+      client.passwordless!.startError = idp.EmailPasswordlessLoginException(
+        reason: idp.EmailPasswordlessLoginExceptionReason.rateLimited,
+      );
+      client.passwordless!.nextRequestId = UuidValue.fromString(
+        '00000000-0000-4000-8000-0000000000ee',
+      );
+
+      await controller.resendVerificationCode();
+      expect(controller.state, EmailAuthState.error);
+
+      client.passwordless!.startError = null;
+      controller.verificationCodeController.text = '123456';
+      await controller.finishLogin();
+
+      expect(
+        client.passwordless!.finishedRequests.single.id,
+        UuidValue.fromString('00000000-0000-4000-8000-0000000000aa'),
+      );
+    },
+  );
+
+  test(
+    'Given the server used up the request, '
+    'when finishing fails with tooManyAttempts, '
+    'then entering the same email within the cooldown does not return to it.',
+    () async {
+      controller.emailController.text = 'user@example.com';
+      await controller.startLogin();
+      client.passwordless!.finishError = idp.EmailPasswordlessLoginException(
+        reason: idp.EmailPasswordlessLoginExceptionReason.tooManyAttempts,
+      );
+      await controller.finishLogin();
+      controller.navigateToStart();
+      client.passwordless!.startError = idp.EmailPasswordlessLoginException(
+        reason: idp.EmailPasswordlessLoginExceptionReason.resendCooldown,
+      );
+
+      await controller.startLogin();
+
+      expect(controller.currentScreen, EmailPasswordlessFlowScreen.start);
+    },
+  );
+
+  group('Given an action in progress', () {
+    test(
+      'when startLogin is called again, '
+      'then the second call is ignored.',
+      () async {
+        final gate = Completer<void>();
+        client.passwordless!.startGate = gate;
+        controller.emailController.text = 'user@example.com';
+
+        final first = controller.startLogin();
+        final second = controller.startLogin();
+        gate.complete();
+        await Future.wait([first, second]);
+
+        expect(client.passwordless!.startedEmails, hasLength(1));
+        expect(controller.currentScreen, EmailPasswordlessFlowScreen.verify);
+      },
+    );
+
+    test(
+      'when finishLogin is called again, '
+      'then the second call is ignored and onAuthenticated is called once.',
+      () async {
+        controller.emailController.text = 'user@example.com';
+        await controller.startLogin();
+        controller.verificationCodeController.text = '123456';
+        final gate = Completer<void>();
+        client.passwordless!.finishGate = gate;
+
+        final first = controller.finishLogin();
+        final second = controller.finishLogin();
+        final resend = controller.resendVerificationCode();
+        gate.complete();
+        await Future.wait([first, second, resend]);
+
+        expect(client.passwordless!.finishedRequests, hasLength(1));
+        expect(client.passwordless!.startedEmails, hasLength(1));
+        expect(authenticatedCount, 1);
+      },
+    );
+  });
+
+  group('Given a disposed controller', () {
+    late EmailPasswordlessAuthController own;
+    late int ownAuthenticated;
+    late List<Object> ownErrors;
+
+    setUp(() {
+      ownAuthenticated = 0;
+      ownErrors = [];
+      own = EmailPasswordlessAuthController(
+        client: client,
+        onAuthenticated: () => ownAuthenticated++,
+        onError: ownErrors.add,
+      );
+    });
+
+    test(
+      'when a startLogin call completes after dispose, '
+      'then nothing is notified and nothing throws.',
+      () async {
+        final gate = Completer<void>();
+        client.passwordless!.startGate = gate;
+        own.emailController.text = 'user@example.com';
+        var notified = 0;
+        own.addListener(() => notified++);
+
+        final call = own.startLogin();
+        final notifiedBeforeDispose = notified;
+        own.dispose();
+        gate.complete();
+        await call;
+
+        expect(notified, notifiedBeforeDispose);
+      },
+    );
+
+    test(
+      'when a failing call completes after dispose, '
+      'then onError is not called.',
+      () async {
+        final gate = Completer<void>();
+        client.passwordless!
+          ..startGate = gate
+          ..startError = idp.EmailPasswordlessLoginException(
+            reason: idp.EmailPasswordlessLoginExceptionReason.rateLimited,
+          );
+        own.emailController.text = 'user@example.com';
+
+        final call = own.startLogin();
+        own.dispose();
+        gate.complete();
+        await call;
+
+        expect(ownErrors, isEmpty);
+      },
+    );
+
+    test(
+      'when finishLogin completes after dispose, '
+      'then the user is signed in and onAuthenticated is still called.',
+      () async {
+        own.emailController.text = 'user@example.com';
+        await own.startLogin();
+        own.verificationCodeController.text = '123456';
+        final gate = Completer<void>();
+        client.passwordless!.finishGate = gate;
+
+        final call = own.finishLogin();
+        own.dispose();
+        gate.complete();
+        await call;
+
+        expect(client.auth.isAuthenticated, isTrue);
+        expect(ownAuthenticated, 1);
+      },
+    );
+  });
+
+  testWidgets(
+    'Given a network error, '
+    'when the controller is disposed right away, '
+    'then no timer is left running.',
+    (tester) async {
+      final own = EmailPasswordlessAuthController(client: client);
+      client.passwordless!.startError = const ServerpodClientNetworkException(
+        'offline',
+      );
+      own.emailController.text = 'user@example.com';
+      await own.startLogin();
+      expect(own.state, EmailAuthState.error);
+
+      own.dispose();
+      await tester.pump(const Duration(seconds: 2));
+    },
+  );
+
+  testWidgets(
+    'Given an edited email address, '
+    'when the controller is disposed before the debounce has elapsed, '
+    'then no timer is left running and nothing throws.',
+    (tester) async {
+      final own = EmailPasswordlessAuthController(client: client);
+      own.emailController.text = 'user@example.com';
+
+      own.dispose();
+      await tester.pump(const Duration(seconds: 2));
     },
   );
 }

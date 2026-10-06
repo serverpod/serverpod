@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as idp;
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
@@ -32,12 +34,17 @@ class FakePasswordlessEndpoint extends idp.EndpointEmailPasswordlessIdpBase {
   Object? startError;
   Object? finishError;
 
+  /// When set, calls complete only once the completer does.
+  Completer<void>? startGate;
+  Completer<void>? finishGate;
+
   @override
   String get name => 'emailPasswordlessAccount';
 
   @override
   Future<UuidValue> startLogin({required String email}) async {
     startedEmails.add(email);
+    await startGate?.future;
     final error = startError;
     if (error != null) throw error;
     return nextRequestId;
@@ -49,6 +56,7 @@ class FakePasswordlessEndpoint extends idp.EndpointEmailPasswordlessIdpBase {
     required String verificationCode,
   }) async {
     finishedRequests.add((id: loginRequestId, code: verificationCode));
+    await finishGate?.future;
     final error = finishError;
     if (error != null) throw error;
     return fakeAuthSuccess;
