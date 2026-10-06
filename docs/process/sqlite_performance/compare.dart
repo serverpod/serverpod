@@ -110,8 +110,8 @@ Set<Uri> compilerInputs(String depfile) {
 Future<void> main(List<String> args) async {
   if (args.contains('--help')) {
     stdout.writeln(
-      'dart run docs/design/sqlite_performance/compare.dart [options]\n'
-      '  --baseline=<git-ref>   Default: c763c4d773c36c2dc76403d86b4edecf763a42ca\n'
+      'dart run docs/process/sqlite_performance/compare.dart [options]\n'
+      '  --baseline=<git-ref>   Required: revision to compare with the working tree\n'
       '  --package-config=<path>  Default: .dart_tool/package_config.json\n'
       '  --native-assets=<path>   Default: .dart_tool/native_assets.yaml\n'
       '  --quick  Smaller fixtures and one baseline/candidate pair (smoke check only).\n'
@@ -131,6 +131,14 @@ Future<void> main(List<String> args) async {
     }
   }
 
+  final baselineRef = option(args, 'baseline', '');
+  if (baselineRef.isEmpty) {
+    throw ArgumentError(
+      'Provide --baseline=<git-ref> to select the revision to compare. '
+      'Use --baseline=HEAD to measure uncommitted database changes.',
+    );
+  }
+
   final root = Directory(
     (await command('git', [
       'rev-parse',
@@ -140,7 +148,7 @@ Future<void> main(List<String> args) async {
   final baseline = (await command('git', [
     'rev-parse',
     '--verify',
-    '${option(args, 'baseline', 'c763c4d773c36c2dc76403d86b4edecf763a42ca')}^{commit}',
+    '$baselineRef^{commit}',
   ])).stdout.toString().trim();
   final head = (await command('git', [
     'rev-parse',
@@ -165,7 +173,7 @@ Future<void> main(List<String> args) async {
   if (!assetsFile.existsSync()) {
     throw StateError(
       'Missing ${assetsFile.path}. Build workspace native assets first with:\n'
-      'dart run docs/design/sqlite_performance/returning_writes/orm_benchmark.dart --quick',
+      'dart run docs/process/sqlite_performance/returning_writes/orm_benchmark.dart --quick',
     );
   }
   final sourceConfig =
@@ -255,7 +263,7 @@ Future<void> main(List<String> args) async {
     final platform =
         '${sdkBin.parent.path}/lib/_internal/vm_platform_strong.dill';
     final script =
-        '${root.path}/docs/design/sqlite_performance/returning_writes/orm_benchmark.dart';
+        '${root.path}/docs/process/sqlite_performance/returning_writes/orm_benchmark.dart';
     // Compile one captured harness for both revisions, even if an editor saves
     // the untracked benchmark file while the baseline compiler is running.
     final capturedScript = await File(
