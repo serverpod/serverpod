@@ -43,6 +43,10 @@ commands:
             tool: ["completely", "carapace"]
             write-dir: ["$directories"]
 
+  - name: clean
+    flags:
+      -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
+
   - name: cloud
 
   - name: create
