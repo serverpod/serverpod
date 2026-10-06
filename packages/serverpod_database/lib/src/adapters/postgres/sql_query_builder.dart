@@ -387,8 +387,7 @@ class InsertQueryBuilder {
   final List<Column>? _conflictColumns;
   final List<Column>? _updateColumns;
   final Expression? _updateWhere;
-  final Returning _returning;
-  bool get _noReturn => _returning == Returning.none;
+  final bool _noReturn;
   late final List<TableRow> _rows;
 
   /// Creates a new [InsertQueryBuilder].
@@ -404,7 +403,6 @@ class InsertQueryBuilder {
   ///
   /// When [noReturn] is true the built query omits the `RETURNING` clause, so
   /// the database does not send the affected rows back to the client.
-  /// Otherwise, [returning] selects which columns to return.
   InsertQueryBuilder({
     required Table table,
     required List<TableRow> rows,
@@ -413,13 +411,12 @@ class InsertQueryBuilder {
     List<Column>? updateColumns,
     Expression? updateWhere,
     bool noReturn = false,
-    Returning returning = Returning.all,
   }) : _table = table,
        _ignoreConflicts = ignoreConflicts,
        _conflictColumns = conflictColumns,
        _updateColumns = updateColumns,
        _updateWhere = updateWhere,
-       _returning = noReturn ? Returning.none : returning {
+       _noReturn = noReturn {
     if (rows.isEmpty) {
       throw ArgumentError.value(
         rows,
@@ -546,11 +543,9 @@ class InsertQueryBuilder {
         .join(', ');
 
     var onConflict = buildOnConflictClause(selectedColumns);
-    var returning = switch (_returning) {
-      Returning.none => '',
-      Returning.id => ' RETURNING "${_table.id.columnName}"',
-      Returning.all => ' RETURNING ${buildReturningClause(_table)}',
-    };
+    var returning = _noReturn
+        ? ''
+        : ' RETURNING ${buildReturningClause(_table)}';
 
     return columnNames.isEmpty
         ? 'INSERT INTO ${_table.aliasedTableName} DEFAULT VALUES$onConflict$returning'
