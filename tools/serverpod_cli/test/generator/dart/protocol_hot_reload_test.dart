@@ -294,7 +294,7 @@ Future<void> _writeProtocol(
       .metadata(
         types: types,
         modules: [
-          for (final module in modules) refer('$module.Protocol').call([]),
+          for (final module in modules) refer('$module.Protocol'),
         ],
       )
       .accept(DartEmitter());

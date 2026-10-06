@@ -297,7 +297,7 @@ class LibraryGenerator {
         ]);
     final deserializationModules = [
       for (var module in config.modules)
-        refer('Protocol', module.dartImportUrl(serverCode)).call([]),
+        refer('Protocol', module.dartImportUrl(serverCode)),
       if (!sharedPackage)
         for (var packageName in config.sharedModelsSourcePathsParts.keys)
           refer(
@@ -305,10 +305,10 @@ class LibraryGenerator {
             packageName == 'serverpod_database' && config.name != 'serverpod'
                 ? serverpodDatabaseUrl(serverCode)
                 : 'package:$packageName/$packageName.dart',
-          ).call([]),
+          ),
       if (config.name != 'serverpod' &&
           (serverCode || config.dartClientDependsOnServiceClient))
-        refer('Protocol', serverpodServiceClientUrl(serverCode)).call([]),
+        refer('Protocol', serverpodServiceClientUrl(serverCode)),
     ];
 
     protocol.methods.add(

@@ -18,7 +18,7 @@ class ProtocolDeserializationGenerator {
 
   Method metadata({
     required Iterable<Expression> types,
-    required List<Expression> modules,
+    required List<Reference> modules,
   }) {
     return Method(
       (m) => m
@@ -39,15 +39,20 @@ class ProtocolDeserializationGenerator {
                         ..symbol = 'getType'
                         ..url = runtimeUrl
                         ..types.add(
-                          type is InvokeExpression
-                              ? type.typeArguments.single
-                              : type as Reference,
+                          switch (type) {
+                            Reference() => type,
+                            InvokeExpression() => type.typeArguments.single,
+                            _ => throw ArgumentError.value(
+                              type,
+                              'types',
+                              'Expected a type reference or getType invocation',
+                            ),
+                          },
                         ),
                     ),
                 ]),
                 'modules': literalConstList([
-                  for (final module in modules)
-                    (module as InvokeExpression).target.property('new'),
+                  for (final module in modules) module.property('new'),
                 ]),
               },
             )
