@@ -26,6 +26,11 @@ abstract interface class DatabaseSession {
   Transaction? get transaction;
 
   /// Optional function to log a query.
+  ///
+  /// Query text reflects the adapter's SQL. SQLite inserts, updates by ID, and
+  /// upserts use bound placeholders for both single-row and batch writes; their
+  /// bound values are not interpolated into the logged query. Raw SQL literals
+  /// and PostgreSQL ORM queries can still include values.
   LogQueryFunction? get logQuery;
 
   /// Optional function to log a warning during the execution of a query.
