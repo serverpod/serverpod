@@ -92,9 +92,15 @@ class EmailPasswordlessAuthController extends ChangeNotifier
   }
 
   Timer? _debounce;
+  Timer? _networkErrorTimer;
+  bool _disposed = false;
 
   void _onEmailChanged() {
-    if (state == EmailAuthState.loading) return;
+    if (_disposed || state == EmailAuthState.loading) return;
+    if (_resendCooldownActive) {
+      _resendCooldownActive = false;
+      _setState(_state);
+    }
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (emailController.text.isEmpty) {
@@ -116,8 +122,17 @@ class EmailPasswordlessAuthController extends ChangeNotifier
   EmailAuthState _state = EmailAuthState.idle;
   Object? _error;
 
-  /// The ID of the login request of the code the user is asked to enter.
+  /// The ID of the latest login request that the server created for this
+  /// controller, together with the normalized email address that it was created
+  /// for ([_loginRequestEmail], `null` when it is not known).
+  ///
+  /// It is only replaced when the server creates a new request, so that a
+  /// failing request, for example within the resend cooldown of the server,
+  /// never discards the ID of the code that the user has been sent.
   UuidValue? _loginRequestId;
+  String? _loginRequestEmail;
+
+  bool _resendCooldownActive = false;
 
   /// The current screen in the authentication flow.
   EmailPasswordlessFlowScreen get currentScreen => _currentScreen;
@@ -137,11 +152,24 @@ class EmailPasswordlessAuthController extends ChangeNotifier
   @override
   String? get errorMessage => _error?.toString();
 
+  /// Whether the server rejected the latest request for a code because a code
+  /// was sent to the email address a short time ago.
+  ///
+  /// This is not an error: the code that was sent earlier can still be used, so
+  /// the UI should tell the user to use it, or to wait before requesting a new
+  /// one. It is reset by the next action and when the email address changes.
+  /// [onError] is not called for it.
+  bool get resendCooldownActive => _resendCooldownActive;
+
   /// Navigates to the email entry screen, to request a code for another email
-  /// address. The pending login request is discarded locally.
+  /// address.
+  ///
+  /// The latest login request is remembered together with its email address, so
+  /// that requesting a code for the same email address again, while the server
+  /// still refuses to send a new one, returns to the verification screen.
   void navigateToStart() {
     verificationCodeController.clear();
-    _loginRequestId = null;
+    _resendCooldownActive = false;
     _currentScreen = EmailPasswordlessFlowScreen.start;
     _setState(EmailAuthState.idle);
   }
@@ -151,17 +179,27 @@ class EmailPasswordlessAuthController extends ChangeNotifier
   void navigateToVerify({required UuidValue loginRequestId}) {
     verificationCodeController.clear();
     _loginRequestId = loginRequestId;
+    _loginRequestEmail = null;
+    _resendCooldownActive = false;
     _currentScreen = EmailPasswordlessFlowScreen.verify;
     _setState(EmailAuthState.idle);
   }
 
-  /// Clears the text controllers and the pending login request.
+  /// Clears the text controllers and the remembered login request.
   void resetState({bool notify = true}) {
     emailController.clear();
     verificationCodeController.clear();
-    _loginRequestId = null;
+    _forgetLoginRequest();
+    _resendCooldownActive = false;
     _setState(_state, notify: notify);
   }
+
+  void _forgetLoginRequest() {
+    _loginRequestId = null;
+    _loginRequestEmail = null;
+  }
+
+  static String _normalizeEmail(String email) => email.trim().toLowerCase();
 
   EndpointEmailPasswordlessIdpBase get _endpoint {
     try {
@@ -180,35 +218,48 @@ class EmailPasswordlessAuthController extends ChangeNotifier
   /// On success, navigates to the verification screen. The server responds the
   /// same way whether the email address has an account or not, so this does not
   /// reveal if an account exists.
-  Future<void> startLogin() async {
-    await _guarded(
-      targetScreen: EmailPasswordlessFlowScreen.verify,
-      action: () async {
-        final email = emailController.text.trim();
-        emailValidation(email);
-        _loginRequestId = await _endpoint.startLogin(email: email);
-      },
-    );
-  }
+  ///
+  /// The server does not send a new code until its resend cooldown has elapsed.
+  /// Within it, the call fails, and the ID of the code that was sent before is
+  /// kept. If that code was requested for the same email address by this
+  /// controller, the verification screen is shown, otherwise the current screen
+  /// stays. In both cases [resendCooldownActive] is `true`, and this is not
+  /// reported as an error.
+  ///
+  /// Calls made while another action is in progress are ignored.
+  Future<void> startLogin() => _requestCode(EmailPasswordlessFlowScreen.verify);
 
   /// Verifies the code in [verificationCodeController] and signs the user in.
   ///
-  /// On success, updates the session manager and calls [onAuthenticated].
+  /// On success, updates the session manager and calls [onAuthenticated]. Calls
+  /// made while another action is in progress are ignored.
   Future<void> finishLogin() async {
     await _guarded(
       targetState: EmailAuthState.authenticated,
       action: () async {
         final loginRequestId = _loginRequestId;
-        if (loginRequestId == null) {
+        if (loginRequestId == null ||
+            _currentScreen != EmailPasswordlessFlowScreen.verify) {
           throw StateError('No login request was found to finish.');
         }
 
-        final authSuccess = await _endpoint.finishLogin(
-          loginRequestId: loginRequestId,
-          verificationCode: verificationCodeController.text.trim(),
-        );
+        final AuthSuccess authSuccess;
+        try {
+          authSuccess = await _endpoint.finishLogin(
+            loginRequestId: loginRequestId,
+            verificationCode: verificationCodeController.text.trim(),
+          );
+        } on EmailPasswordlessLoginException catch (e) {
+          if (e.reason ==
+                  EmailPasswordlessLoginExceptionReason.tooManyAttempts ||
+              e.reason == EmailPasswordlessLoginExceptionReason.expired) {
+            _forgetLoginRequest();
+          }
+          rethrow;
+        }
 
         await client.auth.updateSignedInUser(authSuccess);
+        _forgetLoginRequest();
       },
     );
   }
@@ -216,25 +267,57 @@ class EmailPasswordlessAuthController extends ChangeNotifier
   /// Requests a new verification code for the same email address.
   ///
   /// The server does not send a new code until its resend cooldown has elapsed,
-  /// and then the previous code is replaced. In the meantime, it answers with
-  /// a request ID that can not be completed, so the UI must not offer to resend
-  /// before the cooldown, which `ResendCodeButton` ensures with its countdown.
+  /// and then the previous code is replaced. Before that, the request fails and
+  /// the code that was sent keeps working, see [startLogin] and
+  /// [resendCooldownActive]. `ResendCodeButton` avoids this with its countdown,
+  /// which should be at least as long as the cooldown of the server.
   @override
   Future<void> resendVerificationCode() async {
     if (_currentScreen != EmailPasswordlessFlowScreen.verify) {
       throw StateError('Cannot resend code on screen: $_currentScreen');
     }
+    await _requestCode(EmailPasswordlessFlowScreen.verify);
+  }
+
+  Future<void> _requestCode(EmailPasswordlessFlowScreen targetScreen) async {
+    var cooldown = false;
+
     await _guarded(
-      targetScreen: EmailPasswordlessFlowScreen.verify,
+      targetScreen: targetScreen,
       action: () async {
         final email = emailController.text.trim();
         emailValidation(email);
-        _loginRequestId = await _endpoint.startLogin(email: email);
+
+        final UuidValue loginRequestId;
+        try {
+          loginRequestId = await _endpoint.startLogin(email: email);
+        } on EmailPasswordlessLoginException catch (e) {
+          if (e.reason !=
+              EmailPasswordlessLoginExceptionReason.resendCooldown) {
+            rethrow;
+          }
+
+          cooldown = true;
+          return;
+        }
+
+        _loginRequestId = loginRequestId;
+        _loginRequestEmail = _normalizeEmail(email);
+      },
+      onSuccess: () {
+        _resendCooldownActive = cooldown;
+        if (!cooldown) return targetScreen;
+
+        final hasRequestForEmail =
+            _loginRequestId != null &&
+            _loginRequestEmail == _normalizeEmail(emailController.text);
+        return hasRequestForEmail ? targetScreen : _currentScreen;
       },
     );
   }
 
   void _setState(EmailAuthState newState, {bool notify = true}) {
+    if (_disposed) return;
     if (newState != EmailAuthState.error) _error = null;
     _state = newState;
     if (notify) notifyListeners();
@@ -243,17 +326,23 @@ class EmailPasswordlessAuthController extends ChangeNotifier
   Future<void> _guarded({
     EmailAuthState? targetState,
     EmailPasswordlessFlowScreen? targetScreen,
+    EmailPasswordlessFlowScreen Function()? onSuccess,
     required Future<void> Function() action,
   }) async {
+    if (_disposed || isLoading) return;
+
     _debounce?.cancel();
+    _networkErrorTimer?.cancel();
+    _resendCooldownActive = false;
     _setState(EmailAuthState.loading);
     try {
       await action();
-      if (targetScreen != null) {
-        if (targetScreen != _currentScreen) {
+      final screen = onSuccess?.call() ?? targetScreen;
+      if (screen != null) {
+        if (screen != _currentScreen) {
           verificationCodeController.clear();
         }
-        _currentScreen = targetScreen;
+        _currentScreen = screen;
         _setState(EmailAuthState.idle);
       } else if (targetState != null) {
         _setState(targetState);
@@ -262,12 +351,14 @@ class EmailPasswordlessAuthController extends ChangeNotifier
         }
       }
     } catch (e) {
+      if (_disposed) return;
+
       _error = e;
       _setState(EmailAuthState.error);
       debugPrint('[EmailPasswordlessAuthController] $_currentScreen: $e');
 
       if (e is ServerpodClientNetworkException) {
-        Timer(const Duration(seconds: 1), () {
+        _networkErrorTimer = Timer(const Duration(seconds: 1), () {
           _setState(EmailAuthState.idle);
         });
       }
@@ -281,7 +372,11 @@ class EmailPasswordlessAuthController extends ChangeNotifier
 
   @override
   void dispose() {
+    _disposed = true;
     _debounce?.cancel();
+    _networkErrorTimer?.cancel();
+    emailController.removeListener(_onEmailChanged);
+    legalNoticeAcceptedNotifier.removeListener(notifyListeners);
     emailController.dispose();
     verificationCodeController.dispose();
     legalNoticeAcceptedNotifier.dispose();

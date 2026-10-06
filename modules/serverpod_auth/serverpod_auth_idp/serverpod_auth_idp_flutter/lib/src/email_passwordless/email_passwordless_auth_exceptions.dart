@@ -22,6 +22,12 @@ Exception? convertPasswordlessToUserFacingException(Object error) {
         'Too many codes have been requested. Please try again later.',
         originalException: error,
       ),
+      EmailPasswordlessLoginExceptionReason.resendCooldown =>
+        UserFacingException(
+          'A code was sent recently. Use that code, or wait a moment before '
+          'requesting a new one.',
+          originalException: error,
+        ),
       EmailPasswordlessLoginExceptionReason.tooManyAttempts =>
         UserFacingException(
           'Too many failed attempts. Please request a new code.',
