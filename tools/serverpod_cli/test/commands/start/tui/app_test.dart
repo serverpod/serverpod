@@ -28,6 +28,15 @@ Future<void> _sendCtrlR(NoctermTester tester) {
   );
 }
 
+Future<void> _sendShiftQ(NoctermTester tester) {
+  return tester.sendKeyEvent(
+    const KeyboardEvent(
+      logicalKey: LogicalKey.keyQ,
+      modifiers: ModifierKeys(shift: true),
+    ),
+  );
+}
+
 Future<void> _sendShiftR(NoctermTester tester) {
   return tester.sendKeyEvent(
     const KeyboardEvent(
@@ -56,21 +65,159 @@ void main() {
     await holder.dispose();
   });
 
-  group('Given a running TUI start app with onQuit callback wired', () {
+  group('Given a TUI start app attached to a runner it did not spawn', () {
     late int quitCalls;
+    late int stopCalls;
 
-    setUp(() {
+    setUp(() async {
       quitCalls = 0;
+      stopCalls = 0;
       holder.onQuit = () => quitCalls++;
+      holder.onStopStack = () => stopCalls++;
+      // Rebuild so the button bar picks up the callbacks.
+      holder.widgetState?.rebuild();
+      await tester.pump();
     });
 
     test(
-      'when Ctrl-C is pressed twice without a selection then onQuit is invoked',
+      'when Ctrl-C is pressed twice without a selection '
+      'then it leaves without stopping the runner',
       () async {
         await _sendCtrlC(tester);
         await _sendCtrlC(tester);
 
         expect(quitCalls, 1);
+        expect(stopCalls, 0);
+      },
+    );
+
+    test(
+      'when Q is pressed '
+      'then a dialog offers Q to leave and Shift+Q to stop the runner',
+      () async {
+        await _sendKey(tester, LogicalKey.keyQ);
+
+        expect(state.showQuitDialog, isTrue);
+        expect(
+          tester.terminalState.containsText(
+            'Leave, keeping the server running',
+          ),
+          isTrue,
+        );
+        expect(tester.terminalState.containsText('Stop the server'), isTrue);
+        expect(quitCalls, 0);
+        expect(stopCalls, 0);
+      },
+    );
+
+    test('when Shift+Q is pressed then the runner is stopped', () async {
+      await _sendShiftQ(tester);
+
+      expect(stopCalls, 1);
+      expect(quitCalls, 0);
+    });
+  });
+
+  group(
+    'Given a TUI start app attached to a runner it did not spawn '
+    'with the quit dialog showing',
+    () {
+      late int quitCalls;
+      late int stopCalls;
+      late int restartCalls;
+
+      setUp(() async {
+        quitCalls = 0;
+        stopCalls = 0;
+        restartCalls = 0;
+        holder.onQuit = () => quitCalls++;
+        holder.onStopStack = () => stopCalls++;
+        holder.onRestartFlutterApp = () => restartCalls++;
+        state.canLaunchApps = true;
+        await _sendKey(tester, LogicalKey.keyQ);
+      });
+
+      test(
+        'when Q is pressed then it leaves without stopping the runner',
+        () async {
+          await _sendKey(tester, LogicalKey.keyQ);
+
+          expect(quitCalls, 1);
+          expect(stopCalls, 0);
+        },
+      );
+
+      test('when Shift+Q is pressed then the runner is stopped', () async {
+        await _sendShiftQ(tester);
+
+        expect(stopCalls, 1);
+        expect(quitCalls, 0);
+      });
+
+      test(
+        'when Esc is pressed then the dialog closes and the UI stays',
+        () async {
+          await _sendKey(tester, LogicalKey.escape);
+
+          expect(state.showQuitDialog, isFalse);
+          expect(quitCalls, 0);
+          expect(stopCalls, 0);
+        },
+      );
+
+      test(
+        'when Ctrl+R is pressed then the launch panel stays closed',
+        () async {
+          await _sendCtrlR(tester);
+
+          expect(state.showLaunchPanel, isFalse);
+        },
+      );
+    },
+  );
+
+  group('Given a TUI start app that spawned its runner', () {
+    late int quitCalls;
+    late int stopCalls;
+
+    setUp(() async {
+      quitCalls = 0;
+      stopCalls = 0;
+      state.ownsRunner = true;
+      holder.onQuit = () => quitCalls++;
+      holder.onStopStack = () => stopCalls++;
+      // Rebuild so the button bar picks up the callbacks.
+      holder.widgetState?.rebuild();
+      await tester.pump();
+    });
+
+    test(
+      'when Q is pressed then the runner is stopped without a dialog',
+      () async {
+        await _sendKey(tester, LogicalKey.keyQ);
+
+        expect(stopCalls, 1);
+        expect(state.showQuitDialog, isFalse);
+        expect(quitCalls, 0);
+      },
+    );
+
+    test('when Shift+Q is pressed then the runner is stopped', () async {
+      await _sendShiftQ(tester);
+
+      expect(stopCalls, 1);
+      expect(quitCalls, 0);
+    });
+
+    test(
+      'when Ctrl-C is pressed twice without a selection '
+      'then the runner is stopped',
+      () async {
+        await _sendCtrlC(tester);
+        await _sendCtrlC(tester);
+
+        expect(stopCalls, 1);
+        expect(quitCalls, 0);
       },
     );
   });

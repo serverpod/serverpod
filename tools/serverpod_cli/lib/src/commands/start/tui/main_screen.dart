@@ -49,9 +49,11 @@ class MainScreen extends StatelessComponent {
 
   /// Invoked after a tab is selected via mouse click so the screen redraws.
   final VoidCallback? onTabSelected;
+
+  /// Leaves the UI, which stops the stack only when this session spawned it.
   final VoidCallback? onQuit;
 
-  /// Stops the whole stack, as opposed to [onQuit], which only leaves the UI.
+  /// Stops the whole stack, whoever spawned it.
   final VoidCallback? onStopStack;
 
   /// Copies the pinned alert's segment (also bound to the `C` key).
@@ -94,8 +96,12 @@ class MainScreen extends StatelessComponent {
         ('Shift+P', 'Force Repair migration'),
         ('E', 'Expand / collapse stack traces'),
         ('S', 'Show raw server logs'),
-        ('Q', 'Detach, leaving the stack running'),
-        ('Shift+Q', 'Stop the stack'),
+        if (state.ownsRunner)
+          ('Q', 'Stop the stack')
+        else ...[
+          ('Q', 'Leave, asking whether to stop the stack'),
+          ('Shift+Q', 'Stop the stack'),
+        ],
       ],
     ),
   ];
@@ -181,7 +187,65 @@ class MainScreen extends StatelessComponent {
             closeKey: 'Esc',
             controller: helpScrollController,
           ),
+        if (state.showQuitDialog) _buildQuitDialog(context, st),
       ],
+    );
+  }
+
+  /// Asks whether to leave or stop a runner this session did not spawn.
+  Component _buildQuitDialog(BuildContext context, ServerpodThemeData st) {
+    final theme = TuiTheme.of(context);
+
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+        decoration: BoxDecoration(
+          color: theme.surface,
+          border: BoxBorder.all(
+            style: BoxBorderStyle.rounded,
+            color: st.activationKey,
+          ),
+          title: BorderTitle(
+            text: 'Quit',
+            style: TextStyle(
+              color: st.activationKey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'The server was already running when you attached.',
+              style: TextStyle(color: theme.onSurface),
+            ),
+            const SizedBox(height: 1),
+            for (final (key, desc) in const [
+              ('Q', 'Leave, keeping the server running'),
+              ('Shift+Q', 'Stop the server'),
+              ('Esc', 'Cancel'),
+            ])
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 9,
+                    child: Text(
+                      key,
+                      style: TextStyle(
+                        color: st.activationKey,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(desc, style: TextStyle(color: theme.onSurface)),
+                ],
+              ),
+          ],
+        ),
+      ),
     );
   }
 

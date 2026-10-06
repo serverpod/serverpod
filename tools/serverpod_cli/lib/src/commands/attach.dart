@@ -122,7 +122,9 @@ Future<int> attachWithTui(
   bool ownsRunner = false,
   Duration? waitForRunner,
 }) async {
-  final holder = StartAppStateHolder(ServerWatchState());
+  final holder = StartAppStateHolder(
+    ServerWatchState()..ownsRunner = ownsRunner,
+  );
   final client = RunnerClient(
     socketPath: socketPath,
     history: holder.state.history,

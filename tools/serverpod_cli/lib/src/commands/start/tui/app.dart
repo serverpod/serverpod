@@ -320,14 +320,29 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     );
   }
 
+  /// Leaves the UI, stopping the runner when this session spawned it.
   @override
   void onExit() {
+    final stop = onStopStack;
     final quit = onQuit;
-    if (quit != null) {
+    if (component.holder.state.ownsRunner && stop != null) {
+      stop();
+    } else if (quit != null) {
       quit();
     } else {
       super.onExit();
     }
+  }
+
+  /// Exits as [onExit] does, asking first about a runner found running.
+  void _quit() {
+    final state = component.holder.state;
+    if (state.ownsRunner || state.showQuitDialog) {
+      onExit();
+      return;
+    }
+    state.showQuitDialog = true;
+    _rebuild();
   }
 
   @override
@@ -363,7 +378,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
             _rebuild();
           },
           onLaunchApp: _launchApp,
-          onQuit: onQuit,
+          onQuit: _quit,
           onStopStack: onStopStack,
           onCopyAlert: copyAlert,
           onDismissAlert: dismissAlert,
@@ -381,6 +396,19 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
   bool _handleKeyEvent(KeyboardEvent event) {
     final state = component.holder.state;
+
+    // Q and Shift+Q reach the Quit button first, so only Esc is handled here.
+    if (state.showQuitDialog) {
+      if (event.logicalKey == LogicalKey.escape) {
+        state.showQuitDialog = false;
+        _rebuild();
+        return true;
+      }
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
+      return true;
+    }
 
     if (state.showHelp) {
       if (event.logicalKey == LogicalKey.escape) {

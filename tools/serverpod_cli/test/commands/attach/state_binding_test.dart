@@ -187,6 +187,30 @@ void main() {
     );
 
     test(
+      'when the UI asks to stop the stack again before the runner stops, '
+      'then it leaves on its own without asking the runner twice',
+      () async {
+        var leftOnItsOwn = false;
+        var stops = 0;
+        startingRunner.onStop = () async => stops++;
+        final binding = RunnerStateBinding(
+          client: client,
+          holder: holder,
+          onStopRequested: () => leftOnItsOwn = true,
+        )..bind();
+        addTearDown(binding.dispose);
+
+        holder.stopStack!();
+        await waitFor(() => stops == 1);
+        expect(leftOnItsOwn, isFalse);
+        holder.stopStack!();
+
+        expect(leftOnItsOwn, isTrue);
+        expect(stops, 1);
+      },
+    );
+
+    test(
       'when an app is still launching and the UI asks to stop it, '
       'then the stop reaches the runner, the key being offered while launching',
       () async {

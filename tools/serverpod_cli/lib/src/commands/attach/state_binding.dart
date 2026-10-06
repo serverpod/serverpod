@@ -63,13 +63,21 @@ class RunnerStateBinding {
     _state.isAppLaunching = client.isFlutterAppLaunching;
 
     holder.onQuit = onStopRequested;
-    holder.onStopStack = () => unawaited(
-      client.stop().catchError((Object e) {
-        // A refused stop announces nothing, so nothing else ends this session.
-        log.error('Stopping the runner failed: $e');
-        onStopRequested();
-      }),
-    );
+    var stopRequested = false;
+    holder.onStopStack = () {
+      // A starting runner stops only at its next checkpoint, so asking again
+      // leaves without waiting for it.
+      if (stopRequested) return onStopRequested();
+      stopRequested = true;
+      unawaited(
+        client.stop().catchError((Object e) {
+          // A refused stop announces nothing, so nothing else ends this
+          // session.
+          log.error('Stopping the runner failed: $e');
+          onStopRequested();
+        }),
+      );
+    };
     holder.onHotReload = () =>
         runTrackedAction(holder, () => _reaching(client.hotReload));
     holder.onHotRestart = () {
