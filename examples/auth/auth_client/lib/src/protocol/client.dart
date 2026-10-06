@@ -281,17 +281,24 @@ class EndpointEmailPasswordlessIdp
   /// has none and sign-up is allowed, a sign-up code is sent, and the account
   /// is created when the code is verified.
   ///
-  /// Always returns a login request ID, which together with the code is used
-  /// to finish the login. If no code was sent, because sign-up is disabled for
-  /// an unknown email address, or because a code was sent less than the resend
-  /// cooldown ago, the returned ID may not be valid. Clients should wait for
-  /// the resend cooldown before requesting another code, and keep using the
-  /// ID of the previous request in the meantime.
+  /// Returns the ID of the new login request, which together with the code is
+  /// used to finish the login. The response and the errors do not show whether
+  /// the email address has an account: if sign-up is disabled, an unknown email
+  /// address gets a request that no code was sent for, and that can never be
+  /// completed successfully.
+  ///
+  /// A code is only replaced once the resend cooldown has passed. Within it,
+  /// the call fails with the `resendCooldown` reason, and the ID of the pending
+  /// request is not returned again, so clients must keep the ID they received
+  /// from the successful call and keep using it until it is replaced.
   ///
   /// Throws an [EmailPasswordlessLoginException] in case of errors, with
   /// reason:
   /// - [EmailPasswordlessLoginExceptionReason.invalidEmail] if [email] is not
   ///   a valid email address.
+  /// - [EmailPasswordlessLoginExceptionReason.resendCooldown] if a code for the
+  ///   email address was requested less than the resend cooldown ago, also by
+  ///   a concurrent call.
   /// - [EmailPasswordlessLoginExceptionReason.rateLimited] if too many codes
   ///   have been requested for the email address.
   @override
