@@ -24,7 +24,7 @@ dependencies:
   # sqlite3_web 0.9.5 made WorkerDatabase base, which sqlite_async 0.14.5
   # does not compile against.
   sqlite3_web: '>=0.9.4 <0.9.5'
-  sqlite_async: ^0.14.1
+  sqlite_async: ^0.14.4
   sqlparser: ^0.44.3
 
 dev_dependencies:
