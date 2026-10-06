@@ -4,6 +4,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/email_passwordless.dart';
 import 'package:serverpod_auth_idp_server/providers/facebook.dart';
 import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
@@ -12,6 +13,14 @@ import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
+
+void _noopSender(
+  final Session session, {
+  required final String email,
+  required final UuidValue loginRequestId,
+  required final String verificationCode,
+  required final Transaction? transaction,
+}) {}
 
 void main() {
   final portZeroConfig = ServerConfig(
@@ -43,6 +52,25 @@ void main() {
       () {
         expect(
           () => EmailIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'emailSecretHashPepper',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when constructing EmailPasswordlessIdpConfigFromPasswords then throws PasswordNotFoundException for the same key as the email identity provider.',
+      () {
+        expect(
+          () => EmailPasswordlessIdpConfigFromPasswords(
+            sendSignUpVerificationCode: _noopSender,
+            sendSignInVerificationCode: _noopSender,
+          ),
           throwsA(
             isA<PasswordNotFoundException>().having(
               (final e) => e.key,
@@ -181,6 +209,22 @@ test:
         () {
           final config = EmailIdpConfigFromPasswords();
           expect(config, isA<EmailIdpConfig>());
+        },
+      );
+
+      test(
+        'when constructing EmailPasswordlessIdpConfigFromPasswords then succeeds and uses the same pepper as the email identity provider.',
+        () {
+          final config = EmailPasswordlessIdpConfigFromPasswords(
+            sendSignUpVerificationCode: _noopSender,
+            sendSignInVerificationCode: _noopSender,
+          );
+
+          expect(config, isA<EmailPasswordlessIdpConfig>());
+          expect(
+            config.secretHashPepper,
+            EmailIdpConfigFromPasswords().secretHashPepper,
+          );
         },
       );
     },
