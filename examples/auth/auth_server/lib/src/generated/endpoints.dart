@@ -19,6 +19,7 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
 import '../endpoints/anonymous_idp_endpoint.dart' as _i6e224xf;
 import '../endpoints/apple_idp_endpoint.dart' as _i3mgbwnw;
 import '../endpoints/email_idp_endpoint.dart' as _ilutrrxn;
+import '../endpoints/email_passwordless_idp_endpoint.dart' as _ibg6gi29;
 import '../endpoints/facebook_idp_endpoint.dart' as _ieof6ve0;
 import '../endpoints/firebase_idp_endpoint.dart' as _illsbti4;
 import '../endpoints/github_idp_endpoint.dart' as _iu9ytbxs;
@@ -48,6 +49,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'emailIdp',
+          null,
+        ),
+      'emailPasswordlessIdp': _ibg6gi29.EmailPasswordlessIdpEndpoint()
+        ..initialize(
+          server,
+          'emailPasswordlessIdp',
           null,
         ),
       'facebookIdp': _ieof6ve0.FacebookIdpEndpoint()
@@ -362,6 +369,72 @@ class Endpoints extends _is.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['emailIdp'] as _ilutrrxn.EmailIdpEndpoint)
                   .hasAccount(session),
+        ),
+      },
+    );
+    connectors['emailPasswordlessIdp'] = _is.EndpointConnector(
+      name: 'emailPasswordlessIdp',
+      endpoint: endpoints['emailPasswordlessIdp']!,
+      methodConnectors: {
+        'startLogin': _is.MethodConnector(
+          name: 'startLogin',
+          params: {
+            'email': _is.ParameterDescription(
+              name: 'email',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['emailPasswordlessIdp']
+                          as _ibg6gi29.EmailPasswordlessIdpEndpoint)
+                      .startLogin(
+                        session,
+                        email: params['email'],
+                      ),
+        ),
+        'finishLogin': _is.MethodConnector(
+          name: 'finishLogin',
+          params: {
+            'loginRequestId': _is.ParameterDescription(
+              name: 'loginRequestId',
+              type: _is.getType<_is.UuidValue>(),
+              nullable: false,
+            ),
+            'verificationCode': _is.ParameterDescription(
+              name: 'verificationCode',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['emailPasswordlessIdp']
+                          as _ibg6gi29.EmailPasswordlessIdpEndpoint)
+                      .finishLogin(
+                        session,
+                        loginRequestId: params['loginRequestId'],
+                        verificationCode: params['verificationCode'],
+                      ),
+        ),
+        'hasAccount': _is.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['emailPasswordlessIdp']
+                          as _ibg6gi29.EmailPasswordlessIdpEndpoint)
+                      .hasAccount(session),
         ),
       },
     );

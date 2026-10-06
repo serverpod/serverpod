@@ -7,6 +7,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/email_passwordless.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
@@ -36,6 +37,10 @@ void run(List<String> args) async {
       EmailIdpConfigFromPasswords(
         sendRegistrationVerificationCode: _sendRegistrationCode,
         sendPasswordResetVerificationCode: _sendPasswordResetCode,
+      ),
+      EmailPasswordlessIdpConfigFromPasswords(
+        sendSignUpVerificationCode: _sendSignUpCode,
+        sendSignInVerificationCode: _sendSignInCode,
       ),
       GoogleIdpConfigFromPasswords(),
       PasskeyIdpConfigFromPasswords(),
@@ -75,4 +80,32 @@ void _sendPasswordResetCode(
   // NOTE: Here you call your mail service to send the verification code to
   // the user. For testing, we will just log the verification code.
   session.log('[EmailIDP] Password reset code ($email): $verificationCode');
+}
+
+void _sendSignUpCode(
+  Session session, {
+  required String email,
+  required UuidValue loginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log(
+    '[EmailPasswordlessIDP] Sign-up code ($email): $verificationCode',
+  );
+}
+
+void _sendSignInCode(
+  Session session, {
+  required String email,
+  required UuidValue loginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log(
+    '[EmailPasswordlessIDP] Sign-in code ($email): $verificationCode',
+  );
 }
