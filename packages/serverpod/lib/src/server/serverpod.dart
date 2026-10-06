@@ -983,27 +983,11 @@ class Serverpod {
     if (verified) return;
 
     // A maintenance migration run only reports its result through the exit
-    // code, so it must signal failure in every run mode.
+    // code, other roles keep starting.
     final isMigrationRun =
         config.role == ServerpodRole.maintenance &&
         (applyMigrations || applyRepairMigration);
-    if (isMigrationRun) {
-      _exitCode = 1;
-      return;
-    }
-
-    // Other roles keep starting. Features that need the database fail on a
-    // per-request basis instead of taking the whole server down, which lets
-    // development workflows (e.g. agents) run without a ready database.
-    if (config.runMode == ServerpodRunMode.development) {
-      log.error(
-        'Database integrity verification failed: the database is unavailable '
-        'or does not match the target state. The server will continue to '
-        'run, but requests that require the database may fail until the '
-        'issue is resolved. Check the errors above and apply the pending '
-        'migrations.',
-      );
-    }
+    if (isMigrationRun) _exitCode = 1;
   }
 
   Future<void> _loadRuntimeSettings() async {

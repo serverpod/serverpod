@@ -26,7 +26,6 @@ void main() {
   // database is missing and the integrity verification fails, while loading
   // the runtime settings during startup still succeeds.
   Future<Serverpod> createPod({
-    required String runMode,
     ServerpodRole role = ServerpodRole.monolith,
     bool applyMigrations = false,
   }) async {
@@ -40,7 +39,6 @@ void main() {
         database: SqliteDatabaseConfig(
           filePath: p.join(tempDir.path, 'test.db'),
         ),
-        runMode: runMode,
         role: role,
         applyMigrations: applyMigrations,
         healthCheckInterval: Duration.zero,
@@ -78,20 +76,20 @@ void main() {
 
   group('Given a database that does not match the target state', () {
     test(
-      'when starting Serverpod in development run mode, '
+      'when starting Serverpod, '
       'then the server starts instead of exiting.',
       () async {
-        pod = await createPod(runMode: ServerpodRunMode.development);
+        pod = await createPod();
 
         await expectLater(pod.start(runInGuardedZone: false), completes);
       },
     );
 
     test(
-      'when starting Serverpod in development run mode, '
-      'then an error explaining the failed verification is logged.',
+      'when starting Serverpod, '
+      'then the failure is logged as an error.',
       () async {
-        pod = await createPod(runMode: ServerpodRunMode.development);
+        pod = await createPod();
 
         await pod.start(runInGuardedZone: false);
         await shared.log.flush();
@@ -100,38 +98,18 @@ void main() {
           logWriter.entries.where(
             (e) =>
                 e.level == shared.LogLevel.error &&
-                e.message.contains('Database integrity verification failed'),
+                e.message.contains('Failed to apply database migrations'),
           ),
-          hasLength(1),
+          isNotEmpty,
         );
       },
     );
 
     test(
-      'when starting Serverpod in production run mode, '
-      'then the server starts without the development error being logged.',
-      () async {
-        pod = await createPod(runMode: ServerpodRunMode.production);
-
-        await expectLater(pod.start(runInGuardedZone: false), completes);
-        await shared.log.flush();
-
-        expect(
-          logWriter.entries.where(
-            (e) => e.message.contains('Database integrity verification failed'),
-          ),
-          isEmpty,
-        );
-      },
-    );
-
-    test(
-      'when starting the maintenance role applying migrations in development '
-      'run mode, '
+      'when starting the maintenance role applying migrations, '
       'then it exits with code 1.',
       () async {
         pod = await createPod(
-          runMode: ServerpodRunMode.development,
           role: ServerpodRole.maintenance,
           applyMigrations: true,
         );
