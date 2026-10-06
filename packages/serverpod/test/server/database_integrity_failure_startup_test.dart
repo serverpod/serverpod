@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
-import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod_shared/log.dart' as shared;
 import 'package:serverpod_shared/serverpod_shared.dart' show ServerpodRole;
 import 'package:test/test.dart';
@@ -22,14 +21,12 @@ void main() {
   late Serverpod pod;
   late shared.TestLogWriter logWriter;
 
-  // Only the runtime settings table exists, so the rest of the target
-  // database is missing and the integrity verification fails, while loading
-  // the runtime settings during startup still succeeds.
-  Future<Serverpod> createPod({
+  // The SQLite database is empty, so the integrity verification fails.
+  Serverpod createPod({
     ServerpodRole role = ServerpodRole.monolith,
     bool applyMigrations = false,
-  }) async {
-    final pod = Serverpod(
+  }) {
+    return Serverpod(
       [],
       internal.Protocol(),
       EmptyEndpoints(),
@@ -46,18 +43,6 @@ void main() {
       ),
       serverDirectory: tempDir,
     );
-
-    await pod.internalSession.db.unsafeExecute('''
-      CREATE TABLE "serverpod_runtime_settings" (
-        "id" integer PRIMARY KEY AUTOINCREMENT,
-        "logSettings" text NOT NULL,
-        "logSettingsOverrides" text NOT NULL,
-        "logServiceCalls" integer NOT NULL,
-        "logMalformedCalls" integer NOT NULL
-      )
-    ''');
-
-    return pod;
   }
 
   setUp(() async {
@@ -79,26 +64,26 @@ void main() {
       'when starting Serverpod, '
       'then the server starts instead of exiting.',
       () async {
-        pod = await createPod();
+        pod = createPod();
 
-        await expectLater(pod.start(runInGuardedZone: false), completes);
+        await expectLater(pod.start(), completes);
       },
     );
 
     test(
       'when starting Serverpod, '
-      'then the failure is logged as an error.',
+      'then the mismatch is logged as a warning.',
       () async {
-        pod = await createPod();
+        pod = createPod();
 
-        await pod.start(runInGuardedZone: false);
+        await pod.start();
         await shared.log.flush();
 
         expect(
           logWriter.entries.where(
             (e) =>
-                e.level == shared.LogLevel.error &&
-                e.message.contains('Failed to apply database migrations'),
+                e.level == shared.LogLevel.warning &&
+                e.message.contains('does not match the target database'),
           ),
           isNotEmpty,
         );
@@ -109,7 +94,7 @@ void main() {
       'when starting the maintenance role applying migrations, '
       'then it exits with code 1.',
       () async {
-        pod = await createPod(
+        pod = createPod(
           role: ServerpodRole.maintenance,
           applyMigrations: true,
         );
