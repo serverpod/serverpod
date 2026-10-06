@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
+import 'package:serverpod_cli/src/util/copy_directory.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
@@ -1174,54 +1177,10 @@ void main() async {
     test(
       'when building the server Dockerfile then the image is built successfully',
       () async {
-        // Temporarily remove parameters from server.dart that have not been
-        // published yet, because the Dockerfile won't have access to the local
-        // override. Once published, we can remove these.
-        final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
-        final serverSource = serverFile.readAsStringSync();
-        const wasmHeaders = 'enableWasmHeaders: false,';
-        // TODO: Remove once Session.alert is published.
-        const sessionAlert = 'session.alert(';
-        // TODO: Remove once ServerpodCloudEmailIdpConfig is published. The
-        // published serverpod_auth_idp_server does not have it yet, so swap it
-        // for the published-compatible EmailIdpConfigFromPasswords (its send
-        // callbacks are optional, so the no-argument form compiles).
-        final cloudEmailConfig = RegExp(
-          r'ServerpodCloudEmailIdpConfig\([^)]*\)',
-        );
-        // TODO: Remove once StaticRoute.withCacheBusting is published.
-        const staticRouteCacheBusting =
-            "StaticRoute.withCacheBusting(cacheBustingConfig)";
-
-        serverFile.writeAsStringSync(
-          serverSource
-              .replaceAll(wasmHeaders, '')
-              .replaceAll(sessionAlert, 'session.log(')
-              .replaceAll(cloudEmailConfig, 'EmailIdpConfigFromPasswords()')
-              .replaceAll(
-                staticRouteCacheBusting,
-                "StaticRoute.directory(Directory(Uri(path: 'web/static').toFilePath()))",
-              ),
-        );
-
-        // TODO: Remove once DeserializationClassNameNotFoundException is
-        // published. The generated protocol references the local exception,
-        // while the Docker build resolves the currently published packages.
-        final protocolFile = File(
-          path.join(
-            commandRoot,
-            'lib',
-            'src',
-            'generated',
-            'protocol.dart',
-          ),
-        );
-        final protocolSource = protocolFile.readAsStringSync();
-        protocolFile.writeAsStringSync(
-          protocolSource.replaceAll(
-            RegExp(r'_i\w+\.DeserializationClassNameNotFoundException'),
-            'FormatException',
-          ),
+        _addLocalPackageOverrides(
+          projectRoot: path.join(tempPath, projectName),
+          serverPackage: '${projectName}_server',
+          repositoryRoot: rootPath,
         );
 
         final dockerBuildProcess = await startProcess(
@@ -1423,5 +1382,63 @@ void main() async {
     skip: Platform.isWindows
         ? 'Windows does not support postgres in github actions'
         : null,
+  );
+}
+
+void _addLocalPackageOverrides({
+  required String projectRoot,
+  required String serverPackage,
+  required String repositoryRoot,
+}) {
+  final server = parsePubspec(
+    File(path.join(projectRoot, serverPackage, 'pubspec.yaml')),
+  );
+  final localPackageRoots = {
+    for (final name in [server.name, ...server.devDependencies.keys])
+      ...PackageDependencyTracker(
+        dartToolDir: path.join(projectRoot, '.dart_tool'),
+        packageName: name,
+      ).localPackageLibDirs().map(path.dirname),
+  };
+
+  final overrides = <DependencyUpdate>[];
+  final repository = path.normalize(path.absolute(repositoryRoot));
+  for (final packageRoot in localPackageRoots.toList()..sort()) {
+    if (!path.isWithin(repository, packageRoot)) continue;
+
+    final package = parsePubspec(File(path.join(packageRoot, 'pubspec.yaml')));
+    final destination = path.join('local_packages', package.name);
+    copyDirectory(
+      Directory(packageRoot),
+      Directory(path.join(projectRoot, destination)),
+      ignoreFileNames: const {
+        '.dart_tool',
+        '.git',
+        '.serverpod',
+        'build',
+        'pubspec_overrides.yaml',
+      },
+    );
+    overrides.add((
+      name: package.name,
+      source: DependencySource.path(destination),
+      type: DependencyType.override,
+    ));
+  }
+
+  File(path.join(projectRoot, 'pubspec_overrides.yaml')).writeAsStringSync(
+    addDependencyToPubspec('{}\n', additions: overrides),
+  );
+
+  // Keep the generated Dockerfile, but include this checkout's dependencies
+  // before its pub get so the build uses the same APIs as the generator.
+  final dockerfile = File(path.join(projectRoot, serverPackage, 'Dockerfile'));
+  dockerfile.writeAsStringSync(
+    dockerfile.readAsStringSync().replaceFirst(
+      'RUN dart pub get',
+      'COPY local_packages local_packages\n'
+          'COPY pubspec_overrides.yaml .\n'
+          'RUN dart pub get',
+    ),
   );
 }
