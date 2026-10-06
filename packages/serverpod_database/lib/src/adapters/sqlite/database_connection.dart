@@ -313,110 +313,21 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }) async {
     if (rows.isEmpty) return [];
 
-    Future<List<T>> run(Transaction? tx) async {
-      final results = <T>[];
-      final affectedIds = <Object?>{};
-      var affectedCount = 0;
-      var offset = 0;
-      var statements = <SqliteBatchStatement>[];
-      var bytes = 0;
-
-      Future<void> flush() async {
-        if (statements.isEmpty) return;
-        final List<ResultSet> returned;
-        if (rows.length == 1) {
-          final statement = statements.single;
-          returned = [
-            await _runGeneratedQuery(
-              session,
-              statement.sql,
-              parameters: statement.parameters,
-              transaction: tx,
-            ),
-          ];
-        } else {
-          returned = await _executeStatementBatch(
-            session,
-            statements,
-            tx!,
-            discardResults: noReturn && !rejectDuplicateTargets,
-          );
-        }
-
-        for (var index = 0; index < returned.length; index++) {
-          final input = rows[offset + index];
-          for (final row in returned[index]) {
-            final normalized = _normalizeQueryResultRow(
-              Map<String, dynamic>.from(row),
-              input.table,
-            );
-            if (rejectDuplicateTargets) {
-              affectedIds.add(normalized[input.table.id.fieldName]);
-              affectedCount++;
-            }
-            if (!noReturn) {
-              results.add(
-                poolManager.serializationManager.deserialize<T>(
-                  <String, dynamic>{
-                    ...input.toJson(),
-                    ...normalized,
-                  },
-                ),
-              );
-            }
-          }
-        }
-        offset += statements.length;
-        statements = [];
-        bytes = 0;
-      }
-
-      for (final row in rows) {
-        final pending = statementForRow(row, tx);
-        final statement = pending is Future<SqliteBatchStatement>
-            ? await pending
-            : pending;
-        final statementBytes =
-            statement.sql.length * 2 +
-            statement.parameters.fold<int>(
-              0,
-              (total, value) =>
-                  total +
-                  switch (value) {
-                    String() => value.length * 2,
-                    List<int>() => value.length,
-                    _ => 8,
-                  },
-            );
-        // Bound input transport and preparation memory. An individual large
-        // row still travels alone; result slots always retain the input order.
-        if (statements.length == 256 ||
-            (statements.isNotEmpty && bytes + statementBytes > 1024 * 1024)) {
-          await flush();
-        }
-        statements.add(statement);
-        bytes += statementBytes;
-      }
-      await flush();
-
-      if (rejectDuplicateTargets && affectedIds.length != affectedCount) {
-        throw DatabaseQueryException(
-          'ON CONFLICT DO UPDATE command cannot affect row a second time',
-          code: SqliteErrorCode.integrityConstraintViolation,
-          hint:
-              'Ensure that no rows proposed for insertion within the '
-              'same command have duplicate constrained values.',
-        );
-      }
-      return results;
-    }
+    final executor = _SqliteRowWriteExecutor<T>(
+      connection: this,
+      session: session,
+      rows: rows,
+      statementForRow: statementForRow,
+      noReturn: noReturn,
+      rejectDuplicateTargets: rejectDuplicateTargets,
+    );
 
     return rows.length == 1
-        ? run(transaction)
+        ? executor.execute(transaction)
         : DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             transaction,
-            run,
+            executor.execute,
           );
   }
 
@@ -1737,6 +1648,138 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
   static String _stripTrailingSemicolon(String sql) {
     return sql.trim().replaceFirst(RegExp(r'(?:;|\s)+$'), '');
+  }
+}
+
+/// Owns the planning and result state for one ordered row-write operation.
+class _SqliteRowWriteExecutor<T extends TableRow> {
+  _SqliteRowWriteExecutor({
+    required this.connection,
+    required this.session,
+    required this.rows,
+    required this.statementForRow,
+    required this.noReturn,
+    required this.rejectDuplicateTargets,
+  });
+
+  final SqliteDatabaseConnection connection;
+  final DatabaseSession session;
+  final List<T> rows;
+  final FutureOr<SqliteBatchStatement> Function(T row, Transaction? transaction)
+  statementForRow;
+  final bool noReturn;
+  final bool rejectDuplicateTargets;
+
+  final _results = <T>[];
+  final _affectedIds = <Object?>{};
+  var _affectedCount = 0;
+  var _offset = 0;
+  var _statements = <SqliteBatchStatement>[];
+  var _bytes = 0;
+
+  Future<List<T>> execute(Transaction? transaction) async {
+    for (final row in rows) {
+      final pending = statementForRow(row, transaction);
+      final statement = pending is Future<SqliteBatchStatement>
+          ? await pending
+          : pending;
+      final statementBytes = _estimateStatementBytes(statement);
+
+      // Bound input transport and preparation memory. An individual large
+      // row still travels alone; result slots always retain the input order.
+      if (_statements.length == 256 ||
+          (_statements.isNotEmpty && _bytes + statementBytes > 1024 * 1024)) {
+        await _flush(transaction);
+      }
+
+      _statements.add(statement);
+      _bytes += statementBytes;
+    }
+
+    await _flush(transaction);
+    _validateAffectedTargets();
+    return _results;
+  }
+
+  Future<void> _flush(Transaction? transaction) async {
+    if (_statements.isEmpty) return;
+
+    final List<ResultSet> returned;
+    if (rows.length == 1) {
+      final statement = _statements.single;
+      returned = [
+        await connection._runGeneratedQuery(
+          session,
+          statement.sql,
+          parameters: statement.parameters,
+          transaction: transaction,
+        ),
+      ];
+    } else {
+      returned = await connection._executeStatementBatch(
+        session,
+        _statements,
+        transaction!,
+        discardResults: noReturn && !rejectDuplicateTargets,
+      );
+    }
+
+    _collectResults(returned);
+    _offset += _statements.length;
+    _statements = [];
+    _bytes = 0;
+  }
+
+  void _collectResults(List<ResultSet> returned) {
+    for (var index = 0; index < returned.length; index++) {
+      final input = rows[_offset + index];
+      for (final row in returned[index]) {
+        final normalized = connection._normalizeQueryResultRow(
+          Map<String, dynamic>.from(row),
+          input.table,
+        );
+
+        if (rejectDuplicateTargets) {
+          _affectedIds.add(normalized[input.table.id.fieldName]);
+          _affectedCount++;
+        }
+
+        if (!noReturn) {
+          _results.add(
+            connection.poolManager.serializationManager.deserialize<T>(
+              <String, dynamic>{
+                ...input.toJson(),
+                ...normalized,
+              },
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  void _validateAffectedTargets() {
+    if (rejectDuplicateTargets && _affectedIds.length != _affectedCount) {
+      throw DatabaseQueryException(
+        'ON CONFLICT DO UPDATE command cannot affect row a second time',
+        code: SqliteErrorCode.integrityConstraintViolation,
+        hint:
+            'Ensure that no rows proposed for insertion within the '
+            'same command have duplicate constrained values.',
+      );
+    }
+  }
+
+  static int _estimateStatementBytes(SqliteBatchStatement statement) {
+    var bytes = statement.sql.length * 2;
+    for (final value in statement.parameters) {
+      bytes += switch (value) {
+        String() => value.length * 2,
+        List<int>() => value.length,
+        _ => 8,
+      };
+    }
+    return bytes;
   }
 }
 

@@ -862,20 +862,18 @@ class PostgresDatabaseConfig extends DatabaseConfig {
 /// SQLite-specific database configuration.
 class SqliteDatabaseConfig extends DatabaseConfig {
   /// Creates a new [SqliteDatabaseConfig].
-  SqliteDatabaseConfig({
-    required String filePath,
-    super.maxConnectionCount,
-  }) : super._(
-         host: filePath,
-         port: 0,
-         user: '',
-         password: '',
-         name: '',
-         requireSsl: false,
-         isUnixSocket: false,
-         searchPaths: null,
-         dialect: DatabaseDialect.sqlite,
-       );
+  SqliteDatabaseConfig({required String filePath, super.maxConnectionCount})
+    : super._(
+        host: filePath,
+        port: 0,
+        user: '',
+        password: '',
+        name: '',
+        requireSsl: false,
+        isUnixSocket: false,
+        searchPaths: null,
+        dialect: DatabaseDialect.sqlite,
+      );
 
   /// The file path to the SQLite database.
   String get filePath => host;
