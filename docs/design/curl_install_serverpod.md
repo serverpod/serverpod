@@ -1,449 +1,238 @@
-# Serverpod Development Environment Installer
+# Serverpod development environment installer
 
-## Goal
-
-Provide a single command that can take a macOS or Linux development machine from an unknown state to a working Serverpod + Flutter development environment:
+Provide one command that diagnoses, proposes changes, provisions approved missing
+dependencies, and verifies a usable Serverpod/Flutter environment:
 
 ```bash
 curl -fsSL https://serverpod.dev/install.sh | bash
 ```
 
-The installer should behave primarily as a **diagnostic and reconciliation tool**, not as a collection of bespoke installers.
+**Use a native Serverpod CLI bundle for initial diagnosis, mise for provisioning,
+and vendor tools for platform checks.** Serverpod owns compatibility policy,
+profiles, normalized results, and reconciliation; it should not become another
+package manager. The decisions below reflect research on 2026-10-06, including
+isolated Linux probes of released **mise v2026.10.3**. The doctor API, installer,
+native release matrix, and clean-machine qualification remain implementation work.
 
-It should:
+## Scope and profiles
 
-- Detect what is already installed.
-- Determine what is missing or incompatible.
-- Present the intended changes.
-- Install only what is necessary.
-- Be safe to run repeatedly.
-- Verify the resulting environment.
+“Zeroed machine” means no developer tools. The entry command still needs Bash,
+curl, working HTTPS trust/network, writable storage, and bootstrap archive/checksum
+utilities. Images missing this transport floor need another launch mechanism.
+The installer must supply development prerequisites without asking users to
+configure mise or install Git manually.
 
-## Design Principle
+Target macOS arm64/Intel and named glibc Linux x64 distribution recipes, subject to
+release qualification. Mise's broader platform support does not imply Flutter,
+Android, or Ruby support: its pinned Flutter registry supplies Linux x64 archives;
+Intel CocoaPods requires separate qualification. Linux arm64, musl/NixOS, and other
+unqualified combinations must be reported explicitly.
+([Flutter registry](https://github.com/jdx/mise/blob/v2026.10.3/registry/flutter.toml))
 
-Serverpod should own the **desired development environment and user experience**, while delegating generic tool installation and version management to existing tooling.
+| Profile | Requested capabilities |
+| --- | --- |
+| `minimal` | Flutter/Dart and Serverpod CLI; SDK-only setup |
+| `android` | Minimal plus Android builds; device/emulator setup when requested |
+| `ios` | Minimal plus Xcode, CocoaPods, and iOS simulator support on macOS |
+| `mobile` | Android and iOS where supported |
+| `all` | Mobile plus desktop and web prerequisites |
 
-Use **mise** as the primary provisioning substrate.
+The interactive default recommends `all`; automation specifies a profile.
+An explicitly requested unsupported target fails clearly. Unrequested targets do
+not fail readiness. Build readiness and device/simulator readiness are separate.
 
-Serverpod should not maintain custom installers for Flutter, Java, Ruby, CocoaPods, or similar generic development tools.
-
-Conceptually:
-
-```text
-Serverpod Installer
-├── Environment diagnosis
-├── Desired-state definition
-├── Dependency resolution
-├── Platform-specific decisions
-├── User interaction
-├── Android SDK/emulator provisioning
-└── Final verification
-        │
-        ▼
-       mise
-        │
-        ├── Flutter
-        │   └── Dart
-        ├── Java
-        ├── Ruby
-        ├── CocoaPods
-        └── xcodes
-```
-
-## Supported Platforms
-
-### macOS
-
-Provision a complete Flutter development workstation capable of:
-
-- Serverpod development
-- Flutter desktop/web development
-- Android development
-- iOS development
-
-### Linux
-
-Provision:
-
-- Serverpod development
-- Flutter desktop/web development
-- Android development
-
-iOS tooling must be reported as unavailable rather than treated as an installation failure.
-
-## Components
-
-### Common
-
-The installer should diagnose and provision:
-
-- mise
-- Flutter
-- Dart
-- Serverpod CLI
-- Java/JDK
-- Git and other minimal prerequisites where required
-
-### Android
-
-Provision and configure:
-
-- Android command-line tools
-- Android SDK
-- Platform tools
-- Required Android platform
-- Build tools
-- Emulator
-- At least one usable AVD, optionally
-
-The Android tooling is the main area where Serverpod may initially need custom provisioning logic.
-
-Prefer Google's current Android CLI/tooling over implementing SDK and AVD management directly.
-
-A future goal should be to move Android command-line-tool installation into a reusable mise backend or registry entry.
-
-### macOS / iOS
-
-Provision and configure:
-
-- `xcodes`
-- Xcode
-- Xcode command-line tools
-- iOS Simulator runtime
-- CocoaPods
-- Ruby only where required as a dependency
-
-Where Apple authentication, license acceptance, or other unavoidable interaction is required, the installer should clearly hand control to the user rather than attempting to bypass it.
-
-## Mise Usage
-
-Mise should be treated as an implementation detail rather than part of the Serverpod user-facing mental model.
-
-Example internal operations:
+Proposed automation invocation:
 
 ```bash
-mise use -g flutter@<version>
-mise use -g java@<version>
-mise use -g ruby@<version>
-mise use -g xcodes@<version>
-mise use -g cocoapods@<version>
+curl -fsSL https://serverpod.dev/install.sh | bash -s -- --profile mobile --yes
 ```
 
-Flutter installed through mise provides Dart, so no independent Dart bootstrap is required.
+## Run doctor before provisioning
 
-The Serverpod CLI can then be installed using the Dart provided by Flutter.
+The small shell bootstrap detects OS/architecture, verifies and extracts a pinned
+native CLI bundle, then runs `serverpod doctor`. It can also download pinned mise
+as a private diagnostic helper for package planning, without activation or global
+configuration changes. Basic doctor detection must work when mise is absent.
 
-## Diagnostic-First UX
+Use **`dart build cli`**, preserving its executable and native-library layout;
+the receiving host needs no Dart SDK.
+This repository already bundles the CLI in CI; sqlite3 build hooks make plain
+`dart compile exe` insufficient. Extend that mechanism to qualified release hosts,
+with macOS signing/notarization and explicit minimum OS/libc requirements.
+([Dart bundles](https://dart.dev/tools/dart-build),
+[existing build helper](../../packages/serverpod_shared/lib/src/utils/serverpod_cli_build.dart))
 
-Running the installer on an existing workstation should first produce a status report.
+Doctor needs a bootstrap-safe entry path: bypass existing Dart/Flutter prechecks,
+welcome browser, counters, update checks, and SDK-dependent initialization.
+Downloading the executable is bootstrap; diagnosis must not install missing
+development tools. Reuse existing SDK resolution where possible, converting its
+missing-SDK exceptions into diagnostic results.
+([CLI startup](../../tools/serverpod_cli/bin/serverpod_cli.dart),
+[SDK resolution](../../packages/serverpod_shared/lib/src/utils/sdk_path.dart))
 
-Example:
+Do not bootstrap through Puro: its commands select Flutter environments and its
+configuration requires Git, adding dependencies before diagnosis. An official
+pinned Dart SDK archive is a fallback if native distribution is unavailable,
+with additional download and package-resolution costs.
+([Puro forwarding](https://github.com/pingbird/puro/blob/ce706523fd06fab6995b7cfc10fdc577ffbe7e0e/puro/lib/src/env/command.dart),
+[Git prerequisite](https://github.com/pingbird/puro/blob/ce706523fd06fab6995b7cfc10fdc577ffbe7e0e/puro/lib/src/config.dart))
 
-```text
-Serverpod Development Environment
+## Compose diagnostics around selected tools
 
-System
-  ✓ macOS arm64
-  ✓ Git
+Propose `serverpod doctor [--profile <profile>] [--json]` with a versioned result
+schema: selected executable/SDK root, provider, version, evidence, remedy, and
+status (`ready`, `missing`, `incompatible`, `misconfigured`, `unknown/error`,
+`not-requested`, or `unsupported`). Failed or timed-out probes mean uncertainty,
+not absence. Exit success requires every requested supported capability to pass.
 
-Serverpod
-  ✓ Flutter 3.x
-  ✓ Dart 3.x
-  ✗ Serverpod CLI
+Discover candidates from inherited PATH, explicit configuration/environment, known
+SDK locations, and provider inventories. Retain shim and resolved SDK paths;
+executable presence alone proves little. Preserve compatible user-managed tools
+and flag conflicting selections. Do not source arbitrary shell startup files or
+treat aliases as portable executables. Run bounded probes using selected absolute
+paths and a consistent child environment; disable verified manager auto-install
+behavior or defer unsafe shim execution until approval.
 
-Android
-  ✓ Java 21
-  ✗ Android SDK
-  ✗ Platform tools
-  ✗ Android emulator
-  ✗ Development device
+Reuse these existing interfaces:
 
-iOS
-  ✓ Xcode
-  ✗ iOS Simulator runtime
-  ✗ CocoaPods
+| Tool | Useful evidence and limits |
+| --- | --- |
+| `mise doctor --json`, `mise ls --json` | Mise configuration and known versions; neither inventories every PATH tool. `mise which` only resolves mise tools. |
+| `mise doctor project --json` | Declared exit-based checks with timeouts/platform filters; an empty or skipped set is not readiness. |
+| `mise bootstrap packages status --json`, `mise bootstrap plan --json` | Host package state and plan; inspect manager availability and retain separate SDK/tool actions. |
+| `flutter --version --machine`, `flutter devices --machine` | Structured Flutter and connected-device evidence. |
+| Vendor probes | SDK package inventory, `adb devices -l`, emulator list/acceleration checks, Xcode selection/version, and `xcrun simctl list --json`. |
 
-4 components need installation.
+These mise commands exist in v2026.10.3. Use installer-owned configuration with
+inherited configurations/hooks disabled; never auto-trust a project. Avoid
+`mise env` during inspection because it can install missing versions.
+([Released doctor](https://github.com/jdx/mise/blob/v2026.10.3/src/cli/doctor/mod.rs),
+[project checks](https://github.com/jdx/mise/blob/v2026.10.3/src/cli/doctor/project.rs),
+[environment behavior](https://github.com/jdx/mise/blob/v2026.10.3/src/cli/env.rs))
 
-Install missing components? [Y/n]
-```
+Keep `flutter doctor -v` as a human-readable supplement. Flutter 3.44.4 has no
+doctor JSON option; its normal exit code does not encode readiness. Do not parse
+its prose or import private Flutter validators. Flutter commands can initialize
+their cache; disclose that before running them. Probe the JDK and Android SDK
+Flutter actually selects, including configured overrides and Android Studio's
+bundled JDK, rather than assuming PATH Java is authoritative.
+([Doctor](https://github.com/flutter/flutter/blob/3.44.4/packages/flutter_tools/lib/src/commands/doctor.dart),
+[Java resolution](https://github.com/flutter/flutter/blob/3.44.4/packages/flutter_tools/lib/src/android/java.dart))
 
-The installer must not reinstall valid components unnecessarily.
+## Provision approved changes through mise
 
-## Desired-State Model
+Mise's standalone executable requires neither Git nor shell activation; Flutter
+still requires working Git. Use absolute-path mise operations and controlled
+configuration instead of `mise use -g`. Preserve the pinned registry's Flutter
+HTTP/checksum metadata: bare `http:flutter` omits required options.
+([Mise installation](https://github.com/jdx/mise/blob/v2026.10.3/docs/installing-mise.md),
+[Flutter Git requirement](https://github.com/flutter/flutter/blob/3.44.4/bin/internal/shared.sh))
 
-The implementation should model the environment as dependencies rather than as a linear shell script.
+Declare host prerequisites through mise's released package bootstrap support,
+preview with `mise bootstrap packages apply --manager <manager> --dry-run`, and apply after
+approval. Qualify recipes for each supported distribution. Include Git/archive
+utilities, desktop compiler/CMake/Ninja/GTK dependencies, and a supported web
+browser according to profile; SDK installation alone does not provide them.
+([Package bootstrap](https://github.com/jdx/mise/blob/v2026.10.3/docs/bootstrap/packages/index.md),
+[Linux desktop](https://docs.flutter.dev/platform-integration/linux/setup))
 
-Example:
+A release manifest pins compatible Flutter, Java (`core:java`), Ruby (`core:ruby`),
+CocoaPods (`gem:cocoapods`), and xcodes (`aqua:XcodesOrg/xcodes`) versions and backend
+metadata. Keep Ruby and gems together. Prebuilt Ruby does not cover macOS Intel:
+qualify its compiler/native-library recipe explicitly, rather than silently
+falling back to source builds or assuming Homebrew solves it.
+([Ruby](https://mise.jdx.dev/lang/ruby.html),
+[gem backend](https://mise.jdx.dev/dev-tools/backends/gem.html))
 
-```text
-Flutter
-└── Dart
-    └── Serverpod CLI
+## Apple tooling remains Apple's distribution
 
-Java
-└── Android SDK
-    ├── Platform tools
-    ├── Build tools
-    └── Emulator
-        └── AVD
+Mise installs the third-party **xcodes manager**; xcodes downloads Apple-signed
+Xcode and verifies its signing identity. The same selected Xcode build provides
+Apple's tools. Installation path, App Store receipts/update ownership, active
+selection, and installed runtimes can differ. Reuse compatible existing Xcode.
+([xcodes](https://github.com/XcodesOrg/xcodes),
+[signature verification](https://github.com/XcodesOrg/XcodesKit/blob/main/Sources/XcodesKit/Services/XcodeSignatureVerifier.swift))
 
-macOS
-└── Xcode
-    └── iOS Simulator
+Full Xcode includes command-line tools; otherwise use Apple's CLT installation
+flow. Check developer selection before invoking macOS Git stubs, which can open
+an installation dialog. Select Xcode explicitly and provision a compatible iOS
+runtime with `xcodebuild -downloadPlatform iOS` or pinned xcodes runtime selection.
+Expose Apple authentication/2FA, administrator authorization, first launch, and
+license acceptance: xcodes performs privileged preparation and accepts the Xcode
+license during installation, so specific consent must precede that operation.
+After that approval, run `xcodes install <version> --select`.
+([Apple CLT](https://developer.apple.com/documentation/xcode/installing-the-command-line-tools/),
+[xcodes preparation](https://github.com/XcodesOrg/XcodesKit/blob/main/Sources/XcodesKit/Services/XcodePostInstallPreparationService.swift))
 
-Ruby
-└── CocoaPods
-```
+## Android needs a small persistent-SDK adapter
 
-Each component should support:
+Reuse the selected SDK root; otherwise create a persistent user-owned root. Mise
+already ships `android-sdk`, but v2026.10.3 skips archive checksums and ties the SDK
+root to its tool-version directory. Initially use a verified official archive
+download/unpack/layout adapter; Google tools own packages and AVDs. Android Studio
+is optional. Keep `ANDROID_HOME` and Flutter configuration consistent; resolve
+conflicting deprecated `ANDROID_SDK_ROOT` values before changes.
+([Mise backend](https://github.com/jdx/mise/tree/v2026.10.3/crates/vfox/embedded-plugins/vfox-android-sdk/hooks),
+[Google layout](https://developer.android.com/tools/sdkmanager))
 
-- detection
-- version validation
-- installation
-- verification
+Pin and qualify cmdline-tools with Flutter/JDK and template-required packages,
+including NDK/CMake where needed. Google's new Android CLI replaces deprecated
+sdkmanager/avdmanager; cmdline-tools 23.0's `sdkmanager --licenses` wrapper returns
+success without checking acceptance. Initially qualify a legacy version (19.0 is
+a candidate, **not a validated pairing**). Migrate after license, Flutter, and
+explicit AVD-selection compatibility tests; never infer license readiness from
+exit zero or manufacture license files.
+([Android CLI changes](https://developer.android.com/tools/agents/android-cli/release-notes),
+[23.0 distribution](https://dl.google.com/android/repository/commandlinetools-linux-16111833_latest.zip))
 
-This keeps diagnosis and installation driven by the same model.
-
-## Installation Profiles
-
-Support explicit profiles for automation and advanced users.
-
-For example:
+For that legacy route, bind these variables from the tested release manifest and
+selected SDK, with `SYSTEM_IMAGE="system-images;android-<api>;google_apis;<host-abi>"`.
+Obtain license consent through Google's interactive flow:
 
 ```bash
-serverpod-install --minimal
-serverpod-install --android
-serverpod-install --ios
-serverpod-install --mobile
-serverpod-install --all
+sdkmanager="$ANDROID_HOME/cmdline-tools/$CMDLINE_TOOLS_VERSION/bin/sdkmanager"
+avdmanager="$ANDROID_HOME/cmdline-tools/$CMDLINE_TOOLS_VERSION/bin/avdmanager"
+
+"$sdkmanager" --sdk_root="$ANDROID_HOME" --licenses
+"$sdkmanager" --sdk_root="$ANDROID_HOME" --install \
+  "platform-tools" "platforms;android-$ANDROID_API" \
+  "build-tools;$ANDROID_BUILD_TOOLS"
+
+# Optional emulator target; preserve any existing named AVD.
+"$sdkmanager" --sdk_root="$ANDROID_HOME" --install "emulator" "$SYSTEM_IMAGE"
+"$avdmanager" create avd -n "$AVD_NAME" -k "$SYSTEM_IMAGE"
 ```
 
-Suggested semantics:
+Choose a host-compatible image. Check `emulator -accel-check`: Linux needs usable
+KVM/permissions, macOS uses Hypervisor.Framework. A physical device can replace
+an emulator on supported build hosts, with USB trust/developer setup; it does not
+solve missing Linux ARM host binaries.
+([Acceleration](https://developer.android.com/studio/run/emulator-acceleration),
+[AVD creation](https://developer.android.com/tools/avdmanager))
 
-- `minimal`: Flutter + Dart + Serverpod CLI
-- `android`: minimal + Java + Android tooling
-- `ios`: minimal + Xcode/iOS tooling
-- `mobile`: Android + iOS where supported
-- `all`: all supported development tooling
+## Approval, persistence, and completion
 
-The default interactive invocation should recommend the appropriate complete development setup for the current platform.
+Read approvals and interactive child input through `/dev/tty` under `curl | bash`.
+`--yes` approves the Serverpod plan, not third-party licenses or credentials.
+Headless runs must exit promptly with actionable, resumable blocked status when
+required UI, consent, or privileges are unavailable.
 
-## Non-Interactive Usage
+Pin and verify HTTPS downloads against reviewed release metadata; show privileged
+actions and approved shell integration before execution. Install launchers using
+the selected environment without requiring manual mise setup. A child cannot
+change its parent's PATH: clearly report any new-shell/relogin boundary.
 
-Support:
+Reruns reuse compatible tools, preserve unrelated configuration and AVDs, and
+resume partial work. Doctor remains independently useful; future project pins
+and an explicitly approved `doctor --fix` can share the same component policy.
 
-```bash
-curl -fsSL https://serverpod.dev/install.sh | bash -s -- --yes --mobile
-```
+Completion requires doctor plus an actual selected Serverpod starter launch and
+requested Flutter target build/run, with device boot/connectivity checked
+separately. This checkout's starter uses embedded PostgreSQL and disables Redis;
+do not add mandatory Docker. Follow the selected release's template dependencies.
+([Starter configuration](../../templates/serverpod_templates/projectname_server_upgrade/config/development.yaml))
 
-Requirements:
-
-- No prompts except unavoidable third-party authentication/licensing.
-- Clear non-zero exit codes.
-- Suitable for workstation automation and CI images.
-- Deterministic requested versions where Serverpod requires specific compatibility.
-
-## Idempotency
-
-The installer must be safe to rerun.
-
-It should:
-
-- Detect existing compatible installations.
-- Preserve user-managed installations whenever possible.
-- Avoid overwriting unrelated configuration.
-- Resume cleanly after partial installation.
-- Never require a clean machine.
-
-Example:
-
-```text
-✓ Flutter 3.44.4 already installed
-✓ Java 21 already installed
-→ Installing Android SDK
-→ Installing platform-tools
-✓ Xcode already configured
-```
-
-## Existing Tool Ownership
-
-If the user already manages a tool independently, Serverpod should prefer compatibility over takeover.
-
-For example:
-
-- Existing compatible Flutter installation → use it.
-- Existing compatible Java → use it.
-- Existing Xcode → do not replace it.
-- Existing Android SDK → configure or extend it rather than creating another copy.
-
-Mise is the default provisioning engine, not a requirement that every existing installation become mise-managed.
-
-## Verification
-
-Installation should conclude with actual functional checks, not merely executable discovery.
-
-Example checks:
-
-```text
-✓ flutter doctor
-✓ dart --version
-✓ serverpod version
-✓ Android SDK available
-✓ adb available
-✓ Android emulator available
-✓ Xcode build tools available
-✓ iOS Simulator runtime available
-✓ CocoaPods available
-```
-
-Finish with a concise report:
-
-```text
-Serverpod development environment ready.
-
-Flutter      3.x
-Dart         3.x
-Serverpod    4.x
-Android      Ready
-iOS          Ready
-```
-
-Any remaining issues should be presented as actionable items.
-
-## `serverpod doctor`
-
-The diagnostic system should eventually exist independently of the bootstrap script:
-
-```bash
-serverpod doctor
-```
-
-This should reuse the same component model as the installer and report:
-
-- Missing tooling
-- Unsupported versions
-- PATH/configuration problems
-- Android SDK problems
-- Simulator/emulator availability
-- Serverpod/Flutter compatibility
-
-Potential future command:
-
-```bash
-serverpod doctor --fix
-```
-
-This would reconcile an existing workstation using the same provisioning engine as `install.sh`.
-
-## Project-Level Versions
-
-A later iteration may allow Serverpod projects to declare expected development tool versions.
-
-For example:
-
-```yaml
-environment:
-  flutter: 3.44.4
-  java: 21
-```
-
-Serverpod could integrate this with mise project configuration so that:
-
-- New contributors receive the expected toolchain.
-- `serverpod doctor` detects version drift.
-- CI and local environments can share compatible versions.
-
-This should not be required for the initial installer.
-
-## Security
-
-The top-level bootstrap script should remain small and auditable.
-
-It should:
-
-- Use HTTPS exclusively.
-- Pin or verify downloaded artifacts where practical.
-- Delegate downloads to mise or official vendor tooling.
-- Avoid `sudo` unless required.
-- Show operations requiring elevated privileges before executing them.
-- Avoid modifying shell startup files unless necessary and clearly communicated.
-
-The installer should not evolve into its own general-purpose package manager.
-
-## Non-Goals
-
-The initial implementation should not:
-
-- Replace Homebrew or system package managers.
-- Replace mise's version-management functionality.
-- Maintain custom Flutter or Java download logic.
-- Support iOS development on Linux.
-- Automatically solve Apple account authentication.
-- Manage every possible Android emulator configuration.
-- Force existing development environments to migrate to mise.
-
-## Initial Implementation Boundary
-
-### Serverpod owns
-
-- `install.sh` bootstrap
-- Environment diagnostics
-- Component/dependency model
-- Interactive UX
-- Installation profiles
-- Version compatibility policy
-- Android SDK configuration
-- Emulator/AVD setup
-- Final verification
-- `serverpod doctor`
-
-### Mise / external tools own
-
-- Flutter SDK installation/versioning
-- Java installation/versioning
-- Ruby installation/versioning
-- CocoaPods installation
-- `xcodes` installation
-- Generic binary/archive acquisition
-
-### Apple/Google tooling owns
-
-- Xcode installation internals
-- Simulator runtimes
-- Android SDK packages
-- Emulator internals
-- Platform licenses
-
-## Recommended First Milestone
-
-Implement:
-
-```text
-install.sh
-    ↓
-detect OS/arch
-    ↓
-diagnose environment
-    ↓
-install mise if necessary
-    ↓
-provision Flutter
-    ↓
-install Serverpod CLI
-    ↓
-provision Java
-    ↓
-provision Android SDK
-    ↓
-macOS:
-    provision/check Xcode + CocoaPods
-    ↓
-run validation
-    ↓
-print environment report
-```
-
-The initial success criterion is:
-
-> A developer on a mostly clean macOS or Linux machine can run one Serverpod command and reach a usable Flutter + Serverpod development environment, with Android configured automatically and iOS configured as far as Apple's tooling permits.
+Before publishing, qualify each OS/architecture/profile on clean machines and
+existing installations, including missing Dart, conflicting shims, interrupted
+setup, consent/headless paths, and reruns. Research and isolated mise probes
+validate the strategy; they do not establish complete workstation readiness.
