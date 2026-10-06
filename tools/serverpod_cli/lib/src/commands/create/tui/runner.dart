@@ -40,7 +40,6 @@ Future<CreateConfigStateResult> getCreateConfigState({
   required bool? interactive,
   required List<ServerpodCreateConfig> configs,
   TemplateContext? defaultContext,
-  bool requireIde = false,
   Directory? workingDirectory,
 }) async {
   var isUpgrade = false;
@@ -50,7 +49,6 @@ Future<CreateConfigStateResult> getCreateConfigState({
     template,
     configs: configs,
     defaults: defaultContext,
-    requireIde: requireIde,
   );
 
   // Dry run to collect early errors and exit if needed.
@@ -83,7 +81,6 @@ Future<CreateConfigStateResult> getCreateConfigState({
       state = CreateConfigState(
         template,
         configs: [ServerpodCreateConfig.ide],
-        requireIde: true,
       );
     } else {
       createDefaultMigrationForUpgrade = true;
@@ -95,7 +92,6 @@ Future<CreateConfigStateResult> getCreateConfigState({
         template,
         configs: effectiveConfigs,
         defaults: defaultContext,
-        requireIde: requireIde,
       );
     }
   }
@@ -162,7 +158,6 @@ Future<void> performCreateWithTui(
   String analyticsMethod = 'create',
   List<ServerpodCreateConfig> configs = ServerpodCreateConfig.values,
   TemplateContext? defaultContext,
-  bool requireIde = false,
 }) async {
   final result = await getCreateConfigState(
     name: name,
@@ -171,7 +166,6 @@ Future<void> performCreateWithTui(
     configs: configs,
     interactive: interactive,
     defaultContext: defaultContext,
-    requireIde: requireIde,
   );
 
   final state = result.state;

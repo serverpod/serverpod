@@ -140,7 +140,6 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
         force,
         template: template,
         configs: const [ServerpodCreateConfig.ide],
-        requireIde: true,
         interactive: true,
         defaultContext: TemplateContext(
           auth: true,
