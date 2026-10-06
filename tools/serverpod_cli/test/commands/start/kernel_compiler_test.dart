@@ -18,7 +18,7 @@ void main() {
     await closeLogger();
   });
 
-  group('Given a KernelCompiler with a valid Dart project', () {
+  group('Given a KernelCompiler with a valid Dart project,', () {
     late Directory tempDir;
     late KernelCompiler compiler;
 
@@ -255,6 +255,57 @@ void unused() { undefinedFunction(); }
     );
 
     test(
+      'when a compile is neither accepted nor rejected before a reset, '
+      'then the compiler is still able to compile',
+      () async {
+        await compiler.start();
+        expect((await compiler.compile()).errorCount, 0);
+
+        // No accept, no reject: reset has to send the Frontend Server back to
+        // a state a compile can start from, not assume it is already there.
+        await compiler.reset();
+
+        final result = await compiler.compile();
+
+        expect(result.errorCount, 0);
+        expect(result.dillOutput, compiler.outputDill);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when an incremental compile fails and is rejected, '
+      'then the compiler stays in incremental mode',
+      () async {
+        final mainFile = p.join(tempDir.path, 'bin', 'main.dart');
+
+        await compiler.start();
+        expect((await compiler.compile()).errorCount, 0);
+        await compiler.accept();
+        expect(compiler.needsFullCompile, isFalse);
+
+        await File(mainFile).writeAsString('void main() { undefinedFunc(); }');
+        expect(
+          (await compiler.compile(changedPaths: {mainFile})).errorCount,
+          greaterThan(0),
+        );
+        await compiler.reject();
+
+        // The Frontend Server rolled back to the accepted state, which is
+        // still a complete program; resetting it here would make every later
+        // compile a full one.
+        expect(compiler.needsFullCompile, isFalse);
+
+        await File(mainFile).writeAsString('void main() {}');
+        expect(
+          (await compiler.compile(changedPaths: {mainFile})).errorCount,
+          0,
+        );
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
       'when compile is called with changed paths, '
       'then it succeeds incrementally',
       () async {
@@ -339,11 +390,13 @@ void unused() { undefinedFunction(); }
         await compiler.reject();
 
         await File(mainFile).writeAsString('void main() {}');
-        final result = await compiler.compile(changedPaths: {mainFile});
-        await compiler.accept();
+        // No changedPaths: nothing has been accepted, so this is a full
+        // compile and the invalidated set would be ignored.
+        final result = await compiler.compile();
 
         expect(result.errorCount, 0);
         expect(result.dillOutput, compiler.outputDill);
+        await compiler.accept();
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
