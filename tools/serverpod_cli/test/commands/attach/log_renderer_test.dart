@@ -426,7 +426,7 @@ void main() {
     );
 
     test(
-      'when interrupted, '
+      'when a session that did not spawn the runner is interrupted, '
       'then it detaches with exit code zero and leaves the runner running',
       () async {
         var stops = 0;
@@ -443,6 +443,83 @@ void main() {
 
         expect(await session, 0);
         expect(stops, 0);
+      },
+    );
+
+    test(
+      'when a session that spawned the runner is interrupted, '
+      'then it stops the runner and leaves with the code the runner names',
+      () async {
+        var stops = 0;
+        runner.onStop = () async {
+          stops++;
+          runner.emit(
+            const StageChangedEvent(RunnerStage.stopping, exitCode: 3),
+          );
+        };
+
+        final session = attachWithLogStream(
+          server.socketPath,
+          ownsRunner: true,
+          out: sink,
+          interrupts: interrupts.stream,
+        );
+        await waitFor(() => sink.lines.isNotEmpty);
+
+        interrupts.add(ProcessSignal.sigterm);
+
+        expect(await session, 3);
+        expect(stops, 1);
+      },
+    );
+
+    test(
+      'when a session that spawned the runner is interrupted again '
+      'before the runner stops, '
+      'then it leaves with zero without asking twice',
+      () async {
+        var stops = 0;
+        runner.onStop = () async => stops++;
+
+        final session = attachWithLogStream(
+          server.socketPath,
+          ownsRunner: true,
+          out: sink,
+          interrupts: interrupts.stream,
+        );
+        await waitFor(() => sink.lines.isNotEmpty);
+
+        interrupts.add(ProcessSignal.sigint);
+        await waitFor(() => stops == 1);
+        interrupts.add(ProcessSignal.sigint);
+
+        expect(await session, 0);
+        expect(stops, 1);
+      },
+    );
+
+    test(
+      'when a session that spawned the runner is interrupted '
+      'and the runner refuses the stop, '
+      'then it says so and leaves with one',
+      () async {
+        runner.onStop = () async => throw StateError('refused');
+
+        final session = attachWithLogStream(
+          server.socketPath,
+          ownsRunner: true,
+          out: sink,
+          interrupts: interrupts.stream,
+        );
+        await waitFor(() => sink.lines.isNotEmpty);
+
+        interrupts.add(ProcessSignal.sigint);
+
+        expect(await session, 1);
+        expect(
+          sink.lines,
+          contains(startsWith('--- stopping the runner failed:')),
+        );
       },
     );
   });
