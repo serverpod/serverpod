@@ -48,11 +48,6 @@ class EmailPasswordlessIdpUtils {
             config,
           ),
       verificationCodeHash: hashUtil,
-      completionTokenHash: Argon2HashUtil.forRandomSecrets(
-        hashPepper: config.secretHashPepper,
-        fallbackHashPeppers: config.fallbackSecretHashPeppers,
-        hashSaltLength: config.secretHashSaltLength,
-      ),
     );
   }
 
@@ -120,6 +115,8 @@ extension on EmailPasswordlessLoginServerException {
         return EmailPasswordlessLoginExceptionReason.tooManyAttempts;
       case EmailPasswordlessLoginRequestRateLimitedException():
         return EmailPasswordlessLoginExceptionReason.rateLimited;
+      case EmailPasswordlessResendCooldownException():
+        return EmailPasswordlessLoginExceptionReason.resendCooldown;
       case EmailPasswordlessLoginRequestExpiredException():
         return EmailPasswordlessLoginExceptionReason.expired;
     }

@@ -15,6 +15,8 @@ export '../src/generated/protocol.dart'
         EmailAccountLoginRequest,
         EmailPasswordlessLoginException,
         EmailPasswordlessLoginExceptionReason;
+export '../src/providers/email/business/email_idp_server_exceptions.dart'
+    show EmailAccountNotFoundException;
 export '../src/providers/email_passwordless/business/email_passwordless_idp.dart';
 export '../src/providers/email_passwordless/business/email_passwordless_idp_admin.dart';
 export '../src/providers/email_passwordless/business/email_passwordless_idp_config.dart';

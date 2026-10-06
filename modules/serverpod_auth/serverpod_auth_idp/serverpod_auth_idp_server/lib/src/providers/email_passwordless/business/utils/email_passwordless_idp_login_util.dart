@@ -16,13 +16,18 @@ import '../email_passwordless_idp_server_exceptions.dart';
 ///
 /// This class also contains utility functions for administration tasks, such
 /// as deleting expired login requests and resetting rate limits.
+///
+/// None of the rate limiters is used while holding a database connection of
+/// another transaction, as that exhausts the connection pool when many calls
+/// run at once: [startLogin] and [verifyLoginCode] manage their own
+/// transactions and are not meant to be called from within one.
 /// {@endtemplate}
 class EmailPasswordlessIdpLoginUtil {
   final EmailPasswordlessIdpLoginUtilConfig _config;
   final Argon2HashUtil _verificationCodeHash;
-  late final SecretChallengeUtil<EmailAccountLoginRequest> _challengeUtil;
   late final DatabaseRateLimiter _loginRequestRateLimiter;
   late final DatabaseRateLimiter _failedLoginRateLimiter;
+  late final DatabaseRateLimiter _verificationRateLimiter;
 
   /// A hash of a code that is never valid, used to spend the time of a code
   /// verification when there is no real code to verify against.
@@ -33,7 +38,6 @@ class EmailPasswordlessIdpLoginUtil {
   EmailPasswordlessIdpLoginUtil({
     required final EmailPasswordlessIdpLoginUtilConfig config,
     required final Argon2HashUtil verificationCodeHash,
-    final Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _verificationCodeHash = verificationCodeHash {
     _loginRequestRateLimiter = DatabaseRateLimiter(
@@ -52,50 +56,55 @@ class EmailPasswordlessIdpLoginUtil {
         timeframe: config.failedLoginRateLimit.timeframe,
       ),
     );
-    _challengeUtil = SecretChallengeUtil(
-      verificationConfig: _getVerificationConfig(),
-      completionConfig: _getCompletionConfig(),
-      hashUtil: verificationCodeHash,
-      completionTokenHash: completionTokenHash,
+    _verificationRateLimiter = DatabaseRateLimiter(
+      RateLimiterConfig(
+        domain: 'email_passwordless',
+        source: 'login_verification',
+        maxAttempts: config.loginVerificationCodeAllowedAttempts,
+        onRateLimitExceeded: _onRateLimitExceeded,
+      ),
     );
   }
 
   /// {@template email_passwordless_idp_login_util.start_login}
   /// Starts a passwordless login for [email].
   ///
-  /// Creates a login request with a fresh verification code and sends the code
-  /// with [EmailPasswordlessIdpConfig.sendSignInVerificationCode] if an account
-  /// exists for the email address, or with
-  /// [EmailPasswordlessIdpConfig.sendSignUpVerificationCode] if not.
-  /// The code together with the returned request ID is used with
-  /// [verifyLoginCode].
+  /// Creates a login request with a fresh verification code, replacing a
+  /// pending request of the email address that is older than
+  /// [EmailPasswordlessIdpConfig.resendCooldown], and returns its ID. The code
+  /// is then sent with [EmailPasswordlessIdpConfig.sendSignInVerificationCode]
+  /// if an account exists for the email address, or with
+  /// [EmailPasswordlessIdpConfig.sendSignUpVerificationCode] if not. The code
+  /// together with the returned request ID is used with [verifyLoginCode].
+  ///
+  /// The code is sent after the request has been committed to the database, and
+  /// before this method returns. Failures of the send callbacks are logged and
+  /// are not propagated to the caller.
+  ///
+  /// If the email address has no account and
+  /// [EmailPasswordlessIdpConfig.allowSignUp] is `false`, a decoy request is
+  /// created, with a random code that is never sent. Everything else behaves as
+  /// for known email addresses, including the request ID, the attempt limits
+  /// and the errors, so that a client can not find out whether an account
+  /// exists. The code can not be guessed in practice, and the login of a decoy
+  /// request fails with the same error as a wrong code even if it is guessed.
+  /// The only difference left is the time of sending the email.
   ///
   /// The method will throw the following
   /// [EmailPasswordlessLoginServerException] subclasses:
   /// - [EmailPasswordlessInvalidEmailException] if the email address is not
   ///   valid.
+  /// - [EmailPasswordlessResendCooldownException] if a request for the email
+  ///   address has been created less than
+  ///   [EmailPasswordlessIdpConfig.resendCooldown] ago, also if it has been
+  ///   created by a concurrent call. The ID of the pending request is never
+  ///   returned to anyone but the caller that created it.
   /// - [EmailPasswordlessLoginRequestRateLimitedException] if too many requests
   ///   have been made for the email address.
-  ///
-  /// The method returns a request ID that looks the same, but that can never be
-  /// completed, in these cases, so that the outside client can not use the
-  /// response to determine whether an account exists:
-  /// - The email address has no account and
-  ///   [EmailPasswordlessIdpConfig.allowSignUp] is `false`. Nothing is sent.
-  /// - A request was already created for the email address less than
-  ///   [EmailPasswordlessIdpConfig.resendCooldown] ago, and
-  ///   [EmailPasswordlessIdpConfig.allowSignUp] is `false`. Nothing is sent
-  ///   and the pending request remains untouched. If sign-up is allowed the ID
-  ///   of the pending request is returned instead, as every email address has a
-  ///   pending request then.
-  ///
-  /// Failures of the send callbacks are logged and are not propagated to the
-  /// caller.
   /// {@endtemplate}
   Future<UuidValue> startLogin(
     final Session session, {
     required String email,
-    required final Transaction transaction,
   }) async {
     email = email.normalizedEmail;
 
@@ -103,6 +112,18 @@ class EmailPasswordlessIdpLoginUtil {
       throw EmailPasswordlessInvalidEmailException();
     }
 
+    // Checked before recording the attempt, so that calls that are rejected
+    // anyway do not use up the attempts of the email address.
+    final pendingRequest = await EmailAccountLoginRequest.db.findFirstRow(
+      session,
+      where: (final t) => t.email.equals(email),
+    );
+    if (pendingRequest != null && _isWithinCooldown(pendingRequest)) {
+      throw EmailPasswordlessResendCooldownException();
+    }
+
+    // The attempt is recorded in a transaction of its own, so it must not run
+    // while another transaction of this call holds a connection.
     if (!await _loginRequestRateLimiter.tryRecordAttempt(
       session,
       key: email,
@@ -113,10 +134,26 @@ class EmailPasswordlessIdpLoginUtil {
     final account = await EmailAccount.db.findFirstRow(
       session,
       where: (final t) => t.email.equals(email),
-      transaction: transaction,
     );
 
     final verificationCode = _config.loginVerificationCodeGenerator();
+    final verificationCodeHash = await _verificationCodeHash
+        .createHashFromString(secret: verificationCode);
+
+    final EmailAccountLoginRequest request;
+    try {
+      request = await session.db.transaction(
+        (final transaction) => _replaceRequest(
+          session,
+          email: email,
+          verificationCodeHash: verificationCodeHash,
+          transaction: transaction,
+        ),
+      );
+    } on DatabaseUniqueViolationException {
+      // A concurrent call has created the request of the email address first.
+      throw EmailPasswordlessResendCooldownException();
+    }
 
     if (account == null && !_config.allowSignUp) {
       session.log(
@@ -124,61 +161,8 @@ class EmailPasswordlessIdpLoginUtil {
         level: LogLevel.debug,
       );
 
-      // Spends the time that hashing the code would take for a real request.
-      await _verificationCodeHash.createHashFromString(
-        secret: verificationCode,
-      );
-
-      // NOTE: It is necessary to keep the version of the uuid in sync with the
-      // one used by the [EmailAccountLoginRequest] model to prevent attackers
-      // from using the difference on the version bit of the uuid to determine
-      // whether an email is registered or not.
-      return const Uuid().v7obj();
+      return request.id!;
     }
-
-    final pendingRequest = await EmailAccountLoginRequest.db.findFirstRow(
-      session,
-      where: (final t) => t.email.equals(email),
-      transaction: transaction,
-    );
-
-    if (pendingRequest != null) {
-      final isThrottled =
-          !_isRequestExpired(pendingRequest) &&
-          pendingRequest.createdAt
-              .add(_config.resendCooldown)
-              .isAfter(clock.now());
-
-      if (isThrottled) {
-        session.log(
-          'Not sending a login code to $email, reason: resend cooldown has not elapsed',
-          level: LogLevel.debug,
-        );
-
-        // Handing out the ID of the pending request when sign-up is disabled
-        // would show that the email address has an account, as the response
-        // for unknown addresses is a new random ID on every call.
-        return _config.allowSignUp ? pendingRequest.id! : const Uuid().v7obj();
-      }
-
-      await _deleteRequests(session, [pendingRequest], transaction);
-    }
-
-    final challenge = await _challengeUtil.createChallenge(
-      session,
-      verificationCode: verificationCode,
-      transaction: transaction,
-    );
-
-    final request = await EmailAccountLoginRequest.db.insertRow(
-      session,
-      EmailAccountLoginRequest(
-        email: email,
-        challengeId: challenge.id!,
-        createdAt: clock.now(),
-      ),
-      transaction: transaction,
-    );
 
     await _sendVerificationCode(
       session,
@@ -188,7 +172,6 @@ class EmailPasswordlessIdpLoginUtil {
       email: email,
       loginRequestId: request.id!,
       verificationCode: verificationCode,
-      transaction: transaction,
     );
 
     return request.id!;
@@ -208,53 +191,97 @@ class EmailPasswordlessIdpLoginUtil {
   /// - [EmailPasswordlessLoginRequestExpiredException] if the verification
   ///   code is correct, but the request has already expired.
   ///
-  /// Failed attempts are logged to the database outside of the [transaction]
-  /// and can not be rolled back.
+  /// Attempts are recorded before the code is checked, in transactions of their
+  /// own, so they can not be rolled back by anything that follows.
   ///
-  /// The request is deleted within the [transaction]. A code can only be used
-  /// once, also if it is verified concurrently: only one of the transactions
-  /// succeeds. As the code is used up once the [transaction] is committed, the
-  /// caller should commit it before the account is resolved, so that a failure
-  /// of any later step can not be used to try a code again.
+  /// The request is consumed in a transaction of its own that is committed
+  /// before this method returns. A code can only be used once, also if it is
+  /// verified concurrently: only one of the calls consumes the request, and
+  /// the others fail with [EmailPasswordlessLoginRequestNotFoundException].
+  /// As the code is used up when this method returns, a failure of any later
+  /// step can not be used to try a code again.
+  ///
+  /// The code is checked with a slow hash, also if there is no request with the
+  /// given ID, so that the time does not show whether the ID exists. This makes
+  /// requests with random IDs as expensive for the server as requests with
+  /// real IDs, which is the price of that uniformity. The number of requests
+  /// that reach the hash is not limited per client.
   ///
   /// Returns the normalized email address that the request was created for.
   Future<String> verifyLoginCode(
     final Session session, {
     required final UuidValue loginRequestId,
     required final String verificationCode,
-    required final Transaction transaction,
   }) async {
     final request = await _getLoginRequest(
       session,
       loginRequestId,
-      transaction: transaction,
+      transaction: null,
     );
 
     if (request == null) {
-      // Spends the time that verifying a code would take for a real request.
       await _verificationCodeHash.validateHashFromString(
         secret: verificationCode,
         hashString: await _unmatchableHash,
       );
-    } else if (!await _failedLoginRateLimiter.tryRecordAttempt(
+
+      throw EmailPasswordlessLoginRequestNotFoundException();
+    }
+
+    if (!await _failedLoginRateLimiter.tryRecordAttempt(
       session,
       key: request.email,
     )) {
       throw EmailPasswordlessTooManyVerificationAttemptsException();
     }
 
-    await _withReplacedSecretChallengeException(
-      () => _challengeUtil.verifyChallenge(
-        session,
-        requestId: loginRequestId,
-        verificationCode: verificationCode,
-        transaction: transaction,
-      ),
-    );
-
-    if (request == null) {
-      throw EmailPasswordlessLoginRequestNotFoundException();
+    if (!await _verificationRateLimiter.tryRecordAttempt(
+      session,
+      key: request.id!.uuid,
+    )) {
+      throw EmailPasswordlessTooManyVerificationAttemptsException();
     }
+
+    final isCodeValid = await _verificationCodeHash.validateHashFromString(
+      secret: verificationCode,
+      hashString: request.challenge!.challengeCodeHash,
+    );
+    if (!isCodeValid) {
+      throw EmailPasswordlessInvalidVerificationCodeException();
+    }
+
+    if (_isRequestExpired(request)) {
+      await _deleteRequests(session, [request], null);
+      throw EmailPasswordlessLoginRequestExpiredException();
+    }
+
+    await session.db.transaction((final transaction) async {
+      // The request is deleted by the cascade of the foreign key. Only one of
+      // concurrent calls deletes the row, the others find nothing to delete
+      // once the first one has committed.
+      final deletedChallenges = await SecretChallenge.db.deleteWhere(
+        session,
+        where: (final t) => t.id.equals(request.challengeId),
+        transaction: transaction,
+      );
+
+      if (deletedChallenges.isEmpty) {
+        throw EmailPasswordlessLoginRequestNotFoundException();
+      }
+
+      // The successful login clears the failures of the email address, so
+      // that the count only accumulates over failures.
+      await _failedLoginRateLimiter.deleteAttempts(
+        session,
+        key: request.email,
+        transaction: transaction,
+      );
+      await _verificationRateLimiter.deleteAttempts(
+        session,
+        key: request.id!.uuid,
+        transaction: transaction,
+      );
+    });
 
     return request.email;
   }
@@ -338,15 +365,20 @@ class EmailPasswordlessIdpLoginUtil {
 
   /// {@template email_passwordless_idp_login_util.delete_login_attempts}
   /// Deletes the recorded attempts to request a login code (when
-  /// [loginRequests] is `true`) and to verify a login code (when
-  /// [failedLogins] is `true`) that are older than [olderThan].
+  /// [loginRequests] is `true`), to verify a login code of an email address
+  /// (when [failedLogins] is `true`), and to verify the code of a single login
+  /// request (when [verifications] is `true`), that are older than [olderThan].
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
   /// window that is checked when requesting or verifying a code, as configured
   /// in [EmailPasswordlessIdpConfig.loginRequestRateLimit] and
-  /// [EmailPasswordlessIdpConfig.failedLoginRateLimit].
+  /// [EmailPasswordlessIdpConfig.failedLoginRateLimit]. The attempts of a
+  /// login request are not limited by a window, so those older than
+  /// [EmailPasswordlessIdpConfig.loginVerificationCodeLifetime] are removed,
+  /// as the request is useless by then.
   ///
-  /// If [email] is provided, only attempts for the given email will be deleted.
+  /// If [email] is provided, only attempts for the given email will be deleted,
+  /// which for [verifications] are the attempts of its pending login request.
   /// {@endtemplate}
   Future<void> deleteLoginAttempts(
     final Session session, {
@@ -354,6 +386,7 @@ class EmailPasswordlessIdpLoginUtil {
     final String? email,
     final bool loginRequests = true,
     final bool failedLogins = true,
+    final bool verifications = true,
     required final Transaction transaction,
   }) async {
     final key = email?.normalizedEmail;
@@ -375,40 +408,71 @@ class EmailPasswordlessIdpLoginUtil {
         transaction: transaction,
       );
     }
+
+    if (verifications) {
+      if (key == null) {
+        await _verificationRateLimiter.deleteAttempts(
+          session,
+          olderThan: olderThan ?? _config.loginVerificationCodeLifetime,
+          transaction: transaction,
+        );
+      } else {
+        final pendingRequest = await EmailAccountLoginRequest.db.findFirstRow(
+          session,
+          where: (final t) => t.email.equals(key),
+          transaction: transaction,
+        );
+
+        if (pendingRequest != null) {
+          await _verificationRateLimiter.deleteAttempts(
+            session,
+            olderThan: olderThan,
+            key: pendingRequest.id!.uuid,
+            transaction: transaction,
+          );
+        }
+      }
+    }
   }
 
-  SecretChallengeVerificationConfig<EmailAccountLoginRequest>
-  _getVerificationConfig() {
-    return SecretChallengeVerificationConfig(
-      rateLimiter: DatabaseRateLimiter(
-        RateLimiterConfig(
-          domain: 'email_passwordless',
-          source: 'login_verification',
-          maxAttempts: _config.loginVerificationCodeAllowedAttempts,
-          onRateLimitExceeded: _onRateLimitExceeded,
-        ),
-      ),
-      getRequest: _getLoginRequest,
-      // Requests are deleted when used, so a used request is never found.
-      isAlreadyUsed: (final request) => false,
-      getChallenge: (final request) => request.challenge!,
-      isExpired: _isRequestExpired,
-      onExpired: (final session, final request) =>
-          _deleteRequests(session, [request], null),
-      linkCompletionToken: _consumeRequest,
+  /// Deletes the pending request of [email], if there is one, and creates a
+  /// new one with the given code hash.
+  Future<EmailAccountLoginRequest> _replaceRequest(
+    final Session session, {
+    required final String email,
+    required final String verificationCodeHash,
+    required final Transaction transaction,
+  }) async {
+    final pendingRequest = await EmailAccountLoginRequest.db.findFirstRow(
+      session,
+      where: (final t) => t.email.equals(email),
+      transaction: transaction,
     );
-  }
 
-  /// Completion tokens are not used by the passwordless login, as a request is
-  /// consumed by the verification of its code.
-  SecretChallengeCompletionConfig<EmailAccountLoginRequest>
-  _getCompletionConfig() {
-    return SecretChallengeCompletionConfig(
-      getRequest: _getLoginRequest,
-      getCompletionChallenge: (final request) => null,
-      isExpired: _isRequestExpired,
-      onExpired: (final session, final request) =>
-          _deleteRequests(session, [request], null),
+    if (pendingRequest != null) {
+      if (_isWithinCooldown(pendingRequest)) {
+        throw EmailPasswordlessResendCooldownException();
+      }
+
+      await _deleteRequests(session, [pendingRequest], transaction);
+    }
+
+    final challenge = await SecretChallenge.db.insertRow(
+      session,
+      SecretChallenge(challengeCodeHash: verificationCodeHash),
+      transaction: transaction,
+    );
+
+    // NOTE: The UUID version of the ID is the same for every request, decoy or
+    // not, as it is generated by the database.
+    return await EmailAccountLoginRequest.db.insertRow(
+      session,
+      EmailAccountLoginRequest(
+        email: email,
+        challengeId: challenge.id!,
+        createdAt: clock.now(),
+      ),
+      transaction: transaction,
     );
   }
 
@@ -449,34 +513,9 @@ class EmailPasswordlessIdpLoginUtil {
     return requestExpiresAt.isBefore(clock.now());
   }
 
-  /// Consumes the request by deleting it, instead of linking a completion
-  /// token to it.
-  ///
-  /// Only one concurrent verification can delete the challenge row, the others
-  /// find nothing to delete once the first one has committed, and fail.
-  Future<void> _consumeRequest(
-    final Session session,
-    final EmailAccountLoginRequest request,
-    final SecretChallenge completionChallenge, {
-    required final Transaction? transaction,
-  }) async {
-    // The completion challenge is not used, so it must not be left behind.
-    await SecretChallenge.db.deleteRow(
-      session,
-      completionChallenge,
-      transaction: transaction,
-    );
-
-    // The request is deleted by the cascade of the foreign key.
-    final deletedChallenges = await SecretChallenge.db.deleteWhere(
-      session,
-      where: (final t) => t.id.equals(request.challengeId),
-      transaction: transaction,
-    );
-
-    if (deletedChallenges.isEmpty) {
-      throw ChallengeAlreadyUsedException();
-    }
+  bool _isWithinCooldown(final EmailAccountLoginRequest request) {
+    return !_isRequestExpired(request) &&
+        request.createdAt.add(_config.resendCooldown).isAfter(clock.now());
   }
 
   /// Deletes the [requests] together with their challenges.
@@ -505,23 +544,16 @@ class EmailPasswordlessIdpLoginUtil {
     required final String email,
     required final UuidValue loginRequestId,
     required final String verificationCode,
-    required final Transaction transaction,
   }) async {
-    // The savepoint lets a failing callback not break the transaction that
-    // creates the request.
-    final savepoint = await transaction.createSavepoint();
     try {
       await send(
         session,
         email: email,
         loginRequestId: loginRequestId,
         verificationCode: verificationCode,
-        transaction: transaction,
+        transaction: null,
       );
-      await savepoint.release();
     } catch (e, stackTrace) {
-      await savepoint.rollback();
-
       // Best effort: the failure must not be visible to the caller, as it would
       // show that the email address is known (no code is sent for an unknown
       // address when sign-up is disabled).
@@ -531,29 +563,6 @@ class EmailPasswordlessIdpLoginUtil {
         exception: e,
         stackTrace: stackTrace,
       );
-    }
-  }
-
-  /// Replaces challenge-related exceptions by passwordless-specific exceptions.
-  Future<T> _withReplacedSecretChallengeException<T>(
-    final Future<T> Function() fn,
-  ) async {
-    try {
-      return await fn();
-    } on SecretChallengeException catch (e) {
-      throw switch (e) {
-        ChallengeRequestNotFoundException() ||
-        ChallengeAlreadyUsedException() ||
-        ChallengeNotVerifiedException() =>
-          EmailPasswordlessLoginRequestNotFoundException(),
-        ChallengeInvalidVerificationCodeException() ||
-        ChallengeInvalidCompletionTokenException() =>
-          EmailPasswordlessInvalidVerificationCodeException(),
-        ChallengeExpiredException() =>
-          EmailPasswordlessLoginRequestExpiredException(),
-        ChallengeRateLimitExceededException() =>
-          EmailPasswordlessTooManyVerificationAttemptsException(),
-      };
     }
   }
 }

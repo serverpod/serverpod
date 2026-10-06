@@ -1,5 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../../../../../core.dart';
+import '../../email/business/email_idp_server_exceptions.dart';
 import 'email_passwordless_idp_utils.dart';
 
 /// Collection of admin methods for the passwordless email identity provider.
@@ -38,6 +40,55 @@ class EmailPasswordlessIdpAdmin {
         return account.id!;
       },
     );
+  }
+
+  /// Deletes the email account with the given email address.
+  ///
+  /// The accounts are shared with the email and password identity provider, so
+  /// this removes the account for both. Pending login requests are not
+  /// deleted, but they can not be used to log in again unless sign-up is
+  /// allowed, in which case a new account is created.
+  ///
+  /// Throws an [EmailAccountNotFoundException] if no account exists for the
+  /// given email address.
+  Future<void> deleteAccount(
+    final Session session, {
+    required final String email,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final deleted = await _utils.account.deleteAccount(
+          session,
+          email: email,
+          authUserId: null,
+          transaction: transaction,
+        );
+
+        if (deleted.isEmpty) {
+          throw EmailAccountNotFoundException();
+        }
+      },
+    );
+  }
+
+  /// Finds the email account with the given email address, if there is one.
+  Future<EmailAccount?> findAccount(
+    final Session session, {
+    required final String email,
+    final Transaction? transaction,
+  }) async {
+    return (await DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.account.listAccounts(
+        session,
+        email: email,
+        transaction: transaction,
+      ),
+    )).firstOrNull;
   }
 
   /// {@macro email_passwordless_idp_login_util.delete_login_request_by_id}

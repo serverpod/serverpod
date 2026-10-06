@@ -20,9 +20,11 @@ export '../../email/business/util/serverpod_cloud_email_client.dart';
 /// The staging/production setup reads the `scloudAuthEmailKey` password, which
 /// is provided automatically by Serverpod Cloud. The key is read lazily when an
 /// email is sent (not at startup), so a self-hosted server still boots when it
-/// is unset. Sending is best-effort: a failure (outage, missing key, non-200,
-/// or timeout) is logged and never propagated, so it does not reveal whether an
-/// account exists.
+/// is unset. The email is sent after the login request has been committed, and
+/// before `startLogin` returns, without holding a database connection.
+/// Sending is best-effort: a failure (outage, missing key, non-200, or timeout)
+/// is logged and never propagated, so it does not reveal whether an account
+/// exists.
 ///
 /// The Serverpod Cloud email service does not have an email type for signing in
 /// yet, so both kinds of codes are sent as [ServerpodCloudEmailType.signup]

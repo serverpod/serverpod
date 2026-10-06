@@ -13,6 +13,15 @@ final class EmailPasswordlessInvalidEmailException
 final class EmailPasswordlessLoginRequestRateLimitedException
     extends EmailPasswordlessLoginServerException {}
 
+/// Exception thrown when a login request was made for the email address less
+/// than the resend cooldown ago.
+///
+/// It is thrown the same way for every email address, whether it is known or
+/// not, and whether it has a pending request or the request was created by a
+/// concurrent call.
+final class EmailPasswordlessResendCooldownException
+    extends EmailPasswordlessLoginServerException {}
+
 /// Exception thrown when trying to finish a login request that does not exist
 /// or that has already been used.
 final class EmailPasswordlessLoginRequestNotFoundException

@@ -34,6 +34,11 @@ enum EmailPasswordlessLoginExceptionReason implements _isc.SerializableModel {
   /// Too many login requests have been made for the email address.
   rateLimited,
 
+  /// A login request was created for the email address less than the resend
+  /// cooldown ago, so no new code is sent. The caller can keep using the
+  /// request it created, and try again after the cooldown.
+  resendCooldown,
+
   /// Unknown error occurred.
   unknown;
 
@@ -49,6 +54,8 @@ enum EmailPasswordlessLoginExceptionReason implements _isc.SerializableModel {
         return EmailPasswordlessLoginExceptionReason.tooManyAttempts;
       case 'rateLimited':
         return EmailPasswordlessLoginExceptionReason.rateLimited;
+      case 'resendCooldown':
+        return EmailPasswordlessLoginExceptionReason.resendCooldown;
       case 'unknown':
         return EmailPasswordlessLoginExceptionReason.unknown;
       default:

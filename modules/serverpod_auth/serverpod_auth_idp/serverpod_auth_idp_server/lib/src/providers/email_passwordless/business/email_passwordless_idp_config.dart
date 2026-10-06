@@ -19,9 +19,20 @@ export '../../email/util/default_code_generators.dart';
 /// Used both for [EmailPasswordlessIdpConfig.sendSignUpVerificationCode] and
 /// [EmailPasswordlessIdpConfig.sendSignInVerificationCode].
 ///
-/// Sending is best-effort: an exception thrown by the function is logged and
-/// never reported to the caller of `startLogin`, so that a failure can not be
-/// used to find out whether an account exists for an email address.
+/// The function runs after the login request has been committed to the
+/// database, and is awaited before `startLogin` returns. It is called without a
+/// transaction (`transaction` is always `null`), so the function can take as
+/// long as it needs to without holding a database connection. If the send must
+/// be atomic with other database writes (for example an outbox of emails),
+/// write them to the database in the function, for example with an own
+/// transaction, and deliver them from there.
+///
+/// Sending is best-effort: an exception thrown by the function is logged at
+/// error level and never reported to the caller of `startLogin`, so that a
+/// failure can not be used to find out whether an account exists for an email
+/// address. The user can request a new code after the resend cooldown. The
+/// function is not called at all for unknown email addresses when
+/// [EmailPasswordlessIdpConfig.allowSignUp] is `false`.
 typedef SendPasswordlessLoginVerificationCodeFunction =
     FutureOr<void> Function(
       Session session, {
@@ -59,7 +70,12 @@ typedef BeforePasswordlessAccountCreatedFunction =
 ///
 /// Throw an exception to reject the login. Because the function runs in the
 /// same transaction as the issuing of the token, a rejection also rolls back
-/// the account creation of a first login.
+/// the account creation of a first login. The verification code has already
+/// been consumed by then, so the user has to request a new code after a
+/// failure of the function.
+///
+/// The function is not called for a blocked auth user: the login is rejected
+/// with an `AuthUserBlockedException` before.
 typedef AfterPasswordlessLoginFunction =
     FutureOr<void> Function(
       Session session, {
@@ -100,6 +116,31 @@ bool defaultEmailValidationFunction(final String email) =>
 /// [sendSignInVerificationCode], make it possible to word the emails
 /// differently for users that are about to create an account and users that
 /// already have one.
+///
+/// ## Guessing limits
+///
+/// A code has 6 digits by default, so 1,000,000 values. Each code can be tried
+/// [loginVerificationCodeAllowedAttempts] times (3 by default), and the failed
+/// attempts for an email address, across all of its codes, are limited by
+/// [failedLoginRateLimit] (5 per 5 minutes by default). Together with
+/// [resendCooldown] and [loginRequestRateLimit] this lets an attacker try at
+/// most 5 codes per 5 minutes for an email address, which is 1,440 per day and
+/// a chance of about 0.14 % per day to hit a valid code of a targeted address
+/// (each guess succeeds with a chance of 1 in 1,000,000). The defaults stop
+/// bursts, but not a patient attacker. Applications that need more should
+/// configure a stricter long-window limit, for example
+/// `RateLimit(maxAttempts: 10, timeframe: Duration(hours: 24))` for
+/// [failedLoginRateLimit], which allows 10 guesses per day, about 0.001 % a
+/// day. The price is that the real user is locked out of the same budget when
+/// the limit is reached, until the window has passed or an admin calls
+/// `EmailPasswordlessIdpAdmin.deleteLoginAttemptsForEmail`. Longer codes, for
+/// example through [loginVerificationCodeGenerator], reduce the chance as well.
+///
+/// The failed attempts are counted per email address, so someone who knows an
+/// email address can use up its budget and lock the real user out for the
+/// duration of the window, the same as with the email and password identity
+/// provider. Rate limiting by client address, for example in a proxy, is the
+/// way to limit this.
 /// {@endtemplate}
 class EmailPasswordlessIdpConfig
     extends IdentityProviderBuilder<EmailPasswordlessIdp> {
@@ -151,6 +192,11 @@ class EmailPasswordlessIdpConfig
   ///
   /// Defaults to allowing up to 5 attempts for a sliding 5 minutes. Beyond
   /// that, verification attempts are rejected without checking the code.
+  ///
+  /// This is the limit that bounds how fast the code of an email address can be
+  /// guessed over a long time, see the guessing limits above. A single
+  /// long-window limit is the easiest way to tighten it, for example 10 per 24
+  /// hours.
   final RateLimit failedLoginRateLimit;
 
   /// The maximum number of login requests (calls to `startLogin`) for the same
@@ -161,19 +207,42 @@ class EmailPasswordlessIdpConfig
 
   /// The minimum time between two emails with a code to the same address.
   ///
-  /// While a login request is younger than this, `startLogin` does not send a
-  /// new code and does not replace the pending request, so the pending code
-  /// stays valid and an attacker can not keep invalidating the code of a user.
+  /// While a login request is younger than this, `startLogin` does not replace
+  /// the pending request and does not send a new code. It fails with the
+  /// `resendCooldown` reason for every email address instead, and never returns
+  /// the ID of the pending request. The ID is only ever returned to the call
+  /// that created the request.
   ///
-  /// Defaults to 60 seconds.
+  /// This keeps an attacker that keeps calling `startLogin` for an email
+  /// address from replacing the code of its user over and over, and from
+  /// resetting the attempts of a request to get more guesses per code. It does
+  /// not stop an attacker from replacing the pending request right after the
+  /// cooldown has passed, which makes the user's code invalid, so a user that
+  /// is targeted this way has to request a code again. That is limited to the
+  /// number of requests per cooldown and by [loginRequestRateLimit].
+  ///
+  /// Must not be negative, and must be shorter than
+  /// [loginVerificationCodeLifetime]. Defaults to 60 seconds.
   final Duration resendCooldown;
 
   /// Whether an unknown email address is signed up on the first successful
   /// verification of a code.
   ///
-  /// If `false`, no code is sent for unknown email addresses, and `startLogin`
-  /// returns a request ID that can never be completed. This is done to not
-  /// reveal whether an account exists. Defaults to `true`.
+  /// If `false`, no code is sent for unknown email addresses. To not reveal
+  /// whether an account exists, `startLogin` still creates a decoy login
+  /// request with a random code that is hashed and stored, but never sent, and
+  /// returns its ID. Decoy requests have the same lifetime, cooldown, attempt
+  /// limits and errors as real ones, and even a correct guess of the code ends
+  /// with the same `invalid` error as a wrong code, without creating an
+  /// account.
+  ///
+  /// The only remaining difference that a client can observe is the time that
+  /// sending an email takes, which is skipped for unknown addresses. No delay
+  /// is added to hide it. If that matters to the application, send the emails
+  /// from a background process, for example by enqueueing them to the database
+  /// in the send callbacks.
+  ///
+  /// Defaults to `true`.
   final bool allowSignUp;
 
   /// Callback to send the code for an email address without an account.
@@ -194,6 +263,9 @@ class EmailPasswordlessIdpConfig
 
   /// Callback to be invoked before a new account is created.
   ///
+  /// If the account is created concurrently by something else, the account
+  /// resolution is retried once, so this callback can run twice for one login.
+  ///
   /// This is the place to enforce a sign-up policy, see
   /// [BeforePasswordlessAccountCreatedFunction].
   final BeforePasswordlessAccountCreatedFunction? onBeforeAccountCreated;
@@ -205,6 +277,11 @@ class EmailPasswordlessIdpConfig
 
   /// Callback to be invoked after each successful login, before the token is
   /// issued.
+  ///
+  /// It is not called for blocked users, and runs in the transaction that
+  /// resolves the account. If it throws, the login fails and the transaction is
+  /// rolled back, including a created account. The verification code has been
+  /// consumed by then, so the user has to request a new one.
   ///
   /// This can be used for example to revoke other sessions of the user, as the
   /// passwordless identity provider does not revoke any sessions by itself.
@@ -236,6 +313,67 @@ class EmailPasswordlessIdpConfig
     this.onAfterAccountCreated,
     this.onAfterLogin,
   });
+
+  /// Checks the values of this configuration.
+  ///
+  /// Throws an [ArgumentError] if
+  /// - [loginVerificationCodeAllowedAttempts] is not positive,
+  /// - [loginVerificationCodeLifetime] is not longer than zero,
+  /// - [resendCooldown] is negative or not shorter than
+  ///   [loginVerificationCodeLifetime],
+  /// - [secretHashSaltLength] is less than 8, or
+  /// - one of the rate limits does not allow at least one attempt in a window
+  ///   longer than zero.
+  ///
+  /// This is called when the identity provider is created.
+  void validate() {
+    if (loginVerificationCodeAllowedAttempts <= 0) {
+      throw ArgumentError.value(
+        loginVerificationCodeAllowedAttempts,
+        'loginVerificationCodeAllowedAttempts',
+        'Must be greater than 0.',
+      );
+    }
+
+    if (loginVerificationCodeLifetime <= Duration.zero) {
+      throw ArgumentError.value(
+        loginVerificationCodeLifetime,
+        'loginVerificationCodeLifetime',
+        'Must be longer than zero.',
+      );
+    }
+
+    if (resendCooldown < Duration.zero ||
+        resendCooldown >= loginVerificationCodeLifetime) {
+      throw ArgumentError.value(
+        resendCooldown,
+        'resendCooldown',
+        'Must not be negative and must be shorter than '
+            'loginVerificationCodeLifetime ($loginVerificationCodeLifetime).',
+      );
+    }
+
+    if (secretHashSaltLength < 8) {
+      throw ArgumentError.value(
+        secretHashSaltLength,
+        'secretHashSaltLength',
+        'Must be at least 8.',
+      );
+    }
+
+    for (final (name, limit) in [
+      ('failedLoginRateLimit', failedLoginRateLimit),
+      ('loginRequestRateLimit', loginRequestRateLimit),
+    ]) {
+      if (limit.maxAttempts <= 0 || limit.timeframe <= Duration.zero) {
+        throw ArgumentError.value(
+          limit,
+          name,
+          'Must allow at least 1 attempt in a time frame longer than zero.',
+        );
+      }
+    }
+  }
 
   @override
   EmailPasswordlessIdp build({

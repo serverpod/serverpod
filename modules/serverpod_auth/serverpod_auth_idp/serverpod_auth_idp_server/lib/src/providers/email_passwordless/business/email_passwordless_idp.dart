@@ -64,6 +64,7 @@ class EmailPasswordlessIdp implements IdentityProvider {
     final AuthUsers authUsers = const AuthUsers(),
     final UserProfiles userProfiles = const UserProfiles(),
   }) {
+    config.validate();
     final utils = EmailPasswordlessIdpUtils(config: config);
     final admin = EmailPasswordlessIdpAdmin(utils: utils);
     return EmailPasswordlessIdp._(
@@ -77,30 +78,17 @@ class EmailPasswordlessIdp implements IdentityProvider {
   }
 
   /// {@macro email_passwordless_idp_base_endpoint.start_login}
+  ///
+  /// This manages its own transactions and must not be called from within one,
+  /// so that rate limiting does not hold two connections of the pool at once.
+  /// The code is sent after the login request has been committed.
   Future<UuidValue> startLogin(
     final Session session, {
     required final String email,
-    final Transaction? transaction,
-  }) async {
-    try {
-      return await DatabaseUtil.runInTransactionOrSavepoint(
-        session.db,
-        transaction,
-        (final transaction) =>
-            EmailPasswordlessIdpUtils.withReplacedServerException(
-              () => utils.login.startLogin(
-                session,
-                email: email,
-                transaction: transaction,
-              ),
-            ),
-      );
-    } on DatabaseUniqueViolationException {
-      // A concurrent call has just created the login request for the same
-      // email address and sent its code. The response is a request ID that can
-      // not be completed, as when the resend cooldown has not elapsed.
-      return const Uuid().v7obj();
-    }
+  }) {
+    return EmailPasswordlessIdpUtils.withReplacedServerException(
+      () => utils.login.startLogin(session, email: email),
+    );
   }
 
   /// {@macro email_passwordless_idp_base_endpoint.finish_login}
@@ -109,7 +97,13 @@ class EmailPasswordlessIdp implements IdentityProvider {
   /// committed before the account is resolved, so that a code can only be used
   /// once, and failed attempts are counted whatever happens later. The optional
   /// [transaction] is only used for the account resolution and the issuing of
-  /// the token. If one of those fails, the user has to request a new code.
+  /// the token. If one of those fails, including the hooks of the
+  /// configuration, the code stays consumed and the user has to request a new
+  /// one.
+  ///
+  /// If the account is created concurrently by something else, the account
+  /// resolution is retried once, which then logs in to the existing account.
+  /// If that fails as well, the login fails as with an invalid code.
   Future<AuthSuccess> finishLogin(
     final Session session, {
     required final UuidValue loginRequestId,
@@ -117,23 +111,29 @@ class EmailPasswordlessIdp implements IdentityProvider {
     final Transaction? transaction,
   }) async {
     return EmailPasswordlessIdpUtils.withReplacedServerException(() async {
-      final email = await session.db.transaction(
-        (final transaction) => utils.login.verifyLoginCode(
-          session,
-          loginRequestId: loginRequestId,
-          verificationCode: verificationCode,
-          transaction: transaction,
-        ),
+      final email = await utils.login.verifyLoginCode(
+        session,
+        loginRequestId: loginRequestId,
+        verificationCode: verificationCode,
       );
 
-      await utils.login.clearFailedLoginAttempts(session, email: email);
+      Future<AuthSuccess> resolveAccount() =>
+          DatabaseUtil.runInTransactionOrSavepoint(
+            session.db,
+            transaction,
+            (final transaction) =>
+                _loginOrSignUp(session, email: email, transaction: transaction),
+          );
 
-      return DatabaseUtil.runInTransactionOrSavepoint(
-        session.db,
-        transaction,
-        (final transaction) =>
-            _loginOrSignUp(session, email: email, transaction: transaction),
-      );
+      try {
+        return await resolveAccount();
+      } on DatabaseUniqueViolationException {
+        try {
+          return await resolveAccount();
+        } on DatabaseUniqueViolationException {
+          throw EmailPasswordlessLoginRequestNotFoundException();
+        }
+      }
     });
   }
 
@@ -196,6 +196,10 @@ class EmailPasswordlessIdp implements IdentityProvider {
         authUserId: emailAccount.authUserId,
         transaction: transaction,
       );
+
+      if (authUser.blocked) {
+        throw AuthUserBlockedException();
+      }
 
       scopes = authUser.scopes;
     }
