@@ -17,6 +17,7 @@ class EmailPasswordlessSignInTexts {
     required this.verificationMessage,
     required this.verify,
     required this.useDifferentEmail,
+    required this.resendCooldownMessage,
   });
 
   /// Default English texts.
@@ -29,6 +30,9 @@ class EmailPasswordlessSignInTexts {
         'We sent a code to your email. Enter it below to continue.',
     verify: 'Verify',
     useDifferentEmail: 'Use a different email',
+    resendCooldownMessage:
+        'A code was sent recently. Use that code, or wait a moment before '
+        'requesting a new one.',
   );
 
   /// Title on the email entry form.
@@ -52,6 +56,10 @@ class EmailPasswordlessSignInTexts {
   /// Label of the button that returns to the email entry form.
   final String useDifferentEmail;
 
+  /// Message shown when the server refuses to send a new code because one was
+  /// sent a short time ago. The code that was sent earlier can still be used.
+  final String resendCooldownMessage;
+
   /// Creates a copy of this object with updated values.
   EmailPasswordlessSignInTexts copyWith({
     String? title,
@@ -61,6 +69,7 @@ class EmailPasswordlessSignInTexts {
     String? verificationMessage,
     String? verify,
     String? useDifferentEmail,
+    String? resendCooldownMessage,
   }) {
     return EmailPasswordlessSignInTexts(
       title: title ?? this.title,
@@ -70,6 +79,8 @@ class EmailPasswordlessSignInTexts {
       verificationMessage: verificationMessage ?? this.verificationMessage,
       verify: verify ?? this.verify,
       useDifferentEmail: useDifferentEmail ?? this.useDifferentEmail,
+      resendCooldownMessage:
+          resendCooldownMessage ?? this.resendCooldownMessage,
     );
   }
 
@@ -83,7 +94,8 @@ class EmailPasswordlessSignInTexts {
         other.verifyTitle == verifyTitle &&
         other.verificationMessage == verificationMessage &&
         other.verify == verify &&
-        other.useDifferentEmail == useDifferentEmail;
+        other.useDifferentEmail == useDifferentEmail &&
+        other.resendCooldownMessage == resendCooldownMessage;
   }
 
   @override
@@ -95,6 +107,7 @@ class EmailPasswordlessSignInTexts {
     verificationMessage,
     verify,
     useDifferentEmail,
+    resendCooldownMessage,
   );
 }
 
