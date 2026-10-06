@@ -342,17 +342,17 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       return [for (final _ in statements) ResultSet([], null, [])];
     }
     final stopwatch = Stopwatch()..start();
-    final uniformNoReturn =
-        discardResults &&
-        statements.every((statement) => statement.sql == statements.first.sql);
-    final sql = uniformNoReturn
+    final uniformSql = statements.every(
+      (statement) => statement.sql == statements.first.sql,
+    );
+    final sql = uniformSql
         ? statements.first.sql
         : statements.map((statement) => statement.sql).join(';\n');
     poolManager.lastDatabaseOperationTime = DateTime.now();
 
     try {
       final List<ResultSet> result;
-      if (uniformNoReturn) {
+      if (discardResults && uniformSql) {
         // Keep the driver's lean path when there are no result slots to
         // correlate. Mixed shapes still use one ordered worker exchange.
         await sqliteTx._ctx.executeBatch(sql, [
