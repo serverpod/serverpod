@@ -16,7 +16,3 @@ Future<List<ResultSet>> executeSqliteBatch(
 
   return results;
 }
-
-/// Opens a database with the driver's existing worker and storage options.
-SqliteDatabase openSqliteDatabase(String path, SqliteOptions options) =>
-    SqliteDatabase(path: path, options: options);

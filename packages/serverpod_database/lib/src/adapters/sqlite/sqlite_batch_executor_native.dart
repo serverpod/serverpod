@@ -18,7 +18,3 @@ Future<List<ResultSet>> executeSqliteBatch(
     );
   });
 }
-
-/// Opens a database with support for ordered returning batches.
-SqliteDatabase openSqliteDatabase(String path, SqliteOptions options) =>
-    SqliteDatabase(path: path, options: options);
