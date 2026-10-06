@@ -22,16 +22,15 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  test(
-    'Given an existing row and new columns with literal defaults, '
-    'when applying the generated SQLite migration, '
-    'then old and new rows receive the defaults without a table rebuild.',
-    () async {
+  group('Given an existing row and new columns with literal defaults, ', () {
+    late List<ColumnDefinition> columns;
+
+    setUp(() async {
       await session.db.unsafeExecute(
         'CREATE TABLE items (id INTEGER PRIMARY KEY) STRICT; '
         'INSERT INTO items VALUES (1);',
       );
-      final columns = [
+      columns = [
         ColumnDefinition(
           name: 'enabled',
           columnType: ColumnType.boolean,
@@ -63,64 +62,94 @@ void main() {
           columnDefault: 'NULL',
         ),
       ];
-      final sql = _addColumnsSql(columns);
+    });
 
-      await session.db.unsafeExecute(sql);
-      await session.db.unsafeExecute('INSERT INTO items(id) VALUES (2)');
-      final rows = await session.db.unsafeQuery(
-        'SELECT * FROM items ORDER BY id',
-      );
+    group('when applying the generated SQLite migration, ', () {
+      late String sql;
+      late DatabaseResult rows;
 
-      expect(sql, isNot(contains('DROP TABLE')));
-      expect(rows.map((row) => row.toColumnMap()), [
-        {
-          'id': 1,
-          'enabled': 0,
-          'amount': -125.0,
-          'label': "it's; literal SQL",
-          'data': [0, 255],
-          'optional': null,
-        },
-        {
-          'id': 2,
-          'enabled': 0,
-          'amount': -125.0,
-          'label': "it's; literal SQL",
-          'data': [0, 255],
-          'optional': null,
-        },
-      ]);
-    },
-  );
+      setUp(() async {
+        sql = _addColumnsSql(columns);
+        await session.db.unsafeExecute(sql);
+        await session.db.unsafeExecute('INSERT INTO items(id) VALUES (2)');
+        rows = await session.db.unsafeQuery('SELECT * FROM items ORDER BY id');
+      });
 
-  test(
-    'Given an existing row and a new column with a current-time default, '
-    'when applying the generated SQLite migration, '
-    'then the rebuild evaluates the expression for the existing row.',
-    () async {
-      await session.db.unsafeExecute(
-        'CREATE TABLE items (id INTEGER PRIMARY KEY) STRICT; '
-        'INSERT INTO items VALUES (1);',
-      );
-      final sql = _addColumnsSql([
-        ColumnDefinition(
-          name: 'created',
-          columnType: ColumnType.timestampWithoutTimeZone,
-          isNullable: false,
-          columnDefault: defaultDateTimeValueNow,
-        ),
-      ]);
-      final before = DateTime.now().millisecondsSinceEpoch;
+      test('then the migration does not rebuild the table.', () {
+        expect(sql, isNot(contains('DROP TABLE')));
+      });
 
-      await session.db.unsafeExecute(sql);
-      final row = (await session.db.unsafeQuery('SELECT * FROM items')).single;
+      test('then old and new rows receive the defaults.', () {
+        expect(rows.map((row) => row.toColumnMap()), [
+          {
+            'id': 1,
+            'enabled': 0,
+            'amount': -125.0,
+            'label': "it's; literal SQL",
+            'data': [0, 255],
+            'optional': null,
+          },
+          {
+            'id': 2,
+            'enabled': 0,
+            'amount': -125.0,
+            'label': "it's; literal SQL",
+            'data': [0, 255],
+            'optional': null,
+          },
+        ]);
+      });
+    });
+  });
 
-      expect(sql, contains('DROP TABLE'));
-      expect(row.toColumnMap()['id'], 1);
-      expect(
-        row.toColumnMap()['created'],
-        inInclusiveRange(before, DateTime.now().millisecondsSinceEpoch),
-      );
+  group(
+    'Given an existing row and a new column with a current-time default, ',
+    () {
+      late List<ColumnDefinition> columns;
+
+      setUp(() async {
+        await session.db.unsafeExecute(
+          'CREATE TABLE items (id INTEGER PRIMARY KEY) STRICT; '
+          'INSERT INTO items VALUES (1);',
+        );
+        columns = [
+          ColumnDefinition(
+            name: 'created',
+            columnType: ColumnType.timestampWithoutTimeZone,
+            isNullable: false,
+            columnDefault: defaultDateTimeValueNow,
+          ),
+        ];
+      });
+
+      group('when applying the generated SQLite migration, ', () {
+        late String sql;
+        late Map<String, dynamic> row;
+        late int before;
+        late int after;
+
+        setUp(() async {
+          sql = _addColumnsSql(columns);
+          before = DateTime.now().millisecondsSinceEpoch;
+          await session.db.unsafeExecute(sql);
+          row = (await session.db.unsafeQuery(
+            'SELECT * FROM items',
+          )).single.toColumnMap();
+          after = DateTime.now().millisecondsSinceEpoch;
+        });
+
+        test('then the migration rebuilds the table.', () {
+          expect(sql, contains('DROP TABLE'));
+        });
+
+        test(
+          'then the rebuild evaluates the expression for the existing row.',
+          () {
+            expect(row['id'], 1);
+            expect(row['created'], inInclusiveRange(before, after));
+          },
+        );
+      });
     },
   );
 }

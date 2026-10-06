@@ -8,37 +8,56 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  test(
-    'Given two upserts with equal UUID values, '
-    'when upserting without returning rows, '
-    'then duplicate targets are detected by value and rolled back.',
-    () async {
-      final id = const Uuid().v4obj();
+  group('Given two upserts with equal UUID values, ', () {
+    late UuidValue id;
+    late List<ChangedIdTypeSelf> inputs;
 
-      await expectLater(
-        ChangedIdTypeSelf.db.upsert(
-          session,
-          [
-            ChangedIdTypeSelf(id: id, name: 'first'),
-            ChangedIdTypeSelf(
-              id: UuidValue.fromString(id.toString()),
-              name: 'second',
-            ),
-          ],
-          conflictColumns: (t) => [t.id],
-          noReturn: true,
+    setUp(() {
+      id = const Uuid().v4obj();
+      inputs = [
+        ChangedIdTypeSelf(id: id, name: 'first'),
+        ChangedIdTypeSelf(
+          id: UuidValue.fromString(id.toString()),
+          name: 'second',
         ),
-        throwsA(
+      ];
+    });
+
+    group('when upserting without returning rows, ', () {
+      Object? failure;
+      late ChangedIdTypeSelf? stored;
+
+      setUp(() async {
+        failure = null;
+        try {
+          await ChangedIdTypeSelf.db.upsert(
+            session,
+            inputs,
+            conflictColumns: (t) => [t.id],
+            noReturn: true,
+          );
+        } catch (error) {
+          failure = error;
+        }
+        stored = await ChangedIdTypeSelf.db.findById(session, id);
+      });
+
+      test('then duplicate targets are detected by value.', () {
+        expect(
+          failure,
           isA<DatabaseQueryException>().having(
             (e) => e.message,
             'message',
             'ON CONFLICT DO UPDATE command cannot affect row a second time',
           ),
-        ),
-      );
-      expect(await ChangedIdTypeSelf.db.findById(session, id), isNull);
-    },
-  );
+        );
+      });
+
+      test('then the batch is rolled back.', () {
+        expect(stored, isNull);
+      });
+    });
+  });
 
   tearDown(() async {
     await UniqueData.db.deleteWhere(

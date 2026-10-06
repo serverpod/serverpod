@@ -27,15 +27,15 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  test(
-    'Given reader connections with outdated planner statistics, '
-    'when periodic planner maintenance runs, '
-    'then every reader uses refreshed statistics with schema writes disabled.',
-    () async {
+  group('Given reader connections with outdated planner statistics, ', () {
+    const query =
+        'EXPLAIN QUERY PLAN '
+        'SELECT id FROM items WHERE a=1 AND b=5000';
+    late List<String> initialPlans;
+
+    setUp(() async {
       final db = await pool.database;
-      const query =
-          'EXPLAIN QUERY PLAN '
-          'SELECT id FROM items WHERE a=1 AND b=5000';
+      initialPlans = [];
       await db.withAllConnections((writer, readers) async {
         await writer.execute(
           'CREATE TABLE items(id INTEGER PRIMARY KEY, a INTEGER, b INTEGER)',
@@ -48,50 +48,83 @@ void main() {
         await writer.execute('CREATE INDEX idx_b ON items(b)');
         await writer.execute('CREATE INDEX idx_a ON items(a)');
         for (final reader in readers) {
-          expect(
-            (await reader.getAll(query)).single['detail'],
-            contains('idx_a'),
+          initialPlans.add(
+            (await reader.getAll(query)).single['detail'] as String,
           );
         }
       });
+    });
 
-      final deadline = DateTime.now().add(const Duration(seconds: 10));
-      var refreshed = false;
-      while (!refreshed && DateTime.now().isBefore(deadline)) {
-        await Future<void>.delayed(const Duration(milliseconds: 20));
-        refreshed = await db.withAllConnections((writer, readers) async {
+    group('when periodic planner maintenance runs, ', () {
+      late bool refreshed;
+      late List<List<Object?>> writableSchema;
+      late List<List<Object?>> rowCounts;
+
+      setUp(() async {
+        final db = await pool.database;
+        final deadline = DateTime.now().add(const Duration(seconds: 10));
+        refreshed = false;
+        while (!refreshed && DateTime.now().isBefore(deadline)) {
+          await Future<void>.delayed(const Duration(milliseconds: 20));
+          refreshed = await db.withAllConnections((writer, readers) async {
+            for (final reader in readers) {
+              final plan =
+                  (await reader.getAll(query)).single['detail'] as String;
+              if (!plan.contains('idx_b')) return false;
+            }
+            return true;
+          });
+        }
+        writableSchema = [];
+        rowCounts = [];
+        await db.withAllConnections((writer, readers) async {
           for (final reader in readers) {
-            final plan =
-                (await reader.getAll(query)).single['detail'] as String;
-            if (!plan.contains('idx_b')) return false;
+            writableSchema.add(
+              (await reader.getAll(
+                'PRAGMA writable_schema',
+              )).single.values.toList(),
+            );
+            rowCounts.add(
+              (await reader.getAll(
+                'SELECT count(*) FROM items',
+              )).single.values.toList(),
+            );
           }
-          return true;
         });
-      }
+      });
 
-      expect(refreshed, isTrue);
-      await db.withAllConnections((writer, readers) async {
-        for (final reader in readers) {
-          expect(
-            (await reader.getAll('PRAGMA writable_schema')).single.values,
-            [0],
-          );
-          expect(
-            (await reader.getAll('SELECT count(*) FROM items')).single.values,
-            [10000],
-          );
+      test(
+        'then every reader switches from outdated to refreshed statistics.',
+        () {
+          expect(initialPlans, isNotEmpty);
+          for (final plan in initialPlans) {
+            expect(plan, contains('idx_a'));
+          }
+          expect(refreshed, isTrue);
+        },
+      );
+
+      test('then schema writes remain disabled on every reader.', () {
+        for (final values in writableSchema) {
+          expect(values, [0]);
         }
       });
-    },
-  );
 
-  test(
-    'Given busy readers and a write transaction during periodic maintenance, '
-    'when the transaction reads outside its snapshot, '
-    'then the read and subsequent writes complete without deadlocking.',
-    () async {
+      test('then all stored rows are retained.', () {
+        for (final values in rowCounts) {
+          expect(values, [10000]);
+        }
+      });
+    });
+  });
+
+  group('Given busy readers during periodic maintenance, ', () {
+    late Database database;
+    late Completer<void> releaseReaders;
+    late Future<List<void>> busyReaders;
+
+    setUp(() async {
       final driver = await pool.database;
-      late Database database;
       final session = _Session(() => database);
       database = DatabaseConstructor.create(
         session: session,
@@ -99,93 +132,159 @@ void main() {
       );
       await database.unsafeExecute('CREATE TABLE items(value INTEGER)');
       final readersEntered = Completer<void>();
-      final releaseReaders = Completer<void>();
+      releaseReaders = Completer<void>();
       var readerCount = 0;
-      final busyReaders = Future.wait([
+      busyReaders = Future.wait([
         for (var i = 0; i < driver.maxReaders; i++)
           driver.readLock((reader) async {
             if (++readerCount == driver.maxReaders) readersEntered.complete();
             await releaseReaders.future;
           }),
       ]);
-      await readersEntered.future;
-      Object? failure;
-      Future<DatabaseResult>? independentRead;
-
-      try {
-        await database.transaction((tx) async {
-          await database.unsafeExecute(
-            'INSERT INTO items VALUES (1)',
-            transaction: tx,
-          );
-          // Let the timer enqueue maintenance while the writer and all readers
-          // are busy, then request the adapter's out-of-transaction read.
-          await Future<void>.delayed(const Duration(milliseconds: 80));
-          independentRead = database.unsafeQuery('SELECT count(*) FROM items');
-          await Future<void>.delayed(const Duration(milliseconds: 20));
-          releaseReaders.complete();
-          // A regression times out inside the transaction, releasing its
-          // writer so the test can clean up rather than hanging the process.
-          await independentRead!.timeout(const Duration(seconds: 2));
-        });
-      } catch (error) {
-        failure = error;
-      } finally {
+      addTearDown(() async {
         if (!releaseReaders.isCompleted) releaseReaders.complete();
         await busyReaders;
-        await independentRead;
-      }
-      await database.unsafeExecute('INSERT INTO items VALUES (2)');
+      });
+      await readersEntered.future;
+    });
 
-      expect(failure, isNull);
-      final values = await database.unsafeQuery(
-        'SELECT value FROM items ORDER BY value',
-      );
-      expect(values.map((row) => row.single), [1, 2]);
-    },
-  );
+    group('when a write transaction reads outside its snapshot, ', () {
+      Object? failure;
+      late DatabaseResult values;
 
-  test(
-    'Given startup maintenance is still pending, '
-    'when stopping the pool and then starting it again, '
-    'then the stopped handles close and the restarted database is usable.',
-    () async {
+      setUp(() async {
+        failure = null;
+        Future<DatabaseResult>? independentRead;
+        try {
+          await database.transaction((tx) async {
+            await database.unsafeExecute(
+              'INSERT INTO items VALUES (1)',
+              transaction: tx,
+            );
+            // Enqueue maintenance while the writer and all readers are busy.
+            await Future<void>.delayed(const Duration(milliseconds: 80));
+            independentRead = database.unsafeQuery(
+              'SELECT count(*) FROM items',
+            );
+            await Future<void>.delayed(const Duration(milliseconds: 20));
+            releaseReaders.complete();
+            // Release the writer on timeout so a regression can still clean up.
+            await independentRead!.timeout(const Duration(seconds: 2));
+          });
+        } catch (error) {
+          failure = error;
+        } finally {
+          if (!releaseReaders.isCompleted) releaseReaders.complete();
+          await busyReaders;
+          await independentRead;
+        }
+        await database.unsafeExecute('INSERT INTO items VALUES (2)');
+        values = await database.unsafeQuery(
+          'SELECT value FROM items ORDER BY value',
+        );
+      });
+
+      test('then the read completes without deadlocking.', () {
+        expect(failure, isNull);
+      });
+
+      test('then subsequent writes complete.', () {
+        expect(values.map((row) => row.single), [1, 2]);
+      });
+    });
+  });
+
+  group('Given startup maintenance is still pending, ', () {
+    setUp(() {
       pool.start();
+    });
 
-      await pool.stop();
-      await expectLater(pool.database, throwsStateError);
-      pool.start();
+    group('when stopping and restarting the pool, ', () {
+      Object? stoppedAccessFailure;
+      late bool connected;
 
-      expect(await pool.testConnection(), isTrue);
-    },
-  );
+      setUp(() async {
+        stoppedAccessFailure = null;
+        await pool.stop();
+        try {
+          await pool.database;
+        } catch (error) {
+          stoppedAccessFailure = error;
+        }
+        pool.start();
+        connected = await pool.testConnection();
+      });
 
-  test(
-    'Given periodic maintenance is waiting behind a write lock, '
-    'when stopping the pool and releasing the lock, '
-    'then shutdown waits for maintenance and leaves the database closed.',
-    () async {
+      test('then the stopped database is inaccessible.', () {
+        expect(stoppedAccessFailure, isStateError);
+      });
+
+      test('then the restarted database is usable.', () {
+        expect(connected, isTrue);
+      });
+    });
+  });
+
+  group('Given periodic maintenance is waiting behind a write lock, ', () {
+    late Completer<void> release;
+    late Future<void> write;
+
+    setUp(() async {
       final db = await pool.database;
       final entered = Completer<void>();
-      final release = Completer<void>();
-      final write = db.writeLock((writer) async {
+      release = Completer<void>();
+      write = db.writeLock((writer) async {
         entered.complete();
         await release.future;
       });
+      addTearDown(() async {
+        if (!release.isCompleted) release.complete();
+        await write;
+      });
       await entered.future;
       await Future<void>.delayed(const Duration(milliseconds: 80));
+    });
 
-      final stopped = pool.stop();
-      expect(pool.start, throwsStateError);
-      release.complete();
-      await write;
-      await stopped.timeout(const Duration(seconds: 10));
-      await Future<void>.delayed(const Duration(milliseconds: 80));
+    group('when stopping the pool and releasing the lock, ', () {
+      Object? restartFailure;
+      Object? stoppedAccessFailure;
+      late bool closed;
 
-      expect(db.closed, isTrue);
-      await expectLater(pool.database, throwsStateError);
-    },
-  );
+      setUp(() async {
+        restartFailure = null;
+        stoppedAccessFailure = null;
+        final db = await pool.database;
+        final stopped = pool.stop();
+        try {
+          pool.start();
+        } catch (error) {
+          restartFailure = error;
+        }
+        release.complete();
+        await write;
+        await stopped.timeout(const Duration(seconds: 10));
+        await Future<void>.delayed(const Duration(milliseconds: 80));
+        closed = db.closed;
+        try {
+          await pool.database;
+        } catch (error) {
+          stoppedAccessFailure = error;
+        }
+      });
+
+      test('then restarting during shutdown is rejected.', () {
+        expect(restartFailure, isStateError);
+      });
+
+      test(
+        'then shutdown waits for maintenance and leaves the database closed.',
+        () {
+          expect(closed, isTrue);
+          expect(stoppedAccessFailure, isStateError);
+        },
+      );
+    });
+  });
 }
 
 class _Session implements DatabaseSession {
