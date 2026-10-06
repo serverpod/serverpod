@@ -17,49 +17,49 @@ final _portZeroConfig = ServerConfig(
 );
 
 void main() {
-  late Directory tempDir;
-  late Serverpod pod;
-  late shared.TestLogWriter logWriter;
+  group('Given a database that does not match the target state,', () {
+    late Directory tempDir;
+    late Serverpod pod;
+    late shared.TestLogWriter logWriter;
 
-  // The SQLite database is empty, so the integrity verification fails.
-  Serverpod createPod({
-    ServerpodRole role = ServerpodRole.monolith,
-    bool applyMigrations = false,
-  }) {
-    return Serverpod(
-      [],
-      internal.Protocol(),
-      EmptyEndpoints(),
-      config: ServerpodConfig(
-        apiServer: _portZeroConfig,
-        webServer: _portZeroConfig,
-        database: SqliteDatabaseConfig(
-          filePath: p.join(tempDir.path, 'test.db'),
+    // The SQLite database is empty, so the integrity verification fails.
+    Serverpod createPod({
+      ServerpodRole role = ServerpodRole.monolith,
+      bool applyMigrations = false,
+    }) {
+      return Serverpod(
+        [],
+        internal.Protocol(),
+        EmptyEndpoints(),
+        config: ServerpodConfig(
+          apiServer: _portZeroConfig,
+          webServer: _portZeroConfig,
+          database: SqliteDatabaseConfig(
+            filePath: p.join(tempDir.path, 'test.db'),
+          ),
+          role: role,
+          applyMigrations: applyMigrations,
+          healthCheckInterval: Duration.zero,
+          futureCall: const FutureCallConfig(enabled: false),
         ),
-        role: role,
-        applyMigrations: applyMigrations,
-        healthCheckInterval: Duration.zero,
-        futureCall: const FutureCallConfig(enabled: false),
-      ),
-      serverDirectory: tempDir,
-    );
-  }
-
-  setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp('db_integrity_failure_');
-    logWriter = shared.TestLogWriter();
-    shared.logWriter.add(logWriter);
-  });
-
-  tearDown(() async {
-    shared.logWriter.remove(logWriter);
-    await pod.shutdown(exitProcess: false);
-    if (tempDir.existsSync()) {
-      await tempDir.delete(recursive: true);
+        serverDirectory: tempDir,
+      );
     }
-  });
 
-  group('Given a database that does not match the target state', () {
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('db_integrity_failure_');
+      logWriter = shared.TestLogWriter();
+      shared.logWriter.add(logWriter);
+    });
+
+    tearDown(() async {
+      shared.logWriter.remove(logWriter);
+      await pod.shutdown(exitProcess: false);
+      if (tempDir.existsSync()) {
+        await tempDir.delete(recursive: true);
+      }
+    });
+
     test(
       'when starting Serverpod, '
       'then the server starts instead of exiting.',
