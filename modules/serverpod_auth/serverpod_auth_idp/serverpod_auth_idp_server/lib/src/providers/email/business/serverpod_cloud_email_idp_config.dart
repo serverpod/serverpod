@@ -1,28 +1,10 @@
-import 'dart:async';
-
 import 'package:serverpod/serverpod.dart';
 
-import '../../../utils/get_passwords_extension.dart';
 import 'email_idp_config.dart';
+import 'util/serverpod_cloud_code_sender.dart';
 import 'util/serverpod_cloud_email_client.dart';
 
 export 'util/serverpod_cloud_email_client.dart';
-
-/// The `passwords.yaml` key holding the Serverpod Cloud email service token.
-///
-/// This password is provided automatically by Serverpod Cloud.
-const _scloudAuthEmailKey = 'scloudAuthEmailKey';
-
-/// A function sending a single verification [code] to [email].
-///
-/// Used internally by [ServerpodCloudEmailIdpConfig] to share the
-/// registration- and password-reset sending logic.
-typedef _SendCodeFunction =
-    FutureOr<void> Function(
-      Session session, {
-      required String email,
-      required String code,
-    });
 
 /// {@template serverpod_cloud_email_idp_config}
 /// An [EmailIdpConfig] that works with Serverpod Cloud without configuration.
@@ -94,7 +76,7 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
 
     return ServerpodCloudEmailIdpConfig._(
       sendRegistrationVerificationCode: _registrationSender(
-        _coreSender(
+        serverpodCloudCodeSender(
           appDisplayName: appDisplayName,
           client: client,
           emailType: ServerpodCloudEmailType.signup,
@@ -102,7 +84,7 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
         ),
       ),
       sendPasswordResetVerificationCode: _passwordResetSender(
-        _coreSender(
+        serverpodCloudCodeSender(
           appDisplayName: appDisplayName,
           client: client,
           emailType: ServerpodCloudEmailType.lostpassword,
@@ -122,61 +104,9 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
     super.onAfterAccountCreated,
   });
 
-  /// Builds the shared verification-code sender.
-  ///
-  /// In development/test mode ([client] is null) the code is logged via
-  /// [Session.alert]. Otherwise it is sent through the Serverpod Cloud email
-  /// service. The `scloudAuthEmailKey` password is read lazily, and any failure
-  /// is logged rather than thrown (see the class docs for why).
-  static _SendCodeFunction _coreSender({
-    required final String appDisplayName,
-    required final ServerpodCloudEmailClient? client,
-    required final ServerpodCloudEmailType emailType,
-    required final String logLabel,
-  }) {
-    return (
-      final Session session, {
-      required final String email,
-      required final String code,
-    }) async {
-      if (client == null) {
-        // `session.alert` shows this as a copyable alert in the `serverpod`
-        // CLI's terminal UI and auto-copies the `<...>` segment to the
-        // clipboard. Other log destinations treat it as a regular log message.
-        session.alert('$logLabel code for $email: <$code>');
-        return;
-      }
-
-      try {
-        final token = Serverpod.instance.getPasswordOrThrow(
-          _scloudAuthEmailKey,
-        );
-        await client.sendEmail(
-          token: token,
-          emailType: emailType,
-          email: email,
-          projectName: appDisplayName,
-          authCode: code,
-        );
-      } catch (e, stackTrace) {
-        // Best effort: never rethrow. Propagating here would break sign-up when
-        // the service is unavailable, and on password reset it would reveal
-        // whether an account exists (the send only runs for known emails), so a
-        // failure must not change the response. Operators see it in the logs.
-        session.log(
-          'Failed to send $logLabel email via the Serverpod Cloud email '
-          'service for $email.',
-          level: LogLevel.error,
-          exception: e,
-          stackTrace: stackTrace,
-        );
-      }
-    };
-  }
-
   /// Adapts a shared [send] callback to the registration callback signature.
   static SendRegistrationVerificationCodeFunction _registrationSender(
-    final _SendCodeFunction send,
+    final SendCodeFunction send,
   ) {
     return (
       final Session session, {
@@ -189,7 +119,7 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
 
   /// Adapts a shared [send] callback to the password-reset callback signature.
   static SendPasswordResetVerificationCodeFunction _passwordResetSender(
-    final _SendCodeFunction send,
+    final SendCodeFunction send,
   ) {
     return (
       final Session session, {

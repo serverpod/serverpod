@@ -20,5 +20,6 @@ export '../src/providers/email_passwordless/business/email_passwordless_idp_admi
 export '../src/providers/email_passwordless/business/email_passwordless_idp_config.dart';
 export '../src/providers/email_passwordless/business/email_passwordless_idp_server_exceptions.dart';
 export '../src/providers/email_passwordless/business/email_passwordless_idp_utils.dart';
+export '../src/providers/email_passwordless/business/serverpod_cloud_email_passwordless_idp_config.dart';
 export '../src/providers/email_passwordless/business/utils/email_passwordless_idp_login_util.dart';
 export '../src/providers/email_passwordless/endpoints/email_passwordless_idp_base_endpoint.dart';
