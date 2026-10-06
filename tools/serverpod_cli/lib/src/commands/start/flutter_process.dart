@@ -40,18 +40,20 @@ class FlutterNotInstalledException implements Exception {
   String toString() => 'FlutterNotInstalledException: $message';
 }
 
-/// Manages a `flutter run --machine` subprocess. Mirrors [ServerProcess].
-/// IDE attach flows through [flutterProxy] (which owns the stable
-/// vm-service URI and the per-app `flutter-vm-service-info-<appId>.json`
-/// file); reload/restart go via [FlutterDaemonProtocol] over daemon stdin.
-/// How to spawn flutter_tools. [flutterRoot] is null when the SDK could
-/// not be probed and [executable] is the configured `flutter` verbatim.
+/// How to spawn flutter_tools: [executable] plus the arguments that have to
+/// precede the flutter command itself. [flutterRoot] is the SDK the probe
+/// identified, or null when it failed and [executable] is the configured
+/// `flutter` taken on faith.
 typedef _FlutterInvocation = ({
   String executable,
   List<String> baseArgs,
   String? flutterRoot,
 });
 
+/// Manages a `flutter run --machine` subprocess. Mirrors [ServerProcess].
+/// IDE attach flows through [flutterProxy] (which owns the stable
+/// vm-service URI and the per-app `flutter-vm-service-info-<appId>.json`
+/// file); reload/restart go via [FlutterDaemonProtocol] over daemon stdin.
 class FlutterProcess {
   static const _rawLogDeduplicationWindow = Duration(seconds: 5);
   static const _maxRecentRawLogLines = 1000;
