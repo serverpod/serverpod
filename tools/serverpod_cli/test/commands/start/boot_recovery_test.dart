@@ -54,18 +54,16 @@ class _FakeCompiler extends Fake implements KernelCompiler {
 }
 
 class _FakeServer extends Fake implements ServerProcess {
-  _FakeServer.running()
-    : isRunning = true,
-      vmServiceUri = 'http://127.0.0.1:1/';
+  _FakeServer.running() : isRunning = true, reachedVmService = true;
 
-  _FakeServer.crashed(int code) : isRunning = false, vmServiceUri = null {
+  _FakeServer.crashed(int code) : isRunning = false, reachedVmService = false {
     _exitCode.complete(code);
   }
 
   /// Exited non-zero, but after the VM service came up (an app-level crash).
   _FakeServer.crashedAfterVmService(int code)
     : isRunning = false,
-      vmServiceUri = 'http://127.0.0.1:1/' {
+      reachedVmService = true {
     _exitCode.complete(code);
   }
 
@@ -73,7 +71,7 @@ class _FakeServer extends Fake implements ServerProcess {
   final bool isRunning;
 
   @override
-  final String? vmServiceUri;
+  final bool reachedVmService;
 
   final _exitCode = Completer<int>();
 
@@ -124,7 +122,7 @@ void main() {
     },
   );
 
-  group('Given a server that dies before publishing its VM service URI', () {
+  group('Given a server that dies before its VM service is reached', () {
     // 0xC0000409: a Windows-style abort code; the predicate must not
     // enumerate exit codes.
     const abortCode = 3221226505;
