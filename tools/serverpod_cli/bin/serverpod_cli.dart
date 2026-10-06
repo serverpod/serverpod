@@ -7,6 +7,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/analytics/flush_analytics.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
+import 'package:serverpod_cli/src/commands/clean.dart';
 import 'package:serverpod_cli/src/commands/cloud.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/create_migration.dart';
@@ -114,6 +115,7 @@ ServerpodCommandRunner buildCommandRunner() {
     version,
   )..addCommands([
     AnalyzePubspecsCommand(),
+    CleanCommand(),
     CloudCommand(),
     CreateCommand(),
     DatabaseCommand(),
