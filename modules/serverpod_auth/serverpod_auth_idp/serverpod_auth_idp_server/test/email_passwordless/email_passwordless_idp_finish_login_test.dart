@@ -607,6 +607,42 @@ void main() {
           );
         },
       );
+
+      test(
+        'when finishLogin is called with the correct code then onAfterLogin is not called.',
+        () async {
+          var onAfterLoginCalls = 0;
+          fixture = EmailPasswordlessIdpTestFixture(
+            onAfterLogin:
+                (
+                  final session, {
+                  required final email,
+                  required final authUserId,
+                  required final emailAccountId,
+                  required final accountCreated,
+                  required final transaction,
+                }) {
+                  onAfterLoginCalls++;
+                },
+          );
+
+          final loginRequestId = await fixture.idp.startLogin(
+            session,
+            email: email,
+          );
+
+          await expectLater(
+            fixture.idp.finishLogin(
+              session,
+              loginRequestId: loginRequestId,
+              verificationCode: fixtureVerificationCode,
+            ),
+            throwsA(isA<AuthUserBlockedException>()),
+          );
+
+          expect(onAfterLoginCalls, 0);
+        },
+      );
     },
   );
 
@@ -1075,6 +1111,276 @@ void main() {
           expect(await AuthUser.db.count(session), 0);
         });
       });
+    },
+  );
+  withServerpod(
+    'Given hooks that fail for an existing account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailPasswordlessIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailPasswordlessIdpTestFixture(
+          onAfterLogin:
+              (
+                final session, {
+                required final email,
+                required final authUserId,
+                required final emailAccountId,
+                required final accountCreated,
+                required final transaction,
+              }) {
+                throw StateError('Login rejected.');
+              },
+        );
+
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when onAfterLogin throws then finishLogin throws that exception, the code stays consumed, and no token is issued.',
+        () async {
+          final sessionsBefore = await ServerSideSession.db.count(session);
+          final loginRequestId = await fixture.idp.startLogin(
+            session,
+            email: email,
+          );
+
+          await expectLater(
+            fixture.idp.finishLogin(
+              session,
+              loginRequestId: loginRequestId,
+              verificationCode: fixtureVerificationCode,
+            ),
+            throwsA(isA<StateError>()),
+          );
+
+          await expectLater(
+            fixture.idp.finishLogin(
+              session,
+              loginRequestId: loginRequestId,
+              verificationCode: fixtureVerificationCode,
+            ),
+            _throwsLoginException(
+              EmailPasswordlessLoginExceptionReason.invalid,
+            ),
+          );
+          expect(await SecretChallenge.db.count(session), 0);
+          expect(await ServerSideSession.db.count(session), sessionsBefore);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given an account that is created concurrently with the first login',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailPasswordlessIdpTestFixture fixture;
+      final calls = <String>[];
+      const email = 'newuser@serverpod.dev';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        calls.clear();
+        fixture = EmailPasswordlessIdpTestFixture(
+          onBeforeAccountCreated:
+              (
+                final session, {
+                required final email,
+                required final transaction,
+              }) async {
+                calls.add('before');
+                if (calls.length > 1) return;
+
+                // Another request creates and commits the account first.
+                final otherSession = sessionBuilder.build();
+                final authUser = await fixture.authUsers.create(otherSession);
+                await fixture.createEmailAccount(
+                  otherSession,
+                  authUserId: authUser.id,
+                  email: email,
+                );
+              },
+          onAfterLogin:
+              (
+                final session, {
+                required final email,
+                required final authUserId,
+                required final emailAccountId,
+                required final accountCreated,
+                required final transaction,
+              }) {
+                calls.add('login:$accountCreated');
+              },
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when finishLogin is called then it logs in to the existing account instead of failing, and creates no second account.',
+        () async {
+          final loginRequestId = await fixture.idp.startLogin(
+            session,
+            email: email,
+          );
+
+          final result = await fixture.idp.finishLogin(
+            session,
+            loginRequestId: loginRequestId,
+            verificationCode: fixtureVerificationCode,
+          );
+
+          expect(result.authUserId, isNotNull);
+          expect(calls, ['before', 'login:false']);
+          expect(await EmailAccount.db.count(session), 1);
+          expect(await AuthUser.db.count(session), 1);
+          expect(
+            (await EmailAccount.db.find(session)).single.authUserId,
+            result.authUserId,
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given many more concurrent calls than the size of the connection pool',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailPasswordlessIdpTestFixture fixture;
+      const concurrentCalls = 24;
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      setUp(() {
+        session = sessionBuilder.build();
+        fixture = EmailPasswordlessIdpTestFixture(
+          loginVerificationCodeAllowedAttempts: 100,
+          failedLoginRateLimit: const RateLimit(
+            maxAttempts: 100,
+            timeframe: Duration(minutes: 5),
+          ),
+        );
+      });
+
+      test(
+        'when startLogin is called for many emails at once then all calls complete.',
+        () async {
+          final ids = await Future.wait([
+            for (var i = 0; i < concurrentCalls; i++)
+              fixture.idp.startLogin(
+                sessionBuilder.build(),
+                email: 'user$i@serverpod.dev',
+              ),
+          ]).timeout(const Duration(seconds: 60));
+
+          expect(ids.toSet(), hasLength(concurrentCalls));
+        },
+      );
+
+      test(
+        'when startLogin is called for the same email at once then all calls complete.',
+        () async {
+          final results = await Future.wait<Object>([
+            for (var i = 0; i < concurrentCalls; i++)
+              () async {
+                try {
+                  return await fixture.idp.startLogin(
+                    sessionBuilder.build(),
+                    email: 'same@serverpod.dev',
+                  );
+                } catch (error) {
+                  return error;
+                }
+              }(),
+          ]).timeout(const Duration(seconds: 60));
+
+          expect(results, hasLength(concurrentCalls));
+          expect(
+            results.where((final r) => r is! UuidValue),
+            everyElement(isA<EmailPasswordlessLoginException>()),
+          );
+        },
+      );
+
+      test(
+        'when finishLogin is called for many requests at once then all calls complete and succeed.',
+        () async {
+          final requests = await Future.wait([
+            for (var i = 0; i < concurrentCalls; i++)
+              fixture.idp.startLogin(
+                sessionBuilder.build(),
+                email: 'user$i@serverpod.dev',
+              ),
+          ]);
+
+          final results = await Future.wait([
+            for (final id in requests)
+              fixture.idp.finishLogin(
+                sessionBuilder.build(),
+                loginRequestId: id,
+                verificationCode: fixtureVerificationCode,
+              ),
+          ]).timeout(const Duration(seconds: 60));
+
+          expect(results, hasLength(concurrentCalls));
+          expect(await EmailAccount.db.count(session), concurrentCalls);
+        },
+      );
+
+      test(
+        'when finishLogin is called for one request at once then all calls complete and exactly one wins.',
+        () async {
+          final id = await fixture.idp.startLogin(
+            session,
+            email: 'one@serverpod.dev',
+          );
+
+          final results = await Future.wait<Object>([
+            for (var i = 0; i < concurrentCalls; i++)
+              () async {
+                try {
+                  return await fixture.idp.finishLogin(
+                    sessionBuilder.build(),
+                    loginRequestId: id,
+                    verificationCode: fixtureVerificationCode,
+                  );
+                } catch (error) {
+                  return error;
+                }
+              }(),
+          ]).timeout(const Duration(seconds: 60));
+
+          expect(results.whereType<AuthSuccess>(), hasLength(1));
+          expect(
+            results.whereType<EmailPasswordlessLoginException>().map(
+              (final e) => e.reason,
+            ),
+            everyElement(EmailPasswordlessLoginExceptionReason.invalid),
+          );
+          expect(await EmailAccount.db.count(session), 1);
+        },
+      );
     },
   );
 }

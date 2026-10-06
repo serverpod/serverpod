@@ -44,6 +44,7 @@ final class EmailPasswordlessIdpTestFixture {
       timeframe: Duration(minutes: 5),
     ),
     final Duration resendCooldown = Duration.zero,
+    final int secretHashSaltLength = 16,
     final BeforePasswordlessAccountCreatedFunction? onBeforeAccountCreated,
     final AfterAccountCreatedFunction? onAfterAccountCreated,
     final AfterPasswordlessLoginFunction? onAfterLogin,
@@ -65,6 +66,7 @@ final class EmailPasswordlessIdpTestFixture {
     idp = EmailPasswordlessIdp(
       EmailPasswordlessIdpConfig(
         secretHashPepper: 'pepper',
+        secretHashSaltLength: secretHashSaltLength,
         allowSignUp: allowSignUp,
         loginVerificationCodeGenerator: loginVerificationCodeGenerator,
         loginVerificationCodeLifetime: loginVerificationCodeLifetime,

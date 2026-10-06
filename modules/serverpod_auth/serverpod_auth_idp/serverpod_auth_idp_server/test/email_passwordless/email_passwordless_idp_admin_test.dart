@@ -1,6 +1,7 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email_passwordless.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -219,6 +220,162 @@ void main() {
               where: (final t) => t.domain.equals('email_passwordless'),
             ),
             0,
+          );
+        },
+      );
+    },
+  );
+  withServerpod(
+    'Given recorded attempts of a login request that was not completed',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailPasswordlessIdpTestFixture fixture;
+      late UuidValue loginRequestId;
+      const email = 'test@serverpod.dev';
+
+      Future<Map<String, int>> attemptsBySource() async {
+        final attempts = await RateLimitedRequestAttempt.db.find(
+          session,
+          where: (final t) => t.domain.equals('email_passwordless'),
+        );
+
+        return {
+          for (final source in {...attempts.map((final a) => a.source)})
+            source: attempts.where((final a) => a.source == source).length,
+        };
+      }
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailPasswordlessIdpTestFixture();
+
+        loginRequestId = await fixture.idp.startLogin(session, email: email);
+        for (var i = 0; i < 2; i++) {
+          await fixture.idp
+              .finishLogin(
+                session,
+                loginRequestId: loginRequestId,
+                verificationCode: '000000',
+              )
+              .then((final _) {}, onError: (final _) {});
+        }
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test('then all kinds of attempts are recorded.', () async {
+        expect(await attemptsBySource(), {
+          'login_request': 1,
+          'failed_login': 2,
+          'login_verification': 2,
+        });
+      });
+
+      test(
+        'when deleteExpiredLoginAttempts is called after the rate limit windows but before the code lifetime then the verification attempts are kept.',
+        () async {
+          await withClock(
+            Clock.fixed(DateTime.now().add(const Duration(minutes: 6))),
+            () => fixture.idp.admin.deleteExpiredLoginAttempts(session),
+          );
+
+          expect(await attemptsBySource(), {'login_verification': 2});
+        },
+      );
+
+      test(
+        'when deleteExpiredLoginAttempts is called after the code lifetime then no attempts are left.',
+        () async {
+          await withClock(
+            Clock.fixed(DateTime.now().add(const Duration(minutes: 11))),
+            () => fixture.idp.admin.deleteExpiredLoginAttempts(session),
+          );
+
+          expect(await attemptsBySource(), isEmpty);
+        },
+      );
+
+      test(
+        'when deleteLoginAttemptsForEmail is called then the attempts of its pending request are deleted too.',
+        () async {
+          await fixture.idp.admin.deleteLoginAttemptsForEmail(
+            session,
+            email: email,
+          );
+
+          expect(await attemptsBySource(), isEmpty);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given an email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailPasswordlessIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailPasswordlessIdpTestFixture();
+
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test('when findAccount is called then it returns the account.', () async {
+        final account = await fixture.idp.admin.findAccount(
+          session,
+          email: ' TEST@serverpod.dev ',
+        );
+
+        expect(account?.email, email);
+      });
+
+      test(
+        'when findAccount is called for an unknown email then it returns null.',
+        () async {
+          expect(
+            await fixture.idp.admin.findAccount(
+              session,
+              email: 'other@serverpod.dev',
+            ),
+            isNull,
+          );
+        },
+      );
+
+      test(
+        'when deleteAccount is called then the account is deleted.',
+        () async {
+          await fixture.idp.admin.deleteAccount(session, email: email);
+
+          expect(await EmailAccount.db.count(session), 0);
+        },
+      );
+
+      test(
+        'when deleteAccount is called for an unknown email then it throws EmailAccountNotFoundException.',
+        () async {
+          await expectLater(
+            fixture.idp.admin.deleteAccount(
+              session,
+              email: 'other@serverpod.dev',
+            ),
+            throwsA(isA<EmailAccountNotFoundException>()),
           );
         },
       );

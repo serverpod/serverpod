@@ -217,14 +217,88 @@ void main() {
           ]);
         });
 
-        test('then none of the calls fails.', () {
-          expect(results, everyElement(isA<UuidValue>()));
+        test('then at least one call succeeds.', () {
+          expect(results.whereType<UuidValue>(), isNotEmpty);
+        });
+
+        test(
+          'then every call that does not succeed fails with reason resendCooldown, and never returns an ID.',
+          () {
+            final failures = results.where((final r) => r is! UuidValue);
+
+            expect(
+              failures,
+              everyElement(
+                isA<EmailPasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  EmailPasswordlessLoginExceptionReason.resendCooldown,
+                ),
+              ),
+            );
+          },
+        );
+
+        test('then every returned ID belongs to a code that was sent.', () {
+          expect(
+            fixture.signUpCodes.map((final c) => c.loginRequestId).toSet(),
+            results.whereType<UuidValue>().toSet(),
+          );
         });
 
         test('then there is a single login request for the email.', () async {
           final requests = await EmailAccountLoginRequest.db.find(session);
 
           expect(requests, hasLength(1));
+        });
+      });
+
+      group('when the send callback runs', () {
+        late bool senderCalled;
+        Transaction? transactionPassed;
+        late bool requestVisibleToOthers;
+        late bool senderAwaited;
+
+        setUp(() async {
+          senderCalled = false;
+          transactionPassed = null;
+          requestVisibleToOthers = false;
+          senderAwaited = false;
+          fixture = EmailPasswordlessIdpTestFixture(
+            sendSignUpOverride:
+                (
+                  final session, {
+                  required final email,
+                  required final loginRequestId,
+                  required final verificationCode,
+                  required final transaction,
+                }) async {
+                  senderCalled = true;
+                  transactionPassed = transaction;
+                  final request = await EmailAccountLoginRequest.db.findById(
+                    sessionBuilder.build(),
+                    loginRequestId,
+                  );
+                  requestVisibleToOthers = request != null;
+                  await Future<void>.delayed(const Duration(milliseconds: 50));
+                  senderAwaited = true;
+                },
+          );
+
+          await fixture.idp.startLogin(session, email: email);
+        });
+
+        test('then no transaction is passed to it.', () {
+          expect(senderCalled, isTrue);
+          expect(transactionPassed, isNull);
+        });
+
+        test('then the login request has already been committed.', () {
+          expect(requestVisibleToOthers, isTrue);
+        });
+
+        test('then startLogin waits for it to finish.', () {
+          expect(senderAwaited, isTrue);
         });
       });
     },
@@ -295,24 +369,38 @@ void main() {
       });
 
       group('when startLogin is called again for the same email', () {
-        late UuidValue secondLoginRequestId;
+        late Future<UuidValue> secondCall;
 
-        setUp(() async {
-          secondLoginRequestId = await fixture.idp.startLogin(
-            session,
-            email: email,
-          );
+        setUp(() {
+          secondCall = fixture.idp.startLogin(session, email: email);
+          secondCall.ignore();
         });
 
-        test('then it returns the ID of the pending request.', () {
-          expect(secondLoginRequestId, loginRequestId);
-        });
+        test(
+          'then it throws EmailPasswordlessLoginException with reason resendCooldown and returns no ID.',
+          () async {
+            await expectLater(
+              secondCall,
+              throwsA(
+                isA<EmailPasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  EmailPasswordlessLoginExceptionReason.resendCooldown,
+                ),
+              ),
+            );
+          },
+        );
 
-        test('then no new code is sent.', () {
+        test('then no new code is sent.', () async {
+          await secondCall.then((final _) {}, onError: (final _) {});
+
           expect(fixture.signUpCodes, hasLength(1));
         });
 
         test('then the pending request stays valid.', () async {
+          await secondCall.then((final _) {}, onError: (final _) {});
+
           final result = fixture.idp.finishLogin(
             session,
             loginRequestId: loginRequestId,
@@ -320,6 +408,25 @@ void main() {
           );
 
           await expectLater(result, completion(isA<AuthSuccess>()));
+        });
+      });
+
+      group('when startLogin is called many times within the cooldown', () {
+        setUp(() async {
+          for (var i = 0; i < 10; i++) {
+            await fixture.idp
+                .startLogin(session, email: email)
+                .then((final _) {}, onError: (final _) {});
+          }
+        });
+
+        test('then the rejected calls do not use up the rate limit.', () async {
+          final secondLoginRequestId = await withClock(
+            Clock.fixed(DateTime.now().add(resendCooldown * 2)),
+            () => fixture.idp.startLogin(session, email: email),
+          );
+
+          expect(secondLoginRequestId, isNot(loginRequestId));
         });
       });
 
@@ -357,6 +464,66 @@ void main() {
   );
 
   withServerpod(
+    'Given a pending login request and a resend cooldown, with concurrent calls',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailPasswordlessIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailPasswordlessIdpTestFixture(
+          resendCooldown: const Duration(seconds: 60),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when startLogin is called concurrently then exactly one call succeeds, the others get reason resendCooldown, and only one code is sent.',
+        () async {
+          final results = await Future.wait<Object>([
+            for (var i = 0; i < 4; i++)
+              () async {
+                try {
+                  return await fixture.idp.startLogin(
+                    sessionBuilder.build(),
+                    email: email,
+                  );
+                } catch (error) {
+                  return error;
+                }
+              }(),
+          ]);
+
+          final ids = results.whereType<UuidValue>().toList();
+          expect(ids, hasLength(1));
+          expect(
+            results.where((final r) => r is! UuidValue),
+            everyElement(
+              isA<EmailPasswordlessLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailPasswordlessLoginExceptionReason.resendCooldown,
+              ),
+            ),
+          );
+          expect(fixture.signUpCodes.map((final c) => c.loginRequestId), ids);
+          expect(
+            (await EmailAccountLoginRequest.db.find(session)).map(
+              (final r) => r.id,
+            ),
+            ids,
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
     'Given a pending login request that is older than the lifetime',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
@@ -368,7 +535,7 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
         fixture = EmailPasswordlessIdpTestFixture(
-          resendCooldown: const Duration(minutes: 30),
+          resendCooldown: const Duration(minutes: 5),
           loginVerificationCodeLifetime: const Duration(minutes: 10),
         );
 
@@ -380,7 +547,7 @@ void main() {
       });
 
       test(
-        'when startLogin is called then the expired request is replaced even though the resend cooldown has not elapsed.',
+        'when startLogin is called then the expired request is replaced.',
         () async {
           final secondLoginRequestId = await withClock(
             Clock.fixed(DateTime.now().add(const Duration(minutes: 15))),
@@ -453,40 +620,349 @@ void main() {
           );
         });
 
-        test('then no login request is stored for it.', () async {
-          final requests = await EmailAccountLoginRequest.db.find(session);
+        test(
+          'then a decoy request with a stored code hash exists for it, like for the known email.',
+          () async {
+            final requests = await EmailAccountLoginRequest.db.find(
+              session,
+              include: EmailAccountLoginRequest.include(
+                challenge: SecretChallenge.include(),
+              ),
+            );
 
-          expect(requests.map((final r) => r.email), [knownEmail]);
+            expect(
+              requests.map((final r) => r.email),
+              unorderedEquals([knownEmail, unknownEmail]),
+            );
+            final decoy = requests.singleWhere(
+              (final r) => r.id == loginRequestId,
+            );
+            final real = requests.singleWhere(
+              (final r) => r.id == realLoginRequestId,
+            );
+            expect(decoy.challenge!.challengeCodeHash, isNotEmpty);
+            expect(
+              decoy.challenge!.challengeCodeHash.length,
+              real.challenge!.challengeCodeHash.length,
+            );
+          },
+        );
+      });
+
+      group('when the decoy code of an unknown email is guessed correctly', () {
+        late UuidValue loginRequestId;
+        late Future<AuthSuccess> finishFuture;
+
+        setUp(() async {
+          loginRequestId = await fixture.idp.startLogin(
+            session,
+            email: unknownEmail,
+          );
+
+          final request = await EmailAccountLoginRequest.db.findById(
+            session,
+            loginRequestId,
+          );
+          await SecretChallenge.db.updateRow(
+            session,
+            SecretChallenge(
+              id: request!.challengeId,
+              challengeCodeHash: await fixture.idp.utils.hashUtil
+                  .createHashFromString(secret: '654321'),
+            ),
+          );
+
+          finishFuture = fixture.idp.finishLogin(
+            session,
+            loginRequestId: loginRequestId,
+            verificationCode: '654321',
+          );
+          finishFuture.ignore();
+        });
+
+        test('then finishLogin fails with reason invalid.', () async {
+          await expectLater(
+            finishFuture,
+            throwsA(
+              isA<EmailPasswordlessLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailPasswordlessLoginExceptionReason.invalid,
+              ),
+            ),
+          );
+        });
+
+        test('then no account or user is created.', () async {
+          await finishFuture.then((final _) {}, onError: (final _) {});
+
+          expect(
+            await EmailAccount.db.find(
+              session,
+              where: (final t) => t.email.equals(unknownEmail),
+            ),
+            isEmpty,
+          );
+          expect(await AuthUser.db.count(session), 1);
+        });
+
+        test('then the decoy request is consumed.', () async {
+          await finishFuture.then((final _) {}, onError: (final _) {});
+
+          expect(
+            await EmailAccountLoginRequest.db.findById(session, loginRequestId),
+            isNull,
+          );
         });
       });
 
       group('when startLogin is repeated within the resend cooldown', () {
-        late List<UuidValue> unknownEmailIds;
-        late List<UuidValue> knownEmailIds;
-
-        setUp(() async {
-          unknownEmailIds = [
-            for (var i = 0; i < 3; i++)
-              await fixture.idp.startLogin(session, email: unknownEmail),
-          ];
-          knownEmailIds = [
-            for (var i = 0; i < 3; i++)
-              await fixture.idp.startLogin(session, email: knownEmail),
-          ];
-        });
+        Future<List<Object>> repeated(final String email) async => [
+          for (var i = 0; i < 3; i++)
+            await fixture.idp
+                .startLogin(session, email: email)
+                .then<Object>(
+                  (final id) => id,
+                  onError: (final Object e) => e,
+                ),
+        ];
 
         test(
-          'then known and unknown emails alike get a new ID for every call, to not leak that the email has a pending request.',
-          () {
-            expect(unknownEmailIds.toSet(), hasLength(3));
-            expect(knownEmailIds.toSet(), hasLength(3));
+          'then known and unknown emails alike get the first ID and then reason resendCooldown, and never a pending ID again.',
+          () async {
+            final unknownResults = await repeated(unknownEmail);
+            final knownResults = await repeated(knownEmail);
+
+            for (final results in [unknownResults, knownResults]) {
+              expect(results.first, isA<UuidValue>());
+              expect(
+                results.skip(1),
+                everyElement(
+                  isA<EmailPasswordlessLoginException>().having(
+                    (final e) => e.reason,
+                    'reason',
+                    EmailPasswordlessLoginExceptionReason.resendCooldown,
+                  ),
+                ),
+              );
+            }
           },
         );
 
-        test('then the code is only sent once.', () {
+        test('then the code is only sent once, for the known email.', () async {
+          await repeated(unknownEmail);
+          await repeated(knownEmail);
+
           expect(fixture.signInCodes, hasLength(1));
+          expect(fixture.signUpCodes, isEmpty);
         });
       });
     },
   );
+
+  for (final (name, resendCooldown) in [
+    ('without a resend cooldown', Duration.zero),
+    ('with a resend cooldown', const Duration(seconds: 60)),
+  ]) {
+    withServerpod(
+      'Given sign-up is not allowed, $name',
+      rollbackDatabase: RollbackDatabase.disabled,
+      (final sessionBuilder, final endpoints) {
+        late Session session;
+        late EmailPasswordlessIdpTestFixture fixture;
+        const knownEmail = 'known@serverpod.dev';
+        const unknownEmail = 'unknown@serverpod.dev';
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          fixture = EmailPasswordlessIdpTestFixture(
+            allowSignUp: false,
+            resendCooldown: resendCooldown,
+          );
+
+          final authUser = await fixture.authUsers.create(session);
+          await fixture.createEmailAccount(
+            session,
+            authUserId: authUser.id,
+            email: knownEmail,
+          );
+        });
+
+        tearDown(() async {
+          await fixture.tearDown(session);
+        });
+
+        Future<String> outcome(final Future<Object?> Function() call) async {
+          try {
+            final result = await call();
+            return result is UuidValue ? 'id(v${result.version})' : 'ok';
+          } on EmailPasswordlessLoginException catch (e) {
+            return e.reason.name;
+          }
+        }
+
+        Future<List<String>> sequence(final String email) async {
+          final outcomes = <String>[];
+          var id = UuidValue.fromString(const Uuid().v7());
+
+          Future<void> start() async {
+            outcomes.add(
+              await outcome(
+                () async => id = await fixture.idp.startLogin(
+                  session,
+                  email: email,
+                ),
+              ),
+            );
+          }
+
+          Future<void> wrongFinish() async {
+            outcomes.add(
+              await outcome(
+                () => fixture.idp.finishLogin(
+                  session,
+                  loginRequestId: id,
+                  verificationCode: '000000',
+                ),
+              ),
+            );
+          }
+
+          await start();
+          for (var i = 0; i < 4; i++) {
+            await wrongFinish();
+          }
+          await start();
+          for (var i = 0; i < 3; i++) {
+            await wrongFinish();
+          }
+
+          return outcomes;
+        }
+
+        test(
+          'when startLogin, 4 wrong finishLogin, startLogin and 3 wrong finishLogin are called then known and unknown emails have identical outcomes.',
+          () async {
+            final unknownOutcomes = await sequence(unknownEmail);
+            final knownOutcomes = await sequence(knownEmail);
+
+            expect(unknownOutcomes, knownOutcomes);
+            expect(knownOutcomes.first, startsWith('id(v'));
+            expect(
+              knownOutcomes.sublist(1, 5),
+              ['invalid', 'invalid', 'invalid', 'tooManyAttempts'],
+            );
+          },
+        );
+
+        test(
+          'when the sequence has run then the only difference is that a code is sent for the known email.',
+          () async {
+            await sequence(unknownEmail);
+            expect(fixture.signInCodes, isEmpty);
+            expect(fixture.signUpCodes, isEmpty);
+
+            await sequence(knownEmail);
+            expect(fixture.signInCodes, isNotEmpty);
+          },
+        );
+      },
+    );
+  }
+
+  group('Given an invalid configuration', () {
+    EmailPasswordlessIdpTestFixture build({
+      final Duration loginVerificationCodeLifetime = const Duration(
+        minutes: 10,
+      ),
+      final int loginVerificationCodeAllowedAttempts = 3,
+      final Duration resendCooldown = const Duration(seconds: 60),
+      final int secretHashSaltLength = 16,
+      final RateLimit failedLoginRateLimit = const RateLimit(
+        maxAttempts: 5,
+        timeframe: Duration(minutes: 5),
+      ),
+    }) => EmailPasswordlessIdpTestFixture(
+      loginVerificationCodeLifetime: loginVerificationCodeLifetime,
+      loginVerificationCodeAllowedAttempts:
+          loginVerificationCodeAllowedAttempts,
+      resendCooldown: resendCooldown,
+      secretHashSaltLength: secretHashSaltLength,
+      failedLoginRateLimit: failedLoginRateLimit,
+    );
+
+    test('when the default values are used then it is accepted.', () {
+      expect(build, returnsNormally);
+    });
+
+    test(
+      'when the allowed attempts are 0 then it throws an ArgumentError.',
+      () {
+        expect(
+          () => build(loginVerificationCodeAllowedAttempts: 0),
+          throwsArgumentError,
+        );
+      },
+    );
+
+    test('when the lifetime is zero then it throws an ArgumentError.', () {
+      expect(
+        () => build(loginVerificationCodeLifetime: Duration.zero),
+        throwsArgumentError,
+      );
+    });
+
+    test(
+      'when the resend cooldown is negative then it throws an ArgumentError.',
+      () {
+        expect(
+          () => build(resendCooldown: const Duration(seconds: -1)),
+          throwsArgumentError,
+        );
+      },
+    );
+
+    test(
+      'when the resend cooldown is zero then it is accepted.',
+      () {
+        expect(() => build(resendCooldown: Duration.zero), returnsNormally);
+      },
+    );
+
+    test(
+      'when the resend cooldown is not shorter than the lifetime then it throws an ArgumentError.',
+      () {
+        expect(
+          () => build(resendCooldown: const Duration(minutes: 10)),
+          throwsArgumentError,
+        );
+      },
+    );
+
+    test(
+      'when the salt length is below 8 then it throws an ArgumentError.',
+      () {
+        expect(
+          () => build(secretHashSaltLength: 7),
+          throwsArgumentError,
+        );
+        expect(() => build(secretHashSaltLength: 8), returnsNormally);
+      },
+    );
+
+    test(
+      'when a rate limit allows no attempts then it throws an ArgumentError.',
+      () {
+        expect(
+          () => build(
+            failedLoginRateLimit: const RateLimit(
+              maxAttempts: 0,
+              timeframe: Duration(minutes: 5),
+            ),
+          ),
+          throwsArgumentError,
+        );
+      },
+    );
+  });
 }
