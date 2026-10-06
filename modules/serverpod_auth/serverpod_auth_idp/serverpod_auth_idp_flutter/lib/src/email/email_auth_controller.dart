@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import '../common/email_code_form_controller.dart';
 import '../common/widgets/password_requirements/requirements.dart';
 import 'email_auth_exceptions.dart';
 
@@ -71,7 +72,8 @@ enum EmailFlowScreen {
 ///   // Can use `controller.state` to access the current state.
 /// });
 /// ```
-class EmailAuthController extends ChangeNotifier {
+class EmailAuthController extends ChangeNotifier
+    implements EmailCodeFormController {
   /// The Serverpod client instance.
   final ServerpodClientShared client;
 
@@ -101,13 +103,13 @@ class EmailAuthController extends ChangeNotifier {
   /// defined at [PasswordRequirement.defaultRequirements].
   final List<PasswordRequirement> passwordRequirements;
 
-  /// Text controller for email input.
+  @override
   late final emailController = TextEditingController();
 
   /// Text controller for password input.
   late final passwordController = TextEditingController();
 
-  /// Text controller for verification code input.
+  @override
   late final verificationCodeController = TextEditingController();
 
   /// Notifier for terms and conditions / privacy policy acceptance checkbox.
@@ -277,16 +279,16 @@ class EmailAuthController extends ChangeNotifier {
     _setState(_state, notify: notify);
   }
 
-  /// Whether the controller is currently processing a request.
+  @override
   bool get isLoading => _state == EmailAuthState.loading;
 
   /// Whether the user is authenticated.
   bool get isAuthenticated => client.auth.isAuthenticated;
 
-  /// The current error message, if any.
+  @override
   String? get errorMessage => _error?.toString();
 
-  /// The current error, if any.
+  @override
   Object? get error => _state == EmailAuthState.error ? _error : null;
   Object? _error;
 
@@ -438,6 +440,7 @@ class EmailAuthController extends ChangeNotifier {
   /// Define the resend code according to the current screen (registration or
   /// password reset verification). Throws an error if the current screen is not
   /// a verification screen.
+  @override
   Future<void> resendVerificationCode() async {
     await switch (_currentScreen) {
       EmailFlowScreen.verifyRegistration => startRegistration(),

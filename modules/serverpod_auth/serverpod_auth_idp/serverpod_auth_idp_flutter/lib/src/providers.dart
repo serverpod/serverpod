@@ -28,6 +28,7 @@ class AvailableIdps {
   int get count => [
     hasAnonymous,
     hasEmail,
+    hasEmailPasswordless,
     hasGoogle,
     hasApple,
     hasFirebase,
@@ -41,6 +42,9 @@ class AvailableIdps {
 
   /// Whether the email authentication provider is available.
   bool get hasEmail => has<EndpointEmailIdpBase>();
+
+  /// Whether the passwordless email authentication provider is available.
+  bool get hasEmailPasswordless => has<EndpointEmailPasswordlessIdpBase>();
 
   /// Whether the Google authentication provider is available.
   bool get hasGoogle => has<EndpointGoogleIdpBase>();
