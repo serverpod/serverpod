@@ -1,3 +1,17 @@
+## 4.0.4
+
+- fix: Adds `serverpod clean` command to delete stale cached server kernels.
+- fix: Quotes column in composites foreign keys separately. ([@mackings](https://github.com/mackings))
+- fix: Validates `SetNull` and `SetDefault` relation actions against the foreign key column type.
+- fix: Stops tearing down Flutter apps on slow heartbeat replies.
+- fix: Resets the Redis connecting flag when the error handler throws.
+- fix: Times out method stream connection when the WebSocket upgrade is never answered.
+- fix: Restores two-way table comparison in the database integrity check. ([@BiAksoy](https://github.com/BiAksoy))
+- fix: Ignores commented workspace declarations during project discovery. ([@donavonguyot](https://github.com/donavonguyot))
+- fix: Invalidates the cached kernel when local dependencies change.
+- chore: Stops generating `CLAUDE.md` in favor of `AGENTS.md`.
+- chore: Redesigns the serverpod create TUI as sequential prompts with IDE/agent selection first.
+
 ## 4.0.3
 
 - fix: Prints the reason why `serverpod start` stopped after the TUI ends with an error.
