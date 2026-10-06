@@ -14,6 +14,7 @@ import 'package:serverpod_tui/serverpod_tui.dart' show CompletedOperation;
 /// goes silent past [reconnectDeadline], and 0 on Ctrl+C, which only detaches.
 Future<int> attachWithLogStream(
   String socketPath, {
+  bool ownsRunner = false,
   IOSink? out,
   Stream<ProcessSignal>? interrupts,
   Duration? waitForRunner,

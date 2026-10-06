@@ -670,7 +670,7 @@ void main() {
 
     test(
       'when its socket starts answering during the wait, '
-      'then a caller gets that runner',
+      'then a caller gets that runner as one it did not spawn',
       () async {
         final ensured = ensureRunner(
           config: config,
@@ -688,7 +688,9 @@ void main() {
         final socket = RunnerSocketServer(serverDir: serverDir);
         await socket.start();
         addTearDown(socket.close);
-        expect((await ensured).pid, 4242);
+        final (:manifest, :spawned) = await ensured;
+        expect(manifest.pid, 4242);
+        expect(spawned, isFalse);
       },
     );
 

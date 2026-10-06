@@ -87,18 +87,28 @@ class AttachCommand extends ServerpodCommand<AttachOption> {
 
 /// Renders the runner at [socketPath] and returns the exit code to leave with.
 ///
-/// [waitForRunner] bounds retries after a spawn. Without [onUnreachable], an
-/// unreachable runner is logged and the command exits.
+/// [ownsRunner] is whether this invocation spawned the runner, and so stops it
+/// on leaving. [waitForRunner] bounds retries after a spawn. Without
+/// [onUnreachable], an unreachable runner is logged and the command exits.
 Future<int> attachTo(
   String socketPath, {
   required bool useTui,
+  bool ownsRunner = false,
   Duration? waitForRunner,
   Future<Never> Function(RunnerUnreachableException e)? onUnreachable,
 }) async {
   try {
     return useTui
-        ? await attachWithTui(socketPath, waitForRunner: waitForRunner)
-        : await attachWithLogStream(socketPath, waitForRunner: waitForRunner);
+        ? await attachWithTui(
+            socketPath,
+            ownsRunner: ownsRunner,
+            waitForRunner: waitForRunner,
+          )
+        : await attachWithLogStream(
+            socketPath,
+            ownsRunner: ownsRunner,
+            waitForRunner: waitForRunner,
+          );
   } on RunnerUnreachableException catch (e) {
     if (onUnreachable != null) await onUnreachable(e);
     log.error('$e');
@@ -107,7 +117,11 @@ Future<int> attachTo(
 }
 
 /// Renders the runner in the terminal UI and returns the exit code.
-Future<int> attachWithTui(String socketPath, {Duration? waitForRunner}) async {
+Future<int> attachWithTui(
+  String socketPath, {
+  bool ownsRunner = false,
+  Duration? waitForRunner,
+}) async {
   final holder = StartAppStateHolder(ServerWatchState());
   final client = RunnerClient(
     socketPath: socketPath,

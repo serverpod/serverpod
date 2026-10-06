@@ -129,7 +129,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
   ) async {
     final attaching = commandConfig.value(StartOption.attach);
     final useTui = commandConfig.value(StartOption.tui) && terminalSupportsTui;
-    final (:serverDir, :manifest) = await bringUpRunner(
+    final (:serverDir, :manifest, :spawned) = await bringUpRunner(
       directory: commandConfig.value(StartOption.directory),
       asked: RunnerConfig(
         watch: commandConfig.value(StartOption.watch),
@@ -154,6 +154,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
         projectId: manifest.projectId,
       ),
       useTui: useTui,
+      ownsRunner: spawned,
       waitForRunner: const Duration(seconds: 5),
       onUnreachable: (e) => explainUnreachableRunner(serverDir, manifest, e),
     );
@@ -208,7 +209,8 @@ Future<GeneratorConfig> loadRunnerProjectConfig({
 
 /// Loads the project under [directory] and brings its runner up per [asked],
 /// forwarding what [global] says about verbosity and interactivity.
-Future<({String serverDir, RunnerManifest manifest})> bringUpRunner({
+Future<({String serverDir, RunnerManifest manifest, bool spawned})>
+bringUpRunner({
   required String directory,
   required RunnerConfig asked,
   required bool useTui,
@@ -219,14 +221,14 @@ Future<({String serverDir, RunnerManifest manifest})> bringUpRunner({
     interactive: global.optionalValue(GlobalOption.interactive),
   );
   final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-  final manifest = await ensureRunner(
+  final (:manifest, :spawned) = await ensureRunner(
     config: config,
     serverDir: serverDir,
     asked: asked,
     useTui: useTui,
     globalArgs: runnerServeGlobalArgs(global),
   );
-  return (serverDir: serverDir, manifest: manifest);
+  return (serverDir: serverDir, manifest: manifest, spawned: spawned);
 }
 
 /// Waits for the stack behind [manifest] and prints how to reach it.
@@ -235,9 +237,10 @@ Future<void> reportStackUp(String serverDir, RunnerManifest manifest) async =>
 
 /// Returns the manifest of the runner serving [serverDir], spawning one.
 ///
+/// `spawned` is whether this call started that runner, not one found running.
 /// Waits up to [lockWait] for a runner that holds the lock to answer or stop.
 /// Exits for a runner with options other than [asked], or one still stopping.
-Future<RunnerManifest> ensureRunner({
+Future<({RunnerManifest manifest, bool spawned})> ensureRunner({
   required GeneratorConfig config,
   required String serverDir,
   required RunnerConfig asked,
@@ -287,7 +290,7 @@ Future<RunnerManifest> ensureRunner({
         );
         throw ExitException.error();
       }
-      return manifest;
+      return (manifest: manifest, spawned: false);
 
     case NoRunner():
       // The runner would report this only in its log, and exit with zero.
@@ -300,21 +303,24 @@ Future<RunnerManifest> ensureRunner({
         throw ExitException(0);
       }
 
-      return await _spawnRunner(
-            config: config,
-            serverDir: serverDir,
-            asked: asked,
-            globalArgs: globalArgs,
-            useTui: useTui,
-          ) ??
-          await ensureRunner(
-            config: config,
-            serverDir: serverDir,
-            asked: asked,
-            useTui: useTui,
-            globalArgs: globalArgs,
-            lockWait: lockWait,
-          );
+      final spawned = await _spawnRunner(
+        config: config,
+        serverDir: serverDir,
+        asked: asked,
+        globalArgs: globalArgs,
+        useTui: useTui,
+      );
+      if (spawned != null) return (manifest: spawned, spawned: true);
+
+      // Another start's runner took the lock, so this call resolves that one.
+      return ensureRunner(
+        config: config,
+        serverDir: serverDir,
+        asked: asked,
+        useTui: useTui,
+        globalArgs: globalArgs,
+        lockWait: lockWait,
+      );
   }
 }
 
