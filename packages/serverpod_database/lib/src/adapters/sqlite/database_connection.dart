@@ -265,7 +265,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   SqliteBatchStatement _parameterizedUpdate(
     TableRow row,
     List<Column>? columns, {
-    bool noReturn = true,
+    required bool noReturn,
   }) {
     final table = row.table;
     final selected = (columns ?? table.managedColumns).toSet();
