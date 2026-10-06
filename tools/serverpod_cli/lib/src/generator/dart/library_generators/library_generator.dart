@@ -7,6 +7,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/protocol_deserialization_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/protocol_definition_extension.dart';
@@ -163,6 +164,9 @@ class LibraryGenerator {
     library.ignoreForFile.add('dead_code');
 
     var protocol = ClassBuilder();
+    final deserializationGenerator = ProtocolDeserializationGenerator(
+      runtimeUrl: serverpodUrl(serverCode),
+    );
 
     var nonModelStreamTypes = protocolDefinition
         .getNonModelOrPrimitiveStreamTypes(modules: config.modules);
@@ -177,6 +181,13 @@ class LibraryGenerator {
 
     protocol
       ..name = 'Protocol'
+      ..implements.add(
+        deserializationGenerator.provider(
+          databaseRuntimeUrl: shouldExtendDatabaseSerializationManager
+              ? serverpodDatabaseRuntimeUrl(serverCode)
+              : null,
+        ),
+      )
       ..extend = shouldExtendDatabaseSerializationManager
           ? refer(
               'DatabaseSerializationManager',
@@ -230,6 +241,82 @@ class LibraryGenerator {
         .expand((m) => m.fields)
         .where((f) => f.shouldIncludeField(serverCode))
         .distinct();
+
+    final deserializers =
+        <Expression, Code>{
+          for (var classInfo in unsealedModels)
+            refer(
+              classInfo.className,
+              TypeDefinition.getRef(classInfo),
+            ): Code.scope(
+              (a) =>
+                  '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
+                  '.fromJson(data) as T',
+            ),
+          for (var classInfo in unsealedModels)
+            refer('getType', serverpodUrl(serverCode)).call([], {}, [
+              TypeReference(
+                (b) => b
+                  ..symbol = classInfo.className
+                  ..url = TypeDefinition.getRef(classInfo)
+                  ..isNullable = true,
+              ),
+            ]): Code.scope(
+              (a) =>
+                  '(data!=null?'
+                  '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
+                  '.fromJson(data) :null) as T',
+            ),
+        }..addEntries([
+          // Generate deserialization for fields of models.
+          for (var field in allFieldsToGenerateSerialization)
+            ...field.type.generateDeserialization(
+              serverCode,
+              config: config,
+            ),
+          for (var type in allTypesToDeserialize)
+            ...type.generateDeserialization(
+              serverCode,
+              config: config,
+            ),
+          // Generate deserialization for extra classes.
+          for (var extraClass in config.extraClasses)
+            ...extraClass.generateDeserialization(
+              serverCode,
+              config: config,
+            ),
+          // Generate deserialization for extra classes as nullables.
+          for (var extraClass in config.extraClasses)
+            ...extraClass.asNullable.generateDeserialization(
+              serverCode,
+              config: config,
+            ),
+          // Generate deserialization for containers used in streams
+          for (var type in nonModelStreamTypes)
+            ...type.generateDeserialization(serverCode, config: config),
+        ]);
+    final deserializationModules = [
+      for (var module in config.modules)
+        refer('Protocol', module.dartImportUrl(serverCode)).call([]),
+      if (!sharedPackage)
+        for (var packageName in config.sharedModelsSourcePathsParts.keys)
+          refer(
+            'Protocol',
+            packageName == 'serverpod_database' && config.name != 'serverpod'
+                ? serverpodDatabaseUrl(serverCode)
+                : 'package:$packageName/$packageName.dart',
+          ).call([]),
+      if (config.name != 'serverpod' &&
+          (serverCode || config.dartClientDependsOnServiceClient))
+        refer('Protocol', serverpodServiceClientUrl(serverCode)).call([]),
+    ];
+
+    protocol.methods.add(
+      deserializationGenerator.metadata(
+        types: deserializers.keys,
+        modules: deserializationModules,
+      ),
+    );
 
     protocol.methods.addAll([
       if (shouldExtendDatabaseSerializationManager)
@@ -358,88 +445,17 @@ class LibraryGenerator {
             }
           ''',
             ),
-            ...(<Expression, Code>{
-                  for (var classInfo in unsealedModels)
-                    refer(
-                      classInfo.className,
-                      TypeDefinition.getRef(classInfo),
-                    ): Code.scope(
-                      (a) =>
-                          '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
-                          '.fromJson(data) as T',
-                    ),
-                  for (var classInfo in unsealedModels)
-                    refer('getType', serverpodUrl(serverCode)).call([], {}, [
-                      TypeReference(
-                        (b) => b
-                          ..symbol = classInfo.className
-                          ..url = TypeDefinition.getRef(classInfo)
-                          ..isNullable = true,
-                      ),
-                    ]): Code.scope(
-                      (a) =>
-                          '(data!=null?'
-                          '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
-                          '.fromJson(data) :null) as T',
-                    ),
-                }..addEntries([
-                  // Generate deserialization for fields of models.
-                  for (var field in allFieldsToGenerateSerialization)
-                    ...field.type.generateDeserialization(
-                      serverCode,
-                      config: config,
-                    ),
-                  for (var type in allTypesToDeserialize)
-                    ...type.generateDeserialization(
-                      serverCode,
-                      config: config,
-                    ),
-                  // Generate deserialization for extra classes.
-                  for (var extraClass in config.extraClasses)
-                    ...extraClass.generateDeserialization(
-                      serverCode,
-                      config: config,
-                    ),
-                  // Generate deserialization for extra classes as nullables.
-                  for (var extraClass in config.extraClasses)
-                    ...extraClass.asNullable.generateDeserialization(
-                      serverCode,
-                      config: config,
-                    ),
-                  // Generate deserialization for containers used in streams
-                  for (var type in nonModelStreamTypes)
-                    ...type.generateDeserialization(serverCode, config: config),
-                ]))
-                .entries
-                .map(
-                  (e) => Block.of([
-                    const Code('if(t=='),
-                    e.key.code,
-                    const Code('){return '),
-                    e.value,
-                    const Code(';}'),
-                  ]),
-                ),
-            for (var module in config.modules)
-              Code.scope(
-                (a) =>
-                    'try{return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserialize<T>(data,t);}'
-                    'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}',
-              ),
-            if (!sharedPackage)
-              for (var packageName in config.sharedModelsSourcePathsParts.keys)
-                Code.scope(
-                  (a) =>
-                      'try{return ${a(refer('Protocol', packageName == 'serverpod_database' && config.name != 'serverpod' ? serverpodDatabaseUrl(serverCode) : 'package:$packageName/$packageName.dart'))}().deserialize<T>(data,t);}'
-                      'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}',
-                ),
-            if (config.name != 'serverpod' &&
-                (serverCode || config.dartClientDependsOnServiceClient))
-              Code.scope(
-                (a) =>
-                    'try{return ${a(refer('Protocol', serverpodServiceClientUrl(serverCode)))}().deserialize<T>(data,t);}'
-                    'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}',
-              ),
+            ...deserializers.entries.map(
+              (e) => Block.of([
+                const Code('if(t=='),
+                e.key.code,
+                const Code('){return '),
+                e.value,
+                const Code(';}'),
+              ]),
+            ),
+            if (deserializationModules.isNotEmpty)
+              deserializationGenerator.moduleFallback(),
             const Code('return super.deserialize<T>(data,t);'),
           ]),
       ),
