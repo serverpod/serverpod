@@ -31,7 +31,9 @@ class CleanCommand extends ServerpodCommand<CleanOption> {
   @override
   final description =
       'Delete the cached server build so the next `serverpod start` '
-      'recompiles from scratch.';
+      'recompiles from scratch.\n\n'
+      'Only needed when `serverpod start` keeps reporting compilation errors '
+      'that have already been fixed, even after restarting it.';
 
   CleanCommand() : super(options: CleanOption.values);
 
