@@ -19,3 +19,10 @@ abstract class DatabaseSerializationManager extends SerializationManager {
   /// [DatabaseAnalyzerExtensions.getTargetTableDefinitions].
   List<TableDefinition> getTargetTableDefinitions();
 }
+
+/// Optional typed routing for generated database protocols.
+///
+/// Keeping the database contract in this interface preserves access to table
+/// methods when Dart infers a common type for different database protocols.
+abstract interface class DatabaseProtocolDeserializationProvider
+    implements DatabaseSerializationManager, ProtocolDeserializationProvider {}

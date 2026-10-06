@@ -103,7 +103,8 @@ export 'providers/passkey/models/passkey_login_request.dart';
 export 'providers/passkey/models/passkey_public_key_not_found_exception.dart';
 export 'providers/passkey/models/passkey_registration_request.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -111,6 +112,87 @@ class Protocol extends _is.DatabaseSerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_is.SerializationManager> _hostProtocols = {};
+
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_iddjx2hh.RateLimitedRequestAttempt>,
+          _is.getType<_ihjuvfpt.SecretChallenge>,
+          _is.getType<_i5yjjpde.AnonymousAccount>,
+          _is.getType<_ite257iv.AnonymousAccountBlockedException>,
+          _is.getType<_ig3ph7nw.AnonymousAccountBlockedExceptionReason>,
+          _is.getType<_i9aj4p8a.AppleAccount>,
+          _is.getType<_i047o257.EmailAccount>,
+          _is.getType<_iouphhkf.EmailAccountPasswordResetRequest>,
+          _is.getType<_iaib0xb9.EmailAccountRequest>,
+          _is.getType<_ij1yj4f1.EmailAccountLoginException>,
+          _is.getType<_ihd5znj2.EmailAccountLoginExceptionReason>,
+          _is.getType<_i7yyr103.EmailAccountPasswordResetException>,
+          _is.getType<_io8tbstn.EmailAccountPasswordResetExceptionReason>,
+          _is.getType<_iqtw285f.EmailAccountRequestException>,
+          _is.getType<_isgeino8.EmailAccountRequestExceptionReason>,
+          _is.getType<_i92zrjf0.FacebookAccessTokenVerificationException>,
+          _is.getType<_ivl5gkpe.FacebookAccount>,
+          _is.getType<_i923yrzc.FirebaseAccount>,
+          _is.getType<_imswdwet.FirebaseEmailNotVerifiedException>,
+          _is.getType<_i14hfyiz.FirebaseIdTokenVerificationException>,
+          _is.getType<_i8u0zfwn.GitHubAccessTokenVerificationException>,
+          _is.getType<_i3l39it4.GitHubAccount>,
+          _is.getType<_inlwg89o.GoogleAccount>,
+          _is.getType<_iyz9kvht.GoogleIdTokenVerificationException>,
+          _is.getType<_i0bj371b.MicrosoftAccessTokenVerificationException>,
+          _is.getType<_i8aemsss.MicrosoftAccount>,
+          _is.getType<_iha3dd74.PasskeyAccount>,
+          _is.getType<_ini0eg2j.PasskeyChallenge>,
+          _is.getType<_ihzslz1a.PasskeyChallengeExpiredException>,
+          _is.getType<_ihzssrx9.PasskeyChallengeNotFoundException>,
+          _is.getType<_itcmwg9u.PasskeyLoginRequest>,
+          _is.getType<_isvo2sb5.PasskeyPublicKeyNotFoundException>,
+          _is.getType<_izjoggd8.PasskeyRegistrationRequest>,
+          _is.getType<_iddjx2hh.RateLimitedRequestAttempt?>,
+          _is.getType<_ihjuvfpt.SecretChallenge?>,
+          _is.getType<_i5yjjpde.AnonymousAccount?>,
+          _is.getType<_ite257iv.AnonymousAccountBlockedException?>,
+          _is.getType<_ig3ph7nw.AnonymousAccountBlockedExceptionReason?>,
+          _is.getType<_i9aj4p8a.AppleAccount?>,
+          _is.getType<_i047o257.EmailAccount?>,
+          _is.getType<_iouphhkf.EmailAccountPasswordResetRequest?>,
+          _is.getType<_iaib0xb9.EmailAccountRequest?>,
+          _is.getType<_ij1yj4f1.EmailAccountLoginException?>,
+          _is.getType<_ihd5znj2.EmailAccountLoginExceptionReason?>,
+          _is.getType<_i7yyr103.EmailAccountPasswordResetException?>,
+          _is.getType<_io8tbstn.EmailAccountPasswordResetExceptionReason?>,
+          _is.getType<_iqtw285f.EmailAccountRequestException?>,
+          _is.getType<_isgeino8.EmailAccountRequestExceptionReason?>,
+          _is.getType<_i92zrjf0.FacebookAccessTokenVerificationException?>,
+          _is.getType<_ivl5gkpe.FacebookAccount?>,
+          _is.getType<_i923yrzc.FirebaseAccount?>,
+          _is.getType<_imswdwet.FirebaseEmailNotVerifiedException?>,
+          _is.getType<_i14hfyiz.FirebaseIdTokenVerificationException?>,
+          _is.getType<_i8u0zfwn.GitHubAccessTokenVerificationException?>,
+          _is.getType<_i3l39it4.GitHubAccount?>,
+          _is.getType<_inlwg89o.GoogleAccount?>,
+          _is.getType<_iyz9kvht.GoogleIdTokenVerificationException?>,
+          _is.getType<_i0bj371b.MicrosoftAccessTokenVerificationException?>,
+          _is.getType<_i8aemsss.MicrosoftAccount?>,
+          _is.getType<_iha3dd74.PasskeyAccount?>,
+          _is.getType<_ini0eg2j.PasskeyChallenge?>,
+          _is.getType<_ihzslz1a.PasskeyChallengeExpiredException?>,
+          _is.getType<_ihzssrx9.PasskeyChallengeNotFoundException?>,
+          _is.getType<_itcmwg9u.PasskeyLoginRequest?>,
+          _is.getType<_isvo2sb5.PasskeyPublicKeyNotFoundException?>,
+          _is.getType<_izjoggd8.PasskeyRegistrationRequest?>,
+          _is.getType<Map<String, String>>,
+          _is.getType<Map<String, String>?>,
+          _is.getType<({_idt.ByteData challenge, _is.UuidValue id})>,
+        ],
+        modules: const [
+          _iacs.Protocol.new,
+          _isp.Protocol.new,
+        ],
+      );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
     _isp.TableDefinition(
@@ -1415,12 +1497,15 @@ class Protocol extends _is.DatabaseSerializationManager {
           )
           as T;
     }
-    try {
-      return _iacs.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 

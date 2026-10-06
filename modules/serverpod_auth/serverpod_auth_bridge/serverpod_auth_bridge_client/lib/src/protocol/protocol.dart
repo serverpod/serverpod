@@ -26,7 +26,8 @@ export 'legacy_user_info.dart';
 export 'legacy_user_settings_config.dart';
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _isc.SerializationManager
+    implements _isc.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -34,6 +35,27 @@ class Protocol extends _isc.SerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_isc.SerializationManager> _hostProtocols = {};
+
+  @override
+  _isc.ProtocolDeserialization get deserializationMetadata =>
+      _isc.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _isc.getType<_ijl7odiy.LegacyAuthenticationFailReason>,
+          _isc.getType<_i1vkno9i.LegacyAuthenticationResponse>,
+          _isc.getType<_izh8x5we.LegacyUserInfo>,
+          _isc.getType<_iivi3sn7.LegacyUserSettingsConfig>,
+          _isc.getType<_ijl7odiy.LegacyAuthenticationFailReason?>,
+          _isc.getType<_i1vkno9i.LegacyAuthenticationResponse?>,
+          _isc.getType<_izh8x5we.LegacyUserInfo?>,
+          _isc.getType<_iivi3sn7.LegacyUserSettingsConfig?>,
+          _isc.getType<List<String>>,
+        ],
+        modules: const [
+          _iacc.Protocol.new,
+          _iaic.Protocol.new,
+        ],
+      );
 
   void registerHostProtocol(
     String projectName,
@@ -108,12 +130,15 @@ class Protocol extends _isc.SerializationManager {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    try {
-      return _iacc.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _iaic.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 

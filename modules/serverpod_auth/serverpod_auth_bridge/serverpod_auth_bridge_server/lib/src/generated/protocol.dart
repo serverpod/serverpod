@@ -32,7 +32,8 @@ export 'legacy_session.dart';
 export 'legacy_user_info.dart';
 export 'legacy_user_settings_config.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -40,6 +41,35 @@ class Protocol extends _is.DatabaseSerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_is.SerializationManager> _hostProtocols = {};
+
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_ijl7odiy.LegacyAuthenticationFailReason>,
+          _is.getType<_i1vkno9i.LegacyAuthenticationResponse>,
+          _is.getType<_isu9lcrg.LegacyEmailPassword>,
+          _is.getType<_i552shl7.LegacyExternalUserIdentifier>,
+          _is.getType<_i4848vr5.LegacySession>,
+          _is.getType<_izh8x5we.LegacyUserInfo>,
+          _is.getType<_iivi3sn7.LegacyUserSettingsConfig>,
+          _is.getType<_ijl7odiy.LegacyAuthenticationFailReason?>,
+          _is.getType<_i1vkno9i.LegacyAuthenticationResponse?>,
+          _is.getType<_isu9lcrg.LegacyEmailPassword?>,
+          _is.getType<_i552shl7.LegacyExternalUserIdentifier?>,
+          _is.getType<_i4848vr5.LegacySession?>,
+          _is.getType<_izh8x5we.LegacyUserInfo?>,
+          _is.getType<_iivi3sn7.LegacyUserSettingsConfig?>,
+          _is.getType<Set<String>>,
+          _is.getType<List<String>>,
+        ],
+        modules: const [
+          _iacs.Protocol.new,
+          _iais.Protocol.new,
+          _isp.Protocol.new,
+        ],
+      );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
     _isp.TableDefinition(
@@ -310,15 +340,15 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    try {
-      return _iacs.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _iais.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 

@@ -18,7 +18,8 @@ import 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module
 export 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
     hide Protocol;
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -26,6 +27,17 @@ class Protocol extends _is.DatabaseSerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_is.SerializationManager> _hostProtocols = {};
+
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [],
+        modules: const [
+          _ivdm85cg.Protocol.new,
+          _isp.Protocol.new,
+        ],
+      );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
     ..._ivdm85cg.Protocol() is _is.DatabaseSerializationManager
@@ -72,12 +84,15 @@ class Protocol extends _is.DatabaseSerializationManager {
       }
     }
 
-    try {
-      return _ivdm85cg.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 
