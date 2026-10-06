@@ -139,8 +139,8 @@ void main() {
 
   test(
     'Given a detached TCP postmaster, '
-    'when its data directory is reattached, '
-    'then the endpoint retains its password and queries succeed.',
+    'when its data directory is reattached with the same password, '
+    'then the endpoint carries that password and queries succeed',
     () async {
       var pgDataDir = Directory(
         p.join(tmpRoot.path, '.serverpod', 'pgdata'),
@@ -157,12 +157,8 @@ void main() {
       var origPw = started.endpoint.password!;
       var origPort = started.endpoint.port;
 
-      var attached = await EmbeddedPostgres.attach(pgDataDir);
-      expect(
-        attached.endpoint.password,
-        origPw,
-        reason: 'persisted password must round-trip across attach',
-      );
+      var attached = await EmbeddedPostgres.attach(pgDataDir, password: origPw);
+      expect(attached.endpoint.password, origPw);
       expect(attached.endpoint.port, origPort);
 
       var conn = await pg.Connection.open(

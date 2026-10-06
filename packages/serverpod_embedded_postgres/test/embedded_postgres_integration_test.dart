@@ -24,7 +24,7 @@ void main() {
     if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
   });
 
-  group('Given a fresh project layout', () {
+  group('Given a fresh project layout,', () {
     test(
       'when EmbeddedPostgres.start runs with transport defaults '
       'then endpoint connects, SELECT 1 returns 1, and stop() releases the pidfile.',
@@ -63,14 +63,6 @@ void main() {
           isFalse,
           reason: 'pidfile should be removed after stop()',
         );
-
-        expect(
-          File(
-            p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
-          ).existsSync(),
-          isTrue,
-          reason: 'fresh clusters persist a password for TCP connections',
-        );
       },
       timeout: const Timeout(Duration(seconds: 120)),
     );
@@ -105,53 +97,6 @@ void main() {
         var rs = await conn.execute('SELECT 1');
         expect(rs.first.first, 1);
         await conn.close();
-        await tcp.stop();
-      },
-      timeout: const Timeout(Duration(seconds: 180)),
-    );
-
-    test(
-      'when a cluster created with a configured password is restarted with TcpTransport '
-      'then TCP auth succeeds using the configured password.',
-      () async {
-        var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
-        var pwFile = File(
-          p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
-        );
-        const configuredPassword = 'dev-db-password';
-
-        var unix = await EmbeddedPostgres.start(
-          EmbeddedPostgresOptions(
-            dataDir: pgDataDir,
-            databaseName: 'projectname',
-            transport: const UnixTransport(
-              initialPassword: configuredPassword,
-            ),
-            detach: true,
-          ),
-        );
-        expect(pwFile.existsSync(), isTrue);
-        expect(pwFile.readAsStringSync(), configuredPassword);
-        await unix.stop();
-
-        var tcp = await EmbeddedPostgres.start(
-          EmbeddedPostgresOptions(
-            dataDir: pgDataDir,
-            databaseName: 'projectname',
-            transport: const TcpTransport(password: configuredPassword),
-            detach: true,
-          ),
-        );
-        expect(tcp.endpoint.password, configuredPassword);
-
-        var conn = await pg.Connection.open(
-          tcp.endpoint,
-          settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
-        );
-        var rs = await conn.execute('SELECT 1');
-        expect(rs.first.first, 1);
-        await conn.close();
-
         await tcp.stop();
       },
       timeout: const Timeout(Duration(seconds: 180)),
@@ -227,4 +172,73 @@ void main() {
       timeout: const Timeout(Duration(seconds: 180)),
     );
   });
+
+  test(
+    'Given a stopped cluster last started over its Unix socket, '
+    'when it is restarted with TcpTransport and a password, '
+    'then TCP auth succeeds with that password',
+    () async {
+      final pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
+      final unix = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: pgDataDir,
+          databaseName: 'projectname',
+          transport: const UnixTransport(),
+          detach: true,
+        ),
+      );
+      await unix.stop();
+
+      final tcp = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: pgDataDir,
+          databaseName: 'projectname',
+          transport: const TcpTransport(password: 'dev-db-password'),
+          detach: true,
+        ),
+      );
+      addTearDown(tcp.stop);
+
+      final connection = await pg.Connection.open(
+        pg.Endpoint(
+          host: tcp.endpoint.host,
+          port: tcp.endpoint.port,
+          database: 'projectname',
+          username: 'postgres',
+          password: 'dev-db-password',
+        ),
+        settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+      );
+      addTearDown(connection.close);
+      final result = await connection.execute('SELECT 1');
+      expect(result.first.first, 1);
+    },
+    timeout: const Timeout(Duration(seconds: 180)),
+  );
+
+  test(
+    'Given a project layout with a leftover postgres.password sidecar, '
+    'when a cluster is started, '
+    'then the sidecar is removed',
+    () async {
+      var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
+      var sidecar = File(
+        p.join(tmpRoot.path, '.serverpod', 'postgres.password'),
+      )..createSync(recursive: true);
+
+      var pg_ = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: pgDataDir,
+          databaseName: 'projectname',
+          detach: true,
+        ),
+      );
+      try {
+        expect(sidecar.existsSync(), isFalse);
+      } finally {
+        await pg_.stop();
+      }
+    },
+    timeout: const Timeout(Duration(seconds: 120)),
+  );
 }

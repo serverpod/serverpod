@@ -19,6 +19,14 @@ import 'package:uuid/uuid.dart';
   return (projectName: projectName, commandRoot: commandRoot);
 }
 
+/// A loopback port that was free when checked.
+Future<int> freeLoopbackPort() async {
+  final socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+  final port = socket.port;
+  await socket.close();
+  return port;
+}
+
 ({String serverDir, String flutterDir, String clientDir})
 createProjectFolderPaths(String projectName) {
   final serverDir = path.join(projectName, '${projectName}_server');
