@@ -1268,6 +1268,9 @@ Future<WatchLoopSetupResult> setupWatchLoop({
           );
         }
       });
+      // A pod that exited on its own goes back to the caller, which tells a
+      // kernel the VM refused from an application crash.
+      if (!listening && !serverProcess.isRunning) return serverProcess;
       // A pod the runner cannot see is one it cannot serve.
       if (!listening) {
         log.error(podVmServiceUnreachable);
@@ -1546,9 +1549,10 @@ class _PodVmServiceUnreachable implements Exception {
   const _PodVmServiceUnreachable();
 }
 
-/// Boots the initial server process, recovering once from a corrupt cached
-/// dill (a pod that dies before publishing its VM service URI never got past
-/// kernel loading). Returns `null` if the recovery recompile fails.
+/// Boots the initial server process, recovering once from a cached dill the
+/// VM refuses to load (a pod that dies before the runner reaches an isolate
+/// over its VM service never got past kernel loading). Returns `null` if the
+/// recovery recompile fails.
 @visibleForTesting
 Future<ServerProcess?> bootInitialServer({
   required String? initialDill,
@@ -1569,7 +1573,7 @@ Future<ServerProcess?> bootInitialServer({
 
   // exitCode is already completed whenever isRunning is false.
   final crashedLoadingKernel =
-      server.vmServiceUri == null &&
+      !server.reachedVmService &&
       !server.isRunning &&
       await server.exitCode != 0;
   if (!crashedLoadingKernel) return server;
