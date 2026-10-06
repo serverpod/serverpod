@@ -39,6 +39,10 @@ emailAccount:
   - verifyPasswordResetCode:
   - finishPasswordReset:
   - hasAccount:
+emailPasswordlessAccount:
+  - startLogin:
+  - finishLogin:
+  - hasAccount:
 firebaseAccount:
   - login:
   - hasAccount:

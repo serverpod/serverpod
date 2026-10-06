@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/email_passwordless.dart';
 import 'package:serverpod_auth_test_server/src/web/routes/root.dart';
 
 import 'src/generated/endpoints.dart';
@@ -39,6 +40,27 @@ void run(final List<String> args) async {
         secretHashPepper: pod.getPassword(
           'serverpod_auth_idp_email_secretHashPepper',
         )!,
+      ),
+      EmailPasswordlessIdpConfig(
+        secretHashPepper: pod.getPassword(
+          'serverpod_auth_idp_email_secretHashPepper',
+        )!,
+        sendSignUpVerificationCode:
+            (
+              final session, {
+              required final email,
+              required final loginRequestId,
+              required final verificationCode,
+              required final transaction,
+            }) {},
+        sendSignInVerificationCode:
+            (
+              final session, {
+              required final email,
+              required final loginRequestId,
+              required final verificationCode,
+              required final transaction,
+            }) {},
       ),
     ],
   );

@@ -29,6 +29,7 @@ import '../endpoints/authenticated_streaming_test_endpoint.dart' as _iuowvgje;
 import '../endpoints/email_account_backwards_compatibility_endpoint.dart'
     as _ixnayu92;
 import '../endpoints/email_account_endpoint.dart' as _i58d5kqa;
+import '../endpoints/email_passwordless_account_endpoint.dart' as _i22irx27;
 import '../endpoints/firebase_account_endpoint.dart' as _i2sxdj8m;
 import '../endpoints/github_account_endpoint.dart' as _ibkfnws8;
 import '../endpoints/google_account_backwards_compatibility_test_endpoint.dart'
@@ -79,6 +80,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'emailAccount',
+          null,
+        ),
+      'emailPasswordlessAccount': _i22irx27.EmailPasswordlessAccountEndpoint()
+        ..initialize(
+          server,
+          'emailPasswordlessAccount',
           null,
         ),
       'firebaseAccount': _i2sxdj8m.FirebaseAccountEndpoint()
@@ -816,6 +823,72 @@ class Endpoints extends _is.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['emailAccount'] as _i58d5kqa.EmailAccountEndpoint)
+                      .hasAccount(session),
+        ),
+      },
+    );
+    connectors['emailPasswordlessAccount'] = _is.EndpointConnector(
+      name: 'emailPasswordlessAccount',
+      endpoint: endpoints['emailPasswordlessAccount']!,
+      methodConnectors: {
+        'startLogin': _is.MethodConnector(
+          name: 'startLogin',
+          params: {
+            'email': _is.ParameterDescription(
+              name: 'email',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['emailPasswordlessAccount']
+                          as _i22irx27.EmailPasswordlessAccountEndpoint)
+                      .startLogin(
+                        session,
+                        email: params['email'],
+                      ),
+        ),
+        'finishLogin': _is.MethodConnector(
+          name: 'finishLogin',
+          params: {
+            'loginRequestId': _is.ParameterDescription(
+              name: 'loginRequestId',
+              type: _is.getType<_is.UuidValue>(),
+              nullable: false,
+            ),
+            'verificationCode': _is.ParameterDescription(
+              name: 'verificationCode',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['emailPasswordlessAccount']
+                          as _i22irx27.EmailPasswordlessAccountEndpoint)
+                      .finishLogin(
+                        session,
+                        loginRequestId: params['loginRequestId'],
+                        verificationCode: params['verificationCode'],
+                      ),
+        ),
+        'hasAccount': _is.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['emailPasswordlessAccount']
+                          as _i22irx27.EmailPasswordlessAccountEndpoint)
                       .hasAccount(session),
         ),
       },
