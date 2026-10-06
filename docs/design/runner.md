@@ -208,9 +208,14 @@ the winner publishes.
     "flutter": true,
     "docker": true,
     "serverArgs": ["--mode", "production"]
-  }
+  },
+  "spawnId": "6f1d2c3b-8a4e-4b5c-9d7e-0a1b2c3d4e5f"
 }
 ```
+
+`spawnId` is the id `start` passed when spawning the runner, and what `start`
+matches a published manifest on. The `pid` cannot serve, since `dart` runs a
+program in a child of the process it was spawned as.
 
 The manifest is read by
 

@@ -60,6 +60,7 @@ import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
 import 'package:serverpod_shared/process_io.dart' show isProcessAlive;
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:stream_transform/stream_transform.dart';
+import 'package:uuid/uuid.dart';
 import 'package:vm_service/vm_service.dart'
     show Event, EventStreams, RPCError, VmService;
 import 'package:vm_service/vm_service_io.dart';
@@ -493,6 +494,7 @@ Future<RunnerManifest?> _spawnRunner({
     ),
   );
 
+  final spawnId = const Uuid().v4();
   final process = await Process.start(
     Platform.resolvedExecutable,
     [
@@ -501,6 +503,8 @@ Future<RunnerManifest?> _spawnRunner({
       'runner',
       'serve',
       '--detached',
+      '--spawn-id',
+      spawnId,
       ...asked.toServeArgs(directory: serverDir),
     ],
     // Sockets bind by relative path, which fits the socket address limit.
@@ -508,7 +512,11 @@ Future<RunnerManifest?> _spawnRunner({
     mode: ProcessStartMode.detached,
   );
 
-  switch (await awaitRunnerManifest(serverDir, pid: process.pid)) {
+  switch (await awaitRunnerManifest(
+    serverDir,
+    pid: process.pid,
+    spawnId: spawnId,
+  )) {
     case RunnerPublished(:final manifest):
       return manifest;
     case RunnerTaken():
@@ -573,16 +581,19 @@ final class RunnerTimedOut extends RunnerStartOutcome {
 ///
 /// A detached runner has no exit code to await, so this watches its [pid].
 /// A dead [pid] while the lock is held lost the race, so the wait goes on.
+/// Manifests are matched by [spawnId], since `dart` runs a script in a child
+/// of the spawned process, whose pid the runner then never publishes.
 @visibleForTesting
 Future<RunnerStartOutcome> awaitRunnerManifest(
   String serverDir, {
   required int pid,
+  required String spawnId,
   Duration timeout = _runnerStartTimeout,
 }) async {
   final waited = Stopwatch()..start();
   while (true) {
     switch (await resolveRunner(serverDir)) {
-      case LiveRunner(:final manifest) when manifest.pid != pid:
+      case LiveRunner(:final manifest) when manifest.spawnId != spawnId:
         return const RunnerTaken();
       case LiveRunner(:final manifest)
           when manifest.stage == RunnerStage.stopping:
@@ -590,7 +601,7 @@ Future<RunnerStartOutcome> awaitRunnerManifest(
       case LiveRunner(:final manifest):
         return RunnerPublished(manifest);
       case NoRunner(:final staleManifest)
-          when staleManifest?.pid == pid &&
+          when staleManifest?.spawnId == spawnId &&
               staleManifest?.stage == RunnerStage.stopping:
         return RunnerAborted(staleManifest?.exitCode ?? 1);
       case NoRunner() || IncompatibleRunner():
@@ -920,6 +931,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   required bool watch,
   required bool? docker,
   required bool launchFlutterApp,
+  String? spawnId,
   required ShutdownSignal shutdown,
   // Session-wide log retention. Filled here rather than by the presentation
   // layer, so the MCP log tools serve the same content with and without the
@@ -992,6 +1004,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         target: target,
         serverArgs: requestedServerArgs,
       ),
+      spawnId: spawnId,
     ),
   );
   Future<void> releaseRunnerHold({required int exitCode}) async {

@@ -90,6 +90,7 @@ void main() {
 
       starting = RunnerManifest(
         pid: holder.pid,
+        spawnId: 'spawned',
         stage: RunnerStage.starting,
         projectId: RunnerRegistry.idFor(tempDir.path),
         config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
@@ -103,12 +104,13 @@ void main() {
     });
 
     test(
-      'when the spawned runner is awaited under its own pid, '
+      'when the spawned runner is awaited under its spawn id, '
       'then it is reported as published',
       () async {
         final outcome = await awaitRunnerManifest(
           tempDir.path,
           pid: holder.pid,
+          spawnId: 'spawned',
           timeout: const Duration(seconds: 2),
         );
 
@@ -117,12 +119,30 @@ void main() {
     );
 
     test(
-      'when another pid published while the spawned runner is awaited, '
-      'then it is reported as taken rather than adopted as the spawned one',
+      'when the spawned runner published under another pid than the one '
+      'spawned, '
+      'then it is still reported as published, as dart runs it in a child',
       () async {
         final outcome = await awaitRunnerManifest(
           tempDir.path,
           pid: 1,
+          spawnId: 'spawned',
+          timeout: const Duration(seconds: 2),
+        );
+
+        expect(outcome, isA<RunnerPublished>());
+      },
+    );
+
+    test(
+      'when a runner with another spawn id published while the spawned '
+      'runner is awaited, '
+      'then it is reported as taken rather than adopted as the spawned one',
+      () async {
+        final outcome = await awaitRunnerManifest(
+          tempDir.path,
+          pid: holder.pid,
+          spawnId: 'other',
           timeout: const Duration(seconds: 2),
         );
 
@@ -426,6 +446,7 @@ void main() {
         final outcome = await awaitRunnerManifest(
           tempDir.path,
           pid: deadPid,
+          spawnId: 'spawned',
           timeout: const Duration(seconds: 10),
         );
 
@@ -443,6 +464,7 @@ void main() {
         final outcome = awaitRunnerManifest(
           tempDir.path,
           pid: deadPid,
+          spawnId: 'spawned',
           timeout: const Duration(seconds: 10),
         );
         await expectStillWaiting(outcome);
@@ -468,6 +490,7 @@ void main() {
         final outcome = awaitRunnerManifest(
           tempDir.path,
           pid: deadPid,
+          spawnId: 'spawned',
           timeout: const Duration(seconds: 10),
         );
         await expectStillWaiting(outcome);
