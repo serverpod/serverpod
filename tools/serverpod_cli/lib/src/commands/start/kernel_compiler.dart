@@ -40,6 +40,11 @@ class KernelCompiler {
   /// keeps it set, so the retry is a full compile again rather than an
   /// increment on top of nothing.
   bool _needsFullCompile = true;
+
+  /// Whether [compile] has run since [start] or [restart]. The Frontend
+  /// Server has no incremental state to discard before that, and its client
+  /// still owes a first `compile` rather than a `recompile`.
+  bool _hasCompiled = false;
   bool _started = false;
 
   KernelCompiler({
@@ -57,6 +62,10 @@ class KernelCompiler {
 
   /// Whether [start] has run.
   bool get isStarted => _started;
+
+  /// Whether the next [compile] produces a complete kernel: nothing has been
+  /// accepted since [start], [reset], or [restart].
+  bool get needsFullCompile => _needsFullCompile;
 
   /// Exists while the Frontend Server may be writing [outputDill]; left
   /// behind if compilation fails or the session dies mid-compile.
@@ -80,6 +89,7 @@ class KernelCompiler {
     );
     _started = true;
     _needsFullCompile = true;
+    _hasCompiled = false;
   }
 
   /// Compiles the project on top of the cached [outputDill], if any.
@@ -127,6 +137,7 @@ class KernelCompiler {
   }) async {
     final client = await _client;
     final marker = File(_compileMarkerPath)..createSync(recursive: true);
+    _hasCompiled = true;
 
     final CompileResult result;
     if (_needsFullCompile) {
@@ -186,7 +197,7 @@ class KernelCompiler {
   /// Use this when incremental state may be stale (e.g., an external reload
   /// happened without going through this compiler).
   Future<void> reset() async {
-    if (_needsFullCompile) return; // No compile yet; already in full state.
+    if (!_hasCompiled) return; // Nothing compiled yet; already in full state.
     final client = await _client;
     client.reset();
     _needsFullCompile = true;
