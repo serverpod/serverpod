@@ -14,8 +14,7 @@ import 'package:serverpod_tui/serverpod_tui.dart' show CompletedOperation;
 /// The runner's own code when it stops, 1 when nothing will rebuild it or it
 /// goes silent past [reconnectDeadline], and 0 on detaching.
 ///
-/// SIGINT and SIGTERM stop the runner when [ownsRunner], and only detach
-/// otherwise. A second one always detaches.
+/// SIGINT and SIGTERM stop the runner when [ownsRunner], and otherwise detach.
 Future<int> attachWithLogStream(
   String socketPath, {
   bool ownsRunner = false,

@@ -127,9 +127,19 @@ Together with `--no-attach` it is ignored, since nothing renders.
 
 ### Lifetime
 
-Detaching a UI does not stop the runner, whoever started it. `serverpod runner
-stop` or `Shift+Q` in the UI stops the stack, next to the `Q` that only
-detaches.
+The `serverpod start` that spawned the runner owns it and stops it on leaving:
+`Q`, `Shift+Q` or Ctrl+C in the UI, and SIGINT or SIGTERM on the log stream.
+Nothing else owns a runner. `serverpod start --no-attach` and `serverpod runner
+start` return and leave it running, and `serverpod mcp-server` never spawns
+one.
+
+A client that attached to a runner already running leaves it running by
+default. `Q` in the UI opens a dialog, in which `Q` leaves and `Shift+Q` stops
+the runner, and a signal to the log stream only detaches. `Shift+Q` in the UI
+and `serverpod runner stop` stop the stack from any client.
+
+A runner that is still starting stops only at its next checkpoint, so asking
+a second time leaves the client at once.
 
 The runner stopping ends the session for every attached UI. It announces the
 stop with the exit code it is leaving with, and a UI leaves with that code.
@@ -141,9 +151,9 @@ leaves with exit code 1, since nothing will announce a code. The log stream
 does the same.
 
 > [!NOTE]
-> The rejected alternative is to shut down on detach when the detaching invocation
-spawned the runner. That keeps Ctrl+C closer to its current behaviour, but the
-same key then stops the server or does not, depending on how the session began.
+> The rejected alternative is to never stop the runner on detach, whoever
+started it. The same key then always means the same thing, but a developer who
+starts the stack and quits leaves a server running behind them.
 
 ## Architecture
 
@@ -508,8 +518,9 @@ features and logs at the same level.
 
 - In the runner, SIGINT and SIGTERM trigger a graceful shutdown, as the headless
   path does today.
-- In an attached client, SIGINT detaches and cannot reach the pod.
-- Ordinary shutdown goes over the protocol, from `serverpod runner stop`.
+- In an attached client, SIGINT cannot reach the pod.
+- Ordinary shutdown goes over the protocol, from `serverpod runner stop` or
+  the client that owns the runner.
 
 ### Flutter apps
 

@@ -14,34 +14,34 @@ import '../../test_util/short_temp_dir.dart';
 import '../../test_util/wait_for.dart';
 
 void main() {
+  late Directory tempDir;
+  late RunnerSocketServer server;
+  late FakeRunnerApi runner;
+  late _RecordingSink sink;
+  late StreamController<ProcessSignal> interrupts;
+
+  setUp(() async {
+    tempDir = await createShortTempDir('lrt');
+    server = RunnerSocketServer(serverDir: tempDir.path);
+    await server.start();
+    runner = FakeRunnerApi();
+    server.connect(runner);
+    sink = _RecordingSink();
+    interrupts = StreamController<ProcessSignal>();
+  });
+
+  tearDown(() async {
+    await interrupts.close();
+    await server.close();
+    if (!runner.eventController.isClosed) {
+      await runner.eventController.close();
+    }
+    try {
+      tempDir.deleteSync(recursive: true);
+    } catch (_) {}
+  });
+
   group('Given a runner and a plain-text attach session,', () {
-    late Directory tempDir;
-    late RunnerSocketServer server;
-    late FakeRunnerApi runner;
-    late _RecordingSink sink;
-    late StreamController<ProcessSignal> interrupts;
-
-    setUp(() async {
-      tempDir = await createShortTempDir('lrt');
-      server = RunnerSocketServer(serverDir: tempDir.path);
-      await server.start();
-      runner = FakeRunnerApi();
-      server.connect(runner);
-      sink = _RecordingSink();
-      interrupts = StreamController<ProcessSignal>();
-    });
-
-    tearDown(() async {
-      await interrupts.close();
-      await server.close();
-      if (!runner.eventController.isClosed) {
-        await runner.eventController.close();
-      }
-      try {
-        tempDir.deleteSync(recursive: true);
-      } catch (_) {}
-    });
-
     test(
       'when it attaches to a runner that has been up for a while, '
       'then the retained history is printed before anything new',
@@ -426,7 +426,7 @@ void main() {
     );
 
     test(
-      'when a session that did not spawn the runner is interrupted, '
+      'when interrupted, '
       'then it detaches with exit code zero and leaves the runner running',
       () async {
         var stops = 0;
@@ -445,9 +445,11 @@ void main() {
         expect(stops, 0);
       },
     );
+  });
 
+  group('Given a plain-text attach session that spawned its runner,', () {
     test(
-      'when a session that spawned the runner is interrupted, '
+      'when interrupted, '
       'then it stops the runner and leaves with the code the runner names',
       () async {
         var stops = 0;
@@ -474,8 +476,7 @@ void main() {
     );
 
     test(
-      'when a session that spawned the runner is interrupted again '
-      'before the runner stops, '
+      'when interrupted twice before the runner stops, '
       'then it leaves with zero without asking twice',
       () async {
         var stops = 0;
@@ -499,8 +500,7 @@ void main() {
     );
 
     test(
-      'when a session that spawned the runner is interrupted '
-      'and the runner refuses the stop, '
+      'when interrupted while the runner refuses to stop, '
       'then it says so and leaves with one',
       () async {
         runner.onStop = () async => throw StateError('refused');

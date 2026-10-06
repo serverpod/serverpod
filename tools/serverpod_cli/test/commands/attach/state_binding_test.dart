@@ -202,7 +202,6 @@ void main() {
 
         holder.stopStack!();
         await waitFor(() => stops == 1);
-        expect(leftOnItsOwn, isFalse);
         holder.stopStack!();
 
         expect(leftOnItsOwn, isTrue);

@@ -87,7 +87,6 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
   Future<void> runWithConfig(
     Configuration<RunnerStartOption> commandConfig,
   ) async {
-    // Leaves the runner running, so it is no owner even when it spawned it.
     final (:serverDir, :manifest, spawned: _) = await bringUpRunner(
       directory: commandConfig.value(RunnerStartOption.directory),
       asked: RunnerConfig(

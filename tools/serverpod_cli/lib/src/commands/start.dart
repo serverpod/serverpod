@@ -312,7 +312,6 @@ Future<({RunnerManifest manifest, bool spawned})> ensureRunner({
       );
       if (spawned != null) return (manifest: spawned, spawned: true);
 
-      // Another start's runner took the lock, so this call resolves that one.
       return ensureRunner(
         config: config,
         serverDir: serverDir,

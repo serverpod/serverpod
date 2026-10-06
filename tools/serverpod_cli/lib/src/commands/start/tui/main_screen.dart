@@ -49,11 +49,9 @@ class MainScreen extends StatelessComponent {
 
   /// Invoked after a tab is selected via mouse click so the screen redraws.
   final VoidCallback? onTabSelected;
-
-  /// Leaves the UI, which stops the stack only when this session spawned it.
   final VoidCallback? onQuit;
 
-  /// Stops the whole stack, whoever spawned it.
+  /// Stops the whole stack, as opposed to [onQuit], which may only leave the UI.
   final VoidCallback? onStopStack;
 
   /// Copies the pinned alert's segment (also bound to the `C` key).
