@@ -21,7 +21,8 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _isc.SerializationManager
+    implements _isc.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -29,6 +30,19 @@ class Protocol extends _isc.SerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_isc.SerializationManager> _hostProtocols = {};
+
+  @override
+  _isc.ProtocolDeserialization get deserializationMetadata =>
+      _isc.ProtocolDeserialization.cached(
+        this,
+        types: const [],
+        modules: const [
+          _iabc.Protocol.new,
+          _iacc.Protocol.new,
+          _iaic.Protocol.new,
+          _i312scxx.Protocol.new,
+        ],
+      );
 
   void registerHostProtocol(
     String projectName,
@@ -66,18 +80,15 @@ class Protocol extends _isc.SerializationManager {
       }
     }
 
-    try {
-      return _iabc.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _iacc.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _iaic.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _i312scxx.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 

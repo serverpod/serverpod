@@ -32,7 +32,8 @@ export 'module_feature/models/my_feature_model.dart';
 export 'module_streaming_class.dart';
 export 'project_streaming_class.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -40,6 +41,36 @@ class Protocol extends _is.DatabaseSerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_is.SerializationManager> _hostProtocols = {};
+
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_ircaal6o.DynamicOnModule>,
+          _is.getType<_i3gtzugh.ModulePolymorphicGrandChild>,
+          _is.getType<_in13ph1t.ModulePolymorphicChild>,
+          _is.getType<_is5pt2rl.ModulePolymorphicParent>,
+          _is.getType<_izah8b1s.ModuleClass>,
+          _is.getType<_iya6t7ee.MyModuleFeatureModel>,
+          _is.getType<_idp5674x.ModuleStreamingClass>,
+          _is.getType<_iqrw583n.ProjectStreamingClass>,
+          _is.getType<_ircaal6o.DynamicOnModule?>,
+          _is.getType<_i3gtzugh.ModulePolymorphicGrandChild?>,
+          _is.getType<_in13ph1t.ModulePolymorphicChild?>,
+          _is.getType<_is5pt2rl.ModulePolymorphicParent?>,
+          _is.getType<_izah8b1s.ModuleClass?>,
+          _is.getType<_iya6t7ee.MyModuleFeatureModel?>,
+          _is.getType<_idp5674x.ModuleStreamingClass?>,
+          _is.getType<_iqrw583n.ProjectStreamingClass?>,
+          _is.getType<dynamic>,
+          _is.getType<(bool,)?>,
+          _is.getType<(int?, _irv1xa50.ModuleStreamingClass?)>,
+          _is.getType<(bool,)?>,
+          _is.getType<(int?, _irv1xa50.ModuleStreamingClass?)>,
+        ],
+        modules: const [_isp.Protocol.new],
+      );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [];
 
@@ -181,9 +212,15 @@ class Protocol extends _is.DatabaseSerializationManager {
           )
           as T;
     }
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 

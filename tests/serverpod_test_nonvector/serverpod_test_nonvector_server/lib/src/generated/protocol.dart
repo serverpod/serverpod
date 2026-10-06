@@ -16,12 +16,24 @@ import 'package:serverpod/serverpod.dart' as _is;
 import 'greeting.dart' as _ig8bxnp5;
 export 'greeting.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
+
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_ig8bxnp5.Greeting>,
+          _is.getType<_ig8bxnp5.Greeting?>,
+        ],
+        modules: const [_isp.Protocol.new],
+      );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
     _isp.TableDefinition(
@@ -96,9 +108,15 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _is.getType<_ig8bxnp5.Greeting?>()) {
       return (data != null ? _ig8bxnp5.Greeting.fromJson(data) : null) as T;
     }
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 

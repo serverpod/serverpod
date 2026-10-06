@@ -42,7 +42,8 @@ export 'user_info.dart';
 export 'user_info_public.dart';
 export 'user_settings_config.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -50,6 +51,44 @@ class Protocol extends _is.DatabaseSerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_is.SerializationManager> _hostProtocols = {};
+
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_iy492fk4.AppleAuthInfo>,
+          _is.getType<_i8lzboul.AuthKey>,
+          _is.getType<_ika0ufek.AuthenticationFailReason>,
+          _is.getType<_i6gspdjt.AuthenticationResponse>,
+          _is.getType<_il95bqq6.EmailAuth>,
+          _is.getType<_ilnsxyj8.EmailCreateAccountRequest>,
+          _is.getType<_iaz0raab.EmailFailedSignIn>,
+          _is.getType<_iiusgova.EmailPasswordReset>,
+          _is.getType<_ifm8n60r.EmailReset>,
+          _is.getType<_is585jau.GoogleRefreshToken>,
+          _is.getType<_i0mx5j5p.UserImage>,
+          _is.getType<_iliwsvmu.UserInfo>,
+          _is.getType<_iabwsxht.UserInfoPublic>,
+          _is.getType<_i5rdiffu.UserSettingsConfig>,
+          _is.getType<_iy492fk4.AppleAuthInfo?>,
+          _is.getType<_i8lzboul.AuthKey?>,
+          _is.getType<_ika0ufek.AuthenticationFailReason?>,
+          _is.getType<_i6gspdjt.AuthenticationResponse?>,
+          _is.getType<_il95bqq6.EmailAuth?>,
+          _is.getType<_ilnsxyj8.EmailCreateAccountRequest?>,
+          _is.getType<_iaz0raab.EmailFailedSignIn?>,
+          _is.getType<_iiusgova.EmailPasswordReset?>,
+          _is.getType<_ifm8n60r.EmailReset?>,
+          _is.getType<_is585jau.GoogleRefreshToken?>,
+          _is.getType<_i0mx5j5p.UserImage?>,
+          _is.getType<_iliwsvmu.UserInfo?>,
+          _is.getType<_iabwsxht.UserInfoPublic?>,
+          _is.getType<_i5rdiffu.UserSettingsConfig?>,
+          _is.getType<List<String>>,
+        ],
+        modules: const [_isp.Protocol.new],
+      );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
     _isp.TableDefinition(
@@ -658,9 +697,15 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 
