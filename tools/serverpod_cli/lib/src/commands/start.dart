@@ -28,6 +28,7 @@ import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/status.dart'
     show printServerUris, resolveRunnerOrExit;
+import 'package:serverpod_cli/src/commands/stop.dart' show awaitRunnerShutdown;
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
@@ -39,7 +40,7 @@ import 'package:serverpod_cli/src/runner/local_runner_api.dart';
 import 'package:serverpod_cli/src/runner/port_resolution.dart';
 import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart'
-    show RunnerUnreachableException;
+    show RunnerClient, RunnerUnreachableException;
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/runner/runner_lock.dart';
@@ -130,6 +131,9 @@ class StartCommand extends ServerpodCommand<StartOption> {
   ) async {
     final attaching = commandConfig.value(StartOption.attach);
     final useTui = commandConfig.value(StartOption.tui) && terminalSupportsTui;
+    // A signal while a spawned runner comes up is held until it can be
+    // stopped, since leaving at once would orphan it.
+    final shutdown = ShutdownSignal(listenForSignals: attaching);
     final (:serverDir, :manifest, :spawned) = await bringUpRunner(
       directory: commandConfig.value(StartOption.directory),
       asked: RunnerConfig(
@@ -141,10 +145,15 @@ class StartCommand extends ServerpodCommand<StartOption> {
       ),
       useTui: useTui,
       global: serverpodRunner.globalConfiguration,
-    );
+    ).whenComplete(shutdown.dispose);
 
     if (!attaching) {
       await reportStackUp(serverDir, manifest);
+      return;
+    }
+
+    if (shutdown.isShutdown) {
+      if (spawned) await stopInterruptedRunner(serverDir, manifest);
       return;
     }
 
@@ -160,6 +169,41 @@ class StartCommand extends ServerpodCommand<StartOption> {
       onUnreachable: (e) => explainUnreachableRunner(serverDir, manifest, e),
     );
     if (exitCode != 0) throw ExitException(exitCode);
+  }
+}
+
+/// Stops the runner [manifest] names, for a start interrupted while it came up.
+@visibleForTesting
+Future<void> stopInterruptedRunner(
+  String serverDir,
+  RunnerManifest manifest,
+) async {
+  log.info('Interrupted. Stopping the runner (pid ${manifest.pid}).');
+  final client = RunnerClient(
+    socketPath: runnerSocketPath(
+      serverDir,
+      serverpodTuiSocketName,
+      projectId: manifest.projectId,
+    ),
+  );
+  try {
+    await client.connect();
+    await client.stop();
+  } catch (e) {
+    log.error('Stopping the runner failed: $e');
+    throw ExitException.error();
+  } finally {
+    await client.close();
+  }
+  final stopped = await log.progress(
+    'Waiting for the runner (pid ${manifest.pid}) to stop',
+    () => awaitRunnerShutdown(serverDir),
+  );
+  if (!stopped) {
+    log.warning(
+      'The runner accepted the stop but is still shutting down. '
+      'Check `serverpod runner status`.',
+    );
   }
 }
 

@@ -25,6 +25,7 @@ import 'package:serverpod_shared/serverpod_shared.dart' show ServerpodAddresses;
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
+import '../test_util/fake_runner_api.dart';
 import '../test_util/file_system_entity_helpers.dart';
 import '../test_util/hold_lock.dart';
 import '../test_util/short_temp_dir.dart';
@@ -755,6 +756,46 @@ void main() {
             isA<ExitException>().having((e) => e.exitCode, 'exitCode', 0),
           ),
         );
+      },
+    );
+  });
+
+  group('Given a start interrupted while its spawned runner came up,', () {
+    late Directory root;
+    late RunnerSocketServer socket;
+    late FakeRunnerApi runner;
+    late RunnerManifest manifest;
+
+    setUp(() async {
+      root = await createShortTempDir('rsi');
+      socket = RunnerSocketServer(serverDir: root.path);
+      await socket.start();
+      runner = FakeRunnerApi();
+      socket.connect(runner);
+      manifest = RunnerManifest(
+        pid: 4242,
+        spawnId: 'spawned',
+        projectId: RunnerRegistry.idFor(root.path),
+        config: _asked,
+      );
+      await manifest.writeTo(root.path);
+    });
+
+    tearDown(() async {
+      await socket.close();
+      await root.deleteWithRetry(recursive: true);
+    });
+
+    test(
+      'when the start stops the runner, '
+      'then the stop reaches it and the start returns once it is down',
+      () async {
+        var stops = 0;
+        runner.onStop = () async => stops++;
+
+        await stopInterruptedRunner(root.path, manifest);
+
+        expect(stops, 1);
       },
     );
   });
