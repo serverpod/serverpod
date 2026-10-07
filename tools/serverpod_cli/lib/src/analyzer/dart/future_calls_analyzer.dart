@@ -40,22 +40,42 @@ class FutureCallsAnalyzer {
 
   final String absoluteIncludedPaths;
 
+  /// Absolute paths of the directories this project generates code into.
+  ///
+  /// The generated directories sit inside the analyzed `lib/`, so without
+  /// this the analyzer treats every generated model file as a candidate
+  /// future call file and resolves it looking for a class the generator never
+  /// writes there.
+  final Set<String> generatedDirPaths;
+
   List<SerializableModelDefinition>? _cachedAnalyzedModels;
 
   /// Create a new [FutureCallsAnalyzer] for [directory].
   ///
   /// When [collection] is provided it is reused (e.g. shared with
   /// [EndpointsAnalyzer]). Otherwise a new one is created internally.
+  ///
+  /// Pass [generatedDirPaths] so generated output is not scanned for future
+  /// calls.
   FutureCallsAnalyzer({
     required Directory directory,
     AnalysisContextCollection? collection,
+    Set<String>? generatedDirPaths,
   }) : collection = collection ?? createAnalysisContextCollection(directory),
+       generatedDirPaths = generatedDirPaths ?? const {},
        absoluteIncludedPaths = directory.absolute.path;
 
   /// Cached per-file analysis results for future call files.
   /// Uses [SplayTreeMap] to keep keys sorted, ensuring deterministic
   /// iteration order when collecting definitions across runs.
   final _fileCache = SplayTreeMap<String, _CachedFutureCallFileResult>();
+
+  /// The files the last analysis found future call declarations in, spelled as the
+  /// analysis context spells them.
+  ///
+  /// The cache only holds files the analysis took up as future call files, so a
+  /// file missing here declared no future call when it was last examined.
+  Iterable<String> get futureCallFiles => _fileCache.keys;
 
   /// The future call files currently cached with errors.
   Set<String> get _erroredFiles => {
@@ -100,8 +120,14 @@ class FutureCallsAnalyzer {
     }
 
     // The cache only holds files the analysis recognized as future call files.
+    // Canonicalized once into a set rather than compared pairwise, so this
+    // stays linear in the number of changed files as the project's future
+    // call count grows.
+    final cachedFutureCallPaths = {
+      for (final key in keysAfter) p.canonicalize(key),
+    };
     return relevantPaths.any(
-      (path) => keysAfter.any((key) => p.equals(key, path)),
+      (path) => cachedFutureCallPaths.contains(p.canonicalize(path)),
     );
   }
 
@@ -168,8 +194,15 @@ class FutureCallsAnalyzer {
 
     // Analyze changed files + previously errored future call files
     // (fixing a dependency elsewhere might unblock them).
+    //
+    // Generated output is excluded here rather than from [changedFiles], which
+    // the analysis context above still needs in full: a regenerated model
+    // changes what the future calls importing it resolve to, but declares no
+    // future call of its own.
     final filesToAnalyze = <String>{
-      ...changedFiles,
+      ...changedFiles.where(
+        (path) => !isWithinAnyDirectory(path, generatedDirPaths),
+      ),
       ..._fileCache.keys,
     };
 
@@ -222,12 +255,17 @@ class FutureCallsAnalyzer {
       validLibraries.add((library, path));
     }
 
+    // Paths that were just re-analyzed, so the cached result for them is
+    // superseded by the fresh one collected below. Materialized as a set
+    // because it is consulted once per cached file.
+    final reanalyzedPaths = {for (var (_, path) in validLibraries) path};
+
     // Build future call class map from ALL files for duplicate detection.
     // Errored files have empty definitions so they naturally don't contribute,
     // matching the original behavior.
     Map<String, int> futureCallClassMap = {};
     for (var entry in _fileCache.entries) {
-      if (validLibraries.any((lib) => lib.$2 == entry.key)) continue;
+      if (reanalyzedPaths.contains(entry.key)) continue;
       for (var def in entry.value.definitions) {
         futureCallClassMap.update(
           def.className,
@@ -300,12 +338,13 @@ class FutureCallsAnalyzer {
   }
 
   /// Returns all Dart file paths known to the analysis context, sorted and
-  /// excluding test files.
+  /// excluding test files and this project's own generated output.
   Iterable<String> get _allAnalyzedDartFiles sync* {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
       yield* analyzedFiles
+          .where((path) => !isWithinAnyDirectory(path, generatedDirPaths))
           .where((path) => path.endsWith('.dart'))
           .where((path) => !path.endsWith('_test.dart'))
           .where((path) => !isUnrenderedTemplatePath(path));

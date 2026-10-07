@@ -40,16 +40,29 @@ class EndpointsAnalyzer {
 
   final String absoluteIncludedPaths;
 
+  /// Absolute paths of the directories this project generates code into.
+  ///
+  /// The generated directories sit inside the analyzed `lib/`, so without
+  /// this the analyzer treats every generated model file as a candidate
+  /// endpoint file and resolves it looking for a class the generator never
+  /// writes there.
+  final Set<String> generatedDirPaths;
+
   /// Create a new [EndpointsAnalyzer] for [directory].
   ///
   /// When [collection] is provided it is reused (e.g. shared with
   /// [FutureCallsAnalyzer]). Otherwise a new one is created internally.
+  ///
+  /// Pass [generatedDirPaths] so generated output is not scanned for
+  /// endpoints.
   EndpointsAnalyzer(
     Directory directory, {
     List<TypeDefinition>? extraClasses,
     AnalysisContextCollection? collection,
+    Set<String>? generatedDirPaths,
   }) : extraClasses = extraClasses ?? [],
        collection = collection ?? createAnalysisContextCollection(directory),
+       generatedDirPaths = generatedDirPaths ?? const {},
        absoluteIncludedPaths = directory.absolute.path;
 
   /// Cached per-file analysis results for endpoint files.
@@ -60,6 +73,13 @@ class EndpointsAnalyzer {
   /// Cached template entries for files that don't contain endpoints.
   /// These are tracked separately since they don't appear in [_fileCache].
   final Map<String, DartDocTemplateRegistry> _nonEndpointTemplateCache = {};
+
+  /// The files the last analysis found endpoint declarations in, spelled as the
+  /// analysis context spells them.
+  ///
+  /// The cache only holds files the analysis took up as endpoint files, so a
+  /// file missing here declared no endpoint when it was last examined.
+  Iterable<String> get endpointFiles => _fileCache.keys;
 
   /// The endpoint files currently cached with errors.
   Set<String> get _erroredFiles => {
@@ -107,8 +127,14 @@ class EndpointsAnalyzer {
     // but generated protocol must still be refreshed (otherwise stale
     // generated Dart can break analysis/compile before the next generate).
     // The cache only holds files the analysis recognized as endpoint files.
+    // Canonicalized once into a set rather than compared pairwise, so this
+    // stays linear in the number of changed files as the project's endpoint
+    // count grows.
+    final cachedEndpointPaths = {
+      for (final key in keysAfter) p.canonicalize(key),
+    };
     return relevantPaths.any(
-      (path) => keysAfter.any((key) => p.equals(key, path)),
+      (path) => cachedEndpointPaths.contains(p.canonicalize(path)),
     );
   }
 
@@ -138,8 +164,15 @@ class EndpointsAnalyzer {
 
     // Files to analyze: dirty files + previously errored endpoint files
     // (fixing a dependency elsewhere might unblock them).
+    //
+    // Generated output is excluded here rather than from [changedFiles], which
+    // the analysis context above still needs in full: a regenerated model
+    // changes what the endpoints importing it resolve to, but declares no
+    // endpoint of its own.
     final filesToAnalyze = <String>{
-      ...changedFiles,
+      ...changedFiles.where(
+        (path) => !isWithinAnyDirectory(path, generatedDirPaths),
+      ),
       ..._fileCache.keys,
     };
 
@@ -206,12 +239,17 @@ class EndpointsAnalyzer {
       validLibraries.add((library, path, fileTemplates));
     }
 
+    // Paths that were just re-analyzed, so the cached result for them is
+    // superseded by the fresh one collected below. Materialized as a set
+    // because the phases below consult it once per cached file.
+    final reanalyzedPaths = {for (var (_, path, _) in validLibraries) path};
+
     // Phase 2: Build endpoint class map from ALL files for duplicate detection.
     // Errored files have empty definitions so they naturally don't contribute,
     // matching the original behavior.
     Map<String, int> endpointClassMap = {};
     for (var entry in _fileCache.entries) {
-      if (validLibraries.any((lib) => lib.$2 == entry.key)) continue;
+      if (reanalyzedPaths.contains(entry.key)) continue;
       for (var def in entry.value.definitions) {
         endpointClassMap.update(
           def.className,
@@ -234,7 +272,7 @@ class EndpointsAnalyzer {
     // Phase 3: Build full template registry from all caches + fresh results.
     final templateRegistry = DartDocTemplateRegistry();
     for (var entry in _fileCache.entries) {
-      if (validLibraries.any((lib) => lib.$2 == entry.key)) continue;
+      if (reanalyzedPaths.contains(entry.key)) continue;
       templateRegistry.addAll(entry.value.templates);
     }
     for (var templates in _nonEndpointTemplateCache.values) {
@@ -293,12 +331,13 @@ class EndpointsAnalyzer {
   }
 
   /// Returns all Dart file paths known to the analysis context, sorted and
-  /// excluding test files.
+  /// excluding test files and this project's own generated output.
   Iterable<String> get _allAnalyzedDartFiles sync* {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
       yield* analyzedFiles
+          .where((path) => !isWithinAnyDirectory(path, generatedDirPaths))
           .where((path) => path.endsWith('.dart'))
           .where((path) => !path.endsWith('_test.dart'))
           .where((path) => !isUnrenderedTemplatePath(path));
