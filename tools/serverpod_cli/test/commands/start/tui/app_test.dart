@@ -135,9 +135,21 @@ void main() {
         restartCalls = 0;
         holder.onQuit = () => quitCalls++;
         holder.onStopStack = () => stopCalls++;
-        holder.onRestartFlutterApp = () => restartCalls++;
+        holder.onHotRestart = () => restartCalls++;
         state.canLaunchApps = true;
+        state.watchModeEnabled = true;
+        state.serverReady = true;
+        state.showSplash = false;
+        // Rebuild so the button bar picks up the callbacks.
+        holder.widgetState?.rebuild();
+        await tester.pump();
         await _sendKey(tester, LogicalKey.keyQ);
+      });
+
+      test('when R is pressed then no hot restart runs', () async {
+        await _sendKey(tester, LogicalKey.keyR);
+
+        expect(restartCalls, 0);
       });
 
       test(

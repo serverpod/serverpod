@@ -860,7 +860,9 @@ class MainScreen extends StatelessComponent {
   }
 
   Component _buildButtonBar() {
-    final actionsEnabled = state.serverReady && !state.actionBusy;
+    // The quit dialog takes every key but its own.
+    final modal = state.showQuitDialog;
+    final actionsEnabled = state.serverReady && !state.actionBusy && !modal;
 
     return ButtonBar(
       buttons: [
@@ -874,7 +876,7 @@ class MainScreen extends StatelessComponent {
             activationChar: 'R',
             activationKeys: const [LogicalKey.keyR],
             onActivate: (_) => onHotRestart?.call(),
-            enabled: !state.actionBusy && onHotRestart != null,
+            enabled: !state.actionBusy && !modal && onHotRestart != null,
           )
         // In watch mode the incremental compiler already hot reloads on file
         // changes, so the manual action is a hot restart (with no shift
@@ -910,14 +912,14 @@ class MainScreen extends StatelessComponent {
           activationChar: 'L',
           activationKeys: const [LogicalKey.keyL],
           onActivate: (_) => onClearLogs?.call(),
-          enabled: onClearLogs != null,
+          enabled: !modal && onClearLogs != null,
         ),
         Button(
           name: 'Help',
           activationChar: 'H',
           activationKeys: const [LogicalKey.keyH],
           onActivate: (_) => onToggleHelp?.call(),
-          enabled: onToggleHelp != null,
+          enabled: !modal && onToggleHelp != null,
         ),
         Button(
           name: 'Quit',
