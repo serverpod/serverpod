@@ -540,4 +540,45 @@ class HelperClass {}
       );
     },
   );
+
+  group(
+    'Given an analyzed directory with an endpoint file and a plain file',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        File(path.join(trackedDirectory.path, 'declaring.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+        File(path.join(trackedDirectory.path, 'plain.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+class HelperClass {}
+''');
+        analyzer = EndpointsAnalyzer(trackedDirectory);
+        await analyzer.analyze(collector: CodeGenerationCollector());
+      });
+
+      test(
+        'when asked for its endpoint files '
+        'then only the declaring file is reported.',
+        () {
+          expect(analyzer.endpointFiles, [
+            path.join(trackedDirectory.path, 'declaring.dart'),
+          ]);
+        },
+      );
+    },
+  );
 }

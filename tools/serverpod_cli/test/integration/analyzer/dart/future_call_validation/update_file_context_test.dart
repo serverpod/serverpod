@@ -364,4 +364,48 @@ class HelperClass {}
       );
     },
   );
+
+  group(
+    'Given an analyzed directory with a future call file and a plain file',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        File(path.join(trackedDirectory.path, 'declaring.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+        File(path.join(trackedDirectory.path, 'plain.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+class HelperClass {}
+''');
+        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        await analyzer.analyze(
+          collector: CodeGenerationCollector(),
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test(
+        'when asked for its future call files '
+        'then only the declaring file is reported.',
+        () {
+          expect(analyzer.futureCallFiles, [
+            path.join(trackedDirectory.path, 'declaring.dart'),
+          ]);
+        },
+      );
+    },
+  );
 }
