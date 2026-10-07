@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i7hzilwf;
@@ -96,7 +94,7 @@ abstract class AddressUuid
 
 class _Undefined {}
 
-class _UndefinedAddressUuid$inhabitant extends _issu.UndefinedSentinel
+class _UndefinedAddressUuid$inhabitant extends _isc.UndefinedSentinel
     implements _i7hzilwf.CitizenInt {
   const _UndefinedAddressUuid$inhabitant();
 }
@@ -128,7 +126,7 @@ class _AddressUuidImpl extends AddressUuid {
       id: id ?? this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _issu.UndefinedSentinel
+      inhabitant: inhabitant is _isc.UndefinedSentinel
           ? this.inhabitant?.copyWith()
           : inhabitant,
     );

@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../changed_id_type/one_to_one/address.dart' as _ih0efjtk;
 import '../../changed_id_type/one_to_one/company.dart' as _i441ok8u;
@@ -95,7 +93,7 @@ abstract class CitizenInt
     _ih0efjtk.AddressUuid? address = const _UndefinedCitizenInt$address(),
     _isc.UuidValue? companyId,
     _i441ok8u.CompanyUuid? company = const _UndefinedCitizenInt$company(),
-    _isc.UuidValue? oldCompanyId = const _issu.$UndefinedUuidValue(),
+    _isc.UuidValue? oldCompanyId = const _isc.$UndefinedUuidValue(),
     _i441ok8u.CompanyUuid? oldCompany = const _UndefinedCitizenInt$company(),
   });
   @override
@@ -134,12 +132,12 @@ abstract class CitizenInt
 
 class _Undefined {}
 
-class _UndefinedCitizenInt$address extends _issu.UndefinedSentinel
+class _UndefinedCitizenInt$address extends _isc.UndefinedSentinel
     implements _ih0efjtk.AddressUuid {
   const _UndefinedCitizenInt$address();
 }
 
-class _UndefinedCitizenInt$company extends _issu.UndefinedSentinel
+class _UndefinedCitizenInt$company extends _isc.UndefinedSentinel
     implements _i441ok8u.CompanyUuid {
   const _UndefinedCitizenInt$company();
 }
@@ -173,23 +171,23 @@ class _CitizenIntImpl extends CitizenInt {
     _ih0efjtk.AddressUuid? address = const _UndefinedCitizenInt$address(),
     _isc.UuidValue? companyId,
     _i441ok8u.CompanyUuid? company = const _UndefinedCitizenInt$company(),
-    _isc.UuidValue? oldCompanyId = const _issu.$UndefinedUuidValue(),
+    _isc.UuidValue? oldCompanyId = const _isc.$UndefinedUuidValue(),
     _i441ok8u.CompanyUuid? oldCompany = const _UndefinedCitizenInt$company(),
   }) {
     return CitizenInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _issu.UndefinedSentinel
+      address: address is _isc.UndefinedSentinel
           ? this.address?.copyWith()
           : address,
       companyId: companyId ?? this.companyId,
-      company: company is _issu.UndefinedSentinel
+      company: company is _isc.UndefinedSentinel
           ? this.company?.copyWith()
           : company,
-      oldCompanyId: oldCompanyId is _issu.UndefinedSentinel
+      oldCompanyId: oldCompanyId is _isc.UndefinedSentinel
           ? this.oldCompanyId
           : oldCompanyId,
-      oldCompany: oldCompany is _issu.UndefinedSentinel
+      oldCompany: oldCompany is _isc.UndefinedSentinel
           ? this.oldCompany?.copyWith()
           : oldCompany,
     );

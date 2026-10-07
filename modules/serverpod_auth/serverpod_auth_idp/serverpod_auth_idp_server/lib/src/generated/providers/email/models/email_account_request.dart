@@ -8,15 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, depend_on_referenced_packages
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
     as _i99s0abf;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../../../common/secret_challenge/models/secret_challenge.dart'
     as _i7k1fa50;
 
@@ -108,13 +106,13 @@ abstract class EmailAccountRequest
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   EmailAccountRequest copyWith({
-    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     DateTime? createdAt,
     String? email,
     _is.UuidValue? challengeId,
     _i7k1fa50.SecretChallenge? challenge =
         const _UndefinedEmailAccountRequest$challenge(),
-    _is.UuidValue? createAccountChallengeId = const _issu.$UndefinedUuidValue(),
+    _is.UuidValue? createAccountChallengeId = const _is.$UndefinedUuidValue(),
     _i7k1fa50.SecretChallenge? createAccountChallenge =
         const _UndefinedEmailAccountRequest$challenge(),
   });
@@ -173,7 +171,7 @@ abstract class EmailAccountRequest
   }
 }
 
-class _UndefinedEmailAccountRequest$challenge extends _issu.UndefinedSentinel
+class _UndefinedEmailAccountRequest$challenge extends _is.UndefinedSentinel
     implements _i7k1fa50.SecretChallenge {
   const _UndefinedEmailAccountRequest$challenge();
 }
@@ -202,29 +200,29 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
   @_is.useResult
   @override
   EmailAccountRequest copyWith({
-    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     DateTime? createdAt,
     String? email,
     _is.UuidValue? challengeId,
     _i7k1fa50.SecretChallenge? challenge =
         const _UndefinedEmailAccountRequest$challenge(),
-    _is.UuidValue? createAccountChallengeId = const _issu.$UndefinedUuidValue(),
+    _is.UuidValue? createAccountChallengeId = const _is.$UndefinedUuidValue(),
     _i7k1fa50.SecretChallenge? createAccountChallenge =
         const _UndefinedEmailAccountRequest$challenge(),
   }) {
     return EmailAccountRequest(
-      id: id is _issu.UndefinedSentinel ? this.id : id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       createdAt: createdAt ?? this.createdAt,
       email: email ?? this.email,
       challengeId: challengeId ?? this.challengeId,
-      challenge: challenge is _issu.UndefinedSentinel
+      challenge: challenge is _is.UndefinedSentinel
           ? this.challenge?.copyWith()
           : challenge,
       createAccountChallengeId:
-          createAccountChallengeId is _issu.UndefinedSentinel
+          createAccountChallengeId is _is.UndefinedSentinel
           ? this.createAccountChallengeId
           : createAccountChallengeId,
-      createAccountChallenge: createAccountChallenge is _issu.UndefinedSentinel
+      createAccountChallenge: createAccountChallenge is _is.UndefinedSentinel
           ? this.createAccountChallenge?.copyWith()
           : createAccountChallenge,
     );

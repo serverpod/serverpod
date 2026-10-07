@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/generated_relation_field/generated_relation_company.dart'
     as _ipeijyfj;
@@ -128,8 +126,7 @@ abstract class GeneratedRelationEmployee
 
 class _Undefined {}
 
-class _UndefinedGeneratedRelationEmployee$company
-    extends _issu.UndefinedSentinel
+class _UndefinedGeneratedRelationEmployee$company extends _isc.UndefinedSentinel
     implements _ipeijyfj.GeneratedRelationCompany {
   const _UndefinedGeneratedRelationEmployee$company();
 }
@@ -169,13 +166,13 @@ class _GeneratedRelationEmployeeImpl extends GeneratedRelationEmployee {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       customCompanyId: customCompanyId ?? this.customCompanyId,
-      company: company is _issu.UndefinedSentinel
+      company: company is _isc.UndefinedSentinel
           ? this.company?.copyWith()
           : company,
       customPreviousCompanyId: customPreviousCompanyId is int?
           ? customPreviousCompanyId
           : this.customPreviousCompanyId,
-      previousCompany: previousCompany is _issu.UndefinedSentinel
+      previousCompany: previousCompany is _isc.UndefinedSentinel
           ? this.previousCompany?.copyWith()
           : previousCompany,
     );
