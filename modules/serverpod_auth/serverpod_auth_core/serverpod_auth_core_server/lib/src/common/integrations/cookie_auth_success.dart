@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_serialization/undefined_sentinel.dart';
 
 import '../../generated/protocol.dart';
 

@@ -79,17 +79,6 @@ class SerializableModelLibraryGenerator {
     var codeMap = <String, String>{};
     for (var (:entry, :library) in libraries) {
       var path = entry.model.getFullFilePath(config, serverCode: serverCode);
-      if (entry.allocator.imports.any(
-        (directive) => directive.url == serverpodUndefinedSentinelUrl,
-      )) {
-        // Serverpod's runtime packages provide serialization transitively.
-        // Applications need no direct dependency for generated sentinels.
-        library = library.rebuild(
-          (builder) =>
-              builder.ignoreForFile.add('depend_on_referenced_packages'),
-        );
-      }
-
       codeMap[path] = library.generateCode(
         allocator: entry.allocator,
         formatter: GeneratedDartFormatters.of(path),
@@ -749,7 +738,7 @@ class SerializableModelLibraryGenerator {
       yield Class((c) {
         c
           ..name = sentinel.name
-          ..extend = refer('UndefinedSentinel', serverpodUndefinedSentinelUrl)
+          ..extend = refer('UndefinedSentinel', serverpodUrl(serverCode))
           ..implements.add(
             sentinel.type.reference(
               serverCode,
@@ -779,7 +768,7 @@ class SerializableModelLibraryGenerator {
     return TypeReference((t) {
       t
         ..symbol = '\$Undefined${type.className}'
-        ..url = serverpodUndefinedSentinelUrl
+        ..url = serverpodUrl(serverCode)
         ..types.addAll(
           type.generics.map(
             (generic) => generic.reference(
@@ -1186,7 +1175,7 @@ class SerializableModelLibraryGenerator {
             );
       } else if (field.type.nullable && _hasTypedCopyWithSentinel(field.type)) {
         valueDefinition = refer(field.name)
-            .isA(refer('UndefinedSentinel', serverpodUndefinedSentinelUrl))
+            .isA(refer('UndefinedSentinel', serverpodUrl(serverCode)))
             .conditional(assignment, refer(field.name));
       } else if (field.type.nullable) {
         valueDefinition = refer(field.name)
