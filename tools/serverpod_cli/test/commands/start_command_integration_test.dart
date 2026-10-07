@@ -15,6 +15,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/runner.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/commands/stop.dart' show awaitRunnerShutdown;
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart';
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
@@ -617,6 +618,149 @@ database:
       );
     },
   );
+
+  group(
+    'Given a runner spawned by serverpod start --no-tui,',
+    // A child process cannot be sent SIGINT on Windows.
+    testOn: '!windows',
+    skip: !hasUnixSocketSupport(),
+    () {
+      late Directory serverDirectory;
+      late Process start;
+
+      setUpAll(() async {
+        final projectRoot = await _createRunnableTestProject();
+        serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
+      });
+
+      setUp(() async {
+        start = await _startSubprocess(
+          ['start', '--no-tui'],
+          serverDirectory: serverDirectory,
+        );
+        addTearDown(() => _stopRunnerIfLive(serverDirectory.path));
+        var exited = false;
+        unawaited(start.exitCode.then((_) => exited = true));
+        expect(
+          await _awaitStage(
+            serverDirectory.path,
+            RunnerStage.running,
+            until: () => exited,
+          ),
+          isTrue,
+        );
+      });
+
+      test(
+        'when it is interrupted, '
+        'then it leaves with zero and the runner stops',
+        () async {
+          start.kill(ProcessSignal.sigint);
+
+          expect(await start.exitCode, 0);
+          expect(await awaitRunnerShutdown(serverDirectory.path), isTrue);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a runner started before serverpod start --no-tui attached to it,',
+    // A child process cannot be sent SIGINT on Windows.
+    testOn: '!windows',
+    skip: !hasUnixSocketSupport(),
+    () {
+      late Directory serverDirectory;
+      late Process start;
+
+      setUpAll(() async {
+        final projectRoot = await _createRunnableTestProject();
+        serverDirectory = Directory(p.join(projectRoot.path, 'test_server'));
+      });
+
+      setUp(() async {
+        // `runner start` would wait for addresses this pod never reports.
+        final runner = await _startSubprocess(
+          ['runner', 'serve'],
+          serverDirectory: serverDirectory,
+        );
+        addTearDown(() => _terminateRunnerProcessTree(runner));
+        var runnerExited = false;
+        unawaited(runner.exitCode.then((_) => runnerExited = true));
+        expect(
+          await _awaitStage(
+            serverDirectory.path,
+            RunnerStage.running,
+            until: () => runnerExited,
+          ),
+          isTrue,
+        );
+
+        start = await _startSubprocess(
+          ['start', '--no-tui'],
+          serverDirectory: serverDirectory,
+        );
+        final output = StringBuffer();
+        start.stdout.transform(utf8.decoder).listen(output.write);
+        var exited = false;
+        unawaited(start.exitCode.then((_) => exited = true));
+        while (!output.toString().contains('--- server running ---')) {
+          expect(exited, isFalse, reason: 'start left early:\n$output');
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+        }
+      });
+
+      test(
+        'when it is interrupted, '
+        'then it leaves with zero and the runner keeps running',
+        () async {
+          start.kill(ProcessSignal.sigint);
+
+          expect(await start.exitCode, 0);
+          expect(await resolveRunner(serverDirectory.path), isA<LiveRunner>());
+        },
+      );
+    },
+  );
+}
+
+/// Spawns the compiled CLI with [command] against [serverDirectory].
+///
+/// The runner it brings up is detached, so [_stopRunnerIfLive] ends it.
+Future<Process> _startSubprocess(
+  List<String> command, {
+  required Directory serverDirectory,
+}) async {
+  final dillPath = await _compileStartCommandRunner();
+  final process = await Process.start(
+    Platform.resolvedExecutable,
+    [
+      dillPath,
+      '--no-interactive',
+      '--no-analytics',
+      ...command,
+      '--directory',
+      serverDirectory.path,
+      '--no-watch',
+      '--no-flutter',
+      '--no-docker',
+    ],
+    workingDirectory: Directory.current.path,
+    // RunnerRegistry.defaultDir does not reach the child process.
+    environment: {
+      ...Platform.environment,
+      'SERVERPOD_RUNNER_REGISTRY_DIR': RunnerRegistry.defaultDir!.path,
+    },
+  );
+  process.stderr.drain<void>().ignore();
+  return process;
+}
+
+/// Stops the runner serving [serverDir] if one answers, and waits it out.
+Future<void> _stopRunnerIfLive(String serverDir) async {
+  if (await resolveRunner(serverDir) is! LiveRunner) return;
+  await _stopRunner(serverDir);
+  await awaitRunnerShutdown(serverDir);
 }
 
 /// Runs `serverpod runner serve` in this isolate, and stops it once degraded.
