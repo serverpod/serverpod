@@ -45,6 +45,9 @@ class RunnerStateBinding {
     _subs.add(client.events.listen(_onEvent));
     _subs.add(
       client.connectionChanges.listen((connected) {
+        // A runner that drops without announcing is gone, so a reconnect
+        // reaches another one.
+        if (!connected) _state.ownsRunner = false;
         if (connected) _applyRunnerState();
         holder.markDirty();
       }),

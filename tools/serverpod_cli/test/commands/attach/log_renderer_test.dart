@@ -500,6 +500,35 @@ void main() {
     );
 
     test(
+      'when interrupted after the runner was replaced by another on the '
+      'same socket, '
+      'then it leaves the replacement running',
+      () async {
+        final session = attachWithLogStream(
+          server.socketPath,
+          ownsRunner: true,
+          out: sink,
+          interrupts: interrupts.stream,
+        );
+        await waitFor(() => sink.lines.isNotEmpty);
+
+        await server.close();
+        var stops = 0;
+        runner = FakeRunnerApi()..onStop = () async => stops++;
+        server = RunnerSocketServer(serverDir: tempDir.path);
+        await server.start();
+        server.connect(runner);
+        await waitFor(
+          () => sink.lines.contains('--- reattached to the runner ---'),
+        );
+        interrupts.add(ProcessSignal.sigint);
+
+        expect(await session, 0);
+        expect(stops, 0);
+      },
+    );
+
+    test(
       'when interrupted while the runner refuses to stop, '
       'then it says so and leaves with one',
       () async {

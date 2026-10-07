@@ -75,12 +75,13 @@ Future<int> attachWithLogStream(
         ProcessSignal.sigint.watch(),
         if (!Platform.isWindows) ProcessSignal.sigterm.watch(),
       ]);
+  var owned = ownsRunner;
   var stopRequested = false;
   final signalSub = signals.listen((_) {
     if (done.isCompleted) return;
     // A starting runner stops only at its next checkpoint, so a second signal
     // leaves without waiting for it.
-    if (!ownsRunner || stopRequested) return done.complete(0);
+    if (!owned || stopRequested) return done.complete(0);
     stopRequested = true;
     unawaited(
       client.stop().catchError((Object e) {
@@ -104,6 +105,9 @@ Future<int> attachWithLogStream(
   });
 
   final connectionSub = client.connectionChanges.listen((connected) {
+    // A runner that drops without announcing is gone, so a reconnect reaches
+    // another one.
+    if (!connected) owned = false;
     sink.writeln(
       connected
           ? '--- reattached to the runner ---'
