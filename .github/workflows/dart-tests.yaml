@@ -1315,25 +1315,22 @@ jobs:
           flutter-version: "3.44.4"
           cache: false
       - name: Run publish check
-        continue-on-error: true
-        id: run_publish
-        shell: bash
-        run: dart run melos publish --dry-run --yes 2>&1 | tee publish_output.txt
-      - name: Highlight publish errors
         shell: bash
         run: |
-          if [ -f publish_output.txt ]; then
-            # Print lines that begin with "ERROR: " to make them stand out in logs
-            # Because the publish --dry-run does not support ignoring warnings,
-            # we fail the step if any ERROR lines are found.
-            if grep -nE '^ERROR: ' publish_output.txt >/dev/null; then
-              echo "Packages with errors (lines from melos output):"
-              grep -nE '^ERROR: ' publish_output.txt || true
-              exit 1
-            else
-              echo "No ERROR lines found in melos output."
+          # `dart pub publish --dry-run` exits 65 for warnings as well as
+          # errors, so only pub's own verdict line tells them apart.
+          FAILED=()
+          while read -r PACKAGE; do
+            echo "### $PACKAGE"
+            STATUS=0
+            OUTPUT=$(cd "$PACKAGE" && dart pub get >/dev/null && dart pub publish --dry-run 2>&1) || STATUS=$?
+            if [[ $STATUS -ne 0 && $STATUS -ne 65 ]] || grep -q "missing some requirements" <<<"$OUTPUT"; then
+              echo "$OUTPUT"
+              FAILED+=("$PACKAGE")
             fi
-          else
-            echo "publish_output.txt not found."
+          done < PUBLISHABLE_PACKAGES
+          if (( ${#FAILED[@]} )); then
+            echo "Publish check failed for:"
+            printf '  %s\n' "${FAILED[@]}"
             exit 1
           fi
