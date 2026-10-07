@@ -216,20 +216,25 @@ class MainScreen extends StatelessComponent {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'The server was already running when you attached.',
+              'The server was already running when `serverpod start` was '
+              'called.',
+              style: TextStyle(color: theme.onSurface),
+            ),
+            Text(
+              'What would you like to do?',
               style: TextStyle(color: theme.onSurface),
             ),
             const SizedBox(height: 1),
             for (final (key, desc) in const [
-              ('Q', 'Leave, keeping the server running'),
-              ('Shift+Q', 'Stop the server'),
+              ('Q', 'Quit and leave the server running'),
+              ('Shift+Q', 'Stop the server and quit'),
               ('Esc', 'Cancel'),
             ])
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                    width: 9,
+                    width: 10,
                     child: Text(
                       key,
                       style: TextStyle(

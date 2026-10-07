@@ -98,13 +98,16 @@ void main() {
         await _sendKey(tester, LogicalKey.keyQ);
 
         expect(state.showQuitDialog, isTrue);
+        final screen = tester.terminalState;
         expect(
-          tester.terminalState.containsText(
-            'Leave, keeping the server running',
-          ),
+          screen.containsText('Q         Quit and leave the server running'),
           isTrue,
         );
-        expect(tester.terminalState.containsText('Stop the server'), isTrue);
+        expect(
+          screen.containsText('Shift+Q   Stop the server and quit'),
+          isTrue,
+        );
+        expect(screen.containsText('Esc       Cancel'), isTrue);
         expect(quitCalls, 0);
         expect(stopCalls, 0);
       },
