@@ -260,14 +260,23 @@ Future<GenerateResult> analyzeAndGenerate({
   bool verifyStaleness = true,
   Map<String, FileStamp>? sourceStats,
 }) async {
+  // A full run generates everything regardless of what the analyzers make of
+  // the changes, so the only reasons to prime them up front are an incremental
+  // run, which decides what to generate from the result, and a run that may
+  // return early as up to date, which has to leave them primed for the
+  // incremental loop that follows. Otherwise priming only resolves every file
+  // again for a verdict that is discarded, and generation re-analyzes against
+  // its own freshly written models anyway.
   var requirements = GenerationRequirements.none;
-  await log.progress('Analyzing changes', () async {
-    requirements = await analyzers.update(
-      config: config,
-      affectedPaths: affectedPaths,
-    );
-    return true;
-  });
+  if (incremental || verifyStaleness) {
+    await log.progress('Analyzing changes', () async {
+      requirements = await analyzers.update(
+        config: config,
+        affectedPaths: affectedPaths,
+      );
+      return true;
+    });
+  }
   if (incremental) {
     if (!requirements.generateModels && !requirements.generateProtocol) {
       return (
