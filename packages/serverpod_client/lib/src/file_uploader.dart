@@ -41,6 +41,9 @@ class FileUploader {
     }
     _attemptedUpload = true;
 
+    // The client is closed in the `finally` below instead of relying on the
+    // response stream's `onDone`, which is skipped when the stream errors.
+    final client = http.Client();
     try {
       switch (_uploadDescription.type) {
         case _UploadType.binary:
@@ -58,7 +61,7 @@ class FileUploader {
 
           final (_, response) = await (
             stream.pipe(request.sink),
-            request.send(),
+            client.send(request),
           ).wait;
           await response.stream.drain();
 
@@ -89,13 +92,15 @@ class FileUploader {
             request.fields[key] = _uploadDescription.requestFields[key]!;
           }
 
-          var response = await request.send();
+          var response = await client.send(request);
           await response.stream.drain();
 
           return response.statusCode == 204;
       }
     } catch (e) {
       return false;
+    } finally {
+      client.close();
     }
   }
 }

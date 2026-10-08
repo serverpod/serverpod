@@ -175,6 +175,24 @@ void main() {
       await server.awaitNoOpenConnections();
     },
   );
+
+  test(
+    'Given a multipart upload description,'
+    'when the response stream fails,'
+    'then the connection is released.',
+    () async {
+      server.statusCode = 403;
+      server.failResponseStream = true;
+      final uploader = FileUploader(_multipartDescription(server.url));
+
+      final uploaded = await uploader.upload(
+        Stream.fromIterable([_lastChunk]),
+      );
+
+      expect(uploaded, isFalse);
+      await server.awaitNoOpenConnections();
+    },
+  );
 }
 
 /// Uploads the test file through [upload] and fails unless the server
@@ -234,6 +252,11 @@ class _RecordingServer {
   final _waiters = <(int, Completer<void>)>[];
 
   int statusCode = 200;
+
+  /// When true, the response is sent with a `Content-Encoding: gzip` header
+  /// and a body that is not valid gzip, so the client's response stream
+  /// emits an error while decoding it.
+  bool failResponseStream = false;
   int? contentLength;
   bool? chunked;
 
@@ -285,6 +308,10 @@ class _RecordingServer {
       });
     }
     request.response.statusCode = statusCode;
+    if (failResponseStream) {
+      request.response.headers.set(HttpHeaders.contentEncodingHeader, 'gzip');
+      request.response.add(const [0, 1, 2, 3]);
+    }
     await request.response.close();
   }
 
