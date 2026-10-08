@@ -165,7 +165,7 @@ void main() {
   test(
     'Given a multipart upload description,'
     'when the upload completes,'
-    'then the response is drained and the connection is released.',
+    'then the connection is released.',
     () async {
       server.statusCode = 204;
       final uploader = FileUploader(_multipartDescription(server.url));
