@@ -247,4 +247,31 @@ void main() {
       },
     );
   });
+
+  group('Given a generated file with CRLF line endings,', () {
+    test('then it is not reported as written when generated again.', () async {
+      const index = 0;
+      final model = _model(index);
+
+      await ServerpodCodeGenerator.generateSerializableModels(
+        models: [model],
+        config: config,
+      );
+
+      final file = File(generatedPath(index));
+      final originalContent = await file.readAsString();
+      final crlfContent = originalContent.replaceAll('\n', '\r\n');
+
+      await file.writeAsString(crlfContent);
+
+      final result = await ServerpodCodeGenerator.generateSerializableModels(
+        models: [model],
+        config: config,
+      );
+
+      expect(await file.readAsString(), crlfContent);
+      expect(result.all, contains(generatedPath(index)));
+      expect(result.written, isNot(contains(generatedPath(index))));
+    });
+  });
 }
