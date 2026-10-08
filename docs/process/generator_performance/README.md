@@ -129,7 +129,9 @@ nothing needed generating. `none` in the analysis row means the CLI did not
 analyze the changes as a step of its own; compare such runs by wall clock. A
 one-shot run on an up-to-date project has neither.
 Ratios are baseline over candidate, so values above
-1.00x mean the candidate is faster.
+1.00x mean the candidate is faster. The CLI prints whole milliseconds, so a
+median of 0 ms is a time below one millisecond. It counts as 1 ms in a ratio:
+900 ms against 0 ms is 900x.
 
 The report also records revision identities, differing dependencies, kernel
 hashes, working-tree state, fixture sizes, the SDK version, and all samples.

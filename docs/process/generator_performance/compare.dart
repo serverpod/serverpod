@@ -555,7 +555,7 @@ Future<void> main(List<String> args) async {
           final after = values(operation, mode, 'candidate', metric);
           final ratio = before.isEmpty || after.isEmpty
               ? '-'
-              : '${(median(before) / median(after)).toStringAsFixed(2)}x';
+              : _formatRatio(_ratio(median(before), median(after)));
           stdout.writeln(
             '| $operation | $name | ${summary(before)} | ${summary(after)} | $ratio | ${before.length} / ${after.length} |',
           );
@@ -565,7 +565,7 @@ Future<void> main(List<String> args) async {
     }
 
     stdout.writeln(
-      'Analysis and generation are the times the CLI prints for `Analyzing changes` and `Generating code`, summed over the cycles one change triggers. The CLI prints whole milliseconds below 100 ms and tenths of a second from there on. `none` for generation means the CLI decided that nothing needed generating; `none` for analysis means the CLI did not analyze the changes as a step of its own, so compare wall clock instead. Wall clock is measured by the runner: for watch, from applying the change until the last cycle it triggered finished, which for a cycle that generated code is when its generation stamp is written, and including file watcher latency; for one-shot, the whole process including CLI startup. A one-shot run on an up-to-date project has neither an analysis nor a generation time. Ratios describe these fixtures on this host, not universal gains; values above 1.00x mean the candidate is faster. These summaries are descriptive, not statistical confidence tests. All samples are retained below.\n',
+      'Analysis and generation are the times the CLI prints for `Analyzing changes` and `Generating code`, summed over the cycles one change triggers. The CLI prints whole milliseconds below 100 ms and tenths of a second from there on. `none` for generation means the CLI decided that nothing needed generating; `none` for analysis means the CLI did not analyze the changes as a step of its own, so compare wall clock instead. Wall clock is measured by the runner: for watch, from applying the change until the last cycle it triggered finished, which for a cycle that generated code is when its generation stamp is written, and including file watcher latency; for one-shot, the whole process including CLI startup. A one-shot run on an up-to-date project has neither an analysis nor a generation time. Ratios describe these fixtures on this host, not universal gains; values above 1.00x mean the candidate is faster. A median of 0 ms, which means the CLI printed a time below one millisecond, counts as 1 ms in a ratio. These summaries are descriptive, not statistical confidence tests. All samples are retained below.\n',
     );
     stdout.writeln('| Operation | Mode | Revision | Metric | Samples ms |');
     stdout.writeln('| --- | --- | --- | --- | --- |');
@@ -594,6 +594,25 @@ Future<void> main(List<String> args) async {
       await scratch.delete(recursive: true);
     }
   }
+}
+
+/// How many times faster the candidate is than the baseline.
+///
+/// The CLI prints whole milliseconds, so a median of 0 ms is a time below one
+/// millisecond. It counts as 1 ms, the smallest time the CLI can print, which
+/// keeps the ratio finite: 900 ms against 0 ms is 900x.
+double _ratio(double baselineMs, double candidateMs) =>
+    (baselineMs < 1 ? 1 : baselineMs) / (candidateMs < 1 ? 1 : candidateMs);
+
+/// [ratio] for the report: up to two decimals without trailing zeros, so
+/// `2x` rather than `2.00x`, and none for ratios of 100 and more.
+String _formatRatio(double ratio) {
+  if (ratio >= 100) return '${ratio.toStringAsFixed(0)}x';
+  final text = ratio
+      .toStringAsFixed(2)
+      .replaceFirst(RegExp(r'0+$'), '')
+      .replaceFirst(RegExp(r'\.$'), '');
+  return '${text}x';
 }
 
 double? _analysis(Sample sample) => sample.analysisMs;
