@@ -80,10 +80,14 @@ abstract class ServerpodCodeGenerator {
           continue;
         }
 
-        // Skip the write if the file already has the same content.
+        // Skip the write if the file already has the same content,
+        // regardless of line-ending style.
         if (out.existsSync()) {
           final existing = await out.readAsString();
-          if (existing == file.value) continue;
+          final normalizedExisting = existing.replaceAll('\r\n', '\n');
+          final normalizedGenerated = file.value.replaceAll('\r\n', '\n');
+
+          if (normalizedExisting == normalizedGenerated) continue;
         }
 
         await out.create(recursive: true);
