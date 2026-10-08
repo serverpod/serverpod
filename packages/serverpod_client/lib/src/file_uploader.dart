@@ -27,8 +27,9 @@ class FileUploader {
   }
 
   /// Uploads a file from a [Stream], returns true if successful. The [length]
-  /// of the stream is optional, but if it's not provided for a multipart upload,
-  /// the entire file will be buffered in memory.
+  /// of the stream is optional. If it's not provided for a multipart upload
+  /// and the upload description doesn't pin the exact file size, the entire
+  /// file will be buffered in memory.
   Future<bool> upload(Stream<List<int>> stream, [int? length]) =>
       _upload(stream.toByteStream(), length);
 
@@ -65,6 +66,9 @@ class FileUploader {
           return response.statusCode == 200 || response.statusCode == 204;
 
         case _UploadType.multipart:
+          // Multipart providers require a Content-Length, so a file size
+          // pinned by the server's policy lets the stream be sent unbuffered.
+          length ??= _uploadDescription.contentLength;
           var multipartFile = switch (length) {
             null => http.MultipartFile.fromBytes(
               _uploadDescription.field!,
@@ -113,6 +117,9 @@ class _UploadDescription {
   /// Custom headers for binary uploads.
   Map<String, String> headers = {};
 
+  /// Exact file size in bytes pinned by a multipart upload policy, if any.
+  int? contentLength;
+
   _UploadDescription(String description) {
     var data = jsonDecode(description);
     if (data is! Map<String, dynamic>) {
@@ -132,12 +139,42 @@ class _UploadDescription {
       field = data['field'];
       fileName = data['file-name'];
       requestFields = (data['request-fields'] as Map).cast<String, String>();
+      contentLength = _policyContentLength(requestFields);
     } else if (type == _UploadType.binary) {
       method = data['method'] as String?;
       if (data['headers'] != null) {
         headers = (data['headers'] as Map).cast<String, String>();
       }
     }
+  }
+
+  /// Reads the file size from a presigned POST policy whose
+  /// `content-length-range` condition has equal lower and upper bounds.
+  static int? _policyContentLength(Map<String, String> requestFields) {
+    String? policy;
+    for (var entry in requestFields.entries) {
+      if (entry.key.toLowerCase() == 'policy') policy = entry.value;
+    }
+    if (policy == null) return null;
+
+    try {
+      var decoded = jsonDecode(utf8.decode(base64.decode(policy)));
+      if (decoded is! Map) return null;
+      var conditions = decoded['conditions'];
+      if (conditions is! List) return null;
+      for (var condition in conditions) {
+        if (condition is List &&
+            condition.length == 3 &&
+            condition[0] == 'content-length-range' &&
+            condition[1] is int &&
+            condition[1] == condition[2]) {
+          return condition[1] as int;
+        }
+      }
+    } on FormatException {
+      return null;
+    }
+    return null;
   }
 }
 
