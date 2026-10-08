@@ -8,6 +8,7 @@
 - perf: Improves file uploader performance by using streamed uploads instead of buffered uploads.
 - perf: Speeds up deserialization of shared and module models by ~x3.
 - perf: Speeds up SQLite operations from ~1.1x to ~55x.
+- chore: Adds a Serverpod Cloud deploy workflow to the project template
 
 Also includes all fixes from 4.0.3 and 4.0.4. Version 4.1.0-beta.2 was skipped due to a packaging issue.
 
