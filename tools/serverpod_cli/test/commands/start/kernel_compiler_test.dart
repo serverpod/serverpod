@@ -1,9 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
-import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
@@ -18,7 +18,7 @@ void main() {
     await closeLogger();
   });
 
-  group('Given a KernelCompiler with a valid Dart project', () {
+  group('Given a KernelCompiler with a valid Dart project,', () {
     late Directory tempDir;
     late KernelCompiler compiler;
 
@@ -83,34 +83,16 @@ void main() {
     );
 
     test(
-      'when isDillUpToDate is called with a leftover compile marker, '
-      'then it returns false',
-      () async {
-        await compiler.start();
-        await compiler.compile();
-        await compiler.accept();
-        expect(await compiler.isDillUpToDate({}), isTrue);
-
-        File('${compiler.outputDill}.compiling').createSync();
-
-        expect(await compiler.isDillUpToDate({}), isFalse);
-      },
-      timeout: const Timeout(Duration(seconds: 60)),
-    );
-
-    test(
-      'when compileIfNeeded runs with a leftover compile marker, '
+      'when compileFromCache runs with a leftover compile marker, '
       'then it discards the cached dill and recompiles',
       () async {
-        final watchDirs = {p.join(tempDir.path, 'bin')};
-
         await compiler.start();
-        expect(await compiler.compileIfNeeded(watchDirs), isTrue);
+        expect(await compiler.compileFromCache(), isTrue);
 
         // Simulate a previous session killed mid-compile.
         File('${compiler.outputDill}.compiling').createSync();
 
-        expect(await compiler.compileIfNeeded(watchDirs), isTrue);
+        expect(await compiler.compileFromCache(), isTrue);
         expect(File('${compiler.outputDill}.compiling').existsSync(), isFalse);
         expect(File(compiler.outputDill).existsSync(), isTrue);
       },
@@ -118,75 +100,68 @@ void main() {
     );
 
     test(
-      'when the entrypoint changes, then the cached kernel is not reused',
+      'when the entrypoint changes, '
+      'then the new entrypoint runs from the cached kernel',
       () async {
-        final watchDirs = {p.join(tempDir.path, 'bin')};
         await compiler.start();
-        expect(await compiler.compileIfNeeded(watchDirs), isTrue);
+        expect(await compiler.compileFromCache(), isTrue);
         await compiler.dispose();
 
         final alternate = p.join(tempDir.path, 'bin', 'main_enterprise.dart');
-        await File(alternate).writeAsString('void main() {}');
+        await File(
+          alternate,
+        ).writeAsString("void main() { print('enterprise'); }");
         final enterpriseCompiler = KernelCompiler(
           entryPoint: alternate,
           outputDill: compiler.outputDill,
           packagesPath: compiler.packagesPath,
         );
         try {
-          expect(await enterpriseCompiler.isDillUpToDate({}), isFalse);
           await enterpriseCompiler.start();
-          expect(await enterpriseCompiler.compileIfNeeded(watchDirs), isTrue);
-          expect(await enterpriseCompiler.isDillUpToDate({}), isTrue);
+          expect(await enterpriseCompiler.compileFromCache(), isTrue);
         } finally {
           await enterpriseCompiler.dispose();
         }
+
+        expect(await _run(compiler), 'enterprise\n');
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
 
     test(
-      'when the entrypoint is edited outside the watched directories, '
-      'then a new compiler executes the edited source.',
+      'when the entrypoint is edited with its modification time preserved, '
+      'then a new compiler executes the edited source',
       () async {
         await compiler.start();
-        expect(await compiler.compileIfNeeded({}), isTrue);
+        expect(await compiler.compileFromCache(), isTrue);
         await compiler.dispose();
 
+        // Same length and timestamp, as after `cp -p` or an archive restore.
         final entrypoint = File(compiler.entryPoint);
-        await entrypoint.writeAsString("void main() { print('edited'); }");
-        final cachedModified = (await File(
-          compiler.outputDill,
-        ).stat()).modified;
-        await entrypoint.setLastModified(
-          cachedModified.add(const Duration(seconds: 1)),
-        );
+        final modified = (await entrypoint.stat()).modified;
+        await entrypoint.writeAsString('void main() { print("howdy"); }');
+        await entrypoint.setLastModified(modified);
 
         await compiler.start();
-        expect(await compiler.compileIfNeeded({}), isTrue);
-        final execution = await Process.run(compiler.dartExecutable, [
-          compiler.outputDill,
-        ]);
+        expect(await compiler.compileFromCache(), isTrue);
 
-        expect(execution.exitCode, 0);
-        expect(
-          (execution.stdout as String).replaceAll('\r\n', '\n'),
-          'edited\n',
-        );
-        expect(execution.stderr, isEmpty);
+        expect(await _run(compiler), 'howdy\n');
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
 
     test(
-      'when the entrypoint is deleted outside the watched directories, '
-      'then its cached kernel is no longer current.',
+      'when the entrypoint is deleted before a new compiler starts, '
+      'then compilation fails',
       () async {
         await compiler.start();
-        expect(await compiler.compileIfNeeded({}), isTrue);
+        expect(await compiler.compileFromCache(), isTrue);
+        await compiler.dispose();
 
         await File(compiler.entryPoint).delete();
 
-        expect(await compiler.isDillUpToDate({}), isFalse);
+        await compiler.start();
+        expect(await compiler.compileFromCache(), isFalse);
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
@@ -220,7 +195,7 @@ void main() {
       'then restarting the original entrypoint executes its own code.',
       () async {
         await compiler.start();
-        expect(await compiler.compileIfNeeded({}), isTrue);
+        expect(await compiler.compileFromCache(), isTrue);
         await compiler.dispose();
 
         final alternate = File(p.join(tempDir.path, 'bin', 'alternate.dart'));
@@ -235,34 +210,26 @@ void unused() { undefinedFunction(); }
         );
         try {
           await alternateCompiler.start();
-          expect(await alternateCompiler.compileIfNeeded({}), isFalse);
+          expect(await alternateCompiler.compileFromCache(), isFalse);
           await alternateCompiler.reject();
         } finally {
           await alternateCompiler.dispose();
         }
 
         await compiler.start();
-        expect(await compiler.compileIfNeeded({}), isTrue);
-        final execution = await Process.run(compiler.dartExecutable, [
-          compiler.outputDill,
-        ]);
+        expect(await compiler.compileFromCache(), isTrue);
 
-        expect(execution.exitCode, 0);
-        expect(
-          (execution.stdout as String).replaceAll('\r\n', '\n'),
-          'hello\n',
-        );
-        expect(execution.stderr, isEmpty);
+        expect(await _run(compiler), 'hello\n');
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
 
     test(
       'when another entrypoint compiles but stops before acceptance, '
-      'then its kernel cannot be reused as the original entrypoint.',
+      'then restarting the original entrypoint executes its own code',
       () async {
         await compiler.start();
-        expect(await compiler.compileIfNeeded({}), isTrue);
+        expect(await compiler.compileFromCache(), isTrue);
         await compiler.dispose();
 
         final alternate = File(p.join(tempDir.path, 'bin', 'alternate.dart'));
@@ -279,7 +246,61 @@ void unused() { undefinedFunction(); }
           await alternateCompiler.dispose();
         }
 
-        expect(await compiler.isDillUpToDate({}), isFalse);
+        await compiler.start();
+        expect(await compiler.compileFromCache(), isTrue);
+
+        expect(await _run(compiler), 'hello\n');
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when a compile is neither accepted nor rejected before a reset, '
+      'then the compiler is still able to compile',
+      () async {
+        await compiler.start();
+        expect((await compiler.compile()).errorCount, 0);
+
+        // No accept, no reject: reset has to send the Frontend Server back to
+        // a state a compile can start from, not assume it is already there.
+        await compiler.reset();
+
+        final result = await compiler.compile();
+
+        expect(result.errorCount, 0);
+        expect(result.dillOutput, compiler.outputDill);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when an incremental compile fails and is rejected, '
+      'then the compiler stays in incremental mode',
+      () async {
+        final mainFile = p.join(tempDir.path, 'bin', 'main.dart');
+
+        await compiler.start();
+        expect((await compiler.compile()).errorCount, 0);
+        await compiler.accept();
+        expect(compiler.needsFullCompile, isFalse);
+
+        await File(mainFile).writeAsString('void main() { undefinedFunc(); }');
+        expect(
+          (await compiler.compile(changedPaths: {mainFile})).errorCount,
+          greaterThan(0),
+        );
+        await compiler.reject();
+
+        // The Frontend Server rolled back to the accepted state, which is
+        // still a complete program; resetting it here would make every later
+        // compile a full one.
+        expect(compiler.needsFullCompile, isFalse);
+
+        await File(mainFile).writeAsString('void main() {}');
+        expect(
+          (await compiler.compile(changedPaths: {mainFile})).errorCount,
+          0,
+        );
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
@@ -311,7 +332,7 @@ void unused() { undefinedFunction(); }
     );
   });
 
-  group('Given a KernelCompiler with a file containing errors', () {
+  group('Given a KernelCompiler with a file containing errors,', () {
     late Directory tempDir;
     late KernelCompiler compiler;
 
@@ -347,16 +368,35 @@ void unused() { undefinedFunction(); }
 
     test(
       'when compile is called, '
-      'then it reports a non-zero error count and keeps the cache invalid.',
+      'then it reports a non-zero error count and keeps the compile marker',
       () async {
         await compiler.start();
         final result = await compiler.compile();
 
         expect(result.errorCount, greaterThan(0));
-        expect(
-          await compiler.isDillUpToDate({}),
-          isFalse,
-        );
+        expect(File('${compiler.outputDill}.compiling').existsSync(), isTrue);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when the failed compile is rejected and the file is fixed, '
+      'then the next compile writes a complete kernel to outputDill',
+      () async {
+        final mainFile = p.join(tempDir.path, 'bin', 'main.dart');
+
+        await compiler.start();
+        expect((await compiler.compile()).errorCount, greaterThan(0));
+        await compiler.reject();
+
+        await File(mainFile).writeAsString('void main() {}');
+        // No changedPaths: nothing has been accepted, so this is a full
+        // compile and the invalidated set would be ignored.
+        final result = await compiler.compile();
+
+        expect(result.errorCount, 0);
+        expect(result.dillOutput, compiler.outputDill);
+        await compiler.accept();
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
@@ -378,7 +418,7 @@ void unused() { undefinedFunction(); }
       );
 
       await compiler.start();
-      if (!await compiler.compileIfNeeded({})) {
+      if (!await compiler.compileFromCache()) {
         throw StateError('The initial project must compile successfully.');
       }
 
@@ -417,7 +457,7 @@ void unused() { undefinedFunction(); }
         );
 
         await compiler.start();
-        compiled = await compiler.compileIfNeeded({});
+        compiled = await compiler.compileFromCache();
         execution = await Process.run(compiler.dartExecutable, [
           compiler.outputDill,
         ]);
@@ -441,53 +481,33 @@ void unused() { undefinedFunction(); }
   group('Given a cached kernel that imports a local package,', () {
     late Directory tempDir;
     late KernelCompiler compiler;
-    late PackageDependencyTracker tracker;
     late File depFile;
+    late String packageConfigFile;
 
     setUp(() async {
       tempDir = await Directory.systemTemp.createTemp('kernel_compiler_test_');
       await _createMinimalDartProject(tempDir.path);
       final dartToolDir = p.join(tempDir.path, '.dart_tool');
+      packageConfigFile = p.join(dartToolDir, 'package_config.json');
 
-      depFile = File(p.join(tempDir.path, 'dep', 'lib', 'dep.dart'))
+      // Sources outside `lib/`, so nothing may assume the default layout.
+      depFile = File(p.join(tempDir.path, 'dep', 'src', 'dep.dart'))
         ..createSync(recursive: true)
         ..writeAsStringSync("String greeting() => 'original';");
       await File(p.join(tempDir.path, 'bin', 'main.dart')).writeAsString(
         "import 'package:dep/dep.dart';\n"
         'void main() => print(greeting());',
       );
-      await File(p.join(dartToolDir, 'package_config.json')).writeAsString('''
-{
-  "configVersion": 2,
-  "packages": [
-    { "name": "test_server", "rootUri": "..", "packageUri": "lib/" },
-    { "name": "dep", "rootUri": "../dep", "packageUri": "lib/" }
-  ]
-}
-''');
-      await File(p.join(dartToolDir, 'package_graph.json')).writeAsString('''
-{
-  "configVersion": 1,
-  "roots": ["test_server"],
-  "packages": [
-    { "name": "test_server", "version": "1.0.0", "dependencies": ["dep"] },
-    { "name": "dep", "version": "1.0.0", "dependencies": [] }
-  ]
-}
-''');
+      await File(packageConfigFile).writeAsString(_packageConfig('../dep'));
 
       compiler = KernelCompiler(
         entryPoint: p.join(tempDir.path, 'bin', 'main.dart'),
         outputDill: p.join(dartToolDir, 'serverpod', 'server.dill'),
-        packagesPath: p.join(dartToolDir, 'package_config.json'),
-      );
-      tracker = PackageDependencyTracker(
-        dartToolDir: dartToolDir,
-        packageName: 'test_server',
+        packagesPath: packageConfigFile,
       );
 
       await compiler.start();
-      if (!await compiler.compileIfNeeded(tracker.localPackageLibDirs())) {
+      if (!await compiler.compileFromCache()) {
         throw StateError('The initial project must compile successfully.');
       }
       await compiler.dispose();
@@ -499,32 +519,57 @@ void unused() { undefinedFunction(); }
     });
 
     test(
-      'when the package is edited before a new compiler starts, '
-      'then the edited package code runs.',
+      'when the package is edited with its modification time preserved, '
+      'then a new compiler executes the edited package code',
       () async {
-        await depFile.writeAsString("String greeting() => 'edited';");
-        final cachedModified = (await File(
-          compiler.outputDill,
-        ).stat()).modified;
-        await depFile.setLastModified(
-          cachedModified.add(const Duration(seconds: 1)),
-        );
+        final modified = (await depFile.stat()).modified;
+        await depFile.writeAsString("String greeting() => 'modified';");
+        await depFile.setLastModified(modified);
 
         await compiler.start();
-        expect(
-          await compiler.compileIfNeeded(tracker.localPackageLibDirs()),
-          isTrue,
-        );
-        final execution = await Process.run(compiler.dartExecutable, [
-          compiler.outputDill,
-        ]);
+        expect(await compiler.compileFromCache(), isTrue);
 
-        expect(execution.exitCode, 0);
+        expect(await _run(compiler), 'modified\n');
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when package_config.json moves the package, '
+      'then a new compiler executes the code at the new location',
+      () async {
+        File(p.join(tempDir.path, 'dep_v2', 'src', 'dep.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync("String greeting() => 'moved';");
+        await File(
+          packageConfigFile,
+        ).writeAsString(_packageConfig('../dep_v2'));
+
+        await compiler.start();
+        expect(await compiler.compileFromCache(), isTrue);
+
+        expect(await _run(compiler), 'moved\n');
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when the package is saved after a new compiler starts, '
+      'then the save compiles to an incremental kernel with the saved code',
+      () async {
+        await compiler.start();
+        expect(await compiler.compileFromCache(), isTrue);
+
+        await depFile.writeAsString("String greeting() => 'saved';");
+        final result = await compiler.compile(changedPaths: {depFile.path});
+        await compiler.accept();
+
+        expect(result.errorCount, 0);
+        expect(result.dillOutput, '${compiler.outputDill}.incremental.dill');
         expect(
-          (execution.stdout as String).replaceAll('\r\n', '\n'),
-          'edited\n',
+          latin1.decode(File(result.dillOutput!).readAsBytesSync()),
+          contains("'saved'"),
         );
-        expect(execution.stderr, isEmpty);
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
@@ -623,6 +668,28 @@ void unused() { undefinedFunction(); }
     );
   });
 }
+
+/// Runs [compiler]'s output kernel and returns its stdout.
+Future<String> _run(KernelCompiler compiler) async {
+  final execution = await Process.run(compiler.dartExecutable, [
+    compiler.outputDill,
+  ]);
+  expect(execution.exitCode, 0);
+  expect(execution.stderr, isEmpty);
+  return (execution.stdout as String).replaceAll('\r\n', '\n');
+}
+
+/// A package_config.json mapping `package:dep` to `src/` under [depRoot].
+String _packageConfig(String depRoot) =>
+    '''
+{
+  "configVersion": 2,
+  "packages": [
+    { "name": "test_server", "rootUri": "..", "packageUri": "lib/" },
+    { "name": "dep", "rootUri": "$depRoot", "packageUri": "src/" }
+  ]
+}
+''';
 
 /// Creates a minimal Dart project with package_config.json for FES.
 Future<void> _createMinimalDartProject(String dir) async {

@@ -1224,26 +1224,10 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         return const WatchLoopAborted(1);
       }
 
-      // Built now, so the first package_config.json change has a baseline.
-      final serverResolutionDartTool =
-          PackageDependencyTracker.resolveDartToolDir(
-            serverDir,
-            packageName: config.serverPackage,
-          );
-      serverDependencyTracker = serverResolutionDartTool == null
-          ? null
-          : PackageDependencyTracker(
-              dartToolDir: serverResolutionDartTool,
-              packageName: config.serverPackage,
-            );
-
       await localCompiler.start();
 
       if (buildOk) {
-        if (!await localCompiler.compileIfNeeded({
-          ...config.watchPaths(includeWeb: true, includeClientPackage: true),
-          ...?serverDependencyTracker?.localPackageLibDirs(),
-        })) {
+        if (!await localCompiler.compileFromCache()) {
           // Back to the empty state, so recovery does a full compile.
           await localCompiler.reject();
           log.error('Initial compilation failed.');
@@ -1259,6 +1243,19 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       compiler = localCompiler;
       nativeAssetsBuilder = localBuilder;
       dartExecutable = localCompiler.dartExecutable;
+
+      // Built now, so the first package_config.json change has a baseline.
+      final serverResolutionDartTool =
+          PackageDependencyTracker.resolveDartToolDir(
+            serverDir,
+            packageName: config.serverPackage,
+          );
+      serverDependencyTracker = serverResolutionDartTool == null
+          ? null
+          : PackageDependencyTracker(
+              dartToolDir: serverResolutionDartTool,
+              packageName: config.serverPackage,
+            );
     }
 
     // Initialized even without `--flutter`, for the apps' IDE info files.
@@ -1333,6 +1330,9 @@ Future<WatchLoopSetupResult> setupWatchLoop({
           );
         }
       });
+      // A pod that exited on its own goes back to the caller, which tells a
+      // kernel the VM refused from an application crash.
+      if (!listening && !serverProcess.isRunning) return serverProcess;
       // A pod the runner cannot see is one it cannot serve.
       if (!listening) {
         log.error(podVmServiceUnreachable);
@@ -1611,9 +1611,10 @@ class _PodVmServiceUnreachable implements Exception {
   const _PodVmServiceUnreachable();
 }
 
-/// Boots the initial server process, recovering once from a corrupt cached
-/// dill (a pod that dies before publishing its VM service URI never got past
-/// kernel loading). Returns `null` if the recovery recompile fails.
+/// Boots the initial server process, recovering once from a cached dill the
+/// VM refuses to load (a pod that dies before the runner reaches an isolate
+/// over its VM service never got past kernel loading). Returns `null` if the
+/// recovery recompile fails.
 @visibleForTesting
 Future<ServerProcess?> bootInitialServer({
   required String? initialDill,
@@ -1634,7 +1635,7 @@ Future<ServerProcess?> bootInitialServer({
 
   // exitCode is already completed whenever isRunning is false.
   final crashedLoadingKernel =
-      server.vmServiceUri == null &&
+      !server.reachedVmService &&
       !server.isRunning &&
       await server.exitCode != 0;
   if (!crashedLoadingKernel) return server;
