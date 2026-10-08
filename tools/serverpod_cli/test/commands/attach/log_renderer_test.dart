@@ -14,34 +14,34 @@ import '../../test_util/short_temp_dir.dart';
 import '../../test_util/wait_for.dart';
 
 void main() {
+  late Directory tempDir;
+  late RunnerSocketServer server;
+  late FakeRunnerApi runner;
+  late _RecordingSink sink;
+  late StreamController<ProcessSignal> interrupts;
+
+  setUp(() async {
+    tempDir = await createShortTempDir('lrt');
+    server = RunnerSocketServer(serverDir: tempDir.path);
+    await server.start();
+    runner = FakeRunnerApi();
+    server.connect(runner);
+    sink = _RecordingSink();
+    interrupts = StreamController<ProcessSignal>();
+  });
+
+  tearDown(() async {
+    await interrupts.close();
+    await server.close();
+    if (!runner.eventController.isClosed) {
+      await runner.eventController.close();
+    }
+    try {
+      tempDir.deleteSync(recursive: true);
+    } catch (_) {}
+  });
+
   group('Given a runner and a plain-text attach session,', () {
-    late Directory tempDir;
-    late RunnerSocketServer server;
-    late FakeRunnerApi runner;
-    late _RecordingSink sink;
-    late StreamController<ProcessSignal> interrupts;
-
-    setUp(() async {
-      tempDir = await createShortTempDir('lrt');
-      server = RunnerSocketServer(serverDir: tempDir.path);
-      await server.start();
-      runner = FakeRunnerApi();
-      server.connect(runner);
-      sink = _RecordingSink();
-      interrupts = StreamController<ProcessSignal>();
-    });
-
-    tearDown(() async {
-      await interrupts.close();
-      await server.close();
-      if (!runner.eventController.isClosed) {
-        await runner.eventController.close();
-      }
-      try {
-        tempDir.deleteSync(recursive: true);
-      } catch (_) {}
-    });
-
     test(
       'when it attaches to a runner that has been up for a while, '
       'then the retained history is printed before anything new',
@@ -443,6 +443,112 @@ void main() {
 
         expect(await session, 0);
         expect(stops, 0);
+      },
+    );
+  });
+
+  group('Given a plain-text attach session that spawned its runner,', () {
+    test(
+      'when interrupted, '
+      'then it stops the runner and leaves with the code the runner names',
+      () async {
+        var stops = 0;
+        runner.onStop = () async {
+          stops++;
+          runner.emit(
+            const StageChangedEvent(RunnerStage.stopping, exitCode: 3),
+          );
+        };
+
+        final session = attachWithLogStream(
+          server.socketPath,
+          ownsRunner: true,
+          out: sink,
+          interrupts: interrupts.stream,
+        );
+        await waitFor(() => sink.lines.isNotEmpty);
+
+        interrupts.add(ProcessSignal.sigterm);
+
+        expect(await session, 3);
+        expect(stops, 1);
+      },
+    );
+
+    test(
+      'when interrupted twice before the runner stops, '
+      'then it leaves with zero without asking twice',
+      () async {
+        var stops = 0;
+        runner.onStop = () async => stops++;
+
+        final session = attachWithLogStream(
+          server.socketPath,
+          ownsRunner: true,
+          out: sink,
+          interrupts: interrupts.stream,
+        );
+        await waitFor(() => sink.lines.isNotEmpty);
+
+        interrupts.add(ProcessSignal.sigint);
+        await waitFor(() => stops == 1);
+        interrupts.add(ProcessSignal.sigint);
+
+        expect(await session, 0);
+        expect(stops, 1);
+      },
+    );
+
+    test(
+      'when interrupted after the runner was replaced by another on the '
+      'same socket, '
+      'then it leaves the replacement running',
+      () async {
+        final session = attachWithLogStream(
+          server.socketPath,
+          ownsRunner: true,
+          out: sink,
+          interrupts: interrupts.stream,
+        );
+        await waitFor(() => sink.lines.isNotEmpty);
+
+        await server.close();
+        var stops = 0;
+        runner = FakeRunnerApi()..onStop = () async => stops++;
+        server = RunnerSocketServer(serverDir: tempDir.path);
+        await server.start();
+        server.connect(runner);
+        await waitFor(
+          () => sink.lines.contains('--- reattached to the runner ---'),
+        );
+        interrupts.add(ProcessSignal.sigint);
+
+        expect(await session, 0);
+        expect(stops, 0);
+      },
+    );
+
+    test(
+      'when interrupted while the runner refuses to stop, '
+      'then it says so and leaves with one',
+      () async {
+        runner.onStop = () async => throw StateError('refused');
+
+        final session = attachWithLogStream(
+          server.socketPath,
+          ownsRunner: true,
+          out: sink,
+          interrupts: interrupts.stream,
+        );
+        await waitFor(() => sink.lines.isNotEmpty);
+
+        interrupts.add(ProcessSignal.sigint);
+
+        expect(await session, 1);
+        expect(
+          sink.lines,
+          contains(startsWith('--- stopping the runner failed:')),
+        );
       },
     );
   });

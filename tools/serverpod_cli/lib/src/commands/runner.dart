@@ -87,7 +87,7 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
   Future<void> runWithConfig(
     Configuration<RunnerStartOption> commandConfig,
   ) async {
-    final (:serverDir, :manifest) = await bringUpRunner(
+    final (:serverDir, :manifest, spawned: _) = await bringUpRunner(
       directory: commandConfig.value(RunnerStartOption.directory),
       asked: RunnerConfig(
         watch: commandConfig.value(RunnerStartOption.watch),
@@ -119,6 +119,14 @@ enum RunnerServeOption<V> implements OptionDefinition<V> {
           'Write this process\'s output to .dart_tool/serverpod/runner.log '
           'instead of stdout. Passed by `serverpod start`, which spawns the '
           'runner with no stdio to inherit.',
+    ),
+  ),
+  spawnId(
+    StringOption(
+      argName: 'spawn-id',
+      helpText:
+          'An id to publish in the manifest. Passed by `serverpod start` to '
+          'recognize the runner it spawned.',
     ),
   );
 
@@ -211,6 +219,7 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
         watch: commandConfig.value(RunnerServeOption.watch),
         docker: commandConfig.optionalValue(RunnerServeOption.docker),
         launchFlutterApp: commandConfig.value(RunnerServeOption.flutter),
+        spawnId: commandConfig.optionalValue(RunnerServeOption.spawnId),
         shutdown: shutdown,
         logHistory: logHistory,
         serverStdoutSink: logHistory.serverOutputSink(

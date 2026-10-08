@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
-import 'package:meta/meta.dart';
 import 'package:serverpod_cli/src/commands/runner_options.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/commands/status.dart'
@@ -135,7 +134,6 @@ Future<bool> _awaitShutdown(String serverDir, {required int pid}) =>
 /// Whether the runner serving [serverDir] goes down within [timeout].
 ///
 /// Down means the lock is free, so a start right after does not find it held.
-@visibleForTesting
 Future<bool> awaitRunnerShutdown(
   String serverDir, {
   Duration timeout = const Duration(seconds: 30),

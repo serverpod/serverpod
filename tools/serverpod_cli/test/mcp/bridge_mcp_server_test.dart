@@ -33,6 +33,7 @@ void main() {
       late McpSocketServer runner;
       late _Pair pair;
       late int applyMigrationCalls;
+      late int stopCalls;
 
       setUp(() async {
         tempServerDir = await Directory.systemTemp.createTemp('bt');
@@ -41,10 +42,14 @@ void main() {
         await runner.start();
 
         applyMigrationCalls = 0;
+        stopCalls = 0;
         runner.connect(
           FakeRunnerApi()
             ..onApplyMigrations = () async {
               applyMigrationCalls++;
+            }
+            ..onStop = () async {
+              stopCalls++;
             },
         );
 
@@ -56,6 +61,18 @@ void main() {
         await runner.close();
         await _safeDelete(tempServerDir);
       });
+
+      test(
+        'when the bridge session ends after a call, '
+        'then the runner is not asked to stop',
+        () async {
+          await pair.client.callTool(CallToolRequest(name: 'apply_migrations'));
+          await pair.dispose();
+          pair = await _makeBridgePair(runner.socketPath);
+
+          expect(stopCalls, 0);
+        },
+      );
 
       test(
         'when listing tools, '

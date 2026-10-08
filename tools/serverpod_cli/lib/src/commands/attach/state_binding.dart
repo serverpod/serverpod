@@ -45,6 +45,9 @@ class RunnerStateBinding {
     _subs.add(client.events.listen(_onEvent));
     _subs.add(
       client.connectionChanges.listen((connected) {
+        // A runner that drops without announcing is gone, so a reconnect
+        // reaches another one.
+        if (!connected) _state.ownsRunner = false;
         if (connected) _applyRunnerState();
         holder.markDirty();
       }),
@@ -63,13 +66,21 @@ class RunnerStateBinding {
     _state.isAppLaunching = client.isFlutterAppLaunching;
 
     holder.onQuit = onStopRequested;
-    holder.onStopStack = () => unawaited(
-      client.stop().catchError((Object e) {
-        // A refused stop announces nothing, so nothing else ends this session.
-        log.error('Stopping the runner failed: $e');
-        onStopRequested();
-      }),
-    );
+    var stopRequested = false;
+    holder.onStopStack = () {
+      // A starting runner stops only at its next checkpoint, so asking again
+      // leaves without waiting for it.
+      if (stopRequested) return onStopRequested();
+      stopRequested = true;
+      unawaited(
+        client.stop().catchError((Object e) {
+          // A refused stop announces nothing, so nothing else ends this
+          // session.
+          log.error('Stopping the runner failed: $e');
+          onStopRequested();
+        }),
+      );
+    };
     holder.onHotReload = () =>
         runTrackedAction(holder, () => _reaching(client.hotReload));
     holder.onHotRestart = () {

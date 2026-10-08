@@ -28,6 +28,7 @@ import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/status.dart'
     show printServerUris, resolveRunnerOrExit;
+import 'package:serverpod_cli/src/commands/stop.dart' show awaitRunnerShutdown;
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
@@ -39,7 +40,7 @@ import 'package:serverpod_cli/src/runner/local_runner_api.dart';
 import 'package:serverpod_cli/src/runner/port_resolution.dart';
 import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart'
-    show RunnerUnreachableException;
+    show RunnerClient, RunnerUnreachableException;
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/runner/runner_lock.dart';
@@ -60,6 +61,7 @@ import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
 import 'package:serverpod_shared/process_io.dart' show isProcessAlive;
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:stream_transform/stream_transform.dart';
+import 'package:uuid/uuid.dart';
 import 'package:vm_service/vm_service.dart'
     show Event, EventStreams, RPCError, VmService;
 import 'package:vm_service/vm_service_io.dart';
@@ -129,7 +131,10 @@ class StartCommand extends ServerpodCommand<StartOption> {
   ) async {
     final attaching = commandConfig.value(StartOption.attach);
     final useTui = commandConfig.value(StartOption.tui) && terminalSupportsTui;
-    final (:serverDir, :manifest) = await bringUpRunner(
+    // A signal while a spawned runner comes up is held until it can be
+    // stopped, since leaving at once would orphan it.
+    final shutdown = ShutdownSignal(listenForSignals: attaching);
+    final (:serverDir, :manifest, :spawned) = await bringUpRunner(
       directory: commandConfig.value(StartOption.directory),
       asked: RunnerConfig(
         watch: commandConfig.value(StartOption.watch),
@@ -140,10 +145,15 @@ class StartCommand extends ServerpodCommand<StartOption> {
       ),
       useTui: useTui,
       global: serverpodRunner.globalConfiguration,
-    );
+    ).whenComplete(shutdown.dispose);
 
     if (!attaching) {
       await reportStackUp(serverDir, manifest);
+      return;
+    }
+
+    if (shutdown.isShutdown) {
+      if (spawned) await stopInterruptedRunner(serverDir, manifest);
       return;
     }
 
@@ -154,10 +164,46 @@ class StartCommand extends ServerpodCommand<StartOption> {
         projectId: manifest.projectId,
       ),
       useTui: useTui,
+      ownsRunner: spawned,
       waitForRunner: const Duration(seconds: 5),
       onUnreachable: (e) => explainUnreachableRunner(serverDir, manifest, e),
     );
     if (exitCode != 0) throw ExitException(exitCode);
+  }
+}
+
+/// Stops the runner [manifest] names, for a start interrupted while it came up.
+@visibleForTesting
+Future<void> stopInterruptedRunner(
+  String serverDir,
+  RunnerManifest manifest,
+) async {
+  log.info('Interrupted. Stopping the runner (pid ${manifest.pid}).');
+  final client = RunnerClient(
+    socketPath: runnerSocketPath(
+      serverDir,
+      serverpodTuiSocketName,
+      projectId: manifest.projectId,
+    ),
+  );
+  try {
+    await client.connect();
+    await client.stop();
+  } catch (e) {
+    log.error('Stopping the runner failed: $e');
+    throw ExitException.error();
+  } finally {
+    await client.close();
+  }
+  final stopped = await log.progress(
+    'Waiting for the runner (pid ${manifest.pid}) to stop',
+    () => awaitRunnerShutdown(serverDir),
+  );
+  if (!stopped) {
+    log.warning(
+      'The runner accepted the stop but is still shutting down. '
+      'Check `serverpod runner status`.',
+    );
   }
 }
 
@@ -208,7 +254,8 @@ Future<GeneratorConfig> loadRunnerProjectConfig({
 
 /// Loads the project under [directory] and brings its runner up per [asked],
 /// forwarding what [global] says about verbosity and interactivity.
-Future<({String serverDir, RunnerManifest manifest})> bringUpRunner({
+Future<({String serverDir, RunnerManifest manifest, bool spawned})>
+bringUpRunner({
   required String directory,
   required RunnerConfig asked,
   required bool useTui,
@@ -219,14 +266,14 @@ Future<({String serverDir, RunnerManifest manifest})> bringUpRunner({
     interactive: global.optionalValue(GlobalOption.interactive),
   );
   final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-  final manifest = await ensureRunner(
+  final (:manifest, :spawned) = await ensureRunner(
     config: config,
     serverDir: serverDir,
     asked: asked,
     useTui: useTui,
     globalArgs: runnerServeGlobalArgs(global),
   );
-  return (serverDir: serverDir, manifest: manifest);
+  return (serverDir: serverDir, manifest: manifest, spawned: spawned);
 }
 
 /// Waits for the stack behind [manifest] and prints how to reach it.
@@ -235,9 +282,10 @@ Future<void> reportStackUp(String serverDir, RunnerManifest manifest) async =>
 
 /// Returns the manifest of the runner serving [serverDir], spawning one.
 ///
+/// `spawned` is whether this call started that runner, not one found running.
 /// Waits up to [lockWait] for a runner that holds the lock to answer or stop.
 /// Exits for a runner with options other than [asked], or one still stopping.
-Future<RunnerManifest> ensureRunner({
+Future<({RunnerManifest manifest, bool spawned})> ensureRunner({
   required GeneratorConfig config,
   required String serverDir,
   required RunnerConfig asked,
@@ -287,7 +335,7 @@ Future<RunnerManifest> ensureRunner({
         );
         throw ExitException.error();
       }
-      return manifest;
+      return (manifest: manifest, spawned: false);
 
     case NoRunner():
       // The runner would report this only in its log, and exit with zero.
@@ -300,21 +348,23 @@ Future<RunnerManifest> ensureRunner({
         throw ExitException(0);
       }
 
-      return await _spawnRunner(
-            config: config,
-            serverDir: serverDir,
-            asked: asked,
-            globalArgs: globalArgs,
-            useTui: useTui,
-          ) ??
-          await ensureRunner(
-            config: config,
-            serverDir: serverDir,
-            asked: asked,
-            useTui: useTui,
-            globalArgs: globalArgs,
-            lockWait: lockWait,
-          );
+      final spawned = await _spawnRunner(
+        config: config,
+        serverDir: serverDir,
+        asked: asked,
+        globalArgs: globalArgs,
+        useTui: useTui,
+      );
+      if (spawned != null) return (manifest: spawned, spawned: true);
+
+      return ensureRunner(
+        config: config,
+        serverDir: serverDir,
+        asked: asked,
+        useTui: useTui,
+        globalArgs: globalArgs,
+        lockWait: lockWait,
+      );
   }
 }
 
@@ -488,6 +538,7 @@ Future<RunnerManifest?> _spawnRunner({
     ),
   );
 
+  final spawnId = const Uuid().v4();
   final process = await Process.start(
     Platform.resolvedExecutable,
     [
@@ -496,6 +547,8 @@ Future<RunnerManifest?> _spawnRunner({
       'runner',
       'serve',
       '--detached',
+      '--spawn-id',
+      spawnId,
       ...asked.toServeArgs(directory: serverDir),
     ],
     // Sockets bind by relative path, which fits the socket address limit.
@@ -503,7 +556,11 @@ Future<RunnerManifest?> _spawnRunner({
     mode: ProcessStartMode.detached,
   );
 
-  switch (await awaitRunnerManifest(serverDir, pid: process.pid)) {
+  switch (await awaitRunnerManifest(
+    serverDir,
+    pid: process.pid,
+    spawnId: spawnId,
+  )) {
     case RunnerPublished(:final manifest):
       return manifest;
     case RunnerTaken():
@@ -568,16 +625,19 @@ final class RunnerTimedOut extends RunnerStartOutcome {
 ///
 /// A detached runner has no exit code to await, so this watches its [pid].
 /// A dead [pid] while the lock is held lost the race, so the wait goes on.
+/// Manifests are matched by [spawnId], since `dart` runs a script in a child
+/// of the spawned process, whose pid the runner then never publishes.
 @visibleForTesting
 Future<RunnerStartOutcome> awaitRunnerManifest(
   String serverDir, {
   required int pid,
+  required String spawnId,
   Duration timeout = _runnerStartTimeout,
 }) async {
   final waited = Stopwatch()..start();
   while (true) {
     switch (await resolveRunner(serverDir)) {
-      case LiveRunner(:final manifest) when manifest.pid != pid:
+      case LiveRunner(:final manifest) when manifest.spawnId != spawnId:
         return const RunnerTaken();
       case LiveRunner(:final manifest)
           when manifest.stage == RunnerStage.stopping:
@@ -585,7 +645,7 @@ Future<RunnerStartOutcome> awaitRunnerManifest(
       case LiveRunner(:final manifest):
         return RunnerPublished(manifest);
       case NoRunner(:final staleManifest)
-          when staleManifest?.pid == pid &&
+          when staleManifest?.spawnId == spawnId &&
               staleManifest?.stage == RunnerStage.stopping:
         return RunnerAborted(staleManifest?.exitCode ?? 1);
       case NoRunner() || IncompatibleRunner():
@@ -915,6 +975,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   required bool watch,
   required bool? docker,
   required bool launchFlutterApp,
+  String? spawnId,
   required ShutdownSignal shutdown,
   // Session-wide log retention. Filled here rather than by the presentation
   // layer, so the MCP log tools serve the same content with and without the
@@ -987,6 +1048,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         target: target,
         serverArgs: requestedServerArgs,
       ),
+      spawnId: spawnId,
     ),
   );
   Future<void> releaseRunnerHold({required int exitCode}) async {

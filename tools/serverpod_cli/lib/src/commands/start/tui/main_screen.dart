@@ -51,7 +51,7 @@ class MainScreen extends StatelessComponent {
   final VoidCallback? onTabSelected;
   final VoidCallback? onQuit;
 
-  /// Stops the whole stack, as opposed to [onQuit], which only leaves the UI.
+  /// Stops the whole stack, as opposed to [onQuit], which may only leave the UI.
   final VoidCallback? onStopStack;
 
   /// Copies the pinned alert's segment (also bound to the `C` key).
@@ -94,8 +94,12 @@ class MainScreen extends StatelessComponent {
         ('Shift+P', 'Force Repair migration'),
         ('E', 'Expand / collapse stack traces'),
         ('S', 'Show raw server logs'),
-        ('Q', 'Detach, leaving the stack running'),
-        ('Shift+Q', 'Stop the stack'),
+        if (state.ownsRunner)
+          ('Q', 'Stop the stack')
+        else ...[
+          ('Q', 'Leave, asking whether to stop the stack'),
+          ('Shift+Q', 'Stop the stack'),
+        ],
       ],
     ),
   ];
@@ -181,7 +185,70 @@ class MainScreen extends StatelessComponent {
             closeKey: 'Esc',
             controller: helpScrollController,
           ),
+        if (state.showQuitDialog) _buildQuitDialog(context, st),
       ],
+    );
+  }
+
+  /// Asks whether to leave or stop a runner this session did not spawn.
+  Component _buildQuitDialog(BuildContext context, ServerpodThemeData st) {
+    final theme = TuiTheme.of(context);
+
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+        decoration: BoxDecoration(
+          color: theme.surface,
+          border: BoxBorder.all(
+            style: BoxBorderStyle.rounded,
+            color: st.activationKey,
+          ),
+          title: BorderTitle(
+            text: 'Quit',
+            style: TextStyle(
+              color: st.activationKey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'The server was already running when `serverpod start` was '
+              'called.',
+              style: TextStyle(color: theme.onSurface),
+            ),
+            Text(
+              'What would you like to do?',
+              style: TextStyle(color: theme.onSurface),
+            ),
+            const SizedBox(height: 1),
+            for (final (key, desc) in const [
+              ('Q', 'Quit and leave the server running'),
+              ('Shift+Q', 'Stop the server and quit'),
+              ('Esc', 'Cancel'),
+            ])
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 10,
+                    child: Text(
+                      key,
+                      style: TextStyle(
+                        color: st.activationKey,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(desc, style: TextStyle(color: theme.onSurface)),
+                ],
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -793,7 +860,9 @@ class MainScreen extends StatelessComponent {
   }
 
   Component _buildButtonBar() {
-    final actionsEnabled = state.serverReady && !state.actionBusy;
+    // The quit dialog takes every key but its own.
+    final modal = state.showQuitDialog;
+    final actionsEnabled = state.serverReady && !state.actionBusy && !modal;
 
     return ButtonBar(
       buttons: [
@@ -807,7 +876,7 @@ class MainScreen extends StatelessComponent {
             activationChar: 'R',
             activationKeys: const [LogicalKey.keyR],
             onActivate: (_) => onHotRestart?.call(),
-            enabled: !state.actionBusy && onHotRestart != null,
+            enabled: !state.actionBusy && !modal && onHotRestart != null,
           )
         // In watch mode the incremental compiler already hot reloads on file
         // changes, so the manual action is a hot restart (with no shift
@@ -843,14 +912,14 @@ class MainScreen extends StatelessComponent {
           activationChar: 'L',
           activationKeys: const [LogicalKey.keyL],
           onActivate: (_) => onClearLogs?.call(),
-          enabled: onClearLogs != null,
+          enabled: !modal && onClearLogs != null,
         ),
         Button(
           name: 'Help',
           activationChar: 'H',
           activationKeys: const [LogicalKey.keyH],
           onActivate: (_) => onToggleHelp?.call(),
-          enabled: onToggleHelp != null,
+          enabled: !modal && onToggleHelp != null,
         ),
         Button(
           name: 'Quit',

@@ -18,8 +18,10 @@ RunnerManifest _manifest({
   Map<String, int>? ports,
   RunnerDocker? docker,
   RunnerConfig? config,
+  String? spawnId,
 }) => RunnerManifest(
   pid: pid,
+  spawnId: spawnId,
   projectId: 'a3d3a8b2-4f6c-5d1e-9b7a-2c8f0e1d3a5b',
   vmService: vmService,
   servers: servers,
@@ -68,6 +70,7 @@ void main() {
             docker: true,
             serverArgs: ['--mode', 'production'],
           ),
+          spawnId: 'spawn-1',
         );
 
         final decoded = RunnerManifest.fromJson(
@@ -89,6 +92,7 @@ void main() {
         expect(decoded.config.watch, isFalse);
         expect(decoded.config.flutter, isFalse);
         expect(decoded.config.serverArgs, ['--mode', 'production']);
+        expect(decoded.spawnId, 'spawn-1');
       },
     );
 

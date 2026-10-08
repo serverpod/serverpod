@@ -25,6 +25,7 @@ import 'package:serverpod_shared/serverpod_shared.dart' show ServerpodAddresses;
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
+import '../test_util/fake_runner_api.dart';
 import '../test_util/file_system_entity_helpers.dart';
 import '../test_util/hold_lock.dart';
 import '../test_util/short_temp_dir.dart';
@@ -90,6 +91,7 @@ void main() {
 
       starting = RunnerManifest(
         pid: holder.pid,
+        spawnId: 'spawned',
         stage: RunnerStage.starting,
         projectId: RunnerRegistry.idFor(tempDir.path),
         config: const RunnerConfig(watch: true, flutter: true, serverArgs: []),
@@ -103,12 +105,13 @@ void main() {
     });
 
     test(
-      'when the spawned runner is awaited under its own pid, '
+      'when the spawned runner is awaited under its spawn id, '
       'then it is reported as published',
       () async {
         final outcome = await awaitRunnerManifest(
           tempDir.path,
           pid: holder.pid,
+          spawnId: 'spawned',
           timeout: const Duration(seconds: 2),
         );
 
@@ -117,12 +120,30 @@ void main() {
     );
 
     test(
-      'when another pid published while the spawned runner is awaited, '
-      'then it is reported as taken rather than adopted as the spawned one',
+      'when the spawned runner published under another pid than the one '
+      'spawned, '
+      'then it is still reported as published, as dart runs it in a child',
       () async {
         final outcome = await awaitRunnerManifest(
           tempDir.path,
           pid: 1,
+          spawnId: 'spawned',
+          timeout: const Duration(seconds: 2),
+        );
+
+        expect(outcome, isA<RunnerPublished>());
+      },
+    );
+
+    test(
+      'when a runner with another spawn id published while the spawned '
+      'runner is awaited, '
+      'then it is reported as taken rather than adopted as the spawned one',
+      () async {
+        final outcome = await awaitRunnerManifest(
+          tempDir.path,
+          pid: holder.pid,
+          spawnId: 'other',
           timeout: const Duration(seconds: 2),
         );
 
@@ -426,6 +447,7 @@ void main() {
         final outcome = await awaitRunnerManifest(
           tempDir.path,
           pid: deadPid,
+          spawnId: 'spawned',
           timeout: const Duration(seconds: 10),
         );
 
@@ -443,6 +465,7 @@ void main() {
         final outcome = awaitRunnerManifest(
           tempDir.path,
           pid: deadPid,
+          spawnId: 'spawned',
           timeout: const Duration(seconds: 10),
         );
         await expectStillWaiting(outcome);
@@ -468,6 +491,7 @@ void main() {
         final outcome = awaitRunnerManifest(
           tempDir.path,
           pid: deadPid,
+          spawnId: 'spawned',
           timeout: const Duration(seconds: 10),
         );
         await expectStillWaiting(outcome);
@@ -670,7 +694,7 @@ void main() {
 
     test(
       'when its socket starts answering during the wait, '
-      'then a caller gets that runner',
+      'then a caller gets that runner as one it did not spawn',
       () async {
         final ensured = ensureRunner(
           config: config,
@@ -688,7 +712,9 @@ void main() {
         final socket = RunnerSocketServer(serverDir: serverDir);
         await socket.start();
         addTearDown(socket.close);
-        expect((await ensured).pid, 4242);
+        final (:manifest, :spawned) = await ensured;
+        expect(manifest.pid, 4242);
+        expect(spawned, isFalse);
       },
     );
 
@@ -730,6 +756,46 @@ void main() {
             isA<ExitException>().having((e) => e.exitCode, 'exitCode', 0),
           ),
         );
+      },
+    );
+  });
+
+  group('Given a start interrupted while its spawned runner came up,', () {
+    late Directory root;
+    late RunnerSocketServer socket;
+    late FakeRunnerApi runner;
+    late RunnerManifest manifest;
+
+    setUp(() async {
+      root = await createShortTempDir('rsi');
+      socket = RunnerSocketServer(serverDir: root.path);
+      await socket.start();
+      runner = FakeRunnerApi();
+      socket.connect(runner);
+      manifest = RunnerManifest(
+        pid: 4242,
+        spawnId: 'spawned',
+        projectId: RunnerRegistry.idFor(root.path),
+        config: _asked,
+      );
+      await manifest.writeTo(root.path);
+    });
+
+    tearDown(() async {
+      await socket.close();
+      await root.deleteWithRetry(recursive: true);
+    });
+
+    test(
+      'when the start stops the runner, '
+      'then the stop reaches it and the start returns once it is down',
+      () async {
+        var stops = 0;
+        runner.onStop = () async => stops++;
+
+        await stopInterruptedRunner(root.path, manifest);
+
+        expect(stops, 1);
       },
     );
   });
