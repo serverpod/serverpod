@@ -8,12 +8,10 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class DateTimeDefaultPersist
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -68,8 +66,8 @@ abstract class DateTimeDefaultPersist
   @_is.useResult
   DateTimeDefaultPersist copyWith({
     int? id,
-    DateTime? dateTimeDefaultPersistNow = const _issu.$UndefinedDateTime(),
-    DateTime? dateTimeDefaultPersistStr = const _issu.$UndefinedDateTime(),
+    DateTime? dateTimeDefaultPersistNow = const _is.$UndefinedDateTime(),
+    DateTime? dateTimeDefaultPersistStr = const _is.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -142,17 +140,17 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
   @override
   DateTimeDefaultPersist copyWith({
     Object? id = _Undefined,
-    DateTime? dateTimeDefaultPersistNow = const _issu.$UndefinedDateTime(),
-    DateTime? dateTimeDefaultPersistStr = const _issu.$UndefinedDateTime(),
+    DateTime? dateTimeDefaultPersistNow = const _is.$UndefinedDateTime(),
+    DateTime? dateTimeDefaultPersistStr = const _is.$UndefinedDateTime(),
   }) {
     return DateTimeDefaultPersist(
       id: id is int? ? id : this.id,
       dateTimeDefaultPersistNow:
-          dateTimeDefaultPersistNow is _issu.UndefinedSentinel
+          dateTimeDefaultPersistNow is _is.UndefinedSentinel
           ? this.dateTimeDefaultPersistNow
           : dateTimeDefaultPersistNow,
       dateTimeDefaultPersistStr:
-          dateTimeDefaultPersistStr is _issu.UndefinedSentinel
+          dateTimeDefaultPersistStr is _is.UndefinedSentinel
           ? this.dateTimeDefaultPersistStr
           : dateTimeDefaultPersistStr,
     );

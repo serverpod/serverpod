@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart'
@@ -69,7 +67,7 @@ abstract class LongImplicitIdFieldCollection
     String? name,
     List<_i4kuijum.LongImplicitIdField>?
         thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
-        const _issu.$UndefinedList<_i4kuijum.LongImplicitIdField>(),
+        const _isc.$UndefinedList<_i4kuijum.LongImplicitIdField>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -127,14 +125,14 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
     String? name,
     List<_i4kuijum.LongImplicitIdField>?
         thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
-        const _issu.$UndefinedList<_i4kuijum.LongImplicitIdField>(),
+        const _isc.$UndefinedList<_i4kuijum.LongImplicitIdField>(),
   }) {
     return LongImplicitIdFieldCollection(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
           thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-              is _issu.UndefinedSentinel
+              is _isc.UndefinedSentinel
           ? this.thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
                 ?.map((e0) => e0.copyWith())
                 .toList()
