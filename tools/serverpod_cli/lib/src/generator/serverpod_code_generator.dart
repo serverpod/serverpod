@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
@@ -35,7 +36,7 @@ abstract class ServerpodCodeGenerator {
           config: config,
         ),
     };
-    await _writeFiles(allFiles);
+    await writeFiles(allFiles);
 
     return allFiles.keys.toList();
   }
@@ -55,14 +56,18 @@ abstract class ServerpodCodeGenerator {
           config: config,
         ),
     };
-    await _writeFiles(allFiles);
+    await writeFiles(allFiles);
 
     return allFiles.keys.toList();
   }
 
   /// Writes generated files to disk, skipping files whose content is
   /// unchanged to avoid unnecessary file-system modification timestamps.
-  static Future<void> _writeFiles(Map<String, String> files) async {
+  ///
+  /// Exposed for tests so the skip decision can be exercised on a real
+  /// directory without running a full generation.
+  @visibleForTesting
+  static Future<void> writeFiles(Map<String, String> files) async {
     for (var file in files.entries) {
       try {
         log.debug('Generating ${file.key}.');
@@ -80,10 +85,15 @@ abstract class ServerpodCodeGenerator {
           continue;
         }
 
-        // Skip the write if the file already has the same content.
+        // Skip the write if the file already has the same content. Line
+        // endings do not count as a difference: with `core.autocrlf=true` on
+        // Windows the files on disk are CRLF while the generator emits LF, and
+        // rewriting them for that alone leaves every generated file modified
+        // in `git status` (issue #5792). A genuine change still differs after
+        // normalization, so it is written as before.
         if (out.existsSync()) {
           final existing = await out.readAsString();
-          if (existing == file.value) continue;
+          if (!_differsBeyondLineEndings(existing, file.value)) continue;
         }
 
         await out.create(recursive: true);
@@ -94,6 +104,11 @@ abstract class ServerpodCodeGenerator {
       }
     }
   }
+
+  /// True when [existing] differs from [generated] in anything other than
+  /// line endings.
+  static bool _differsBeyondLineEndings(String existing, String generated) =>
+      existing.replaceAll('\r\n', '\n') != generated.replaceAll('\r\n', '\n');
 
   /// Removes files from previous generation runs.
   /// By removing old files that are not part of the [generatedFiles].
