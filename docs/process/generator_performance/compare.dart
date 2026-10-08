@@ -535,9 +535,7 @@ Future<void> main(List<String> args) async {
     ];
     String summary(List<double> samples) {
       if (samples.isEmpty) return 'none';
-      final sorted = [...samples]..sort();
-      return '${median(sorted).toStringAsFixed(0)} '
-          '[${sorted.first.toStringAsFixed(0)}–${sorted.last.toStringAsFixed(0)}]';
+      return median(samples).toStringAsFixed(0);
     }
 
     for (final mode in Mode.values) {
@@ -547,7 +545,7 @@ Future<void> main(List<String> args) async {
             : '## One-shot generation (`serverpod generate`)\n',
       );
       stdout.writeln(
-        '| Operation | Metric | Baseline median [min–max] ms | Candidate median [min–max] ms | Baseline / candidate | Samples |',
+        '| Operation | Metric | Baseline median ms | Candidate median ms | Baseline / candidate | Samples |',
       );
       stdout.writeln('| --- | --- | ---: | ---: | ---: | ---: |');
       for (final operation in results.operations) {
