@@ -161,6 +161,20 @@ void main() {
       expect(server.contentLength, server.body.length);
     },
   );
+
+  test(
+    'Given a multipart upload description,'
+    'when the upload completes,'
+    'then the response is drained and the connection is released.',
+    () async {
+      server.statusCode = 204;
+      final uploader = FileUploader(_multipartDescription(server.url));
+
+      await uploader.upload(Stream.fromIterable([_lastChunk]));
+
+      await server.awaitNoOpenConnections();
+    },
+  );
 }
 
 /// Uploads the test file through [upload] and fails unless the server
@@ -234,6 +248,18 @@ class _RecordingServer {
   Uri get url => Uri.http('${_server.address.host}:${_server.port}', '/');
 
   List<int> get body => _body.toBytes();
+
+  /// Completes once the client has closed its connection, which `http` only
+  /// does once the response stream has been drained.
+  Future<void> awaitNoOpenConnections() async {
+    final deadline = DateTime.now().add(const Duration(seconds: 5));
+    while (_server.connectionsInfo().total > 0) {
+      if (DateTime.now().isAfter(deadline)) {
+        fail('Connection was not released after the upload completed.');
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
+  }
 
   /// Completes once at least [count] body bytes have been received.
   Future<void> receivedBytes(int count) {

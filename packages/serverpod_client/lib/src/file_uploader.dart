@@ -90,6 +90,7 @@ class FileUploader {
           }
 
           var response = await request.send();
+          await response.stream.drain();
 
           return response.statusCode == 204;
       }
