@@ -1,11 +1,16 @@
-## 4.1.0-beta.2
+## 4.1.0-beta.3
 
 - feat: Adds support for custom target entrypoints in runner commands. ([@mathis6787](https://github.com/mathis6787))
+- fix: Stops the runner on quit when `serverpod start` spawned it.
+- fix: Normalizes method stream cancellation futures before timeout. ([@donavonguyot](https://github.com/donavonguyot))
+- fix: Prevents exiting the server on development when the startup database integrity check fails.
+- fix: Improves type-safety of generated `copyWith` constructors by using typed sentinels.
+- perf: Improves file uploader performance by using streamed uploads instead of buffered uploads.
 - perf: Speeds up deserialization of shared and module models by ~x3.
 - perf: Speeds up SQLite operations from ~1.1x to ~55x.
-- chore: Makes generated `copyWith` constructors more type-safe.
+- chore: Adds a Serverpod Cloud deploy workflow to the project template
 
-Also includes all fixes from 4.0.3 and 4.0.4.
+Also includes all fixes from 4.0.3 and 4.0.4. Version 4.1.0-beta.2 was skipped due to a packaging issue.
 
 ## 4.1.0-beta.1
 
