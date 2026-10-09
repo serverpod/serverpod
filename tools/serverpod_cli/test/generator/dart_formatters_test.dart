@@ -334,6 +334,153 @@ formatter:
       expect(formatter.languageVersion, Version(3, 12, 0));
     },
   );
+
+  group(
+    'Given a target package with page width 120 whose formatter was resolved and used for an output path,',
+    () {
+      // One statement that exactly fills each page width and one that is a
+      // single character too long for it, so the formatted code shows the
+      // exact width in effect: 80, 81, 120 and 121 characters.
+      const source = '''
+void main() {
+  final fits80 = join(value1, value2, value3, value4, value5, padddddddddddddd);
+  final over80 = join(value1, value2, value3, value4, value5, paddddddddddddddd);
+  final fits120 = join(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, padddddddddddd);
+  final over120 = join(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, paddddddddddddd);
+}
+''';
+      const formattedAtPageWidth120 = '''
+void main() {
+  final fits80 = join(value1, value2, value3, value4, value5, padddddddddddddd);
+  final over80 = join(value1, value2, value3, value4, value5, paddddddddddddddd);
+  final fits120 = join(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, padddddddddddd);
+  final over120 = join(
+    value1,
+    value2,
+    value3,
+    value4,
+    value5,
+    value6,
+    value7,
+    value8,
+    value9,
+    value10,
+    paddddddddddddd,
+  );
+}
+''';
+      const formattedAtPageWidth80 = '''
+void main() {
+  final fits80 = join(value1, value2, value3, value4, value5, padddddddddddddd);
+  final over80 = join(
+    value1,
+    value2,
+    value3,
+    value4,
+    value5,
+    paddddddddddddddd,
+  );
+  final fits120 = join(
+    value1,
+    value2,
+    value3,
+    value4,
+    value5,
+    value6,
+    value7,
+    value8,
+    value9,
+    value10,
+    padddddddddddd,
+  );
+  final over120 = join(
+    value1,
+    value2,
+    value3,
+    value4,
+    value5,
+    value6,
+    value7,
+    value8,
+    value9,
+    value10,
+    paddddddddddddd,
+  );
+}
+''';
+      late File analysisOptions;
+      late String outputPath;
+
+      Future<void> resolveWithPageWidth(int pageWidth) async {
+        await analysisOptions.writeAsString('''
+formatter:
+  page_width: $pageWidth
+''');
+        await GeneratedDartFormatters.resolve(
+          GeneratorConfigBuilder()
+              .withServerPackageDirectoryPathParts(
+                p.split(serverDirectory.path),
+              )
+              .build(),
+        );
+      }
+
+      setUp(() async {
+        analysisOptions = File(
+          p.join(serverDirectory.path, 'analysis_options.yaml'),
+        );
+        outputPath = p.joinAll(
+          GeneratorConfigBuilder()
+              .withServerPackageDirectoryPathParts(
+                p.split(serverDirectory.path),
+              )
+              .build()
+              .generatedServerProtocolFilePathParts,
+        );
+        await resolveWithPageWidth(120);
+        GeneratedDartFormatters.of(outputPath).format(source);
+      });
+
+      test(
+        'then code formatted for the output path is wrapped at exactly 120.',
+        () {
+          final formatted = GeneratedDartFormatters.of(
+            outputPath,
+          ).format(source);
+
+          expect(formatted, formattedAtPageWidth120);
+        },
+      );
+
+      test(
+        'when the page width changes to 80 and the formatters are resolved again, '
+        'then code formatted for the same output path is wrapped at exactly 80.',
+        () async {
+          await resolveWithPageWidth(80);
+
+          final formatted = GeneratedDartFormatters.of(
+            outputPath,
+          ).format(source);
+
+          expect(formatted, formattedAtPageWidth80);
+        },
+      );
+
+      test(
+        'when the formatters are reset, '
+        'then code formatted for the same output path is wrapped at exactly the default page width of 80.',
+        () {
+          GeneratedDartFormatters.reset();
+
+          final formatted = GeneratedDartFormatters.of(
+            outputPath,
+          ).format(source);
+
+          expect(formatted, formattedAtPageWidth80);
+        },
+      );
+    },
+  );
 }
 
 /// Makes [directory] unsearchable, so that `Directory.exists()` on the paths

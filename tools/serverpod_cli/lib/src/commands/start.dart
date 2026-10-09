@@ -1419,13 +1419,12 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     session = WatchSession(
       compiler: compiler,
       nativeAssetsBuilder: nativeAssetsBuilder,
-      generate: (affectedPaths, requirements) async {
+      generate: (affectedPaths) async {
         return analyzeAndGenerate(
           analyzers: await analyzersFuture,
           config: config,
           affectedPaths: affectedPaths,
           incremental: true,
-          requirements: requirements,
         );
       },
       fullGenerate: () async {

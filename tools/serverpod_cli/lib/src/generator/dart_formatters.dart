@@ -21,7 +21,15 @@ final class GeneratedDartFormatters {
   final Map<String, DartFormatter> _byDirectory;
   final DartFormatter _fallback;
 
-  const GeneratedDartFormatters._(this._byDirectory, this._fallback);
+  /// Formatter already resolved for an output path, keyed by that path as the
+  /// generators spell it. [of] is called once per generated file, and the
+  /// lookup normalizes the path and scans every output directory; generated
+  /// files come in runs that share a directory, so the same answer is asked
+  /// for repeatedly. Scoped to one instance, which is replaced per generation
+  /// run, so it cannot outlive the configuration it was resolved against.
+  final Map<String, DartFormatter> _byOutputPath = {};
+
+  GeneratedDartFormatters._(this._byDirectory, this._fallback);
 
   /// The formatter used outside a configured generation run.
   factory GeneratedDartFormatters.serverpodDefaults() {
@@ -85,19 +93,23 @@ final class GeneratedDartFormatters {
 
   /// Returns the formatter applying to [outputPath].
   static DartFormatter of(String outputPath) {
+    final registry = _current;
+    final cached = registry._byOutputPath[outputPath];
+    if (cached != null) return cached;
+
     final path = p.normalize(p.absolute(outputPath));
     String? bestMatch;
 
-    for (final directory in _current._byDirectory.keys) {
+    for (final directory in registry._byDirectory.keys) {
       if (!p.isWithin(directory, path)) continue;
       if (bestMatch == null || directory.length > bestMatch.length) {
         bestMatch = directory;
       }
     }
 
-    return bestMatch == null
-        ? _current._fallback
-        : _current._byDirectory[bestMatch]!;
+    return registry._byOutputPath[outputPath] = bestMatch == null
+        ? registry._fallback
+        : registry._byDirectory[bestMatch]!;
   }
 
   static List<String> _outputDirectories(GeneratorConfig config) {
