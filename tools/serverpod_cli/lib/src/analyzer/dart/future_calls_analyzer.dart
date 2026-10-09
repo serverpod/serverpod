@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definition_hash.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
@@ -25,10 +26,13 @@ class _CachedFutureCallFileResult {
   final List<FutureCallDefinition> definitions;
   final bool hadErrors;
 
+  /// Hash of [definitions], taken once when the file is parsed.
+  final int definitionsHash;
+
   _CachedFutureCallFileResult({
     required this.definitions,
     required this.hadErrors,
-  });
+  }) : definitionsHash = futureCallDefinitionsHash(definitions);
 }
 
 /// Analyzes dart files for [FutureCall]s.
@@ -83,11 +87,16 @@ class FutureCallsAnalyzer {
       if (entry.value.hadErrors) entry.key,
   };
 
+  /// The hash of each future call file's definitions as the last
+  /// [updateFileContexts] found them, `null` before the first one.
+  Map<String, int>? _definitionHashesAtLastUpdate;
+
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
   /// Refreshes the Dart analysis context for the changed files and returns
   /// `true` if the analysis recognizes any of them as (or as having been)
-  /// future call files, meaning code generation should run.
+  /// future call files, or if the change altered what a future call in another
+  /// file declares, meaning code generation should run.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     // Only consider files within the tracked directory.
     final relevantPaths = filePaths
@@ -104,6 +113,26 @@ class FutureCallsAnalyzer {
 
     final erroredFilesAfter = _erroredFiles;
     final keysAfter = _fileCache.keys.toSet();
+
+    // What a future call declares can change without its file changing, through
+    // an alias, a base class or a type in a file it imports. Every cached file
+    // was just analyzed again and hashed its definitions while it was parsed,
+    // so the hashes show it. They are compared with the ones of the previous
+    // update, which were parsed the same way, rather than with what generation
+    // left in the cache, which validates against models and can differ from
+    // this without anything having changed.
+    final definitionHashes = {
+      for (final entry in _fileCache.entries)
+        entry.key: entry.value.definitionsHash,
+    };
+    final previousHashes = _definitionHashesAtLastUpdate;
+    _definitionHashesAtLastUpdate = definitionHashes;
+    if (previousHashes != null &&
+        definitionHashes.entries.any(
+          (entry) => previousHashes[entry.key] != entry.value,
+        )) {
+      return true;
+    }
 
     // Regenerate when the set of future call files changed, or when any
     // file's error state flipped (an error appearing or clearing changes the

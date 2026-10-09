@@ -9,6 +9,7 @@ import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definition_hash.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
@@ -25,11 +26,14 @@ class _CachedFileResult {
   final DartDocTemplateRegistry templates;
   final bool hadErrors;
 
+  /// Hash of [definitions], taken once when the file is parsed.
+  final int definitionsHash;
+
   _CachedFileResult({
     required this.definitions,
     required this.templates,
     required this.hadErrors,
-  });
+  }) : definitionsHash = endpointDefinitionsHash(definitions);
 }
 
 /// Analyzes dart files for the protocol specification.
@@ -87,11 +91,16 @@ class EndpointsAnalyzer {
       if (entry.value.hadErrors) entry.key,
   };
 
+  /// The hash of each endpoint file's definitions as the last
+  /// [updateFileContexts] found them, `null` before the first one.
+  Map<String, int>? _definitionHashesAtLastUpdate;
+
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
   /// Refreshes the Dart analysis context for the changed files and returns
   /// `true` if the analysis recognizes any of them as (or as having been)
-  /// endpoint files, meaning code generation should run. The actual full
+  /// endpoint files, or if the change altered what an endpoint in another
+  /// file declares, meaning code generation should run. The actual full
   /// analysis is deferred to the next [analyze] call.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     // Only consider files within the tracked directory.
@@ -109,6 +118,26 @@ class EndpointsAnalyzer {
 
     final erroredFilesAfter = _erroredFiles;
     final keysAfter = _fileCache.keys.toSet();
+
+    // What a endpoint declares can change without its file changing, through
+    // an alias, a base class or a type in a file it imports. Every cached file
+    // was just analyzed again and hashed its definitions while it was parsed,
+    // so the hashes show it. They are compared with the ones of the previous
+    // update rather than with what generation left in the cache,
+    // which validates against models and can differ from
+    // this without anything having changed.
+    final definitionHashes = {
+      for (final entry in _fileCache.entries)
+        entry.key: entry.value.definitionsHash,
+    };
+    final previousHashes = _definitionHashesAtLastUpdate;
+    _definitionHashesAtLastUpdate = definitionHashes;
+    if (previousHashes != null &&
+        definitionHashes.entries.any(
+          (entry) => previousHashes[entry.key] != entry.value,
+        )) {
+      return true;
+    }
 
     // Regenerate when the set of endpoint files changed, or when any file's
     // error state flipped (an error appearing or clearing changes the parsed
