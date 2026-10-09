@@ -261,14 +261,18 @@ Future<GenerateResult> analyzeAndGenerate({
   Map<String, FileStamp>? sourceStats,
 }) async {
   // A full run generates everything regardless of what the analyzers make of
-  // the changes, so the only reasons to prime them up front are an incremental
-  // run, which decides what to generate from the result, and a run that may
-  // return early as up to date, which has to leave them primed for the
-  // incremental loop that follows. Otherwise priming only resolves every file
-  // again for a verdict that is discarded, and generation re-analyzes against
-  // its own freshly written models anyway.
+  // the changes, so the verdict of an update is only needed by an incremental
+  // run, which decides what to generate from it, and by a run that may return
+  // early as up to date, which has to leave the analyzers primed for the
+  // incremental loop that follows.
+  //
+  // The update is also what tells analyzers that were used before which models
+  // and Dart files changed since. Without it they generate from what they saw
+  // last and the result is stamped as current, so only fresh analyzers, which
+  // read everything for the first time while generating, can do without it.
+  // For those it would resolve every file for a verdict that is discarded.
   var requirements = GenerationRequirements.none;
-  if (incremental || verifyStaleness) {
+  if (incremental || verifyStaleness || !await analyzers.isFresh) {
     await log.progress('Analyzing changes', () async {
       requirements = await analyzers.update(
         config: config,

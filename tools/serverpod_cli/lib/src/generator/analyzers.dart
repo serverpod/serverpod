@@ -56,6 +56,16 @@ class Analyzers {
   /// `IsolatedAnalyzers` to shut down the worker isolate.
   Future<void> close() async {}
 
+  bool _isFresh = true;
+
+  /// Whether these analyzers have neither been updated nor generated with.
+  ///
+  /// Fresh analyzers hold nothing a generation could be stale against: they
+  /// read every source the first time they need it. Once used, they keep the
+  /// models and the resolved Dart files they saw, and only [update] tells them
+  /// what changed since.
+  Future<bool> get isFresh async => _isFresh;
+
   /// Creates the analyzers needed for code generation from [config].
   static Future<Analyzers> create(GeneratorConfig config) async {
     final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
@@ -120,6 +130,8 @@ class Analyzers {
     required GeneratorConfig config,
     required Set<String> affectedPaths,
   }) async {
+    _isFresh = false;
+
     // Fingerprinted once per call and used both to drop files that cannot have
     // changed what they declare and to record the result afterwards, so a
     // changed file is read once rather than once per purpose.
@@ -346,6 +358,8 @@ class Analyzers {
     GenerationRequirements requirements = GenerationRequirements.full,
     Set<String>? affectedPaths,
   }) async {
+    _isFresh = false;
+
     bool success = true;
     final protocolBackups = <String, String>{};
     final stubOverlayPaths = <String>[];

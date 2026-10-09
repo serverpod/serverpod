@@ -97,6 +97,9 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
   }
 
   @override
+  Future<bool> get isFresh => evaluate((analyzers) => analyzers.isFresh);
+
+  @override
   Future<GenerationRequirements> update({
     required GeneratorConfig config,
     required Set<String> affectedPaths,
