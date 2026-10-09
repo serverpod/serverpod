@@ -3,12 +3,16 @@ import 'package:flutter/services.dart';
 import '../../../common/text_formatters.dart';
 import '../../../localization/sign_in_localization_provider.dart';
 import '../../../common/widgets/text_field.dart';
+import '../../../common/email_code_form_controller.dart';
 import '../../email_auth_controller.dart';
 
 /// A text field for email input.
 class EmailTextField extends StatelessWidget {
   /// The controller for the email authentication.
-  final EmailAuthController controller;
+  ///
+  /// Either an [EmailAuthController] or any other [EmailCodeFormController],
+  /// such as the `EmailPasswordlessAuthController`.
+  final EmailCodeFormController controller;
 
   /// Creates a new [EmailTextField] widget.
   const EmailTextField({

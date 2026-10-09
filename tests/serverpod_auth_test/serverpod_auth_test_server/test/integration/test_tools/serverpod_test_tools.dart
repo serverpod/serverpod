@@ -170,6 +170,8 @@ class TestEndpoints {
 
   late final _EmailAccountEndpoint emailAccount;
 
+  late final _EmailPasswordlessAccountEndpoint emailPasswordlessAccount;
+
   late final _FirebaseAccountEndpoint firebaseAccount;
 
   late final _GitHubAccountEndpoint gitHubAccount;
@@ -219,6 +221,10 @@ class _InternalTestEndpoints extends TestEndpoints
           serializationManager,
         );
     emailAccount = _EmailAccountEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    emailPasswordlessAccount = _EmailPasswordlessAccountEndpoint(
       endpoints,
       serializationManager,
     );
@@ -1420,6 +1426,111 @@ class _EmailAccountEndpoint {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'emailAccount',
+          methodName: 'hasAccount',
+          parameters: _ist.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _EmailPasswordlessAccountEndpoint {
+  _EmailPasswordlessAccountEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _is.EndpointDispatch _endpointDispatch;
+
+  final _is.SerializationManager _serializationManager;
+
+  _ida.Future<_is.UuidValue> startLogin(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required String email,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'emailPasswordlessAccount',
+            method: 'startLogin',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'emailPasswordlessAccount',
+          methodName: 'startLogin',
+          parameters: _ist.testObjectToJson({'email': email}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_is.UuidValue>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_iacs.AuthSuccess> finishLogin(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _is.UuidValue loginRequestId,
+    required String verificationCode,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'emailPasswordlessAccount',
+            method: 'finishLogin',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'emailPasswordlessAccount',
+          methodName: 'finishLogin',
+          parameters: _ist.testObjectToJson({
+            'loginRequestId': loginRequestId,
+            'verificationCode': verificationCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iacs.AuthSuccess>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<bool> hasAccount(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'emailPasswordlessAccount',
+            method: 'hasAccount',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'emailPasswordlessAccount',
           methodName: 'hasAccount',
           parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,

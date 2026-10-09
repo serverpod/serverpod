@@ -24,6 +24,18 @@ final List<Story> signInStories = [
   Story(
     name: 'Sign In/Disabled Email Widget',
     description: 'Sign in flow suppressing the email sign-in widget.',
+    builder: (context) => _signInWidgetStory(
+      context,
+      disableEmailSignInWidget: true,
+      disableEmailPasswordlessSignInWidget: true,
+    ),
+  ),
+  Story(
+    name: 'Sign In/Passwordless Email Widget',
+    description:
+        'Sign in flow showing the passwordless email widget instead of the '
+        'email and password widget, which is shown by default when the '
+        'server has both. The endpoint is mocked, and the code is 123456.',
     builder: (context) =>
         _signInWidgetStory(context, disableEmailSignInWidget: true),
   ),
@@ -75,6 +87,7 @@ Widget _signInWidgetStory(
   BuildContext context, {
   bool disableAnonymousSignInWidget = false,
   bool disableEmailSignInWidget = false,
+  bool disableEmailPasswordlessSignInWidget = false,
   bool disableGoogleSignInWidget = false,
   bool disableAppleSignInWidget = false,
   bool disableGitHubSignInWidget = false,
@@ -101,6 +114,8 @@ Widget _signInWidgetStory(
       buttonStyle: _signInButtonStyleFromKnobs(context),
       disableAnonymousSignInWidget: disableAnonymousSignInWidget,
       disableEmailSignInWidget: disableEmailSignInWidget,
+      disableEmailPasswordlessSignInWidget:
+          disableEmailPasswordlessSignInWidget,
       disableGoogleSignInWidget: disableGoogleSignInWidget,
       disableAppleSignInWidget: disableAppleSignInWidget,
       disableGitHubSignInWidget: disableGitHubSignInWidget,

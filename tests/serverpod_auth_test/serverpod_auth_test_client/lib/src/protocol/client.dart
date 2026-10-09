@@ -502,6 +502,86 @@ class EndpointEmailAccount extends _iaic.EndpointEmailIdpBase {
   );
 }
 
+/// Endpoint for passwordless email authentication.
+/// {@category Endpoint}
+class EndpointEmailPasswordlessAccount
+    extends _iaic.EndpointEmailPasswordlessIdpBase {
+  EndpointEmailPasswordlessAccount(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'emailPasswordlessAccount';
+
+  /// Starts a login with a verification code sent to [email].
+  ///
+  /// If the email address has an account, a sign-in code is sent to it. If it
+  /// has none and sign-up is allowed, a sign-up code is sent, and the account
+  /// is created when the code is verified.
+  ///
+  /// Returns the ID of the new login request, which together with the code is
+  /// used to finish the login. The response and the errors do not show whether
+  /// the email address has an account: if sign-up is disabled, an unknown email
+  /// address gets a request that no code was sent for, and that can never be
+  /// completed successfully.
+  ///
+  /// A code is only replaced once the resend cooldown has passed. Within it,
+  /// the call fails with the `resendCooldown` reason, and the ID of the pending
+  /// request is not returned again, so clients must keep the ID they received
+  /// from the successful call and keep using it until it is replaced.
+  ///
+  /// Throws an [EmailPasswordlessLoginException] in case of errors, with
+  /// reason:
+  /// - [EmailPasswordlessLoginExceptionReason.invalidEmail] if [email] is not
+  ///   a valid email address.
+  /// - [EmailPasswordlessLoginExceptionReason.resendCooldown] if a code for the
+  ///   email address was requested less than the resend cooldown ago, also by
+  ///   a concurrent call.
+  /// - [EmailPasswordlessLoginExceptionReason.rateLimited] if too many codes
+  ///   have been requested for the email address.
+  @override
+  _ida.Future<_isc.UuidValue> startLogin({required String email}) =>
+      caller.callServerEndpoint<_isc.UuidValue>(
+        'emailPasswordlessAccount',
+        'startLogin',
+        {'email': email},
+      );
+
+  /// Finishes a login by verifying the code of the login request, and returns
+  /// a session for the user. A user is created if the email address is new.
+  ///
+  /// A code can be used once and is invalidated by too many wrong attempts.
+  ///
+  /// Throws an [EmailPasswordlessLoginException] in case of errors, with
+  /// reason:
+  /// - [EmailPasswordlessLoginExceptionReason.expired] if the login request
+  ///   has already expired.
+  /// - [EmailPasswordlessLoginExceptionReason.tooManyAttempts] if too many
+  ///   attempts have been made to verify the code.
+  /// - [EmailPasswordlessLoginExceptionReason.invalid] if no request exists
+  ///   for the given [loginRequestId], it has already been used, or
+  ///   [verificationCode] is invalid.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  @override
+  _ida.Future<_iacc.AuthSuccess> finishLogin({
+    required _isc.UuidValue loginRequestId,
+    required String verificationCode,
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
+    'emailPasswordlessAccount',
+    'finishLogin',
+    {
+      'loginRequestId': loginRequestId,
+      'verificationCode': verificationCode,
+    },
+  );
+
+  @override
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'emailPasswordlessAccount',
+    'hasAccount',
+    {},
+  );
+}
+
 /// Endpoint for Firebase-based authentication.
 /// {@category Endpoint}
 class EndpointFirebaseAccount extends _iaic.EndpointFirebaseIdpBase {
@@ -1030,6 +1110,7 @@ class Client extends _isc.ServerpodClientShared {
     emailAccountBackwardsCompatibilityTest =
         EndpointEmailAccountBackwardsCompatibilityTest(this);
     emailAccount = EndpointEmailAccount(this);
+    emailPasswordlessAccount = EndpointEmailPasswordlessAccount(this);
     firebaseAccount = EndpointFirebaseAccount(this);
     gitHubAccount = EndpointGitHubAccount(this);
     googleAccountBackwardsCompatibilityTest =
@@ -1055,6 +1136,8 @@ class Client extends _isc.ServerpodClientShared {
   emailAccountBackwardsCompatibilityTest;
 
   late final EndpointEmailAccount emailAccount;
+
+  late final EndpointEmailPasswordlessAccount emailPasswordlessAccount;
 
   late final EndpointFirebaseAccount firebaseAccount;
 
@@ -1085,6 +1168,7 @@ class Client extends _isc.ServerpodClientShared {
     'emailAccountBackwardsCompatibilityTest':
         emailAccountBackwardsCompatibilityTest,
     'emailAccount': emailAccount,
+    'emailPasswordlessAccount': emailPasswordlessAccount,
     'firebaseAccount': firebaseAccount,
     'gitHubAccount': gitHubAccount,
     'googleAccountBackwardsCompatibilityTest':

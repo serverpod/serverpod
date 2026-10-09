@@ -41,6 +41,12 @@ import 'providers/email/models/exceptions/email_account_request_exception.dart'
     as _iqtw285f;
 import 'providers/email/models/exceptions/email_account_request_exception_reason.dart'
     as _isgeino8;
+import 'providers/email_passwordless/models/email_account_login_request.dart'
+    as _itm3nmsa;
+import 'providers/email_passwordless/models/exceptions/email_passwordless_login_exception.dart'
+    as _isiafkw6;
+import 'providers/email_passwordless/models/exceptions/email_passwordless_login_exception_reason.dart'
+    as _ibjvi0kv;
 import 'providers/facebook/models/facebook_access_token_verification_exception.dart'
     as _i92zrjf0;
 import 'providers/facebook/models/facebook_account.dart' as _ivl5gkpe;
@@ -84,6 +90,9 @@ export 'providers/email/models/exceptions/email_account_password_reset_exception
 export 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_request_exception.dart';
 export 'providers/email/models/exceptions/email_account_request_exception_reason.dart';
+export 'providers/email_passwordless/models/email_account_login_request.dart';
+export 'providers/email_passwordless/models/exceptions/email_passwordless_login_exception.dart';
+export 'providers/email_passwordless/models/exceptions/email_passwordless_login_exception_reason.dart';
 export 'providers/facebook/models/facebook_access_token_verification_exception.dart';
 export 'providers/facebook/models/facebook_account.dart';
 export 'providers/firebase/models/firebase_account.dart';
@@ -399,6 +408,68 @@ class Protocol extends _is.DatabaseSerializationManager
       indexes: [
         _isp.IndexDefinition(
           indexName: 'serverpod_auth_idp_email_account_email',
+          tableSpace: null,
+          elements: [
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'email',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'serverpod_auth_idp_email_account_login_request',
+      dartName: 'EmailAccountLoginRequest',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'random_v7',
+        ),
+        _isp.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'now',
+        ),
+        _isp.ColumnDefinition(
+          name: 'email',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'challengeId',
+          columnType: _isp.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_email_account_login_request_fk_0',
+          columns: ['challengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _isp.IndexDefinition(
+          indexName: 'serverpod_auth_idp_email_account_login_request_email',
           tableSpace: null,
           elements: [
             _isp.IndexElementDefinition(
@@ -1233,6 +1304,16 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _isgeino8.EmailAccountRequestExceptionReason) {
       return _isgeino8.EmailAccountRequestExceptionReason.fromJson(data) as T;
     }
+    if (t == _itm3nmsa.EmailAccountLoginRequest) {
+      return _itm3nmsa.EmailAccountLoginRequest.fromJson(data) as T;
+    }
+    if (t == _isiafkw6.EmailPasswordlessLoginException) {
+      return _isiafkw6.EmailPasswordlessLoginException.fromJson(data) as T;
+    }
+    if (t == _ibjvi0kv.EmailPasswordlessLoginExceptionReason) {
+      return _ibjvi0kv.EmailPasswordlessLoginExceptionReason.fromJson(data)
+          as T;
+    }
     if (t == _i92zrjf0.FacebookAccessTokenVerificationException) {
       return _i92zrjf0.FacebookAccessTokenVerificationException.fromJson(data)
           as T;
@@ -1370,6 +1451,24 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _is.getType<_isgeino8.EmailAccountRequestExceptionReason?>()) {
       return (data != null
               ? _isgeino8.EmailAccountRequestExceptionReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_itm3nmsa.EmailAccountLoginRequest?>()) {
+      return (data != null
+              ? _itm3nmsa.EmailAccountLoginRequest.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_isiafkw6.EmailPasswordlessLoginException?>()) {
+      return (data != null
+              ? _isiafkw6.EmailPasswordlessLoginException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ibjvi0kv.EmailPasswordlessLoginExceptionReason?>()) {
+      return (data != null
+              ? _ibjvi0kv.EmailPasswordlessLoginExceptionReason.fromJson(data)
               : null)
           as T;
     }
@@ -1533,6 +1632,11 @@ class Protocol extends _is.DatabaseSerializationManager
       _iqtw285f.EmailAccountRequestException => 'EmailAccountRequestException',
       _isgeino8.EmailAccountRequestExceptionReason =>
         'EmailAccountRequestExceptionReason',
+      _itm3nmsa.EmailAccountLoginRequest => 'EmailAccountLoginRequest',
+      _isiafkw6.EmailPasswordlessLoginException =>
+        'EmailPasswordlessLoginException',
+      _ibjvi0kv.EmailPasswordlessLoginExceptionReason =>
+        'EmailPasswordlessLoginExceptionReason',
       _i92zrjf0.FacebookAccessTokenVerificationException =>
         'FacebookAccessTokenVerificationException',
       _ivl5gkpe.FacebookAccount => 'FacebookAccount',
@@ -1607,6 +1711,12 @@ class Protocol extends _is.DatabaseSerializationManager
         return 'EmailAccountRequestException';
       case _isgeino8.EmailAccountRequestExceptionReason():
         return 'EmailAccountRequestExceptionReason';
+      case _itm3nmsa.EmailAccountLoginRequest():
+        return 'EmailAccountLoginRequest';
+      case _isiafkw6.EmailPasswordlessLoginException():
+        return 'EmailPasswordlessLoginException';
+      case _ibjvi0kv.EmailPasswordlessLoginExceptionReason():
+        return 'EmailPasswordlessLoginExceptionReason';
       case _i92zrjf0.FacebookAccessTokenVerificationException():
         return 'FacebookAccessTokenVerificationException';
       case _ivl5gkpe.FacebookAccount():
@@ -1713,6 +1823,19 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (dataClassName == 'EmailAccountRequestExceptionReason') {
       return deserialize<_isgeino8.EmailAccountRequestExceptionReason>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'EmailAccountLoginRequest') {
+      return deserialize<_itm3nmsa.EmailAccountLoginRequest>(data['data']);
+    }
+    if (dataClassName == 'EmailPasswordlessLoginException') {
+      return deserialize<_isiafkw6.EmailPasswordlessLoginException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'EmailPasswordlessLoginExceptionReason') {
+      return deserialize<_ibjvi0kv.EmailPasswordlessLoginExceptionReason>(
         data['data'],
       );
     }
@@ -1883,6 +2006,8 @@ class Protocol extends _is.DatabaseSerializationManager
         return _iouphhkf.EmailAccountPasswordResetRequest.t;
       case _iaib0xb9.EmailAccountRequest:
         return _iaib0xb9.EmailAccountRequest.t;
+      case _itm3nmsa.EmailAccountLoginRequest:
+        return _itm3nmsa.EmailAccountLoginRequest.t;
       case _ivl5gkpe.FacebookAccount:
         return _ivl5gkpe.FacebookAccount.t;
       case _i923yrzc.FirebaseAccount:

@@ -121,6 +121,13 @@ class SignInScreen extends StatelessWidget {
           signUpTitle: 'Sign up with email',
           continueAction: 'Continue',
         ),
+        // The server also exposes passwordless email sign-in. As only one of
+        // the two email widgets is shown, the email and password one is used
+        // here. To use passwordless instead, set `disableEmailSignInWidget` on
+        // the `SignInWidget`. Its texts are customized the same way:
+        // emailPasswordless: EmailPasswordlessSignInTexts.defaults.copyWith(
+        //   title: 'Sign in with a code',
+        // ),
         passwordRequirementTexts: PasswordRequirementTexts.defaults.copyWith(
           minLengthTemplate: 'At least {length} characters',
           maxLengthTemplate: 'At most {length} characters',
@@ -213,6 +220,7 @@ class _ConnectedScreenState extends State<ConnectedScreen> {
                       'All connected Idps: ${connectedIdps!.names}',
                       'User has Google: ${connectedIdps!.hasGoogle ? '✅' : '❌'}',
                       'User has Email: ${connectedIdps!.hasEmail ? '✅' : '❌'}',
+                      'User has passwordless Email: ${connectedIdps!.hasEmailPasswordless ? '✅' : '❌'}',
                       'User has Apple: ${connectedIdps!.hasApple ? '✅' : '❌'}',
                       'User has GitHub: ${connectedIdps!.hasGitHub ? '✅' : '❌'}',
                       'User has Firebase: ${connectedIdps!.hasFirebase ? '✅' : '❌'}',

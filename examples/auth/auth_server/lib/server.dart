@@ -3,6 +3,7 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/email_passwordless.dart';
 import 'package:serverpod_auth_idp_server/providers/facebook.dart';
 import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
@@ -64,6 +65,12 @@ void run(List<String> args) async {
     sendPasswordResetVerificationCode: _sendPasswordResetCode,
   );
 
+  final emailPasswordlessIdpConfig = EmailPasswordlessIdpConfig(
+    secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
+    sendSignUpVerificationCode: _sendSignUpCode,
+    sendSignInVerificationCode: _sendSignInCode,
+  );
+
   final facebookIdpConfig = FacebookIdpConfig(
     appId: pod.getPassword('facebookAppId')!,
     appSecret: pod.getPassword('facebookAppSecret')!,
@@ -97,6 +104,7 @@ void run(List<String> args) async {
       googleIdpConfig,
       appleIdpConfig,
       emailIdpConfig,
+      emailPasswordlessIdpConfig,
       facebookIdpConfig,
       githubIdpConfig,
       microsoftIdpConfig,
@@ -150,4 +158,32 @@ void _sendPasswordResetCode(
   // NOTE: Here you call your mail service to send the verification code to
   // the user. For testing, we will just log the verification code.
   session.log('[EmailIDP] Password reset code ($email): $verificationCode');
+}
+
+void _sendSignUpCode(
+  Session session, {
+  required String email,
+  required UuidValue loginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log(
+    '[EmailPasswordlessIDP] Sign-up code ($email): $verificationCode',
+  );
+}
+
+void _sendSignInCode(
+  Session session, {
+  required String email,
+  required UuidValue loginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log(
+    '[EmailPasswordlessIDP] Sign-in code ($email): $verificationCode',
+  );
 }

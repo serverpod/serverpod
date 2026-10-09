@@ -2,6 +2,7 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/email_passwordless.dart';
 import 'package:serverpod_auth_idp_server/providers/facebook.dart';
 import 'package:serverpod_auth_idp_server/providers/firebase.dart';
 import 'package:serverpod_auth_idp_server/providers/github.dart';
@@ -17,6 +18,7 @@ void main() {
     late AnonymousIdp anonymousIdp;
     late AppleIdp appleIdp;
     late EmailIdp emailIdp;
+    late EmailPasswordlessIdp emailPasswordlessIdp;
     late FacebookIdp facebookIdp;
     late FirebaseIdp firebaseIdp;
     late GitHubIdp githubIdp;
@@ -53,6 +55,30 @@ void main() {
 
       emailIdp = EmailIdp(
         const EmailIdpConfig(secretHashPepper: 'test-secret-hash-pepper'),
+        tokenManager: tokenManager,
+        authUsers: authUsers,
+      );
+
+      emailPasswordlessIdp = EmailPasswordlessIdp(
+        EmailPasswordlessIdpConfig(
+          secretHashPepper: 'test-secret-hash-pepper',
+          sendSignUpVerificationCode:
+              (
+                final session, {
+                required final email,
+                required final loginRequestId,
+                required final verificationCode,
+                required final transaction,
+              }) {},
+          sendSignInVerificationCode:
+              (
+                final session, {
+                required final email,
+                required final loginRequestId,
+                required final verificationCode,
+                required final transaction,
+              }) {},
+        ),
         tokenManager: tokenManager,
         authUsers: authUsers,
       );
@@ -125,6 +151,7 @@ void main() {
             AnonymousIdp: anonymousIdp.method,
             AppleIdp: appleIdp.method,
             EmailIdp: emailIdp.method,
+            EmailPasswordlessIdp: emailPasswordlessIdp.method,
             FacebookIdp: facebookIdp.method,
             FirebaseIdp: firebaseIdp.method,
             GitHubIdp: githubIdp.method,
@@ -136,6 +163,7 @@ void main() {
             AnonymousIdp: 'anonymous',
             AppleIdp: 'apple',
             EmailIdp: 'email',
+            EmailPasswordlessIdp: 'emailPasswordless',
             FacebookIdp: 'facebook',
             FirebaseIdp: 'firebase',
             GitHubIdp: 'github',

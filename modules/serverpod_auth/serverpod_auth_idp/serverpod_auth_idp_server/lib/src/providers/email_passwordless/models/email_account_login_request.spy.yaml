@@ -1,0 +1,27 @@
+### Pending passwordless login request for an email address.
+###
+### Created by `startLogin` of the passwordless email identity provider (see
+### https://github.com/serverpod/serverpod/issues/2100). The request is
+### deleted once its code has been used successfully, too many verification
+### attempts have been made, or the request has expired.
+class: EmailAccountLoginRequest
+serverOnly: true
+table: serverpod_auth_idp_email_account_login_request
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The time when this request was created.
+  createdAt: DateTime, default=now
+
+  ### The email of the user.
+  ###
+  ### Stored in lower-case.
+  email: String
+
+  ### The associated challenge holding the hash of the verification code.
+  challenge: SecretChallenge?, relation(onDelete=Cascade)
+
+indexes:
+  serverpod_auth_idp_email_account_login_request_email:
+    fields: email
+    unique: true

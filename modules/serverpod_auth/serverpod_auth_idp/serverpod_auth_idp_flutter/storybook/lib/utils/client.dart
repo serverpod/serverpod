@@ -132,6 +132,44 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
   Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
+class EmailPasswordlessIdpEndpoint extends EndpointEmailPasswordlessIdpBase {
+  EmailPasswordlessIdpEndpoint(super.caller);
+
+  static const mockCode = '123456';
+
+  final _mockData = MockAuthData();
+
+  @override
+  String get name => 'emailPasswordlessIdp';
+
+  @override
+  Future<UuidValue> startLogin({required String email}) async {
+    _mockData.email = email;
+    final loginRequestId = const Uuid().v7obj();
+    _mockData.loginRequestId = loginRequestId;
+    return loginRequestId;
+  }
+
+  @override
+  Future<AuthSuccess> finishLogin({
+    required UuidValue loginRequestId,
+    required String verificationCode,
+  }) async {
+    if (loginRequestId != _mockData.loginRequestId ||
+        verificationCode != mockCode) {
+      throw EmailPasswordlessLoginException(
+        reason: EmailPasswordlessLoginExceptionReason.invalid,
+      );
+    }
+    _mockData.hasAccount = true;
+    _mockData.loginRequestId = null;
+    return _mockData.authSuccess;
+  }
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
+}
+
 class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
   GoogleIdpEndpoint(super.caller);
 
@@ -261,6 +299,7 @@ class Client extends ServerpodClientShared {
       ) {
     anonymousIdp = AnonymousIdpEndpoint(this);
     authEmail = EndpointAuthEmail(this);
+    emailPasswordlessIdp = EmailPasswordlessIdpEndpoint(this);
     googleIdp = GoogleIdpEndpoint(this);
     appleIdp = AppleIdpEndpoint(this);
     facebookIdp = FacebookIdpEndpoint(this);
@@ -272,6 +311,8 @@ class Client extends ServerpodClientShared {
   late final AnonymousIdpEndpoint anonymousIdp;
 
   late final EndpointAuthEmail authEmail;
+
+  late final EmailPasswordlessIdpEndpoint emailPasswordlessIdp;
 
   late final GoogleIdpEndpoint googleIdp;
 
@@ -289,6 +330,7 @@ class Client extends ServerpodClientShared {
   Map<String, EndpointRef> get endpointRefLookup => {
     'anonymousIdp': anonymousIdp,
     'emailAuth': authEmail,
+    'emailPasswordlessIdp': emailPasswordlessIdp,
     'googleIdp': googleIdp,
     'appleIdp': appleIdp,
     'facebookIdp': facebookIdp,
@@ -325,6 +367,7 @@ class MockAuthData {
   String? passwordResetToken;
   bool hasAccount = false;
 
+  UuidValue? loginRequestId;
   UuidValue? registrationRequestId;
   UuidValue? passwordResetRequestId;
 

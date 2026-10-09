@@ -52,6 +52,19 @@ final emailStories = [
         _buildEmailStory(context, EmailFlowScreen.completePasswordReset),
   ),
   Story(
+    name: 'Email Passwordless/Email Screen',
+    description:
+        'Passwordless email form where the user requests a sign-in code.',
+    builder: (context) => _buildPasswordlessStory(context),
+  ),
+  Story(
+    name: 'Email Passwordless/Verification Screen',
+    description:
+        'Passwordless email verification form. The mocked code is 123456.',
+    builder: (context) =>
+        _buildPasswordlessStory(context, startOnVerifyScreen: true),
+  ),
+  Story(
     name: 'Email/Widgets/Verification Code Input',
     description: 'Verification code input field with varying lengths.',
     builder: (context) {
@@ -107,6 +120,55 @@ Widget _buildEmailStory(BuildContext context, EmailFlowScreen screen) {
       },
       onTermsAndConditionsPressed: showTermsAndConditions ? () {} : null,
       onPrivacyPolicyPressed: showPrivacyPolicy ? () {} : null,
+    ),
+  ], width: width.toDouble());
+}
+
+Widget _buildPasswordlessStory(
+  BuildContext context, {
+  bool startOnVerifyScreen = false,
+}) {
+  final width = context.knobs.sliderInt(
+    label: 'Column width',
+    initial: 300,
+    min: 270,
+    max: 400,
+  );
+
+  final showConsentNotice = context.knobs.boolean(
+    label: 'Show a consent notice below the email field.',
+    initial: true,
+  );
+
+  final consentNotice = showConsentNotice
+      ? const Text('By continuing, you agree to the terms of this app.')
+      : null;
+
+  void onError(Object error) => context.showErrorSnackBar(error.toString());
+  void onAuthenticated() =>
+      context.showSuccessSnackBar('Authenticated with passwordless email!');
+
+  if (!startOnVerifyScreen) {
+    return wrapWidgetInDefaultColumn([
+      EmailPasswordlessSignInWidget(
+        client: context.read<Client>(),
+        onError: onError,
+        onAuthenticated: onAuthenticated,
+        consentNotice: consentNotice,
+      ),
+    ], width: width.toDouble());
+  }
+
+  final controller = EmailPasswordlessAuthController(
+    client: context.read<Client>(),
+    onError: onError,
+    onAuthenticated: onAuthenticated,
+  )..navigateToVerify(loginRequestId: const Uuid().v7obj());
+
+  return wrapWidgetInDefaultColumn([
+    EmailPasswordlessSignInWidget(
+      controller: controller,
+      consentNotice: consentNotice,
     ),
   ], width: width.toDouble());
 }

@@ -14,6 +14,7 @@ import 'common/sign_in_flow_coordinator.dart';
 import 'common/widgets/divider.dart';
 import 'common/widgets/gaps.dart';
 import 'email/email_sign_in_widget.dart';
+import 'email_passwordless/email_passwordless_sign_in_widget.dart';
 import 'github/github_sign_in_widget.dart';
 import 'google/google_sign_in_widget.dart';
 import 'localization/sign_in_localization_provider.dart';
@@ -27,12 +28,21 @@ import 'providers.dart';
 /// and displays the appropriate sign-in options.
 ///
 /// Currently supports:
-/// - Email authentication (via [EndpointEmailIdpBase])
+/// - Email and password authentication (via [EndpointEmailIdpBase])
+/// - Passwordless email authentication (via
+///   [EndpointEmailPasswordlessIdpBase])
 /// - Google Sign-In (via [EndpointGoogleIdpBase])
 /// - Apple Sign-In (via [EndpointAppleIdpBase])
 /// - GitHub Sign-In (via [EndpointGitHubIdpBase])
 /// - Microsoft Sign-In (via [EndpointMicrosoftIdpBase])
 /// - External providers registered via [ExternalIdpRegistry]
+///
+/// If the server exposes both the email and password endpoint and the
+/// passwordless email endpoint, only one of them is shown. By default it is the
+/// email and password widget, so that adding the passwordless endpoint does not
+/// change the UI of an existing app. To show the passwordless widget instead,
+/// either set [disableEmailSignInWidget] to `true`, or provide a custom
+/// [emailPasswordlessSignInWidget] without providing an [emailSignInWidget].
 ///
 /// The widget separates email authentication from other providers with a
 /// visual divider showing "Or continue with" text.
@@ -69,6 +79,10 @@ class SignInWidget extends StatefulWidget {
   /// Whether to disable the email sign-in widget if it is available.
   final bool disableEmailSignInWidget;
 
+  /// Whether to disable the passwordless email sign-in widget if it is
+  /// available.
+  final bool disableEmailPasswordlessSignInWidget;
+
   /// Whether to disable the Google sign-in widget if it is available.
   final bool disableGoogleSignInWidget;
 
@@ -89,6 +103,9 @@ class SignInWidget extends StatefulWidget {
 
   /// Customized widget to use for email sign-in.
   final EmailSignInWidget? emailSignInWidget;
+
+  /// Customized widget to use for passwordless email sign-in.
+  final EmailPasswordlessSignInWidget? emailPasswordlessSignInWidget;
 
   /// Customized widget to use for Google sign-in.
   final GoogleSignInWidget? googleSignInWidget;
@@ -116,6 +133,7 @@ class SignInWidget extends StatefulWidget {
     this.onError,
     this.disableAnonymousSignInWidget = false,
     this.disableEmailSignInWidget = false,
+    this.disableEmailPasswordlessSignInWidget = false,
     this.disableGoogleSignInWidget = false,
     this.disableAppleSignInWidget = false,
     this.disableGitHubSignInWidget = false,
@@ -123,6 +141,7 @@ class SignInWidget extends StatefulWidget {
     this.disableFacebookSignInWidget = false,
     this.anonymousSignInWidget,
     this.emailSignInWidget,
+    this.emailPasswordlessSignInWidget,
     this.googleSignInWidget,
     this.appleSignInWidget,
     this.githubSignInWidget,
@@ -141,7 +160,23 @@ class _SignInWidgetState extends State<SignInWidget> {
   bool get hasAnonymous =>
       auth.idp.hasAnonymous && !widget.disableAnonymousSignInWidget;
 
-  bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
+  bool get _hasEmailPassword =>
+      auth.idp.hasEmail && !widget.disableEmailSignInWidget;
+
+  bool get _hasEmailPasswordless =>
+      auth.idp.hasEmailPasswordless &&
+      !widget.disableEmailPasswordlessSignInWidget;
+
+  /// Whether the passwordless widget is shown instead of the email and
+  /// password widget, when both are available.
+  bool get _preferPasswordless =>
+      widget.emailPasswordlessSignInWidget != null &&
+      widget.emailSignInWidget == null;
+
+  bool get hasEmail =>
+      _hasEmailPassword && !(_hasEmailPasswordless && _preferPasswordless);
+
+  bool get hasEmailPasswordless => _hasEmailPasswordless && !hasEmail;
 
   bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
 
@@ -253,7 +288,15 @@ class _SignInWidgetState extends State<SignInWidget> {
                     onAuthenticated: widget.onAuthenticated,
                     onError: widget.onError,
                   ),
-            if (socialProviders.isNotEmpty && hasEmail)
+            if (hasEmailPasswordless)
+              widget.emailPasswordlessSignInWidget ??
+                  EmailPasswordlessSignInWidget(
+                    client: widget.client,
+                    onAuthenticated: widget.onAuthenticated,
+                    onError: widget.onError,
+                  ),
+            if (socialProviders.isNotEmpty &&
+                (hasEmail || hasEmailPasswordless))
               const _SignInSeparator(),
             ...socialProviders,
             if (hasAnonymous) ...[

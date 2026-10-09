@@ -5,6 +5,7 @@ import '../../common/widgets/buttons/action_button.dart';
 import '../../common/widgets/gaps.dart';
 import '../../common/widgets/verification_code.dart';
 import '../../localization/sign_in_localization_provider.dart';
+import '../../common/email_code_form_controller.dart';
 import '../email_auth_controller.dart';
 import 'widgets/back_to_sign_in_button.dart';
 import 'widgets/form_standard_layout.dart';
@@ -24,7 +25,10 @@ final _defaultAllowedCharacters = RegExp(r'[1-9]');
 /// Displays a verification code input field for users to validate a request.
 class VerificationForm extends StatefulWidget {
   /// The controller that manages authentication state and logic.
-  final EmailAuthController controller;
+  ///
+  /// Either an [EmailAuthController] or any other [EmailCodeFormController],
+  /// such as the `EmailPasswordlessAuthController`.
+  final EmailCodeFormController controller;
 
   /// Callback to call when verification is completed.
   ///
@@ -47,6 +51,12 @@ class VerificationForm extends StatefulWidget {
   /// Configuration for the verification code input.
   final VerificationCodeConfig verificationCodeConfig;
 
+  /// Optional widget to display below the verify button.
+  ///
+  /// Defaults to a "Back to sign in" button when [controller] is an
+  /// [EmailAuthController], and to nothing otherwise.
+  final Widget? bottomText;
+
   /// Creates a [VerificationForm] widget.
   const VerificationForm({
     required this.title,
@@ -55,6 +65,7 @@ class VerificationForm extends StatefulWidget {
     required this.verificationCodeConfig,
     this.messageText,
     this.verifyButtonLabel,
+    this.bottomText,
     super.key,
   });
 
@@ -65,7 +76,7 @@ class VerificationForm extends StatefulWidget {
 class _VerificationFormState extends State<VerificationForm> {
   late final FocusNode focusNode;
 
-  EmailAuthController get controller => widget.controller;
+  EmailCodeFormController get controller => widget.controller;
 
   @override
   void initState() {
@@ -79,7 +90,7 @@ class _VerificationFormState extends State<VerificationForm> {
   /// the user to correct it.
   void _onControllerStateChanged() {
     if (!mounted) return;
-    if (controller.state == EmailAuthState.error) {
+    if (controller.error != null) {
       focusNode.requestFocus();
     }
   }
@@ -129,7 +140,14 @@ class _VerificationFormState extends State<VerificationForm> {
         label: widget.verifyButtonLabel ?? texts.verify,
         isLoading: controller.isLoading,
       ),
-      bottomText: BackToSignInButton(controller: controller),
+      bottomText:
+          widget.bottomText ??
+          switch (controller) {
+            final EmailAuthController emailController => BackToSignInButton(
+              controller: emailController,
+            ),
+            _ => null,
+          },
     );
   }
 }
