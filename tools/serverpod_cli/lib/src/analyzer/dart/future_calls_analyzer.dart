@@ -88,8 +88,15 @@ class FutureCallsAnalyzer {
   };
 
   /// The hash of each future call file's definitions as the last
-  /// [updateFileContexts] found them, `null` before the first one.
+  /// [updateFileContexts] found them. Before the first one, as the first
+  /// [analyze] found them, and `null` before that.
   Map<String, int>? _definitionHashesAtLastUpdate;
+
+  /// The hash of the definitions currently cached for each file.
+  Map<String, int> get _definitionHashes => {
+    for (final entry in _fileCache.entries)
+      entry.key: entry.value.definitionsHash,
+  };
 
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
@@ -105,6 +112,9 @@ class FutureCallsAnalyzer {
 
     final erroredFilesBefore = _erroredFiles;
     final keysBefore = _fileCache.keys.toSet();
+    // Read before analyzing, which records the hashes itself when there are
+    // none yet.
+    final previousHashes = _definitionHashesAtLastUpdate;
 
     await analyze(
       collector: CodeGenerationCollector(),
@@ -121,11 +131,7 @@ class FutureCallsAnalyzer {
     // update, which were parsed the same way, rather than with what generation
     // left in the cache, which validates against models and can differ from
     // this without anything having changed.
-    final definitionHashes = {
-      for (final entry in _fileCache.entries)
-        entry.key: entry.value.definitionsHash,
-    };
-    final previousHashes = _definitionHashesAtLastUpdate;
+    final definitionHashes = _definitionHashes;
     _definitionHashesAtLastUpdate = definitionHashes;
     if (previousHashes != null &&
         definitionHashes.entries.any(
@@ -362,6 +368,13 @@ class FutureCallsAnalyzer {
       futureCallDefs.addAll(result.definitions);
     }
     futureCallDefs.removeWhere((e) => e.filePath.startsWith('package:'));
+
+    // An update compares the definitions with the ones of the update before
+    // it. Analyzers that generate without having been updated have no such
+    // update, so the first analysis stands in for it. Otherwise the first
+    // change after that generation could alter what a future call in another
+    // file declares without being noticed.
+    _definitionHashesAtLastUpdate ??= _definitionHashes;
 
     return futureCallDefs;
   }
