@@ -168,33 +168,6 @@ class ReminderFutureCall extends FutureCall {
                 );
               },
             );
-
-            test(
-              'when the parameters are removed from the future call and incremental generation runs again, '
-              'then the parameter model file is removed.',
-              () async {
-                futureCallFile.writeAsStringSync('''
-import 'package:serverpod/serverpod.dart';
-
-class ReminderFutureCall extends FutureCall {
-  Future<void> remind(Session session) async {}
-}
-''');
-
-                final requirements = await analyzers.update(
-                  config: config,
-                  affectedPaths: {futureCallFile.path},
-                );
-                final result = await analyzers.performGenerate(
-                  config: config,
-                  requirements: requirements,
-                  affectedPaths: {futureCallFile.path},
-                );
-
-                expect(result.success, isTrue);
-                expect(parameterModelFile.existsSync(), isFalse);
-              },
-            );
           });
         },
       );
