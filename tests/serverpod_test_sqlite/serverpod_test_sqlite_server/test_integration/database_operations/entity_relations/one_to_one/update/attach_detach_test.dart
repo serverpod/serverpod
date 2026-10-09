@@ -52,8 +52,12 @@ Future<int> deleteAll(Session session) async {
       postDeletions.length;
 }
 
-void main() async {
-  var session = await IntegrationTestServer().session();
+void main() {
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => closeTestSession(session));
 
   group('Given an address', () {
     late List<Citizen> citizens;

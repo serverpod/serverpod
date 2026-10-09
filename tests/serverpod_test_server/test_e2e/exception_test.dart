@@ -5,9 +5,15 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = test_client.Client(
-    serverUrl,
-  );
+  late test_client.Client client;
+  setUpAll(() {
+    client = test_client.Client(
+      serverUrl,
+    );
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   setUp(() {});
 
