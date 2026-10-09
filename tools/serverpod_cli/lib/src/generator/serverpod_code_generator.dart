@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
@@ -72,6 +73,10 @@ abstract class ServerpodCodeGenerator {
     return (all: allFiles.keys.toList(), written: written);
   }
 
+  /// How many generated files are compared and written at a time.
+  @visibleForTesting
+  static const writeBatchSize = 32;
+
   /// Writes generated files to disk, skipping files whose content is
   /// unchanged to avoid unnecessary file-system modification timestamps.
   ///
@@ -80,12 +85,11 @@ abstract class ServerpodCodeGenerator {
   /// against its own path, and a project generates hundreds of them, so doing
   /// them one await at a time pays the full round trip per file.
   static Future<Set<String>> _writeFiles(Map<String, String> files) async {
-    const concurrency = 32;
     final entries = files.entries.toList();
     final written = <String>{};
 
-    for (var start = 0; start < entries.length; start += concurrency) {
-      final batch = entries.skip(start).take(concurrency);
+    for (var start = 0; start < entries.length; start += writeBatchSize) {
+      final batch = entries.skip(start).take(writeBatchSize);
       final results = await Future.wait(batch.map(_writeFile));
       written.addAll(results.nonNulls);
     }
