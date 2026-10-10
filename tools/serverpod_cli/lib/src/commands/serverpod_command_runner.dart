@@ -12,6 +12,7 @@ import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../generated/completion_script_carapace.dart';
@@ -19,19 +20,80 @@ import 'upgrade.dart' show UpgradeCommand;
 import 'version.dart' show VersionCommand;
 
 Future<void> _preCommandEnvironmentChecks() async {
-  if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
-    log.error(
-      'Failed to run serverpod. You need to have dart installed and in your \$PATH',
-    );
+  try {
+    try {
+      await sdkResolver.dartSdk;
+    } on SdkResolutionException {
+      log.error(
+        'Failed to run serverpod. You need to have dart installed and in your \$PATH',
+      );
+      throw ExitException.error();
+    }
+    if (!ci.isCI && !await sdkResolver.isFlutterInstalled) {
+      log.error(
+        'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
+      );
+      if (await CommandLineTools.existsCommand('fvm', ['--version'])) {
+        // Raw, so text wrapping never breaks a command across lines.
+        log.error('\n${_fvmShimInstructions()}\n', type: const RawLogType());
+      }
+      throw ExitException.error();
+    }
+
+    if (log.logLevel == LogLevel.debug) {
+      log.debug(await sdkResolver.describeResolution());
+    }
+  } on SdkResolutionTimeoutException catch (e) {
+    log.error('Failed to run serverpod. ${e.message}');
     throw ExitException.error();
   }
-  if (!ci.isCI &&
-      !await CommandLineTools.existsCommand('flutter', ['--version'])) {
-    log.error(
-      'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
-    );
-    throw ExitException.error();
+}
+
+/// How fvm users put `fvm flutter` behind a `flutter` on their PATH.
+String _fvmShimInstructions() {
+  // Without a project pin or a global version, `fvm flutter` runs the
+  // `flutter` on PATH, which is the shim itself.
+  const globalVersion =
+      'Also set a version with `fvm global <version>`, or the shim ends up\n'
+      'calling itself outside projects pinned with fvm.';
+  if (Platform.isWindows) {
+    return 'If you use fvm, create `%USERPROFILE%\\.fvm_shim` and save a '
+        '`flutter.bat`\n'
+        'file in it containing this line:\n'
+        '\n'
+        '  @fvm flutter %*\n'
+        '\n'
+        'Add that folder to the front of your PATH environment variable\n'
+        'and reopen your terminal.\n'
+        '\n'
+        '$globalVersion\n'
+        '\n'
+        'Then verify:\n'
+        '\n'
+        '  where.exe flutter\n'
+        '\n'
+        'The first result from `where.exe flutter` should be your '
+        '`flutter.bat` shim.';
   }
+  return 'If you use fvm, add a `flutter` that runs `fvm flutter`:\n'
+      '\n'
+      '  mkdir -p ~/.fvm_shim\n'
+      '  printf \'#!/bin/sh\\nexec fvm flutter "\$@"\\n\' > ~/.fvm_shim/flutter\n'
+      '  chmod +x ~/.fvm_shim/flutter\n'
+      '\n'
+      'Put the shim directory at the front of your \$PATH:\n'
+      '\n'
+      '  export PATH="\$HOME/.fvm_shim:\$PATH"\n'
+      '\n'
+      'Reopen your terminal.\n'
+      '\n'
+      '$globalVersion\n'
+      '\n'
+      'Then verify:\n'
+      '\n'
+      '  which flutter\n'
+      '\n'
+      '`which flutter` should report your `~/.fvm_shim/flutter` shim.';
 }
 
 Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
@@ -77,6 +139,11 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     // call site reads it from the singleton instead of taking a flag. Set
     // before the `--version` early return so the state is never stale.
     cliAnalytics.enabled = analyticsEnabled();
+
+    // Installed before any command runs so every call site reads one answer.
+    // Resolution itself is lazy, so a command that never touches an SDK never
+    // pays for looking one up.
+    initializeSdkResolver();
 
     if (globalConfiguration.value(GlobalOption.version)) {
       await commands['version']?.run();
