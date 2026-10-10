@@ -59,6 +59,47 @@ void main() {
     );
   });
 
+  group('Given wasmHeadersMiddleware with sameOriginAllowPopups policy', () {
+    late Serverpod pod;
+
+    setUp(() async {
+      pod = IntegrationTestServer.create();
+
+      pod.webServer.addMiddleware(
+        const WasmHeadersMiddleware(
+          crossOriginOpenerPolicy:
+              CrossOriginOpenerPolicyHeader.sameOriginAllowPopups,
+        ),
+        '/test',
+      );
+      pod.webServer.addRoute(_TestRoute('test response'), '/test/route');
+
+      await pod.startWithDatabase();
+    });
+
+    tearDown(() async {
+      await pod.shutdown(exitProcess: false);
+    });
+
+    test(
+      'when Response is returned then the configured COOP policy is used',
+      () async {
+        final response = await client.get(
+          Uri.parse('${pod.webUrl}test/route'),
+        );
+        expect(response.statusCode, 200);
+        expect(
+          response.headers['cross-origin-opener-policy'],
+          'same-origin-allow-popups',
+        );
+        expect(
+          response.headers['cross-origin-embedder-policy'],
+          'require-corp',
+        );
+      },
+    );
+  });
+
   group('Given wasmHeadersMiddleware applied to multiple routes', () {
     late Serverpod pod;
 
