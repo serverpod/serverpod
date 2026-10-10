@@ -124,6 +124,16 @@ class PasskeyIdp implements IdentityProvider {
         throw AuthUserBlockedException();
       }
 
+      await AccountLinkRequests.attachToActiveLinkRequest(
+        session,
+        authUserId: authUserId,
+        method: method,
+        // Passkeys are registered through a separate, already authenticated
+        // call, so logging in only ever signs in to an existing account.
+        newAccount: false,
+        transaction: transaction,
+      );
+
       return _tokenIssuer.issueToken(
         session,
         authUserId: authUserId,

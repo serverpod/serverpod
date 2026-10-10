@@ -5,10 +5,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import '../common/account_linking_controller.dart';
 import '../common/exceptions.dart';
 import '../common/oauth2_pkce/oauth2_pkce_exception.dart';
 import 'google_sign_in_service.dart';
 import 'google_web_sign_in_service.dart';
+import '../common/sign_in_completion.dart';
 
 /// Controller for managing Google-based authentication flows.
 ///
@@ -51,6 +53,16 @@ class GoogleAuthController extends ChangeNotifier {
   /// log, but not passed to the callback.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Used by account linking, where the signed-in user stays signed in and the
+  /// new sign-in only proves ownership of the account being linked.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// Whether to attempt to authenticate the user automatically using the
   /// `attemptLightweightAuthentication` method after the controller is
   /// initialized.
@@ -75,6 +87,8 @@ class GoogleAuthController extends ChangeNotifier {
     required this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     this.attemptLightweightSignIn = false,
     this.scopes = defaultScopes,
   }) {
@@ -186,6 +200,11 @@ class GoogleAuthController extends ChangeNotifier {
     }
     if (_state == GoogleAuthState.loading) return;
 
+    if (accountLinking != null) {
+      await accountLinking!.start();
+      if (accountLinking!.state != AccountLinkingState.awaitingSignIn) return;
+    }
+
     _setState(GoogleAuthState.loading);
 
     final flowCompleter = Completer<void>();
@@ -205,6 +224,11 @@ class GoogleAuthController extends ChangeNotifier {
 
   Future<void> _signInWeb() async {
     if (_state == GoogleAuthState.loading) return;
+
+    if (accountLinking != null) {
+      await accountLinking!.start();
+      if (accountLinking!.state != AccountLinkingState.awaitingSignIn) return;
+    }
 
     _setState(GoogleAuthState.loading);
     try {
@@ -251,10 +275,19 @@ class GoogleAuthController extends ChangeNotifier {
         accessToken: accessToken,
       );
 
-      await client.auth.updateSignedInUser(authSuccess);
+      final didSignIn = await completeSignIn(
+        client,
+        authSuccess,
+        accountLinking: accountLinking,
+        onAuthSuccess: onAuthSuccess,
+      );
 
-      _setState(GoogleAuthState.authenticated);
-      onAuthenticated?.call();
+      if (didSignIn) {
+        _setState(GoogleAuthState.authenticated);
+        onAuthenticated?.call();
+      } else {
+        _setState(GoogleAuthState.idle);
+      }
       _completeSignInFlowAwait();
     } catch (error) {
       _handleAuthenticationError(error);
@@ -270,10 +303,19 @@ class GoogleAuthController extends ChangeNotifier {
         redirectUri: result.redirectUri,
       );
 
-      await client.auth.updateSignedInUser(authSuccess);
+      final didSignIn = await completeSignIn(
+        client,
+        authSuccess,
+        accountLinking: accountLinking,
+        onAuthSuccess: onAuthSuccess,
+      );
 
-      _setState(GoogleAuthState.authenticated);
-      onAuthenticated?.call();
+      if (didSignIn) {
+        _setState(GoogleAuthState.authenticated);
+        onAuthenticated?.call();
+      } else {
+        _setState(GoogleAuthState.idle);
+      }
     } catch (error) {
       _handleAuthenticationError(error);
     }

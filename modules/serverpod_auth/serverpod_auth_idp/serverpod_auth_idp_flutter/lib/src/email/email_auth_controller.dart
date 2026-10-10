@@ -5,8 +5,10 @@ import 'package:flutter/widgets.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import '../common/account_linking_controller.dart';
 import '../common/widgets/password_requirements/requirements.dart';
 import 'email_auth_exceptions.dart';
+import '../common/sign_in_completion.dart';
 
 /// Represents the different screens in the email authentication flow.
 enum EmailFlowScreen {
@@ -88,6 +90,16 @@ class EmailAuthController extends ChangeNotifier {
   /// log, but not passed to the callback.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Used by account linking, where the signed-in user stays signed in and the
+  /// new sign-in only proves ownership of the account being linked.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// The validation function to use for email validation.
   ///
   /// This function should throw an [InvalidEmailException] if the email is
@@ -119,6 +131,8 @@ class EmailAuthController extends ChangeNotifier {
     this.startScreen = EmailFlowScreen.login,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     void Function(String email)? emailValidation,
     List<PasswordRequirement>? passwordRequirements,
   }) : emailValidation = emailValidation ?? validateEmail,
@@ -315,14 +329,12 @@ class EmailAuthController extends ChangeNotifier {
   /// On success, updates the session manager and calls [onAuthenticated].
   /// On failure, transitions to error state with the error message.
   Future<void> login() async {
-    await _guarded(EmailAuthState.authenticated, null, () async {
-      final authSuccess = await _emailEndpoint.login(
+    await _guardedSignIn(
+      () => _emailEndpoint.login(
         email: emailController.text.trim(),
         password: passwordController.text,
-      );
-
-      await client.auth.updateSignedInUser(authSuccess);
-    });
+      ),
+    );
   }
 
   /// Starts the registration process for a new user with email only.
@@ -330,11 +342,14 @@ class EmailAuthController extends ChangeNotifier {
   /// Validates the email and transitions to the set password screen.
   /// On failure, transitions to error state with the error message.
   Future<void> startRegistration() async {
-    await _guarded(null, EmailFlowScreen.verifyRegistration, () async {
-      final email = emailController.text.trim();
-      emailValidation.call(email);
-      _requestId = await _emailEndpoint.startRegistration(email: email);
-    });
+    await _guardedScreenTransition(
+      EmailFlowScreen.verifyRegistration,
+      () async {
+        final email = emailController.text.trim();
+        emailValidation.call(email);
+        _requestId = await _emailEndpoint.startRegistration(email: email);
+      },
+    );
   }
 
   /// Submits the registration process and sends verification email.
@@ -343,17 +358,20 @@ class EmailAuthController extends ChangeNotifier {
   /// On success, transitions to verification screen.
   /// On failure, transitions to error state with the error message.
   Future<void> verifyRegistrationCode() async {
-    await _guarded(null, EmailFlowScreen.completeRegistration, () async {
-      final registrationRequestId = _requestId;
-      if (registrationRequestId == null) {
-        throw StateError('No registration request was found to verify.');
-      }
+    await _guardedScreenTransition(
+      EmailFlowScreen.completeRegistration,
+      () async {
+        final registrationRequestId = _requestId;
+        if (registrationRequestId == null) {
+          throw StateError('No registration request was found to verify.');
+        }
 
-      _finishRequestToken = await _emailEndpoint.verifyRegistrationCode(
-        accountRequestId: registrationRequestId,
-        verificationCode: verificationCodeController.text.trim(),
-      );
-    });
+        _finishRequestToken = await _emailEndpoint.verifyRegistrationCode(
+          accountRequestId: registrationRequestId,
+          verificationCode: verificationCodeController.text.trim(),
+        );
+      },
+    );
   }
 
   /// Completes the registration process with the verification code.
@@ -361,19 +379,17 @@ class EmailAuthController extends ChangeNotifier {
   /// On success, updates the session manager and calls [onAuthenticated].
   /// On failure, transitions to error state with the error message.
   Future<void> finishRegistration() async {
-    await _guarded(EmailAuthState.authenticated, null, () async {
-      final finishRequestToken = _finishRequestToken;
-      if (finishRequestToken == null) {
-        throw StateError('No registration request was found to finish.');
-      }
+    final finishRequestToken = _finishRequestToken;
+    if (finishRequestToken == null) {
+      throw StateError('No registration request was found to finish.');
+    }
 
-      final authSuccess = await _emailEndpoint.finishRegistration(
+    await _guardedSignIn(
+      () => _emailEndpoint.finishRegistration(
         registrationToken: finishRequestToken,
         password: passwordController.text,
-      );
-
-      await client.auth.updateSignedInUser(authSuccess);
-    });
+      ),
+    );
   }
 
   /// Starts the password reset process.
@@ -382,10 +398,13 @@ class EmailAuthController extends ChangeNotifier {
   /// On success, transitions to password reset pending state.
   /// On failure, transitions to error state with the error message.
   Future<void> startPasswordReset() async {
-    await _guarded(null, EmailFlowScreen.verifyPasswordReset, () async {
-      final email = emailController.text.trim();
-      _requestId = await _emailEndpoint.startPasswordReset(email: email);
-    });
+    await _guardedScreenTransition(
+      EmailFlowScreen.verifyPasswordReset,
+      () async {
+        final email = emailController.text.trim();
+        _requestId = await _emailEndpoint.startPasswordReset(email: email);
+      },
+    );
   }
 
   /// Verifies the password reset verification code.
@@ -394,17 +413,20 @@ class EmailAuthController extends ChangeNotifier {
   /// [finishPasswordReset]. On failure, transitions to error state with the
   /// error message.
   Future<void> verifyPasswordResetCode() async {
-    await _guarded(null, EmailFlowScreen.completePasswordReset, () async {
-      final passwordResetRequestId = _requestId;
-      if (passwordResetRequestId == null) {
-        throw StateError('No password reset request was found to verify.');
-      }
+    await _guardedScreenTransition(
+      EmailFlowScreen.completePasswordReset,
+      () async {
+        final passwordResetRequestId = _requestId;
+        if (passwordResetRequestId == null) {
+          throw StateError('No password reset request was found to verify.');
+        }
 
-      _finishRequestToken = await _emailEndpoint.verifyPasswordResetCode(
-        passwordResetRequestId: passwordResetRequestId,
-        verificationCode: verificationCodeController.text.trim(),
-      );
-    });
+        _finishRequestToken = await _emailEndpoint.verifyPasswordResetCode(
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: verificationCodeController.text.trim(),
+        );
+      },
+    );
   }
 
   /// Completes the password reset process with a new password.
@@ -413,23 +435,21 @@ class EmailAuthController extends ChangeNotifier {
   /// updates the session manager and calls [onAuthenticated]. On failure,
   /// transitions to error state with the error message.
   Future<void> finishPasswordReset() async {
-    await _guarded(EmailAuthState.authenticated, null, () async {
-      final finishRequestToken = _finishRequestToken;
-      if (finishRequestToken == null) {
-        throw StateError('No password reset request was found to finish.');
-      }
+    final finishRequestToken = _finishRequestToken;
+    if (finishRequestToken == null) {
+      throw StateError('No password reset request was found to finish.');
+    }
 
+    await _guardedSignIn(() async {
       await _emailEndpoint.finishPasswordReset(
         finishPasswordResetToken: finishRequestToken,
         newPassword: passwordController.text,
       );
 
-      final authSuccess = await _emailEndpoint.login(
+      return _emailEndpoint.login(
         email: emailController.text.trim(),
         password: passwordController.text,
       );
-
-      await client.auth.updateSignedInUser(authSuccess);
     });
   }
 
@@ -453,34 +473,14 @@ class EmailAuthController extends ChangeNotifier {
     if (notify) notifyListeners();
   }
 
-  /// Executes the given action and transitions to the target state on success.
-  /// If the target state is authenticated, calls [onAuthenticated] callback.
-  /// In case of an error, transitions to error state and calls [onError] only
-  /// for exceptions that should be shown to the user.
-  Future<void> _guarded(
-    EmailAuthState? targetState,
-    EmailFlowScreen? targetScreen,
-    Future<void> Function() action,
-  ) async {
-    if ((targetState == null) && (targetScreen == null)) {
-      throw ArgumentError('Provide either targetState or targetScreen.');
-    }
-
+  Future<void> _guarded(Future<void> Function() action) async {
     _setState(EmailAuthState.loading);
     try {
       await action();
-      if (targetScreen != null) {
-        navigateTo(targetScreen);
-      } else if (targetState != null) {
-        _setState(targetState);
-        if (targetState == EmailAuthState.authenticated) {
-          onAuthenticated?.call();
-        }
-      }
     } catch (e) {
       _error = e;
       _setState(EmailAuthState.error);
-      debugPrint('[EmailAuthController] $_currentScreen -> $targetState: $e');
+      debugPrint('[EmailAuthController] $_currentScreen: $e');
 
       // If we have a network error, start a timer to enable the action button
       // again after a short delay.
@@ -495,6 +495,65 @@ class EmailAuthController extends ChangeNotifier {
         onError?.call(userFriendlyError);
       }
     }
+  }
+
+  /// Executes the given [action] and transitions to [targetScreen] on success.
+  ///
+  /// Transitions like this are for intermediate steps that do not yet yield a
+  /// session, like when the user is ushered forward to enter a verification
+  /// code.
+  ///
+  /// In case of an error, transitions to error state and calls [onError] only
+  /// for exceptions that should be shown to the user.
+  Future<void> _guardedScreenTransition(
+    EmailFlowScreen targetScreen,
+    Future<void> Function() action,
+  ) async {
+    await _guarded(() async {
+      await action();
+      navigateTo(targetScreen);
+    });
+  }
+
+  /// Executes the given [signIn] action and finishes sign-in completion.
+  ///
+  /// On successful authentication without account-linking interception,
+  /// transitions to [EmailAuthState.authenticated] and calls [onAuthenticated].
+  /// If account linking interceptor takes over, returns to [EmailAuthState.idle].
+  /// In case of an error, transitions to error state and calls [onError] only
+  /// for exceptions that should be shown to the user.
+  ///
+  /// See also:
+  ///   * [_guardedScreenTransition] For when you need to transition to a
+  ///       different screen on success.
+  Future<void> _guardedSignIn(Future<AuthSuccess> Function() signIn) async {
+    if (_state == EmailAuthState.loading) return;
+
+    if (accountLinking != null) {
+      await accountLinking!.start();
+      if (accountLinking!.state != AccountLinkingState.awaitingSignIn) return;
+    }
+
+    await _guarded(() async {
+      final authSuccess = await signIn();
+      final didSignIn = await completeSignIn(
+        client,
+        authSuccess,
+        accountLinking: accountLinking,
+        onAuthSuccess: onAuthSuccess,
+      );
+
+      if (didSignIn) {
+        _setState(EmailAuthState.authenticated);
+        onAuthenticated?.call();
+      } else {
+        // If `completeSignIn` did not sign in during an authentication attempt,
+        // then account-linking is in effect and the UI should be communicating
+        // with the user about whether or not they want to accept an account
+        // merge.
+        _setState(EmailAuthState.idle);
+      }
+    });
   }
 }
 

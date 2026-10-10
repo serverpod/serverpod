@@ -1,14 +1,23 @@
 import 'package:flutter/widgets.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import 'account_linking_controller.dart';
+import 'sign_in_completion.dart';
+
 /// Builder function for external IDP sign-in widgets.
+///
+/// When [accountLinking] or [onAuthSuccess] is given, the built widget must hand
+/// the completed sign-in to it instead of signing the user in, so that the
+/// provider can take part in account linking.
 typedef ExternalIdpWidgetBuilder =
     Widget Function(
       BuildContext context,
       ServerpodClientShared client,
       VoidCallback? onAuthenticated,
-      Function(Object error)? onError,
-    );
+      Function(Object error)? onError, [
+      AccountLinkingController? accountLinking,
+      OnAuthSuccessCallback? onAuthSuccess,
+    ]);
 
 /// Registry for external identity provider widgets.
 ///
