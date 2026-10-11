@@ -387,8 +387,6 @@ class SerializableModelLibraryGenerator {
             shouldOverrideAbstractCopyWith: () =>
                 _shouldOverrideAbstractCopyWithMethod(classDefinition),
             subDirParts: classDefinition.subDirParts,
-            inheritedFields: classDefinition.inheritedFields,
-            isIdInherited: false,
           ),
         );
       } else if (!classDefinition.isSealed) {
@@ -410,8 +408,6 @@ class SerializableModelLibraryGenerator {
             fields,
             shouldOverrideAbstractCopyWith: () => false,
             subDirParts: classDefinition.subDirParts,
-            inheritedFields: classDefinition.inheritedFields,
-            isIdInherited: false,
           ),
         );
       }
@@ -585,8 +581,6 @@ class SerializableModelLibraryGenerator {
             shouldOverrideAbstractCopyWith: () =>
                 _shouldOverrideAbstractCopyWithMethod(classDefinition),
             subDirParts: classDefinition.subDirParts,
-            inheritedFields: classDefinition.inheritedFields,
-            isIdInherited: classDefinition.isIdInherited,
           ),
         );
       } else if (!classDefinition.isSealed) {
@@ -608,8 +602,6 @@ class SerializableModelLibraryGenerator {
             fields,
             shouldOverrideAbstractCopyWith: () => false,
             subDirParts: classDefinition.subDirParts,
-            inheritedFields: classDefinition.inheritedFields,
-            isIdInherited: classDefinition.isIdInherited,
           ),
         );
       }
@@ -1027,8 +1019,6 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields, {
     required bool Function() shouldOverrideAbstractCopyWith,
     required List<String> subDirParts,
-    required List<SerializableModelFieldDefinition> inheritedFields,
-    required bool isIdInherited,
   }) {
     return Method((methodBuilder) {
       if (shouldOverrideAbstractCopyWith()) {
@@ -1049,8 +1039,6 @@ class SerializableModelLibraryGenerator {
             fields,
             className: className,
             subDirParts: subDirParts,
-            inheritedFields: inheritedFields,
-            isIdInherited: isIdInherited,
           ),
         )
         ..returns = refer(className);
@@ -1092,38 +1080,15 @@ class SerializableModelLibraryGenerator {
         }
 
         m.optionalParameters.addAll(
-          fields.where((field) => field.shouldIncludeField(serverCode)).map(
-            (field) {
-              var fieldType = field.type.reference(
-                serverCode,
-                nullable: true,
-                subDirParts: subDirParts,
-                config: config,
-              );
-
-              final usesUndefinedCopyWithDefault =
-                  _fieldUsesUndefinedCopyWithSentinel(field);
-              final usesTypedSentinel =
-                  usesUndefinedCopyWithDefault &&
-                  _hasTypedCopyWithSentinel(field.type);
-              var type = usesUndefinedCopyWithDefault && !usesTypedSentinel
-                  ? refer('Object?')
-                  : fieldType;
-              var defaultValue = usesTypedSentinel
-                  ? _typedCopyWithSentinel(field, subDirParts, className).code
-                  : usesUndefinedCopyWithDefault
-                  ? const Code('_Undefined')
-                  : null;
-
-              return Parameter((p) {
-                p
-                  ..name = field.name
-                  ..named = true
-                  ..type = type
-                  ..defaultTo = defaultValue;
-              });
-            },
-          ),
+          fields
+              .where((field) => field.shouldIncludeField(serverCode))
+              .map(
+                (field) => _buildCopyWithParameter(
+                  field,
+                  subDirParts: subDirParts,
+                  className: className,
+                ),
+              ),
         );
         m.returns = refer(className);
         m.body = createClassExpression(hasImplicitClass, className)
@@ -2338,39 +2303,52 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields, {
     required String className,
     required List<String> subDirParts,
-    required List<SerializableModelFieldDefinition> inheritedFields,
-    required bool isIdInherited,
   }) {
-    return fields.where((field) => field.shouldIncludeField(serverCode)).map((
+    return fields
+        .where((field) => field.shouldIncludeField(serverCode))
+        .map(
+          (field) => _buildCopyWithParameter(
+            field,
+            subDirParts: subDirParts,
+            className: className,
+          ),
+        )
+        .toList();
+  }
+
+  Parameter _buildCopyWithParameter(
+    SerializableModelFieldDefinition field, {
+    required List<String> subDirParts,
+    required String className,
+  }) {
+    var fieldType = field.type.reference(
+      serverCode,
+      nullable: true,
+      subDirParts: subDirParts,
+      config: config,
+    );
+
+    final usesUndefinedCopyWithDefault = _fieldUsesUndefinedCopyWithSentinel(
       field,
-    ) {
-      var fieldType = field.type.reference(
-        serverCode,
-        nullable: true,
-        subDirParts: subDirParts,
-        config: config,
-      );
+    );
+    final usesTypedSentinel =
+        usesUndefinedCopyWithDefault && _hasTypedCopyWithSentinel(field.type);
+    var type = usesUndefinedCopyWithDefault && !usesTypedSentinel
+        ? refer('Object?')
+        : fieldType;
+    var defaultValue = usesTypedSentinel
+        ? _typedCopyWithSentinel(field, subDirParts, className).code
+        : usesUndefinedCopyWithDefault
+        ? const Code('_Undefined')
+        : null;
 
-      var isInheritedField =
-          inheritedFields.contains(field) ||
-          (field.name == defaultPrimaryKeyName && isIdInherited);
-
-      var usesTypedSentinel =
-          field.type.nullable && _hasTypedCopyWithSentinel(field.type);
-      var type = field.type.nullable && isInheritedField && !usesTypedSentinel
-          ? refer('Object?')
-          : fieldType;
-
-      return Parameter(
-        (p) => p
-          ..named = true
-          ..type = type
-          ..defaultTo = usesTypedSentinel
-              ? _typedCopyWithSentinel(field, subDirParts, className).code
-              : null
-          ..name = field.name,
-      );
-    }).toList();
+    return Parameter((p) {
+      p
+        ..name = field.name
+        ..named = true
+        ..type = type
+        ..defaultTo = defaultValue;
+    });
   }
 
   List<Field> _buildModelClassFields(

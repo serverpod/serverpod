@@ -181,7 +181,7 @@ void main() {
             () {
               expect(
                 copyWithMethod?.parameters?.toSource(),
-                '({String? name, int? age})',
+                '({String? name, Object? age = _Undefined})',
               );
             },
           );
@@ -381,7 +381,7 @@ void main() {
           test('with the named params set where all variables are nullable.', () {
             expect(
               copyWithMethod?.parameters?.toSource(),
-              '({String? name, int? parentDefault, int? age, int? childDefault})',
+              '({String? name, int? parentDefault, Object? age = _Undefined, int? childDefault})',
             );
           });
         });
@@ -616,15 +616,15 @@ void main() {
               (param) => param.name.toString() == 'name',
             );
 
-            expect(nameParam?.toSource(), 'Object? name');
+            expect(nameParam?.toSource(), 'Object? name = _Undefined');
           });
 
-          test('where nullable-local fields are typed', () {
+          test('where nullable-local fields use the untyped sentinel', () {
             var ageParam = copyWithMethod?.parameters?.parameters.firstWhere(
               (param) => param.name.toString() == 'age',
             );
 
-            expect(ageParam?.toSource(), 'int? age');
+            expect(ageParam?.toSource(), 'Object? age = _Undefined');
           });
         });
       });
