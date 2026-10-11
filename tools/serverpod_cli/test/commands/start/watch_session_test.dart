@@ -530,6 +530,36 @@ void main() {
         expect(server.calls, isEmpty);
       },
     );
+
+    test(
+      'when a later file change is handled and codegen succeeds, '
+      'then the files of the failed cycle are compiled with it',
+      () async {
+        // First cycle: codegen fails, so nothing is compiled and the Frontend
+        // Server never hears about these files.
+        generatedFiles = {'/generated/endpoints.dart'};
+        await session.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart', '/generated/protocol.dart'},
+          ),
+        );
+        expect(compiler.calls, isEmpty);
+
+        // Next cycle: an unrelated dart change. The files skipped above must
+        // be invalidated with it, or the compiler keeps their old content.
+        generateSuccess = true;
+        generatedFiles = {};
+        await session.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/b.dart'}),
+        );
+
+        expect(compiler.calls, [
+          'compile(changed):[/generated/endpoints.dart, '
+              '/generated/protocol.dart, /lib/a.dart, /lib/b.dart]',
+          'accept',
+        ]);
+      },
+    );
   });
 
   group('Given dart file changes where compilation fails', () {
@@ -785,6 +815,35 @@ void main() {
         expect(compiler.calls, contains('accept'));
       },
     );
+
+    test(
+      'when codegen fails in the same cycle, '
+      'then the package config is invalidated on the next compile',
+      () async {
+        // First cycle: package_config changed, but codegen fails before
+        // anything is compiled.
+        generateSuccess = false;
+        await session.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+        expect(compiler.calls, isEmpty);
+
+        // Next cycle: an unrelated dart change that does NOT set
+        // packageConfigChanged. The skipped invalidation must ride along.
+        generateSuccess = true;
+        await session.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/b.dart'}),
+        );
+
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart, /lib/b.dart]+package_config',
+          'accept',
+        ]);
+      },
+    );
   });
 
   group('Given a native-assets builder', () {
@@ -837,6 +896,35 @@ void main() {
           testLogger.infoMessages,
           isNot(contains(serverNativeAssetsChanged)),
         );
+      },
+    );
+
+    test(
+      'when package_config changed in a cycle where codegen fails, '
+      'then package discovery is reset for the next compile',
+      () async {
+        // First cycle: codegen fails before the build hooks run.
+        generateSuccess = false;
+        await nativeSession.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+        expect(builder.calls, ['reset']);
+
+        // Next cycle: no package_config change of its own. The hooks run
+        // against the package layout that was reset above.
+        generateSuccess = true;
+        await nativeSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/b.dart'}),
+        );
+
+        expect(builder.calls, ['reset', 'applyTo']);
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart, /lib/b.dart]+package_config',
+          'accept',
+        ]);
       },
     );
 
