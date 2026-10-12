@@ -642,7 +642,6 @@ fields:
           await analyzers.update(
             config: config,
             affectedPaths: {p.absolute(modelPath)},
-            requirements: GenerationRequirements.full,
           );
 
           final result = await analyzers.performGenerate(

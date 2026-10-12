@@ -246,10 +246,9 @@ Future<bool> performOneShotGenerate({
 /// is up to date. Pass `false` when the caller already verified staleness, so
 /// generation runs and refreshes the stamp regardless.
 ///
-/// The [requirements] parameter controls which parts of the generation
-/// pipeline run. When model files change, use [GenerationRequirements.full].
-/// When only Dart files change, use [GenerationRequirements.protocolOnly]
-/// to skip expensive model generation.
+/// Which parts of the generation pipeline run is decided by the analyzers
+/// from [affectedPaths] on an incremental run (see [Analyzers.update]); a full
+/// run always uses [GenerationRequirements.full].
 ///
 /// Returns a [GenerateResult] with success status and the set of files
 /// written by code generation (empty when generation was skipped).
@@ -260,19 +259,30 @@ Future<GenerateResult> analyzeAndGenerate({
   bool incremental = false,
   bool verifyStaleness = true,
   Map<String, FileStamp>? sourceStats,
-  GenerationRequirements requirements = GenerationRequirements.full,
 }) async {
-  bool needsGenerate = false;
-  await log.progress('Analyzing changes', () async {
-    needsGenerate = await analyzers.update(
-      config: config,
-      affectedPaths: affectedPaths,
-      requirements: requirements,
-    );
-    return true;
-  });
+  // A full run generates everything regardless of what the analyzers make of
+  // the changes, so the verdict of an update is only needed by an incremental
+  // run, which decides what to generate from it, and by a run that may return
+  // early as up to date, which has to leave the analyzers primed for the
+  // incremental loop that follows.
+  //
+  // The update is also what tells analyzers that were used before which models
+  // and Dart files changed since. Without it they generate from what they saw
+  // last and the result is stamped as current, so only fresh analyzers, which
+  // read everything for the first time while generating, can do without it.
+  // For those it would resolve every file for a verdict that is discarded.
+  var requirements = GenerationRequirements.none;
+  if (incremental || verifyStaleness || !await analyzers.isFresh) {
+    await log.progress('Analyzing changes', () async {
+      requirements = await analyzers.update(
+        config: config,
+        affectedPaths: affectedPaths,
+      );
+      return true;
+    });
+  }
   if (incremental) {
-    if (!needsGenerate) {
+    if (!requirements.generateModels && !requirements.generateProtocol) {
       return (
         success: true,
         generatedFiles: <String>{},
@@ -289,6 +299,7 @@ Future<GenerateResult> analyzeAndGenerate({
       protocolAnalyticsSnapshot: null,
     );
   }
+  if (!incremental) requirements = GenerationRequirements.full;
   final stopwatch = Stopwatch()..start();
   late final GenerateResult result;
   await log.progress('Generating code', () async {
@@ -423,18 +434,32 @@ class GenerationRequirements {
   final bool generateModels;
 
   /// Whether endpoint analysis and protocol generation is required.
-  /// Set to `true` when any Dart files have changed.
+  /// Set to `true` when endpoint, future call or model files have changed.
   final bool generateProtocol;
+
+  /// Whether the parameter models of future calls must be generated.
+  /// Set to `true` when future call files have changed. These models are
+  /// derived from Dart files, so they are needed even when no model file
+  /// changed. Implied by [generateModels].
+  final bool generateFutureCallModels;
 
   const GenerationRequirements({
     required this.generateModels,
     required this.generateProtocol,
+    this.generateFutureCallModels = false,
   });
+
+  /// Nothing to generate.
+  static const none = GenerationRequirements(
+    generateModels: false,
+    generateProtocol: false,
+  );
 
   /// Full generation - models and protocol.
   static const full = GenerationRequirements(
     generateModels: true,
     generateProtocol: true,
+    generateFutureCallModels: true,
   );
 
   /// Protocol-only generation - skips expensive model generation.
