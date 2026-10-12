@@ -592,8 +592,9 @@ class Server implements RouterInjectable {
         var response = methodCallContext.endpoint.sendAsRaw
             ? _toResponse(result)
             : Response.ok(
-                body: Body.fromString(
-                  SerializationManager.encodeForProtocol(result),
+                body: Body.fromData(
+                  SerializationManager.encodeForProtocolToUtf8(result),
+                  encoding: utf8,
                   mimeType: MimeType.json,
                 ),
               );

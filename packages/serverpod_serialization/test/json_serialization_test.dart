@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
@@ -165,6 +167,43 @@ void main() {
           ];
           var stringifiedJson = SerializationManager.encodeForProtocol(list);
           expect(stringifiedJson, isNot(contains('password')));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a map with a user object, non-ASCII text and nested lists,',
+    () {
+      var map = {
+        'user': _User(name: 'J\u00f8rgen', password: '123'),
+        'text': 'na\u00efve \u{1F600}',
+        'nested': [
+          1,
+          2.5,
+          null,
+          {'k': 'v'},
+        ],
+      };
+
+      test(
+        'when encoded using encodeForProtocolToUtf8 method, '
+        'then output equals the UTF-8 encoding of encodeForProtocol',
+        () {
+          var bytes = SerializationManager.encodeForProtocolToUtf8(map);
+          expect(
+            bytes,
+            utf8.encode(SerializationManager.encodeForProtocol(map)),
+          );
+        },
+      );
+
+      test(
+        'when encoded using encodeForProtocolToUtf8 method, '
+        'then password is excluded from the output',
+        () {
+          var bytes = SerializationManager.encodeForProtocolToUtf8(map);
+          expect(utf8.decode(bytes), isNot(contains('password')));
         },
       );
     },
