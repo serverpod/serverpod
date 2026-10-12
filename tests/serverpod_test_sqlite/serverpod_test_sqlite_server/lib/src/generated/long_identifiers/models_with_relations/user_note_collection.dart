@@ -62,7 +62,7 @@ abstract class UserNoteCollection
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UserNoteCollection copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_ia9r0qbl.UserNote>? userNotesPropertyName =
         const _is.$UndefinedList<_ia9r0qbl.UserNote>(),

@@ -100,15 +100,15 @@ abstract class QueryLogEntry
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   QueryLogEntry copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? serverId,
     int? sessionLogId,
-    int? messageId,
+    Object? messageId = _Undefined,
     String? query,
     double? duration,
-    int? numRows,
-    String? error,
-    String? stackTrace,
+    Object? numRows = _Undefined,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
     bool? slow,
     int? order,
   });

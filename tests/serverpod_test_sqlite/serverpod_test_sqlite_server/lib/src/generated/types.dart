@@ -232,17 +232,17 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Types copyWith({
-    int? id,
-    int? anInt,
-    bool? aBool,
-    double? aDouble,
+    Object? id = _Undefined,
+    Object? anInt = _Undefined,
+    Object? aBool = _Undefined,
+    Object? aDouble = _Undefined,
     DateTime? aDateTime = const _is.$UndefinedDateTime(),
-    String? aString,
-    _idt.ByteData? aByteData,
+    Object? aString = _Undefined,
+    Object? aByteData = _Undefined,
     Duration? aDuration = const _is.$UndefinedDuration(),
     _is.UuidValue? aUuid = const _is.$UndefinedUuidValue(),
     Uri? aUri = const _is.$UndefinedUri(),
-    BigInt? aBigInt,
+    Object? aBigInt = _Undefined,
     _is.Vector? aVector = const _is.$UndefinedVector(),
     _is.HalfVector? aHalfVector = const _is.$UndefinedHalfVector(),
     _is.SparseVector? aSparseVector = const _is.$UndefinedSparseVector(),
@@ -254,12 +254,12 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
         const _is.$UndefinedGeographyPolygon(),
     _is.GeographyGeometryCollection? aGeographyGeometryCollection =
         const _is.$UndefinedGeographyGeometryCollection(),
-    _ionapfu9.TestEnum? anEnum,
-    _i7liykk2.TestEnumStringified? aStringifiedEnum,
+    Object? anEnum = _Undefined,
+    Object? aStringifiedEnum = _Undefined,
     List<int>? aList = const _is.$UndefinedList<int>(),
     Map<int, int>? aMap = const _is.$UndefinedMap<int, int>(),
     Set<int>? aSet = const _is.$UndefinedSet<int>(),
-    (String, {Uri? optionalUri})? aRecord,
+    Object? aRecord = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

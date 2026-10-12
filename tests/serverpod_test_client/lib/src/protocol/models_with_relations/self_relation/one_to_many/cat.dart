@@ -68,9 +68,9 @@ abstract class Cat
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Cat copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? motherId,
+    Object? motherId = _Undefined,
     _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
     List<_iayhscrz.Cat>? kittens = const _isc.$UndefinedList<_iayhscrz.Cat>(),
   });

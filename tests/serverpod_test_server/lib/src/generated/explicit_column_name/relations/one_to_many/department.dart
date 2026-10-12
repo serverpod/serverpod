@@ -61,7 +61,7 @@ abstract class Department
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Department copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_ilvmgye0.Employee>? employees =
         const _is.$UndefinedList<_ilvmgye0.Employee>(),

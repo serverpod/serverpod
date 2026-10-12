@@ -64,9 +64,9 @@ abstract class ObjectFieldPersist
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectFieldPersist copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? normal,
-    String? api,
+    Object? api = _Undefined,
     _i0zisc0t.SimpleData? data = const _UndefinedObjectFieldPersist$data(),
   });
   @override

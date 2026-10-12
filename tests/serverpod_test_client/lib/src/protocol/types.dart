@@ -226,17 +226,17 @@ abstract class Types
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Types copyWith({
-    int? id,
-    int? anInt,
-    bool? aBool,
-    double? aDouble,
+    Object? id = _Undefined,
+    Object? anInt = _Undefined,
+    Object? aBool = _Undefined,
+    Object? aDouble = _Undefined,
     DateTime? aDateTime = const _isc.$UndefinedDateTime(),
-    String? aString,
-    _idt.ByteData? aByteData,
+    Object? aString = _Undefined,
+    Object? aByteData = _Undefined,
     Duration? aDuration = const _isc.$UndefinedDuration(),
     _isc.UuidValue? aUuid = const _isc.$UndefinedUuidValue(),
     Uri? aUri = const _isc.$UndefinedUri(),
-    BigInt? aBigInt,
+    Object? aBigInt = _Undefined,
     _isc.Vector? aVector = const _isc.$UndefinedVector(),
     _isc.HalfVector? aHalfVector = const _isc.$UndefinedHalfVector(),
     _isc.SparseVector? aSparseVector = const _isc.$UndefinedSparseVector(),
@@ -249,12 +249,12 @@ abstract class Types
         const _isc.$UndefinedGeographyPolygon(),
     _isc.GeographyGeometryCollection? aGeographyGeometryCollection =
         const _isc.$UndefinedGeographyGeometryCollection(),
-    _ionapfu9.TestEnum? anEnum,
-    _i7liykk2.TestEnumStringified? aStringifiedEnum,
+    Object? anEnum = _Undefined,
+    Object? aStringifiedEnum = _Undefined,
     List<int>? aList = const _isc.$UndefinedList<int>(),
     Map<int, int>? aMap = const _isc.$UndefinedMap<int, int>(),
     Set<int>? aSet = const _isc.$UndefinedSet<int>(),
-    (String, {Uri? optionalUri})? aRecord,
+    Object? aRecord = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

@@ -69,7 +69,7 @@ abstract class DateTimeDefault
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   DateTimeDefault copyWith({
-    int? id,
+    Object? id = _Undefined,
     DateTime? dateTimeDefaultNow,
     DateTime? dateTimeDefaultStr,
     DateTime? dateTimeDefaultStrNull = const _isc.$UndefinedDateTime(),

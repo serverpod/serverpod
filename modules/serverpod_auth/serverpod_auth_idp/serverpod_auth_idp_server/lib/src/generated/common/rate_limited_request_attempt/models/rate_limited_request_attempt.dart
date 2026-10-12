@@ -103,7 +103,7 @@ abstract class RateLimitedRequestAttempt
     String? domain,
     String? source,
     String? key,
-    String? ipAddress,
+    Object? ipAddress = _Undefined,
     DateTime? attemptedAt,
     Map<String, String>? extraData = const _is.$UndefinedMap<String, String>(),
   });

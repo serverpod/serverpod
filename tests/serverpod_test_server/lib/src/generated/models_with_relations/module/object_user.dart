@@ -65,8 +65,8 @@ abstract class ObjectUser
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectUser copyWith({
-    int? id,
-    String? name,
+    Object? id = _Undefined,
+    Object? name = _Undefined,
     int? userInfoId,
     _i1n3uhu0.UserInfo? userInfo = const _UndefinedObjectUser$userInfo(),
   });

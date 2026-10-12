@@ -63,7 +63,7 @@ abstract class Member
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Member copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_iv5rlvod.Blocking>? blocking =
         const _isc.$UndefinedList<_iv5rlvod.Blocking>(),

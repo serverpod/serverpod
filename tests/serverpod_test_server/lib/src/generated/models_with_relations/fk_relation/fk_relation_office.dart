@@ -66,7 +66,7 @@ abstract class FkRelationOffice
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   FkRelationOffice copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? address,
     int? companyId,
     _ikyus01r.FkRelationCompany? company =

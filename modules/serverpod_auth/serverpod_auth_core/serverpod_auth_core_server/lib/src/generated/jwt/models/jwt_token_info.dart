@@ -86,7 +86,7 @@ abstract class JwtTokenInfo
     _is.UuidValue? id,
     _is.UuidValue? authUserId,
     Set<String>? scopeNames,
-    String? extraClaimsJSON,
+    Object? extraClaimsJSON = _Undefined,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
     String? method,

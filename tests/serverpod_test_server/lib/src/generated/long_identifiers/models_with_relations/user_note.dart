@@ -53,7 +53,7 @@ abstract class UserNote
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UserNote copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
   });
   @override

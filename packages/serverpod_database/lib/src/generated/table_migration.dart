@@ -109,8 +109,8 @@ abstract class TableMigration
   @_iss.useResult
   TableMigration copyWith({
     String? name,
-    String? dartName,
-    String? module,
+    Object? dartName = _Undefined,
+    Object? module = _Undefined,
     String? schema,
     List<_isd.ColumnDefinition>? addColumns,
     List<String>? deleteColumns,

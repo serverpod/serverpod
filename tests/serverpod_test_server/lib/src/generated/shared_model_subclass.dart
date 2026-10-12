@@ -67,11 +67,11 @@ abstract class SharedModelSubclass extends _ilwf0zl1.SharedModel
   SharedModelSubclass copyWith({
     _is.UuidValue? id,
     String? name,
-    Object? data,
+    Object? data = _Undefined,
     DateTime? createdAt,
     String? sharedModelSubclassField,
     _ilwf0zl1.SharedEnum? sharedEnumField,
-    String? serverOnlyField,
+    Object? serverOnlyField = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

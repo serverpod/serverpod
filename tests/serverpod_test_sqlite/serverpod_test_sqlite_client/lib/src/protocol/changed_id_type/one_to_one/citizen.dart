@@ -89,7 +89,7 @@ abstract class CitizenInt
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   CitizenInt copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     _ih0efjtk.AddressUuid? address = const _UndefinedCitizenInt$address(),
     _isc.UuidValue? companyId,

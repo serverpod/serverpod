@@ -57,7 +57,7 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
   @override
   @_is.useResult
   ChildEntity copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? sharedField,
     String? localField,
   });

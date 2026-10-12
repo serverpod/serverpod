@@ -50,8 +50,8 @@ abstract class ExceptionWithRequiredField
   @_is.useResult
   ExceptionWithRequiredField copyWith({
     String? name,
-    String? email,
-    String? phone,
+    Object? email = _Undefined,
+    Object? phone = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

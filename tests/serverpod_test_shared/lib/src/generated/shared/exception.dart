@@ -43,7 +43,7 @@ abstract class SharedException
   @_iss.useResult
   SharedException copyWith({
     String? message,
-    int? code,
+    Object? code = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

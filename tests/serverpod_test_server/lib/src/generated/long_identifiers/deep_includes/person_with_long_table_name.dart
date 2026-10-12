@@ -74,9 +74,9 @@ abstract class PersonWithLongTableName
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   PersonWithLongTableName copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? organizationId,
+    Object? organizationId = _Undefined,
     _imc5i9r4.OrganizationWithLongTableName? organization =
         const _UndefinedPersonWithLongTableName$organization(),
   });

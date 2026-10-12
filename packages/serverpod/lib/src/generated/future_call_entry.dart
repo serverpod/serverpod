@@ -87,13 +87,13 @@ abstract class FutureCallEntry
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   FutureCallEntry copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     DateTime? time,
-    String? serializedObject,
+    Object? serializedObject = _Undefined,
     String? serverId,
-    String? identifier,
-    _is8pd350.FutureCallScheduling? scheduling,
+    Object? identifier = _Undefined,
+    Object? scheduling = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

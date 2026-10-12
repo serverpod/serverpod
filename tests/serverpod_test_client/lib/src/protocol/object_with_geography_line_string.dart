@@ -60,7 +60,7 @@ abstract class ObjectWithGeographyLineString
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithGeographyLineString copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.GeographyLineString? lineString,
     _isc.GeographyLineString? lineStringIndexedGist,
     _isc.GeographyLineString? lineStringIndexedSpgist,

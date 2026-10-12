@@ -57,7 +57,7 @@ abstract class EmailFailedSignIn
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   EmailFailedSignIn copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? email,
     DateTime? time,
     String? ipAddress,

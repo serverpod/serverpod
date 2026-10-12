@@ -168,11 +168,11 @@ abstract class AppleAccount
     _is.UuidValue? authUserId,
     _iacs.AuthUser? authUser = const _UndefinedAppleAccount$authUser(),
     DateTime? createdAt,
-    String? email,
-    bool? isEmailVerified,
-    bool? isPrivateEmail,
-    String? firstName,
-    String? lastName,
+    Object? email = _Undefined,
+    Object? isEmailVerified = _Undefined,
+    Object? isPrivateEmail = _Undefined,
+    Object? firstName = _Undefined,
+    Object? lastName = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

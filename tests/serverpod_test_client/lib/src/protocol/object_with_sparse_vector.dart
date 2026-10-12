@@ -70,7 +70,7 @@ abstract class ObjectWithSparseVector
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithSparseVector copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.SparseVector? sparseVector,
     _isc.SparseVector? sparseVectorNullable =
         const _isc.$UndefinedSparseVector(),

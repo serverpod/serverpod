@@ -81,7 +81,7 @@ abstract class UuidDefaultMix
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UuidDefaultMix copyWith({
-    int? id,
+    Object? id = _Undefined,
     _is.UuidValue? uuidDefaultAndDefaultModel,
     _is.UuidValue? uuidDefaultAndDefaultPersist,
     _is.UuidValue? uuidDefaultModelAndDefaultPersist,

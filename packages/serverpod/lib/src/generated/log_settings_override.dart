@@ -59,9 +59,9 @@ abstract class LogSettingsOverride
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   LogSettingsOverride copyWith({
-    String? module,
-    String? endpoint,
-    String? method,
+    Object? module = _Undefined,
+    Object? endpoint = _Undefined,
+    Object? method = _Undefined,
     _illv0ea4.LogSettings? logSettings,
   });
   @override

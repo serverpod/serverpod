@@ -96,13 +96,13 @@ abstract class UserInfo
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UserInfo copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? userIdentifier,
-    String? userName,
-    String? fullName,
-    String? email,
+    Object? userName = _Undefined,
+    Object? fullName = _Undefined,
+    Object? email = _Undefined,
     DateTime? created,
-    String? imageUrl,
+    Object? imageUrl = _Undefined,
     List<String>? scopeNames,
     bool? blocked,
   });

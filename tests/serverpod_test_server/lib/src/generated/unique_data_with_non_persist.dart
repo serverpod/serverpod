@@ -60,10 +60,10 @@ abstract class UniqueDataWithNonPersist
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UniqueDataWithNonPersist copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? number,
     String? email,
-    String? extra,
+    Object? extra = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

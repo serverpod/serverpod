@@ -68,10 +68,10 @@ abstract class Post
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Post copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? content,
     _ittc76ec.Post? previous = const _UndefinedPost$previous(),
-    int? nextId,
+    Object? nextId = _Undefined,
     _ittc76ec.Post? next = const _UndefinedPost$previous(),
   });
   @override

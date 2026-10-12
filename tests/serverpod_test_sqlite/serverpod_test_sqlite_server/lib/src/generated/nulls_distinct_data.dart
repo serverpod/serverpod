@@ -58,10 +58,10 @@ abstract class NullsDistinctData
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   NullsDistinctData copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? tenantId,
     String? category,
-    String? archivedAt,
+    Object? archivedAt = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

@@ -61,7 +61,7 @@ abstract class AddressUuid
   AddressUuid copyWith({
     _isc.UuidValue? id,
     String? street,
-    int? inhabitantId,
+    Object? inhabitantId = _Undefined,
     _i7hzilwf.CitizenInt? inhabitant = const _UndefinedAddressUuid$inhabitant(),
   });
   @override

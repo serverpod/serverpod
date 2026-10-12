@@ -53,7 +53,7 @@ abstract class UriDefault
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UriDefault copyWith({
-    int? id,
+    Object? id = _Undefined,
     Uri? uriDefault,
     Uri? uriDefaultNull = const _isc.$UndefinedUri(),
   });

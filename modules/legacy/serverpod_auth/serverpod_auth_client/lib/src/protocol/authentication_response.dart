@@ -76,11 +76,11 @@ abstract class AuthenticationResponse
   @_isc.useResult
   AuthenticationResponse copyWith({
     bool? success,
-    String? key,
-    int? keyId,
+    Object? key = _Undefined,
+    Object? keyId = _Undefined,
     _iliwsvmu.UserInfo? userInfo =
         const _UndefinedAuthenticationResponse$userInfo(),
-    _ika0ufek.AuthenticationFailReason? failReason,
+    Object? failReason = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

@@ -56,7 +56,7 @@ abstract class EmptyModelRelationItem
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   EmptyModelRelationItem copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
   });
   @override

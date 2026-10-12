@@ -97,7 +97,7 @@ abstract class UuidDefault
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UuidDefault copyWith({
-    int? id,
+    Object? id = _Undefined,
     _is.UuidValue? uuidDefaultRandom,
     _is.UuidValue? uuidDefaultRandomV7,
     _is.UuidValue? uuidDefaultRandomNull = const _is.$UndefinedUuidValue(),

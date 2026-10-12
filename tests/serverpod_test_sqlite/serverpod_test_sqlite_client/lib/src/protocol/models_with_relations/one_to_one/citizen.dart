@@ -91,12 +91,12 @@ abstract class Citizen
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Citizen copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     _i5rzbc0r.Address? address = const _UndefinedCitizen$address(),
     int? companyId,
     _i2fdza8t.Company? company = const _UndefinedCitizen$company(),
-    int? oldCompanyId,
+    Object? oldCompanyId = _Undefined,
     _i2fdza8t.Company? oldCompany = const _UndefinedCitizen$company(),
   });
   @override

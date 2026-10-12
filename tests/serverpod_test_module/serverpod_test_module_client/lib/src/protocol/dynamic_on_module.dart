@@ -44,7 +44,7 @@ abstract class DynamicOnModule
   @_isc.useResult
   DynamicOnModule copyWith({
     String? name,
-    dynamic data,
+    Object? data = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

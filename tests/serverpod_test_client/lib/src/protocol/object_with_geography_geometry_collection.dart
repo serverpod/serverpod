@@ -63,7 +63,7 @@ abstract class ObjectWithGeographyGeometryCollection
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithGeographyGeometryCollection copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.GeographyGeometryCollection? geometryCollection,
     _isc.GeographyGeometryCollection? geometryCollectionIndexedGist,
     _isc.GeographyGeometryCollection? geometryCollectionIndexedSpgist,

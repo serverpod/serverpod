@@ -43,7 +43,7 @@ abstract class DynamicOnShared
   @_iss.useResult
   DynamicOnShared copyWith({
     String? name,
-    dynamic data,
+    Object? data = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

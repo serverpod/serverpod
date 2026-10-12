@@ -81,7 +81,7 @@ abstract class MigratedUser
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   MigratedUser copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? oldUserId,
     _i1n3uhu0.UserInfo? oldUser = const _UndefinedMigratedUser$oldUser(),
     _is.UuidValue? newAuthUserId,

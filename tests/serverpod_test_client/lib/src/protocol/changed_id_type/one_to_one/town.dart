@@ -58,9 +58,9 @@ abstract class TownInt
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   TownInt copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? mayorId,
+    Object? mayorId = _Undefined,
     _i7hzilwf.CitizenInt? mayor = const _UndefinedTownInt$mayor(),
   });
   @override

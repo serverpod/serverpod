@@ -45,7 +45,7 @@ abstract class ChildClass extends _iv35mfmj.ParentClass
   @override
   @_is.useResult
   ChildClass copyWith({
-    Object? id,
+    Object? id = _Undefined,
     String? grandParentField,
     String? parentField,
     int? childField,

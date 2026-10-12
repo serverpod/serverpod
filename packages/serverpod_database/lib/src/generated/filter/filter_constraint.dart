@@ -55,7 +55,7 @@ abstract class FilterConstraint
     _isd.FilterConstraintType? type,
     String? column,
     String? value,
-    String? value2,
+    Object? value2 = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

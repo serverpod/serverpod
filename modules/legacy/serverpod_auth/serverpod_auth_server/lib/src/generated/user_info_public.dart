@@ -60,11 +60,11 @@ abstract class UserInfoPublic
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UserInfoPublic copyWith({
-    int? id,
-    String? userName,
-    String? fullName,
+    Object? id = _Undefined,
+    Object? userName = _Undefined,
+    Object? fullName = _Undefined,
     DateTime? created,
-    String? imageUrl,
+    Object? imageUrl = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

@@ -85,7 +85,7 @@ abstract class AuthSuccess
     String? authStrategy,
     String? token,
     DateTime? tokenExpiresAt = const _isc.$UndefinedDateTime(),
-    String? refreshToken,
+    Object? refreshToken = _Undefined,
     _isc.UuidValue? authUserId,
     Set<String>? scopeNames,
   });

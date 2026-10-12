@@ -65,7 +65,7 @@ abstract class ModuleDatatype
     _i89s5423.ModuleClass? model,
     List<_i89s5423.ModuleClass>? list,
     Map<String, _i89s5423.ModuleClass>? map,
-    (_i89s5423.ModuleClass,)? record,
+    Object? record = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

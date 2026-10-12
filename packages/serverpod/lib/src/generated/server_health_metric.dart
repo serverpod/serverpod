@@ -85,7 +85,7 @@ abstract class ServerHealthMetric
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ServerHealthMetric copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     String? serverId,
     DateTime? timestamp,

@@ -67,9 +67,9 @@ abstract class UserProfileModel
   @_is.useResult
   UserProfileModel copyWith({
     _is.UuidValue? authUserId,
-    String? userName,
-    String? fullName,
-    String? email,
+    Object? userName = _Undefined,
+    Object? fullName = _Undefined,
+    Object? email = _Undefined,
     Uri? imageUrl = const _is.$UndefinedUri(),
   });
   @override

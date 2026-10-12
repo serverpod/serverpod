@@ -96,14 +96,14 @@ abstract class TableDefinition
   @_iss.useResult
   TableDefinition copyWith({
     String? name,
-    String? dartName,
-    String? module,
+    Object? dartName = _Undefined,
+    Object? module = _Undefined,
     String? schema,
-    String? tableSpace,
+    Object? tableSpace = _Undefined,
     List<_isd.ColumnDefinition>? columns,
     List<_isd.ForeignKeyDefinition>? foreignKeys,
     List<_isd.IndexDefinition>? indexes,
-    bool? managed,
+    Object? managed = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

@@ -96,12 +96,12 @@ abstract class BleedRoot
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   BleedRoot copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? firstChildId,
+    Object? firstChildId = _Undefined,
     _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24 =
         const _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun24(),
-    int? secondChildId,
+    Object? secondChildId = _Undefined,
     _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23 =
         const _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun24(),
   });

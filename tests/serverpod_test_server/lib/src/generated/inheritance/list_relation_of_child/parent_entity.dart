@@ -56,7 +56,7 @@ abstract class ParentEntity
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ParentEntity copyWith({
-    int? id,
+    Object? id = _Undefined,
     List<_i41rqetj.ChildEntity>? children =
         const _is.$UndefinedList<_i41rqetj.ChildEntity>(),
   });

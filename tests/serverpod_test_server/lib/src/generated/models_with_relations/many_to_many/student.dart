@@ -60,7 +60,7 @@ abstract class Student
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Student copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_im07rq0v.Enrollment>? enrollments =
         const _is.$UndefinedList<_im07rq0v.Enrollment>(),

@@ -80,12 +80,9 @@ abstract class ObjectWithNullableCustomClass
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectWithNullableCustomClass copyWith({
-    _ilwf0zl1.CustomClassWithoutProtocolSerialization?
-    nullableCustomClassWithoutProtocolSerialization,
-    _ilwf0zl1.CustomClassWithProtocolSerialization?
-    nullableCustomClassWithProtocolSerialization,
-    _ilwf0zl1.CustomClassWithProtocolSerializationMethod?
-    nullableCustomClassWithProtocolSerializationMethod,
+    Object? nullableCustomClassWithoutProtocolSerialization = _Undefined,
+    Object? nullableCustomClassWithProtocolSerialization = _Undefined,
+    Object? nullableCustomClassWithProtocolSerializationMethod = _Undefined,
     _ilwf0zl1.CustomClassWithProtocolSerialization? nonNullableCustomClass,
   });
   @override

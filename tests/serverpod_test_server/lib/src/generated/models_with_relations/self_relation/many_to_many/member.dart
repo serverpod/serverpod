@@ -69,7 +69,7 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Member copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_iv5rlvod.Blocking>? blocking =
         const _is.$UndefinedList<_iv5rlvod.Blocking>(),

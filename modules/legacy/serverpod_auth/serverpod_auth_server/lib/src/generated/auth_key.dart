@@ -78,10 +78,10 @@ abstract class AuthKey
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   AuthKey copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? userId,
     String? hash,
-    String? key,
+    Object? key = _Undefined,
     List<String>? scopeNames,
     String? method,
   });

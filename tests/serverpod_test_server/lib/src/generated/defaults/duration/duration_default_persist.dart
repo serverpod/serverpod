@@ -55,7 +55,7 @@ abstract class DurationDefaultPersist
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   DurationDefaultPersist copyWith({
-    int? id,
+    Object? id = _Undefined,
     Duration? durationDefaultPersist = const _is.$UndefinedDuration(),
   });
   @override

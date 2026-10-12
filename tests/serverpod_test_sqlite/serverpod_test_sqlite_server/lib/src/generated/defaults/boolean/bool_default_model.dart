@@ -73,7 +73,7 @@ abstract class BoolDefaultModel
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   BoolDefaultModel copyWith({
-    int? id,
+    Object? id = _Undefined,
     bool? boolDefaultModelTrue,
     bool? boolDefaultModelFalse,
     bool? boolDefaultModelNullFalse,

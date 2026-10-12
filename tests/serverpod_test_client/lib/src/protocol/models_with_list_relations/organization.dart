@@ -68,11 +68,11 @@ abstract class Organization
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Organization copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_ijqkgw0m.Person>? people =
         const _isc.$UndefinedList<_ijqkgw0m.Person>(),
-    int? cityId,
+    Object? cityId = _Undefined,
     _i64066zp.City? city = const _UndefinedOrganization$city(),
   });
   @override

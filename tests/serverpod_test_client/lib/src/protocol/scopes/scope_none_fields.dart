@@ -30,7 +30,7 @@ abstract class ScopeNoneFields
   /// Returns a shallow copy of this [ScopeNoneFields]
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
-  ScopeNoneFields copyWith({int? id});
+  ScopeNoneFields copyWith({Object? id = _Undefined});
   @override
   Map<String, dynamic> toJson() {
     return {

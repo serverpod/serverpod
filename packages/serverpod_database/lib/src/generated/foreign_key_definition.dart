@@ -113,10 +113,10 @@ abstract class ForeignKeyDefinition
     String? referenceTable,
     String? referenceTableSchema,
     List<String>? referenceColumns,
-    _isd.ForeignKeyAction? onUpdate,
-    _isd.ForeignKeyAction? onDelete,
-    _isd.ForeignKeyMatchType? matchType,
-    _isd.DeferrableConstraint? deferrable,
+    Object? onUpdate = _Undefined,
+    Object? onDelete = _Undefined,
+    Object? matchType = _Undefined,
+    Object? deferrable = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

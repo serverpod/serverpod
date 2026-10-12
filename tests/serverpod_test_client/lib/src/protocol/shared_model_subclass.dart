@@ -62,7 +62,7 @@ abstract class SharedModelSubclass extends _ilwf0zl1.SharedModel
   SharedModelSubclass copyWith({
     _isc.UuidValue? id,
     String? name,
-    Object? data,
+    Object? data = _Undefined,
     DateTime? createdAt,
     String? sharedModelSubclassField,
     _ilwf0zl1.SharedEnum? sharedEnumField,

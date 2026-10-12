@@ -53,9 +53,9 @@ abstract class ParentUser
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ParentUser copyWith({
-    int? id,
-    String? name,
-    int? userInfoId,
+    Object? id = _Undefined,
+    Object? name = _Undefined,
+    Object? userInfoId = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

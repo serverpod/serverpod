@@ -60,7 +60,7 @@ abstract class CommentInt
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   CommentInt copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? description,
     _isc.UuidValue? orderId,
     _ivss21qh.OrderUuid? order = const _UndefinedCommentInt$order(),

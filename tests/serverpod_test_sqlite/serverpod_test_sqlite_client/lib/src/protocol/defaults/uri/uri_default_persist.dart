@@ -46,7 +46,7 @@ abstract class UriDefaultPersist
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UriDefaultPersist copyWith({
-    int? id,
+    Object? id = _Undefined,
     Uri? uriDefaultPersist = const _isc.$UndefinedUri(),
   });
   @override

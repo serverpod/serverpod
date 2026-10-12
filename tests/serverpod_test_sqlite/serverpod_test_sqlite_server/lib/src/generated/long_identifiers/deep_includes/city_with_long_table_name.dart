@@ -77,7 +77,7 @@ abstract class CityWithLongTableName
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   CityWithLongTableName copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_i5nficvp.PersonWithLongTableName>? citizens =
         const _is.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),

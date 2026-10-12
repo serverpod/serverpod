@@ -120,10 +120,10 @@ abstract class FacebookAccount
     _iacs.AuthUser? authUser = const _UndefinedFacebookAccount$authUser(),
     DateTime? createdAt,
     String? userIdentifier,
-    String? email,
-    String? fullName,
-    String? firstName,
-    String? lastName,
+    Object? email = _Undefined,
+    Object? fullName = _Undefined,
+    Object? firstName = _Undefined,
+    Object? lastName = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

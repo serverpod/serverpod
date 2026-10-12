@@ -58,7 +58,7 @@ abstract class Greeting
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Greeting copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? message,
     String? author,
     DateTime? timestamp,

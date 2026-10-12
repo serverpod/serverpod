@@ -101,16 +101,16 @@ abstract class LogEntry
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   LogEntry copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? sessionLogId,
-    int? messageId,
-    String? reference,
+    Object? messageId = _Undefined,
+    Object? reference = _Undefined,
     String? serverId,
     DateTime? time,
     _iavjjqw5.LogLevel? logLevel,
     String? message,
-    String? error,
-    String? stackTrace,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
     int? order,
   });
   @override

@@ -75,7 +75,7 @@ abstract class DatabaseDefinition
   @_iss.useResult
   DatabaseDefinition copyWith({
     int? schemaVersion,
-    String? name,
+    Object? name = _Undefined,
     String? moduleName,
     List<_isd.TableDefinition>? tables,
     List<_isd.DatabaseMigrationVersionModel>? installedModules,

@@ -67,7 +67,7 @@ abstract class ObjectWithJsonbClassLevel
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectWithJsonbClassLevel copyWith({
-    int? id,
+    Object? id = _Undefined,
     List<String>? implicitJsonb,
     List<String>? explicitJsonb,
     List<String>? json,
