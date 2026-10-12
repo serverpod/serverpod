@@ -411,14 +411,24 @@ class Server implements RouterInjectable {
   FutureOr<Result> _cloudStorage(Request req) async {
     final uri = req.url;
     assert(uri.path == '/serverpod_cloud_storage');
-    return await _handleEndpointCall(uri, '', req);
+    return await _handleEndpointCall(uri, Uint8List(0), req);
   }
 
   Future<Response> _endpoints(Request req) async {
     var maxRequestSize = serverpod.config.maxRequestSize;
-    final body = await req.readAsString(maxLength: maxRequestSize);
+    final body = await _collectBytes(req.read(maxLength: maxRequestSize));
     return await _handleEndpointCall(req.url, body, req);
   }
+
+  static Future<Uint8List> _collectBytes(Stream<Uint8List> stream) async {
+    final builder = BytesBuilder(copy: false);
+    await for (final chunk in stream) {
+      builder.add(chunk);
+    }
+    return builder.takeBytes();
+  }
+
+  static final _jsonUtf8Decoder = utf8.decoder.fuse(json.decoder);
 
   Handler _dispatchWebSocket(
     Future<void> Function(
@@ -471,7 +481,7 @@ class Server implements RouterInjectable {
 
   Future<Response> _handleEndpointCall(
     Uri uri,
-    String body,
+    Uint8List body,
     Request request,
   ) async {
     var path = uri.pathSegments.join('/');
@@ -482,10 +492,12 @@ class Server implements RouterInjectable {
 
     // Read query parameters
     var queryParameters = <String, dynamic>{};
-    var isValidBody = body != 'null' && body.isNotEmpty;
-    if (isValidBody) {
+    if (body.isNotEmpty) {
       try {
-        queryParameters = jsonDecode(body);
+        final decoded = _jsonUtf8Decoder.convert(body);
+        if (decoded != null) {
+          queryParameters = decoded as Map<String, dynamic>;
+        }
       } catch (_) {
         throw InvalidParametersException('Invalid JSON in body');
       }
@@ -554,7 +566,7 @@ class Server implements RouterInjectable {
           maybeSession = await SessionInternalMethods.createMethodCallSession(
             server: this,
             uri: uri,
-            body: body,
+            bodyBytes: body,
             path: path,
             request: request,
             method: methodName,
