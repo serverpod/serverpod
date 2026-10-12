@@ -1,7 +1,7 @@
 part of '../../compilation_unit_matcher.dart';
 
 class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
-  final ChainableMatcher<Iterable<Expression>> _parent;
+  final ChainableMatcher<Iterable<Argument>> _parent;
   final String _value;
   final _ParameterType? _parameterType;
 
@@ -93,7 +93,7 @@ class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
     return filteredArguments.isNotEmpty;
   }
 
-  Iterable<Expression>? _featureValueOf(dynamic actual) {
+  Iterable<Argument>? _featureValueOf(dynamic actual) {
     var match = _parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 
@@ -112,14 +112,14 @@ final class _PositionalParameter extends _ParameterType {
   _PositionalParameter();
 }
 
-extension on Expression {
+extension on Argument {
   bool _hasMatchingNamedParameter(_ParameterType? argumentType) {
     if (argumentType is! _NamedParameter) return true;
 
     var resolvedThis = this;
-    if (resolvedThis is! NamedExpression) return false;
+    if (resolvedThis is! NamedArgument) return false;
 
-    return resolvedThis.name.label.name == argumentType.parameterName;
+    return resolvedThis.name.lexeme == argumentType.parameterName;
   }
 
   bool _hasMatchingParameterType(_ParameterType? namedArgumentType) {
@@ -129,14 +129,14 @@ extension on Expression {
 
     return switch (namedArgumentType) {
       _PositionalParameter _ => resolvedThis is SimpleIdentifier,
-      _NamedParameter _ => resolvedThis is NamedExpression,
+      _NamedParameter _ => resolvedThis is NamedArgument,
     };
   }
 
   bool _hasMatchingValue(String name) {
     var resolvedThis = this;
-    if (resolvedThis is NamedExpression) {
-      return resolvedThis.expression._hasMatchingValue(name);
+    if (resolvedThis is NamedArgument) {
+      return resolvedThis.argumentExpression._hasMatchingValue(name);
     }
 
     return resolvedThis.toSource() == name;

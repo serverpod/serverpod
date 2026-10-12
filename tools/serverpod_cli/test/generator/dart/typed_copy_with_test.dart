@@ -299,9 +299,10 @@ void main() {
         r'_UndefinedExample$local',
         r'_UndefinedExample$external',
       ]);
-      final defaults = _copyWith(code, '_ExampleImpl').parameters!.parameters
-          .cast<DefaultFormalParameter>()
-          .map((p) => p.defaultValue?.toSource());
+      final defaults = _copyWith(
+        code,
+        '_ExampleImpl',
+      ).parameters!.parameters.map((p) => p.defaultClause?.value.toSource());
       expect(defaults, [
         r'const _UndefinedExample$local()',
         r'const _UndefinedExample$external()',

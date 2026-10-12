@@ -67,8 +67,8 @@ void main() {
           .single
           .argumentList
           .arguments
-          .whereType<NamedExpression>()
-          .map((argument) => argument.name.label.name)
+          .whereType<NamedArgument>()
+          .map((argument) => argument.name.lexeme)
           .toSet();
 
       const outOfSyncReason =
@@ -87,14 +87,13 @@ ConstructorDeclaration _unnamedConstructorOfClass(
   CompilationUnit unit,
   String className,
 ) {
-  // The replacements (namePart, body) only exist in analyzer 10+, and the
-  // pubspec range starts at 8.1.0 (exercised by the CI downgrade legs).
-  return unit.declarations
+  var classDeclaration = unit.declarations
       .whereType<ClassDeclaration>()
-      // ignore: deprecated_member_use
-      .singleWhere((declaration) => declaration.name.lexeme == className)
-      // ignore: deprecated_member_use
-      .members
+      .singleWhere(
+        (declaration) => declaration.namePart.typeName.lexeme == className,
+      );
+
+  return (classDeclaration.body as BlockClassBody).members
       .whereType<ConstructorDeclaration>()
       .singleWhere((constructor) => constructor.name == null);
 }

@@ -124,10 +124,6 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
 extension on FormalParameter {
   Initializer? _getInitializer() {
     var resolvedThis = this;
-    if (resolvedThis is DefaultFormalParameter) {
-      return resolvedThis.parameter._getInitializer();
-    }
-
     if (resolvedThis is SuperFormalParameter) {
       return Initializer.super_;
     }
@@ -141,11 +137,7 @@ extension on FormalParameter {
 
   String? _getType() {
     var resolvedThis = this;
-    if (resolvedThis is DefaultFormalParameter) {
-      return resolvedThis.parameter._getType();
-    }
-
-    if (resolvedThis is SimpleFormalParameter) {
+    if (resolvedThis is RegularFormalParameter) {
       return resolvedThis.type.toString();
     }
 
