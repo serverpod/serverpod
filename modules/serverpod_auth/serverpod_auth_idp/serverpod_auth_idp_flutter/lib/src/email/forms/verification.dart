@@ -47,6 +47,11 @@ class VerificationForm extends StatefulWidget {
   /// Configuration for the verification code input.
   final VerificationCodeConfig verificationCodeConfig;
 
+  /// Optional widget to display below the verify button.
+  ///
+  /// If not provided, defaults to a "Back to sign in" button.
+  final Widget? bottomText;
+
   /// Creates a [VerificationForm] widget.
   const VerificationForm({
     required this.title,
@@ -55,6 +60,7 @@ class VerificationForm extends StatefulWidget {
     required this.verificationCodeConfig,
     this.messageText,
     this.verifyButtonLabel,
+    this.bottomText,
     super.key,
   });
 
@@ -129,7 +135,8 @@ class _VerificationFormState extends State<VerificationForm> {
         label: widget.verifyButtonLabel ?? texts.verify,
         isLoading: controller.isLoading,
       ),
-      bottomText: BackToSignInButton(controller: controller),
+      bottomText:
+          widget.bottomText ?? BackToSignInButton(controller: controller),
     );
   }
 }

@@ -88,6 +88,18 @@ class SignInWidget extends StatefulWidget {
   final AnonymousSignInWidget? anonymousSignInWidget;
 
   /// Customized widget to use for email sign-in.
+  ///
+  /// Use it to choose the [EmailSignInWidget.loginMethods], for example to
+  /// offer the passwordless login with a code sent by email:
+  /// ```dart
+  /// SignInWidget(
+  ///   client: client,
+  ///   emailSignInWidget: EmailSignInWidget(
+  ///     client: client,
+  ///     loginMethods: EmailLoginMethods.both,
+  ///   ),
+  /// )
+  /// ```
   final EmailSignInWidget? emailSignInWidget;
 
   /// Customized widget to use for Google sign-in.

@@ -28,6 +28,16 @@ final List<Story> signInStories = [
         _signInWidgetStory(context, disableEmailSignInWidget: true),
   ),
   Story(
+    name: 'Sign In/Email Widget With Passwordless',
+    description:
+        'Sign in flow with an email widget offering both the password and the '
+        'passwordless login. The endpoint is mocked, and the code is 123456.',
+    builder: (context) => _signInWidgetStory(
+      context,
+      emailLoginMethods: EmailLoginMethods.both,
+    ),
+  ),
+  Story(
     name: 'Sign In/Disabled Google Widget',
     description: 'Sign in flow suppressing the Google sign-in widget.',
     builder: (context) =>
@@ -80,6 +90,7 @@ Widget _signInWidgetStory(
   bool disableGitHubSignInWidget = false,
   bool disableMicrosoftSignInWidget = false,
   bool disableFacebookSignInWidget = false,
+  EmailLoginMethods? emailLoginMethods,
 }) {
   final width = context.knobs.sliderInt(
     label: 'Column width',
@@ -88,16 +99,24 @@ Widget _signInWidgetStory(
     max: 400,
   );
 
+  void onAuthenticated() => context.showSuccessSnackBar('Authenticated!');
+  void onError(Object error) => context.showErrorSnackBar(error.toString());
+
   return SizedBox(
     width: width.toDouble(),
     child: SignInWidget(
       client: context.read<Client>(),
-      onAuthenticated: () {
-        context.showSuccessSnackBar('Authenticated!');
-      },
-      onError: (error) {
-        context.showErrorSnackBar(error.toString());
-      },
+      onAuthenticated: onAuthenticated,
+      onError: onError,
+      emailSignInWidget: emailLoginMethods == null
+          ? null
+          : EmailSignInWidget(
+              client: context.read<Client>(),
+              startScreen: EmailFlowScreen.login,
+              loginMethods: emailLoginMethods,
+              onAuthenticated: onAuthenticated,
+              onError: onError,
+            ),
       buttonStyle: _signInButtonStyleFromKnobs(context),
       disableAnonymousSignInWidget: disableAnonymousSignInWidget,
       disableEmailSignInWidget: disableEmailSignInWidget,

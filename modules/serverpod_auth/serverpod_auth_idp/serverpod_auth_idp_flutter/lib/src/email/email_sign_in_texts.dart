@@ -34,6 +34,19 @@ class EmailSignInTexts {
     required this.termsAndConditions,
     required this.andText,
     required this.privacyPolicy,
+    this.passwordlessTitle = 'Continue with email',
+    this.passwordlessDescription =
+        'Enter your email address to receive a sign-in code.',
+    this.passwordlessContinueAction = 'Send code',
+    this.passwordlessVerifyTitle = 'Enter your code',
+    this.passwordlessVerificationMessage =
+        'We sent a code to your email. Enter it below to continue.',
+    this.passwordlessUseDifferentEmail = 'Use a different email',
+    this.passwordlessResendCooldownMessage =
+        'A code was sent recently. Use that code, or wait a moment before '
+        'requesting a new one.',
+    this.signInWithCode = 'Sign in with a code instead',
+    this.usePasswordInstead = 'Use password instead',
   });
 
   /// Default English texts.
@@ -150,6 +163,39 @@ class EmailSignInTexts {
   /// Text for privacy policy.
   final String privacyPolicy;
 
+  /// Title on the passwordless login form, where the user enters the email
+  /// address to receive a sign-in code.
+  final String passwordlessTitle;
+
+  /// Description shown above the email field on the passwordless login form.
+  final String passwordlessDescription;
+
+  /// Label of the button that requests a passwordless login code.
+  final String passwordlessContinueAction;
+
+  /// Title on the passwordless login code verification form.
+  final String passwordlessVerifyTitle;
+
+  /// Message shown on the passwordless login code verification form.
+  final String passwordlessVerificationMessage;
+
+  /// Label of the button that returns from the passwordless login code
+  /// verification form to the email entry form.
+  final String passwordlessUseDifferentEmail;
+
+  /// Message shown when the server refuses to send a new passwordless login
+  /// code because one was sent a short time ago. The code that was sent
+  /// earlier can still be used.
+  final String passwordlessResendCooldownMessage;
+
+  /// Label of the link on the login form to sign in with a code sent by email
+  /// instead of a password, shown when both login methods are enabled.
+  final String signInWithCode;
+
+  /// Label of the link on the passwordless login form to sign in with a
+  /// password instead, shown when both login methods are enabled.
+  final String usePasswordInstead;
+
   /// Creates a copy of this object with updated values.
   EmailSignInTexts copyWith({
     String? title,
@@ -179,6 +225,15 @@ class EmailSignInTexts {
     String? termsAndConditions,
     String? andText,
     String? privacyPolicy,
+    String? passwordlessTitle,
+    String? passwordlessDescription,
+    String? passwordlessContinueAction,
+    String? passwordlessVerifyTitle,
+    String? passwordlessVerificationMessage,
+    String? passwordlessUseDifferentEmail,
+    String? passwordlessResendCooldownMessage,
+    String? signInWithCode,
+    String? usePasswordInstead,
   }) {
     return EmailSignInTexts(
       title: title ?? this.title,
@@ -210,6 +265,23 @@ class EmailSignInTexts {
       termsAndConditions: termsAndConditions ?? this.termsAndConditions,
       andText: andText ?? this.andText,
       privacyPolicy: privacyPolicy ?? this.privacyPolicy,
+      passwordlessTitle: passwordlessTitle ?? this.passwordlessTitle,
+      passwordlessDescription:
+          passwordlessDescription ?? this.passwordlessDescription,
+      passwordlessContinueAction:
+          passwordlessContinueAction ?? this.passwordlessContinueAction,
+      passwordlessVerifyTitle:
+          passwordlessVerifyTitle ?? this.passwordlessVerifyTitle,
+      passwordlessVerificationMessage:
+          passwordlessVerificationMessage ??
+          this.passwordlessVerificationMessage,
+      passwordlessUseDifferentEmail:
+          passwordlessUseDifferentEmail ?? this.passwordlessUseDifferentEmail,
+      passwordlessResendCooldownMessage:
+          passwordlessResendCooldownMessage ??
+          this.passwordlessResendCooldownMessage,
+      signInWithCode: signInWithCode ?? this.signInWithCode,
+      usePasswordInstead: usePasswordInstead ?? this.usePasswordInstead,
     );
   }
 
@@ -243,7 +315,18 @@ class EmailSignInTexts {
         other.termsIntro == termsIntro &&
         other.termsAndConditions == termsAndConditions &&
         other.andText == andText &&
-        other.privacyPolicy == privacyPolicy;
+        other.privacyPolicy == privacyPolicy &&
+        other.passwordlessTitle == passwordlessTitle &&
+        other.passwordlessDescription == passwordlessDescription &&
+        other.passwordlessContinueAction == passwordlessContinueAction &&
+        other.passwordlessVerifyTitle == passwordlessVerifyTitle &&
+        other.passwordlessVerificationMessage ==
+            passwordlessVerificationMessage &&
+        other.passwordlessUseDifferentEmail == passwordlessUseDifferentEmail &&
+        other.passwordlessResendCooldownMessage ==
+            passwordlessResendCooldownMessage &&
+        other.signInWithCode == signInWithCode &&
+        other.usePasswordInstead == usePasswordInstead;
   }
 
   @override
@@ -275,6 +358,15 @@ class EmailSignInTexts {
     termsAndConditions,
     andText,
     privacyPolicy,
+    passwordlessTitle,
+    passwordlessDescription,
+    passwordlessContinueAction,
+    passwordlessVerifyTitle,
+    passwordlessVerificationMessage,
+    passwordlessUseDifferentEmail,
+    passwordlessResendCooldownMessage,
+    signInWithCode,
+    usePasswordInstead,
   ]);
 }
 

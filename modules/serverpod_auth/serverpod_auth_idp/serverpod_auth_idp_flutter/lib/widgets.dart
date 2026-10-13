@@ -19,6 +19,7 @@ export 'src/email/forms/widgets/form_standard_layout.dart';
 export 'src/email/forms/widgets/set_password_form.dart';
 export 'src/email/forms/widgets/terms_and_privacy.dart';
 export 'src/email/forms/login.dart';
+export 'src/email/forms/passwordless_login_start.dart';
 export 'src/email/forms/password_reset_complete.dart';
 export 'src/email/forms/password_reset_start.dart';
 export 'src/email/forms/registration_complete.dart';

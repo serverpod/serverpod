@@ -128,6 +128,34 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
     return _mockData.authSuccess;
   }
 
+  /// The code accepted by the mocked passwordless login.
+  static const passwordlessMockCode = '123456';
+
+  @override
+  Future<UuidValue> startPasswordlessLogin({required String email}) async {
+    _mockData.email = email;
+    final loginRequestId = const Uuid().v7obj();
+    _mockData.loginRequestId = loginRequestId;
+    return loginRequestId;
+  }
+
+  @override
+  Future<AuthSuccess> finishPasswordlessLogin({
+    required UuidValue loginRequestId,
+    required String verificationCode,
+  }) async {
+    // The request id is not checked, so that the code also works in the story
+    // that starts on the verification screen.
+    if (verificationCode != passwordlessMockCode) {
+      throw EmailPasswordlessLoginException(
+        reason: EmailPasswordlessLoginExceptionReason.invalid,
+      );
+    }
+    _mockData.hasAccount = true;
+    _mockData.loginRequestId = null;
+    return _mockData.authSuccess;
+  }
+
   @override
   Future<bool> hasAccount() async => _mockData.hasAccount;
 }
@@ -325,6 +353,7 @@ class MockAuthData {
   String? passwordResetToken;
   bool hasAccount = false;
 
+  UuidValue? loginRequestId;
   UuidValue? registrationRequestId;
   UuidValue? passwordResetRequestId;
 

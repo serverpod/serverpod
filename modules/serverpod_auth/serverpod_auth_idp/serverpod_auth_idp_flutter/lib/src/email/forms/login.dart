@@ -17,12 +17,25 @@ class LoginForm extends StatelessWidget {
   /// The controller that manages authentication state and logic.
   final EmailAuthController controller;
 
+  /// Whether to show a link to sign in with a code sent by email instead of a
+  /// password.
+  final bool showSignInWithCodeLink;
+
   /// Creates a [LoginForm] widget.
-  const LoginForm({super.key, required this.controller});
+  const LoginForm({
+    super.key,
+    required this.controller,
+    this.showSignInWithCodeLink = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final texts = context.emailSignInTexts;
+    final forgotPasswordButton = HyperlinkTextButton(
+      onPressed: () =>
+          controller.navigateTo(EmailFlowScreen.requestPasswordReset),
+      label: texts.forgotPassword,
+    );
 
     return FormStandardLayout(
       title: texts.title,
@@ -36,14 +49,23 @@ class LoginForm extends StatelessWidget {
             isLoading: controller.isLoading,
           ),
           tinyGap,
-          Align(
-            alignment: Alignment.centerRight,
-            child: HyperlinkTextButton(
-              onPressed: () =>
-                  controller.navigateTo(EmailFlowScreen.requestPasswordReset),
-              label: texts.forgotPassword,
+          if (showSignInWithCodeLink)
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              children: [
+                HyperlinkTextButton(
+                  onPressed: () =>
+                      controller.navigateTo(EmailFlowScreen.passwordlessStart),
+                  label: texts.signInWithCode,
+                ),
+                forgotPasswordButton,
+              ],
+            )
+          else
+            Align(
+              alignment: Alignment.centerRight,
+              child: forgotPasswordButton,
             ),
-          ),
         ],
       ),
       actionButton: ActionButton(

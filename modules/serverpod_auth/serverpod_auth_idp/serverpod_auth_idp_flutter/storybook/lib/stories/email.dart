@@ -15,6 +15,17 @@ final emailStories = [
     builder: (context) => _buildEmailStory(context, EmailFlowScreen.login),
   ),
   Story(
+    name: 'Email/Sign In/Login Screen With Passwordless',
+    description:
+        'Login form with a link to the passwordless login, as shown when both '
+        'login methods are enabled. The mocked code is 123456.',
+    builder: (context) => _buildEmailStory(
+      context,
+      EmailFlowScreen.login,
+      loginMethods: EmailLoginMethods.both,
+    ),
+  ),
+  Story(
     name: 'Email/Sign Up/Register Screen',
     description: 'Registration form with email and password fields.',
     builder: (context) =>
@@ -52,6 +63,19 @@ final emailStories = [
         _buildEmailStory(context, EmailFlowScreen.completePasswordReset),
   ),
   Story(
+    name: 'Email/Passwordless/Email Screen',
+    description:
+        'Passwordless email form where the user requests a sign-in code.',
+    builder: (context) => _buildPasswordlessStory(context),
+  ),
+  Story(
+    name: 'Email/Passwordless/Verification Screen',
+    description:
+        'Passwordless email verification form. The mocked code is 123456.',
+    builder: (context) =>
+        _buildPasswordlessStory(context, startOnVerifyScreen: true),
+  ),
+  Story(
     name: 'Email/Widgets/Verification Code Input',
     description: 'Verification code input field with varying lengths.',
     builder: (context) {
@@ -77,7 +101,11 @@ final emailStories = [
   ),
 ];
 
-Widget _buildEmailStory(BuildContext context, EmailFlowScreen screen) {
+Widget _buildEmailStory(
+  BuildContext context,
+  EmailFlowScreen screen, {
+  EmailLoginMethods loginMethods = EmailLoginMethods.password,
+}) {
   final width = context.knobs.sliderInt(
     label: 'Column width',
     initial: 300,
@@ -99,6 +127,7 @@ Widget _buildEmailStory(BuildContext context, EmailFlowScreen screen) {
     EmailSignInWidget(
       client: context.read<Client>(),
       startScreen: screen,
+      loginMethods: loginMethods,
       onError: (error) {
         context.showErrorSnackBar(error.toString());
       },
@@ -107,6 +136,62 @@ Widget _buildEmailStory(BuildContext context, EmailFlowScreen screen) {
       },
       onTermsAndConditionsPressed: showTermsAndConditions ? () {} : null,
       onPrivacyPolicyPressed: showPrivacyPolicy ? () {} : null,
+    ),
+  ], width: width.toDouble());
+}
+
+Widget _buildPasswordlessStory(
+  BuildContext context, {
+  bool startOnVerifyScreen = false,
+}) {
+  final width = context.knobs.sliderInt(
+    label: 'Column width',
+    initial: 300,
+    min: 270,
+    max: 400,
+  );
+
+  final showConsentNotice = context.knobs.boolean(
+    label: 'Show a consent notice below the email field.',
+    initial: true,
+  );
+
+  final consentNotice = showConsentNotice
+      ? const Text('By continuing, you agree to the terms of this app.')
+      : null;
+
+  void onError(Object error) => context.showErrorSnackBar(error.toString());
+  void onAuthenticated() =>
+      context.showSuccessSnackBar('Authenticated with passwordless email!');
+
+  if (!startOnVerifyScreen) {
+    return wrapWidgetInDefaultColumn([
+      EmailSignInWidget(
+        client: context.read<Client>(),
+        loginMethods: EmailLoginMethods.passwordless,
+        onError: onError,
+        onAuthenticated: onAuthenticated,
+        consentNotice: consentNotice,
+      ),
+    ], width: width.toDouble());
+  }
+
+  final controller =
+      EmailAuthController(
+        client: context.read<Client>(),
+        startScreen: EmailFlowScreen.passwordlessStart,
+        onError: onError,
+        onAuthenticated: onAuthenticated,
+      )..navigateTo(
+        EmailFlowScreen.passwordlessVerify,
+        requestId: const Uuid().v7obj(),
+      );
+
+  return wrapWidgetInDefaultColumn([
+    EmailSignInWidget(
+      controller: controller,
+      loginMethods: EmailLoginMethods.passwordless,
+      consentNotice: consentNotice,
     ),
   ], width: width.toDouble());
 }
