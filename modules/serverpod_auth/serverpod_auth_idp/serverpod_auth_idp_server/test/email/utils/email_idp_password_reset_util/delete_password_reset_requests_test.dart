@@ -4,6 +4,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import '../../../test_tools/serverpod_test_tools.dart';
+import '../../../test_utils/coarse_clock.dart';
 import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
@@ -38,11 +39,13 @@ void main() {
           email: email,
         );
 
-        passwordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
+        passwordResetRequestId = await inTheRecentPast(
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           ),
         );
       });
@@ -142,11 +145,13 @@ void main() {
           email: email,
         );
 
-        passwordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
+        passwordResetRequestId = await inTheRecentPast(
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           ),
         );
 
@@ -344,11 +349,13 @@ void main() {
           email: firstEmail,
         );
         firstEmailAccountId = firstEmailAccount.id!;
-        firstPasswordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: firstEmail,
-            transaction: transaction,
+        firstPasswordResetRequestId = await inTheRecentPast(
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: firstEmail,
+              transaction: transaction,
+            ),
           ),
         );
 
@@ -360,11 +367,13 @@ void main() {
           authUserId: secondAuthUser.id,
           email: secondEmail,
         );
-        secondPasswordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: secondEmail,
-            transaction: transaction,
+        secondPasswordResetRequestId = await inTheRecentPast(
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: secondEmail,
+              transaction: transaction,
+            ),
           ),
         );
       });
@@ -444,6 +453,83 @@ void main() {
           );
         });
       });
+    },
+  );
+
+  withServerpod(
+    'Given a password reset request created at a fixed timestamp',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      late UuidValue passwordResetRequestId;
+      const verificationCode = '12345678';
+      final createdAt = DateTime.utc(2026, 6, 1);
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            passwordResetVerificationCodeGenerator: () => verificationCode,
+            passwordResetVerificationCodeLifetime: const Duration(hours: 1),
+          ),
+        );
+
+        final authUser = await fixture.authUsers.create(session);
+
+        const email = 'test@serverpod.dev';
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+        );
+
+        passwordResetRequestId = await withClock(
+          Clock.fixed(createdAt),
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when deleting requests older than zero at that same timestamp then the request can still be verified',
+        () async {
+          await withClock(Clock.fixed(createdAt), () async {
+            await session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.deletePasswordResetRequests(
+                    session,
+                    olderThan: Duration.zero,
+                    emailAccountId: null,
+                    transaction: transaction,
+                  ),
+            );
+
+            final result = session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.verifyPasswordResetCode(
+                    session,
+                    passwordResetRequestId: passwordResetRequestId,
+                    verificationCode: verificationCode,
+                    transaction: transaction,
+                  ),
+            );
+
+            await expectLater(result, completion(isA<String>()));
+          });
+        },
+      );
     },
   );
 }

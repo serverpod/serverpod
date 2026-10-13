@@ -4,6 +4,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
+import '../test_utils/coarse_clock.dart';
 import 'test_utils/email_idp_test_fixture.dart';
 
 void main() {
@@ -447,6 +448,7 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
+      late Clock attemptClock;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
       const maxPasswordResetAttempts = RateLimit(
@@ -471,12 +473,17 @@ void main() {
           password: EmailAccountPassword.fromString(password),
         );
 
-        // Make initial request to hit the rate limit
-        await session.db.transaction(
-          (final transaction) => fixture.emailIdp.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
+        // Same timestamp as the cleanup below. Clearing the rate limit must
+        // remove an attempt recorded in the current clock tick.
+        attemptClock = Clock.fixed(DateTime.now());
+        await withClock(
+          attemptClock,
+          () => session.db.transaction(
+            (final transaction) => fixture.emailIdp.startPasswordReset(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           ),
         );
       });
@@ -488,24 +495,26 @@ void main() {
       test(
         'when deletePasswordResetRequestsAttemptsForEmail is called then user can request password reset again',
         () async {
-          await session.db.transaction(
-            (final transaction) => fixture.emailIdp.admin
-                .deletePasswordResetRequestsAttemptsForEmail(
-                  session,
-                  email: email,
-                  transaction: transaction,
-                ),
-          );
+          await withClock(attemptClock, () async {
+            await session.db.transaction(
+              (final transaction) => fixture.emailIdp.admin
+                  .deletePasswordResetRequestsAttemptsForEmail(
+                    session,
+                    email: email,
+                    transaction: transaction,
+                  ),
+            );
 
-          final result = session.db.transaction(
-            (final transaction) => fixture.emailIdp.startPasswordReset(
-              session,
-              email: email,
-              transaction: transaction,
-            ),
-          );
+            final result = session.db.transaction(
+              (final transaction) => fixture.emailIdp.startPasswordReset(
+                session,
+                email: email,
+                transaction: transaction,
+              ),
+            );
 
-          await expectLater(result, completion(isA<UuidValue>()));
+            await expectLater(result, completion(isA<UuidValue>()));
+          });
         },
       );
     },
@@ -540,14 +549,17 @@ void main() {
           password: EmailAccountPassword.fromString(password),
         );
 
-        // Make initial failed login attempt to hit the rate limit
+        // The failed attempt must be strictly older than a `Duration.zero`
+        // cleanup. A same-tick timestamp is kept.
         try {
-          await session.db.transaction(
-            (final transaction) => fixture.emailIdp.login(
-              session,
-              email: email,
-              password: 'WrongPassword123!',
-              transaction: transaction,
+          await inTheRecentPast(
+            () => session.db.transaction(
+              (final transaction) => fixture.emailIdp.login(
+                session,
+                email: email,
+                password: 'WrongPassword123!',
+                transaction: transaction,
+              ),
             ),
           );
         } on EmailAccountLoginException {

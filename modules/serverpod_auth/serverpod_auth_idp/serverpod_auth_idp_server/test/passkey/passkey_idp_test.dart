@@ -10,6 +10,7 @@ import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
+import '../test_utils/coarse_clock.dart';
 
 void main() {
   const authUsers = AuthUsers();
@@ -81,9 +82,7 @@ void main() {
         () async {
           await expectLater(
             withClock(
-              Clock.fixed(
-                DateTime.now().add(passKeyIdp.config.challengeLifetime),
-              ),
+              clockPastLifetime(passKeyIdp.config.challengeLifetime),
               () => passKeyIdp.register(
                 session,
                 authUserId: user.id,
