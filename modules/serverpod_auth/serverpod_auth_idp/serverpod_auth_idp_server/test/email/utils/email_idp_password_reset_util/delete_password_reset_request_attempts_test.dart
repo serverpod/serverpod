@@ -4,6 +4,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import '../../../test_tools/serverpod_test_tools.dart';
+import '../../../test_utils/coarse_clock.dart';
 import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
@@ -37,12 +38,15 @@ void main() {
           email: email,
         );
 
-        // Make initial request to hit the rate limit
-        await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
+        // Make initial request to hit the rate limit. The attempt must be
+        // strictly older than the deletion cutoff; a same-tick timestamp is kept.
+        await inTheRecentPast(
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           ),
         );
       });
@@ -221,11 +225,13 @@ void main() {
           authUserId: firstAuthUser.id,
           email: firstEmail,
         );
-        await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: firstEmail,
-            transaction: transaction,
+        await inTheRecentPast(
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: firstEmail,
+              transaction: transaction,
+            ),
           ),
         );
 
@@ -236,11 +242,13 @@ void main() {
           authUserId: secondAuthUser.id,
           email: secondEmail,
         );
-        await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: secondEmail,
-            transaction: transaction,
+        await inTheRecentPast(
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: secondEmail,
+              transaction: transaction,
+            ),
           ),
         );
       });
