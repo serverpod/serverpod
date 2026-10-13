@@ -120,6 +120,10 @@ class SignInScreen extends StatelessWidget {
           signUp: 'Sign up',
           signUpTitle: 'Sign up with email',
           continueAction: 'Continue',
+          // The texts of the passwordless login are customized the same way.
+          passwordlessTitle: 'Sign in with a code',
+          signInWithCode: 'Sign in with a code instead',
+          usePasswordInstead: 'Use password instead',
         ),
         passwordRequirementTexts: PasswordRequirementTexts.defaults.copyWith(
           minLengthTemplate: 'At least {length} characters',
@@ -141,6 +145,15 @@ class SignInScreen extends StatelessWidget {
           // client.auth.authInfo listener.
           onAuthenticated: () => onAuthenticated(context),
           onError: (error) => onError(context, error),
+          // The server enables both the password and the passwordless email
+          // login, so the email widget offers both of them.
+          emailSignInWidget: EmailSignInWidget(
+            client: client,
+            startScreen: EmailFlowScreen.login,
+            loginMethods: EmailLoginMethods.both,
+            onAuthenticated: () => onAuthenticated(context),
+            onError: (error) => onError(context, error),
+          ),
           // NOTE: To customize widgets, pass the desired widget here.
           // googleSignInWidget: GoogleSignInWidget(
           //   client: client,

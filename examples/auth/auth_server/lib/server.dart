@@ -60,8 +60,17 @@ void run(List<String> args) async {
 
   final emailIdpConfig = EmailIdpConfig(
     secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
-    sendRegistrationVerificationCode: _sendRegistrationCode,
-    sendPasswordResetVerificationCode: _sendPasswordResetCode,
+    // Sign in with an email and a password.
+    password: EmailPasswordLoginConfig(
+      sendRegistrationVerificationCode: _sendRegistrationCode,
+      sendPasswordResetVerificationCode: _sendPasswordResetCode,
+    ),
+    // Sign in with a code sent to the email address, without a password. Set
+    // `password` to `null` to only allow this.
+    passwordless: EmailPasswordlessLoginConfig(
+      sendSignUpVerificationCode: _sendSignUpCode,
+      sendSignInVerificationCode: _sendSignInCode,
+    ),
   );
 
   final facebookIdpConfig = FacebookIdpConfig(
@@ -150,4 +159,32 @@ void _sendPasswordResetCode(
   // NOTE: Here you call your mail service to send the verification code to
   // the user. For testing, we will just log the verification code.
   session.log('[EmailIDP] Password reset code ($email): $verificationCode');
+}
+
+void _sendSignUpCode(
+  Session session, {
+  required String email,
+  required UuidValue loginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log(
+    '[EmailIDP] Sign-up code ($email): $verificationCode',
+  );
+}
+
+void _sendSignInCode(
+  Session session, {
+  required String email,
+  required UuidValue loginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log(
+    '[EmailIDP] Sign-in code ($email): $verificationCode',
+  );
 }

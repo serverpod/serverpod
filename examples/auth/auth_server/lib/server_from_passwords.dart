@@ -34,8 +34,14 @@ void run(List<String> args) async {
     identityProviderBuilders: [
       AppleIdpConfigFromPasswords(),
       EmailIdpConfigFromPasswords(
-        sendRegistrationVerificationCode: _sendRegistrationCode,
-        sendPasswordResetVerificationCode: _sendPasswordResetCode,
+        password: EmailPasswordLoginConfig(
+          sendRegistrationVerificationCode: _sendRegistrationCode,
+          sendPasswordResetVerificationCode: _sendPasswordResetCode,
+        ),
+        passwordless: EmailPasswordlessLoginConfig(
+          sendSignUpVerificationCode: _sendSignUpCode,
+          sendSignInVerificationCode: _sendSignInCode,
+        ),
       ),
       GoogleIdpConfigFromPasswords(),
       PasskeyIdpConfigFromPasswords(),
@@ -75,4 +81,32 @@ void _sendPasswordResetCode(
   // NOTE: Here you call your mail service to send the verification code to
   // the user. For testing, we will just log the verification code.
   session.log('[EmailIDP] Password reset code ($email): $verificationCode');
+}
+
+void _sendSignUpCode(
+  Session session, {
+  required String email,
+  required UuidValue loginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log(
+    '[EmailIDP] Sign-up code ($email): $verificationCode',
+  );
+}
+
+void _sendSignInCode(
+  Session session, {
+  required String email,
+  required UuidValue loginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log(
+    '[EmailIDP] Sign-in code ($email): $verificationCode',
+  );
 }
