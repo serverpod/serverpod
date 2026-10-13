@@ -38,6 +38,8 @@ emailAccount:
   - startPasswordReset:
   - verifyPasswordResetCode:
   - finishPasswordReset:
+  - startPasswordlessLogin:
+  - finishPasswordlessLogin:
   - hasAccount:
 firebaseAccount:
   - login:
@@ -68,6 +70,8 @@ passwordImportingEmailAccount:
   - startPasswordReset:
   - verifyPasswordResetCode:
   - finishPasswordReset:
+  - startPasswordlessLogin:
+  - finishPasswordlessLogin:
   - hasAccount:
 userProfile:
   - removeUserImage:

@@ -11,6 +11,8 @@ emailIdp:
   - startPasswordReset:
   - verifyPasswordResetCode:
   - finishPasswordReset:
+  - startPasswordlessLogin:
+  - finishPasswordlessLogin:
   - hasAccount:
 facebookIdp:
   - login:

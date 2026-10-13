@@ -807,6 +807,52 @@ class Endpoints extends _is.EndpointDispatch {
                         newPassword: params['newPassword'],
                       ),
         ),
+        'startPasswordlessLogin': _is.MethodConnector(
+          name: 'startPasswordlessLogin',
+          params: {
+            'email': _is.ParameterDescription(
+              name: 'email',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['emailAccount'] as _i58d5kqa.EmailAccountEndpoint)
+                      .startPasswordlessLogin(
+                        session,
+                        email: params['email'],
+                      ),
+        ),
+        'finishPasswordlessLogin': _is.MethodConnector(
+          name: 'finishPasswordlessLogin',
+          params: {
+            'loginRequestId': _is.ParameterDescription(
+              name: 'loginRequestId',
+              type: _is.getType<_is.UuidValue>(),
+              nullable: false,
+            ),
+            'verificationCode': _is.ParameterDescription(
+              name: 'verificationCode',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['emailAccount'] as _i58d5kqa.EmailAccountEndpoint)
+                      .finishPasswordlessLogin(
+                        session,
+                        loginRequestId: params['loginRequestId'],
+                        verificationCode: params['verificationCode'],
+                      ),
+        ),
         'hasAccount': _is.MethodConnector(
           name: 'hasAccount',
           params: {},
@@ -1349,6 +1395,54 @@ class Endpoints extends _is.EndpointDispatch {
                         finishPasswordResetToken:
                             params['finishPasswordResetToken'],
                         newPassword: params['newPassword'],
+                      ),
+        ),
+        'startPasswordlessLogin': _is.MethodConnector(
+          name: 'startPasswordlessLogin',
+          params: {
+            'email': _is.ParameterDescription(
+              name: 'email',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['passwordImportingEmailAccount']
+                          as _i728np9q.PasswordImportingEmailAccountEndpoint)
+                      .startPasswordlessLogin(
+                        session,
+                        email: params['email'],
+                      ),
+        ),
+        'finishPasswordlessLogin': _is.MethodConnector(
+          name: 'finishPasswordlessLogin',
+          params: {
+            'loginRequestId': _is.ParameterDescription(
+              name: 'loginRequestId',
+              type: _is.getType<_is.UuidValue>(),
+              nullable: false,
+            ),
+            'verificationCode': _is.ParameterDescription(
+              name: 'verificationCode',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['passwordImportingEmailAccount']
+                          as _i728np9q.PasswordImportingEmailAccountEndpoint)
+                      .finishPasswordlessLogin(
+                        session,
+                        loginRequestId: params['loginRequestId'],
+                        verificationCode: params['verificationCode'],
                       ),
         ),
         'hasAccount': _is.MethodConnector(

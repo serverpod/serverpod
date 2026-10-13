@@ -353,6 +353,50 @@ class Endpoints extends _is.EndpointDispatch {
                     newPassword: params['newPassword'],
                   ),
         ),
+        'startPasswordlessLogin': _is.MethodConnector(
+          name: 'startPasswordlessLogin',
+          params: {
+            'email': _is.ParameterDescription(
+              name: 'email',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['emailIdp'] as _ilutrrxn.EmailIdpEndpoint)
+                  .startPasswordlessLogin(
+                    session,
+                    email: params['email'],
+                  ),
+        ),
+        'finishPasswordlessLogin': _is.MethodConnector(
+          name: 'finishPasswordlessLogin',
+          params: {
+            'loginRequestId': _is.ParameterDescription(
+              name: 'loginRequestId',
+              type: _is.getType<_is.UuidValue>(),
+              nullable: false,
+            ),
+            'verificationCode': _is.ParameterDescription(
+              name: 'verificationCode',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['emailIdp'] as _ilutrrxn.EmailIdpEndpoint)
+                  .finishPasswordlessLogin(
+                    session,
+                    loginRequestId: params['loginRequestId'],
+                    verificationCode: params['verificationCode'],
+                  ),
+        ),
         'hasAccount': _is.MethodConnector(
           name: 'hasAccount',
           params: {},
