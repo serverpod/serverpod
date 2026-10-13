@@ -15,10 +15,16 @@ import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../generated/completion_script_carapace.dart';
+import 'doctor.dart' show DoctorCommand;
 import 'upgrade.dart' show UpgradeCommand;
 import 'version.dart' show VersionCommand;
 
-Future<void> _preCommandEnvironmentChecks() async {
+Future<void> _preCommandEnvironmentChecks(
+  ServerpodCommandRunner runner,
+) async {
+  // Doctor reports on missing SDKs instead of refusing to run without them.
+  if (runner._invokedCommandName == DoctorCommand.commandName) return;
+
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
       'Failed to run serverpod. You need to have dart installed and in your \$PATH',
@@ -46,8 +52,8 @@ Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
 }
 
 Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
-  await _preCommandEnvironmentChecks();
-  await _preCommandPrints(runner as ServerpodCommandRunner);
+  await _preCommandEnvironmentChecks(runner as ServerpodCommandRunner);
+  await _preCommandPrints(runner);
 }
 
 class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {

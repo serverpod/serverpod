@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/create_migration.dart';
 import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
 import 'package:serverpod_cli/src/commands/database.dart';
+import 'package:serverpod_cli/src/commands/doctor.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
@@ -119,6 +120,7 @@ ServerpodCommandRunner buildCommandRunner() {
     CloudCommand(),
     CreateCommand(),
     DatabaseCommand(),
+    DoctorCommand(),
     QuickstartCommand(),
     GenerateCommand(),
     GeneratePubspecsCommand(),
