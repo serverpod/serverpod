@@ -45,6 +45,10 @@ client = Client(serverUrl)
 client.auth.initialize();
 ```
 
+## Passwordless email
+
+Passwordless sign-in is part of the email identity provider. To let users sign in with a code sent by email, pass `enablePasswordlessLogin: true` to `ServerpodCloudEmailIdpConfig`, or set `passwordless: EmailPasswordlessLoginConfig(sendSignUpVerificationCode: ..., sendSignInVerificationCode: ...)` on `EmailIdpConfig` / `EmailIdpConfigFromPasswords` for a custom email provider. The existing endpoint extending `EmailIdpBaseEndpoint` then serves `startPasswordlessLogin` and `finishPasswordlessLogin`. It adds a table, so run the migration workflow. Accounts are created on the first successful sign-in unless `allowSignUp` (`allowPasswordlessSignUp` for the cloud config) is `false`. To offer only passwordless sign-in, disable the password login with `password: null` (or `enablePasswordLogin: false`). In Flutter, set `loginMethods: EmailLoginMethods.passwordless` (or `.both`) on `EmailSignInWidget`.
+
 ## Social sign-ins
 
 Each provider needs the user to configure it outside the project (e.g. the GCP console or the Apple developer portal). Follow the official setup guide:
