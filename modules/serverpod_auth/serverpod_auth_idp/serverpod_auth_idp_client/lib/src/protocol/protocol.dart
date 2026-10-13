@@ -31,6 +31,10 @@ import 'providers/email/models/exceptions/email_account_request_exception.dart'
     as _iqtw285f;
 import 'providers/email/models/exceptions/email_account_request_exception_reason.dart'
     as _isgeino8;
+import 'providers/email/models/exceptions/email_passwordless_login_exception.dart'
+    as _im0so2b0;
+import 'providers/email/models/exceptions/email_passwordless_login_exception_reason.dart'
+    as _ibc5syjm;
 import 'providers/facebook/models/facebook_access_token_verification_exception.dart'
     as _i92zrjf0;
 import 'providers/firebase/models/firebase_email_not_verified_exception.dart'
@@ -60,6 +64,8 @@ export 'providers/email/models/exceptions/email_account_password_reset_exception
 export 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_request_exception.dart';
 export 'providers/email/models/exceptions/email_account_request_exception_reason.dart';
+export 'providers/email/models/exceptions/email_passwordless_login_exception.dart';
+export 'providers/email/models/exceptions/email_passwordless_login_exception_reason.dart';
 export 'providers/facebook/models/facebook_access_token_verification_exception.dart';
 export 'providers/firebase/models/firebase_email_not_verified_exception.dart';
 export 'providers/firebase/models/firebase_id_token_verification_exception.dart';
@@ -96,6 +102,8 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<_io8tbstn.EmailAccountPasswordResetExceptionReason>,
           _isc.getType<_iqtw285f.EmailAccountRequestException>,
           _isc.getType<_isgeino8.EmailAccountRequestExceptionReason>,
+          _isc.getType<_im0so2b0.EmailPasswordlessLoginException>,
+          _isc.getType<_ibc5syjm.EmailPasswordlessLoginExceptionReason>,
           _isc.getType<_i92zrjf0.FacebookAccessTokenVerificationException>,
           _isc.getType<_imswdwet.FirebaseEmailNotVerifiedException>,
           _isc.getType<_i14hfyiz.FirebaseIdTokenVerificationException>,
@@ -115,6 +123,8 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<_io8tbstn.EmailAccountPasswordResetExceptionReason?>,
           _isc.getType<_iqtw285f.EmailAccountRequestException?>,
           _isc.getType<_isgeino8.EmailAccountRequestExceptionReason?>,
+          _isc.getType<_im0so2b0.EmailPasswordlessLoginException?>,
+          _isc.getType<_ibc5syjm.EmailPasswordlessLoginExceptionReason?>,
           _isc.getType<_i92zrjf0.FacebookAccessTokenVerificationException?>,
           _isc.getType<_imswdwet.FirebaseEmailNotVerifiedException?>,
           _isc.getType<_i14hfyiz.FirebaseIdTokenVerificationException?>,
@@ -192,6 +202,13 @@ class Protocol extends _isc.SerializationManager
     }
     if (t == _isgeino8.EmailAccountRequestExceptionReason) {
       return _isgeino8.EmailAccountRequestExceptionReason.fromJson(data) as T;
+    }
+    if (t == _im0so2b0.EmailPasswordlessLoginException) {
+      return _im0so2b0.EmailPasswordlessLoginException.fromJson(data) as T;
+    }
+    if (t == _ibc5syjm.EmailPasswordlessLoginExceptionReason) {
+      return _ibc5syjm.EmailPasswordlessLoginExceptionReason.fromJson(data)
+          as T;
     }
     if (t == _i92zrjf0.FacebookAccessTokenVerificationException) {
       return _i92zrjf0.FacebookAccessTokenVerificationException.fromJson(data)
@@ -278,6 +295,18 @@ class Protocol extends _isc.SerializationManager
     if (t == _isc.getType<_isgeino8.EmailAccountRequestExceptionReason?>()) {
       return (data != null
               ? _isgeino8.EmailAccountRequestExceptionReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_im0so2b0.EmailPasswordlessLoginException?>()) {
+      return (data != null
+              ? _im0so2b0.EmailPasswordlessLoginException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ibc5syjm.EmailPasswordlessLoginExceptionReason?>()) {
+      return (data != null
+              ? _ibc5syjm.EmailPasswordlessLoginExceptionReason.fromJson(data)
               : null)
           as T;
     }
@@ -391,6 +420,10 @@ class Protocol extends _isc.SerializationManager
       _iqtw285f.EmailAccountRequestException => 'EmailAccountRequestException',
       _isgeino8.EmailAccountRequestExceptionReason =>
         'EmailAccountRequestExceptionReason',
+      _im0so2b0.EmailPasswordlessLoginException =>
+        'EmailPasswordlessLoginException',
+      _ibc5syjm.EmailPasswordlessLoginExceptionReason =>
+        'EmailPasswordlessLoginExceptionReason',
       _i92zrjf0.FacebookAccessTokenVerificationException =>
         'FacebookAccessTokenVerificationException',
       _imswdwet.FirebaseEmailNotVerifiedException =>
@@ -444,6 +477,10 @@ class Protocol extends _isc.SerializationManager
         return 'EmailAccountRequestException';
       case _isgeino8.EmailAccountRequestExceptionReason():
         return 'EmailAccountRequestExceptionReason';
+      case _im0so2b0.EmailPasswordlessLoginException():
+        return 'EmailPasswordlessLoginException';
+      case _ibc5syjm.EmailPasswordlessLoginExceptionReason():
+        return 'EmailPasswordlessLoginExceptionReason';
       case _i92zrjf0.FacebookAccessTokenVerificationException():
         return 'FacebookAccessTokenVerificationException';
       case _imswdwet.FirebaseEmailNotVerifiedException():
@@ -509,6 +546,16 @@ class Protocol extends _isc.SerializationManager
     }
     if (dataClassName == 'EmailAccountRequestExceptionReason') {
       return deserialize<_isgeino8.EmailAccountRequestExceptionReason>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'EmailPasswordlessLoginException') {
+      return deserialize<_im0so2b0.EmailPasswordlessLoginException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'EmailPasswordlessLoginExceptionReason') {
+      return deserialize<_ibc5syjm.EmailPasswordlessLoginExceptionReason>(
         data['data'],
       );
     }
