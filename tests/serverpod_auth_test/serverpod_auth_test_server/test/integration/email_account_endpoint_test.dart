@@ -46,17 +46,19 @@ void main() {
         setUp(() async {
           final config = EmailIdpConfig(
             secretHashPepper: 'test',
-            sendRegistrationVerificationCode:
-                (
-                  final session, {
-                  required final accountRequestId,
-                  required final email,
-                  required final transaction,
-                  required final verificationCode,
-                }) {
-                  receivedVerificationCode = verificationCode;
-                  receivedAccountRequestId = accountRequestId;
-                },
+            password: EmailPasswordLoginConfig(
+              sendRegistrationVerificationCode:
+                  (
+                    final session, {
+                    required final accountRequestId,
+                    required final email,
+                    required final transaction,
+                    required final verificationCode,
+                  }) {
+                    receivedVerificationCode = verificationCode;
+                    receivedAccountRequestId = accountRequestId;
+                  },
+            ),
           );
           AuthServices.set(
             identityProviderBuilders: [config],
@@ -143,21 +145,23 @@ void main() {
         setUp(() async {
           final config = EmailIdpConfig(
             secretHashPepper: 'test',
-            maxPasswordResetAttempts: const RateLimit(
-              timeframe: Duration(seconds: 1),
-              maxAttempts: 100,
+            password: EmailPasswordLoginConfig(
+              maxPasswordResetAttempts: const RateLimit(
+                timeframe: Duration(seconds: 1),
+                maxAttempts: 100,
+              ),
+              sendPasswordResetVerificationCode:
+                  (
+                    final session, {
+                    required final email,
+                    required final passwordResetRequestId,
+                    required final transaction,
+                    required final verificationCode,
+                  }) {
+                    receivedVerificationCode = verificationCode;
+                    receivedPasswordResetRequestId = passwordResetRequestId;
+                  },
             ),
-            sendPasswordResetVerificationCode:
-                (
-                  final session, {
-                  required final email,
-                  required final passwordResetRequestId,
-                  required final transaction,
-                  required final verificationCode,
-                }) {
-                  receivedVerificationCode = verificationCode;
-                  receivedPasswordResetRequestId = passwordResetRequestId;
-                },
           );
           AuthServices.set(
             identityProviderBuilders: [config],
@@ -205,18 +209,20 @@ void main() {
       setUp(() async {
         final config = EmailIdpConfig(
           secretHashPepper: 'test',
-          sendRegistrationVerificationCode:
-              (
-                final session, {
-                required final accountRequestId,
-                required final email,
-                required final transaction,
-                required final verificationCode,
-              }) {
-                receivedAccountRequestId = accountRequestId;
-                receivedVerificationCode = verificationCode;
-              },
-          registrationVerificationCodeLifetime: verificationCodeLifetime,
+          password: EmailPasswordLoginConfig(
+            sendRegistrationVerificationCode:
+                (
+                  final session, {
+                  required final accountRequestId,
+                  required final email,
+                  required final transaction,
+                  required final verificationCode,
+                }) {
+                  receivedAccountRequestId = accountRequestId;
+                  receivedVerificationCode = verificationCode;
+                },
+            registrationVerificationCodeLifetime: verificationCodeLifetime,
+          ),
         );
         AuthServices.set(
           identityProviderBuilders: [config],
@@ -394,26 +400,28 @@ void main() {
         );
         final config = EmailIdpConfig(
           secretHashPepper: 'test',
-          sendRegistrationVerificationCode:
-              (
-                final session, {
-                required final accountRequestId,
-                required final email,
-                required final transaction,
-                required final verificationCode,
-              }) {
-                receivedVerificationCode = verificationCode;
-              },
-          sendPasswordResetVerificationCode:
-              (
-                final session, {
-                required final email,
-                required final passwordResetRequestId,
-                required final transaction,
-                required final verificationCode,
-              }) {
-                receivedPasswordResetCode = verificationCode;
-              },
+          password: EmailPasswordLoginConfig(
+            sendRegistrationVerificationCode:
+                (
+                  final session, {
+                  required final accountRequestId,
+                  required final email,
+                  required final transaction,
+                  required final verificationCode,
+                }) {
+                  receivedVerificationCode = verificationCode;
+                },
+            sendPasswordResetVerificationCode:
+                (
+                  final session, {
+                  required final email,
+                  required final passwordResetRequestId,
+                  required final transaction,
+                  required final verificationCode,
+                }) {
+                  receivedPasswordResetCode = verificationCode;
+                },
+          ),
         );
         AuthServices.set(
           identityProviderBuilders: [config],
@@ -1057,21 +1065,23 @@ extension on TestEndpoints {
     late String receivedVerificationCode;
     final config = EmailIdpConfig(
       secretHashPepper: 'test',
-      maxPasswordResetAttempts: const RateLimit(
-        timeframe: Duration(seconds: 1),
-        maxAttempts: 100,
+      password: EmailPasswordLoginConfig(
+        maxPasswordResetAttempts: const RateLimit(
+          timeframe: Duration(seconds: 1),
+          maxAttempts: 100,
+        ),
+        sendRegistrationVerificationCode:
+            (
+              final session, {
+              required final accountRequestId,
+              required final email,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedAccountRequestId = accountRequestId;
+              receivedVerificationCode = verificationCode;
+            },
       ),
-      sendRegistrationVerificationCode:
-          (
-            final session, {
-            required final accountRequestId,
-            required final email,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedAccountRequestId = accountRequestId;
-            receivedVerificationCode = verificationCode;
-          },
     );
 
     AuthServices.set(
@@ -1113,17 +1123,19 @@ extension on TestEndpoints {
     late String receivedVerificationCode;
     final config = EmailIdpConfig(
       secretHashPepper: 'test',
-      sendPasswordResetVerificationCode:
-          (
-            final session, {
-            required final email,
-            required final passwordResetRequestId,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedPasswordResetRequestId = passwordResetRequestId;
-            receivedVerificationCode = verificationCode;
-          },
+      password: EmailPasswordLoginConfig(
+        sendPasswordResetVerificationCode:
+            (
+              final session, {
+              required final email,
+              required final passwordResetRequestId,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedPasswordResetRequestId = passwordResetRequestId;
+              receivedVerificationCode = verificationCode;
+            },
+      ),
     );
     AuthServices.set(
       identityProviderBuilders: [config],

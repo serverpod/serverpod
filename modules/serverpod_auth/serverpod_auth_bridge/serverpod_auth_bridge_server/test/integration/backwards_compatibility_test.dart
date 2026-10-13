@@ -75,7 +75,9 @@ void main() {
           identityProviderBuilders: [
             const EmailIdpConfig(
               secretHashPepper: 'test',
-              failedLoginRateLimit: failedLoginRateLimit,
+              password: EmailPasswordLoginConfig(
+                failedLoginRateLimit: failedLoginRateLimit,
+              ),
             ),
           ],
           tokenManagerBuilders: [tokenManagerConfig],

@@ -39,6 +39,24 @@ void run(final List<String> args) async {
         secretHashPepper: pod.getPassword(
           'serverpod_auth_idp_email_secretHashPepper',
         )!,
+        passwordless: EmailPasswordlessLoginConfig(
+          sendSignUpVerificationCode:
+              (
+                final session, {
+                required final email,
+                required final loginRequestId,
+                required final verificationCode,
+                required final transaction,
+              }) {},
+          sendSignInVerificationCode:
+              (
+                final session, {
+                required final email,
+                required final loginRequestId,
+                required final verificationCode,
+                required final transaction,
+              }) {},
+        ),
       ),
     ],
   );

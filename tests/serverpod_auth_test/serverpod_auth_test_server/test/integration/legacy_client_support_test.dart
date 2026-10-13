@@ -367,16 +367,18 @@ void main() {
         String? receivedVerificationCode;
         final config = EmailIdpConfig(
           secretHashPepper: 'test',
-          sendRegistrationVerificationCode:
-              (
-                final session, {
-                required final email,
-                required final accountRequestId,
-                required final transaction,
-                required final verificationCode,
-              }) {
-                receivedVerificationCode = verificationCode;
-              },
+          password: EmailPasswordLoginConfig(
+            sendRegistrationVerificationCode:
+                (
+                  final session, {
+                  required final email,
+                  required final accountRequestId,
+                  required final transaction,
+                  required final verificationCode,
+                }) {
+                  receivedVerificationCode = verificationCode;
+                },
+          ),
         );
         AuthServices.set(
           identityProviderBuilders: [config],

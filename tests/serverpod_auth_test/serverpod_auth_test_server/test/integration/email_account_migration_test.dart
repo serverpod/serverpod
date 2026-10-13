@@ -51,16 +51,18 @@ void main() {
         // Configure EmailAccounts for password reset verification
         final config = EmailIdpConfig(
           secretHashPepper: 'test',
-          sendPasswordResetVerificationCode:
-              (
-                final session, {
-                required final email,
-                required final passwordResetRequestId,
-                required final transaction,
-                required final verificationCode,
-              }) {
-                receivedVerificationCode = verificationCode;
-              },
+          password: EmailPasswordLoginConfig(
+            sendPasswordResetVerificationCode:
+                (
+                  final session, {
+                  required final email,
+                  required final passwordResetRequestId,
+                  required final transaction,
+                  required final verificationCode,
+                }) {
+                  receivedVerificationCode = verificationCode;
+                },
+          ),
         );
         AuthServices.set(
           identityProviderBuilders: [config],
@@ -161,19 +163,21 @@ void main() {
         // Configure EmailAccounts for password reset verification
         final config = EmailIdpConfig(
           secretHashPepper: 'test',
-          sendPasswordResetVerificationCode:
-              (
-                final session, {
-                required final email,
-                required final passwordResetRequestId,
-                required final transaction,
-                required final verificationCode,
-              }) {
-                receivedPasswordResetRequestId = passwordResetRequestId;
-                receivedVerificationCode = verificationCode;
-              },
-          onPasswordResetCompleted:
-              AuthBackwardsCompatibility.clearLegacyPassword,
+          password: EmailPasswordLoginConfig(
+            sendPasswordResetVerificationCode:
+                (
+                  final session, {
+                  required final email,
+                  required final passwordResetRequestId,
+                  required final transaction,
+                  required final verificationCode,
+                }) {
+                  receivedPasswordResetRequestId = passwordResetRequestId;
+                  receivedVerificationCode = verificationCode;
+                },
+            onPasswordResetCompleted:
+                AuthBackwardsCompatibility.clearLegacyPassword,
+          ),
         );
         AuthServices.set(
           identityProviderBuilders: [config],
