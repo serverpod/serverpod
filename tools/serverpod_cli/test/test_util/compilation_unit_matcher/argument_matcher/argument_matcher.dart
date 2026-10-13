@@ -1,7 +1,7 @@
 part of '../../compilation_unit_matcher.dart';
 
 class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
-  final ChainableMatcher<Iterable<Argument>> _parent;
+  final ChainableMatcher<Iterable<AstNode>> _parent;
   final String _value;
   final _ParameterType? _parameterType;
 
@@ -93,7 +93,7 @@ class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
     return filteredArguments.isNotEmpty;
   }
 
-  Iterable<Argument>? _featureValueOf(dynamic actual) {
+  Iterable<AstNode>? _featureValueOf(dynamic actual) {
     var match = _parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 
@@ -112,14 +112,18 @@ final class _PositionalParameter extends _ParameterType {
   _PositionalParameter();
 }
 
-extension on Argument {
+extension on AstNode {
+  // A named argument is recognized by its leading `name:` tokens, since its
+  // node type differs across the supported analyzer versions
+  // (`NamedExpression` before 13.0.0, `NamedArgument` from 13.0.0).
+  bool get _isNamedArgument => beginToken.next?.lexeme == ':';
+
   bool _hasMatchingNamedParameter(_ParameterType? argumentType) {
     if (argumentType is! _NamedParameter) return true;
 
-    var resolvedThis = this;
-    if (resolvedThis is! NamedArgument) return false;
+    if (!_isNamedArgument) return false;
 
-    return resolvedThis.name.lexeme == argumentType.parameterName;
+    return beginToken.lexeme == argumentType.parameterName;
   }
 
   bool _hasMatchingParameterType(_ParameterType? namedArgumentType) {
@@ -129,16 +133,15 @@ extension on Argument {
 
     return switch (namedArgumentType) {
       _PositionalParameter _ => resolvedThis is SimpleIdentifier,
-      _NamedParameter _ => resolvedThis is NamedArgument,
+      _NamedParameter _ => _isNamedArgument,
     };
   }
 
   bool _hasMatchingValue(String name) {
-    var resolvedThis = this;
-    if (resolvedThis is NamedArgument) {
-      return resolvedThis.argumentExpression._hasMatchingValue(name);
+    if (_isNamedArgument) {
+      return childEntities.whereType<AstNode>().last._hasMatchingValue(name);
     }
 
-    return resolvedThis.toSource() == name;
+    return toSource() == name;
   }
 }

@@ -122,8 +122,14 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
 }
 
 extension on FormalParameter {
+  // Before analyzer 13.0.0 a parameter with a default value is wrapped in a
+  // `DefaultFormalParameter`. The wrapped parameter is found through the
+  // child nodes, since that type does not exist in later versions.
+  FormalParameter get _withoutDefaultValue =>
+      childEntities.whereType<FormalParameter>().firstOrNull ?? this;
+
   Initializer? _getInitializer() {
-    var resolvedThis = this;
+    var resolvedThis = _withoutDefaultValue;
     if (resolvedThis is SuperFormalParameter) {
       return Initializer.super_;
     }
@@ -136,12 +142,16 @@ extension on FormalParameter {
   }
 
   String? _getType() {
-    var resolvedThis = this;
-    if (resolvedThis is RegularFormalParameter) {
-      return resolvedThis.type.toString();
+    var resolvedThis = _withoutDefaultValue;
+    if (resolvedThis is SuperFormalParameter ||
+        resolvedThis is FieldFormalParameter) {
+      return null;
     }
 
-    return null;
+    return resolvedThis.childEntities
+        .whereType<TypeAnnotation>()
+        .firstOrNull
+        .toString();
   }
 
   bool _hasMatchingInitializer(Initializer? initializer) {

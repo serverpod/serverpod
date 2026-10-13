@@ -12,7 +12,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  analyzer: '>=13.1.0 <14.0.0'
+  analyzer: '>=8.1.0 <14.0.0'
   archive: ^4.0.0
   args: ^2.7.0
   async: ^2.11.0

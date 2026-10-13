@@ -302,7 +302,7 @@ void main() {
       final defaults = _copyWith(
         code,
         '_ExampleImpl',
-      ).parameters!.parameters.map((p) => p.defaultClause?.value.toSource());
+      ).parameters!.parameters.map(_defaultValueSource);
       expect(defaults, [
         r'const _UndefinedExample$local()',
         r'const _UndefinedExample$external()',
@@ -638,6 +638,16 @@ SerializableModelFieldDefinition _field(String name, String type) =>
         .withName(name)
         .withType(parseType(type, extraClasses: []))
         .build();
+
+// Read from the parameter source, since the AST nodes for default values
+// differ across the supported analyzer versions.
+String? _defaultValueSource(FormalParameter parameter) {
+  var source = parameter.toSource();
+  var separator = source.indexOf(' = ');
+  if (separator == -1) return null;
+
+  return source.substring(separator + ' = '.length);
+}
 
 MethodDeclaration _copyWith(String code, String className) {
   final unit = parseString(content: code).unit;

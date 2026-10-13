@@ -67,8 +67,10 @@ void main() {
           .single
           .argumentList
           .arguments
-          .whereType<NamedArgument>()
-          .map((argument) => argument.name.lexeme)
+          // Named arguments are recognized by their `name:` tokens, since
+          // their node type differs across the supported analyzer versions.
+          .where((argument) => argument.beginToken.next?.lexeme == ':')
+          .map((argument) => argument.beginToken.lexeme)
           .toSet();
 
       const outOfSyncReason =
@@ -93,7 +95,7 @@ ConstructorDeclaration _unnamedConstructorOfClass(
         (declaration) => declaration.namePart.typeName.lexeme == className,
       );
 
-  return (classDeclaration.body as BlockClassBody).members
+  return classDeclaration.body.childEntities
       .whereType<ConstructorDeclaration>()
       .singleWhere((constructor) => constructor.name == null);
 }
