@@ -30,10 +30,11 @@ class CleanCommand extends ServerpodCommand<CleanOption> {
 
   @override
   final description =
-      'Delete the cached server build so the next `serverpod start` '
-      'recompiles from scratch.\n\n'
+      'Delete the cached server build and generation staleness stamp.\n\n'
+      'The next `serverpod start` recompiles from scratch, and the next '
+      '`serverpod generate` regenerates code.\n\n'
       'Only needed when `serverpod start` keeps reporting compilation errors '
-      'that have already been fixed, even after restarting it.';
+      'that have already been fixed, or `serverpod generate` leaves bad output.';
 
   CleanCommand() : super(options: CleanOption.values);
 
@@ -68,7 +69,8 @@ class CleanCommand extends ServerpodCommand<CleanOption> {
   }
 }
 
-/// Deletes the cached server kernel for [serverDir], and whether any existed.
+/// Deletes the cached server kernel and generation stamp for [serverDir], and
+/// whether any existed.
 ///
 /// The kernel's sidecar files all share its name as a prefix.
 @visibleForTesting
@@ -86,5 +88,10 @@ Future<bool> cleanKernelCache(String serverDir) async {
   for (final file in kernelFiles) {
     await file.delete();
   }
-  return kernelFiles.isNotEmpty;
+
+  final generationStamp = File(p.join(toolDir.path, 'generation.stamp'));
+  final hadGenerationStamp = await generationStamp.exists();
+  if (hadGenerationStamp) await generationStamp.delete();
+
+  return kernelFiles.isNotEmpty || hadGenerationStamp;
 }

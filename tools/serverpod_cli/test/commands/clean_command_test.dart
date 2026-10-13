@@ -28,6 +28,7 @@ void main() {
         'server.dill.incremental.dill',
         'server.dill.compiling',
         'server.dill.entrypoint',
+        'generation.stamp',
         'runner.json',
       ]) {
         await File(p.join(toolDir.path, name)).create();
@@ -40,6 +41,21 @@ void main() {
         toolDir.listSync().map((entity) => p.basename(entity.path)),
         ['runner.json'],
       );
+    },
+  );
+
+  test(
+    'Given a server directory with only a generation stamp, '
+    'when cleaning the kernel cache, '
+    'then the stamp is deleted and cleaning is reported.',
+    () async {
+      await toolDir.create(recursive: true);
+      await File(p.join(toolDir.path, 'generation.stamp')).create();
+
+      final cleaned = await cleanKernelCache(serverDir.path);
+
+      expect(cleaned, isTrue);
+      expect(toolDir.listSync(), isEmpty);
     },
   );
 
