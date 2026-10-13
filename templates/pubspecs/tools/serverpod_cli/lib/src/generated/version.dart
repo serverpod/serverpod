@@ -3,3 +3,9 @@
 
 const templateVersion = 'SERVERPOD_VERSION';
 const productionMode = PRODUCTION_MODE;
+
+/// The Flutter SDK constraint this CLI version was released against.
+const requiredFlutterSdk = FLUTTER_VERSION;
+
+/// The Dart SDK constraint this CLI version was released against.
+const requiredDartSdk = DART_VERSION;
