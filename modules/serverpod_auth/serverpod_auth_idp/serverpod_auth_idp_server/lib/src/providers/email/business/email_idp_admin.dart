@@ -125,6 +125,84 @@ class EmailIdpAdmin {
     );
   }
 
+  /// {@macro email_idp_passwordless_login_util.delete_login_request_by_id}
+  Future<void> deletePasswordlessLoginRequestById(
+    final Session session,
+    final UuidValue loginRequestId, {
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.passwordlessLogin.deleteLoginRequestById(
+        session,
+        loginRequestId,
+        transaction: transaction,
+      ),
+    );
+  }
+
+  /// {@macro email_idp_passwordless_login_util.delete_expired_login_requests}
+  ///
+  /// Requests are not deleted when they expire, but only when someone tries to
+  /// use them or another request is created for the same email address, so this
+  /// should be called regularly, for example from a future call.
+  Future<void> deleteExpiredPasswordlessLoginRequests(
+    final Session session, {
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) =>
+          _utils.passwordlessLogin.deleteExpiredLoginRequests(
+            session,
+            transaction: transaction,
+          ),
+    );
+  }
+
+  /// Deletes all recorded passwordless login attempts for an email.
+  ///
+  /// This is useful when you want to allow a user to log in with a code even
+  /// though they have hit a rate limit.
+  Future<void> deletePasswordlessLoginAttemptsForEmail(
+    final Session session, {
+    required final String email,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.passwordlessLogin.deleteLoginAttempts(
+        session,
+        olderThan: Duration.zero,
+        email: email,
+        transaction: transaction,
+      ),
+    );
+  }
+
+  /// {@macro email_idp_passwordless_login_util.delete_login_attempts}
+  ///
+  /// Should be called regularly, for example from a future call, to keep the
+  /// table of attempts small.
+  Future<void> deleteExpiredPasswordlessLoginAttempts(
+    final Session session, {
+    final Duration? olderThan,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.passwordlessLogin.deleteLoginAttempts(
+        session,
+        olderThan: olderThan,
+        transaction: transaction,
+      ),
+    );
+  }
+
   /// Deletes an email account by email address.
   ///
   /// This will delete the email authentication account for the given email

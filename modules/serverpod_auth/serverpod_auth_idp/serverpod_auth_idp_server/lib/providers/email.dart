@@ -16,7 +16,10 @@ export '../src/generated/protocol.dart'
         EmailAccountPasswordResetException,
         EmailAccountPasswordResetExceptionReason,
         EmailAccountRequestException,
-        EmailAccountRequestExceptionReason;
+        EmailAccountRequestExceptionReason,
+        EmailAccountLoginRequest,
+        EmailPasswordlessLoginException,
+        EmailPasswordlessLoginExceptionReason;
 export '../src/providers/email/business/email_idp.dart';
 export '../src/providers/email/business/email_idp_admin.dart';
 export '../src/providers/email/business/email_idp_config.dart';
@@ -26,4 +29,5 @@ export '../src/providers/email/business/serverpod_cloud_email_idp_config.dart';
 export '../src/providers/email/business/utils/email_idp_account_creation_util.dart';
 export '../src/providers/email/business/utils/email_idp_authentication_util.dart';
 export '../src/providers/email/business/utils/email_idp_password_reset_util.dart';
+export '../src/providers/email/business/utils/email_idp_passwordless_login_util.dart';
 export '../src/providers/email/endpoints/email_idp_base_endpoint.dart';

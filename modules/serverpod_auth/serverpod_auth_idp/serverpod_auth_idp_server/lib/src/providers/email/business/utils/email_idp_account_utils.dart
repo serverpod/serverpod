@@ -7,6 +7,34 @@ import '../../util/email_string_extension.dart';
 /// Utility functions for working with email accounts.
 /// {@endtemplate}
 class EmailIdpAccountUtils {
+  /// Creates an [EmailAccount] for [authUserId].
+  ///
+  /// The [email] is treated as verified, so the caller must ensure that it
+  /// comes from a trusted source. It is normalized before it is stored.
+  ///
+  /// Without a [passwordHash], the account has no password: it can only log in
+  /// through the passwordless login, until a password is set (for example
+  /// through a password reset).
+  ///
+  /// Returns the created account.
+  Future<EmailAccount> createAccount(
+    final Session session, {
+    required final UuidValue authUserId,
+    required final String email,
+    final String passwordHash = '',
+    required final Transaction transaction,
+  }) {
+    return EmailAccount.db.insertRow(
+      session,
+      EmailAccount(
+        authUserId: authUserId,
+        email: email.normalizedEmail,
+        passwordHash: passwordHash,
+      ),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes email accounts matching the provided filters.
   ///
   /// Both [email] and [authUserId] are optional nullable parameters that act

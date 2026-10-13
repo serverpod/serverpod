@@ -5,6 +5,11 @@ import '../business/email_idp.dart';
 
 /// Base endpoint for email-based accounts.
 ///
+/// Users log in with a password ([login], [startRegistration] and the password
+/// reset methods) or with a verification code sent to their email address
+/// ([startPasswordlessLogin] and [finishPasswordlessLogin]), depending on which
+/// of the two is enabled in the `EmailIdpConfig`.
+///
 /// Uses `serverpod_auth_session` for session creation upon successful login,
 /// and `serverpod_auth_profile` to create profiles for new users upon
 /// registration.
@@ -194,6 +199,76 @@ abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
       session,
       finishPasswordResetToken: finishPasswordResetToken,
       newPassword: newPassword,
+    );
+  }
+
+  /// {@template email_idp_base_endpoint.start_passwordless_login}
+  /// Starts a passwordless login with a verification code sent to [email].
+  ///
+  /// If the email address has an account, a sign-in code is sent to it. If it
+  /// has none and sign-up is allowed, a sign-up code is sent, and the account
+  /// is created when the code is verified.
+  ///
+  /// Returns the ID of the new login request, which together with the code is
+  /// used with [finishPasswordlessLogin]. The response and the errors do not
+  /// show whether the email address has an account: if sign-up is disabled, an
+  /// unknown email address gets a request that no code was sent for, and that
+  /// can never be completed successfully.
+  ///
+  /// A code is only replaced once the resend cooldown has passed. Within it,
+  /// the call fails with the `resendCooldown` reason, and the ID of the pending
+  /// request is not returned again, so clients must keep the ID they received
+  /// from the successful call and keep using it until it is replaced.
+  ///
+  /// Throws an [EmailPasswordlessLoginException] in case of errors, with
+  /// reason:
+  /// - [EmailPasswordlessLoginExceptionReason.invalidEmail] if [email] is not
+  ///   a valid email address.
+  /// - [EmailPasswordlessLoginExceptionReason.resendCooldown] if a code for the
+  ///   email address was requested less than the resend cooldown ago, also by
+  ///   a concurrent call.
+  /// - [EmailPasswordlessLoginExceptionReason.rateLimited] if too many codes
+  ///   have been requested for the email address.
+  /// - [EmailPasswordlessLoginExceptionReason.unknown] if the passwordless
+  ///   login is disabled.
+  /// {@endtemplate}
+  Future<UuidValue> startPasswordlessLogin(
+    final Session session, {
+    required final String email,
+  }) async {
+    return emailIdp.startPasswordlessLogin(session, email: email);
+  }
+
+  /// {@template email_idp_base_endpoint.finish_passwordless_login}
+  /// Finishes a passwordless login by verifying the code of the login request,
+  /// and returns a session for the user. A user is created if the email
+  /// address is new.
+  ///
+  /// A code can be used once and is invalidated by too many wrong attempts.
+  ///
+  /// Throws an [EmailPasswordlessLoginException] in case of errors, with
+  /// reason:
+  /// - [EmailPasswordlessLoginExceptionReason.expired] if the login request
+  ///   has already expired.
+  /// - [EmailPasswordlessLoginExceptionReason.tooManyAttempts] if too many
+  ///   attempts have been made to verify the code.
+  /// - [EmailPasswordlessLoginExceptionReason.invalid] if no request exists
+  ///   for the given [loginRequestId], it has already been used, or
+  ///   [verificationCode] is invalid.
+  /// - [EmailPasswordlessLoginExceptionReason.unknown] if the passwordless
+  ///   login is disabled.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  /// {@endtemplate}
+  Future<AuthSuccess> finishPasswordlessLogin(
+    final Session session, {
+    required final UuidValue loginRequestId,
+    required final String verificationCode,
+  }) async {
+    return emailIdp.finishPasswordlessLogin(
+      session,
+      loginRequestId: loginRequestId,
+      verificationCode: verificationCode,
     );
   }
 

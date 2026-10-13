@@ -7,8 +7,10 @@ import '../../../utils/get_passwords_extension.dart';
 import '../util/default_code_generators.dart';
 import '../util/registration_password_policy.dart';
 import 'email_idp.dart';
+import 'email_idp_passwordless_login_config.dart';
 
 export '../util/default_code_generators.dart';
+export 'email_idp_passwordless_login_config.dart';
 
 /// Function to be called after a password reset is successfully completed.
 typedef OnPasswordResetCompletedFunction =
@@ -58,24 +60,15 @@ typedef AfterAccountCreatedFunction =
       required Transaction? transaction,
     });
 
-/// {@template email_idp_config}
-/// Configuration options for the email account module.
+/// {@template email_password_login_config}
+/// Configuration of the password login of the email identity provider.
+///
+/// This covers the registration with a password, the login with a password and
+/// the password reset. Set it as `EmailIdpConfig.password` (the default) to
+/// enable them, or set `EmailIdpConfig.password` to `null` to only allow the
+/// passwordless login.
 /// {@endtemplate}
-class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
-  /// The pepper used for hashing passwords and verification codes.
-  ///
-  /// To rotate peppers without invalidating existing passwords, use [fallbackSecretHashPeppers].
-  final String secretHashPepper;
-
-  /// Optional fallback peppers for validating passwords and verification codes created with previous peppers.
-  ///
-  /// When rotating peppers, add old peppers to this list to allow existing passwords
-  /// to continue working. The system will try [secretHashPepper] first, then
-  /// each fallback pepper in order until a match is found.
-  ///
-  /// This is optional and defaults to an empty list.
-  final List<String> fallbackSecretHashPeppers;
-
+class EmailPasswordLoginConfig {
   /// The time for the registration email verification code to be valid.
   ///
   ///  Default is 15 minutes.
@@ -128,12 +121,6 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
   /// during migration scenarios.
   final OnPasswordResetCompletedFunction? onPasswordResetCompleted;
 
-  /// Callback to be invoked after a new email account has been created.
-  ///
-  /// This can be used to perform additional setup tasks, such as creating a
-  /// user profile or sending a welcome email.
-  final AfterAccountCreatedFunction? onAfterAccountCreated;
-
   /// Function to check passwords against a policy during registration and password change.
   ///
   /// If the rules are changed after a password has been set, subsequent logins with
@@ -147,16 +134,8 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
   /// Defaults to allowing at most 3 attempts in the last hour.
   final RateLimit maxPasswordResetAttempts;
 
-  /// The length in bytes of the random salt generated for each hashed secret.
-  ///
-  /// Must be at least 8, the shortest salt Argon2 accepts.
-  /// Defaults to 16.
-  final int secretHashSaltLength;
-
-  /// Create a new email account configuration.
-  const EmailIdpConfig({
-    required this.secretHashPepper,
-    this.fallbackSecretHashPeppers = const [],
+  /// Creates a new password login configuration.
+  const EmailPasswordLoginConfig({
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),
     this.registrationVerificationCodeAllowedAttempts = 3,
     this.registrationVerificationCodeGenerator =
@@ -178,9 +157,351 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
       timeframe: Duration(hours: 1),
       maxAttempts: 3,
     ),
+  });
+
+  /// Returns a copy of this configuration with the given fields replaced.
+  EmailPasswordLoginConfig copyWith({
+    final Duration? registrationVerificationCodeLifetime,
+    final int? registrationVerificationCodeAllowedAttempts,
+    final String Function()? registrationVerificationCodeGenerator,
+    final Duration? passwordResetVerificationCodeLifetime,
+    final int? passwordResetVerificationCodeAllowedAttempts,
+    final String Function()? passwordResetVerificationCodeGenerator,
+    final SendRegistrationVerificationCodeFunction?
+    sendRegistrationVerificationCode,
+    final SendPasswordResetVerificationCodeFunction?
+    sendPasswordResetVerificationCode,
+    final OnPasswordResetCompletedFunction? onPasswordResetCompleted,
+    final RateLimit? failedLoginRateLimit,
+    final PasswordValidationFunction? passwordValidationFunction,
+    final RateLimit? maxPasswordResetAttempts,
+  }) {
+    return EmailPasswordLoginConfig(
+      registrationVerificationCodeLifetime:
+          registrationVerificationCodeLifetime ??
+          this.registrationVerificationCodeLifetime,
+      registrationVerificationCodeAllowedAttempts:
+          registrationVerificationCodeAllowedAttempts ??
+          this.registrationVerificationCodeAllowedAttempts,
+      registrationVerificationCodeGenerator:
+          registrationVerificationCodeGenerator ??
+          this.registrationVerificationCodeGenerator,
+      passwordResetVerificationCodeLifetime:
+          passwordResetVerificationCodeLifetime ??
+          this.passwordResetVerificationCodeLifetime,
+      passwordResetVerificationCodeAllowedAttempts:
+          passwordResetVerificationCodeAllowedAttempts ??
+          this.passwordResetVerificationCodeAllowedAttempts,
+      passwordResetVerificationCodeGenerator:
+          passwordResetVerificationCodeGenerator ??
+          this.passwordResetVerificationCodeGenerator,
+      sendRegistrationVerificationCode:
+          sendRegistrationVerificationCode ??
+          this.sendRegistrationVerificationCode,
+      sendPasswordResetVerificationCode:
+          sendPasswordResetVerificationCode ??
+          this.sendPasswordResetVerificationCode,
+      onPasswordResetCompleted:
+          onPasswordResetCompleted ?? this.onPasswordResetCompleted,
+      failedLoginRateLimit: failedLoginRateLimit ?? this.failedLoginRateLimit,
+      passwordValidationFunction:
+          passwordValidationFunction ?? this.passwordValidationFunction,
+      maxPasswordResetAttempts:
+          maxPasswordResetAttempts ?? this.maxPasswordResetAttempts,
+    );
+  }
+}
+
+/// {@template email_idp_config}
+/// Configuration options for the email identity provider.
+///
+/// The email identity provider supports two ways to log in, which can be
+/// enabled independently:
+/// - [password]: registration, login and password reset with a password.
+///   Enabled by default.
+/// - [passwordless]: login with a verification code sent to the email address.
+///   Disabled by default.
+///
+/// At least one of them must be enabled. Both use the same email accounts, so
+/// with both enabled, a user can log in either way.
+/// {@endtemplate}
+class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
+  /// The pepper used for hashing passwords and verification codes.
+  ///
+  /// To rotate peppers without invalidating existing passwords, use [fallbackSecretHashPeppers].
+  final String secretHashPepper;
+
+  /// Optional fallback peppers for validating passwords and verification codes created with previous peppers.
+  ///
+  /// When rotating peppers, add old peppers to this list to allow existing passwords
+  /// to continue working. The system will try [secretHashPepper] first, then
+  /// each fallback pepper in order until a match is found.
+  ///
+  /// This is optional and defaults to an empty list.
+  final List<String> fallbackSecretHashPeppers;
+
+  /// The length in bytes of the random salt generated for each hashed secret.
+  ///
+  /// Must be at least 8, the shortest salt Argon2 accepts.
+  /// Defaults to 16.
+  final int secretHashSaltLength;
+
+  /// Callback to be invoked after a new email account has been created.
+  ///
+  /// It is called for accounts created by a registration with a password and
+  /// for accounts created by a first passwordless login.
+  ///
+  /// This can be used to perform additional setup tasks, such as creating a
+  /// user profile or sending a welcome email.
+  final AfterAccountCreatedFunction? onAfterAccountCreated;
+
+  /// {@macro email_password_login_config}
+  ///
+  /// Defaults to a [EmailPasswordLoginConfig] with default values. Set to
+  /// `null` to disable the password login.
+  final EmailPasswordLoginConfig? password;
+
+  /// {@macro email_passwordless_login_config}
+  ///
+  /// Defaults to `null`, which disables the passwordless login.
+  final EmailPasswordlessLoginConfig? passwordless;
+
+  final Duration? _registrationVerificationCodeLifetime;
+  final String Function()? _registrationVerificationCodeGenerator;
+  final int? _registrationVerificationCodeAllowedAttempts;
+  final Duration? _passwordResetVerificationCodeLifetime;
+  final int? _passwordResetVerificationCodeAllowedAttempts;
+  final String Function()? _passwordResetVerificationCodeGenerator;
+  final RateLimit? _failedLoginRateLimit;
+  final SendRegistrationVerificationCodeFunction?
+  _sendRegistrationVerificationCode;
+  final SendPasswordResetVerificationCodeFunction?
+  _sendPasswordResetVerificationCode;
+  final OnPasswordResetCompletedFunction? _onPasswordResetCompleted;
+  final PasswordValidationFunction? _passwordValidationFunction;
+  final RateLimit? _maxPasswordResetAttempts;
+
+  /// Create a new email identity provider configuration.
+  ///
+  /// The password login settings that are passed directly to this constructor
+  /// are deprecated. They override the matching settings of [password], and
+  /// require [password] to be set.
+  const EmailIdpConfig({
+    required this.secretHashPepper,
+    this.fallbackSecretHashPeppers = const [],
     this.secretHashSaltLength = 16,
     this.onAfterAccountCreated,
-  });
+    this.password = const EmailPasswordLoginConfig(),
+    this.passwordless,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final Duration? registrationVerificationCodeLifetime,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final int? registrationVerificationCodeAllowedAttempts,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final String Function()? registrationVerificationCodeGenerator,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final Duration? passwordResetVerificationCodeLifetime,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final int? passwordResetVerificationCodeAllowedAttempts,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final String Function()? passwordResetVerificationCodeGenerator,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final SendRegistrationVerificationCodeFunction?
+    sendRegistrationVerificationCode,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final SendPasswordResetVerificationCodeFunction?
+    sendPasswordResetVerificationCode,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final OnPasswordResetCompletedFunction? onPasswordResetCompleted,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final RateLimit? failedLoginRateLimit,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final PasswordValidationFunction? passwordValidationFunction,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    final RateLimit? maxPasswordResetAttempts,
+  }) : _registrationVerificationCodeLifetime =
+           registrationVerificationCodeLifetime,
+       _registrationVerificationCodeGenerator =
+           registrationVerificationCodeGenerator,
+       _registrationVerificationCodeAllowedAttempts =
+           registrationVerificationCodeAllowedAttempts,
+       _passwordResetVerificationCodeLifetime =
+           passwordResetVerificationCodeLifetime,
+       _passwordResetVerificationCodeAllowedAttempts =
+           passwordResetVerificationCodeAllowedAttempts,
+       _passwordResetVerificationCodeGenerator =
+           passwordResetVerificationCodeGenerator,
+       _failedLoginRateLimit = failedLoginRateLimit,
+       _sendRegistrationVerificationCode = sendRegistrationVerificationCode,
+       _sendPasswordResetVerificationCode = sendPasswordResetVerificationCode,
+       _onPasswordResetCompleted = onPasswordResetCompleted,
+       _passwordValidationFunction = passwordValidationFunction,
+       _maxPasswordResetAttempts = maxPasswordResetAttempts;
+
+  /// The effective value of [EmailPasswordLoginConfig.registrationVerificationCodeLifetime], or `null` if the
+  /// password login is disabled.
+  @Deprecated(
+    'Use effectivePassword?.registrationVerificationCodeLifetime instead.',
+  )
+  Duration? get registrationVerificationCodeLifetime =>
+      effectivePassword?.registrationVerificationCodeLifetime;
+
+  /// The effective value of [EmailPasswordLoginConfig.registrationVerificationCodeGenerator], or `null` if the
+  /// password login is disabled.
+  @Deprecated(
+    'Use effectivePassword?.registrationVerificationCodeGenerator instead.',
+  )
+  String Function()? get registrationVerificationCodeGenerator =>
+      effectivePassword?.registrationVerificationCodeGenerator;
+
+  /// The effective value of [EmailPasswordLoginConfig.registrationVerificationCodeAllowedAttempts], or `null` if the
+  /// password login is disabled.
+  @Deprecated(
+    'Use effectivePassword?.registrationVerificationCodeAllowedAttempts instead.',
+  )
+  int? get registrationVerificationCodeAllowedAttempts =>
+      effectivePassword?.registrationVerificationCodeAllowedAttempts;
+
+  /// The effective value of [EmailPasswordLoginConfig.passwordResetVerificationCodeLifetime], or `null` if the
+  /// password login is disabled.
+  @Deprecated(
+    'Use effectivePassword?.passwordResetVerificationCodeLifetime instead.',
+  )
+  Duration? get passwordResetVerificationCodeLifetime =>
+      effectivePassword?.passwordResetVerificationCodeLifetime;
+
+  /// The effective value of [EmailPasswordLoginConfig.passwordResetVerificationCodeAllowedAttempts], or `null` if the
+  /// password login is disabled.
+  @Deprecated(
+    'Use effectivePassword?.passwordResetVerificationCodeAllowedAttempts instead.',
+  )
+  int? get passwordResetVerificationCodeAllowedAttempts =>
+      effectivePassword?.passwordResetVerificationCodeAllowedAttempts;
+
+  /// The effective value of [EmailPasswordLoginConfig.passwordResetVerificationCodeGenerator], or `null` if the
+  /// password login is disabled.
+  @Deprecated(
+    'Use effectivePassword?.passwordResetVerificationCodeGenerator instead.',
+  )
+  String Function()? get passwordResetVerificationCodeGenerator =>
+      effectivePassword?.passwordResetVerificationCodeGenerator;
+
+  /// The effective value of [EmailPasswordLoginConfig.failedLoginRateLimit], or `null` if the
+  /// password login is disabled.
+  @Deprecated('Use effectivePassword?.failedLoginRateLimit instead.')
+  RateLimit? get failedLoginRateLimit =>
+      effectivePassword?.failedLoginRateLimit;
+
+  /// The effective value of [EmailPasswordLoginConfig.sendRegistrationVerificationCode], or `null` if the
+  /// password login is disabled.
+  @Deprecated(
+    'Use effectivePassword?.sendRegistrationVerificationCode instead.',
+  )
+  SendRegistrationVerificationCodeFunction?
+  get sendRegistrationVerificationCode =>
+      effectivePassword?.sendRegistrationVerificationCode;
+
+  /// The effective value of [EmailPasswordLoginConfig.sendPasswordResetVerificationCode], or `null` if the
+  /// password login is disabled.
+  @Deprecated(
+    'Use effectivePassword?.sendPasswordResetVerificationCode instead.',
+  )
+  SendPasswordResetVerificationCodeFunction?
+  get sendPasswordResetVerificationCode =>
+      effectivePassword?.sendPasswordResetVerificationCode;
+
+  /// The effective value of [EmailPasswordLoginConfig.onPasswordResetCompleted], or `null` if the
+  /// password login is disabled.
+  @Deprecated('Use effectivePassword?.onPasswordResetCompleted instead.')
+  OnPasswordResetCompletedFunction? get onPasswordResetCompleted =>
+      effectivePassword?.onPasswordResetCompleted;
+
+  /// The effective value of [EmailPasswordLoginConfig.passwordValidationFunction], or `null` if the
+  /// password login is disabled.
+  @Deprecated('Use effectivePassword?.passwordValidationFunction instead.')
+  PasswordValidationFunction? get passwordValidationFunction =>
+      effectivePassword?.passwordValidationFunction;
+
+  /// The effective value of [EmailPasswordLoginConfig.maxPasswordResetAttempts], or `null` if the
+  /// password login is disabled.
+  @Deprecated('Use effectivePassword?.maxPasswordResetAttempts instead.')
+  RateLimit? get maxPasswordResetAttempts =>
+      effectivePassword?.maxPasswordResetAttempts;
+
+  bool get _hasDeprecatedPasswordSettings =>
+      _registrationVerificationCodeLifetime != null ||
+      _registrationVerificationCodeAllowedAttempts != null ||
+      _registrationVerificationCodeGenerator != null ||
+      _passwordResetVerificationCodeLifetime != null ||
+      _passwordResetVerificationCodeAllowedAttempts != null ||
+      _passwordResetVerificationCodeGenerator != null ||
+      _sendRegistrationVerificationCode != null ||
+      _sendPasswordResetVerificationCode != null ||
+      _onPasswordResetCompleted != null ||
+      _failedLoginRateLimit != null ||
+      _passwordValidationFunction != null ||
+      _maxPasswordResetAttempts != null;
+
+  /// The password login configuration in effect: [password] with the
+  /// deprecated settings of this class applied on top.
+  ///
+  /// `null` if the password login is disabled.
+  EmailPasswordLoginConfig? get effectivePassword {
+    return password?.copyWith(
+      registrationVerificationCodeLifetime:
+          _registrationVerificationCodeLifetime,
+      registrationVerificationCodeAllowedAttempts:
+          _registrationVerificationCodeAllowedAttempts,
+      registrationVerificationCodeGenerator:
+          _registrationVerificationCodeGenerator,
+      passwordResetVerificationCodeLifetime:
+          _passwordResetVerificationCodeLifetime,
+      passwordResetVerificationCodeAllowedAttempts:
+          _passwordResetVerificationCodeAllowedAttempts,
+      passwordResetVerificationCodeGenerator:
+          _passwordResetVerificationCodeGenerator,
+      sendRegistrationVerificationCode: _sendRegistrationVerificationCode,
+      sendPasswordResetVerificationCode: _sendPasswordResetVerificationCode,
+      onPasswordResetCompleted: _onPasswordResetCompleted,
+      failedLoginRateLimit: _failedLoginRateLimit,
+      passwordValidationFunction: _passwordValidationFunction,
+      maxPasswordResetAttempts: _maxPasswordResetAttempts,
+    );
+  }
+
+  /// Checks the values of this configuration.
+  ///
+  /// Throws an [ArgumentError] if
+  /// - neither [password] nor [passwordless] is set,
+  /// - deprecated password settings are passed while [password] is `null`,
+  /// - [secretHashSaltLength] is less than 8, or
+  /// - [passwordless] is invalid, see [EmailPasswordlessLoginConfig.validate].
+  ///
+  /// This is called when the identity provider is created.
+  void validate() {
+    if (password == null && passwordless == null) {
+      throw ArgumentError(
+        'At least one of `password` and `passwordless` must be set.',
+      );
+    }
+
+    if (password == null && _hasDeprecatedPasswordSettings) {
+      throw ArgumentError(
+        'Password login settings were passed, but the password login is '
+        'disabled (`password` is null).',
+      );
+    }
+
+    if (secretHashSaltLength < 8) {
+      throw ArgumentError.value(
+        secretHashSaltLength,
+        'secretHashSaltLength',
+        'Must be at least 8.',
+      );
+    }
+
+    passwordless?.validate();
+  }
 
   @override
   EmailIdp build({
@@ -204,20 +525,34 @@ class EmailIdpConfigFromPasswords extends EmailIdpConfig {
   /// Creates a new [EmailIdpConfigFromPasswords] instance.
   EmailIdpConfigFromPasswords({
     super.fallbackSecretHashPeppers,
-    super.registrationVerificationCodeLifetime,
-    super.registrationVerificationCodeAllowedAttempts,
-    super.registrationVerificationCodeGenerator,
-    super.passwordResetVerificationCodeLifetime,
-    super.passwordResetVerificationCodeAllowedAttempts,
-    super.passwordResetVerificationCodeGenerator,
-    super.sendRegistrationVerificationCode,
-    super.sendPasswordResetVerificationCode,
-    super.onPasswordResetCompleted,
-    super.failedLoginRateLimit,
-    super.passwordValidationFunction,
-    super.maxPasswordResetAttempts,
     super.secretHashSaltLength,
     super.onAfterAccountCreated,
+    super.password,
+    super.passwordless,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.registrationVerificationCodeLifetime,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.registrationVerificationCodeAllowedAttempts,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.registrationVerificationCodeGenerator,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.passwordResetVerificationCodeLifetime,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.passwordResetVerificationCodeAllowedAttempts,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.passwordResetVerificationCodeGenerator,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.sendRegistrationVerificationCode,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.sendPasswordResetVerificationCode,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.onPasswordResetCompleted,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.failedLoginRateLimit,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.passwordValidationFunction,
+    @Deprecated('Use password: EmailPasswordLoginConfig(...) instead.')
+    super.maxPasswordResetAttempts,
   }) : super(
          secretHashPepper: Serverpod.instance.getPasswordOrThrow(
            'emailSecretHashPepper',

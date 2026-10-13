@@ -6,6 +6,7 @@ import '../../../../../core.dart';
 import '../../util/email_string_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
+import 'email_idp_account_utils.dart';
 
 /// {@template email_idp_account_creation_util}
 /// This class contains utility functions for the email identity provider
@@ -276,13 +277,11 @@ class EmailIdpAccountCreationUtil {
       null => '',
     };
 
-    final account = await EmailAccount.db.insertRow(
+    final account = await EmailIdpAccountUtils().createAccount(
       session,
-      EmailAccount(
-        authUserId: authUserId,
-        email: email.normalizedEmail,
-        passwordHash: passwordHash,
-      ),
+      authUserId: authUserId,
+      email: email,
+      passwordHash: passwordHash,
       transaction: transaction,
     );
 
@@ -502,15 +501,21 @@ class EmailIdpAccountCreationUtilsConfig {
   factory EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(
     final EmailIdpConfig config,
   ) {
+    final password = config.effectivePassword;
+    if (password == null) {
+      throw StateError('The password login of the email IdP is disabled.');
+    }
+
     return EmailIdpAccountCreationUtilsConfig(
-      passwordValidationFunction: config.passwordValidationFunction,
+      passwordValidationFunction: password.passwordValidationFunction,
       registrationVerificationCodeGenerator:
-          config.registrationVerificationCodeGenerator,
+          password.registrationVerificationCodeGenerator,
       registrationVerificationCodeLifetime:
-          config.registrationVerificationCodeLifetime,
+          password.registrationVerificationCodeLifetime,
       registrationVerificationCodeAllowedAttempts:
-          config.registrationVerificationCodeAllowedAttempts,
-      sendRegistrationVerificationCode: config.sendRegistrationVerificationCode,
+          password.registrationVerificationCodeAllowedAttempts,
+      sendRegistrationVerificationCode:
+          password.sendRegistrationVerificationCode,
       onAfterAccountCreated: config.onAfterAccountCreated,
     );
   }

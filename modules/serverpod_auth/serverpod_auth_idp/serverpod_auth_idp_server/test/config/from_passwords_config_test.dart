@@ -13,6 +13,14 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
+void _noopSender(
+  final Session session, {
+  required final String email,
+  required final UuidValue loginRequestId,
+  required final String verificationCode,
+  required final Transaction? transaction,
+}) {}
+
 void main() {
   final portZeroConfig = ServerConfig(
     port: 0,
@@ -181,6 +189,23 @@ test:
         () {
           final config = EmailIdpConfigFromPasswords();
           expect(config, isA<EmailIdpConfig>());
+        },
+      );
+
+      test(
+        'when constructing EmailIdpConfigFromPasswords with only the passwordless login then succeeds.',
+        () {
+          final config = EmailIdpConfigFromPasswords(
+            password: null,
+            passwordless: const EmailPasswordlessLoginConfig(
+              sendSignUpVerificationCode: _noopSender,
+              sendSignInVerificationCode: _noopSender,
+            ),
+          );
+
+          expect(config.password, isNull);
+          expect(config.passwordless, isNotNull);
+          expect(config.validate, returnsNormally);
         },
       );
     },

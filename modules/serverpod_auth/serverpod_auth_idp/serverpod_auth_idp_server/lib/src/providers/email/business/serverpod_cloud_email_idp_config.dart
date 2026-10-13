@@ -22,6 +22,13 @@ export 'util/serverpod_cloud_email_client.dart';
 /// or timeout) is logged and never propagated, so it neither breaks sign-up nor
 /// reveals whether an account exists during password reset.
 ///
+/// The password login is enabled by default, and the passwordless login can be
+/// enabled with `enablePasswordlessLogin`. The Serverpod Cloud email service
+/// does not have an email type for signing in with a code yet, so both kinds of
+/// passwordless codes are sent as [ServerpodCloudEmailType.signup] emails by
+/// default. Use `passwordlessSignUpEmailType` and `passwordlessSignInEmailType`
+/// to change that once it has.
+///
 /// If you want to send emails through a custom provider instead, use
 /// [EmailIdpConfigFromPasswords].
 ///
@@ -62,6 +69,38 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
     /// This can be used to perform additional setup tasks, such as creating a
     /// user profile or sending a welcome email.
     final AfterAccountCreatedFunction? onAfterAccountCreated,
+
+    /// Whether users can register and log in with a password. Defaults to
+    /// `true`.
+    final bool enablePasswordLogin = true,
+
+    /// Whether users can log in with a code sent to their email address.
+    /// Defaults to `false`.
+    final bool enablePasswordlessLogin = false,
+
+    /// The Serverpod Cloud email type for passwordless codes sent to email
+    /// addresses without an account.
+    final ServerpodCloudEmailType passwordlessSignUpEmailType =
+        ServerpodCloudEmailType.signup,
+
+    /// The Serverpod Cloud email type for passwordless codes sent to email
+    /// addresses with an account.
+    final ServerpodCloudEmailType passwordlessSignInEmailType =
+        ServerpodCloudEmailType.signup,
+
+    /// Whether an unknown email address is signed up on its first successful
+    /// passwordless login. Defaults to `true`.
+    final bool allowPasswordlessSignUp = true,
+
+    /// Callback to be invoked before a new account is created by a
+    /// passwordless login.
+    ///
+    /// This can be used to enforce a sign-up policy.
+    final BeforePasswordlessAccountCreatedFunction? onBeforeAccountCreated,
+
+    /// Callback to be invoked after each successful passwordless login, before
+    /// the token is issued.
+    final AfterPasswordlessLoginFunction? onAfterPasswordlessLogin,
   }) {
     final resolvedRunMode = runMode ?? Serverpod.instance.runMode;
     final isDevelopment =
@@ -75,32 +114,58 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
         : (emailClient ?? ServerpodCloudEmailClient());
 
     return ServerpodCloudEmailIdpConfig._(
-      sendRegistrationVerificationCode: _registrationSender(
-        serverpodCloudCodeSender(
-          appDisplayName: appDisplayName,
-          client: client,
-          emailType: ServerpodCloudEmailType.signup,
-          logLabel: 'Registration',
-        ),
-      ),
-      sendPasswordResetVerificationCode: _passwordResetSender(
-        serverpodCloudCodeSender(
-          appDisplayName: appDisplayName,
-          client: client,
-          emailType: ServerpodCloudEmailType.lostpassword,
-          logLabel: 'Password reset',
-        ),
-      ),
-      onPasswordResetCompleted: onPasswordResetCompleted,
+      password: enablePasswordLogin
+          ? EmailPasswordLoginConfig(
+              sendRegistrationVerificationCode: _registrationSender(
+                serverpodCloudCodeSender(
+                  appDisplayName: appDisplayName,
+                  client: client,
+                  emailType: ServerpodCloudEmailType.signup,
+                  logLabel: 'Registration',
+                ),
+              ),
+              sendPasswordResetVerificationCode: _passwordResetSender(
+                serverpodCloudCodeSender(
+                  appDisplayName: appDisplayName,
+                  client: client,
+                  emailType: ServerpodCloudEmailType.lostpassword,
+                  logLabel: 'Password reset',
+                ),
+              ),
+              onPasswordResetCompleted: onPasswordResetCompleted,
+            )
+          : null,
+      passwordless: enablePasswordlessLogin
+          ? EmailPasswordlessLoginConfig(
+              sendSignUpVerificationCode: _passwordlessLoginSender(
+                serverpodCloudCodeSender(
+                  appDisplayName: appDisplayName,
+                  client: client,
+                  emailType: passwordlessSignUpEmailType,
+                  logLabel: 'Sign-up',
+                ),
+              ),
+              sendSignInVerificationCode: _passwordlessLoginSender(
+                serverpodCloudCodeSender(
+                  appDisplayName: appDisplayName,
+                  client: client,
+                  emailType: passwordlessSignInEmailType,
+                  logLabel: 'Sign-in',
+                ),
+              ),
+              allowSignUp: allowPasswordlessSignUp,
+              onBeforeAccountCreated: onBeforeAccountCreated,
+              onAfterLogin: onAfterPasswordlessLogin,
+            )
+          : null,
       onAfterAccountCreated: onAfterAccountCreated,
     );
   }
 
   // Reads `emailSecretHashPepper` via `EmailIdpConfigFromPasswords`.
   ServerpodCloudEmailIdpConfig._({
-    required super.sendRegistrationVerificationCode,
-    required super.sendPasswordResetVerificationCode,
-    super.onPasswordResetCompleted,
+    required super.password,
+    required super.passwordless,
     super.onAfterAccountCreated,
   });
 
@@ -125,6 +190,20 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
       final Session session, {
       required final String email,
       required final UuidValue passwordResetRequestId,
+      required final String verificationCode,
+      required final Transaction? transaction,
+    }) => send(session, email: email, code: verificationCode);
+  }
+
+  /// Adapts a shared [send] callback to the passwordless login callback
+  /// signature.
+  static SendPasswordlessLoginVerificationCodeFunction _passwordlessLoginSender(
+    final SendCodeFunction send,
+  ) {
+    return (
+      final Session session, {
+      required final String email,
+      required final UuidValue loginRequestId,
       required final String verificationCode,
       required final Transaction? transaction,
     }) => send(session, email: email, code: verificationCode);

@@ -472,18 +472,23 @@ class EmailIdpPasswordResetUtilsConfig {
   factory EmailIdpPasswordResetUtilsConfig.fromEmailIdpConfig(
     final EmailIdpConfig config,
   ) {
+    final password = config.effectivePassword;
+    if (password == null) {
+      throw StateError('The password login of the email IdP is disabled.');
+    }
+
     return EmailIdpPasswordResetUtilsConfig(
-      passwordValidationFunction: config.passwordValidationFunction,
+      passwordValidationFunction: password.passwordValidationFunction,
       passwordResetVerificationCodeAllowedAttempts:
-          config.passwordResetVerificationCodeAllowedAttempts,
+          password.passwordResetVerificationCodeAllowedAttempts,
       passwordResetVerificationCodeLifetime:
-          config.passwordResetVerificationCodeLifetime,
-      onPasswordResetCompleted: config.onPasswordResetCompleted,
-      maxPasswordResetAttempts: config.maxPasswordResetAttempts,
+          password.passwordResetVerificationCodeLifetime,
+      onPasswordResetCompleted: password.onPasswordResetCompleted,
+      maxPasswordResetAttempts: password.maxPasswordResetAttempts,
       passwordResetVerificationCodeGenerator:
-          config.passwordResetVerificationCodeGenerator,
+          password.passwordResetVerificationCodeGenerator,
       sendPasswordResetVerificationCode:
-          config.sendPasswordResetVerificationCode,
+          password.sendPasswordResetVerificationCode,
     );
   }
 }

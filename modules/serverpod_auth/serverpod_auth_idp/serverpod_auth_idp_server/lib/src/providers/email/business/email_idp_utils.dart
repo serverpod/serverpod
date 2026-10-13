@@ -7,6 +7,7 @@ import 'utils/email_idp_account_creation_util.dart';
 import 'utils/email_idp_account_utils.dart';
 import 'utils/email_idp_authentication_util.dart';
 import 'utils/email_idp_password_reset_util.dart';
+import 'utils/email_idp_passwordless_login_util.dart';
 
 /// Email account management functions.
 ///
@@ -18,6 +19,11 @@ import 'utils/email_idp_password_reset_util.dart';
 /// - [authentication] - Utilities for authenticating users
 /// - [accountCreation] - Utilities for creating and verifying email accounts
 /// - [passwordReset] - Utilities for resetting passwords
+/// - [passwordlessLogin] - Utilities for logging in with a code sent by email
+///
+/// The utilities of a login method that is disabled in the [EmailIdpConfig]
+/// throw a [StateError] when accessed, see [passwordLoginEnabled] and
+/// [passwordlessLoginEnabled].
 ///
 /// For most standard use cases, the methods exposed by [EmailIdp] and
 /// [EmailIdpAdmin] should be sufficient.
@@ -27,14 +33,39 @@ class EmailIdpUtils {
   /// Follows OWASP recommended parameters for storing passwords.
   final Argon2HashUtil hashUtil;
 
+  EmailIdpAccountCreationUtil? _accountCreation;
+  EmailIdpPasswordResetUtil? _passwordReset;
+  EmailIdpAuthenticationUtil? _authentication;
+  EmailIdpPasswordlessLoginUtil? _passwordlessLogin;
+
+  /// Whether the password login is enabled, see [EmailIdpConfig.password].
+  bool get passwordLoginEnabled => _authentication != null;
+
+  /// Whether the passwordless login is enabled, see
+  /// [EmailIdpConfig.passwordless].
+  bool get passwordlessLoginEnabled => _passwordlessLogin != null;
+
   /// {@macro email_idp_account_creation_util}
-  late final EmailIdpAccountCreationUtil accountCreation;
+  EmailIdpAccountCreationUtil get accountCreation =>
+      _accountCreation ?? (throw _passwordLoginDisabled());
 
   /// {@macro email_idp_password_reset_util}
-  late final EmailIdpPasswordResetUtil passwordReset;
+  EmailIdpPasswordResetUtil get passwordReset =>
+      _passwordReset ?? (throw _passwordLoginDisabled());
 
   /// {@macro email_idp_authentication_utils}
-  late final EmailIdpAuthenticationUtil authentication;
+  EmailIdpAuthenticationUtil get authentication =>
+      _authentication ?? (throw _passwordLoginDisabled());
+
+  /// {@macro email_idp_passwordless_login_util}
+  EmailIdpPasswordlessLoginUtil get passwordlessLogin =>
+      _passwordlessLogin ??
+      (throw StateError(
+        'The passwordless login of the email IdP is disabled.',
+      ));
+
+  static StateError _passwordLoginDisabled() =>
+      StateError('The password login of the email IdP is disabled.');
 
   /// {@macro email_idp_account_utils}
   final EmailIdpAccountUtils account;
@@ -67,23 +98,32 @@ class EmailIdpUtils {
       fallbackHashPeppers: config.fallbackSecretHashPeppers,
       hashSaltLength: config.secretHashSaltLength,
     );
-    accountCreation = EmailIdpAccountCreationUtil(
-      config: EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(config),
-      passwordHashUtils: hashUtil,
-      authUsers: authUsers,
-      verificationCodeHash: verificationCodeHash,
-      completionTokenHash: completionTokenHash,
-    );
-    passwordReset = EmailIdpPasswordResetUtil(
-      config: EmailIdpPasswordResetUtilsConfig.fromEmailIdpConfig(config),
-      passwordHashUtils: hashUtil,
-      verificationCodeHash: verificationCodeHash,
-      completionTokenHash: completionTokenHash,
-    );
-    authentication = EmailIdpAuthenticationUtil(
-      hashUtil: hashUtil,
-      failedLoginRateLimit: config.failedLoginRateLimit,
-    );
+    final password = config.effectivePassword;
+    if (password != null) {
+      _accountCreation = EmailIdpAccountCreationUtil(
+        config: EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(config),
+        passwordHashUtils: hashUtil,
+        authUsers: authUsers,
+        verificationCodeHash: verificationCodeHash,
+        completionTokenHash: completionTokenHash,
+      );
+      _passwordReset = EmailIdpPasswordResetUtil(
+        config: EmailIdpPasswordResetUtilsConfig.fromEmailIdpConfig(config),
+        passwordHashUtils: hashUtil,
+        verificationCodeHash: verificationCodeHash,
+        completionTokenHash: completionTokenHash,
+      );
+      _authentication = EmailIdpAuthenticationUtil(
+        hashUtil: hashUtil,
+        failedLoginRateLimit: password.failedLoginRateLimit,
+      );
+    }
+    if (config.passwordless != null) {
+      _passwordlessLogin = EmailIdpPasswordlessLoginUtil(
+        config: EmailIdpPasswordlessLoginUtilConfig.fromEmailIdpConfig(config),
+        verificationCodeHash: verificationCodeHash,
+      );
+    }
   }
 
   /// Returns the possible [EmailAccount] associated with a session.
@@ -114,6 +154,8 @@ class EmailIdpUtils {
           throw EmailAccountRequestException(reason: e.reason);
         case EmailPasswordResetServerException():
           throw EmailAccountPasswordResetException(reason: e.reason);
+        case EmailPasswordlessLoginServerException():
+          throw EmailPasswordlessLoginException(reason: e.reason);
       }
     }
   }
@@ -169,6 +211,29 @@ extension on EmailPasswordResetServerException {
         return EmailAccountPasswordResetExceptionReason.policyViolation;
       case EmailPasswordResetRequestExpiredException():
         return EmailAccountPasswordResetExceptionReason.expired;
+    }
+  }
+}
+
+extension on EmailPasswordlessLoginServerException {
+  EmailPasswordlessLoginExceptionReason get reason {
+    switch (this) {
+      // It is important that these are grouped together, so that we don't leak
+      // information about the existence of the request or the account.
+      case EmailPasswordlessLoginRequestNotFoundException():
+      case EmailPasswordlessInvalidVerificationCodeException():
+      case EmailPasswordlessSignUpNotAllowedException():
+        return EmailPasswordlessLoginExceptionReason.invalid;
+      case EmailPasswordlessInvalidEmailException():
+        return EmailPasswordlessLoginExceptionReason.invalidEmail;
+      case EmailPasswordlessTooManyVerificationAttemptsException():
+        return EmailPasswordlessLoginExceptionReason.tooManyAttempts;
+      case EmailPasswordlessLoginRequestRateLimitedException():
+        return EmailPasswordlessLoginExceptionReason.rateLimited;
+      case EmailPasswordlessResendCooldownException():
+        return EmailPasswordlessLoginExceptionReason.resendCooldown;
+      case EmailPasswordlessLoginRequestExpiredException():
+        return EmailPasswordlessLoginExceptionReason.expired;
     }
   }
 }
