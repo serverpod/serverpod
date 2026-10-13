@@ -11,10 +11,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
-import 'file:///C:/Users/GUESTMMU/AppData/Local/Temp/opencode/serverpod-repo/tests/serverpod_test_nonvector/serverpod_test_nonvector_server/lib/src/generated/greeting.dart'
-    as _iip1prnc;
 import 'package:http/http.dart' as _i85jenna;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_nonvector_client/src/protocol/greeting.dart'
+    as _ih3h3m99;
 import 'protocol.dart' as _il2as5qe;
 
 /// {@category Endpoint}
@@ -24,8 +24,8 @@ class EndpointGreeting extends _isc.EndpointRef {
   @override
   String get name => 'greeting';
 
-  _ida.Future<_iip1prnc.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_iip1prnc.Greeting>(
+  _ida.Future<_ih3h3m99.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_ih3h3m99.Greeting>(
         'greeting',
         'hello',
         {'name': name},

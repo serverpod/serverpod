@@ -13,10 +13,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'dart:io' as _idi;
-import 'file:///C:/Users/GUESTMMU/AppData/Local/Temp/opencode/serverpod-repo/tests/serverpod_test_nonvector/serverpod_test_nonvector_server/lib/src/generated/greeting.dart'
-    as _iip1prnc;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test/serverpod_test.dart' as _ist;
+import 'package:serverpod_test_nonvector_server/src/generated/greeting.dart'
+    as _ikwrs8la;
 import 'package:serverpod_test_nonvector_server/src/generated/protocol.dart';
 import 'package:serverpod_test_nonvector_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -177,7 +177,7 @@ class _GreetingEndpoint {
 
   final _is.SerializationManager _serializationManager;
 
-  _ida.Future<_iip1prnc.Greeting> hello(
+  _ida.Future<_ikwrs8la.Greeting> hello(
     _ist.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
@@ -200,7 +200,7 @@ class _GreetingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _ida.Future<_iip1prnc.Greeting>);
+                as _ida.Future<_ikwrs8la.Greeting>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
