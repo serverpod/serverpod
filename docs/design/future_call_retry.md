@@ -152,7 +152,7 @@ Every failure is reported the way failures are reported today, with the attempt 
 
 - The first run is attempt 0. The first retry is attempt 1. `FutureCallSession.retryAttempt` and `FutureCallRetryContext.retryAttempt` both use this numbering.
 - `maxAttempts` counts retries only. `maxAttempts: 3` means the first run plus at most three retries, so up to four runs. `maxAttempts: 0` means no retries.
-- `maxAttempts` is optional on the fixed, linear, exponential and random policies. Without it, the policy never stops retrying by itself. The call is then retried until it succeeds, is cancelled, or `shouldRetry` returns `false`.
+- `maxAttempts` is required on the fixed, linear, exponential and random policies, so each of them always stops retrying at some point.
 - `CustomDelaysRetryPolicy` retries once for each delay in its list.
 - `ChainedRetryPolicies` retries until its last policy stops retrying. Each policy in the chain counts its own retries from zero when its turn starts.
 
@@ -327,9 +327,3 @@ Which errors can be retried depends on the call's code. How long to wait depends
 ### The policy is chosen when scheduling
 
 Putting the policy on the scheduled call, with no class-level default, means the stored entry fully describes how the call will retry, and a deploy does not change the behaviour of calls already pending.
-
-## Open questions
-
-- **Unlimited retries:** the chained example relies on a `FixedDelayRetryPolicy` without `maxAttempts`, so `maxAttempts` is optional here and leaving it out means the policy never stops by itself. Is that the intended meaning, and should a policy without a limit be allowed outside a chain? A call that can never succeed would then be retried until someone cancels it.
-- **Automatic registration:** is finding policy classes automatically the right direction? So far every extra class has been listed explicitly in `generator.yaml`, and the review feedback leans toward keeping it that way. Requiring explicit listing would need a way to list server-only classes, plus an error for policies that aren't listed.
-- **Custom policies in a chain:** can `ChainedRetryPolicies` hold custom policies as well as built-in ones? Saving a chain means saving each policy in it together with its class. It needs confirming that a chain, which is defined in Serverpod, can load policy classes that are defined in a project.
