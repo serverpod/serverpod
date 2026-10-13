@@ -334,8 +334,7 @@ class FutureCallManager {
       }
       // The future call was deleted after it was scanned, either because
       // it has already been executed or because it was cancelled.
-      if (error is DatabaseForeignKeyViolationException &&
-          error.code == PgErrorCode.foreignKeyViolation) {
+      if (error is DatabaseForeignKeyViolationException) {
         return null;
       }
       _diagnosticsService.submitFrameworkException(error, stackTrace);
