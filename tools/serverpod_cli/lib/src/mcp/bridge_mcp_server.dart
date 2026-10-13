@@ -4,9 +4,11 @@ import 'dart:io';
 
 import 'package:dart_mcp/client.dart';
 import 'package:dart_mcp/server.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/mcp/runner_surface.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
+import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' show connectUnixSocket;
 
 const _notRunningErrorTag = 'not-running';
@@ -27,6 +29,12 @@ base class BridgeMcpServer extends MCPServer
   /// (`<serverDir>/.dart_tool/serverpod/mcp.sock`).
   final String socketPath;
 
+  /// The runner's log file, which lives beside its socket.
+  late final String logPath = p.join(
+    p.dirname(socketPath),
+    serverpodRunnerLogName,
+  );
+
   final MCPClient _client = MCPClient(_bridgeImplementation);
 
   ServerConnection? _connection;
@@ -42,12 +50,14 @@ base class BridgeMcpServer extends MCPServer
             'logs, create and apply database migrations, hot reload or restart '
             "the server and Flutter app, and get the Flutter app's Dart "
             'Tooling Daemon (DTD) URI. If a tool reports the server is not '
-            'running, ask the user to start it with `serverpod start` in the '
-            'project directory.',
+            'running, call `tail_runner_logs` to see whether it is still '
+            'starting or why it stopped, then ask the user to start it with '
+            '`serverpod start` in the project directory.',
       ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
     }
+    registerTool(tailRunnerLogsTool, _tailRunnerLogs);
     for (final resource in runnerStaticResources) {
       addResource(resource, _makeResourceReader(resource.uri));
     }
@@ -60,11 +70,40 @@ base class BridgeMcpServer extends MCPServer
       TextContent(
         text:
             'The server is not running with `serverpod start` for this project. '
-            'Ask the user to run `serverpod start` in the project directory.',
+            'Call `tail_runner_logs` to see whether it is still starting or '
+            'why it stopped, then ask the user to run `serverpod start` in '
+            'the project directory.',
       ),
     ],
     isError: true,
   );
+
+  /// Reads the file directly, since the runner may be starting or gone.
+  Future<CallToolResult> _tailRunnerLogs(CallToolRequest request) async {
+    final file = File(logPath);
+    if (!await file.exists()) {
+      return CallToolResult(
+        content: [
+          TextContent(
+            text:
+                'No runner log at $logPath. A runner spawned by '
+                '`serverpod start` writes one; nothing has been started for '
+                'this project yet.',
+          ),
+        ],
+        isError: true,
+      );
+    }
+    final limit = switch (request.arguments?['limit']) {
+      int v => v.clamp(1, 10000),
+      _ => 200,
+    };
+    final lines = await file.readAsLines();
+    final tail = lines.length <= limit
+        ? lines
+        : lines.sublist(lines.length - limit);
+    return CallToolResult(content: [TextContent(text: jsonEncode(tail))]);
+  }
 
   /// Attempt to (re)connect to the runner socket. Coalesces concurrent
   /// callers so we don't open multiple parallel connections during a burst
