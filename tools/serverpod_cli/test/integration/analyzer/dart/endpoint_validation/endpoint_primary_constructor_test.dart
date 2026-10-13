@@ -14,6 +14,8 @@ var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
   setUpAll(() async {
+    if (skipUnlessPrimaryConstructorsSupported != null) return;
+
     await createTestEnvironment(
       testProjectDirectory,
       sdkConstraint: '^3.13.0',
@@ -61,6 +63,7 @@ class ExampleEndpoint() extends Endpoint {
         );
       });
     },
+    skip: skipUnlessPrimaryConstructorsSupported,
   );
 
   group(
@@ -99,5 +102,6 @@ class ExampleEndpoint({final String greeting = 'hi'}) extends Endpoint {
         );
       });
     },
+    skip: skipUnlessPrimaryConstructorsSupported,
   );
 }

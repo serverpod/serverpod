@@ -18,6 +18,8 @@ late Directory testProjectDirectory;
 void main() {
   setUpAll(() async {
     testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+    if (skipUnlessPrimaryConstructorsSupported != null) return;
+
     await createTestEnvironment(
       testProjectDirectory,
       sdkConstraint: '^3.13.0',
@@ -73,5 +75,6 @@ class ExampleFutureCall() extends FutureCall {
         );
       });
     },
+    skip: skipUnlessPrimaryConstructorsSupported,
   );
 }
