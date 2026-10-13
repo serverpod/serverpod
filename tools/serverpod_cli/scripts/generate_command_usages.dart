@@ -158,10 +158,12 @@ String _generateMcpToolReference() {
   markdown.writeln(
     'The bridge exposes the following tools. Each one acts on the running '
     '`serverpod start` session, so they report an error when no session is '
+    'running. The exception is `${tailRunnerLogsTool.name}`, which the bridge '
+    "answers from the runner's log file whether or not a session is "
     'running.\n',
   );
 
-  final tools = [...runnerStaticTools]
+  final tools = [...runnerStaticTools, tailRunnerLogsTool]
     ..sort((final a, final b) => a.name.compareTo(b.name));
 
   for (final tool in tools) {
