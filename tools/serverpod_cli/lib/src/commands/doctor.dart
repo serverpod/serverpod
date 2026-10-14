@@ -36,6 +36,8 @@ enum DoctorOption<V> implements OptionDefinition<V> {
 class DoctorCommand extends ServerpodCommand<DoctorOption> {
   static const String commandName = 'doctor';
 
+  final Future<List<DoctorCheckResult>> Function() _runChecks;
+
   @override
   final name = commandName;
 
@@ -45,7 +47,12 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
       'compatible, and selected by PATH.\n\n'
       'Exits with an error when any check does not pass.';
 
-  DoctorCommand() : super(options: DoctorOption.values);
+  /// [runChecks] stands in for the real probes in tests.
+  DoctorCommand({
+    final Future<List<DoctorCheckResult>> Function() runChecks =
+        runDoctorChecks,
+  }) : _runChecks = runChecks,
+       super(options: DoctorOption.values);
 
   @override
   Future<void> runWithConfig(
@@ -53,7 +60,7 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
   ) async {
     final asJson = commandConfig.value(DoctorOption.json);
 
-    final results = await runDoctorChecks();
+    final results = await _runChecks();
 
     if (asJson) {
       stdout.writeln(
