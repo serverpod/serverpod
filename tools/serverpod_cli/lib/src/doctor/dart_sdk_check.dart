@@ -8,53 +8,87 @@ import 'package:serverpod_cli/src/doctor/doctor_check.dart';
 import 'package:serverpod_cli/src/doctor/probe.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 
+/// What the Dart SDK behind a launcher reports about itself.
+typedef DartSdkInfo = ({String executable, Version version});
+
 /// Checks that the `dart` on PATH is compatible, and bundled with the
 /// detected Flutter SDK when there is one.
+///
+/// The `dart` on PATH is often a launcher (fvm, puro, asdf) outside any SDK,
+/// so the check asks the SDK it runs where it lives instead of judging the
+/// launcher's location.
 class DartSdkCheck {
   static const id = 'dart';
 
-  static final _versionPattern = RegExp(r'Dart SDK version: (\S+)');
+  /// Prints the running SDK's real executable, then its version.
+  static const _probeScript =
+      'import "dart:io";\n'
+      'void main() {\n'
+      '  print(Platform.resolvedExecutable);\n'
+      '  print(Platform.version);\n'
+      '}\n';
 
   /// [flutterRoot] is the SDK root the Flutter check found, if any.
   static Future<DoctorCheckResult> probe({final String? flutterRoot}) async {
-    final executable = findExecutableOnPath('dart');
-    if (executable == null) {
-      return evaluate(
-        executable: null,
-        output: null,
-        flutterRoot: flutterRoot,
-      );
+    final launcher = findExecutableOnPath('dart');
+    if (launcher == null) {
+      return evaluate(launcher: null, output: null, flutterRoot: flutterRoot);
     }
 
-    final result = await runProbe(executable, ['--version']);
-    return evaluate(
-      executable: _resolve(executable),
-      output: result?.exitCode == 0
-          ? '${result!.stdout}${result.stderr}'
-          : null,
-      flutterRoot: flutterRoot == null ? null : _resolve(flutterRoot),
-    );
+    final tempDir = Directory.systemTemp.createTempSync('serverpod_doctor_');
+    try {
+      final script = File(p.join(tempDir.path, 'probe.dart'))
+        ..writeAsStringSync(_probeScript);
+      // Flutter's launcher may finish setting up its SDK on first run.
+      final result = await runProbe(
+        launcher,
+        [script.path],
+        timeout: const Duration(minutes: 1),
+      );
+      return evaluate(
+        launcher: launcher,
+        output: result?.exitCode == 0 ? result!.stdout as String : null,
+        flutterRoot: flutterRoot == null ? null : _canonicalize(flutterRoot),
+      );
+    } finally {
+      tempDir.deleteSync(recursive: true);
+    }
   }
 
-  /// Follows symbolic links so a `dart` linked into the Flutter SDK counts
-  /// as bundled with it.
-  static String _resolve(final String path) {
+  static String _canonicalize(final String path) {
     try {
-      return File(path).resolveSymbolicLinksSync();
+      return Directory(path).resolveSymbolicLinksSync();
     } on FileSystemException {
       return p.canonicalize(path);
     }
   }
 
+  /// Reads the probe script's output, or `null` if it is not there.
+  ///
+  /// Launchers can print notices first, so only the last two lines count.
+  static DartSdkInfo? parse(final String output) {
+    final lines = output
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .toList();
+    if (lines.length < 2) return null;
+
+    final version = tryParseVersion(lines.last.split(' ').first);
+    if (version == null) return null;
+
+    return (executable: lines[lines.length - 2], version: version);
+  }
+
   static DoctorCheckResult evaluate({
-    required final String? executable,
+    required final String? launcher,
     required final String? output,
     required final String? flutterRoot,
     final String constraint = requiredDartSdk,
   }) {
     const title = 'Dart SDK';
 
-    if (executable == null) {
+    if (launcher == null) {
       return DoctorCheckResult(
         id: id,
         title: title,
@@ -66,48 +100,46 @@ class DartSdkCheck {
       );
     }
 
-    final version = tryParseVersion(
-      output == null ? null : _versionPattern.firstMatch(output)?.group(1),
-    );
-    if (version == null) {
+    final info = output == null ? null : parse(output);
+    if (info == null) {
       return DoctorCheckResult(
         id: id,
         title: title,
         status: DoctorStatus.unknown,
-        path: executable,
-        message: '$executable did not report its version.',
+        path: launcher,
+        message: '$launcher did not report its SDK.',
         remedy: 'Run `dart --version` to see what is wrong with it.',
       );
     }
 
     final required = VersionConstraint.parse(constraint);
-    if (!required.allows(version)) {
+    if (!required.allows(info.version)) {
       return DoctorCheckResult(
         id: id,
         title: title,
         status: DoctorStatus.incompatible,
-        version: version.toString(),
-        path: executable,
+        version: info.version.toString(),
+        path: info.executable,
         message:
-            'Dart $version is installed, but Serverpod $templateVersion '
-            'requires $constraint.',
+            'Dart ${info.version} is installed, but Serverpod '
+            '$templateVersion requires $constraint.',
         remedy: 'Upgrade Flutter, which brings a compatible Dart SDK with it.',
       );
     }
 
-    if (flutterRoot != null && !p.isWithin(flutterRoot, executable)) {
+    if (flutterRoot != null && !p.isWithin(flutterRoot, info.executable)) {
       return DoctorCheckResult(
         id: id,
         title: title,
         status: DoctorStatus.misconfigured,
-        version: version.toString(),
-        path: executable,
+        version: info.version.toString(),
+        path: info.executable,
         message:
-            'PATH selects $executable instead of the Dart SDK bundled with '
-            'Flutter at $flutterRoot.',
+            'PATH selects $launcher, which runs ${info.executable} instead '
+            'of the Dart SDK bundled with Flutter at $flutterRoot.',
         remedy:
             'Put ${p.join(flutterRoot, 'bin')} before '
-            '${p.dirname(executable)} on your PATH.',
+            '${p.dirname(launcher)} on your PATH.',
       );
     }
 
@@ -115,9 +147,9 @@ class DartSdkCheck {
       id: id,
       title: title,
       status: DoctorStatus.ready,
-      version: version.toString(),
-      path: executable,
-      message: 'Dart $version.',
+      version: info.version.toString(),
+      path: info.executable,
+      message: 'Dart ${info.version}.',
     );
   }
 }
