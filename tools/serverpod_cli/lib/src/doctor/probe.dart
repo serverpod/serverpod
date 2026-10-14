@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Runs [executable] with [arguments] and returns its result, or `null` if
-/// it did not exit within [timeout]. The process is killed on timeout so it
-/// cannot outlive the doctor run.
+/// it did not exit and close its output within [timeout]. The process is
+/// killed on timeout so it cannot outlive the doctor run.
 Future<ProcessResult?> runProbe(
   final String executable,
   final List<String> arguments, {
@@ -33,8 +33,14 @@ Future<ProcessResult?> runProbe(
       .join();
 
   try {
-    final exitCode = await process.exitCode.timeout(timeout);
-    return ProcessResult(process.pid, exitCode, await stdout, await stderr);
+    // A wrapper can exit while a child it spawned still holds the output
+    // pipes open, so the output must be under the timeout too.
+    final (exitCode, out, err) = await (
+      process.exitCode,
+      stdout,
+      stderr,
+    ).wait.timeout(timeout);
+    return ProcessResult(process.pid, exitCode, out, err);
   } on TimeoutException {
     log.debug('$executable ${arguments.join(' ')} timed out after $timeout.');
     process.kill();
