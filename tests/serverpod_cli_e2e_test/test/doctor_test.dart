@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
@@ -48,6 +49,49 @@ void main() {
         expect(statusById['dart'], 'missing');
         expect(statusById['serverpod'], 'missing');
         expect(statusById['git'], 'missing');
+      },
+    );
+  });
+
+  group('Given the compiled CLI with a fresh, empty home directory,', () {
+    late Directory home;
+    late ProcessResult result;
+
+    setUp(() async {
+      home = Directory(d.sandbox).createTempSync('home');
+      result = await Process.run(
+        await compiledServerpodCliExe,
+        ['doctor', '--json', '--no-analytics'],
+        workingDirectory: d.sandbox,
+        environment: {
+          for (final entry in Platform.environment.entries)
+            if (!const {
+              'HOME',
+              'USERPROFILE',
+            }.contains(entry.key.toUpperCase()))
+              entry.key: entry.value,
+          'HOME': home.path,
+          'USERPROFILE': home.path,
+          'SERVERPOD_HOME': serverpodHome,
+        },
+        includeParentEnvironment: false,
+      );
+    });
+
+    test(
+      'when running doctor, then stdout is only the JSON report and nothing '
+      'is written to the profile',
+      () {
+        expect(
+          () => jsonDecode(result.stdout as String),
+          returnsNormally,
+          reason: result.stdout as String,
+        );
+        expect(
+          Directory(p.join(home.path, '.serverpod')).existsSync(),
+          isFalse,
+          reason: 'Doctor must not create the run counter or user ID.',
+        );
       },
     );
   });

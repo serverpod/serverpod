@@ -9,7 +9,9 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
+import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -19,12 +21,7 @@ import 'doctor.dart' show DoctorCommand;
 import 'upgrade.dart' show UpgradeCommand;
 import 'version.dart' show VersionCommand;
 
-Future<void> _preCommandEnvironmentChecks(
-  ServerpodCommandRunner runner,
-) async {
-  // Doctor reports on missing SDKs instead of refusing to run without them.
-  if (runner._invokedCommandName == DoctorCommand.commandName) return;
-
+Future<void> _preCommandEnvironmentChecks() async {
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
       'Failed to run serverpod. You need to have dart installed and in your \$PATH',
@@ -40,6 +37,27 @@ Future<void> _preCommandEnvironmentChecks(
   }
 }
 
+/// Pops the web browser on the first and 20th run.
+///
+/// If the user ID is not available, the welcome and check-in pages are
+/// skipped, to avoid invoking the webpage every time the CLI is run if any
+/// configuration prevents the CLI from writing to the user home directory.
+Future<void> _preCommandWelcome() async {
+  final runCount = resourceManager.runCount;
+  final uuid = resourceManager.uniqueUserId;
+  if (uuid == null) return;
+
+  if (runCount == 1) {
+    await BrowserLauncher.openUrl(
+      Uri.parse('https://serverpod.dev/welcome?distinct_id=$uuid'),
+    );
+  } else if (runCount == 20) {
+    await BrowserLauncher.openUrl(
+      Uri.parse('https://serverpod.dev/checkin?distinct_id=$uuid'),
+    );
+  }
+}
+
 Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
   if (!runner._productionMode) {
     log.debug('Development mode.');
@@ -52,7 +70,14 @@ Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
 }
 
 Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
-  await _preCommandEnvironmentChecks(runner as ServerpodCommandRunner);
+  runner as ServerpodCommandRunner;
+
+  // Doctor reports on missing SDKs instead of refusing to run without them,
+  // and scripts need its stdout and the user's profile left untouched.
+  if (runner._invokedCommandName == DoctorCommand.commandName) return;
+
+  await _preCommandEnvironmentChecks();
+  await _preCommandWelcome();
   await _preCommandPrints(runner);
 }
 
