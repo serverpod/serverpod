@@ -29,8 +29,12 @@ class DartSdkCheck {
       '}\n';
 
   /// [flutterRoot] is the SDK root the Flutter check found, if any.
-  static Future<DoctorCheckResult> probe({final String? flutterRoot}) async {
-    final launcher = findExecutableOnPath('dart');
+  /// [environment] stands in for the process environment in tests.
+  static Future<DoctorCheckResult> probe({
+    final String? flutterRoot,
+    final Map<String, String>? environment,
+  }) async {
+    final launcher = findExecutableOnPath('dart', environment: environment);
     if (launcher == null) {
       return evaluate(launcher: null, output: null, flutterRoot: flutterRoot);
     }

@@ -21,8 +21,14 @@ typedef FlutterVersionInfo = ({
 class FlutterCheck {
   static const id = 'flutter';
 
-  static Future<DoctorCheckResult> probe() async {
-    final executable = findExecutableOnPath('flutter');
+  /// [environment] stands in for the process environment in tests.
+  static Future<DoctorCheckResult> probe({
+    final Map<String, String>? environment,
+  }) async {
+    final executable = findExecutableOnPath(
+      'flutter',
+      environment: environment,
+    );
     if (executable == null) return evaluate(executable: null, output: null);
 
     // Flutter may populate its cache on first run, which takes a while.

@@ -11,7 +11,10 @@ class GitCheck {
 
   static final _versionPattern = RegExp(r'git version (\S+)');
 
-  static Future<DoctorCheckResult> probe() async {
+  /// [environment] stands in for the process environment in tests.
+  static Future<DoctorCheckResult> probe({
+    final Map<String, String>? environment,
+  }) async {
     // Without the developer tools, macOS's git stub opens an install dialog
     // instead of running, so check for them first.
     if (Platform.isMacOS) {
@@ -25,7 +28,7 @@ class GitCheck {
       }
     }
 
-    final executable = findExecutableOnPath('git');
+    final executable = findExecutableOnPath('git', environment: environment);
     if (executable == null) return evaluate(executable: null, output: null);
 
     final result = await runProbe(executable, ['--version']);
