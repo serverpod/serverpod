@@ -18,6 +18,16 @@ enum DoctorStatus {
   unknown,
 }
 
+/// The one-character marker a report shows in front of a check.
+extension DoctorStatusMarker on DoctorStatus {
+  String get marker => switch (this) {
+    DoctorStatus.ready => '✓',
+    DoctorStatus.misconfigured => '!',
+    DoctorStatus.unknown => '?',
+    DoctorStatus.missing || DoctorStatus.incompatible => '✗',
+  };
+}
+
 /// What one check found, with the evidence and the fix when not
 /// [DoctorStatus.ready].
 class DoctorCheckResult {

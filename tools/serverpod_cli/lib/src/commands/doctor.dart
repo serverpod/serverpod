@@ -89,7 +89,7 @@ Future<List<DoctorCheckResult>> runDoctorChecks() async {
 void _printReport(final List<DoctorCheckResult> results) {
   for (final result in results) {
     final lines = [
-      '[${_marker(result.status)}] ${result.title}: ${result.message}',
+      '[${result.status.marker}] ${result.title}: ${result.message}',
       if (result.remedy != null) '    ${result.remedy}',
     ];
     log.info('${lines.join('\n')}\n', type: const RawLogType());
@@ -103,10 +103,3 @@ void _printReport(final List<DoctorCheckResult> results) {
     newParagraph: true,
   );
 }
-
-String _marker(final DoctorStatus status) => switch (status) {
-  DoctorStatus.ready => '✓',
-  DoctorStatus.misconfigured => '!',
-  DoctorStatus.unknown => '?',
-  DoctorStatus.missing || DoctorStatus.incompatible => '✗',
-};

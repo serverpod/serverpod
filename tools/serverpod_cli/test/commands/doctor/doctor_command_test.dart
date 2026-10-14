@@ -28,6 +28,17 @@ void main() {
     });
   });
 
+  group('Given each doctor status,', () {
+    test('when reading its marker, then ready, warning, unknown, and failure '
+        'glyphs are distinct', () {
+      expect(DoctorStatus.ready.marker, '✓');
+      expect(DoctorStatus.misconfigured.marker, '!');
+      expect(DoctorStatus.unknown.marker, '?');
+      expect(DoctorStatus.missing.marker, '✗');
+      expect(DoctorStatus.incompatible.marker, '✗');
+    });
+  });
+
   group('Given a check result with every field set,', () {
     test('when serializing, then every field is present', () {
       const result = DoctorCheckResult(
