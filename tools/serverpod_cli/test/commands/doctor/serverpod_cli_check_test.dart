@@ -26,65 +26,64 @@ CliInstallation _installation({
 );
 
 void main() {
-  group('Given no serverpod on PATH and none installed,', () {
-    test(
-      'when evaluating, then the status is missing with an install remedy',
-      () {
-        final result = ServerpodCliCheck.evaluate(
-          _installation(
-            kind: CliInstallationKind.source,
-            onPath: null,
-            pathResolvesToManaged: false,
-          ),
-        );
+  test(
+    'Given no serverpod on PATH and none installed, '
+    'when evaluating, then the status is missing with an install remedy',
+    () {
+      final result = ServerpodCliCheck.evaluate(
+        _installation(
+          kind: CliInstallationKind.source,
+          onPath: null,
+          pathResolvesToManaged: false,
+        ),
+      );
 
-        expect(result.status, DoctorStatus.missing);
-        expect(result.remedy, contains('dart install serverpod_cli'));
-      },
-    );
-  });
+      expect(result.status, DoctorStatus.missing);
+      expect(result.remedy, contains('dart install serverpod_cli'));
+    },
+  );
 
-  group('Given a managed install whose bin directory is not on PATH,', () {
-    test(
-      'when evaluating, then the status is misconfigured with a PATH remedy',
-      () {
-        final result = ServerpodCliCheck.evaluate(
-          _installation(
-            kind: CliInstallationKind.managed,
-            onPath: null,
-            pathResolvesToManaged: false,
-          ),
-        );
+  test(
+    'Given a managed install whose bin directory is not on PATH, '
+    'when evaluating, then the status is misconfigured with a PATH remedy',
+    () {
+      final result = ServerpodCliCheck.evaluate(
+        _installation(
+          kind: CliInstallationKind.managed,
+          onPath: null,
+          pathResolvesToManaged: false,
+        ),
+      );
 
-        expect(result.status, DoctorStatus.misconfigured);
-        expect(result.path, _managed);
-        expect(result.remedy, contains(p.dirname(_managed)));
-      },
-    );
-  });
+      expect(result.status, DoctorStatus.misconfigured);
+      expect(result.path, _managed);
+      expect(result.remedy, contains(p.dirname(_managed)));
+    },
+  );
 
-  group('Given PATH selecting a binstub instead of the managed install,', () {
-    test(
-      'when evaluating, then the status is misconfigured with a deactivate '
-      'remedy',
-      () {
-        final result = ServerpodCliCheck.evaluate(
-          _installation(
-            kind: CliInstallationKind.foreign,
-            onPath: _binstub,
-            pathResolvesToManaged: false,
-          ),
-        );
+  test(
+    'Given PATH selecting a binstub instead of the managed install, '
+    'when evaluating, then the status is misconfigured with a deactivate '
+    'remedy',
+    () {
+      final result = ServerpodCliCheck.evaluate(
+        _installation(
+          kind: CliInstallationKind.foreign,
+          onPath: _binstub,
+          pathResolvesToManaged: false,
+        ),
+      );
 
-        expect(result.status, DoctorStatus.misconfigured);
-        expect(result.path, _binstub);
-        expect(result.remedy, contains('dart pub global deactivate'));
-      },
-    );
-  });
+      expect(result.status, DoctorStatus.misconfigured);
+      expect(result.path, _binstub);
+      expect(result.remedy, contains('dart pub global deactivate'));
+    },
+  );
 
-  group('Given PATH selecting the managed install,', () {
-    test('when evaluating, then the status is ready', () {
+  test(
+    'Given PATH selecting the managed install, '
+    'when evaluating, then the status is ready',
+    () {
       final result = ServerpodCliCheck.evaluate(
         _installation(
           kind: CliInstallationKind.managed,
@@ -96,6 +95,6 @@ void main() {
       expect(result.status, DoctorStatus.ready);
       expect(result.version, isNotNull);
       expect(result.path, _managed);
-    });
-  });
+    },
+  );
 }

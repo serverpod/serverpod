@@ -28,19 +28,23 @@ void main() {
     });
   });
 
-  group('Given each doctor status,', () {
-    test('when reading its marker, then ready, warning, unknown, and failure '
-        'glyphs are distinct', () {
+  test(
+    'Given each doctor status, '
+    'when reading its marker, then ready, warning, unknown, and failure '
+    'glyphs are distinct',
+    () {
       expect(DoctorStatus.ready.marker, '✓');
       expect(DoctorStatus.misconfigured.marker, '!');
       expect(DoctorStatus.unknown.marker, '?');
       expect(DoctorStatus.missing.marker, '✗');
       expect(DoctorStatus.incompatible.marker, '✗');
-    });
-  });
+    },
+  );
 
-  group('Given a check result with every field set,', () {
-    test('when serializing, then every field is present', () {
+  test(
+    'Given a check result with every field set, '
+    'when serializing, then every field is present',
+    () {
       const result = DoctorCheckResult(
         id: 'flutter',
         title: 'Flutter',
@@ -60,11 +64,13 @@ void main() {
         'message': 'too old',
         'remedy': 'upgrade',
       });
-    });
-  });
+    },
+  );
 
-  group('Given a check result with only the required fields,', () {
-    test('when serializing, then the optional keys are left out', () {
+  test(
+    'Given a check result with only the required fields, '
+    'when serializing, then the optional keys are left out',
+    () {
       const result = DoctorCheckResult(
         id: 'network',
         title: 'Network',
@@ -73,6 +79,6 @@ void main() {
       );
 
       expect(result.toJson().keys, ['id', 'title', 'status', 'message']);
-    });
-  });
+    },
+  );
 }
