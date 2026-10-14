@@ -11,17 +11,25 @@ class NetworkCheck {
 
   static final _url = Uri.https('pub.dev', '/api/packages/serverpod_cli');
 
-  static Future<DoctorCheckResult> probe() async {
+  /// [client] and [timeout] stand in for the real network in tests.
+  static Future<DoctorCheckResult> probe({
+    final http.Client? client,
+    final Duration timeout = const Duration(seconds: 5),
+  }) async {
+    final owned = client == null;
+    final http = client ?? _newClient();
     try {
-      final response = await http
-          .head(_url)
-          .timeout(const Duration(seconds: 5));
+      final response = await http.head(_url).timeout(timeout);
       return evaluate(reachable: response.statusCode < 500);
     } catch (e) {
       log.debug('Could not reach $_url: $e');
       return evaluate(reachable: false);
+    } finally {
+      if (owned) http.close();
     }
   }
+
+  static http.Client _newClient() => http.Client();
 
   static DoctorCheckResult evaluate({required final bool reachable}) {
     const title = 'Network';
