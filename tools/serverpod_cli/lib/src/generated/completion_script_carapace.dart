@@ -85,6 +85,10 @@ commands:
           -m, --mode=: "Serverpod run mode whose database config should be used."
           -p, --port=: "TCP port override. Defaults to the configured database port."
 
+  - name: doctor
+    flags:
+      --json: "Print the results as JSON instead of text."
+
   - name: quickstart
     flags:
       -f, --force: "Create the project even if there are issues that prevent it from running out of the box."
