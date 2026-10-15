@@ -27,27 +27,36 @@ base class BridgeMcpServer extends MCPServer
   /// (`<serverDir>/.dart_tool/serverpod/mcp.sock`).
   final String socketPath;
 
+  /// The runner's log file. Not derived from [socketPath], which may be a
+  /// registry link the runner removes when it stops.
+  final String logPath;
+
   final MCPClient _client = MCPClient(_bridgeImplementation);
 
   ServerConnection? _connection;
   Future<void>? _pendingConnect;
   StreamSubscription<ResourceUpdatedNotification>? _resourceUpdatedSub;
 
-  BridgeMcpServer(super.channel, {required this.socketPath})
-    : super.fromStreamChannel(
-        implementation: _bridgeImplementation,
-        instructions:
-            'Manage a Serverpod server and its Flutter app running under '
-            '`serverpod start`. Use these tools to read Serverpod and Flutter '
-            'logs, create and apply database migrations, hot reload or restart '
-            "the server and Flutter app, and get the Flutter app's Dart "
-            'Tooling Daemon (DTD) URI. If a tool reports the server is not '
-            'running, ask the user to start it with `serverpod start` in the '
-            'project directory.',
-      ) {
+  BridgeMcpServer(
+    super.channel, {
+    required this.socketPath,
+    required this.logPath,
+  }) : super.fromStreamChannel(
+         implementation: _bridgeImplementation,
+         instructions:
+             'Manage a Serverpod server and its Flutter app running under '
+             '`serverpod start`. Use these tools to read Serverpod and Flutter '
+             'logs, create and apply database migrations, hot reload or restart '
+             "the server and Flutter app, and get the Flutter app's Dart "
+             'Tooling Daemon (DTD) URI. If a tool reports the server is not '
+             'running, call `tail_runner_logs` to see whether it is still '
+             'starting or why it stopped, then ask the user to start it with '
+             '`serverpod start` in the project directory.',
+       ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
     }
+    registerTool(tailRunnerLogsTool, _tailRunnerLogs);
     for (final resource in runnerStaticResources) {
       addResource(resource, _makeResourceReader(resource.uri));
     }
@@ -60,11 +69,40 @@ base class BridgeMcpServer extends MCPServer
       TextContent(
         text:
             'The server is not running with `serverpod start` for this project. '
-            'Ask the user to run `serverpod start` in the project directory.',
+            'Call `tail_runner_logs` to see whether it is still starting or '
+            'why it stopped, then ask the user to run `serverpod start` in '
+            'the project directory.',
       ),
     ],
     isError: true,
   );
+
+  /// Reads the file directly, since the runner may be starting or gone.
+  Future<CallToolResult> _tailRunnerLogs(CallToolRequest request) async {
+    final file = File(logPath);
+    if (!await file.exists()) {
+      return CallToolResult(
+        content: [
+          TextContent(
+            text:
+                'No runner log at $logPath. A runner spawned by '
+                '`serverpod start` writes one; nothing has been started for '
+                'this project yet.',
+          ),
+        ],
+        isError: true,
+      );
+    }
+    final limit = switch (request.arguments?['limit']) {
+      int v => v.clamp(1, 10000),
+      _ => 200,
+    };
+    final lines = await file.readAsLines();
+    final tail = lines.length <= limit
+        ? lines
+        : lines.sublist(lines.length - limit);
+    return CallToolResult(content: [TextContent(text: jsonEncode(tail))]);
+  }
 
   /// Attempt to (re)connect to the runner socket. Coalesces concurrent
   /// callers so we don't open multiple parallel connections during a burst

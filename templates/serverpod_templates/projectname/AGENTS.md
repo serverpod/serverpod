@@ -6,7 +6,7 @@ This project is a Flutter app (frontend) backed by a Serverpod server (backend).
 Build for multiple users, use Serverpod's built-in authentication, which is already set up in `lib/server.dart`.
 <!-- {{/auth}} -->
 
-The user starts the server and Flutter app with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then STOP and ask the user to start it. NEVER start the server yourself. The Flutter app is started along with it, or can be launched from the MCP tool `spawn_flutter_app`.
+The user starts the server and Flutter app with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then call `tail_runner_logs` to learn whether it is still starting or why it stopped, STOP and ask the user to start it. NEVER start the server yourself. The Flutter app is started along with it, or can be launched from the MCP tool `spawn_flutter_app`.
 
 While running, `serverpod start` watches for file changes to run incremental code generation and hot reload both the server and the Flutter app.
 <!-- {{/flutterApp}} -->
@@ -18,7 +18,7 @@ This project is a Serverpod server (backend).
 Build for multiple users, use Serverpod's built-in authentication, which is already set up in `lib/server.dart`.
 <!-- {{/auth}} -->
 
-The user starts the server with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then STOP and ask the user to start it. NEVER start the server yourself.
+The user starts the server with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then call `tail_runner_logs` to learn whether it is still starting or why it stopped, STOP and ask the user to start it. NEVER start the server yourself.
 
 While running, `serverpod start` watches for file changes to run incremental code generation and hot reload the running server.
 <!-- {{/flutterApp}} -->
@@ -32,6 +32,7 @@ ALWAYS use the MCP server instead of the command line. Use the MCP server to:
 - `create_repair_migration` if the database has drifted out of sync with the migrations.
 <!-- {{/database}} -->
 - `tail_server_logs` to read logs from the server.
+- `tail_runner_logs` to read the output of `serverpod start` itself (code generation, compilation, Docker, raw server output). The only tool that also works while the server is starting or after it stopped.
 <!-- {{#flutterApp}} -->
 - `tail_flutter_logs` to read the raw stdout/stderr of the Flutter app.
 - `hot_reload` / `hot_restart` to reload or restart the server and the Flutter app. ALWAYS call `hot_restart` after doing changes in the Flutter app that may not work with normal hot reload (which is automatically applied).
