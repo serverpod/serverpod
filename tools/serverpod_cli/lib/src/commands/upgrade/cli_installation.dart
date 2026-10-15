@@ -66,9 +66,13 @@ class CliInstallation {
       : executableOnPath ?? runningExecutable;
 
   /// Inspects the process and environment to find these installations.
-  static CliInstallation resolve() {
+  /// [environment] stands in for the process environment when given.
+  static CliInstallation resolve({final Map<String, String>? environment}) {
     final managedExecutable = dartInstalledExecutable(_executableName);
-    final executableOnPath = findExecutableOnPath(_executableName);
+    final executableOnPath = findExecutableOnPath(
+      _executableName,
+      environment: environment,
+    );
 
     final canonicalManaged = _canonicalize(managedExecutable);
 

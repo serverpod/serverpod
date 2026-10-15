@@ -7,7 +7,9 @@ import 'package:serverpod_cli/src/generated/version.dart';
 class ServerpodCliCheck {
   static const id = 'serverpod';
 
-  static DoctorCheckResult probe() => evaluate(CliInstallation.resolve());
+  /// [environment] stands in for the process environment in tests.
+  static DoctorCheckResult probe({final Map<String, String>? environment}) =>
+      evaluate(CliInstallation.resolve(environment: environment));
 
   static DoctorCheckResult evaluate(final CliInstallation installation) {
     const title = 'Serverpod CLI';
