@@ -36,7 +36,15 @@ class KernelCompiler {
   );
   late Future<FrontendServerClient> _client;
 
+  /// True until a full compile has been accepted. A rejected full compile
+  /// keeps it set, so the retry is a full compile again rather than an
+  /// increment on top of nothing.
   bool _needsFullCompile = true;
+
+  /// Whether [compile] has run since [start] or [restart]. The Frontend
+  /// Server has no incremental state to discard before that, and its client
+  /// still owes a first `compile` rather than a `recompile`.
+  bool _hasCompiled = false;
   bool _started = false;
 
   KernelCompiler({
@@ -55,12 +63,13 @@ class KernelCompiler {
   /// Whether [start] has run.
   bool get isStarted => _started;
 
+  /// Whether the next [compile] produces a complete kernel: nothing has been
+  /// accepted since [start], [reset], or [restart].
+  bool get needsFullCompile => _needsFullCompile;
+
   /// Exists while the Frontend Server may be writing [outputDill]; left
   /// behind if compilation fails or the session dies mid-compile.
   String get _compileMarkerPath => '$outputDill.compiling';
-
-  /// A cached kernel is only valid for the entrypoint that produced it.
-  String get _entryPointPath => '$outputDill.entrypoint';
 
   /// Start the Frontend Server process.
   ///
@@ -80,61 +89,22 @@ class KernelCompiler {
     );
     _started = true;
     _needsFullCompile = true;
+    _hasCompiled = false;
   }
 
-  /// Returns `true` if [outputDill] exists, is newer than [entryPoint] and every
-  /// file under [watchDirs], is compatible with the current Dart SDK's kernel
-  /// binary format, and the last compile that wrote it completed successfully.
-  Future<bool> isDillUpToDate(Set<String> watchDirs) async {
-    if (File(_compileMarkerPath).existsSync()) return false;
-
-    try {
-      if (await File(_entryPointPath).readAsString() != entryPoint) {
-        return false;
-      }
-    } on FileSystemException {
-      return false;
-    }
-
-    final dillFile = File(outputDill);
-    if (!await dillFile.exists()) return false;
-
-    if (!_dillHeadersMatch(outputDill, _platformDill)) return false;
-
-    final dillMtime = (await dillFile.stat()).modified;
-    final entryPointStat = await File(entryPoint).stat();
-    if (entryPointStat.type != FileSystemEntityType.file ||
-        entryPointStat.modified.isAfter(dillMtime)) {
-      return false;
-    }
-
-    for (final watchDir in watchDirs) {
-      final dir = Directory(watchDir);
-      if (!await dir.exists()) continue;
-      await for (final entity in dir.list(recursive: true)) {
-        if (entity is File &&
-            (await entity.stat()).modified.isAfter(dillMtime)) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
-  /// Compiles the project if the cached dill is stale relative to [watchDirs].
+  /// Compiles the project on top of the cached [outputDill], if any.
   ///
-  /// Returns `true` on success (including when no compilation was needed).
-  /// Returns `false` if compilation failed.
-  Future<bool> compileIfNeeded(Set<String> watchDirs) async {
+  /// The Frontend Server initializes from [outputDill] and invalidates every
+  /// source whose content differs from the copy recorded in it. It falls back
+  /// to a cold compile when the SDK or a package location has changed.
+  ///
+  /// Returns `true` on success, `false` if compilation failed.
+  Future<bool> compileFromCache() async {
     if (File(_compileMarkerPath).existsSync()) {
       log.warning(previousCompileInterrupted);
       await invalidateCachedDill();
       // Ensure a complete kernel, not an incremental delta.
       await reset();
-    } else if (await isDillUpToDate(watchDirs)) {
-      log.debug('Cached server.dill is up to date, skipping initial compile.');
-      return true;
     }
 
     final result = await compileWithProgress('Compiling server', this);
@@ -149,7 +119,6 @@ class KernelCompiler {
     await File(outputDill).deleteIfExists();
     await File('$outputDill.incremental.dill').deleteIfExists();
     await File(_compileMarkerPath).deleteIfExists();
-    await File(_entryPointPath).deleteIfExists();
   }
 
   /// Compile the project.
@@ -168,16 +137,12 @@ class KernelCompiler {
   }) async {
     final client = await _client;
     final marker = File(_compileMarkerPath)..createSync(recursive: true);
-
-    // Compilation can overwrite the kernel before accept records its target.
-    // Do not let a previous target's stamp validate that new output.
-    await File(_entryPointPath).deleteIfExists();
+    _hasCompiled = true;
 
     final CompileResult result;
     if (_needsFullCompile) {
       log.debug('compile: full');
       result = await client.compile();
-      _needsFullCompile = false;
     } else {
       // Invalidate the exact URI the FES was started with (see
       // [FrontendServerClient.packageConfigUri]) so the resident compiler
@@ -217,18 +182,22 @@ class KernelCompiler {
   Future<void> accept() async {
     final client = await _client;
     client.accept();
-    await File(_entryPointPath).writeAsStringAtomically(entryPoint);
+    _needsFullCompile = false;
   }
 
   /// Reject the last compile result.
-  Future<void> reject() => _client.then((c) => c.reject());
+  Future<void> reject() async {
+    final client = await _client;
+    await client.reject();
+    if (_needsFullCompile) client.reset();
+  }
 
   /// Reset the compiler so the next [compile] produces a complete kernel.
   ///
   /// Use this when incremental state may be stale (e.g., an external reload
   /// happened without going through this compiler).
   Future<void> reset() async {
-    if (_needsFullCompile) return; // No compile yet; already in full state.
+    if (!_hasCompiled) return; // Nothing compiled yet; already in full state.
     final client = await _client;
     client.reset();
     _needsFullCompile = true;
@@ -253,39 +222,6 @@ class KernelCompiler {
       final client = await _client;
       client.kill();
       _started = false;
-    }
-  }
-
-  /// The Dart kernel binary header is 8 bytes: 4-byte magic number followed by
-  /// a 4-byte binary format version. Two .dill files are compatible only if
-  /// these bytes match.
-  static const _dillHeaderSize = 8;
-
-  /// Returns `true` if both files exist and their first [_dillHeaderSize] bytes
-  /// are identical.
-  static bool _dillHeadersMatch(String pathA, String pathB) {
-    try {
-      final fileA = File(pathA);
-      final fileB = File(pathB);
-      final headerA = fileA.openSync()..setPositionSync(0);
-      final headerB = fileB.openSync()..setPositionSync(0);
-      try {
-        final bytesA = headerA.readSync(_dillHeaderSize);
-        final bytesB = headerB.readSync(_dillHeaderSize);
-        if (bytesA.length != _dillHeaderSize ||
-            bytesB.length != _dillHeaderSize) {
-          return false;
-        }
-        for (var i = 0; i < _dillHeaderSize; i++) {
-          if (bytesA[i] != bytesB[i]) return false;
-        }
-        return true;
-      } finally {
-        headerA.closeSync();
-        headerB.closeSync();
-      }
-    } on FileSystemException {
-      return false;
     }
   }
 }

@@ -6,9 +6,11 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart'
     show vmServiceWsUri;
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
@@ -37,6 +39,16 @@ class FlutterNotInstalledException implements Exception {
   @override
   String toString() => 'FlutterNotInstalledException: $message';
 }
+
+/// How to spawn flutter_tools: [executable] plus the arguments that have to
+/// precede the flutter command itself. [flutterRoot] is the SDK the probe
+/// identified, or null when it failed and [executable] is the configured
+/// `flutter` taken on faith.
+typedef _FlutterInvocation = ({
+  String executable,
+  List<String> baseArgs,
+  String? flutterRoot,
+});
 
 /// Manages a `flutter run --machine` subprocess. Mirrors [ServerProcess].
 /// IDE attach flows through [flutterProxy] (which owns the stable
@@ -191,6 +203,10 @@ class FlutterProcess {
         <String>['run', '--machine', '-d', device, ..._extraArgs];
 
     final invocation = await _resolveFlutterInvocation(_flutterExecutable);
+
+    if (invocation.flutterRoot != null) {
+      await _ensurePubGetIfStale(invocation);
+    }
 
     Process process;
     try {
@@ -977,20 +993,90 @@ class FlutterProcess {
     }
   }
 
-  static ({String executable, List<String> baseArgs})? _cachedInvocation;
+  /// Runs `flutter pub get` when the app has no package resolution or its
+  /// `package_config.json` is older than the resolution's `pubspec.lock`.
+  /// `flutter run` fetches for itself, but its Xcode `flutter assemble` step
+  /// has been seen to fail on a workspace project with a cold `.dart_tool/`
+  /// ("Because the app requires the Flutter SDK, version solving failed");
+  /// a warm resolution short-circuits that step. No-op when deps are
+  /// current. Uses the same direct-dart invocation as the main spawn so
+  /// puro wrappers don't sit between us and flutter_tools; pub finds the
+  /// workspace root from the package dir.
+  Future<void> _ensurePubGetIfStale(_FlutterInvocation invocation) async {
+    final pkgDir = p.normalize(p.absolute(_flutterPackageDir));
+    if (!File(p.join(pkgDir, 'pubspec.yaml')).existsSync()) return;
+    final packageConfig = _resolvePackageConfig(pkgDir);
+    if (packageConfig != null) {
+      final rootDir = p.dirname(p.dirname(packageConfig));
+      final lockFile = File(p.join(rootDir, 'pubspec.lock'));
+      if (!await lockFile.exists()) return;
+      final lockMtime = (await lockFile.stat()).modified;
+      final cfgMtime = (await File(packageConfig).stat()).modified;
+      if (!lockMtime.isAfter(cfgMtime)) return;
+    }
+    try {
+      await log.progress(
+        'Running flutter pub get in ${p.basename(pkgDir)}',
+        () async {
+          final result = await Process.run(
+            invocation.executable,
+            [...invocation.baseArgs, 'pub', 'get'],
+            workingDirectory: pkgDir,
+          );
+          if (result.exitCode != 0) {
+            log.warning(
+              'flutter pub get exited ${result.exitCode}:\n'
+              '${result.stdout}\n${result.stderr}',
+            );
+          }
+          return result.exitCode == 0;
+        },
+      );
+    } catch (e) {
+      log.warning('flutter pub get failed to spawn: $e');
+    }
+  }
+
+  /// The `package_config.json` the app resolves against: the nearest
+  /// resolution above [pkgDir] that lists the app, the same walk the
+  /// dependency tracker uses. `null` when dependencies have not been fetched
+  /// or the app's pubspec is unreadable.
+  String? _resolvePackageConfig(String pkgDir) {
+    final String packageName;
+    try {
+      packageName = parsePubspec(File(p.join(pkgDir, 'pubspec.yaml'))).name;
+    } catch (e) {
+      log.debug('Flutter package name unreadable at $pkgDir: $e');
+      return null;
+    }
+    final dartToolDir = PackageDependencyTracker.resolveDartToolDir(
+      pkgDir,
+      packageName: packageName,
+    );
+    return dartToolDir == null
+        ? null
+        : p.join(dartToolDir, 'package_config.json');
+  }
+
+  static _FlutterInvocation? _cachedInvocation;
 
   /// Probe `flutter --version --machine` for `flutterRoot`, then return
   /// `dart <flutterRoot>/.../flutter_tools.dart` so signals bypass
   /// puro/fvm/asdf wrappers and reach the daemon. Falls back to
   /// invoking [flutterExecutable] verbatim if the SDK paths are missing.
-  static Future<({String executable, List<String> baseArgs})>
-  _resolveFlutterInvocation(String flutterExecutable) async {
+  static Future<_FlutterInvocation> _resolveFlutterInvocation(
+    String flutterExecutable,
+  ) async {
     final cached = _cachedInvocation;
     if (cached != null) return cached;
 
     // Don't cache the fallback: a fake-executable test probe would
     // poison the cache for later real callers.
-    final fallback = (executable: flutterExecutable, baseArgs: <String>[]);
+    final _FlutterInvocation fallback = (
+      executable: flutterExecutable,
+      baseArgs: const [],
+      flutterRoot: null,
+    );
     try {
       final result = await Process.run(
         flutterExecutable,
@@ -1033,6 +1119,7 @@ class FlutterProcess {
       return _cachedInvocation = (
         executable: dartBin,
         baseArgs: ['--disable-dart-dev', '--packages=$packages', entry],
+        flutterRoot: root,
       );
     } catch (_) {
       return fallback;
