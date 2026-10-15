@@ -1,0 +1,96 @@
+name: Publish install bootstrap bundle
+
+# Publishes the bootstrap bundle that install.sh downloads as a GitHub
+# Release, one per `install-v*` tag. The tag must match BOOTSTRAP_TAG in
+# install.sh, so the script and the bundle it pins always ship together.
+# A published release is never updated: ship a fix as the next tag.
+on:
+  push:
+    tags:
+      - "install-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check the tag against install.sh
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Verify the tag matches the pinned bootstrap tag
+        if: ${{ startsWith(github.ref, 'refs/tags/install-v') }}
+        run: |
+          pinned="$(sed -n 's/^BOOTSTRAP_TAG="\(.*\)"$/\1/p' tools/serverpod_cli/install/install.sh)"
+          if [ "$pinned" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match BOOTSTRAP_TAG=$pinned in install.sh - bump it in the tagged commit"
+            exit 1
+          fi
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::release $GITHUB_REF_NAME already exists - this workflow never updates a published bundle; ship the fix as the next tag"
+            exit 1
+          fi
+
+  build:
+    name: Build bootstrap bundle (${{ matrix.platform }})
+    needs: check
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: ubuntu-latest, platform: linux-x64 }
+          - { runner: macos-15, platform: macos-arm64 }
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
+      - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
+        with:
+          sdk: "3.13.0"
+      - name: Build the bundle
+        run: bash tools/serverpod_cli/install/build_bootstrap.sh "${{ matrix.platform }}" "$RUNNER_TEMP/release"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-${{ matrix.platform }}
+          path: ${{ runner.temp }}/release/*
+
+  # One release for both platforms: a missing platform would strand its users
+  # on a 404, so one failed build fails the whole publish.
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    if: ${{ startsWith(github.ref, 'refs/tags/install-v') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: release-*
+          path: release
+          merge-multiple: true
+      - name: Verify the release set is complete and self-consistent
+        run: |
+          cd release || exit 1
+          for platform in linux-x64 macos-arm64; do
+            archive="serverpod-bootstrap-$platform.tar.gz"
+            [ -f "$archive" ] && [ -f "$archive.sha256" ] || { echo "::error::missing $archive or its sidecar"; exit 1; }
+            echo "$(cat "$archive.sha256")  $archive" | sha256sum --check --quiet - \
+              || { echo "::error::sha256 mismatch for $archive"; exit 1; }
+          done
+          # The script that pins this bundle, frozen alongside it.
+          cp ../tools/serverpod_cli/install/install.sh .
+          ls -l
+      - name: Publish the release
+        run: |
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "Serverpod install bootstrap ${TAG#install-}" \
+            --notes "Bootstrap bundles downloaded by the Serverpod install script (\`curl -fsSL https://serverpod.dev/install.sh | sh\`). Not for direct use." \
+            release/*
