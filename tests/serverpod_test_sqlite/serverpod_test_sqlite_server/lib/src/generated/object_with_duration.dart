@@ -50,7 +50,7 @@ abstract class ObjectWithDuration
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectWithDuration copyWith({
-    int? id,
+    Object? id = _Undefined,
     Duration? duration,
   });
   @override

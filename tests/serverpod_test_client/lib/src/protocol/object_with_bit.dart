@@ -77,7 +77,7 @@ abstract class ObjectWithBit
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithBit copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.Bit? bit,
     _isc.Bit? bitNullable = const _isc.$UndefinedBit(),
     _isc.Bit? bitIndexedHnsw,

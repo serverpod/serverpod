@@ -45,7 +45,7 @@ abstract class ObjectWithByteData
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithByteData copyWith({
-    int? id,
+    Object? id = _Undefined,
     _idt.ByteData? byteData,
   });
   @override

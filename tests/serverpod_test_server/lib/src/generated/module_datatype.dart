@@ -65,7 +65,7 @@ abstract class ModuleDatatype
     _iom2gwyu.ModuleClass? model,
     List<_iom2gwyu.ModuleClass>? list,
     Map<String, _iom2gwyu.ModuleClass>? map,
-    (_iom2gwyu.ModuleClass,)? record,
+    Object? record = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

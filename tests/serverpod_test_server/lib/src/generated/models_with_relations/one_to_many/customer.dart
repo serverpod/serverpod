@@ -60,7 +60,7 @@ abstract class Customer
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Customer copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_ig920ya2.Order>? orders = const _is.$UndefinedList<_ig920ya2.Order>(),
   });

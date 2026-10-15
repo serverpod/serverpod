@@ -61,11 +61,11 @@ abstract class ImmutableObjectWithMultipleFields
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ImmutableObjectWithMultipleFields copyWith({
-    int? anInt,
-    bool? aBool,
-    double? aDouble,
+    Object? anInt = _Undefined,
+    Object? aBool = _Undefined,
+    Object? aDouble = _Undefined,
     DateTime? aDateTime = const _is.$UndefinedDateTime(),
-    String? aString,
+    Object? aString = _Undefined,
   });
   @override
   bool operator ==(Object other) {

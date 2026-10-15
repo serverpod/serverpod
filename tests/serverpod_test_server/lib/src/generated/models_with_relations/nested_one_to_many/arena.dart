@@ -59,7 +59,7 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Arena copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     _iaks25tn.Team? team = const _UndefinedArena$team(),
   });

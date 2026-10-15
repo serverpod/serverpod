@@ -58,7 +58,7 @@ abstract class EmailReset
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   EmailReset copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? userId,
     String? verificationCode,
     DateTime? expiration,

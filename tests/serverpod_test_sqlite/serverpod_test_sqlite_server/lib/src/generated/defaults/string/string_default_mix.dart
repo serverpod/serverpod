@@ -66,7 +66,7 @@ abstract class StringDefaultMix
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   StringDefaultMix copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? stringDefaultAndDefaultModel,
     String? stringDefaultAndDefaultPersist,
     String? stringDefaultModelAndDefaultPersist,

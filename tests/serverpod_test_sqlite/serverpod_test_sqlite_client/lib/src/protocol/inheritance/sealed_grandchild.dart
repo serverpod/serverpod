@@ -46,7 +46,7 @@ abstract class SealedGrandChild extends _iv35mfmj.SealedChild
   SealedGrandChild copyWith({
     int? sealedInt,
     String? sealedString,
-    Object? nullableInt,
+    Object? nullableInt = _Undefined,
     String? sealedGrandchildField,
   });
   @override

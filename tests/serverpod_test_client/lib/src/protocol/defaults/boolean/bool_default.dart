@@ -66,10 +66,10 @@ abstract class BoolDefault
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   BoolDefault copyWith({
-    int? id,
+    Object? id = _Undefined,
     bool? boolDefaultTrue,
     bool? boolDefaultFalse,
-    bool? boolDefaultNullFalse,
+    Object? boolDefaultNullFalse = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

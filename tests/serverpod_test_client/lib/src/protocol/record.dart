@@ -34,7 +34,7 @@ abstract class Record
   /// Returns a shallow copy of this [Record]
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
-  Record copyWith({(bool,)? aBoolRecord});
+  Record copyWith({Object? aBoolRecord = _Undefined});
   @override
   Map<String, dynamic> toJson() {
     return {

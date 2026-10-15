@@ -61,10 +61,10 @@ abstract class ModelWithRequiredField
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ModelWithRequiredField copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    String? email,
-    String? phone,
+    Object? email = _Undefined,
+    Object? phone = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

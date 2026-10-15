@@ -74,11 +74,11 @@ abstract class OrganizationWithLongTableName
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   OrganizationWithLongTableName copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_i5nficvp.PersonWithLongTableName>? people =
         const _isc.$UndefinedList<_i5nficvp.PersonWithLongTableName>(),
-    int? cityId,
+    Object? cityId = _Undefined,
     _ii8bs4lb.CityWithLongTableName? city =
         const _UndefinedOrganizationWithLongTableName$city(),
   });

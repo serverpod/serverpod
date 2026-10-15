@@ -55,7 +55,7 @@ abstract class UserNoteWithALongName
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UserNoteWithALongName copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
   });
   @override

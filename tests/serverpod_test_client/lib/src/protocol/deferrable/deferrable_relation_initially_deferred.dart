@@ -44,7 +44,7 @@ abstract class DeferrableRelationInitiallyDeferred
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   DeferrableRelationInitiallyDeferred copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? parentId,
   });
   @override

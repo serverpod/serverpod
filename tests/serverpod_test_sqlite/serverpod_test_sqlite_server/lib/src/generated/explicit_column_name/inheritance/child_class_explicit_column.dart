@@ -55,7 +55,7 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
   @override
   @_is.useResult
   ChildClassExplicitColumn copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? nonTableParentField,
     String? childField,
   });

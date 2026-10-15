@@ -99,7 +99,7 @@ abstract class DurationDefaultMix
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   DurationDefaultMix copyWith({
-    int? id,
+    Object? id = _Undefined,
     Duration? durationDefaultAndDefaultModel,
     Duration? durationDefaultAndDefaultPersist,
     Duration? durationDefaultModelAndDefaultPersist,

@@ -106,15 +106,15 @@ abstract class MessageLogEntry
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   MessageLogEntry copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? sessionLogId,
     String? serverId,
     int? messageId,
     String? endpoint,
     String? messageName,
     double? duration,
-    String? error,
-    String? stackTrace,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
     bool? slow,
     int? order,
   });

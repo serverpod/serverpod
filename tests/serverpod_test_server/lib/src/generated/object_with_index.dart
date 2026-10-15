@@ -53,7 +53,7 @@ abstract class ObjectWithIndex
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectWithIndex copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? indexed,
     int? indexed2,
   });

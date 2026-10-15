@@ -70,11 +70,11 @@ abstract class UserData
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UserData copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.UuidValue? authUserId,
     _iacc.AuthUser? authUser = const _UndefinedUserData$authUser(),
     String? displayName,
-    String? bio,
+    Object? bio = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

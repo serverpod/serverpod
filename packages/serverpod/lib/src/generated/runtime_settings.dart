@@ -80,7 +80,7 @@ abstract class RuntimeSettings
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   RuntimeSettings copyWith({
-    int? id,
+    Object? id = _Undefined,
     _illv0ea4.LogSettings? logSettings,
     List<_i5sjxqb6.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,

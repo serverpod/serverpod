@@ -71,7 +71,7 @@ abstract class City implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   City copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_ijqkgw0m.Person>? citizens =
         const _isc.$UndefinedList<_ijqkgw0m.Person>(),

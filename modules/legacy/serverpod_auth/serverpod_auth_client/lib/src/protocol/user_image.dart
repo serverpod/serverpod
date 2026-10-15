@@ -56,7 +56,7 @@ abstract class UserImage
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UserImage copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? userId,
     int? version,
     String? url,

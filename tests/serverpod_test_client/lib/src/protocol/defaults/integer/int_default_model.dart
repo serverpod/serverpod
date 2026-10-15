@@ -48,7 +48,7 @@ abstract class IntDefaultModel
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   IntDefaultModel copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? intDefaultModel,
     int? intDefaultModelNull,
   });

@@ -82,11 +82,11 @@ abstract class EnumDefault
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   EnumDefault copyWith({
-    int? id,
+    Object? id = _Undefined,
     _iwklobdz.ByNameEnum? byNameEnumDefault,
-    _iwklobdz.ByNameEnum? byNameEnumDefaultNull,
+    Object? byNameEnumDefaultNull = _Undefined,
     _ido5z594.ByIndexEnum? byIndexEnumDefault,
-    _ido5z594.ByIndexEnum? byIndexEnumDefaultNull,
+    Object? byIndexEnumDefaultNull = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

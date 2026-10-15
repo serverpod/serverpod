@@ -87,7 +87,7 @@ abstract class LegacySession
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   LegacySession copyWith({
-    int? id,
+    Object? id = _Undefined,
     _is.UuidValue? authUserId,
     _iacs.AuthUser? authUser = const _UndefinedLegacySession$authUser(),
     Set<String>? scopeNames,

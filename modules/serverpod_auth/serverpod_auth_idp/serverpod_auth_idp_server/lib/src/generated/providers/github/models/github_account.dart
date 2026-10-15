@@ -99,7 +99,7 @@ abstract class GitHubAccount
     _is.UuidValue? authUserId,
     _iacs.AuthUser? authUser = const _UndefinedGitHubAccount$authUser(),
     String? userIdentifier,
-    String? email,
+    Object? email = _Undefined,
     DateTime? created,
   });
   @override

@@ -54,9 +54,9 @@ abstract class StringDefault
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   StringDefault copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? stringDefault,
-    String? stringDefaultNull,
+    Object? stringDefaultNull = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

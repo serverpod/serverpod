@@ -88,13 +88,13 @@ abstract class SessionLogFilter
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   SessionLogFilter copyWith({
-    String? endpoint,
-    String? method,
-    String? futureCall,
+    Object? endpoint = _Undefined,
+    Object? method = _Undefined,
+    Object? futureCall = _Undefined,
     bool? slow,
     bool? error,
     bool? open,
-    int? lastSessionLogId,
+    Object? lastSessionLogId = _Undefined,
     DateTime? startTime = const _is.$UndefinedDateTime(),
     DateTime? endTime = const _is.$UndefinedDateTime(),
   });

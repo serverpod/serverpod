@@ -50,7 +50,7 @@ abstract class DoubleDefaultModel
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   DoubleDefaultModel copyWith({
-    int? id,
+    Object? id = _Undefined,
     double? doubleDefaultModel,
     double? doubleDefaultModelNull,
   });

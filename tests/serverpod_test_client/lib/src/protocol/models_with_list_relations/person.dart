@@ -58,9 +58,9 @@ abstract class Person
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Person copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? organizationId,
+    Object? organizationId = _Undefined,
     _i0ptycc3.Organization? organization =
         const _UndefinedPerson$organization(),
   });

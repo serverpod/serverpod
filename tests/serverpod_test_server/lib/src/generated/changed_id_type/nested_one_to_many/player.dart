@@ -69,7 +69,7 @@ abstract class PlayerUuid
   PlayerUuid copyWith({
     _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     String? name,
-    int? teamId,
+    Object? teamId = _Undefined,
     _i9bz1am4.TeamInt? team = const _UndefinedPlayerUuid$team(),
   });
   @override

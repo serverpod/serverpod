@@ -47,7 +47,7 @@ abstract class UniqueData
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UniqueData copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? number,
     String? email,
   });

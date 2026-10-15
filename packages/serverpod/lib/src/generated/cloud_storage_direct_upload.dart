@@ -125,19 +125,19 @@ abstract class CloudStorageDirectUploadEntry
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   CloudStorageDirectUploadEntry copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? storageId,
     String? path,
     DateTime? expiration,
     String? authKey,
     int? maxFileSize,
-    int? contentLength,
+    Object? contentLength = _Undefined,
     bool? preventOverwrite,
-    String? contentType,
-    String? cacheControl,
-    String? contentDisposition,
-    String? contentEncoding,
-    String? customMetadata,
+    Object? contentType = _Undefined,
+    Object? cacheControl = _Undefined,
+    Object? contentDisposition = _Undefined,
+    Object? contentEncoding = _Undefined,
+    Object? customMetadata = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

@@ -79,7 +79,7 @@ abstract class ObjectWithVector
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithVector copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.Vector? vector,
     _isc.Vector? vectorNullable = const _isc.$UndefinedVector(),
     _isc.Vector? vectorIndexedHnsw,

@@ -78,13 +78,13 @@ abstract class CloudStorageDirectDownloadEntry
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   CloudStorageDirectDownloadEntry copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? storageId,
     String? path,
     DateTime? expiration,
     String? authKey,
-    String? downloadFileName,
-    String? contentType,
+    Object? downloadFileName = _Undefined,
+    Object? contentType = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

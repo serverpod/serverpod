@@ -58,7 +58,7 @@ abstract class UpsertTestModel
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UpsertTestModel copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? code,
     String? category,
     int? value,

@@ -107,16 +107,20 @@ abstract class StringDefaultPersist
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   StringDefaultPersist copyWith({
-    int? id,
-    String? stringDefaultPersist,
-    String? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
-    String? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
-    String? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
-    String? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
-    String? stringDefaultPersistSingleQuoteWithOneDoubleQuote,
-    String? stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
-    String? stringDefaultPersistDoubleQuoteWithOneSingleQuote,
-    String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
+    Object? id = _Undefined,
+    Object? stringDefaultPersist = _Undefined,
+    Object? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote =
+        _Undefined,
+    Object? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote =
+        _Undefined,
+    Object? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote =
+        _Undefined,
+    Object? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote =
+        _Undefined,
+    Object? stringDefaultPersistSingleQuoteWithOneDoubleQuote = _Undefined,
+    Object? stringDefaultPersistSingleQuoteWithTwoDoubleQuote = _Undefined,
+    Object? stringDefaultPersistDoubleQuoteWithOneSingleQuote = _Undefined,
+    Object? stringDefaultPersistDoubleQuoteWithTwoSingleQuote = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

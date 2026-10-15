@@ -72,7 +72,7 @@ abstract class SharedTableRecord
   /// with some or all fields replaced by the given arguments.
   @_iss.useResult
   SharedTableRecord copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     _iqfgygbv.SharedEnum? sharedEnum,
     _iqfgygbv.SharedSubclass? sharedSubclass =

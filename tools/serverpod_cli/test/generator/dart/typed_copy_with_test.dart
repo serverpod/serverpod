@@ -528,6 +528,37 @@ void main() {
     },
   );
 
+  group('Given nullable simple fields that use the untyped sentinel,', () {
+    late ModelClassDefinition model;
+
+    setUp(() {
+      model = ModelClassDefinitionBuilder()
+          .withSimpleField('count', 'int', nullable: true)
+          .withSimpleField('name', 'String', nullable: true)
+          .build();
+    });
+
+    test(
+      'when generating server code, '
+      'then the public and implementation copyWith signatures agree.',
+      () {
+        final code = const DartServerCodeGenerator()
+            .generateSerializableModelsCode(
+              models: [model],
+              config: GeneratorConfigBuilder().build(),
+            )
+            .values
+            .single;
+
+        expect(
+          _parameters(code, 'Example'),
+          '({Object? count = _Undefined, Object? name = _Undefined})',
+        );
+        expect(_parameters(code, '_ExampleImpl'), _parameters(code, 'Example'));
+      },
+    );
+  });
+
   test(
     'Given same-named local and sealed module models, '
     'when resolving the module field type, '

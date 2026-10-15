@@ -64,7 +64,7 @@ abstract class UserNoteCollectionWithALongName
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UserNoteCollectionWithALongName copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_iegdvue1.UserNoteWithALongName>? notes =
         const _is.$UndefinedList<_iegdvue1.UserNoteWithALongName>(),

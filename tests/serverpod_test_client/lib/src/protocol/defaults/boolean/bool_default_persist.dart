@@ -57,9 +57,9 @@ abstract class BoolDefaultPersist
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   BoolDefaultPersist copyWith({
-    int? id,
-    bool? boolDefaultPersistTrue,
-    bool? boolDefaultPersistFalse,
+    Object? id = _Undefined,
+    Object? boolDefaultPersistTrue = _Undefined,
+    Object? boolDefaultPersistFalse = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

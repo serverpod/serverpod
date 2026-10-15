@@ -55,7 +55,7 @@ abstract class MultipleMaxFieldName
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   MultipleMaxFieldName copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
   });

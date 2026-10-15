@@ -55,9 +55,9 @@ abstract class SessionAuthInfo
   @_isc.useResult
   SessionAuthInfo copyWith({
     bool? isAuthenticated,
-    String? userId,
+    Object? userId = _Undefined,
     List<String>? scopes,
-    String? authId,
+    Object? authId = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

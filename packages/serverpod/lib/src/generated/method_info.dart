@@ -56,7 +56,7 @@ abstract class MethodInfo
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   MethodInfo copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? endpoint,
     String? method,
   });

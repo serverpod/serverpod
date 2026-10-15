@@ -47,8 +47,8 @@ abstract class ServerOnlyDefault
   @_is.useResult
   ServerOnlyDefault copyWith({
     String? normalField,
-    int? serverOnlyField,
-    String? serverOnlyStringField,
+    Object? serverOnlyField = _Undefined,
+    Object? serverOnlyStringField = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

@@ -56,7 +56,7 @@ abstract class EmailAuth
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   EmailAuth copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? userId,
     String? email,
     String? hash,

@@ -60,7 +60,7 @@ abstract class ObjectWithGeographyPolygon
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithGeographyPolygon copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.GeographyPolygon? polygon,
     _isc.GeographyPolygon? polygonIndexedGist,
     _isc.GeographyPolygon? polygonIndexedSpgist,

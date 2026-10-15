@@ -61,7 +61,7 @@ abstract class CustomerInt
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   CustomerInt copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_ivss21qh.OrderUuid>? orders =
         const _is.$UndefinedList<_ivss21qh.OrderUuid>(),

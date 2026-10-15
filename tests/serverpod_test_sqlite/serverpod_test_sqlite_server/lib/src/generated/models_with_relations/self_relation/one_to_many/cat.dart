@@ -75,9 +75,9 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Cat copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? motherId,
+    Object? motherId = _Undefined,
     _iayhscrz.Cat? mother = const _UndefinedCat$mother(),
     List<_iayhscrz.Cat>? kittens = const _is.$UndefinedList<_iayhscrz.Cat>(),
   });

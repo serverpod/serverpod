@@ -72,7 +72,7 @@ abstract class DurationDefault
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   DurationDefault copyWith({
-    int? id,
+    Object? id = _Undefined,
     Duration? durationDefault,
     Duration? durationDefaultNull = const _isc.$UndefinedDuration(),
   });

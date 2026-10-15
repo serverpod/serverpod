@@ -66,7 +66,7 @@ abstract class Company
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Company copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     int? townId,
     _i59ly1gg.Town? town = const _UndefinedCompany$town(),

@@ -58,7 +58,7 @@ abstract class Comment
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Comment copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? description,
     int? orderId,
     _ig920ya2.Order? order = const _UndefinedComment$order(),

@@ -68,9 +68,9 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Person copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? organizationId,
+    Object? organizationId = _Undefined,
     _i0ptycc3.Organization? organization =
         const _UndefinedPerson$organization(),
   });

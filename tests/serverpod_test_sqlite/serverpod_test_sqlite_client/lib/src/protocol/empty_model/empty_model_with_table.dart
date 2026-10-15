@@ -37,7 +37,7 @@ abstract class EmptyModelWithTable
   /// Returns a shallow copy of this [EmptyModelWithTable]
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
-  EmptyModelWithTable copyWith({int? id});
+  EmptyModelWithTable copyWith({Object? id = _Undefined});
   @override
   Map<String, dynamic> toJson() {
     return {

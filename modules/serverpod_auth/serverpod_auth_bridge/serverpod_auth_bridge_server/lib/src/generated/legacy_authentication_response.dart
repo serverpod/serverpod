@@ -75,11 +75,11 @@ abstract class LegacyAuthenticationResponse
   @_is.useResult
   LegacyAuthenticationResponse copyWith({
     bool? success,
-    String? key,
-    int? keyId,
+    Object? key = _Undefined,
+    Object? keyId = _Undefined,
     _izh8x5we.LegacyUserInfo? userInfo =
         const _UndefinedLegacyAuthenticationResponse$userInfo(),
-    _ijl7odiy.LegacyAuthenticationFailReason? failReason,
+    Object? failReason = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

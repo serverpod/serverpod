@@ -77,7 +77,7 @@ abstract class Enrollment
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Enrollment copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? studentId,
     _i2rea1ue.Student? student = const _UndefinedEnrollment$student(),
     int? courseId,

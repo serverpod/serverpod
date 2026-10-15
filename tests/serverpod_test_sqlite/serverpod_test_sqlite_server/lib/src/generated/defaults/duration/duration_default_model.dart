@@ -81,7 +81,7 @@ abstract class DurationDefaultModel
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   DurationDefaultModel copyWith({
-    int? id,
+    Object? id = _Undefined,
     Duration? durationDefaultModel,
     Duration? durationDefaultModelNull = const _is.$UndefinedDuration(),
   });

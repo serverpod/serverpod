@@ -58,9 +58,9 @@ abstract class SharedModuleTable
   /// with some or all fields replaced by the given arguments.
   @_iss.useResult
   SharedModuleTable copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    dynamic data,
+    Object? data = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

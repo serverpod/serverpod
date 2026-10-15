@@ -44,8 +44,8 @@ abstract class ObjectWithSelfParent
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithSelfParent copyWith({
-    int? id,
-    int? other,
+    Object? id = _Undefined,
+    Object? other = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

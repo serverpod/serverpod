@@ -77,9 +77,9 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Team copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? arenaId,
+    Object? arenaId = _Undefined,
     _iv085ahk.Arena? arena = const _UndefinedTeam$arena(),
     List<_i9mhudyy.Player>? players =
         const _isc.$UndefinedList<_i9mhudyy.Player>(),

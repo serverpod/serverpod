@@ -53,7 +53,7 @@ abstract class CustomerInt
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   CustomerInt copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_ivss21qh.OrderUuid>? orders =
         const _isc.$UndefinedList<_ivss21qh.OrderUuid>(),

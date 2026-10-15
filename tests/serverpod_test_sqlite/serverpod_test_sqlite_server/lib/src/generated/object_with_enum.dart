@@ -85,9 +85,9 @@ abstract class ObjectWithEnum
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectWithEnum copyWith({
-    int? id,
+    Object? id = _Undefined,
     _ionapfu9.TestEnum? testEnum,
-    _ionapfu9.TestEnum? nullableEnum,
+    Object? nullableEnum = _Undefined,
     List<_ionapfu9.TestEnum>? enumList,
     List<_ionapfu9.TestEnum?>? nullableEnumList,
     List<List<_ionapfu9.TestEnum>>? enumListList,

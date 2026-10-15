@@ -63,7 +63,7 @@ abstract class DatabaseMigrationAction
   @_iss.useResult
   DatabaseMigrationAction copyWith({
     _isd.DatabaseMigrationActionType? type,
-    String? deleteTable,
+    Object? deleteTable = _Undefined,
     _isd.TableMigration? alterTable =
         const _UndefinedDatabaseMigrationAction$alterTable(),
     _isd.TableDefinition? createTable =

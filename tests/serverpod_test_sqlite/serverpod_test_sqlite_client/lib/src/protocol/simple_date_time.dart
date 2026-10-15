@@ -53,7 +53,7 @@ abstract class SimpleDateTime
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   SimpleDateTime copyWith({
-    int? id,
+    Object? id = _Undefined,
     DateTime? dateTime,
   });
   @override

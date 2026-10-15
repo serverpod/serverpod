@@ -63,7 +63,7 @@ abstract class LongImplicitIdFieldCollection
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   LongImplicitIdFieldCollection copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_i4kuijum.LongImplicitIdField>?
         thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =

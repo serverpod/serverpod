@@ -58,7 +58,7 @@ abstract class ObjectWithSealedClass
   @_is.useResult
   ObjectWithSealedClass copyWith({
     _ij7m744x.SealedParent? sealedField,
-    _ij7m744x.SealedParent? nullableSealedField,
+    Object? nullableSealedField = _Undefined,
     List<_ij7m744x.SealedParent>? sealedList,
   });
   @override

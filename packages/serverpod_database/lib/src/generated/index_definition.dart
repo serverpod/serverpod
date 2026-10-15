@@ -129,16 +129,16 @@ abstract class IndexDefinition
   @_iss.useResult
   IndexDefinition copyWith({
     String? indexName,
-    String? tableSpace,
+    Object? tableSpace = _Undefined,
     List<_isd.IndexElementDefinition>? elements,
     String? type,
     bool? isUnique,
     bool? isPrimary,
-    bool? nullsDistinct,
-    String? predicate,
-    _isd.GinOperatorClass? ginOperatorClass,
-    _isd.VectorDistanceFunction? vectorDistanceFunction,
-    _isd.ColumnType? vectorColumnType,
+    Object? nullsDistinct = _Undefined,
+    Object? predicate = _Undefined,
+    Object? ginOperatorClass = _Undefined,
+    Object? vectorDistanceFunction = _Undefined,
+    Object? vectorColumnType = _Undefined,
     Map<String, String>? parameters =
         const _iss.$UndefinedMap<String, String>(),
   });

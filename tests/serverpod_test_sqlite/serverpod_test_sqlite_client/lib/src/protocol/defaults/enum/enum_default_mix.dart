@@ -76,7 +76,7 @@ abstract class EnumDefaultMix
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   EnumDefaultMix copyWith({
-    int? id,
+    Object? id = _Undefined,
     _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultModel,
     _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
     _iwklobdz.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,

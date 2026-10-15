@@ -53,7 +53,7 @@ abstract class Arena
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Arena copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     _iaks25tn.Team? team = const _UndefinedArena$team(),
   });

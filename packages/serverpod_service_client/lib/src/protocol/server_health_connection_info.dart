@@ -81,7 +81,7 @@ abstract class ServerHealthConnectionInfo
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ServerHealthConnectionInfo copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? serverId,
     DateTime? timestamp,
     int? active,

@@ -60,7 +60,7 @@ abstract class ObjectWithGeographyPoint
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithGeographyPoint copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.GeographyPoint? point,
     _isc.GeographyPoint? pointIndexedGist,
     _isc.GeographyPoint? pointIndexedSpgist,

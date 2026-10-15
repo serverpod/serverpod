@@ -43,7 +43,7 @@ abstract class BulkDataException
   @_iss.useResult
   BulkDataException copyWith({
     String? message,
-    String? query,
+    Object? query = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

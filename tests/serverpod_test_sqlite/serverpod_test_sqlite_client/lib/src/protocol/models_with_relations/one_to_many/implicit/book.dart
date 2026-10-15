@@ -62,7 +62,7 @@ abstract class Book implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Book copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? title,
     List<_ithd8abs.Chapter>? chapters =
         const _isc.$UndefinedList<_ithd8abs.Chapter>(),

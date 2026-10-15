@@ -65,9 +65,9 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Player copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? teamId,
+    Object? teamId = _Undefined,
     _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   });
   @override

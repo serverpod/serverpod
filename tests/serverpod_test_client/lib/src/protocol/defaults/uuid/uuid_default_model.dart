@@ -97,7 +97,7 @@ abstract class UuidDefaultModel
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UuidDefaultModel copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.UuidValue? uuidDefaultModelRandom,
     _isc.UuidValue? uuidDefaultModelRandomV7,
     _isc.UuidValue? uuidDefaultModelRandomNull =

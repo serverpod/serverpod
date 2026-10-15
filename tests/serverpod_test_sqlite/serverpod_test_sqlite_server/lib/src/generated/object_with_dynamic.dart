@@ -88,9 +88,9 @@ abstract class ObjectWithDynamic
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectWithDynamic copyWith({
-    int? id,
-    dynamic payload,
-    dynamic jsonbPayload,
+    Object? id = _Undefined,
+    Object? payload = _Undefined,
+    Object? jsonbPayload = _Undefined,
     List<dynamic>? payloadList,
     Map<String, dynamic>? payloadMap,
     Set<dynamic>? payloadSet,

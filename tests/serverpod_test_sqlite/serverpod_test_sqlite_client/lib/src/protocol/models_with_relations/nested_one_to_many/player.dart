@@ -67,9 +67,9 @@ abstract class Player
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Player copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? teamId,
+    Object? teamId = _Undefined,
     _iaks25tn.Team? team = const _UndefinedPlayer$team(),
   });
   @override
