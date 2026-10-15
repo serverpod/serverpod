@@ -1,0 +1,12 @@
+### Exception thrown when merging two accounts failed and was rolled back.
+###
+### Both accounts are left untouched. The underlying error is logged on the
+### server, since it originates from application code and may contain details
+### that should not be sent to the client.
+exception: AccountMergeFailedException
+fields:
+  ### The account that was to be kept.
+  userToKeepId: UuidValue
+
+  ### The account that was to be merged in and removed.
+  userToRemoveId: UuidValue

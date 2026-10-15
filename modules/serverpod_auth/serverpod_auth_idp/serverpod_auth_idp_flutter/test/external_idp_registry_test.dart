@@ -39,8 +39,10 @@ Widget mockWidgetBuilder(
   BuildContext context,
   ServerpodClientShared client,
   VoidCallback? onAuthenticated,
-  Function(Object error)? onError,
-) {
+  Function(Object error)? onError, [
+  AccountLinkingController? accountLinking,
+  OnAuthSuccessCallback? onAuthSuccess,
+]) {
   return Container();
 }
 
@@ -48,8 +50,10 @@ Widget anotherMockWidgetBuilder(
   BuildContext context,
   ServerpodClientShared client,
   VoidCallback? onAuthenticated,
-  Function(Object error)? onError,
-) {
+  Function(Object error)? onError, [
+  AccountLinkingController? accountLinking,
+  OnAuthSuccessCallback? onAuthSuccess,
+]) {
   return const SizedBox();
 }
 

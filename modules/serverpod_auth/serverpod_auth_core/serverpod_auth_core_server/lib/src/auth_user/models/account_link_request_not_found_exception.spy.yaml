@@ -1,0 +1,10 @@
+### Exception thrown when an account link request cannot be used.
+###
+### This covers every way a link flow can go stale: no request was started, it
+### expired, it was started on a different device, no sign-in has been attached
+### to it yet, or the proof token does not match the attached sign-in. In all
+### cases the remedy is the same, which is to start the linking flow again.
+exception: AccountLinkRequestNotFoundException
+fields:
+  ### A description of why the request could not be used.
+  message: String?

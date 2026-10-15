@@ -43,11 +43,23 @@ class FirebaseAuthController extends ChangeNotifier {
   /// Callback when an error occurs during authentication.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Used by account linking, where the signed-in user stays signed in and the
+  /// new sign-in only proves ownership of the account being linked.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// Creates a Firebase authentication controller.
   FirebaseAuthController({
     required this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
   }) {
     FirebaseSignInService.instance.ensureInitialized(auth: client.auth);
   }
@@ -100,6 +112,14 @@ class FirebaseAuthController extends ChangeNotifier {
     if (user == null) {
       return;
     }
+    if (_state == FirebaseAuthState.loading) {
+      return;
+    }
+
+    if (accountLinking != null) {
+      await accountLinking!.start();
+      if (accountLinking!.state != AccountLinkingState.awaitingSignIn) return;
+    }
 
     _setState(FirebaseAuthState.loading);
 
@@ -124,10 +144,19 @@ class FirebaseAuthController extends ChangeNotifier {
       final endpoint = client.getEndpointOfType<EndpointFirebaseIdpBase>();
       final authSuccess = await endpoint.login(idToken: idToken);
 
-      await client.auth.updateSignedInUser(authSuccess);
+      final didSignIn = await completeSignIn(
+        client,
+        authSuccess,
+        accountLinking: accountLinking,
+        onAuthSuccess: onAuthSuccess,
+      );
 
-      _setState(FirebaseAuthState.authenticated);
-      onAuthenticated?.call();
+      if (didSignIn) {
+        _setState(FirebaseAuthState.authenticated);
+        onAuthenticated?.call();
+      } else {
+        _setState(FirebaseAuthState.idle);
+      }
     } catch (error) {
       _error = error;
       _setState(FirebaseAuthState.error);

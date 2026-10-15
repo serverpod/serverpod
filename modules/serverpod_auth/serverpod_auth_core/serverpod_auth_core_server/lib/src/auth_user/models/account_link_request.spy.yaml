@@ -1,0 +1,55 @@
+### An in-progress request to link an additional sign-in method to an [AuthUser].
+###
+### Created before the user signs in with the additional identity provider, and
+### completed once that sign-in has been attached and approved. Only one request
+### can be active per user at a time; creating a new one replaces the previous.
+class: AccountLinkRequest
+serverOnly: true
+table: serverpod_auth_core_account_link_request
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The [AuthUser] that initiated the request. This account is the one kept
+  ### when the link is executed.
+  authUser: AuthUser?, relation(onDelete=Cascade)
+
+  ### The `authId` of the session that created this request.
+  ###
+  ### Depending on the token strategy this is either the server-side session's
+  ### ID or the JWT refresh token's ID. It ensures that only the device which
+  ### started the flow can attach a sign-in to it or execute it, so a concurrent
+  ### login on a second device is never absorbed into this request.
+  authId: String
+
+  ### The [AuthUser] of the sign-in that was attached to this request.
+  ###
+  ### This account is merged into [authUser] and then removed when the request is
+  ### executed. `null` until a sign-in has been attached.
+  ###
+  ### Deliberately not a relation: a cascade from the attached user would delete
+  ### this request, and a missing user is already reported as an
+  ### `AuthUserNotFoundException` by the merge.
+  linkedAuthUserId: UuidValue?
+
+  ### The identity provider method of the attached sign-in, for example "google".
+  linkedMethod: String?
+
+  ### Whether the attached account was created by the sign-in that attached it.
+  ###
+  ### If `true` the account cannot hold any application data yet, so the link can
+  ### be completed without asking the user to approve a merge.
+  linkedAccountWasCreated: bool?
+
+  ### The time when this request was created.
+  createdAt: DateTime, default=now
+
+  ### The time after which this request can no longer be used.
+  ###
+  ### Stored on the request rather than derived from [createdAt] so that
+  ### validity can be checked without access to the module's configuration.
+  expiresAt: DateTime
+
+indexes:
+  serverpod_auth_core_account_link_request_auth_user_id:
+    fields: authUserId
+    unique: true

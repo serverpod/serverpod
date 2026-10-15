@@ -728,6 +728,110 @@ void main() {
       );
     },
   );
+
+  group('Given a merge config,', () {
+    test(
+      'when it is left at its defaults, then it reports no application merge '
+      'handler.',
+      () {
+        expect(
+          const AccountMergeConfig().hasApplicationMergeHandler,
+          isFalse,
+        );
+      },
+    );
+
+    test(
+      'when an application merge handler is supplied, then it reports one.',
+      () {
+        expect(
+          const AccountMergeConfig(
+            applicationMergeHandler: _noOpApplicationMergeHandler,
+          ).hasApplicationMergeHandler,
+          isTrue,
+        );
+      },
+    );
+
+    test('when custom merge hooks are supplied, then it reports one.', () {
+      expect(
+        const AccountMergeConfig.custom(
+          mergeHooks: [],
+        ).hasApplicationMergeHandler,
+        isTrue,
+      );
+    });
+
+    test(
+      'when it is left at its defaults, then the new account hooks leave out '
+      'the throwing default handler.',
+      () {
+        final hooks = const AccountMergeConfig().newAccountMergeHooks;
+
+        expect(hooks, isNot(contains(AccountMergeConfig.defaultMergeHandler)));
+        expect(hooks, contains(AccountMergeConfig.defaultIdpMergeHandler));
+        expect(hooks, contains(AccountMergeConfig.defaultCoreDataMergeHandler));
+        expect(hooks, contains(AccountMergeConfig.defaultMergeCleanupHandler));
+      },
+    );
+
+    test('when an application merge handler is supplied, then the new account '
+        'hooks still run it.', () {
+      final hooks = const AccountMergeConfig(
+        applicationMergeHandler: _noOpApplicationMergeHandler,
+      ).newAccountMergeHooks;
+
+      expect(hooks, contains(_noOpApplicationMergeHandler));
+    });
+  });
+
+  withServerpod(
+    'Given a user that was created moments ago by the sign-in that is being '
+    'linked, and a merge config left at its defaults,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthUserModel userToKeep;
+      late AuthUserModel userToRemove;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+      });
+
+      test('when merged as a newly created user, then it succeeds without an '
+          'application merge handler.', () async {
+        await const AccountMerger().merge(
+          session,
+          userToKeepId: userToKeep.id,
+          userToRemoveId: userToRemove.id,
+          userToRemoveIsNewlyCreated: true,
+        );
+
+        expect(await AuthUser.db.findById(session, userToRemove.id), isNull);
+      });
+
+      test(
+        'when merged as an ordinary user, then it fails on the default merge '
+        'handler.',
+        () async {
+          await expectLater(
+            const AccountMerger().merge(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+            ),
+            throwsA(isA<Exception>()),
+          );
+
+          expect(
+            await AuthUser.db.findById(session, userToRemove.id),
+            isNotNull,
+          );
+        },
+      );
+    },
+  );
 }
 
 /// Application merge handler which leaves the merged users untouched, so that
