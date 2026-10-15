@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dart_mcp/client.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
+import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
@@ -54,7 +55,10 @@ void main() {
             },
         );
 
-        pair = await _makeBridgePair(runner.socketPath);
+        pair = await _makeBridgePair(
+          runner.socketPath,
+          logPath: serverpodRunnerLogPath(tempServerDir.path),
+        );
       });
 
       tearDown(() async {
@@ -69,7 +73,10 @@ void main() {
         () async {
           await pair.client.callTool(CallToolRequest(name: 'apply_migrations'));
           await pair.dispose();
-          pair = await _makeBridgePair(runner.socketPath);
+          pair = await _makeBridgePair(
+            runner.socketPath,
+            logPath: serverpodRunnerLogPath(tempServerDir.path),
+          );
 
           expect(stopCalls, 0);
         },
@@ -139,6 +146,7 @@ void main() {
         // No runner started: the socket file does not exist yet.
         pair = await _makeBridgePair(
           '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock',
+          logPath: serverpodRunnerLogPath(tempServerDir.path),
         );
       });
 
@@ -228,13 +236,14 @@ void main() {
 
       setUp(() async {
         tempServerDir = await Directory.systemTemp.createTemp('bt');
-        final toolDir = Directory('${tempServerDir.path}/.dart_tool/serverpod');
-        await toolDir.create(recursive: true);
-        await File(
-          '${toolDir.path}/runner.log',
-        ).writeAsString(lines.join('\n'));
-        // No runner: the tool reads the file beside the socket path.
-        pair = await _makeBridgePair('${toolDir.path}/mcp.sock');
+        final logPath = serverpodRunnerLogPath(tempServerDir.path);
+        await File(logPath).parent.create(recursive: true);
+        await File(logPath).writeAsString(lines.join('\n'));
+        // The socket path is a registry link the stopped runner removed.
+        pair = await _makeBridgePair(
+          '${tempServerDir.path}/registry/gone/mcp.sock',
+          logPath: logPath,
+        );
       });
 
       tearDown(() async {
@@ -283,7 +292,10 @@ void main() {
 
           final socketPath =
               '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock';
-          final pair = await _makeBridgePair(socketPath);
+          final pair = await _makeBridgePair(
+            socketPath,
+            logPath: serverpodRunnerLogPath(tempServerDir.path),
+          );
           addTearDown(pair.dispose);
 
           // First call: no runner -> not-running.
@@ -328,7 +340,10 @@ void main() {
         tempServerDir = await Directory.systemTemp.createTemp('bt');
         addTearDown(() => _safeDelete(tempServerDir));
         socketPath = '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock';
-        pair = await _makeBridgePair(socketPath);
+        pair = await _makeBridgePair(
+          socketPath,
+          logPath: serverpodRunnerLogPath(tempServerDir.path),
+        );
         addTearDown(pair.dispose);
 
         firstRunner = McpSocketServer(serverDir: tempServerDir.path);
@@ -399,7 +414,10 @@ class _Pair {
   }
 }
 
-Future<_Pair> _makeBridgePair(String socketPath) async {
+Future<_Pair> _makeBridgePair(
+  String socketPath, {
+  required String logPath,
+}) async {
   final clientToBridge = StreamController<String>();
   final bridgeToClient = StreamController<String>();
   final bridgeChannel = StreamChannel<String>(
@@ -411,7 +429,11 @@ Future<_Pair> _makeBridgePair(String socketPath) async {
     clientToBridge.sink,
   );
 
-  final bridge = BridgeMcpServer(bridgeChannel, socketPath: socketPath);
+  final bridge = BridgeMcpServer(
+    bridgeChannel,
+    socketPath: socketPath,
+    logPath: logPath,
+  );
   final client = MCPClient(
     Implementation(name: 'bridge-test-client', version: '0.0.0'),
   ).connectServer(clientChannel);

@@ -4,11 +4,9 @@ import 'dart:io';
 
 import 'package:dart_mcp/client.dart';
 import 'package:dart_mcp/server.dart';
-import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/mcp/runner_surface.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
-import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' show connectUnixSocket;
 
 const _notRunningErrorTag = 'not-running';
@@ -29,11 +27,9 @@ base class BridgeMcpServer extends MCPServer
   /// (`<serverDir>/.dart_tool/serverpod/mcp.sock`).
   final String socketPath;
 
-  /// The runner's log file, which lives beside its socket.
-  late final String logPath = p.join(
-    p.dirname(socketPath),
-    serverpodRunnerLogName,
-  );
+  /// The runner's log file. Not derived from [socketPath], which may be a
+  /// registry link the runner removes when it stops.
+  final String logPath;
 
   final MCPClient _client = MCPClient(_bridgeImplementation);
 
@@ -41,19 +37,22 @@ base class BridgeMcpServer extends MCPServer
   Future<void>? _pendingConnect;
   StreamSubscription<ResourceUpdatedNotification>? _resourceUpdatedSub;
 
-  BridgeMcpServer(super.channel, {required this.socketPath})
-    : super.fromStreamChannel(
-        implementation: _bridgeImplementation,
-        instructions:
-            'Manage a Serverpod server and its Flutter app running under '
-            '`serverpod start`. Use these tools to read Serverpod and Flutter '
-            'logs, create and apply database migrations, hot reload or restart '
-            "the server and Flutter app, and get the Flutter app's Dart "
-            'Tooling Daemon (DTD) URI. If a tool reports the server is not '
-            'running, call `tail_runner_logs` to see whether it is still '
-            'starting or why it stopped, then ask the user to start it with '
-            '`serverpod start` in the project directory.',
-      ) {
+  BridgeMcpServer(
+    super.channel, {
+    required this.socketPath,
+    required this.logPath,
+  }) : super.fromStreamChannel(
+         implementation: _bridgeImplementation,
+         instructions:
+             'Manage a Serverpod server and its Flutter app running under '
+             '`serverpod start`. Use these tools to read Serverpod and Flutter '
+             'logs, create and apply database migrations, hot reload or restart '
+             "the server and Flutter app, and get the Flutter app's Dart "
+             'Tooling Daemon (DTD) URI. If a tool reports the server is not '
+             'running, call `tail_runner_logs` to see whether it is still '
+             'starting or why it stopped, then ask the user to start it with '
+             '`serverpod start` in the project directory.',
+       ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
     }

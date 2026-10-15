@@ -75,7 +75,11 @@ class McpCommand extends ServerpodCommand<McpOption> {
       throw ExitException.error();
     }
     final channel = stdioChannel(input: stdin, output: stdout);
-    final server = BridgeMcpServer(channel, socketPath: socketPath);
+    final server = BridgeMcpServer(
+      channel,
+      socketPath: socketPath,
+      logPath: serverpodRunnerLogPath(serverDir.path),
+    );
     await server.done;
   }
 }
