@@ -280,7 +280,7 @@ void main() {
         () async {
           await expectLater(
             () => withClock(
-              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              _clockAfter(verificationCodeLifetime),
               () => endpoints.emailAccount.verifyRegistrationCode(
                 sessionBuilder,
                 accountRequestId: receivedAccountRequestId,
@@ -325,7 +325,7 @@ void main() {
         () async {
           await expectLater(
             () => withClock(
-              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              _clockAfter(verificationCodeLifetime),
               () => endpoints.emailAccount.verifyRegistrationCode(
                 sessionBuilder,
                 accountRequestId: receivedAccountRequestId,
@@ -611,7 +611,7 @@ void main() {
         () async {
           await expectLater(
             () => withClock(
-              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              _clockAfter(verificationCodeLifetime),
               () => endpoints.emailAccount.verifyPasswordResetCode(
                 sessionBuilder,
                 passwordResetRequestId: passwordResetRequestId,
@@ -682,7 +682,7 @@ void main() {
         () async {
           await expectLater(
             () => withClock(
-              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              _clockAfter(verificationCodeLifetime),
               () => endpoints.emailAccount.verifyPasswordResetCode(
                 sessionBuilder,
                 passwordResetRequestId: passwordResetRequestId,
@@ -789,7 +789,7 @@ void main() {
         () async {
           await expectLater(
             () => withClock(
-              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              _clockAfter(verificationCodeLifetime),
               () => endpoints.emailAccount.finishPasswordReset(
                 sessionBuilder,
                 finishPasswordResetToken: finishPasswordResetToken,
@@ -860,7 +860,7 @@ void main() {
         () async {
           await expectLater(
             () => withClock(
-              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              _clockAfter(verificationCodeLifetime),
               () => endpoints.emailAccount.finishPasswordReset(
                 sessionBuilder,
                 finishPasswordResetToken: finishPasswordResetToken,
@@ -1164,6 +1164,15 @@ extension on TestEndpoints {
       newPassword: password,
     );
   }
+}
+
+/// Strictly after [lifetime]. Expiry checks are exclusive, so advancing by
+/// exactly [lifetime] is still valid when the row shares a clock tick with
+/// [DateTime.now].
+Clock _clockAfter(final Duration lifetime) {
+  return Clock.fixed(
+    DateTime.now().add(lifetime + const Duration(seconds: 1)),
+  );
 }
 
 Future<void> _cleanUpDatabase(final Session session) async {
