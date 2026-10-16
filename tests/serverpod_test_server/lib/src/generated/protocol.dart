@@ -1610,6 +1610,8 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilwf0zl1.FreezedCustomClass>,
       _is.getType<_irwwg01u.TestRetryPolicy>,
       _is.getType<_irwwg01u.TestRetryPolicyWithDoubling>,
+      _is.getType<_irwwg01u.TestCountingRetryPolicy>,
+      _is.getType<_irwwg01u.TestThrowingRetryPolicy>,
       _is.getType<_ilwf0zl1.CustomClass?>,
       _is.getType<_ilwf0zl1.CustomClass2?>,
       _is.getType<_ilwf0zl1.CustomClassWithoutProtocolSerialization?>,
@@ -1620,6 +1622,8 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilwf0zl1.FreezedCustomClass?>,
       _is.getType<_irwwg01u.TestRetryPolicy?>,
       _is.getType<_irwwg01u.TestRetryPolicyWithDoubling?>,
+      _is.getType<_irwwg01u.TestCountingRetryPolicy?>,
+      _is.getType<_irwwg01u.TestThrowingRetryPolicy?>,
       _is.getType<List<_i685tvwm.SimpleData>?>,
       _is.getType<(String, _ieub4zqi.PolymorphicParent)>,
       _is.getType<(int?,)?>,
@@ -14104,6 +14108,12 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _irwwg01u.TestRetryPolicyWithDoubling) {
       return _irwwg01u.TestRetryPolicyWithDoubling.fromJson(data) as T;
     }
+    if (t == _irwwg01u.TestCountingRetryPolicy) {
+      return _irwwg01u.TestCountingRetryPolicy.fromJson(data) as T;
+    }
+    if (t == _irwwg01u.TestThrowingRetryPolicy) {
+      return _irwwg01u.TestThrowingRetryPolicy.fromJson(data) as T;
+    }
     if (t == _is.getType<_ilwf0zl1.CustomClass?>()) {
       return (data != null ? _ilwf0zl1.CustomClass.fromJson(data) : null) as T;
     }
@@ -14155,6 +14165,18 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _is.getType<_irwwg01u.TestRetryPolicyWithDoubling?>()) {
       return (data != null
               ? _irwwg01u.TestRetryPolicyWithDoubling.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_irwwg01u.TestCountingRetryPolicy?>()) {
+      return (data != null
+              ? _irwwg01u.TestCountingRetryPolicy.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_irwwg01u.TestThrowingRetryPolicy?>()) {
+      return (data != null
+              ? _irwwg01u.TestThrowingRetryPolicy.fromJson(data)
               : null)
           as T;
     }
@@ -14351,6 +14373,8 @@ class Protocol extends _is.DatabaseSerializationManager
       _ilwf0zl1.FreezedCustomClass => 'FreezedCustomClass',
       _irwwg01u.TestRetryPolicy => 'TestRetryPolicy',
       _irwwg01u.TestRetryPolicyWithDoubling => 'TestRetryPolicyWithDoubling',
+      _irwwg01u.TestCountingRetryPolicy => 'TestCountingRetryPolicy',
+      _irwwg01u.TestThrowingRetryPolicy => 'TestThrowingRetryPolicy',
       _ihs9bjzx.ByIndexEnumWithNameValue => 'ByIndexEnumWithNameValue',
       _iwdug2n0.ByNameEnumWithNameValue => 'ByNameEnumWithNameValue',
       _ik6ri27s.CourseUuid => 'CourseUuid',
@@ -14628,6 +14652,12 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (data.runtimeType == _irwwg01u.TestRetryPolicyWithDoubling) {
       return 'TestRetryPolicyWithDoubling';
+    }
+    if (data.runtimeType == _irwwg01u.TestCountingRetryPolicy) {
+      return 'TestCountingRetryPolicy';
+    }
+    if (data.runtimeType == _irwwg01u.TestThrowingRetryPolicy) {
+      return 'TestThrowingRetryPolicy';
     }
     switch (data) {
       case _ilwf0zl1.CustomClass():
@@ -15254,6 +15284,12 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (dataClassName == 'TestRetryPolicyWithDoubling') {
       return deserialize<_irwwg01u.TestRetryPolicyWithDoubling>(data['data']);
+    }
+    if (dataClassName == 'TestCountingRetryPolicy') {
+      return deserialize<_irwwg01u.TestCountingRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'TestThrowingRetryPolicy') {
+      return deserialize<_irwwg01u.TestThrowingRetryPolicy>(data['data']);
     }
     if (dataClassName == 'ByIndexEnumWithNameValue') {
       return deserialize<_ihs9bjzx.ByIndexEnumWithNameValue>(data['data']);
