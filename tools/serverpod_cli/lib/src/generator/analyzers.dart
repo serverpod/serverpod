@@ -94,6 +94,7 @@ class Analyzers {
       directory: libDirectory,
       collection: collection,
       generatedDirPaths: generatedDirPaths,
+      extraClasses: config.extraClasses,
     );
     return Analyzers(
       endpoints: endpointsAnalyzer,
@@ -536,6 +537,7 @@ class Analyzers {
         endpoints: endpoints,
         models: allModels,
         futureCalls: futureCalls,
+        futureCallRetryPolicies: _futureCalls.retryPolicies,
       );
 
       var generatedProtocolFiles =

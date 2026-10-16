@@ -102,6 +102,13 @@ class LibraryGenerator {
     return library.build();
   }
 
+  /// The extra classes the protocol serializes: the ones configured for the
+  /// project and, in server code, the project's future call retry policies.
+  List<TypeDefinition> get _protocolExtraClasses => [
+    ...config.extraClasses,
+    if (serverCode) ...protocolDefinition.futureCallRetryPolicies,
+  ];
+
   /// Generate the protocol library.
   Library generateProtocol() {
     var library = LibraryBuilder();
@@ -280,13 +287,13 @@ class LibraryGenerator {
               config: config,
             ),
           // Generate deserialization for extra classes.
-          for (var extraClass in config.extraClasses)
+          for (var extraClass in _protocolExtraClasses)
             ...extraClass.generateDeserialization(
               serverCode,
               config: config,
             ),
           // Generate deserialization for extra classes as nullables.
-          for (var extraClass in config.extraClasses)
+          for (var extraClass in _protocolExtraClasses)
             ...extraClass.asNullable.generateDeserialization(
               serverCode,
               config: config,
@@ -474,8 +481,8 @@ class LibraryGenerator {
           ..body = Block.of([
             const Code('return switch (type) {'),
             if (unsealedModels.isNotEmpty ||
-                config.extraClasses.isNotEmpty) ...[
-              for (var extraClass in config.extraClasses)
+                _protocolExtraClasses.isNotEmpty) ...[
+              for (var extraClass in _protocolExtraClasses)
                 Code.scope(
                   (a) =>
                       '${a(extraClass.reference(serverCode, config: config))} => '
@@ -514,6 +521,17 @@ class LibraryGenerator {
               return (data['__className__'] as String).replaceFirst('${config.name}.', '');
             }
           '''),
+            // Retry policies are matched by their exact type, so that a policy
+            // that extends another one is never named after its superclass.
+            if (serverCode)
+              for (var retryPolicy
+                  in protocolDefinition.futureCallRetryPolicies)
+                Code.scope(
+                  (a) =>
+                      'if (data.runtimeType == ${a(retryPolicy.reference(serverCode, config: config))}) {'
+                      '  return \'${retryPolicy.className}\';'
+                      '}',
+                ),
             if (unsealedModels.isNotEmpty ||
                 config.extraClasses.isNotEmpty) ...[
               const Code('switch (data) {'),
@@ -587,7 +605,7 @@ class LibraryGenerator {
               'if (dataClassName is! String) {'
               'return super.deserializeByClassName(data);}',
             ),
-            for (var extraClass in config.extraClasses)
+            for (var extraClass in _protocolExtraClasses)
               Code.scope(
                 (a) =>
                     'if(dataClassName == \'${extraClass.className}\'){'

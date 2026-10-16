@@ -1,3 +1,4 @@
+import '../generator/types.dart';
 import 'dart/definitions.dart';
 import 'models/definitions.dart';
 
@@ -13,10 +14,16 @@ class ProtocolDefinition {
   /// The future calls that are a part of this protocol.
   final List<FutureCallDefinition> futureCalls;
 
+  /// The future call retry policy classes of this project.
+  ///
+  /// They are serialized by the server protocol only, like extra classes.
+  final List<TypeDefinition> futureCallRetryPolicies;
+
   /// Create a new [ProtocolDefinition].
   const ProtocolDefinition({
     required this.endpoints,
     required this.models,
     required this.futureCalls,
+    this.futureCallRetryPolicies = const [],
   });
 }
