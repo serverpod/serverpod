@@ -1,12 +1,8 @@
-import 'dart:async';
-
-import 'package:email_validator/email_validator.dart';
-import 'package:flutter/widgets.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
-import '../common/widgets/password_requirements/requirements.dart';
-import 'email_auth_exceptions.dart';
+import 'email_flow_controller.dart';
+
+export 'email_flow_controller.dart' show EmailAuthState, InvalidEmailException;
 
 /// Represents the different screens in the email authentication flow.
 enum EmailFlowScreen {
@@ -71,95 +67,16 @@ enum EmailFlowScreen {
 ///   // Can use `controller.state` to access the current state.
 /// });
 /// ```
-class EmailAuthController extends ChangeNotifier {
-  /// The Serverpod client instance.
-  final ServerpodClientShared client;
-
-  /// The screen to display when starting the flow.
-  final EmailFlowScreen startScreen;
-
-  /// Callback when authentication is successful.
-  final VoidCallback? onAuthenticated;
-
-  /// Callback when an error occurs during authentication.
-  ///
-  /// The [error] parameter is an exception that should be shown to the user.
-  /// Exceptions that should not be shown to the user are shown in the debug
-  /// log, but not passed to the callback.
-  final Function(Object error)? onError;
-
-  /// The validation function to use for email validation.
-  ///
-  /// This function should throw an [InvalidEmailException] if the email is
-  /// invalid, so the error can be displayed to the user.
-  final void Function(String email) emailValidation;
-
-  /// Optional list of password requirements to display to the user.
-  ///
-  /// If provided, these requirements will be shown in password forms to guide
-  /// users on password creation. If null, will use a recommended safe default
-  /// defined at [PasswordRequirement.defaultRequirements].
-  final List<PasswordRequirement> passwordRequirements;
-
-  /// Text controller for email input.
-  late final emailController = TextEditingController();
-
-  /// Text controller for password input.
-  late final passwordController = TextEditingController();
-
-  /// Text controller for verification code input.
-  late final verificationCodeController = TextEditingController();
-
-  /// Notifier for terms and conditions / privacy policy acceptance checkbox.
-  late final legalNoticeAcceptedNotifier = ValueNotifier<bool>(false);
-
+class EmailAuthController extends EmailFlowController<EmailFlowScreen> {
   /// Creates an email authentication controller.
   EmailAuthController({
-    required this.client,
-    this.startScreen = EmailFlowScreen.login,
-    this.onAuthenticated,
-    this.onError,
-    void Function(String email)? emailValidation,
-    List<PasswordRequirement>? passwordRequirements,
-  }) : emailValidation = emailValidation ?? validateEmail,
-       passwordRequirements =
-           passwordRequirements ?? PasswordRequirement.defaultRequirements {
-    _currentScreen = startScreen;
-
-    emailController.addListener(() {
-      if (state == EmailAuthState.loading) return;
-      _debounce?.cancel();
-      _debounce = Timer(const Duration(milliseconds: 500), () {
-        if (emailController.text.isEmpty) {
-          _setState(EmailAuthState.idle);
-        } else {
-          try {
-            this.emailValidation.call(emailController.text.trim());
-            _setState(EmailAuthState.idle);
-          } catch (e) {
-            _error = e;
-            _setState(EmailAuthState.error);
-          }
-        }
-      });
-    });
-
-    passwordController.addListener(() {
-      if (passwordController.text.isEmpty ||
-          passwordController.text != _lastPassword) {
-        _setState(EmailAuthState.idle);
-      }
-      _lastPassword = passwordController.text;
-    });
-
-    legalNoticeAcceptedNotifier.addListener(notifyListeners);
-  }
-
-  /// The last typed password for comparison of changed value.
-  String _lastPassword = '';
-
-  /// Debounce timer for email validation.
-  Timer? _debounce;
+    required super.client,
+    super.startScreen = EmailFlowScreen.login,
+    super.onAuthenticated,
+    super.onError,
+    super.emailValidation,
+    super.passwordRequirements,
+  });
 
   /// Default email validation function.
   ///
@@ -178,31 +95,19 @@ class EmailAuthController extends ChangeNotifier {
     String email, {
     bool allowTopLevelDomains = false,
     bool allowEmailAliases = false,
-  }) {
-    if (!EmailValidator.validate(email, allowTopLevelDomains)) {
-      throw const InvalidEmailException('Invalid email address');
-    }
-    if (!allowEmailAliases && email.contains('+')) {
-      throw const InvalidEmailException('Email aliases are not allowed');
-    }
-  }
+  }) => EmailFlowController.validateEmail(
+    email,
+    allowTopLevelDomains: allowTopLevelDomains,
+    allowEmailAliases: allowEmailAliases,
+  );
 
-  late EmailFlowScreen _currentScreen;
+  @override
+  EmailFlowScreen get verifyPasswordResetScreen =>
+      EmailFlowScreen.verifyPasswordReset;
 
-  /// Stores the request ID for the current flow, if any.
-  UuidValue? _requestId;
-
-  /// Stores the finish account registration or password reset request token
-  /// after verification code is verified.
-  String? _finishRequestToken;
-
-  EmailAuthState _state = EmailAuthState.idle;
-
-  /// The current screen in the authentication flow.
-  EmailFlowScreen get currentScreen => _currentScreen;
-
-  /// The current state of the authentication flow.
-  EmailAuthState get state => _state;
+  @override
+  EmailFlowScreen get completePasswordResetScreen =>
+      EmailFlowScreen.completePasswordReset;
 
   /// Navigates to a specific screen in the authentication flow.
   ///
@@ -210,6 +115,7 @@ class EmailAuthController extends ChangeNotifier {
   /// navigate to account creation or password reset verification screens
   /// directly. This is useful when starting the flow from a deep link or push
   /// notification.
+  @override
   void navigateTo(
     EmailFlowScreen screen, {
     UuidValue? requestId,
@@ -222,20 +128,21 @@ class EmailAuthController extends ChangeNotifier {
         screen == EmailFlowScreen.verifyPasswordReset) {
       verificationCodeController.clear();
     } else {
-      _requestId = null;
+      this.requestId = null;
     }
     if (screen == EmailFlowScreen.completeRegistration ||
         screen == EmailFlowScreen.completePasswordReset) {
       passwordController.clear();
     } else {
-      _finishRequestToken = null;
+      this.finishRequestToken = null;
     }
 
-    if (requestId != null) _requestId = requestId;
-    if (finishRequestToken != null) _finishRequestToken = finishRequestToken;
+    if (requestId != null) this.requestId = requestId;
+    if (finishRequestToken != null) {
+      this.finishRequestToken = finishRequestToken;
+    }
 
-    _currentScreen = screen;
-    _setState(EmailAuthState.idle);
+    showScreen(screen);
   }
 
   /// Whether it is possible to navigate back to the previous screen.
@@ -265,75 +172,16 @@ class EmailAuthController extends ChangeNotifier {
     return true;
   }
 
-  /// Clears the text controllers and previously set request ID, if not on
-  /// a verification code screen. Pass [notify] as `false` if calling before
-  /// [navigateTo] to avoid notifying listeners twice.
-  void resetState({bool notify = true}) {
-    emailController.clear();
-    passwordController.clear();
-    verificationCodeController.clear();
-    _requestId = null;
-    _finishRequestToken = null;
-    _setState(_state, notify: notify);
-  }
-
-  /// Whether the controller is currently processing a request.
-  bool get isLoading => _state == EmailAuthState.loading;
-
-  /// Whether the user is authenticated.
-  bool get isAuthenticated => client.auth.isAuthenticated;
-
-  /// The current error message, if any.
-  String? get errorMessage => _error?.toString();
-
-  /// The current error, if any.
-  Object? get error => _state == EmailAuthState.error ? _error : null;
-  Object? _error;
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    verificationCodeController.dispose();
-    super.dispose();
-  }
-
-  /// Gets the email authentication endpoint from the client.
-  EndpointEmailIdpBase get _emailEndpoint {
-    try {
-      return client.getEndpointOfType<EndpointEmailIdpBase>();
-    } on ServerpodClientEndpointNotFound catch (_) {
-      throw StateError(
-        'No email authentication endpoint found. Make sure you have extended '
-        '"EndpointEmailIdpBase" in your server and exposed it.',
-      );
-    }
-  }
-
-  /// Logs in a user with email and password from the text controllers.
-  ///
-  /// On success, updates the session manager and calls [onAuthenticated].
-  /// On failure, transitions to error state with the error message.
-  Future<void> login() async {
-    await _guarded(EmailAuthState.authenticated, null, () async {
-      final authSuccess = await _emailEndpoint.login(
-        email: emailController.text.trim(),
-        password: passwordController.text,
-      );
-
-      await client.auth.updateSignedInUser(authSuccess);
-    });
-  }
-
   /// Starts the registration process for a new user with email only.
   ///
   /// Validates the email and transitions to the set password screen.
   /// On failure, transitions to error state with the error message.
   Future<void> startRegistration() async {
-    await _guarded(null, EmailFlowScreen.verifyRegistration, () async {
+    await runGuarded(() async {
       final email = emailController.text.trim();
       emailValidation.call(email);
-      _requestId = await _emailEndpoint.startRegistration(email: email);
+      requestId = await emailEndpoint.startRegistration(email: email);
+      return EmailFlowScreen.verifyRegistration;
     });
   }
 
@@ -343,16 +191,17 @@ class EmailAuthController extends ChangeNotifier {
   /// On success, transitions to verification screen.
   /// On failure, transitions to error state with the error message.
   Future<void> verifyRegistrationCode() async {
-    await _guarded(null, EmailFlowScreen.completeRegistration, () async {
-      final registrationRequestId = _requestId;
+    await runGuarded(() async {
+      final registrationRequestId = requestId;
       if (registrationRequestId == null) {
         throw StateError('No registration request was found to verify.');
       }
 
-      _finishRequestToken = await _emailEndpoint.verifyRegistrationCode(
+      finishRequestToken = await emailEndpoint.verifyRegistrationCode(
         accountRequestId: registrationRequestId,
         verificationCode: verificationCodeController.text.trim(),
       );
+      return EmailFlowScreen.completeRegistration;
     });
   }
 
@@ -361,75 +210,19 @@ class EmailAuthController extends ChangeNotifier {
   /// On success, updates the session manager and calls [onAuthenticated].
   /// On failure, transitions to error state with the error message.
   Future<void> finishRegistration() async {
-    await _guarded(EmailAuthState.authenticated, null, () async {
-      final finishRequestToken = _finishRequestToken;
+    await runGuarded(() async {
+      final finishRequestToken = this.finishRequestToken;
       if (finishRequestToken == null) {
         throw StateError('No registration request was found to finish.');
       }
 
-      final authSuccess = await _emailEndpoint.finishRegistration(
+      final authSuccess = await emailEndpoint.finishRegistration(
         registrationToken: finishRequestToken,
         password: passwordController.text,
       );
 
       await client.auth.updateSignedInUser(authSuccess);
-    });
-  }
-
-  /// Starts the password reset process.
-  ///
-  /// Sends a password reset email to the provided email address.
-  /// On success, transitions to password reset pending state.
-  /// On failure, transitions to error state with the error message.
-  Future<void> startPasswordReset() async {
-    await _guarded(null, EmailFlowScreen.verifyPasswordReset, () async {
-      final email = emailController.text.trim();
-      _requestId = await _emailEndpoint.startPasswordReset(email: email);
-    });
-  }
-
-  /// Verifies the password reset verification code.
-  ///
-  /// On success, stores the finish password reset token to be used with
-  /// [finishPasswordReset]. On failure, transitions to error state with the
-  /// error message.
-  Future<void> verifyPasswordResetCode() async {
-    await _guarded(null, EmailFlowScreen.completePasswordReset, () async {
-      final passwordResetRequestId = _requestId;
-      if (passwordResetRequestId == null) {
-        throw StateError('No password reset request was found to verify.');
-      }
-
-      _finishRequestToken = await _emailEndpoint.verifyPasswordResetCode(
-        passwordResetRequestId: passwordResetRequestId,
-        verificationCode: verificationCodeController.text.trim(),
-      );
-    });
-  }
-
-  /// Completes the password reset process with a new password.
-  ///
-  /// Use the [passwordController] to provide the new password. On success,
-  /// updates the session manager and calls [onAuthenticated]. On failure,
-  /// transitions to error state with the error message.
-  Future<void> finishPasswordReset() async {
-    await _guarded(EmailAuthState.authenticated, null, () async {
-      final finishRequestToken = _finishRequestToken;
-      if (finishRequestToken == null) {
-        throw StateError('No password reset request was found to finish.');
-      }
-
-      await _emailEndpoint.finishPasswordReset(
-        finishPasswordResetToken: finishRequestToken,
-        newPassword: passwordController.text,
-      );
-
-      final authSuccess = await _emailEndpoint.login(
-        email: emailController.text.trim(),
-        password: passwordController.text,
-      );
-
-      await client.auth.updateSignedInUser(authSuccess);
+      return null;
     });
   }
 
@@ -438,90 +231,12 @@ class EmailAuthController extends ChangeNotifier {
   /// Define the resend code according to the current screen (registration or
   /// password reset verification). Throws an error if the current screen is not
   /// a verification screen.
+  @override
   Future<void> resendVerificationCode() async {
-    await switch (_currentScreen) {
+    await switch (currentScreen) {
       EmailFlowScreen.verifyRegistration => startRegistration(),
       EmailFlowScreen.verifyPasswordReset => startPasswordReset(),
-      _ => throw StateError('Cannot resend code on screen: $_currentScreen'),
+      _ => throw StateError('Cannot resend code on screen: $currentScreen'),
     };
   }
-
-  /// Sets the current state of the authentication flow and notifies listeners.
-  void _setState(EmailAuthState newState, {bool notify = true}) {
-    if (newState != EmailAuthState.error) _error = null;
-    _state = newState;
-    if (notify) notifyListeners();
-  }
-
-  /// Executes the given action and transitions to the target state on success.
-  /// If the target state is authenticated, calls [onAuthenticated] callback.
-  /// In case of an error, transitions to error state and calls [onError] only
-  /// for exceptions that should be shown to the user.
-  Future<void> _guarded(
-    EmailAuthState? targetState,
-    EmailFlowScreen? targetScreen,
-    Future<void> Function() action,
-  ) async {
-    if ((targetState == null) && (targetScreen == null)) {
-      throw ArgumentError('Provide either targetState or targetScreen.');
-    }
-
-    _setState(EmailAuthState.loading);
-    try {
-      await action();
-      if (targetScreen != null) {
-        navigateTo(targetScreen);
-      } else if (targetState != null) {
-        _setState(targetState);
-        if (targetState == EmailAuthState.authenticated) {
-          onAuthenticated?.call();
-        }
-      }
-    } catch (e) {
-      _error = e;
-      _setState(EmailAuthState.error);
-      debugPrint('[EmailAuthController] $_currentScreen -> $targetState: $e');
-
-      // If we have a network error, start a timer to enable the action button
-      // again after a short delay.
-      if (e is ServerpodClientNetworkException) {
-        Timer(const Duration(seconds: 1), () {
-          _setState(EmailAuthState.idle);
-        });
-      }
-
-      final userFriendlyError = convertToUserFacingException(e);
-      if (userFriendlyError != null) {
-        onError?.call(userFriendlyError);
-      }
-    }
-  }
-}
-
-/// Represents the state of the email authentication flow.
-enum EmailAuthState {
-  /// Initial idle state of each screen.
-  idle,
-
-  /// Loading state while processing any request.
-  loading,
-
-  /// A request ended with error. The error can be retrieved from the controller.
-  error,
-
-  /// Authentication was successful, either by login, registration, or password reset.
-  authenticated,
-}
-
-/// Exception thrown when an email is invalid.
-class InvalidEmailException implements Exception {
-  /// The reason why the email is invalid. This must be a human-readable message
-  /// that can be displayed to the user.
-  final String reason;
-
-  /// Creates a new [InvalidEmailException].
-  const InvalidEmailException(this.reason);
-
-  @override
-  String toString() => reason;
 }
