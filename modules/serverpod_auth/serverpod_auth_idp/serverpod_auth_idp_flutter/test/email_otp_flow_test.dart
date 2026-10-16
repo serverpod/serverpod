@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as idp;
@@ -506,6 +507,71 @@ void main() {
       );
       expect(buttonRect.bottom, lessThanOrEqualTo(formRect.bottom));
       expect(formRect.height, greaterThan(330));
+    },
+  );
+
+  testWidgets(
+    'Given the code of a previous sign-in in the clipboard, '
+    'when the app is resumed on the verification screen of a new sign-in, '
+    'then that code is not filled in, while a newly copied code is filled in '
+    'and submitted.',
+    (tester) async {
+      const previousCode = '654321';
+      const newCode = '234567';
+      String? clipboardText;
+      final messenger = tester.binding.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'Clipboard.getData' && clipboardText != null) {
+          return <String, dynamic>{'text': clipboardText};
+        }
+        return null;
+      });
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+
+      Future<void> resumeApp() async {
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.inactive,
+        );
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await tester.pumpAndSettle();
+      }
+
+      final previousClient = _TestClient(accountExists: true);
+      final previousController = EmailOtpAuthController(
+        client: previousClient,
+      );
+      await pumpWidget(
+        tester,
+        EmailOtpSignInWidget(controller: previousController),
+      );
+      await requestCode(tester, previousController);
+      clipboardText = previousCode;
+      await resumeApp();
+      expect(previousClient.email.verifiedCode, previousCode);
+      expect(previousController.state, EmailAuthState.authenticated);
+
+      final client = _TestClient(accountExists: true);
+      final controller = EmailOtpAuthController(client: client);
+      await pumpWidget(
+        tester,
+        EmailOtpSignInWidget(key: UniqueKey(), controller: controller),
+      );
+      await requestCode(tester, controller);
+
+      await resumeApp();
+
+      expect(controller.verificationCodeController.text, isEmpty);
+      expect(client.email.calls, ['startOtpLogin']);
+
+      clipboardText = newCode;
+      await resumeApp();
+
+      expect(client.email.verifiedCode, newCode);
+      expect(controller.state, EmailAuthState.authenticated);
     },
   );
 

@@ -54,6 +54,11 @@ class VerificationCodeInput extends StatefulWidget {
 }
 
 class _VerificationCodeInputState extends State<VerificationCodeInput> {
+  /// Codes completed in any verification code input of the app, which are not
+  /// filled in from the clipboard again, e.g. the code of a previous sign-in
+  /// that is still in the clipboard when signing in again.
+  static final _completedCodes = <String>{};
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -93,6 +98,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
               if (value.length != widget.length) return;
               final formattedValue = inputFormatters.apply(value);
               if (formattedValue.length != value.length) return;
+              if (_completedCodes.contains(formattedValue)) return;
 
               setState(() {
                 widget.verificationCodeController.text = formattedValue;
@@ -103,7 +109,10 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
             enabled: !widget.isLoading,
             focusNode: widget.focusNode,
             defaultPinTheme: defaultPinTheme,
-            onCompleted: (_) => widget.onCompleted(),
+            onCompleted: (code) {
+              _completedCodes.add(code);
+              widget.onCompleted();
+            },
             focusedPinTheme: focusedPinTheme,
             errorPinTheme: errorPinTheme,
           ),
