@@ -12,6 +12,13 @@ import '../test_tools/serverpod_test_tools.dart';
 import '../utils/future_call_manager_builder.dart';
 import '../utils/recording_future_call_diagnostics_service.dart';
 
+const _callName = 'should-retry-test-call';
+const _generatedCallName = 'TestRetryCallFailFutureCall';
+const _retryPolicy = FixedDelayRetryPolicy(
+  maxAttempts: 3,
+  delay: Duration.zero,
+);
+
 /// A future call that always fails and decides whether to be retried with the
 /// function it is given.
 class ShouldRetryTestCall extends FutureCall<test_server.SimpleData>
@@ -43,322 +50,365 @@ class ShouldRetryTestCall extends FutureCall<test_server.SimpleData>
   }
 }
 
-void main() {
-  const callName = 'should-retry-test-call';
-  const generatedCallName = 'TestRetryCallFailFutureCall';
-  const retryPolicy = FixedDelayRetryPolicy(
-    maxAttempts: 3,
-    delay: Duration.zero,
-  );
+/// Schedules the future calls of these tests and runs them with new future
+/// call managers.
+class _ShouldRetryTestHarness {
+  final TestSessionBuilder _sessionBuilder;
 
+  /// The session used to read and clean up the entries of the future calls.
+  final Session session;
+
+  /// Records the errors the future call managers report.
+  final diagnostics = RecordingFutureCallDiagnosticsService();
+
+  /// The sessions built for the runs, in order.
+  final sessionsOfRuns = <Session>[];
+
+  _ShouldRetryTestHarness(this._sessionBuilder)
+    : session = _sessionBuilder.build();
+
+  /// Returns the entries of the future call named [name].
+  Future<List<FutureCallEntry>> findEntries(String name) {
+    return FutureCallEntry.db.find(
+      session,
+      where: (entry) => entry.name.equals(name),
+    );
+  }
+
+  FutureCallManager _buildManager() {
+    return FutureCallManagerBuilder.fromTestSessionBuilder(_sessionBuilder)
+        .withDiagnosticsService(diagnostics)
+        .withSessionProvider((futureCallName, retryAttempt) {
+          var runSession = _sessionBuilder.build();
+          sessionsOfRuns.add(runSession);
+          return runSession;
+        })
+        .build();
+  }
+
+  /// Schedules the future call that [runDueCalls] runs to run now.
+  Future<void> schedule({FutureCallRetryPolicy? retryPolicy}) async {
+    await _buildManager().scheduleFutureCall(
+      _callName,
+      null,
+      DateTime.now().toUtc(),
+      'default',
+      null,
+      retryPolicy: retryPolicy,
+    );
+  }
+
+  /// Runs the due future calls once, with a new future call manager that runs
+  /// [testCall] for the future call.
+  Future<void> runDueCalls(ShouldRetryTestCall testCall) async {
+    var futureCallManager = _buildManager();
+    futureCallManager.registerFutureCall(testCall, _callName);
+    await futureCallManager.runScheduledFutureCalls();
+  }
+
+  /// Initializes the generated future calls of [pod] with a new future call
+  /// manager, so that they can be scheduled.
+  void initializeGeneratedCalls(Serverpod pod) {
+    pod.futureCalls.initialize(_buildManager(), 'default');
+  }
+
+  /// Runs the due future calls once, with a new future call manager that has
+  /// the generated future calls of [pod] registered.
+  Future<void> runDueGeneratedCalls(Serverpod pod) async {
+    var futureCallManager = _buildManager();
+    pod.futureCalls.initialize(futureCallManager, 'default');
+    await futureCallManager.runScheduledFutureCalls();
+  }
+
+  /// Deletes the entries of the future calls and closes [session].
+  Future<void> dispose() async {
+    await FutureCallEntry.db.deleteWhere(
+      session,
+      where: (entry) =>
+          entry.name.equals(_callName) | entry.name.equals(_generatedCallName),
+    );
+    await session.close();
+  }
+}
+
+void main() {
   withServerpod(
-    'Given the future call manager,',
+    'Given a failing future call whose shouldRetry returns true and that is scheduled with a retry policy,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      late Session session;
+      late _ShouldRetryTestHarness harness;
       late ShouldRetryTestCall testCall;
-      late List<Session> sessionsOfRuns;
-      late RecordingFutureCallDiagnosticsService diagnostics;
 
-      Future<List<FutureCallEntry>> findEntries(String name) {
-        return FutureCallEntry.db.find(
-          session,
-          where: (entry) => entry.name.equals(name),
-        );
-      }
-
-      FutureCallManager buildManager() {
-        return FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
-            .withDiagnosticsService(diagnostics)
-            .withSessionProvider((futureCallName, retryAttempt) {
-              var runSession = sessionBuilder.build();
-              sessionsOfRuns.add(runSession);
-              return runSession;
-            })
-            .build();
-      }
-
-      /// Runs the due future calls once, with a new future call manager.
-      Future<void> runDueCalls() async {
-        var futureCallManager = buildManager();
-        futureCallManager.registerFutureCall(testCall, callName);
-        await futureCallManager.runScheduledFutureCalls();
-      }
-
-      Future<void> schedule({FutureCallRetryPolicy? retryPolicy}) async {
-        await buildManager().scheduleFutureCall(
-          callName,
-          null,
-          DateTime.now().toUtc(),
-          'default',
-          null,
-          retryPolicy: retryPolicy,
-        );
-      }
-
-      setUp(() {
-        session = sessionBuilder.build();
-        sessionsOfRuns = [];
-        diagnostics = RecordingFutureCallDiagnosticsService();
+      setUp(() async {
+        harness = _ShouldRetryTestHarness(sessionBuilder);
+        testCall = ShouldRetryTestCall(() => true);
+        await harness.schedule(retryPolicy: _retryPolicy);
       });
 
-      tearDown(() async {
-        await FutureCallEntry.db.deleteWhere(
-          session,
-          where: (entry) =>
-              entry.name.equals(callName) |
-              entry.name.equals(generatedCallName),
-        );
-        await session.close();
-      });
+      tearDown(() => harness.dispose());
 
       group(
-        'Given a failing future call whose shouldRetry returns true and that is scheduled with a retry policy,',
+        'when the due future calls are run once,',
         () {
           setUp(() async {
-            testCall = ShouldRetryTestCall(() => true);
-            await schedule(retryPolicy: retryPolicy);
-          });
-
-          group(
-            'when the due future calls are run once,',
-            () {
-              setUp(() async {
-                await runDueCalls();
-              });
-
-              test(
-                'then the entry is kept with one failed attempt.',
-                () async {
-                  var entries = await findEntries(callName);
-                  expect(entries, hasLength(1));
-                  expect(entries.single.failedAttempts, 1);
-                },
-              );
-
-              test(
-                'then shouldRetry is called with the session of the run that failed.',
-                () {
-                  expect(testCall.shouldRetrySessions, hasLength(1));
-                  expect(
-                    testCall.shouldRetrySessions.single,
-                    same(sessionsOfRuns.single),
-                  );
-                },
-              );
-
-              test(
-                'then shouldRetry is called with the error of the run and retry attempt 0.',
-                () {
-                  var context = testCall.shouldRetryContexts.single;
-                  expect(context.retryAttempt, 0);
-                  expect(
-                    '${context.error}',
-                    'Exception: ShouldRetryTestCall failed on run 1.',
-                  );
-                },
-              );
-            },
-          );
-        },
-      );
-
-      group(
-        'Given a failing future call whose shouldRetry returns false and that is scheduled with a retry policy,',
-        () {
-          setUp(() async {
-            testCall = ShouldRetryTestCall(() => false);
-            await schedule(retryPolicy: retryPolicy);
-          });
-
-          group(
-            'when the due future calls are run twice,',
-            () {
-              setUp(() async {
-                await runDueCalls();
-                await runDueCalls();
-              });
-
-              test(
-                'then the call ran once.',
-                () {
-                  expect(testCall.runs, 1);
-                },
-              );
-
-              test(
-                'then the entry is deleted.',
-                () async {
-                  expect(await findEntries(callName), isEmpty);
-                },
-              );
-            },
-          );
-        },
-      );
-
-      group(
-        'Given a failing future call whose shouldRetry returns a future that completes with false and that is scheduled with a retry policy,',
-        () {
-          setUp(() async {
-            testCall = ShouldRetryTestCall(() async => false);
-            await schedule(retryPolicy: retryPolicy);
-          });
-
-          group(
-            'when the due future calls are run twice,',
-            () {
-              setUp(() async {
-                await runDueCalls();
-                await runDueCalls();
-              });
-
-              test(
-                'then the call ran once.',
-                () {
-                  expect(testCall.runs, 1);
-                },
-              );
-
-              test(
-                'then the entry is deleted.',
-                () async {
-                  expect(await findEntries(callName), isEmpty);
-                },
-              );
-            },
-          );
-        },
-      );
-
-      group(
-        'Given a failing future call whose shouldRetry throws and that is scheduled with a retry policy,',
-        () {
-          setUp(() async {
-            testCall = ShouldRetryTestCall(
-              () => throw StateError('shouldRetry failed.'),
-            );
-            await schedule(retryPolicy: retryPolicy);
-          });
-
-          group(
-            'when the due future calls are run twice,',
-            () {
-              setUp(() async {
-                await runDueCalls();
-                await runDueCalls();
-              });
-
-              test(
-                'then the call ran once.',
-                () {
-                  expect(testCall.runs, 1);
-                },
-              );
-
-              test(
-                'then the entry is deleted.',
-                () async {
-                  expect(await findEntries(callName), isEmpty);
-                },
-              );
-
-              test(
-                'then the error of the call and the error of shouldRetry are reported.',
-                () {
-                  expect(diagnostics.callExceptions, [
-                    isA<Exception>().having(
-                      (e) => e.toString(),
-                      'toString',
-                      'Exception: ShouldRetryTestCall failed on run 1.',
-                    ),
-                    isA<StateError>().having(
-                      (e) => e.message,
-                      'message',
-                      'shouldRetry failed.',
-                    ),
-                  ]);
-                },
-              );
-            },
-          );
-        },
-      );
-
-      group(
-        'Given a failing future call that is scheduled without a retry policy,',
-        () {
-          setUp(() async {
-            testCall = ShouldRetryTestCall(() => true);
-            await schedule();
+            await harness.runDueCalls(testCall);
           });
 
           test(
-            'when the due future calls are run once,'
-            'then shouldRetry is not called.',
-            () async {
-              await runDueCalls();
-
-              expect(testCall.shouldRetryContexts, isEmpty);
-            },
-          );
-        },
-      );
-
-      group(
-        'Given a generated future call whose class overrides shouldRetry,',
-        () {
-          late Serverpod pod;
-
-          /// Runs the due future calls once, with a new future call manager
-          /// that has the generated future calls registered.
-          Future<void> runDueGeneratedCalls() async {
-            var futureCallManager = buildManager();
-            pod.futureCalls.initialize(futureCallManager, 'default');
-            await futureCallManager.runScheduledFutureCalls();
-          }
-
-          setUp(() {
-            pod = session.serverpod;
-            pod.futureCalls.initialize(buildManager(), 'default');
-            TestRetryCall.runs.clear();
-          });
-
-          test(
-            'when it fails with a reason its shouldRetry accepts and the due future calls are run,'
             'then the entry is kept with one failed attempt.',
             () async {
-              await pod.futureCalls
-                  .callWithDelay(Duration.zero)
-                  .withRetryPolicy(retryPolicy)
-                  .testRetryCall
-                  .fail('temporary');
-
-              await runDueGeneratedCalls();
-
-              var entries = await findEntries(generatedCallName);
-              expect(TestRetryCall.runs, ['temporary']);
+              var entries = await harness.findEntries(_callName);
               expect(entries, hasLength(1));
               expect(entries.single.failedAttempts, 1);
             },
           );
 
           test(
-            'when it fails with a reason its shouldRetry rejects and the due future calls are run,'
-            'then the entry is deleted.',
-            () async {
-              await pod.futureCalls
-                  .callWithDelay(Duration.zero)
-                  .withRetryPolicy(retryPolicy)
-                  .testRetryCall
-                  .fail('permanent');
-
-              await runDueGeneratedCalls();
-
-              expect(TestRetryCall.runs, ['permanent']);
-              expect(await findEntries(generatedCallName), isEmpty);
+            'then shouldRetry is called with the session of the run that failed.',
+            () {
+              expect(testCall.shouldRetrySessions, hasLength(1));
+              expect(
+                testCall.shouldRetrySessions.single,
+                same(harness.sessionsOfRuns.single),
+              );
             },
           );
+
+          test(
+            'then shouldRetry is called with the error of the run and retry attempt 0.',
+            () {
+              var context = testCall.shouldRetryContexts.single;
+              expect(context.retryAttempt, 0);
+              expect(
+                '${context.error}',
+                'Exception: ShouldRetryTestCall failed on run 1.',
+              );
+            },
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a failing future call whose shouldRetry returns false and that is scheduled with a retry policy,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late _ShouldRetryTestHarness harness;
+      late ShouldRetryTestCall testCall;
+
+      setUp(() async {
+        harness = _ShouldRetryTestHarness(sessionBuilder);
+        testCall = ShouldRetryTestCall(() => false);
+        await harness.schedule(retryPolicy: _retryPolicy);
+      });
+
+      tearDown(() => harness.dispose());
+
+      group(
+        'when the due future calls are run twice,',
+        () {
+          setUp(() async {
+            await harness.runDueCalls(testCall);
+            await harness.runDueCalls(testCall);
+          });
+
+          test(
+            'then the call ran once.',
+            () {
+              expect(testCall.runs, 1);
+            },
+          );
+
+          test(
+            'then the entry is deleted.',
+            () async {
+              expect(await harness.findEntries(_callName), isEmpty);
+            },
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a failing future call whose shouldRetry returns a future that completes with false and that is scheduled with a retry policy,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late _ShouldRetryTestHarness harness;
+      late ShouldRetryTestCall testCall;
+
+      setUp(() async {
+        harness = _ShouldRetryTestHarness(sessionBuilder);
+        testCall = ShouldRetryTestCall(() async => false);
+        await harness.schedule(retryPolicy: _retryPolicy);
+      });
+
+      tearDown(() => harness.dispose());
+
+      group(
+        'when the due future calls are run twice,',
+        () {
+          setUp(() async {
+            await harness.runDueCalls(testCall);
+            await harness.runDueCalls(testCall);
+          });
+
+          test(
+            'then the call ran once.',
+            () {
+              expect(testCall.runs, 1);
+            },
+          );
+
+          test(
+            'then the entry is deleted.',
+            () async {
+              expect(await harness.findEntries(_callName), isEmpty);
+            },
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a failing future call whose shouldRetry throws and that is scheduled with a retry policy,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late _ShouldRetryTestHarness harness;
+      late ShouldRetryTestCall testCall;
+
+      setUp(() async {
+        harness = _ShouldRetryTestHarness(sessionBuilder);
+        testCall = ShouldRetryTestCall(
+          () => throw StateError('shouldRetry failed.'),
+        );
+        await harness.schedule(retryPolicy: _retryPolicy);
+      });
+
+      tearDown(() => harness.dispose());
+
+      group(
+        'when the due future calls are run twice,',
+        () {
+          setUp(() async {
+            await harness.runDueCalls(testCall);
+            await harness.runDueCalls(testCall);
+          });
+
+          test(
+            'then the call ran once.',
+            () {
+              expect(testCall.runs, 1);
+            },
+          );
+
+          test(
+            'then the entry is deleted.',
+            () async {
+              expect(await harness.findEntries(_callName), isEmpty);
+            },
+          );
+
+          test(
+            'then the error of the call and the error of shouldRetry are reported.',
+            () {
+              expect(harness.diagnostics.callExceptions, [
+                isA<Exception>().having(
+                  (e) => e.toString(),
+                  'toString',
+                  'Exception: ShouldRetryTestCall failed on run 1.',
+                ),
+                isA<StateError>().having(
+                  (e) => e.message,
+                  'message',
+                  'shouldRetry failed.',
+                ),
+              ]);
+            },
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a failing future call that is scheduled without a retry policy,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late _ShouldRetryTestHarness harness;
+      late ShouldRetryTestCall testCall;
+
+      setUp(() async {
+        harness = _ShouldRetryTestHarness(sessionBuilder);
+        testCall = ShouldRetryTestCall(() => true);
+        await harness.schedule();
+      });
+
+      tearDown(() => harness.dispose());
+
+      test(
+        'when the due future calls are run once,'
+        'then shouldRetry is not called.',
+        () async {
+          await harness.runDueCalls(testCall);
+
+          expect(testCall.shouldRetryContexts, isEmpty);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a generated future call whose class overrides shouldRetry,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late _ShouldRetryTestHarness harness;
+      late Serverpod pod;
+
+      setUp(() {
+        harness = _ShouldRetryTestHarness(sessionBuilder);
+        pod = harness.session.serverpod;
+        harness.initializeGeneratedCalls(pod);
+        TestRetryCall.runs.clear();
+      });
+
+      tearDown(() => harness.dispose());
+
+      test(
+        'when it fails with a reason its shouldRetry accepts and the due future calls are run,'
+        'then the entry is kept with one failed attempt.',
+        () async {
+          await pod.futureCalls
+              .callWithDelay(Duration.zero)
+              .withRetryPolicy(_retryPolicy)
+              .testRetryCall
+              .fail('temporary');
+
+          await harness.runDueGeneratedCalls(pod);
+
+          var entries = await harness.findEntries(_generatedCallName);
+          expect(TestRetryCall.runs, ['temporary']);
+          expect(entries, hasLength(1));
+          expect(entries.single.failedAttempts, 1);
+        },
+      );
+
+      test(
+        'when it fails with a reason its shouldRetry rejects and the due future calls are run,'
+        'then the entry is deleted.',
+        () async {
+          await pod.futureCalls
+              .callWithDelay(Duration.zero)
+              .withRetryPolicy(_retryPolicy)
+              .testRetryCall
+              .fail('permanent');
+
+          await harness.runDueGeneratedCalls(pod);
+
+          expect(TestRetryCall.runs, ['permanent']);
+          expect(await harness.findEntries(_generatedCallName), isEmpty);
         },
       );
     },
