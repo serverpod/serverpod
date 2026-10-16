@@ -34,6 +34,7 @@ class EmailSignInTexts {
     required this.termsAndConditions,
     required this.andText,
     required this.privacyPolicy,
+    this.resendCode = "Didn't receive? Send a new code",
   });
 
   /// Default English texts.
@@ -150,6 +151,10 @@ class EmailSignInTexts {
   /// Text for privacy policy.
   final String privacyPolicy;
 
+  /// Text for the action requesting a new verification code. The remaining
+  /// countdown is appended to it.
+  final String resendCode;
+
   /// Creates a copy of this object with updated values.
   EmailSignInTexts copyWith({
     String? title,
@@ -179,6 +184,7 @@ class EmailSignInTexts {
     String? termsAndConditions,
     String? andText,
     String? privacyPolicy,
+    String? resendCode,
   }) {
     return EmailSignInTexts(
       title: title ?? this.title,
@@ -210,6 +216,7 @@ class EmailSignInTexts {
       termsAndConditions: termsAndConditions ?? this.termsAndConditions,
       andText: andText ?? this.andText,
       privacyPolicy: privacyPolicy ?? this.privacyPolicy,
+      resendCode: resendCode ?? this.resendCode,
     );
   }
 
@@ -243,7 +250,8 @@ class EmailSignInTexts {
         other.termsIntro == termsIntro &&
         other.termsAndConditions == termsAndConditions &&
         other.andText == andText &&
-        other.privacyPolicy == privacyPolicy;
+        other.privacyPolicy == privacyPolicy &&
+        other.resendCode == resendCode;
   }
 
   @override
@@ -275,6 +283,7 @@ class EmailSignInTexts {
     termsAndConditions,
     andText,
     privacyPolicy,
+    resendCode,
   ]);
 }
 
