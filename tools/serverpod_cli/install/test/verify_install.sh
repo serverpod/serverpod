@@ -24,8 +24,10 @@ case "$serverpod_on_path" in
   *) fail "serverpod on PATH is not the dart install one: '$serverpod_on_path'" ;;
 esac
 
-echo "verify: doctor passes with the new PATH"
-serverpod doctor --no-analytics
+# `dart install` fetches the latest stable CLI, which may predate `doctor`,
+# so the check uses a command every version has.
+echo "verify: the installed CLI runs with the new PATH"
+serverpod version --no-analytics
 
 echo "verify: a project can be created"
 project_dir="$(mktemp -d)"
