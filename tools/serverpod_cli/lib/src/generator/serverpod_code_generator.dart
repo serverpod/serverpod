@@ -97,6 +97,12 @@ abstract class ServerpodCodeGenerator {
     return written;
   }
 
+  /// Exposed for tests so the skip decision can be exercised on a real
+  /// directory without running a full generation.
+  @visibleForTesting
+  static Future<void> writeFiles(Map<String, String> files) =>
+      _writeFiles(files);
+
   /// Writes one generated file, returning its path when the write happened and
   /// `null` when it was skipped or failed.
   static Future<String?> _writeFile(MapEntry<String, String> file) async {
@@ -116,10 +122,15 @@ abstract class ServerpodCodeGenerator {
         return null;
       }
 
-      // Skip the write if the file already has the same content.
+      // Skip the write if the file already has the same content. Line endings
+      // do not count as a difference: with `core.autocrlf=true` on Windows the
+      // files on disk are CRLF while the generator emits LF, and rewriting
+      // them for that alone leaves every generated file modified in
+      // `git status` (issue #5792). A genuine change still differs after
+      // normalization, so it is written as before.
       if (out.existsSync()) {
         final existing = await out.readAsString();
-        if (existing == file.value) return null;
+        if (!_differsBeyondLineEndings(existing, file.value)) return null;
       }
 
       await out.create(recursive: true);
@@ -131,6 +142,11 @@ abstract class ServerpodCodeGenerator {
       return null;
     }
   }
+
+  /// True when [existing] differs from [generated] in anything other than
+  /// line endings.
+  static bool _differsBeyondLineEndings(String existing, String generated) =>
+      existing.replaceAll('\r\n', '\n') != generated.replaceAll('\r\n', '\n');
 
   /// Removes files from previous generation runs.
   /// By removing old files that are not part of the [generatedFiles].
