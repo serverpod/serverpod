@@ -130,8 +130,9 @@ void main() {
           'channel': 'stable',
           'flutterRoot': flutterRoot,
         });
+        // printf is a shell builtin: the CLI's PATH below has no /usr/bin.
         final flutter = File(p.join(flutterBin.path, 'flutter'))
-          ..writeAsStringSync("#!/bin/sh\ncat <<'EOF'\n$machineJson\nEOF\n");
+          ..writeAsStringSync("#!/bin/sh\nprintf '%s\\n' '$machineJson'\n");
         await Process.run('chmod', ['755', flutter.path]);
 
         // A managed CLI, as `dart install` would leave it, off PATH.
