@@ -1,4 +1,6 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/generated/protocol.dart' as core;
+import 'package:serverpod/src/server/future_call_manager/future_call_retry_policy_serialization.dart';
 import 'package:test/test.dart';
 
 FutureCallRetryContext _contextFor(int retryAttempt) {
@@ -294,6 +296,103 @@ void main() {
     );
   });
 
+  group(
+    'Given a ChainedRetryPolicies of an ExponentialBackoffRetryPolicy with maxAttempts 4 and a CustomDelaysRetryPolicy with 3 delays,',
+    () {
+      late ChainedRetryPolicies policy;
+
+      setUp(() {
+        policy = ChainedRetryPolicies([
+          const ExponentialBackoffRetryPolicy(
+            maxAttempts: 4,
+            initialDelay: Duration(seconds: 1),
+          ),
+          const CustomDelaysRetryPolicy([
+            Duration(minutes: 1),
+            Duration(minutes: 10),
+            Duration(minutes: 20),
+          ]),
+        ]);
+      });
+
+      test(
+        'when nextDelay is called 8 times with increasing retry attempts,'
+        'then it returns the delays of the first policy, then those of the second policy, before returning null.',
+        () {
+          final delays = List.generate(
+            8,
+            (i) => policy.nextDelay(_contextFor(i)),
+          );
+          expect(delays, [
+            const Duration(seconds: 1),
+            const Duration(seconds: 2),
+            const Duration(seconds: 4),
+            const Duration(seconds: 8),
+            const Duration(minutes: 1),
+            const Duration(minutes: 10),
+            const Duration(minutes: 20),
+            null,
+          ]);
+        },
+      );
+
+      test(
+        'when nextDelay is called for retry attempts 0 to 4 and the policy is then serialized and deserialized by the future call manager,'
+        'then the deserialized policy continues with the second policy.',
+        () {
+          for (var i = 0; i < 5; i++) {
+            policy.nextDelay(_contextFor(i));
+          }
+
+          var protocol = core.Protocol();
+          var restored = runWithRetryPolicySerialization(
+            protocol,
+            () => protocol.decodeWithType(protocol.encodeWithType(policy)),
+          );
+
+          expect(restored, isA<ChainedRetryPolicies>());
+          final delays = List.generate(
+            3,
+            (i) => (restored as ChainedRetryPolicies).nextDelay(
+              _contextFor(i + 5),
+            ),
+          );
+          expect(delays, [
+            const Duration(minutes: 10),
+            const Duration(minutes: 20),
+            null,
+          ]);
+        },
+      );
+
+      test(
+        'when serialized outside of the future call manager,'
+        'then a StateError is thrown.',
+        () {
+          expect(
+            () => policy.toJson(),
+            throwsA(
+              isA<StateError>().having(
+                (e) => e.message,
+                'message',
+                'Retry policies that contain other retry policies can only be '
+                    'saved and loaded by the future call manager.',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when the policy is validated,'
+        'then no error is thrown.',
+        () {
+          expect(() => policy.validate(), returnsNormally);
+        },
+      );
+    },
+  );
+
   var invalidPolicies = <String, (FutureCallRetryPolicy, String)>{
     'a FixedDelayRetryPolicy with a negative delay': (
       const FixedDelayRetryPolicy(
@@ -399,6 +498,19 @@ void main() {
         Duration(seconds: -1),
       ]),
       'Must not be negative.',
+    ),
+    'a ChainedRetryPolicies with an empty list': (
+      ChainedRetryPolicies([]),
+      'Must not be empty.',
+    ),
+    'a ChainedRetryPolicies with a policy that cannot work': (
+      ChainedRetryPolicies([
+        const FixedDelayRetryPolicy(
+          maxAttempts: 0,
+          delay: Duration(seconds: 1),
+        ),
+      ]),
+      'Must be 1 or greater.',
     ),
   };
 
