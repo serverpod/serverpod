@@ -21,6 +21,7 @@ import 'package:serverpod_test_server/src/generated/simple_data.dart'
 import '../futureCalls/test_call.dart' as _i3varv2q;
 import '../futureCalls/test_exception_call.dart' as _i6a94ofc;
 import '../futureCalls/test_generated_call.dart' as _iwn8y0ww;
+import '../futureCalls/test_retry_call.dart' as _it4m5thl;
 import 'future_calls_generated_models/test_generated_call_bye_model.dart'
     as _ip57k4t4;
 import 'future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
@@ -29,6 +30,8 @@ import 'future_calls_generated_models/test_generated_call_hello_model.dart'
     as _ifspsmem;
 import 'future_calls_generated_models/test_generated_call_invoke_model.dart'
     as _i3yv7lzj;
+import 'future_calls_generated_models/test_retry_call_fail_model.dart'
+    as _iu5opqcr;
 
 /// Invokes a future call.
 typedef _InvokeFutureCall =
@@ -86,6 +89,7 @@ class FutureCalls extends _is.FutureCallDispatch<_FutureCallRef> {
       'TestGeneratedCallInvokeFutureCall': TestGeneratedCallInvokeFutureCall(),
       'TestGeneratedCallExecuteWithTriggerFutureCall':
           TestGeneratedCallExecuteWithTriggerFutureCall(),
+      'TestRetryCallFailFutureCall': TestRetryCallFailFutureCall(),
     };
     _futureCallManager = futureCallManager;
     _serverId = serverId;
@@ -219,6 +223,10 @@ class _FutureCallRefBase {
   late final testGeneratedCall = _TestGeneratedCallFutureCallDispatcher(
     _invokeFutureCall,
   );
+
+  late final testRetryCall = _TestRetryCallFutureCallDispatcher(
+    _invokeFutureCall,
+  );
 }
 
 class _FutureCallRef extends _FutureCallRefBase {
@@ -327,6 +335,20 @@ class _TestGeneratedCallFutureCallDispatcher {
   }
 }
 
+class _TestRetryCallFutureCallDispatcher {
+  _TestRetryCallFutureCallDispatcher(this._invokeFutureCall);
+
+  final _InvokeFutureCall _invokeFutureCall;
+
+  Future<void> fail(String reason) {
+    var object = _iu5opqcr.TestRetryCallFailModel(reason: reason);
+    return _invokeFutureCall(
+      'TestRetryCallFailFutureCall',
+      object,
+    );
+  }
+}
+
 class TestCallRunFutureCall extends _is.FutureCall<_i685tvwm.SimpleData>
     implements _is.InvokableFutureCall<_i685tvwm.SimpleData> {
   @override
@@ -339,6 +361,15 @@ class TestCallRunFutureCall extends _is.FutureCall<_i685tvwm.SimpleData>
       data,
     );
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _i3varv2q.TestCall().shouldRetry(
+    session,
+    context,
+  );
 }
 
 class TestExceptionCallRunFutureCall
@@ -354,6 +385,15 @@ class TestExceptionCallRunFutureCall
       data,
     );
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _i6a94ofc.TestExceptionCall().shouldRetry(
+    session,
+    context,
+  );
 }
 
 class TestGeneratedCallHelloFutureCall
@@ -371,6 +411,15 @@ class TestGeneratedCallHelloFutureCall
       );
     }
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _iwn8y0ww.TestGeneratedCall().shouldRetry(
+    session,
+    context,
+  );
 }
 
 class TestGeneratedCallByeFutureCall
@@ -389,6 +438,15 @@ class TestGeneratedCallByeFutureCall
       );
     }
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _iwn8y0ww.TestGeneratedCall().shouldRetry(
+    session,
+    context,
+  );
 }
 
 /// A sample future call that logs data.
@@ -405,6 +463,15 @@ class TestGeneratedCallLogDataFutureCall
       data!,
     );
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _iwn8y0ww.TestGeneratedCall().shouldRetry(
+    session,
+    context,
+  );
 }
 
 class TestGeneratedCallDoTaskFutureCall extends _is.FutureCall
@@ -416,6 +483,15 @@ class TestGeneratedCallDoTaskFutureCall extends _is.FutureCall
   ) async {
     await _iwn8y0ww.TestGeneratedCall().doTask(session);
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _iwn8y0ww.TestGeneratedCall().shouldRetry(
+    session,
+    context,
+  );
 }
 
 /// A future call method named `invoke`, which is not reserved and generates
@@ -435,6 +511,15 @@ class TestGeneratedCallInvokeFutureCall
       );
     }
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _iwn8y0ww.TestGeneratedCall().shouldRetry(
+    session,
+    context,
+  );
 }
 
 /// Future call with enum parameter.
@@ -457,4 +542,39 @@ class TestGeneratedCallExecuteWithTriggerFutureCall
       );
     }
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _iwn8y0ww.TestGeneratedCall().shouldRetry(
+    session,
+    context,
+  );
+}
+
+class TestRetryCallFailFutureCall
+    extends _is.FutureCall<_iu5opqcr.TestRetryCallFailModel>
+    implements _is.InvokableFutureCall<_iu5opqcr.TestRetryCallFailModel> {
+  @override
+  _ida.Future<void> invoke(
+    _is.Session session,
+    _iu5opqcr.TestRetryCallFailModel? object,
+  ) async {
+    if (object != null) {
+      await _it4m5thl.TestRetryCall().fail(
+        session,
+        object.reason,
+      );
+    }
+  }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _it4m5thl.TestRetryCall().shouldRetry(
+    session,
+    context,
+  );
 }

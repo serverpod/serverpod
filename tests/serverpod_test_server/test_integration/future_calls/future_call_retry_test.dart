@@ -1,6 +1,5 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod_test_server/src/futureCalls/test_retry_policies.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart'
     as test_server;
@@ -8,6 +7,7 @@ import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 import '../utils/future_call_manager_builder.dart';
+import '../utils/recording_future_call_diagnostics_service.dart';
 
 /// A future call that fails a given number of times before it succeeds.
 class FailingTestCall extends FutureCall<test_server.SimpleData>
@@ -33,30 +33,6 @@ class FailingTestCall extends FutureCall<test_server.SimpleData>
   }
 }
 
-/// Records the errors the future call manager reports.
-class RecordingDiagnosticsService implements FutureCallDiagnosticsService {
-  final callExceptions = <Object>[];
-  final frameworkExceptions = <Object>[];
-
-  @override
-  void submitCallException(
-    Object error,
-    StackTrace stackTrace, {
-    required Session session,
-  }) {
-    callExceptions.add(error);
-  }
-
-  @override
-  void submitFrameworkException(
-    Object error,
-    StackTrace stackTrace, {
-    String? message,
-  }) {
-    frameworkExceptions.add(error);
-  }
-}
-
 void main() {
   var protocol = test_server.Protocol();
   const callName = 'retry-test-call';
@@ -69,7 +45,7 @@ void main() {
       late Session session;
       late FailingTestCall testCall;
       late List<int> retryAttemptsOfSessions;
-      late RecordingDiagnosticsService diagnostics;
+      late RecordingFutureCallDiagnosticsService diagnostics;
 
       Future<List<FutureCallEntry>> findEntries() {
         return FutureCallEntry.db.find(
@@ -117,7 +93,7 @@ void main() {
       setUp(() {
         session = sessionBuilder.build();
         retryAttemptsOfSessions = [];
-        diagnostics = RecordingDiagnosticsService();
+        diagnostics = RecordingFutureCallDiagnosticsService();
       });
 
       tearDown(() async {

@@ -30,6 +30,8 @@ import 'package:serverpod_test_server/src/generated/future_calls_generated_model
     as _irznr7ew;
 import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_invoke_model.dart'
     as _i8808sn4;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_retry_call_fail_model.dart'
+    as _ieka17p9;
 import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container.dart'
     as _ioyh3y7j;
 import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container_module.dart'
@@ -605,6 +607,8 @@ class _FutureCalls {
   late final testExceptionCall = _TestExceptionCallFutureCall();
 
   late final testGeneratedCall = _TestGeneratedCallFutureCall();
+
+  late final testRetryCall = _TestRetryCallFutureCall();
 }
 
 class _AsyncTasksEndpoint {
@@ -15894,6 +15898,25 @@ class _TestGeneratedCallFutureCall {
         (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
       await _i3an2vcw.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+}
+
+class _TestRetryCallFutureCall {
+  Future<void> fail(
+    _ist.TestSessionBuilder sessionBuilder,
+    String reason,
+  ) async {
+    var object = _ieka17p9.TestRetryCallFailModel(reason: reason);
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
+    try {
+      await _i3an2vcw.TestRetryCallFailFutureCall().invoke(
         _localUniqueSession,
         object,
       );

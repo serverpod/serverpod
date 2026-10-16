@@ -403,6 +403,7 @@ class FutureCallManager {
 
       keepEntry = await _retryIfNeeded(
         futureCallEntry: futureCallEntry,
+        futureCall: futureCall,
         futureCallSession: futureCallSession,
         error: error,
         stackTrace: stackTrace,
@@ -429,6 +430,7 @@ class FutureCallManager {
   /// retried and its entry can be deleted.
   Future<bool> _retryIfNeeded({
     required FutureCallEntry futureCallEntry,
+    required FutureCall futureCall,
     required Session futureCallSession,
     required Object error,
     required StackTrace stackTrace,
@@ -437,20 +439,28 @@ class FutureCallManager {
     if (serializedRetryPolicy == null) return false;
 
     var retryAttempt = futureCallEntry.failedAttempts;
+    var context = FutureCallRetryContext(
+      error: error,
+      stackTrace: stackTrace,
+      retryAttempt: retryAttempt,
+    );
 
     FutureCallRetryPolicy policy;
     Duration? delay;
     try {
+      if (!await futureCall.shouldRetry(futureCallSession, context)) {
+        futureCallSession.log(
+          'Future call ${futureCallEntry.name} failed and is not retried, '
+          'because shouldRetry returned false.',
+          level: LogLevel.info,
+        );
+        return false;
+      }
+
       policy =
           _serializationManager.decodeWithType(serializedRetryPolicy)
               as FutureCallRetryPolicy;
-      delay = policy.nextDelay(
-        FutureCallRetryContext(
-          error: error,
-          stackTrace: stackTrace,
-          retryAttempt: retryAttempt,
-        ),
-      );
+      delay = policy.nextDelay(context);
     } catch (policyError, policyStackTrace) {
       _diagnosticsService.submitCallException(
         policyError,
@@ -458,8 +468,8 @@ class FutureCallManager {
         session: futureCallSession,
       );
       futureCallSession.log(
-        'The retry policy of future call ${futureCallEntry.name} failed, so '
-        'the call is not retried.',
+        'Deciding whether to retry future call ${futureCallEntry.name} '
+        'failed, so the call is not retried.',
         level: LogLevel.error,
         exception: policyError,
         stackTrace: policyStackTrace,
