@@ -12,7 +12,7 @@ void _validateMaxAttempts(int maxAttempts) {
     throw ArgumentError.value(
       maxAttempts,
       'maxAttempts',
-      'Must 1 or greater.',
+      'Must be 1 or greater.',
     );
   }
 }
