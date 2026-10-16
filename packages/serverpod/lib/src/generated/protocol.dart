@@ -13,6 +13,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/protocol.dart' as _isp;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod/src/server/future_call_manager/future_call_retry_policies.dart'
+    as _ibkzyeqm;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'authentication/revoked_authentication_auth_id.dart' as _i0ntvx71;
 import 'authentication/revoked_authentication_scope.dart' as _ivj17zej;
@@ -185,6 +187,16 @@ class Protocol extends _is.DatabaseSerializationManager
           _is.getType<List<_i783h20h.SessionLogInfo>>,
           _is.getType<List<_isd.TableDefinition>>,
           _is.getType<List<String>>,
+          _is.getType<_ibkzyeqm.CustomDelaysRetryPolicy>,
+          _is.getType<_ibkzyeqm.ExponentialBackoffRetryPolicy>,
+          _is.getType<_ibkzyeqm.FixedDelayRetryPolicy>,
+          _is.getType<_ibkzyeqm.LinearBackoffRetryPolicy>,
+          _is.getType<_ibkzyeqm.RandomDelayRetryPolicy>,
+          _is.getType<_ibkzyeqm.CustomDelaysRetryPolicy?>,
+          _is.getType<_ibkzyeqm.ExponentialBackoffRetryPolicy?>,
+          _is.getType<_ibkzyeqm.FixedDelayRetryPolicy?>,
+          _is.getType<_ibkzyeqm.LinearBackoffRetryPolicy?>,
+          _is.getType<_ibkzyeqm.RandomDelayRetryPolicy?>,
         ],
         modules: const [_isd.Protocol.new],
       );
@@ -1840,6 +1852,51 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
+    if (t == _ibkzyeqm.CustomDelaysRetryPolicy) {
+      return _ibkzyeqm.CustomDelaysRetryPolicy.fromJson(data) as T;
+    }
+    if (t == _ibkzyeqm.ExponentialBackoffRetryPolicy) {
+      return _ibkzyeqm.ExponentialBackoffRetryPolicy.fromJson(data) as T;
+    }
+    if (t == _ibkzyeqm.FixedDelayRetryPolicy) {
+      return _ibkzyeqm.FixedDelayRetryPolicy.fromJson(data) as T;
+    }
+    if (t == _ibkzyeqm.LinearBackoffRetryPolicy) {
+      return _ibkzyeqm.LinearBackoffRetryPolicy.fromJson(data) as T;
+    }
+    if (t == _ibkzyeqm.RandomDelayRetryPolicy) {
+      return _ibkzyeqm.RandomDelayRetryPolicy.fromJson(data) as T;
+    }
+    if (t == _is.getType<_ibkzyeqm.CustomDelaysRetryPolicy?>()) {
+      return (data != null
+              ? _ibkzyeqm.CustomDelaysRetryPolicy.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ibkzyeqm.ExponentialBackoffRetryPolicy?>()) {
+      return (data != null
+              ? _ibkzyeqm.ExponentialBackoffRetryPolicy.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ibkzyeqm.FixedDelayRetryPolicy?>()) {
+      return (data != null
+              ? _ibkzyeqm.FixedDelayRetryPolicy.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ibkzyeqm.LinearBackoffRetryPolicy?>()) {
+      return (data != null
+              ? _ibkzyeqm.LinearBackoffRetryPolicy.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ibkzyeqm.RandomDelayRetryPolicy?>()) {
+      return (data != null
+              ? _ibkzyeqm.RandomDelayRetryPolicy.fromJson(data)
+              : null)
+          as T;
+    }
     final modules = dataClassName == null
         ? deserializationMetadata.modulesForType(t)
         : deserializationMetadata.modules;
@@ -1854,6 +1911,12 @@ class Protocol extends _is.DatabaseSerializationManager
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
+      _ibkzyeqm.CustomDelaysRetryPolicy => 'CustomDelaysRetryPolicy',
+      _ibkzyeqm.ExponentialBackoffRetryPolicy =>
+        'ExponentialBackoffRetryPolicy',
+      _ibkzyeqm.FixedDelayRetryPolicy => 'FixedDelayRetryPolicy',
+      _ibkzyeqm.LinearBackoffRetryPolicy => 'LinearBackoffRetryPolicy',
+      _ibkzyeqm.RandomDelayRetryPolicy => 'RandomDelayRetryPolicy',
       _i0ntvx71.RevokedAuthenticationAuthId => 'RevokedAuthenticationAuthId',
       _ivj17zej.RevokedAuthenticationScope => 'RevokedAuthenticationScope',
       _iubydmqj.RevokedAuthenticationUser => 'RevokedAuthenticationUser',
@@ -1905,6 +1968,21 @@ class Protocol extends _is.DatabaseSerializationManager
       return (data['__className__'] as String).replaceFirst('serverpod.', '');
     }
 
+    if (data.runtimeType == _ibkzyeqm.CustomDelaysRetryPolicy) {
+      return 'CustomDelaysRetryPolicy';
+    }
+    if (data.runtimeType == _ibkzyeqm.ExponentialBackoffRetryPolicy) {
+      return 'ExponentialBackoffRetryPolicy';
+    }
+    if (data.runtimeType == _ibkzyeqm.FixedDelayRetryPolicy) {
+      return 'FixedDelayRetryPolicy';
+    }
+    if (data.runtimeType == _ibkzyeqm.LinearBackoffRetryPolicy) {
+      return 'LinearBackoffRetryPolicy';
+    }
+    if (data.runtimeType == _ibkzyeqm.RandomDelayRetryPolicy) {
+      return 'RandomDelayRetryPolicy';
+    }
     switch (data) {
       case _i0ntvx71.RevokedAuthenticationAuthId():
         return 'RevokedAuthenticationAuthId';
@@ -1993,6 +2071,21 @@ class Protocol extends _is.DatabaseSerializationManager
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'CustomDelaysRetryPolicy') {
+      return deserialize<_ibkzyeqm.CustomDelaysRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'ExponentialBackoffRetryPolicy') {
+      return deserialize<_ibkzyeqm.ExponentialBackoffRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'FixedDelayRetryPolicy') {
+      return deserialize<_ibkzyeqm.FixedDelayRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'LinearBackoffRetryPolicy') {
+      return deserialize<_ibkzyeqm.LinearBackoffRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'RandomDelayRetryPolicy') {
+      return deserialize<_ibkzyeqm.RandomDelayRetryPolicy>(data['data']);
     }
     if (dataClassName == 'RevokedAuthenticationAuthId') {
       return deserialize<_i0ntvx71.RevokedAuthenticationAuthId>(data['data']);

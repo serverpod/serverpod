@@ -17,6 +17,8 @@ import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _iom2gwyu;
+import 'package:serverpod_test_server/src/futureCalls/test_retry_policies.dart'
+    as _irwwg01u;
 import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/parent.dart'
     as _ieub4zqi;
 import 'package:serverpod_test_server/src/generated/simple_data.dart'
@@ -1606,6 +1608,8 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilwf0zl1.ProtocolCustomClass>,
       _is.getType<_ilwf0zl1.ExternalCustomClass>,
       _is.getType<_ilwf0zl1.FreezedCustomClass>,
+      _is.getType<_irwwg01u.TestRetryPolicy>,
+      _is.getType<_irwwg01u.TestRetryPolicyWithDoubling>,
       _is.getType<_ilwf0zl1.CustomClass?>,
       _is.getType<_ilwf0zl1.CustomClass2?>,
       _is.getType<_ilwf0zl1.CustomClassWithoutProtocolSerialization?>,
@@ -1614,6 +1618,8 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilwf0zl1.ProtocolCustomClass?>,
       _is.getType<_ilwf0zl1.ExternalCustomClass?>,
       _is.getType<_ilwf0zl1.FreezedCustomClass?>,
+      _is.getType<_irwwg01u.TestRetryPolicy?>,
+      _is.getType<_irwwg01u.TestRetryPolicyWithDoubling?>,
       _is.getType<List<_i685tvwm.SimpleData>?>,
       _is.getType<(String, _ieub4zqi.PolymorphicParent)>,
       _is.getType<(int?,)?>,
@@ -14092,6 +14098,12 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _ilwf0zl1.FreezedCustomClass) {
       return _ilwf0zl1.FreezedCustomClass.fromJson(data) as T;
     }
+    if (t == _irwwg01u.TestRetryPolicy) {
+      return _irwwg01u.TestRetryPolicy.fromJson(data) as T;
+    }
+    if (t == _irwwg01u.TestRetryPolicyWithDoubling) {
+      return _irwwg01u.TestRetryPolicyWithDoubling.fromJson(data) as T;
+    }
     if (t == _is.getType<_ilwf0zl1.CustomClass?>()) {
       return (data != null ? _ilwf0zl1.CustomClass.fromJson(data) : null) as T;
     }
@@ -14134,6 +14146,16 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (t == _is.getType<_ilwf0zl1.FreezedCustomClass?>()) {
       return (data != null ? _ilwf0zl1.FreezedCustomClass.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_irwwg01u.TestRetryPolicy?>()) {
+      return (data != null ? _irwwg01u.TestRetryPolicy.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_irwwg01u.TestRetryPolicyWithDoubling?>()) {
+      return (data != null
+              ? _irwwg01u.TestRetryPolicyWithDoubling.fromJson(data)
+              : null)
           as T;
     }
     if (t == _is.getType<List<_i685tvwm.SimpleData>?>()) {
@@ -14327,6 +14349,8 @@ class Protocol extends _is.DatabaseSerializationManager
       _ilwf0zl1.ProtocolCustomClass => 'ProtocolCustomClass',
       _ilwf0zl1.ExternalCustomClass => 'ExternalCustomClass',
       _ilwf0zl1.FreezedCustomClass => 'FreezedCustomClass',
+      _irwwg01u.TestRetryPolicy => 'TestRetryPolicy',
+      _irwwg01u.TestRetryPolicyWithDoubling => 'TestRetryPolicyWithDoubling',
       _ihs9bjzx.ByIndexEnumWithNameValue => 'ByIndexEnumWithNameValue',
       _iwdug2n0.ByNameEnumWithNameValue => 'ByNameEnumWithNameValue',
       _ik6ri27s.CourseUuid => 'CourseUuid',
@@ -14599,6 +14623,12 @@ class Protocol extends _is.DatabaseSerializationManager
       );
     }
 
+    if (data.runtimeType == _irwwg01u.TestRetryPolicy) {
+      return 'TestRetryPolicy';
+    }
+    if (data.runtimeType == _irwwg01u.TestRetryPolicyWithDoubling) {
+      return 'TestRetryPolicyWithDoubling';
+    }
     switch (data) {
       case _ilwf0zl1.CustomClass():
         return 'CustomClass';
@@ -15218,6 +15248,12 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (dataClassName == 'FreezedCustomClass') {
       return deserialize<_ilwf0zl1.FreezedCustomClass>(data['data']);
+    }
+    if (dataClassName == 'TestRetryPolicy') {
+      return deserialize<_irwwg01u.TestRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'TestRetryPolicyWithDoubling') {
+      return deserialize<_irwwg01u.TestRetryPolicyWithDoubling>(data['data']);
     }
     if (dataClassName == 'ByIndexEnumWithNameValue') {
       return deserialize<_ihs9bjzx.ByIndexEnumWithNameValue>(data['data']);

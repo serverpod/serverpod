@@ -13,10 +13,12 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_retry_policy_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/model_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_cli/src/util/unrendered_template_path.dart';
@@ -33,6 +35,20 @@ class _CachedFutureCallFileResult {
     required this.definitions,
     required this.hadErrors,
   }) : definitionsHash = futureCallDefinitionsHash(definitions);
+}
+
+/// A future call retry policy class found in a file.
+class _CachedRetryPolicy {
+  /// The type that refers to the class in the generated protocol.
+  final TypeDefinition type;
+
+  /// Whether the class passed validation and can be registered.
+  final bool isValid;
+
+  _CachedRetryPolicy({
+    required this.type,
+    required this.isValid,
+  });
 }
 
 /// Analyzes dart files for [FutureCall]s.
@@ -54,6 +70,10 @@ class FutureCallsAnalyzer {
 
   List<SerializableModelDefinition>? _cachedAnalyzedModels;
 
+  /// The names of the extra classes in the protocol, which future call retry
+  /// policies must not share.
+  final Set<String> _extraClassNames;
+
   /// Create a new [FutureCallsAnalyzer] for [directory].
   ///
   /// When [collection] is provided it is reused (e.g. shared with
@@ -61,12 +81,20 @@ class FutureCallsAnalyzer {
   ///
   /// Pass [generatedDirPaths] so generated output is not scanned for future
   /// calls.
+  ///
+  /// Pass the configured [extraClasses] so that future call retry policies
+  /// with the same name as one of them are reported.
   FutureCallsAnalyzer({
     required Directory directory,
     AnalysisContextCollection? collection,
     Set<String>? generatedDirPaths,
+    List<TypeDefinition>? extraClasses,
   }) : collection = collection ?? createAnalysisContextCollection(directory),
        generatedDirPaths = generatedDirPaths ?? const {},
+       _extraClassNames = {
+         for (var extraClass in extraClasses ?? const <TypeDefinition>[])
+           extraClass.className,
+       },
        absoluteIncludedPaths = directory.absolute.path;
 
   /// Cached per-file analysis results for future call files.
@@ -80,6 +108,26 @@ class FutureCallsAnalyzer {
   /// The cache only holds files the analysis took up as future call files, so a
   /// file missing here declared no future call when it was last examined.
   Iterable<String> get futureCallFiles => _fileCache.keys;
+
+  /// Future call retry policy classes found in the last analysis, by file.
+  final _retryPolicyCache = SplayTreeMap<String, List<_CachedRetryPolicy>>();
+
+  /// The future call retry policy classes found in the last analysis that
+  /// passed validation.
+  ///
+  /// These have to be registered in the server protocol so that the policies
+  /// can be saved with a future call and loaded again.
+  List<TypeDefinition> get retryPolicies => [
+    for (var cached in _retryPolicyCache.values.expand((e) => e))
+      if (cached.isValid) cached.type,
+  ];
+
+  /// Identifies the future call retry policy classes found in the last
+  /// analysis, whether or not they passed validation.
+  String get _retryPolicySignature => [
+    for (var cached in _retryPolicyCache.values.expand((e) => e))
+      '${cached.type.url}:${cached.type.className}',
+  ].join('\n');
 
   /// The future call files currently cached with errors.
   Set<String> get _erroredFiles => {
@@ -112,6 +160,7 @@ class FutureCallsAnalyzer {
 
     final erroredFilesBefore = _erroredFiles;
     final keysBefore = _fileCache.keys.toSet();
+    final retryPoliciesBefore = _retryPolicySignature;
     // Read before analyzing, which records the hashes itself when there are
     // none yet.
     final previousHashes = _definitionHashesAtLastUpdate;
@@ -123,6 +172,12 @@ class FutureCallsAnalyzer {
 
     final erroredFilesAfter = _erroredFiles;
     final keysAfter = _fileCache.keys.toSet();
+
+    // Retry policy classes are registered in the protocol, so adding, removing
+    // or renaming one means the protocol has to be generated again.
+    if (_retryPolicySignature != retryPoliciesBefore) {
+      return true;
+    }
 
     // What a future call declares can change without its file changing, through
     // an alias, a base class or a type in a file it imports. Every cached file
@@ -234,23 +289,30 @@ class FutureCallsAnalyzer {
     // the analysis context above still needs in full: a regenerated model
     // changes what the future calls importing it resolve to, but declares no
     // future call of its own.
+    //
+    // Files with retry policy classes are analyzed again too: whether a class
+    // is a retry policy, and whether its name clashes, can change through
+    // other files.
     final filesToAnalyze = <String>{
       ...changedFiles.where(
         (path) => !isWithinAnyDirectory(path, generatedDirPaths),
       ),
       ..._fileCache.keys,
+      ..._retryPolicyCache.keys,
     };
 
     // Remove deleted files from cache.
     for (var path in filesToAnalyze) {
       if (!File(path).existsSync()) {
         _fileCache.remove(path);
+        _retryPolicyCache.remove(path);
       }
     }
 
     // Resolve only the files that need re-analysis.
     List<(ResolvedLibraryResult, String)> validLibraries = [];
     List<String> erroredFiles = [];
+    List<(ResolvedLibraryResult, String)> retryPolicyLibraries = [];
 
     for (var path in filesToAnalyze) {
       if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
@@ -259,6 +321,12 @@ class FutureCallsAnalyzer {
 
       var library = await _resolveLibrary(path);
       if (library == null) continue;
+
+      if (_getRetryPolicyClasses(library).isEmpty) {
+        _retryPolicyCache.remove(path);
+      } else {
+        retryPolicyLibraries.add((library, path));
+      }
 
       var futureCallClasses = _getFutureCallClasses(library);
       if (futureCallClasses.isEmpty) {
@@ -360,6 +428,12 @@ class FutureCallsAnalyzer {
         hadErrors: !hasModels,
       );
     }
+
+    _analyzeRetryPolicies(
+      retryPolicyLibraries,
+      collector: collector,
+      validate: hasModels,
+    );
 
     // Phase 4: Collect all future call definitions from cache.
     // _fileCache is a SplayTreeMap so iteration is in sorted key order.
@@ -501,6 +575,73 @@ class FutureCallsAnalyzer {
     }
 
     return validationErrors;
+  }
+
+  /// Caches the future call retry policy classes of [libraries], which are all
+  /// the files with retry policy classes, and reports the ones that can't be
+  /// registered in the protocol.
+  ///
+  /// When [validate] is `false` the classes are only recorded. Validation
+  /// needs the models, to report retry policies that share a name with one.
+  void _analyzeRetryPolicies(
+    List<(ResolvedLibraryResult, String)> libraries, {
+    required CodeAnalysisCollector collector,
+    required bool validate,
+  }) {
+    var policyNameCounts = <String, int>{};
+    for (var (library, _) in libraries) {
+      for (var element in _getRetryPolicyClasses(library)) {
+        policyNameCounts.update(
+          element.displayName,
+          (count) => count + 1,
+          ifAbsent: () => 1,
+        );
+      }
+    }
+
+    var takenClassNames = {
+      ..._extraClassNames,
+      for (var model
+          in _cachedAnalyzedModels ?? <SerializableModelDefinition>[])
+        model.className,
+      for (var entry in policyNameCounts.entries)
+        if (entry.value > 1) entry.key,
+    };
+
+    for (var (library, path) in libraries) {
+      _retryPolicyCache[path] = [
+        for (var element in _getRetryPolicyClasses(library))
+          _CachedRetryPolicy(
+            type: FutureCallRetryPolicyAnalyzer.typeDefinition(element),
+            isValid:
+                !validate ||
+                _isValidRetryPolicy(
+                  element,
+                  takenClassNames,
+                  collector,
+                ),
+          ),
+      ];
+    }
+  }
+
+  bool _isValidRetryPolicy(
+    ClassElement element,
+    Set<String> takenClassNames,
+    CodeAnalysisCollector collector,
+  ) {
+    var errors = FutureCallRetryPolicyAnalyzer.validate(
+      element,
+      takenClassNames,
+    );
+    collector.addErrors(errors);
+    return errors.isEmpty;
+  }
+
+  Iterable<ClassElement> _getRetryPolicyClasses(ResolvedLibraryResult library) {
+    return library.element.classes.where(
+      FutureCallRetryPolicyAnalyzer.isRetryPolicyClass,
+    );
   }
 
   Iterable<ClassElement> _getFutureCallClasses(ResolvedLibraryResult library) {
