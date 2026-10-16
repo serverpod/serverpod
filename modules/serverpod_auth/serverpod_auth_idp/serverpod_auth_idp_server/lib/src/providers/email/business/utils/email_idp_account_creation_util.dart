@@ -6,6 +6,7 @@ import '../../../../../core.dart';
 import '../../util/email_string_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
+import 'secret_challenge_exception_mapping.dart';
 
 /// {@template email_idp_account_creation_util}
 /// This class contains utility functions for the email identity provider
@@ -442,28 +443,7 @@ class EmailIdpAccountCreationUtil {
   /// Replaces challenge-related exceptions by email-specific exceptions.
   Future<T> withReplacedSecretChallengeException<T>(
     final Future<T> Function() fn,
-  ) async {
-    try {
-      return await fn();
-    } on SecretChallengeException catch (e) {
-      throw switch (e) {
-        ChallengeRequestNotFoundException() =>
-          EmailAccountRequestNotFoundException(),
-        ChallengeAlreadyUsedException() =>
-          EmailAccountRequestVerificationCodeAlreadyUsedException(),
-        ChallengeInvalidVerificationCodeException() =>
-          EmailAccountRequestInvalidVerificationCodeException(),
-        ChallengeExpiredException() =>
-          EmailAccountRequestVerificationExpiredException(),
-        ChallengeNotVerifiedException() =>
-          EmailAccountRequestNotVerifiedException(),
-        ChallengeInvalidCompletionTokenException() =>
-          EmailAccountRequestInvalidVerificationCodeException(),
-        ChallengeRateLimitExceededException() =>
-          EmailAccountRequestVerificationTooManyAttemptsException(),
-      };
-    }
-  }
+  ) => withEmailAccountRequestExceptions(fn);
 }
 
 /// Configuration for the [EmailIdpAccountCreationUtil] class.
