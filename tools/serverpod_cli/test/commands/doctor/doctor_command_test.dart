@@ -61,7 +61,7 @@ void main() {
 
     setUp(() {
       command = DoctorCommand(
-        runChecks: () async => [
+        runChecks: ({environment}) async => [
           _check('flutter', DoctorStatus.ready),
           _check('dart', DoctorStatus.ready),
         ],
@@ -114,7 +114,7 @@ void main() {
 
     setUp(() {
       command = DoctorCommand(
-        runChecks: () async => [
+        runChecks: ({environment}) async => [
           _check('flutter', DoctorStatus.ready),
           _check('git', DoctorStatus.missing),
         ],
