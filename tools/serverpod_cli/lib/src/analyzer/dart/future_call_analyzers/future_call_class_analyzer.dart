@@ -7,6 +7,10 @@ import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_cal
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
+/// The name of the generated method that sets the retry policy of a future
+/// call being scheduled.
+const _withRetryPolicyName = 'withRetryPolicy';
+
 abstract class FutureCallClassAnalyzer {
   /// Parses an [ClassElement] into a [FutureCallDefinition].
   ///
@@ -140,6 +144,23 @@ abstract class FutureCallClassAnalyzer {
         SourceSpanSeverityException(
           'Multiple future call definitions for ${classElement.name} exists. '
           'Please provide a unique name for each future call class.',
+          classElement.span,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+    }
+
+    // The generated reference returned by the scheduling methods has a
+    // property per future call and a `withRetryPolicy` method, so a future
+    // call with that name would clash with the method.
+    if (!classElement.isAbstract &&
+        _formatFutureCallName(classElement.displayName) ==
+            _withRetryPolicyName) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The future call ${classElement.name} would be scheduled through a '
+          'property named $_withRetryPolicyName, which clashes with the '
+          'method used to set a retry policy. Please rename the class.',
           classElement.span,
           severity: SourceSpanSeverity.error,
         ),
