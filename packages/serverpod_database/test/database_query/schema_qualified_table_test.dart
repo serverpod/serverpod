@@ -31,7 +31,7 @@ class _Citizen implements TableRow<int?> {
 }
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   group('Given a table with an unqualified name', () {
     var citizenTable = Table<int?>(tableName: 'citizen');

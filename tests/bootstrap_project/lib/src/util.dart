@@ -237,38 +237,12 @@ Future<void> createProject({
 
 Future<String>? _compiledServerpodCli;
 
-/// Path to the compiled in-repo serverpod CLI, built once per `dart test` run.
+/// Path to the compiled in-repo serverpod CLI, built once per version of its
+/// sources.
 ///
 /// A prebuilt CLI can be supplied via SERVERPOD_CLI_EXE.
 Future<String> compiledServerpodCli({required String rootPath}) =>
-    _compiledServerpodCli ??= _compileServerpodCli(rootPath);
-
-Future<String> _compileServerpodCli(String rootPath) async {
-  // Keyed on `dart test` run pid. Shared by its isolates.
-  const prefix = 'serverpod_bootstrap_cli_';
-  _cleanupStaleBuildDirs(prefix);
-  return buildServerpodCli(
-    buildRoot: path.join(Directory.systemTemp.path, '$prefix$pid'),
-    serverpodHome: rootPath,
-  );
-}
-
-/// Deletes CLI build dirs left behind by previous runs (older than a day).
-void _cleanupStaleBuildDirs(String prefix) {
-  final now = DateTime.now();
-  for (final entity in Directory.systemTemp.listSync()) {
-    if (entity is! Directory) continue;
-    final name = path.basename(entity.path);
-    if (!name.startsWith(prefix)) continue;
-    if (name == '$prefix$pid') continue;
-    if (now.difference(entity.statSync().modified).inDays < 1) continue;
-    try {
-      entity.deleteSync(recursive: true);
-    } catch (_) {
-      // Might be in use by a concurrent run.
-    }
-  }
-}
+    _compiledServerpodCli ??= buildServerpodCli(serverpodHome: rootPath);
 
 String getServerpodCliProjectPath({required final String rootPath}) {
   return path.join(

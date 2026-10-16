@@ -9,7 +9,9 @@ void main() {
   // Registers this project as a host on module protocols for dynamic fields.
   // This will always be called for real projects, since the client protocol
   // is used on the generated `Client` class.
-  client.Protocol();
+  setUpAll(() {
+    client.Protocol();
+  });
 
   group(
     'Given a model from a module with a dynamic field and a project model as data,',

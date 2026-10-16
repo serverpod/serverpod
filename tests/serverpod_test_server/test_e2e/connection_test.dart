@@ -19,7 +19,13 @@ ByteData createByteData() {
 }
 
 void main() {
-  var client = Client(serverUrl);
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   group('Calls', () {
     test(

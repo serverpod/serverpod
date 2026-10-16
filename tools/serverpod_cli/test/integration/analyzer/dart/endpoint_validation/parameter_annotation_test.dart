@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
@@ -10,29 +11,36 @@ import 'package:test/test.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
+late AnalysisContextCollection collection;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
+    collection = await createCachedAnalysisContextCollection(
+      testProjectDirectory,
+    );
   });
 
   tearDownAll(() async {
+    await collection.dispose();
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
   group(
-    'Given endpoint method with @deprecated parameter annotation when analyzed',
+    'Given endpoint method with @deprecated parameter annotation, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         File(path.join(testDirectory.path, 'endpoint.dart'))
           ..createSync(recursive: true)
           ..writeAsStringSync('''
@@ -46,7 +54,7 @@ class TestEndpoint extends Endpoint {
 }
 ''');
 
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -68,17 +76,18 @@ class TestEndpoint extends Endpoint {
   );
 
   group(
-    'Given endpoint method with @Deprecated parameter annotation when analyzed',
+    'Given endpoint method with @Deprecated parameter annotation, when analyzed,',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory testDirectory;
 
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         File(path.join(testDirectory.path, 'endpoint.dart'))
           ..createSync(recursive: true)
           ..writeAsStringSync('''
@@ -92,7 +101,7 @@ class TestEndpoint extends Endpoint {
 }
 ''');
 
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
