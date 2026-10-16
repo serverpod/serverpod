@@ -192,11 +192,13 @@ class Protocol extends _is.DatabaseSerializationManager
           _is.getType<_ibkzyeqm.ExponentialBackoffRetryPolicy>,
           _is.getType<_ibkzyeqm.RandomDelayRetryPolicy>,
           _is.getType<_ibkzyeqm.CustomDelaysRetryPolicy>,
+          _is.getType<_ibkzyeqm.ChainedRetryPolicies>,
           _is.getType<_ibkzyeqm.FixedDelayRetryPolicy?>,
           _is.getType<_ibkzyeqm.LinearBackoffRetryPolicy?>,
           _is.getType<_ibkzyeqm.ExponentialBackoffRetryPolicy?>,
           _is.getType<_ibkzyeqm.RandomDelayRetryPolicy?>,
           _is.getType<_ibkzyeqm.CustomDelaysRetryPolicy?>,
+          _is.getType<_ibkzyeqm.ChainedRetryPolicies?>,
         ],
         modules: const [_isd.Protocol.new],
       );
@@ -1880,6 +1882,9 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _ibkzyeqm.CustomDelaysRetryPolicy) {
       return _ibkzyeqm.CustomDelaysRetryPolicy.fromJson(data) as T;
     }
+    if (t == _ibkzyeqm.ChainedRetryPolicies) {
+      return _ibkzyeqm.ChainedRetryPolicies.fromJson(data) as T;
+    }
     if (t == _is.getType<_ibkzyeqm.FixedDelayRetryPolicy?>()) {
       return (data != null
               ? _ibkzyeqm.FixedDelayRetryPolicy.fromJson(data)
@@ -1910,6 +1915,12 @@ class Protocol extends _is.DatabaseSerializationManager
               : null)
           as T;
     }
+    if (t == _is.getType<_ibkzyeqm.ChainedRetryPolicies?>()) {
+      return (data != null
+              ? _ibkzyeqm.ChainedRetryPolicies.fromJson(data)
+              : null)
+          as T;
+    }
     final modules = dataClassName == null
         ? deserializationMetadata.modulesForType(t)
         : deserializationMetadata.modules;
@@ -1930,6 +1941,7 @@ class Protocol extends _is.DatabaseSerializationManager
         'ExponentialBackoffRetryPolicy',
       _ibkzyeqm.RandomDelayRetryPolicy => 'RandomDelayRetryPolicy',
       _ibkzyeqm.CustomDelaysRetryPolicy => 'CustomDelaysRetryPolicy',
+      _ibkzyeqm.ChainedRetryPolicies => 'ChainedRetryPolicies',
       _i0ntvx71.RevokedAuthenticationAuthId => 'RevokedAuthenticationAuthId',
       _ivj17zej.RevokedAuthenticationScope => 'RevokedAuthenticationScope',
       _iubydmqj.RevokedAuthenticationUser => 'RevokedAuthenticationUser',
@@ -1995,6 +2007,9 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (data.runtimeType == _ibkzyeqm.CustomDelaysRetryPolicy) {
       return 'CustomDelaysRetryPolicy';
+    }
+    if (data.runtimeType == _ibkzyeqm.ChainedRetryPolicies) {
+      return 'ChainedRetryPolicies';
     }
     switch (data) {
       case _i0ntvx71.RevokedAuthenticationAuthId():
@@ -2099,6 +2114,9 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (dataClassName == 'CustomDelaysRetryPolicy') {
       return deserialize<_ibkzyeqm.CustomDelaysRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'ChainedRetryPolicies') {
+      return deserialize<_ibkzyeqm.ChainedRetryPolicies>(data['data']);
     }
     if (dataClassName == 'RevokedAuthenticationAuthId') {
       return deserialize<_i0ntvx71.RevokedAuthenticationAuthId>(data['data']);

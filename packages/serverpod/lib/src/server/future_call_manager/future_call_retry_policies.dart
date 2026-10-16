@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'future_call_retry_policy.dart';
+import 'future_call_retry_policy_serialization.dart';
 
 bool _hasReachedMaxAttempts(int maxAttempts, FutureCallRetryContext context) {
   return context.retryAttempt >= maxAttempts;
@@ -287,4 +288,101 @@ final class CustomDelaysRetryPolicy extends FutureCallRetryPolicy {
   Map<String, dynamic> toJson() => {
     'delays': [for (var delay in delays) delay.toJson()],
   };
+}
+
+/// A [FutureCallRetryPolicy] that uses a list of [policies] in order. It asks
+/// the first policy for delays until that policy stops retrying, then moves on
+/// to the next one, and so on. It stops retrying when the last policy does.
+///
+/// Each policy counts its retries from zero when its turn starts.
+final class ChainedRetryPolicies extends FutureCallRetryPolicy {
+  /// The policies, in the order they are used.
+  final List<FutureCallRetryPolicy> policies;
+
+  /// The index in [policies] of the policy whose turn it is.
+  int _currentPolicy;
+
+  /// The retry attempt at which the turn of the current policy started.
+  int _currentPolicyStart;
+
+  /// Creates a new [ChainedRetryPolicies].
+  ChainedRetryPolicies(this.policies)
+    : _currentPolicy = 0,
+      _currentPolicyStart = 0;
+
+  ChainedRetryPolicies._(
+    this.policies, {
+    required int currentPolicy,
+    required int currentPolicyStart,
+  }) : _currentPolicy = currentPolicy,
+       _currentPolicyStart = currentPolicyStart;
+
+  /// Creates a [ChainedRetryPolicies] from its serialized form.
+  ///
+  /// Only works while a retry policy is loaded by the future call manager,
+  /// which provides the serialization manager to load the [policies] with.
+  factory ChainedRetryPolicies.fromJson(Map<String, dynamic> json) {
+    var serializationManager = currentRetryPolicySerializationManager();
+    return ChainedRetryPolicies._(
+      [
+        for (var policy in json['policies'] as List)
+          serializationManager.deserializeByClassName(
+                policy as Map<String, dynamic>,
+              )
+              as FutureCallRetryPolicy,
+      ],
+      currentPolicy: json['currentPolicy'] as int,
+      currentPolicyStart: json['currentPolicyStart'] as int,
+    );
+  }
+
+  @override
+  Duration? nextDelay(FutureCallRetryContext context) {
+    while (_currentPolicy < policies.length) {
+      var delay = policies[_currentPolicy].nextDelay(
+        FutureCallRetryContext(
+          error: context.error,
+          stackTrace: context.stackTrace,
+          retryAttempt: context.retryAttempt - _currentPolicyStart,
+        ),
+      );
+      if (delay != null) return delay;
+
+      _currentPolicy++;
+      _currentPolicyStart = context.retryAttempt;
+    }
+    return null;
+  }
+
+  @override
+  void validate() {
+    if (policies.isEmpty) {
+      throw ArgumentError.value(policies, 'policies', 'Must not be empty.');
+    }
+    for (var policy in policies) {
+      policy.validate();
+    }
+  }
+
+  /// Serializes the chain, including each policy with its class name.
+  ///
+  /// Only works while a retry policy is saved by the future call manager,
+  /// which provides the serialization manager to save the [policies] with.
+  @override
+  Map<String, dynamic> toJson() {
+    var serializationManager = currentRetryPolicySerializationManager();
+    return {
+      'policies': [
+        for (var policy in policies)
+          {
+            'className': serializationManager.wrapWithClassName(
+              policy,
+            )['className'],
+            'data': policy.toJson(),
+          },
+      ],
+      'currentPolicy': _currentPolicy,
+      'currentPolicyStart': _currentPolicyStart,
+    };
+  }
 }

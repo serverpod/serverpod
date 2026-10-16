@@ -7,6 +7,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/log.dart' hide LogLevel;
 
 import 'future_call_diagnostics_service.dart';
+import 'future_call_retry_policy_serialization.dart';
 import 'future_call_scanner.dart';
 import 'serverpod_task_scheduler.dart';
 
@@ -185,7 +186,7 @@ class FutureCallManager {
     String? serializedRetryPolicy;
     if (retryPolicy != null) {
       retryPolicy.validate();
-      serializedRetryPolicy = _serializationManager.encodeWithType(retryPolicy);
+      serializedRetryPolicy = _encodeRetryPolicy(retryPolicy);
     }
 
     var entry = FutureCallEntry(
@@ -457,9 +458,7 @@ class FutureCallManager {
         return false;
       }
 
-      policy =
-          _serializationManager.decodeWithType(serializedRetryPolicy)
-              as FutureCallRetryPolicy;
+      policy = _decodeRetryPolicy(serializedRetryPolicy);
       delay = policy.nextDelay(context);
     } catch (policyError, policyStackTrace) {
       _diagnosticsService.submitCallException(
@@ -496,7 +495,7 @@ class FutureCallManager {
             t.time(nextTime),
             t.failedAttempts(retryAttempt + 1),
             t.serializedRetryPolicy(
-              _serializationManager.encodeWithType(policy),
+              _encodeRetryPolicy(policy),
             ),
           ],
           transaction: transaction,
@@ -532,6 +531,37 @@ class FutureCallManager {
       );
       return true;
     }
+  }
+
+  /// Serializes [policy] with its class name, so that it can be loaded with
+  /// [_decodeRetryPolicy].
+  String _encodeRetryPolicy(FutureCallRetryPolicy policy) {
+    return runWithRetryPolicySerialization(_serializationManager, () {
+      // The policy is converted to JSON before encoding, so that an error
+      // thrown by its toJson is thrown as it is, not wrapped by the encoder.
+      var withClassName = _serializationManager.wrapWithClassName(policy);
+      return SerializationManager.encode({
+        ...withClassName,
+        'data': policy.toJson(),
+      });
+    });
+  }
+
+  /// Loads a retry policy serialized by [_encodeRetryPolicy].
+  ///
+  /// Throws if the policy can't be loaded, or isn't a retry policy.
+  FutureCallRetryPolicy _decodeRetryPolicy(String serializedRetryPolicy) {
+    return runWithRetryPolicySerialization(_serializationManager, () {
+      var retryPolicy = _serializationManager.decodeWithType(
+        serializedRetryPolicy,
+      );
+      if (retryPolicy is! FutureCallRetryPolicy) {
+        throw FormatException(
+          'Not a retry policy: ${retryPolicy.runtimeType}',
+        );
+      }
+      return retryPolicy;
+    });
   }
 
   /// Returns the next time the [futureCallEntry] should run
@@ -691,12 +721,7 @@ class FutureCallManager {
     if (serializedRetryPolicy == null) return null;
 
     try {
-      final retryPolicy = _serializationManager.decodeWithType(
-        serializedRetryPolicy,
-      );
-      if (retryPolicy is! FutureCallRetryPolicy) {
-        return 'Not a retry policy: ${retryPolicy.runtimeType}';
-      }
+      _decodeRetryPolicy(serializedRetryPolicy);
       return null;
     } catch (e) {
       return e.toString();
