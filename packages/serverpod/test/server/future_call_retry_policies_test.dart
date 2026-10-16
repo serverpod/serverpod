@@ -308,7 +308,7 @@ void main() {
         initialDelay: Duration(seconds: 1),
         increment: Duration(seconds: 1),
       ),
-      'Must 1 or greater.',
+      'Must be 1 or greater.',
     ),
     'a LinearBackoffRetryPolicy with a negative initialDelay': (
       const LinearBackoffRetryPolicy(
@@ -340,7 +340,7 @@ void main() {
         maxAttempts: 0,
         initialDelay: Duration(seconds: 1),
       ),
-      'Must 1 or greater.',
+      'Must be 1 or greater.',
     ),
     'an ExponentialBackoffRetryPolicy with a negative initialDelay': (
       const ExponentialBackoffRetryPolicy(
@@ -371,7 +371,7 @@ void main() {
         min: Duration(seconds: 1),
         max: Duration(seconds: 2),
       ),
-      'Must 1 or greater.',
+      'Must be 1 or greater.',
     ),
     'a RandomDelayRetryPolicy with a negative min': (
       const RandomDelayRetryPolicy(
