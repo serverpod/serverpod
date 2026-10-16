@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../localization/sign_in_localization_provider.dart';
 import '../gaps.dart';
 
 /// A widget that displays a "didn't receive? Send a new code" button.
@@ -91,7 +92,7 @@ class _ResendCodeButtonState extends State<ResendCodeButton> {
   @override
   Widget build(BuildContext context) {
     final isEnabled = _remainingSeconds == 0 && !_isResending;
-    const label = "Didn't receive? Send a new code";
+    final label = context.emailSignInTexts.resendCode;
 
     return Column(
       children: [
@@ -100,7 +101,7 @@ class _ResendCodeButtonState extends State<ResendCodeButton> {
           onPressed: isEnabled ? _handleResend : null,
           child: _remainingSeconds > 0
               ? Text("$label (${_formatTime(_remainingSeconds)})")
-              : const Text(label),
+              : Text(label),
         ),
       ],
     );

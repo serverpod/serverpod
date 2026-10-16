@@ -20,8 +20,18 @@ import 'email_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class EmailIdp implements IdentityProvider {
   /// The method used when authenticating with the Email identity provider.
+  ///
+  /// Used for tokens issued after authenticating with a password.
   @override
   String get method => 'email';
+
+  /// The method used for tokens issued after a passwordless login with a
+  /// one-time password sent to the user's email.
+  ///
+  /// It differs from [method] so that sessions can be audited by how they were
+  /// authenticated, e.g. to tell whether a compromised account was accessed
+  /// through the password or through the email inbox.
+  static const String otpMethod = 'email_otp';
 
   /// Admin operations to work with email-backed accounts.
   final EmailIdpAdmin admin;
@@ -83,12 +93,16 @@ class EmailIdp implements IdentityProvider {
               transaction: transaction,
             );
 
-            await _tokenManager.revokeAllTokens(
-              session,
-              authUserId: authUserId,
-              method: method,
-              transaction: transaction,
-            );
+            // Tokens from passwordless logins are revoked as well, since a
+            // password reset may be in response to a compromised account.
+            for (final tokenMethod in [method, otpMethod]) {
+              await _tokenManager.revokeAllTokens(
+                session,
+                authUserId: authUserId,
+                method: tokenMethod,
+                transaction: transaction,
+              );
+            }
 
             return authUserId;
           }),
@@ -292,6 +306,119 @@ class EmailIdp implements IdentityProvider {
           );
         },
       ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.start_otp_login}
+  Future<UuidValue> startOtpLogin(
+    final Session session, {
+    required final String email,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
+        () => utils.otpLogin.startOtpLogin(
+          session,
+          email: email,
+          transaction: transaction,
+        ),
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.verify_otp_login_code}
+  Future<EmailAccountOtpVerificationResult> verifyOtpLoginCode(
+    final Session session, {
+    required final UuidValue otpLoginRequestId,
+    required final String verificationCode,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
+        () => utils.otpLogin.verifyOtpLoginCode(
+          session,
+          otpLoginRequestId: otpLoginRequestId,
+          verificationCode: verificationCode,
+          transaction: transaction,
+        ),
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.finish_otp_login}
+  Future<AuthSuccess> finishOtpLogin(
+    final Session session, {
+    required final String otpLoginToken,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) =>
+          EmailIdpUtils.withReplacedServerEmailException(() async {
+            final authUserId = await utils.otpLogin.completeOtpLogin(
+              session,
+              otpLoginToken: otpLoginToken,
+              transaction: transaction,
+            );
+
+            final authUser = await _authUsers.get(
+              session,
+              authUserId: authUserId,
+              transaction: transaction,
+            );
+
+            return _tokenManager.issueToken(
+              session,
+              authUserId: authUserId,
+              method: otpMethod,
+              scopes: authUser.scopes,
+              transaction: transaction,
+            );
+          }),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.finish_otp_registration}
+  Future<AuthSuccess> finishOtpRegistration(
+    final Session session, {
+    required final String otpLoginToken,
+    final String? password,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) =>
+          EmailIdpUtils.withReplacedServerEmailException(() async {
+            final result = await utils.otpLogin.completeOtpRegistration(
+              session,
+              otpLoginToken: otpLoginToken,
+              password: password,
+              transaction: transaction,
+            );
+
+            await _userProfiles.createUserProfile(
+              session,
+              result.authUserId,
+              UserProfileData(
+                email: result.email,
+              ),
+              transaction: transaction,
+            );
+
+            return _tokenManager.issueToken(
+              session,
+              authUserId: result.authUserId,
+              method: otpMethod,
+              scopes: result.scopes,
+              transaction: transaction,
+            );
+          }),
     );
   }
 

@@ -33,7 +33,12 @@ class ActionButton extends StatelessWidget {
         fixedSize: const Size(double.infinity, 48),
       ),
       onPressed: isLoading ? null : onPressed,
-      child: isLoading ? const LoadingIndicator() : Text(label),
+      child: isLoading
+          ? const LoadingIndicator()
+          : AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: Text(label, key: ValueKey(label)),
+            ),
     );
   }
 }

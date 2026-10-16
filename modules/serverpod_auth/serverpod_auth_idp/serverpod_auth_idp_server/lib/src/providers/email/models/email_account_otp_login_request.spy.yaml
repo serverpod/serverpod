@@ -1,0 +1,29 @@
+### Pending one-time password (OTP) login request for an email address.
+###
+### Created for both registered and unregistered email addresses, so that the
+### existence of an account is not revealed before the code is verified.
+class: EmailAccountOtpLoginRequest
+serverOnly: true
+table: serverpod_auth_idp_email_account_otp_login_request
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The time when this request was created.
+  createdAt: DateTime, default=now
+
+  ### The email of the user.
+  ###
+  ### Stored in lower-case.
+  email: String
+
+  ### The associated challenge holding the one-time password.
+  challenge: SecretChallenge?, relation(onDelete=Cascade)
+
+  ### Used to complete the login or the account creation.
+  ### This will be set after the one-time password has been verified.
+  completeChallenge: SecretChallenge?, relation(onDelete=Cascade, optional)
+
+indexes:
+  serverpod_auth_idp_email_account_otp_login_request_email:
+    fields: email
+    unique: true
