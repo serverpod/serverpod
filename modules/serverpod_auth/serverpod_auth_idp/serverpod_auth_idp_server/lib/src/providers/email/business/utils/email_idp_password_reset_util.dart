@@ -5,6 +5,7 @@ import '../../../../../core.dart';
 import '../../util/email_string_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
+import 'secret_challenge_exception_mapping.dart';
 
 /// {@template email_idp_password_reset_util}
 /// Class for handling password reset operations in the email account module.
@@ -408,28 +409,7 @@ class EmailIdpPasswordResetUtil {
   /// Replaces challenge-related exceptions by email-specific exceptions.
   Future<T> withReplacedSecretChallengeException<T>(
     final Future<T> Function() fn,
-  ) async {
-    try {
-      return await fn();
-    } on SecretChallengeException catch (e) {
-      throw switch (e) {
-        ChallengeRequestNotFoundException() =>
-          EmailPasswordResetRequestNotFoundException(),
-        ChallengeAlreadyUsedException() =>
-          EmailPasswordResetVerificationCodeAlreadyUsedException(),
-        ChallengeInvalidVerificationCodeException() =>
-          EmailPasswordResetInvalidVerificationCodeException(),
-        ChallengeExpiredException() =>
-          EmailPasswordResetRequestExpiredException(),
-        ChallengeNotVerifiedException() =>
-          EmailPasswordResetNotVerifiedException(),
-        ChallengeInvalidCompletionTokenException() =>
-          EmailPasswordResetInvalidVerificationCodeException(),
-        ChallengeRateLimitExceededException() =>
-          EmailPasswordResetTooManyVerificationAttemptsException(),
-      };
-    }
-  }
+  ) => withEmailPasswordResetExceptions(fn);
 }
 
 /// Configuration options for the [EmailIdpPasswordResetUtil] class.
