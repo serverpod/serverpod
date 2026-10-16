@@ -160,6 +160,10 @@ class FutureCallManager {
   /// - [serverId]: The ID of the server responsible for executing the call.
   /// - [identifier]: An optional unique identifier for the call, used for cancellation.
   /// - [scheduling]: An optional scheduling configuration for recurring calls.
+  /// - [retryPolicy]: An optional policy for retrying the call when it fails.
+  ///
+  /// Throws an [ArgumentError] if [retryPolicy] is configured in a way that
+  /// can't work, or if its class is not registered in the protocol.
   Future<void> scheduleFutureCall(
     String name,
     SerializableModel? object,
@@ -167,10 +171,17 @@ class FutureCallManager {
     String serverId,
     String? identifier, {
     FutureCallScheduling? scheduling,
+    FutureCallRetryPolicy? retryPolicy,
   }) async {
     String? serialization;
     if (object != null) {
       serialization = SerializationManager.encode(object.toJson());
+    }
+
+    String? serializedRetryPolicy;
+    if (retryPolicy != null) {
+      retryPolicy.validate();
+      serializedRetryPolicy = _serializationManager.encodeWithType(retryPolicy);
     }
 
     var entry = FutureCallEntry(
@@ -180,6 +191,7 @@ class FutureCallManager {
       serverId: serverId,
       identifier: identifier,
       scheduling: scheduling,
+      serializedRetryPolicy: serializedRetryPolicy,
     );
 
     var session = _internalSession;
