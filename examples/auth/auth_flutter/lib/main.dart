@@ -121,6 +121,13 @@ class SignInScreen extends StatelessWidget {
           signUpTitle: 'Sign up with email',
           continueAction: 'Continue',
         ),
+        emailWithOtp: EmailWithOtpSignInTexts.defaults.copyWith(
+          startTitle: 'Sign in with email',
+          sendCode: 'Send code',
+          signInWithPassword: 'Sign in with password',
+          verifyTitle: 'Check your email',
+          createAccountTitle: 'Create your account',
+        ),
         passwordRequirementTexts: PasswordRequirementTexts.defaults.copyWith(
           minLengthTemplate: 'At least {length} characters',
           maxLengthTemplate: 'At most {length} characters',
