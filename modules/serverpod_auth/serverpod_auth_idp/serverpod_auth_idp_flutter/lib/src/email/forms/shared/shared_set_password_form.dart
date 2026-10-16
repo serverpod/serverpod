@@ -6,7 +6,7 @@ import '../../../common/widgets/password_field.dart';
 import '../../../common/widgets/password_requirements/requirements.dart';
 import '../../../common/widgets/password_requirements/widget.dart';
 import '../../email_flow_controller.dart';
-import '../widgets/form_standard_layout.dart';
+import 'shared_form_layout.dart';
 
 /// Set new password form widget, shared by the email authentication flows.
 ///
@@ -31,6 +31,10 @@ class SharedSetPasswordForm extends StatefulWidget {
   /// Widget to display at the bottom of the form.
   final Widget bottomText;
 
+  /// Whether to place the action right below the content, growing with it,
+  /// instead of at the bottom of a fixed height form.
+  final bool inlineAction;
+
   /// Creates a [SharedSetPasswordForm] widget.
   const SharedSetPasswordForm({
     super.key,
@@ -40,6 +44,7 @@ class SharedSetPasswordForm extends StatefulWidget {
     required this.actionButtonLabel,
     required this.onActionPressed,
     required this.bottomText,
+    this.inlineAction = false,
   });
 
   @override
@@ -69,7 +74,8 @@ class _SharedSetPasswordFormState extends State<SharedSetPasswordForm> {
     final password = widget.controller.passwordController.text;
     final isValidPassword = passwordRequirements.isValid(password);
 
-    return FormStandardLayout(
+    return SharedFormLayout(
+      inlineAction: widget.inlineAction,
       title: widget.title,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

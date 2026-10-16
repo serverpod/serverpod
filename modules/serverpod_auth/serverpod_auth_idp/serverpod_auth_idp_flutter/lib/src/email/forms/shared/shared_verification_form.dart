@@ -7,8 +7,8 @@ import '../../../common/widgets/verification_code.dart';
 import '../../../localization/sign_in_localization_provider.dart';
 import '../../email_flow_controller.dart';
 import '../verification.dart' show VerificationCodeConfig;
-import '../widgets/form_standard_layout.dart';
 import 'shared_back_to_sign_in_button.dart';
+import 'shared_form_layout.dart';
 
 /// Pattern with the default server-side characters in the verification code.
 ///
@@ -46,6 +46,10 @@ class SharedVerificationForm extends StatefulWidget {
   /// Configuration for the verification code input.
   final VerificationCodeConfig verificationCodeConfig;
 
+  /// Whether to place the action right below the content, growing with it,
+  /// instead of at the bottom of a fixed height form.
+  final bool inlineAction;
+
   /// Creates a [SharedVerificationForm] widget.
   const SharedVerificationForm({
     required this.onBackToSignIn,
@@ -55,6 +59,7 @@ class SharedVerificationForm extends StatefulWidget {
     required this.verificationCodeConfig,
     this.messageText,
     this.verifyButtonLabel,
+    this.inlineAction = false,
     super.key,
   });
 
@@ -96,40 +101,47 @@ class _SharedVerificationFormState extends State<SharedVerificationForm> {
     final texts = context.emailSignInTexts;
     final config = widget.verificationCodeConfig;
 
-    return FormStandardLayout(
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          widget.messageText ?? texts.verificationMessage,
+          style: Theme.of(context).textTheme.bodyMedium,
+          textAlign: TextAlign.left,
+        ),
+        smallGap,
+        VerificationCodeInput(
+          focusNode: focusNode,
+          verificationCodeController: controller.verificationCodeController,
+          onCompleted: widget.onCompleted,
+          isLoading: controller.isLoading,
+          length: config.length,
+          keyboardType: config.keyboardType,
+          allowedLetterCase: config.allowedLetterCase,
+          allowedCharactersPattern:
+              config.allowedCharactersPattern ?? _defaultAllowedCharacters,
+        ),
+        ResendCodeButton(
+          onResendPressed: controller.resendVerificationCode,
+          countdownDuration: config.resendCountdownDuration,
+        ),
+      ],
+    );
+    final actionButton = ActionButton(
+      onPressed: widget.onCompleted,
+      label: widget.verifyButtonLabel ?? texts.verify,
+      isLoading: controller.isLoading,
+    );
+    final bottomText = SharedBackToSignInButton(
+      onPressed: widget.onBackToSignIn,
+    );
+
+    return SharedFormLayout(
+      inlineAction: widget.inlineAction,
       title: widget.title,
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            widget.messageText ?? texts.verificationMessage,
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.left,
-          ),
-          smallGap,
-          VerificationCodeInput(
-            focusNode: focusNode,
-            verificationCodeController: controller.verificationCodeController,
-            onCompleted: widget.onCompleted,
-            isLoading: controller.isLoading,
-            length: config.length,
-            keyboardType: config.keyboardType,
-            allowedLetterCase: config.allowedLetterCase,
-            allowedCharactersPattern:
-                config.allowedCharactersPattern ?? _defaultAllowedCharacters,
-          ),
-          ResendCodeButton(
-            onResendPressed: controller.resendVerificationCode,
-            countdownDuration: config.resendCountdownDuration,
-          ),
-        ],
-      ),
-      actionButton: ActionButton(
-        onPressed: widget.onCompleted,
-        label: widget.verifyButtonLabel ?? texts.verify,
-        isLoading: controller.isLoading,
-      ),
-      bottomText: SharedBackToSignInButton(onPressed: widget.onBackToSignIn),
+      content: content,
+      actionButton: actionButton,
+      bottomText: bottomText,
     );
   }
 }
