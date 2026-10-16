@@ -156,5 +156,19 @@ void main() {
         expect(config, isA<EmailIdpConfig>());
       },
     );
+
+    test(
+      'when constructing ServerpodCloudEmailIdpConfig '
+      'then senders for all verification codes are configured',
+      () {
+        final config = ServerpodCloudEmailIdpConfig(
+          appDisplayName: 'My App',
+          runMode: ServerpodRunMode.staging,
+        );
+        expect(config.sendRegistrationVerificationCode, isNotNull);
+        expect(config.sendPasswordResetVerificationCode, isNotNull);
+        expect(config.sendOtpLoginVerificationCode, isNotNull);
+      },
+    );
   });
 }
