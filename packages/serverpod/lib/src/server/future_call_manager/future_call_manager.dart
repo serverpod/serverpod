@@ -11,7 +11,11 @@ import 'future_call_scanner.dart';
 import 'serverpod_task_scheduler.dart';
 
 /// A function that builds a [Session] for a [FutureCall].
-typedef FutureCallSessionBuilder = Session Function(String futureCallName);
+///
+/// [retryAttempt] is how many retries of the call have already run: 0 for the
+/// first run, 1 for the first retry, and so on.
+typedef FutureCallSessionBuilder =
+    Session Function(String futureCallName, int retryAttempt);
 
 /// A function that initializes a [FutureCall].
 typedef InitializeFutureCall =
@@ -367,10 +371,18 @@ class FutureCallManager {
     // claim will run the call and clean up after running.
     if (heartbeatTimer == null) return;
 
-    await _scheduleNextRecurringCallIfNeeded(futureCallEntry);
+    // Retries of a recurring call must not schedule another occurrence. The
+    // first run already did.
+    if (futureCallEntry.failedAttempts == 0) {
+      await _scheduleNextRecurringCallIfNeeded(futureCallEntry);
+    }
 
-    final futureCallSession = _sessionBuilder(futureCallEntry.name);
+    final futureCallSession = _sessionBuilder(
+      futureCallEntry.name,
+      futureCallEntry.failedAttempts,
+    );
 
+    var keepEntry = false;
     try {
       dynamic object;
       if (futureCallEntry.serializedObject != null) {
@@ -389,13 +401,126 @@ class FutureCallManager {
         session: futureCallSession,
       );
 
+      keepEntry = await _retryIfNeeded(
+        futureCallEntry: futureCallEntry,
+        futureCallSession: futureCallSession,
+        error: error,
+        stackTrace: stackTrace,
+      );
+
       await futureCallSession.close(error: error, stackTrace: stackTrace);
     } finally {
       _cancelHeartbeatTimer(heartbeatTimer);
-      await FutureCallEntry.db.deleteWhere(
-        _internalSession,
-        where: (t) => t.id.equals(futureCallEntry.id),
+      if (!keepEntry) {
+        await FutureCallEntry.db.deleteWhere(
+          _internalSession,
+          where: (t) => t.id.equals(futureCallEntry.id),
+        );
+      }
+    }
+  }
+
+  /// Schedules a retry of [futureCallEntry], which failed with [error], if
+  /// its retry policy asks for one.
+  ///
+  /// Returns `true` when the entry must be kept: either a retry was scheduled,
+  /// or saving the retry failed, in which case the claim goes stale and the
+  /// same attempt runs again later. Returns `false` when the call is not
+  /// retried and its entry can be deleted.
+  Future<bool> _retryIfNeeded({
+    required FutureCallEntry futureCallEntry,
+    required Session futureCallSession,
+    required Object error,
+    required StackTrace stackTrace,
+  }) async {
+    var serializedRetryPolicy = futureCallEntry.serializedRetryPolicy;
+    if (serializedRetryPolicy == null) return false;
+
+    var retryAttempt = futureCallEntry.failedAttempts;
+
+    FutureCallRetryPolicy policy;
+    Duration? delay;
+    try {
+      policy =
+          _serializationManager.decodeWithType(serializedRetryPolicy)
+              as FutureCallRetryPolicy;
+      delay = policy.nextDelay(
+        FutureCallRetryContext(
+          error: error,
+          stackTrace: stackTrace,
+          retryAttempt: retryAttempt,
+        ),
       );
+    } catch (policyError, policyStackTrace) {
+      _diagnosticsService.submitCallException(
+        policyError,
+        policyStackTrace,
+        session: futureCallSession,
+      );
+      futureCallSession.log(
+        'The retry policy of future call ${futureCallEntry.name} failed, so '
+        'the call is not retried.',
+        level: LogLevel.error,
+        exception: policyError,
+        stackTrace: policyStackTrace,
+      );
+      return false;
+    }
+
+    if (delay == null) {
+      futureCallSession.log(
+        'Future call ${futureCallEntry.name} failed and is not retried '
+        'again. It gave up after $retryAttempt retries.',
+        level: LogLevel.error,
+      );
+      return false;
+    }
+
+    var nextTime = clock.now().toUtc().add(delay);
+    try {
+      var retried = await _internalSession.db.transaction((transaction) async {
+        var updated = await FutureCallEntry.db.updateWhere(
+          _internalSession,
+          where: (t) => t.id.equals(futureCallEntry.id),
+          columnValues: (t) => [
+            t.time(nextTime),
+            t.failedAttempts(retryAttempt + 1),
+            t.serializedRetryPolicy(
+              _serializationManager.encodeWithType(policy),
+            ),
+          ],
+          transaction: transaction,
+        );
+
+        // The entry was cancelled while the call was running.
+        if (updated.isEmpty) return false;
+
+        await FutureCallClaimEntry.db.deleteWhere(
+          _internalSession,
+          where: (t) => t.futureCallId.equals(futureCallEntry.id),
+          transaction: transaction,
+        );
+        return true;
+      });
+
+      if (retried) {
+        futureCallSession.log(
+          'Future call ${futureCallEntry.name} failed and is retried at '
+          '$nextTime (retry ${retryAttempt + 1}).',
+          level: LogLevel.warning,
+        );
+      }
+      return retried;
+    } catch (saveError, saveStackTrace) {
+      _diagnosticsService.submitFrameworkException(
+        saveError,
+        saveStackTrace,
+        message:
+            'Failed to schedule a retry of future call '
+            '${futureCallEntry.name}. The same attempt runs again once its '
+            'claim is stale.',
+      );
+      return true;
     }
   }
 

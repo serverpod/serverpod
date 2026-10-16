@@ -53,3 +53,54 @@ class TestRetryPolicyWithDoubling extends TestRetryPolicy {
     return delay * (1 << context.retryAttempt);
   }
 }
+
+/// A retry policy that keeps state between attempts: it counts how many times
+/// it was asked for a delay. Used to test that a policy's state is saved
+/// after each failed attempt.
+class TestCountingRetryPolicy extends FutureCallRetryPolicy {
+  /// The maximum number of retries.
+  final int maxAttempts;
+
+  /// How many times [nextDelay] was called.
+  int timesAsked;
+
+  TestCountingRetryPolicy({required this.maxAttempts, this.timesAsked = 0});
+
+  factory TestCountingRetryPolicy.fromJson(Map<String, dynamic> json) {
+    return TestCountingRetryPolicy(
+      maxAttempts: json['maxAttempts'] as int,
+      timesAsked: json['timesAsked'] as int,
+    );
+  }
+
+  @override
+  Duration? nextDelay(FutureCallRetryContext context) {
+    timesAsked++;
+    if (context.retryAttempt >= maxAttempts) return null;
+    return Duration.zero;
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'maxAttempts': maxAttempts,
+    'timesAsked': timesAsked,
+  };
+}
+
+/// A retry policy whose [nextDelay] throws, used to test that a failing policy
+/// stops the call from being retried.
+class TestThrowingRetryPolicy extends FutureCallRetryPolicy {
+  TestThrowingRetryPolicy();
+
+  factory TestThrowingRetryPolicy.fromJson(Map<String, dynamic> json) {
+    return TestThrowingRetryPolicy();
+  }
+
+  @override
+  Duration? nextDelay(FutureCallRetryContext context) {
+    throw StateError('TestThrowingRetryPolicy always throws.');
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {};
+}

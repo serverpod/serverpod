@@ -710,10 +710,12 @@ class Serverpod {
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
         internalSession: internalSession,
         logSession: _internalLoggingSession,
-        sessionProvider: (String futureCallName) => FutureCallSession(
-          server: server,
-          futureCallName: futureCallName,
-        ),
+        sessionProvider: (String futureCallName, int retryAttempt) =>
+            FutureCallSession(
+              server: server,
+              futureCallName: futureCallName,
+              retryAttempt: retryAttempt,
+            ),
         initializeFutureCall: (FutureCall futureCall, String name) {
           futureCall.initialize(
             server,
