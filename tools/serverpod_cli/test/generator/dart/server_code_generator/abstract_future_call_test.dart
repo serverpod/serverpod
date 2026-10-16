@@ -153,8 +153,8 @@ void main() {
           expect(
             futureCallsFile,
             matches(
-              r'class _FutureCallRef {\n'
-              r'  _FutureCallRef\(this._invokeFutureCall\);\n'
+              r'class _FutureCallRefBase {\n'
+              r'  _FutureCallRefBase\(this._invokeFutureCall\);\n'
               r'\n'
               r'  final _InvokeFutureCall _invokeFutureCall;\n'
               r'\n'

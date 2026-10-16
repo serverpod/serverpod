@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../server.dart';
 import '../session.dart';
+import 'future_call_retry_policy.dart';
 
 /// Superclass for future calls. Extend this class and declare public
 /// `Future<void>` methods that take a [Session] as their first parameter to
@@ -26,6 +29,18 @@ abstract class FutureCall<T extends SerializableModel> {
   void initialize(Server server, String name) {
     _server = server;
     _name = name;
+  }
+
+  /// Decides whether a failed run of this future call may be retried.
+  ///
+  /// Only called for calls scheduled with a [FutureCallRetryPolicy], before
+  /// the policy is asked for a delay. Return `false` for errors that will
+  /// never go away, so the call is not retried whatever the policy says.
+  ///
+  /// [session] is the session of the run that failed. [context] describes the
+  /// failure. Returns `true` by default.
+  FutureOr<bool> shouldRetry(Session session, FutureCallRetryContext context) {
+    return true;
   }
 }
 

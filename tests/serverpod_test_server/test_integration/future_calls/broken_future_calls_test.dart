@@ -630,6 +630,122 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given a Serverpod server instance with checkBrokenCalls enabled and registered future calls whose retry policies cannot all be loaded,',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(checkBrokenCalls: true),
+          ),
+        );
+        await server.ensureDatabase();
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+        futureCallEntries = await _insertRetryPolicyCalls(server, session);
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      group(
+        'when starting Serverpod,',
+        () {
+          late String logMessage;
+
+          setUp(() async {
+            await server.start();
+            await server.internalLoggingSession.close();
+            final logs = await LoggingUtil.findAllLogs(session);
+            final logEntry = logs.last.logs.first;
+            expect(logEntry.logLevel, LogLevel.warning);
+            logMessage = logEntry.message;
+          });
+
+          test(
+            'then the future call whose retry policy class is unknown is logged.',
+            () {
+              expect(
+                logMessage,
+                matches(
+                  r'Future call retry policy failed deserialization\. '
+                  r'Error: .*RemovedRetryPolicy.*\. '
+                  r'Entry: \{.*"name":\s*"RetryPolicyCall0".*\}',
+                ),
+              );
+            },
+          );
+
+          test(
+            'then the future call whose retry policy data cannot be loaded is logged.',
+            () {
+              expect(
+                logMessage,
+                matches(
+                  r'Future call retry policy failed deserialization\. '
+                  r'Error: .*\. '
+                  r'Entry: \{.*"name":\s*"RetryPolicyCall1".*\}',
+                ),
+              );
+            },
+          );
+
+          test(
+            'then the future call whose retry policy can be loaded is not logged.',
+            () {
+              expect(logMessage, isNot(contains('RetryPolicyCall2')));
+            },
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with deleteBrokenCalls enabled and registered future calls whose retry policies cannot all be loaded,',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(deleteBrokenCalls: true),
+          ),
+        );
+        await server.ensureDatabase();
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+        futureCallEntries = await _insertRetryPolicyCalls(server, session);
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod,'
+        'then only the future call whose retry policy can be loaded is left.',
+        () async {
+          await server.start();
+
+          final entries = await FutureCallEntry.db.find(session);
+          expect(entries.map((e) => e.name), ['RetryPolicyCall2']);
+        },
+      );
+    },
+  );
 }
 
 extension _ServerpodConfigExtension on ServerpodConfig {
@@ -647,4 +763,42 @@ extension _ServerpodConfigExtension on ServerpodConfig {
       ]).toMap(),
     );
   }
+}
+
+/// Registers three future calls on [server] and inserts an entry for each,
+/// due in a day so they don't run during the test:
+///
+/// - `RetryPolicyCall0`, whose retry policy class is unknown.
+/// - `RetryPolicyCall1`, whose retry policy data cannot be loaded.
+/// - `RetryPolicyCall2`, whose retry policy can be loaded.
+Future<List<FutureCallEntry>> _insertRetryPolicyCalls(
+  Serverpod server,
+  Session session,
+) async {
+  final serializedRetryPolicies = [
+    '{"className":"RemovedRetryPolicy","data":{}}',
+    '{"className":"serverpod.FixedDelayRetryPolicy","data":{}}',
+    server.serializationManager.encodeWithType(
+      const FixedDelayRetryPolicy(maxAttempts: 1, delay: Duration(seconds: 1)),
+    ),
+  ];
+
+  final entries = <FutureCallEntry>[];
+  for (var i = 0; i < serializedRetryPolicies.length; i++) {
+    final name = 'RetryPolicyCall$i';
+    server.futureCallManager!.registerFutureCall(_SimpleFutureCall(), name);
+    entries.add(
+      await FutureCallEntry.db.insertRow(
+        session,
+        FutureCallEntry(
+          name: name,
+          serializedObject: SimpleData(num: i).toString(),
+          time: DateTime.now().toUtc().add(const Duration(days: 1)),
+          serverId: 'default',
+          serializedRetryPolicy: serializedRetryPolicies[i],
+        ),
+      ),
+    );
+  }
+  return entries;
 }

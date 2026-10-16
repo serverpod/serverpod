@@ -43,7 +43,8 @@ class FutureCallManagerBuilder {
     TestSessionBuilder sessionBuilder,
   ) {
     return FutureCallManagerBuilder(
-      sessionProvider: (String futureCallName) => sessionBuilder.build(),
+      sessionProvider: (String futureCallName, int retryAttempt) =>
+          sessionBuilder.build(),
       internalSession: sessionBuilder.build(),
     );
   }
