@@ -237,4 +237,13 @@ class InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall
       data!,
     );
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _ini5cz4e.InsertSimpleDataCall().shouldRetry(
+    session,
+    context,
+  );
 }

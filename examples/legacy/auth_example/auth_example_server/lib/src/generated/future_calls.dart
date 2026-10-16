@@ -228,4 +228,13 @@ class ExampleDoSomethingFutureCall extends _is.FutureCall
   ) async {
     await _i5banjqs.ExampleFutureCall().doSomething(session);
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _i5banjqs.ExampleFutureCall().shouldRetry(
+    session,
+    context,
+  );
 }

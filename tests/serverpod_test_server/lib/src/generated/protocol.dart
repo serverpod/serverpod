@@ -118,6 +118,8 @@ import 'future_calls_generated_models/test_generated_call_hello_model.dart'
     as _ifspsmem;
 import 'future_calls_generated_models/test_generated_call_invoke_model.dart'
     as _i3yv7lzj;
+import 'future_calls_generated_models/test_retry_call_fail_model.dart'
+    as _iu5opqcr;
 import 'immutable/immutable_child_object.dart' as _isas41s9;
 import 'immutable/immutable_child_object_with_no_additional_fields.dart'
     as _i8ali8rk;
@@ -620,6 +622,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilmnz413.TestGeneratedCallExecuteWithTriggerModel>,
       _is.getType<_ifspsmem.TestGeneratedCallHelloModel>,
       _is.getType<_i3yv7lzj.TestGeneratedCallInvokeModel>,
+      _is.getType<_iu5opqcr.TestRetryCallFailModel>,
       _is.getType<_isas41s9.ImmutableChildObject>,
       _is.getType<_i8ali8rk.ImmutableChildObjectWithNoAdditionalFields>,
       _is.getType<_ib4436rb.ImmutableObject>,
@@ -859,6 +862,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilmnz413.TestGeneratedCallExecuteWithTriggerModel?>,
       _is.getType<_ifspsmem.TestGeneratedCallHelloModel?>,
       _is.getType<_i3yv7lzj.TestGeneratedCallInvokeModel?>,
+      _is.getType<_iu5opqcr.TestRetryCallFailModel?>,
       _is.getType<_isas41s9.ImmutableChildObject?>,
       _is.getType<_i8ali8rk.ImmutableChildObjectWithNoAdditionalFields?>,
       _is.getType<_ib4436rb.ImmutableObject?>,
@@ -8593,6 +8597,9 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _i3yv7lzj.TestGeneratedCallInvokeModel) {
       return _i3yv7lzj.TestGeneratedCallInvokeModel.fromJson(data) as T;
     }
+    if (t == _iu5opqcr.TestRetryCallFailModel) {
+      return _iu5opqcr.TestRetryCallFailModel.fromJson(data) as T;
+    }
     if (t == _isas41s9.ImmutableChildObject) {
       return _isas41s9.ImmutableChildObject.fromJson(data) as T;
     }
@@ -9413,6 +9420,12 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _is.getType<_i3yv7lzj.TestGeneratedCallInvokeModel?>()) {
       return (data != null
               ? _i3yv7lzj.TestGeneratedCallInvokeModel.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_iu5opqcr.TestRetryCallFailModel?>()) {
+      return (data != null
+              ? _iu5opqcr.TestRetryCallFailModel.fromJson(data)
               : null)
           as T;
     }
@@ -14460,6 +14473,7 @@ class Protocol extends _is.DatabaseSerializationManager
         'TestGeneratedCallExecuteWithTriggerModel',
       _ifspsmem.TestGeneratedCallHelloModel => 'TestGeneratedCallHelloModel',
       _i3yv7lzj.TestGeneratedCallInvokeModel => 'TestGeneratedCallInvokeModel',
+      _iu5opqcr.TestRetryCallFailModel => 'TestRetryCallFailModel',
       _isas41s9.ImmutableChildObject => 'ImmutableChildObject',
       _i8ali8rk.ImmutableChildObjectWithNoAdditionalFields =>
         'ImmutableChildObjectWithNoAdditionalFields',
@@ -14838,6 +14852,8 @@ class Protocol extends _is.DatabaseSerializationManager
         return 'TestGeneratedCallHelloModel';
       case _i3yv7lzj.TestGeneratedCallInvokeModel():
         return 'TestGeneratedCallInvokeModel';
+      case _iu5opqcr.TestRetryCallFailModel():
+        return 'TestRetryCallFailModel';
       case _isas41s9.ImmutableChildObject():
         return 'ImmutableChildObject';
       case _i8ali8rk.ImmutableChildObjectWithNoAdditionalFields():
@@ -15539,6 +15555,9 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (dataClassName == 'TestGeneratedCallInvokeModel') {
       return deserialize<_i3yv7lzj.TestGeneratedCallInvokeModel>(data['data']);
+    }
+    if (dataClassName == 'TestRetryCallFailModel') {
+      return deserialize<_iu5opqcr.TestRetryCallFailModel>(data['data']);
     }
     if (dataClassName == 'ImmutableChildObject') {
       return deserialize<_isas41s9.ImmutableChildObject>(data['data']);

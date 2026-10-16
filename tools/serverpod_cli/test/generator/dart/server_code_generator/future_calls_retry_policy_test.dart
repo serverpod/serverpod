@@ -123,6 +123,28 @@ void main() {
           );
 
           test(
+            'then the generated future call forwards shouldRetry to the future call class.',
+            () {
+              expect(
+                futureCallsFile,
+                matches(
+                  RegExp(
+                    r'class TestingSayHelloFutureCall[\s\S]*'
+                    r'@override\s*'
+                    r'_i[a-z0-9]+\.FutureOr<bool> shouldRetry\(\s*'
+                    r'_i[a-z0-9]+\.Session session,\s*'
+                    r'_i[a-z0-9]+\.FutureCallRetryContext context,\s*'
+                    r'\) => _i[a-z0-9]+\.TestingFutureCall\(\)\.shouldRetry\(\s*'
+                    r'session,\s*'
+                    r'context,\s*'
+                    r'\);',
+                  ),
+                ),
+              );
+            },
+          );
+
+          test(
             'then every scheduling method passes the retry policy to the future call manager.',
             () {
               expect(

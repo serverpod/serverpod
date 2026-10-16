@@ -805,6 +805,46 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                       : _buildFutureCallMethodBody(futureCall, method),
               ),
             );
+
+            // Forwards the retry decision to the future call class, which may
+            // override shouldRetry.
+            c.methods.add(
+              Method(
+                (m) => m
+                  ..annotations.add(refer('override'))
+                  ..returns = TypeReference(
+                    (t) => t
+                      ..symbol = 'FutureOr'
+                      ..url = 'dart:async'
+                      ..types.add(refer('bool')),
+                  )
+                  ..name = 'shouldRetry'
+                  ..requiredParameters.addAll([
+                    Parameter(
+                      (p) => p
+                        ..name = 'session'
+                        ..type = refer('Session', serverpodUrl(true)),
+                    ),
+                    Parameter(
+                      (p) => p
+                        ..name = 'context'
+                        ..type = refer(
+                          'FutureCallRetryContext',
+                          serverpodUrl(true),
+                        ),
+                    ),
+                  ])
+                  ..lambda = true
+                  ..body =
+                      refer(
+                        futureCall.className,
+                        _futureCallPath(futureCall),
+                      ).call([]).property('shouldRetry').call([
+                        refer('session'),
+                        refer('context'),
+                      ]).code,
+              ),
+            );
           }),
         );
       }
