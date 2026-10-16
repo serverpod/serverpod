@@ -30,3 +30,4 @@ export '../src/providers/email/business/utils/email_idp_authentication_util.dart
 export '../src/providers/email/business/utils/email_idp_otp_login_util.dart';
 export '../src/providers/email/business/utils/email_idp_password_reset_util.dart';
 export '../src/providers/email/endpoints/email_idp_base_endpoint.dart';
+export '../src/providers/email/endpoints/email_otp_idp_base_endpoint.dart';
