@@ -8,6 +8,7 @@ class SignInLocalizationProvider extends InheritedWidget {
   const SignInLocalizationProvider({
     this.basic = BasicSignInTexts.defaults,
     this.email = EmailSignInTexts.defaults,
+    this.emailWithOtp = EmailWithOtpSignInTexts.defaults,
     this.apple = AppleSignInTexts.defaults,
     this.google = GoogleSignInTexts.defaults,
     this.github = GitHubSignInTexts.defaults,
@@ -23,7 +24,13 @@ class SignInLocalizationProvider extends InheritedWidget {
   final BasicSignInTexts basic;
 
   /// Texts for the email sign-in flow.
+  ///
+  /// Also used by the screens the passwordless email flow shares with it,
+  /// such as the email field and the password reset.
   final EmailSignInTexts email;
+
+  /// Texts for the passwordless email sign-in flow with one-time passwords.
+  final EmailWithOtpSignInTexts emailWithOtp;
 
   /// Texts for the Apple Sign-In button.
   final AppleSignInTexts apple;
@@ -67,6 +74,7 @@ class SignInLocalizationProvider extends InheritedWidget {
   bool updateShouldNotify(SignInLocalizationProvider oldWidget) {
     return oldWidget.basic != basic ||
         oldWidget.email != email ||
+        oldWidget.emailWithOtp != emailWithOtp ||
         oldWidget.apple != apple ||
         oldWidget.google != google ||
         oldWidget.github != github ||
