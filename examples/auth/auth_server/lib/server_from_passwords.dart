@@ -36,6 +36,7 @@ void run(List<String> args) async {
       EmailIdpConfigFromPasswords(
         sendRegistrationVerificationCode: _sendRegistrationCode,
         sendPasswordResetVerificationCode: _sendPasswordResetCode,
+        sendOtpLoginVerificationCode: _sendOtpLoginCode,
       ),
       GoogleIdpConfigFromPasswords(),
       PasskeyIdpConfigFromPasswords(),
@@ -75,4 +76,16 @@ void _sendPasswordResetCode(
   // NOTE: Here you call your mail service to send the verification code to
   // the user. For testing, we will just log the verification code.
   session.log('[EmailIDP] Password reset code ($email): $verificationCode');
+}
+
+void _sendOtpLoginCode(
+  Session session, {
+  required String email,
+  required UuidValue otpLoginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the one-time password to
+  // the user. For testing, we will just log the code.
+  session.log('[EmailIDP] Login code ($email): $verificationCode');
 }
