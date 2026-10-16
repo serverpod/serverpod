@@ -635,6 +635,15 @@ class FutureCallManager {
           buffer.writeln(
             'Future call failed deserialization. Error: $error. Entry: $entry',
           );
+        } else {
+          final retryPolicyError = _canDecodeRetryPolicy(entry);
+          if (retryPolicyError != null) {
+            brokenCalls.add(entry);
+            buffer.writeln(
+              'Future call retry policy failed deserialization. '
+              'Error: $retryPolicyError. Entry: $entry',
+            );
+          }
         }
       }
     }
@@ -668,6 +677,25 @@ class FutureCallManager {
           futureCallEntry.serializedObject!,
           futureCall.dataType,
         );
+      }
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  /// Returns `null` if [futureCallEntry] has no retry policy or its stored
+  /// retry policy can be loaded. Otherwise, the error is returned.
+  String? _canDecodeRetryPolicy(FutureCallEntry futureCallEntry) {
+    final serializedRetryPolicy = futureCallEntry.serializedRetryPolicy;
+    if (serializedRetryPolicy == null) return null;
+
+    try {
+      final retryPolicy = _serializationManager.decodeWithType(
+        serializedRetryPolicy,
+      );
+      if (retryPolicy is! FutureCallRetryPolicy) {
+        return 'Not a retry policy: ${retryPolicy.runtimeType}';
       }
       return null;
     } catch (e) {
