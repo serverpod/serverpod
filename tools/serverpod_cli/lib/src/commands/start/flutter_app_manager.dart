@@ -294,7 +294,7 @@ class FlutterAppManager {
     // versions, and the pin is a property of the app's own directory.
     String? sdkRoot;
     if (flutterExecutableForTesting == null) {
-      final appResolver = SdkResolver(baseDirectory: Directory(appDir));
+      final appResolver = sdkResolverFor(Directory(appDir));
       sdkRoot = await appResolver.flutterSdk;
     }
 

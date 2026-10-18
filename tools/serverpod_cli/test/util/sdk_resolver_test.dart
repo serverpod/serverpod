@@ -816,4 +816,195 @@ void main() {
       });
     },
   );
+
+  group(
+    'Given a base directory and a not yet created directory inside it, which probe from the same directory,',
+    () {
+      late Directory baseDirectory;
+      late Directory notYetCreated;
+
+      setUp(() {
+        initializeSdkResolver();
+        baseDirectory = _tempDir();
+        notYetCreated = Directory(p.join(baseDirectory.path, 'my_new_app'));
+      });
+
+      test(
+        'when a resolver is looked up for each,'
+        'then both get the same resolver.',
+        () {
+          final resolver = sdkResolverFor(baseDirectory);
+
+          expect(sdkResolverFor(notYetCreated), same(resolver));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a base directory and an existing directory inside it, which probe from different directories,',
+    () {
+      late Directory baseDirectory;
+      late Directory nested;
+
+      setUp(() {
+        initializeSdkResolver();
+        baseDirectory = _tempDir();
+        nested = Directory(p.join(baseDirectory.path, 'apps', 'admin'))
+          ..createSync(recursive: true);
+      });
+
+      test(
+        'when a resolver is looked up for each,'
+        'then each gets its own resolver.',
+        () {
+          final resolver = sdkResolverFor(baseDirectory);
+
+          expect(sdkResolverFor(nested), isNot(same(resolver)));
+        },
+      );
+    },
+  );
+
+  group('Given a resolver looked up for a directory,', () {
+    late Directory baseDirectory;
+    late SdkResolver resolver;
+
+    setUp(() {
+      initializeSdkResolver();
+      baseDirectory = _tempDir();
+      resolver = sdkResolverFor(baseDirectory);
+    });
+
+    test(
+      'when the resolvers are initialized again,'
+      'then the directory gets a new resolver.',
+      () {
+        initializeSdkResolver();
+
+        expect(sdkResolverFor(baseDirectory), isNot(same(resolver)));
+      },
+    );
+
+    test(
+      'when the singleton is rescoped to that directory,'
+      'then the singleton is that resolver.',
+      () {
+        rescopeSdkResolver(baseDirectory);
+
+        expect(sdkResolver, same(resolver));
+      },
+    );
+  });
+
+  group('Given a base directory and a path to it that goes through `..`,', () {
+    late Directory baseDirectory;
+    late Directory throughParent;
+
+    setUp(() {
+      initializeSdkResolver();
+      baseDirectory = _tempDir();
+      Directory(p.join(baseDirectory.path, 'apps')).createSync();
+      throughParent = Directory(p.join(baseDirectory.path, 'apps', '..'));
+    });
+
+    test(
+      'when a resolver is looked up for each,'
+      'then both get the same resolver.',
+      () {
+        final resolver = sdkResolverFor(baseDirectory);
+
+        expect(sdkResolverFor(throughParent), same(resolver));
+      },
+    );
+  });
+
+  group(
+    'Given a base directory and a symlink to it,',
+    // Creating a symlink on Windows needs Developer Mode or an elevated
+    // process.
+    testOn: '!windows',
+    () {
+      late Directory baseDirectory;
+      late Directory symlinked;
+
+      setUp(() {
+        initializeSdkResolver();
+        final temp = _tempDir();
+        baseDirectory = Directory(p.join(temp.path, 'project'))..createSync();
+        final link = Link(p.join(temp.path, 'link'))
+          ..createSync(baseDirectory.path);
+        symlinked = Directory(link.path);
+      });
+
+      test(
+        'when a resolver is looked up for each,'
+        'then both get the same resolver.',
+        () {
+          final resolver = sdkResolverFor(baseDirectory);
+
+          expect(sdkResolverFor(symlinked), same(resolver));
+        },
+      );
+    },
+  );
+
+  group('Given a cached resolver whose flutter never answers,', () {
+    // Not a directory the test deletes: the probe that timed out is left
+    // running in it, which on Windows keeps the directory in use.
+    final baseDirectory = Directory.systemTemp;
+    late SdkResolver resolver;
+
+    setUp(() {
+      initializeSdkResolver();
+      resolver = sdkResolverFor(
+        baseDirectory,
+        createResolver: () => SdkResolver(
+          baseDirectory: baseDirectory,
+          flutterCommand: _shimCommand('never_answers.dart'),
+          probeTimeout: const Duration(milliseconds: 500),
+        ),
+      );
+    });
+
+    test(
+      'when its Flutter SDK is resolved,'
+      'then the directory gets a new resolver that probes again.',
+      () async {
+        await resolver.flutterSdk;
+
+        expect(sdkResolverFor(baseDirectory), isNot(same(resolver)));
+      },
+    );
+  });
+
+  group('Given a cached resolver whose flutter answers,', () {
+    late Directory baseDirectory;
+    late SdkResolver resolver;
+
+    setUp(() {
+      initializeSdkResolver();
+      baseDirectory = _tempDir();
+      final sdkOnPath = _fakeFlutterSdk(baseDirectory, name: 'on-path');
+      resolver = sdkResolverFor(
+        baseDirectory,
+        createResolver: () => _shimResolver(
+          baseDirectory,
+          _shimCommand('reports_bound_flutter_root.dart', [
+            '--unbound=$sdkOnPath',
+          ]),
+        ),
+      );
+    });
+
+    test(
+      'when its Flutter SDK is resolved,'
+      'then the directory keeps that resolver.',
+      () async {
+        await resolver.flutterSdk;
+
+        expect(sdkResolverFor(baseDirectory), same(resolver));
+      },
+    );
+  });
 }

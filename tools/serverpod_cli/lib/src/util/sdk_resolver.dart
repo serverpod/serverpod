@@ -11,7 +11,21 @@ import 'package:serverpod_shared/process_io.dart';
 // Singleton resolver
 // ---------------------------------------------------------------------------
 
+final _resolversByProbeDirectory = <String, SdkResolver>{};
 SdkResolver? _resolver;
+
+/// The resolver for [baseDirectory], shared by every base directory that
+/// probes from the same directory, so none of them is probed twice.
+///
+/// A resolver whose `flutter` timed out is dropped again, so the next lookup
+/// probes afresh.
+SdkResolver sdkResolverFor(
+  Directory baseDirectory, {
+  @visibleForTesting SdkResolver Function()? createResolver,
+}) => _resolversByProbeDirectory.putIfAbsent(
+  SdkResolver.probeDirectoryFor(baseDirectory),
+  createResolver ?? () => SdkResolver(baseDirectory: baseDirectory),
+);
 
 /// Installs the resolver every call site reads from.
 ///
@@ -19,13 +33,14 @@ SdkResolver? _resolver;
 /// better base directory than the working directory call [rescopeSdkResolver]
 /// once they have resolved it.
 void initializeSdkResolver() {
-  _resolver = SdkResolver(baseDirectory: Directory.current);
+  _resolversByProbeDirectory.clear();
+  _resolver = sdkResolverFor(Directory.current);
 }
 
-/// Re-points the singleton at [baseDirectory]. Discards anything already
-/// resolved.
+/// Re-points the singleton at [baseDirectory], reusing what was already
+/// resolved for it.
 void rescopeSdkResolver(Directory baseDirectory) {
-  _resolver = SdkResolver(baseDirectory: baseDirectory);
+  _resolver = sdkResolverFor(baseDirectory);
 }
 
 /// The resolver for this invocation.
@@ -33,8 +48,7 @@ void rescopeSdkResolver(Directory baseDirectory) {
 /// Self-initializes against the working directory, so entry points
 /// that never called [initializeSdkResolver] still get the documented chain
 /// rather than a crash.
-SdkResolver get sdkResolver =>
-    _resolver ??= SdkResolver(baseDirectory: Directory.current);
+SdkResolver get sdkResolver => _resolver ??= sdkResolverFor(Directory.current);
 
 /// Thrown when the Dart chain is exhausted - no Flutter SDK to derive from,
 /// and the SDK running this CLI cannot be located either.
@@ -173,17 +187,26 @@ class SdkResolver {
     }
   }
 
-  /// The directory the probes run in, so version managers that bind an SDK to
-  /// a directory report the project's SDK.
+  /// The directory the probes for [baseDirectory] run in, so version managers
+  /// that bind an SDK to a directory report the project's SDK.
   ///
   /// `serverpod create` resolves against a directory it has not created yet,
   /// so this is the nearest ancestor of [baseDirectory] that exists.
-  String get _probeDirectory {
-    var dir = baseDirectory.absolute;
+  ///
+  /// The result is canonical, with symlinks and `.` and `..` resolved, so
+  /// every path to the same directory yields the same one.
+  static String probeDirectoryFor(Directory baseDirectory) {
+    // Normalized first, so a `..` below a directory that does not exist yet
+    // does not stop the walk.
+    var dir = Directory(p.normalize(baseDirectory.absolute.path));
     while (!dir.existsSync() && dir.parent.path != dir.path) {
       dir = dir.parent;
     }
-    return dir.path;
+    try {
+      return dir.resolveSymbolicLinksSync();
+    } on FileSystemException {
+      return dir.path;
+    }
   }
 
   /// Whether `flutter` is installed.
@@ -203,13 +226,13 @@ class SdkResolver {
         'what it is waiting for.',
       );
 
-  /// Runs `flutter --version --machine` in [_probeDirectory] and returns the
-  /// `flutterRoot` it reports.
+  /// Runs `flutter --version --machine` in the probe directory for
+  /// [baseDirectory] and returns the `flutterRoot` it reports.
   Future<String?> _probeFlutterRoot() async {
     final result = await _runFlutter([
       '--version',
       '--machine',
-    ], workingDirectory: _probeDirectory);
+    ], workingDirectory: probeDirectoryFor(baseDirectory));
     if (result == null || result.exitCode != 0) return null;
     return _flutterRootIn(result.stdout);
   }
@@ -230,6 +253,11 @@ class SdkResolver {
     );
     if (result != null && result.exitCode == null) {
       _flutterTimedOut = true;
+      // A `flutter` that was only slow may answer next time, so the next
+      // lookup for this directory gets a resolver that probes again.
+      _resolversByProbeDirectory.removeWhere(
+        (_, cached) => identical(cached, this),
+      );
       log.warning(
         '`${command.join(' ')}` did not answer within '
         '${_probeTimeout.inSeconds} seconds, so no Flutter SDK was resolved.',
