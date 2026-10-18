@@ -217,7 +217,7 @@ class SdkResolver {
   /// Runs [_flutterCommand] with [arguments], giving it [_probeTimeout].
   ///
   /// Returns `null` when there is nothing to spawn. An `exitCode` of `null`
-  /// means it did not answer in time and was stopped.
+  /// means it did not answer in time and was left running.
   Future<({int? exitCode, String stdout})?> _runFlutter(
     List<String> arguments, {
     String? workingDirectory,
@@ -232,8 +232,7 @@ class SdkResolver {
       _flutterTimedOut = true;
       log.warning(
         '`${command.join(' ')}` did not answer within '
-        '${_probeTimeout.inSeconds} seconds and was stopped, so no Flutter '
-        'SDK was resolved.',
+        '${_probeTimeout.inSeconds} seconds, so no Flutter SDK was resolved.',
       );
     }
     return result;
@@ -243,7 +242,8 @@ class SdkResolver {
   /// exit, and its output a moment more to close, so the whole run is bounded.
   ///
   /// Returns `null` when there is nothing to spawn. An `exitCode` of `null`
-  /// means the process was still running at the deadline and was killed.
+  /// means the process was still running at the deadline. It is left running,
+  /// with its output still drained.
   static Future<({int? exitCode, String stdout})?> _runWithDeadline(
     List<String> command, {
     String? workingDirectory,
@@ -261,17 +261,22 @@ class SdkResolver {
       return null;
     }
 
+    // Both streams are drained for as long as the process runs, past the
+    // deadline too, so it is never stalled by a full pipe or broken by a
+    // closed one.
     final stdout = StringBuffer();
+    var collecting = true;
     final stdoutClosed = Completer<void>();
-    final stdoutSubscription = process.stdout
+    process.stdout
         .transform(systemEncoding.decoder)
         .listen(
-          stdout.write,
+          (data) {
+            if (collecting) stdout.write(data);
+          },
           onError: (Object _) {},
           onDone: stdoutClosed.complete,
         );
-    // Drained so a command that fills the pipe cannot stall.
-    final stderrSubscription = process.stderr.listen((_) {});
+    process.stderr.listen((_) {}, onError: (_) {});
 
     int? exitCode;
     try {
@@ -280,10 +285,9 @@ class SdkResolver {
       // it open, and what the process wrote before exiting is already here.
       await stdoutClosed.future.timeout(const Duration(seconds: 1));
     } on TimeoutException {
-      if (exitCode == null) process.kill();
+      // Not killed. A kill reaches only this process, not the ones it started.
     } finally {
-      unawaited(stdoutSubscription.cancel());
-      unawaited(stderrSubscription.cancel());
+      collecting = false;
     }
 
     return (exitCode: exitCode, stdout: stdout.toString());

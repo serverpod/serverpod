@@ -78,7 +78,8 @@ today.
 
 `flutter` gets 30 seconds to answer, enough for one that is rebuilding its tool,
 downloading SDK components, or waiting for its startup lock. One that has not
-answered by then is stopped with a warning. Dart is
+answered by then is no longer waited for, with a warning, but is left running
+to finish on its own. Dart is
 not resolved either: it is derived from Flutter, so falling back to the SDK
 running the CLI would build the project with the wrong one. The command fails
 saying that `flutter` did not answer, not that it is missing.
