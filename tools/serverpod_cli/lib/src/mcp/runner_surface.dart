@@ -159,6 +159,29 @@ final Resource vmServiceResource = Resource(
   mimeType: 'application/json',
 );
 
+/// Answered by the `serverpod mcp-server` bridge itself, not the runner, so
+/// it works while the runner is starting and after it stopped.
+final Tool tailRunnerLogsTool = Tool(
+  name: 'tail_runner_logs',
+  description:
+      'Return the last lines of the runner log file, which records everything '
+      '`serverpod start` printed: code generation, compilation, Docker, the '
+      "server's raw stdout/stderr and Flutter output. Newest last, with a "
+      '`--- serverpod runner <pid> started ---` line at the start of each run. '
+      'Unlike the other tools, this works while the server is still starting '
+      'and after it stopped or crashed, so call it to find out why a tool '
+      'reports the server is not running.',
+  inputSchema: Schema.object(
+    properties: {
+      'limit': Schema.int(
+        description: 'Max lines to return (default 200, max 10000).',
+        minimum: 1,
+        maximum: 10000,
+      ),
+    },
+  ),
+);
+
 final List<Tool> runnerStaticTools = [
   applyMigrationsTool,
   createMigrationTool,

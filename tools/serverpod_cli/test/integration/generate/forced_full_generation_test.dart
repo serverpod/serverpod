@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
+import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';
@@ -193,7 +194,10 @@ class ItemEndpoint extends Endpoint {
       late IsolatedAnalyzers analyzers;
 
       setUp(() async {
-        analyzers = await IsolatedAnalyzers.create(config);
+        analyzers = await IsolatedAnalyzers.create(
+          config,
+          dartSdkPath: getSdkPath(),
+        );
         addTearDown(analyzers.close);
         addModelFieldAndEndpointMethod();
       });
