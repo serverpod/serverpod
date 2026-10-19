@@ -12,7 +12,7 @@ import 'package:serverpod_shared/process_io.dart';
 // ---------------------------------------------------------------------------
 
 final _resolversByProbeDirectory = <String, SdkResolver>{};
-SdkResolver? _resolver;
+Directory? _scope;
 
 /// The resolver for [baseDirectory], shared by every base directory that
 /// probes from the same directory, so none of them is probed twice.
@@ -27,28 +27,27 @@ SdkResolver sdkResolverFor(
   createResolver ?? () => SdkResolver(baseDirectory: baseDirectory),
 );
 
-/// Installs the resolver every call site reads from.
+/// Scopes the resolver every call site reads from to the working directory.
 ///
 /// Called once per invocation, before any command runs. Commands that know a
 /// better base directory than the working directory call [rescopeSdkResolver]
 /// once they have resolved it.
 void initializeSdkResolver() {
   _resolversByProbeDirectory.clear();
-  _resolver = sdkResolverFor(Directory.current);
+  _scope = Directory.current;
 }
 
 /// Re-points the singleton at [baseDirectory], reusing what was already
 /// resolved for it.
-void rescopeSdkResolver(Directory baseDirectory) {
-  _resolver = sdkResolverFor(baseDirectory);
-}
+void rescopeSdkResolver(Directory baseDirectory) => _scope = baseDirectory;
 
-/// The resolver for this invocation.
+/// The resolver for this invocation's scope.
 ///
-/// Self-initializes against the working directory, so entry points
-/// that never called [initializeSdkResolver] still get the documented chain
-/// rather than a crash.
-SdkResolver get sdkResolver => _resolver ??= sdkResolverFor(Directory.current);
+/// Looked up on every read, so a resolver dropped after a timeout is replaced
+/// by one that probes again. Self-initializes against the working directory,
+/// so entry points that never called [initializeSdkResolver] still get the
+/// documented chain rather than a crash.
+SdkResolver get sdkResolver => sdkResolverFor(_scope ??= Directory.current);
 
 /// Thrown when the Dart chain is exhausted - no Flutter SDK to derive from,
 /// and the SDK running this CLI cannot be located either.

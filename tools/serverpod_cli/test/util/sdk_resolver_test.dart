@@ -978,6 +978,40 @@ void main() {
     );
   });
 
+  group(
+    'Given the singleton rescoped to a directory whose flutter never answers,',
+    () {
+      // Not a directory the test deletes: the probe that timed out is left
+      // running in it, which on Windows keeps the directory in use.
+      final baseDirectory = Directory.systemTemp;
+      late SdkResolver resolver;
+
+      setUp(() {
+        initializeSdkResolver();
+        resolver = sdkResolverFor(
+          baseDirectory,
+          createResolver: () => SdkResolver(
+            baseDirectory: baseDirectory,
+            flutterCommand: _shimCommand('never_answers.dart'),
+            probeTimeout: const Duration(milliseconds: 500),
+          ),
+        );
+        rescopeSdkResolver(baseDirectory);
+      });
+
+      test(
+        'when its Flutter SDK is resolved,'
+        'then the singleton is a new resolver for that directory.',
+        () async {
+          await sdkResolver.flutterSdk;
+
+          expect(sdkResolver, isNot(same(resolver)));
+          expect(sdkResolver.baseDirectory.path, baseDirectory.path);
+        },
+      );
+    },
+  );
+
   group('Given a cached resolver whose flutter answers,', () {
     late Directory baseDirectory;
     late SdkResolver resolver;
