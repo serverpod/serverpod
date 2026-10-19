@@ -110,6 +110,11 @@ Transport embeddedTransportFor(PostgresDatabaseConfig config) =>
     ? const UnixTransport()
     : DualTransport(port: config.port, password: config.password);
 
+/// Whether the embedded postmaster for [config] also listens on loopback TCP.
+bool embeddedPostgresListensOnTcp(PostgresDatabaseConfig config) =>
+    config._embeddedPostgresDataDir() != null &&
+    embeddedTransportFor(config) is DualTransport;
+
 extension on PostgresDatabaseConfig {
   /// The effective PGDATA [Directory] for the embedded PostgreSQL, or `null`
   /// when no `dataPath` is configured.

@@ -688,6 +688,74 @@ void main() {
     },
   );
 
+  group('Given a sibling runner that has claimed the database port,', () {
+    late int database;
+
+    setUp(() async {
+      database = await _freePort();
+      await startSibling(claimedPorts: {'database': database});
+    });
+
+    test(
+      'when the project resolves its ports with the database joinable, '
+      'then the whole stack moves aside, database included',
+      () async {
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': await _freePort(), 'database': database},
+          joinable: const {'database'},
+        );
+
+        expect(resolution.useEphemeral, isTrue);
+        expect(resolution.hasConflicts, isFalse);
+        expect(resolution.overrides, {'api': 0, 'database': 0});
+      },
+    );
+  });
+
+  group('Given the database port held by something that is not a runner,', () {
+    late ServerSocket held;
+
+    setUp(() async {
+      held = await holdPort();
+    });
+
+    test(
+      'when the project resolves its ports with the database joinable, '
+      'then the held port is no conflict and the database keeps it',
+      () async {
+        final ports = {'api': await _freePort(), 'database': held.port};
+
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: ports,
+          joinable: const {'database'},
+        );
+
+        expect(resolution.hasConflicts, isFalse);
+        expect(resolution.useEphemeral, isFalse);
+        expect(resolution.overrides, isEmpty);
+        expect(claimedPorts(ports, resolution.overrides), ports);
+      },
+    );
+
+    test(
+      'when the project resolves its ports without the database joinable, '
+      'then the held port is a conflict',
+      () async {
+        final resolution = await resolvePorts(
+          serverDir: serverDir,
+          registry: registry,
+          ports: {'api': await _freePort(), 'database': held.port},
+        );
+
+        expect(resolution.conflicts, {'database': held.port});
+      },
+    );
+  });
+
   group('Given the port overrides,', () {
     test(
       'when they are applied, '
@@ -748,6 +816,35 @@ void main() {
           'SERVERPOD_API_SERVER_PORT': '0',
           'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
         });
+      },
+    );
+
+    test(
+      'when the database listener is overridden, '
+      'then it is asked for that port and has no public port',
+      () {
+        expect(portOverrideEnvironment(const {'api': 0, 'database': 0}), {
+          'SERVERPOD_API_SERVER_PORT': '0',
+          'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
+          'SERVERPOD_DATABASE_PORT': '0',
+        });
+      },
+    );
+
+    test(
+      'when the pod reports the database address it serves, '
+      'then the database override pins that port',
+      () {
+        expect(
+          pinResolvedPorts(
+            const {'api': 0, 'database': 0},
+            const ServerpodAddresses(
+              api: 'http://localhost:52001',
+              database: 'postgres://postgres@127.0.0.1:52004/my_project',
+            ),
+          ),
+          {'api': 52001, 'database': 52004},
+        );
       },
     );
   });

@@ -422,6 +422,16 @@ manifest. Unconditional ephemeral ports would also avoid collisions, at the cost
 of an address that changes on every restart. The three listeners fall back as a
 block rather than independently.
 
+The embedded database's loopback TCP port is a fourth listener when the pod
+serves one, that is when the development config has a `dataPath` and a database
+password. It moves aside with the block through `SERVERPOD_DATABASE_PORT`, is
+pinned from the `servers.database` address the pod reports, and is suggested to
+the next runner like the others. Unlike the others, a live listener on its
+configured port is not a conflict the runner reports: the runner cannot tell a
+database this worktree already runs, started by `serverpod database start` and
+joined by the pod, from a foreign holder, which the pod refuses with a message
+naming the port. Only a sibling runner's claim moves it aside.
+
 Fallback applies when another Serverpod runner holds or has claimed the port.
 A runner claims its ports in its manifest as soon as it has resolved them,
 before Docker and the first compile, and the `servers` addresses its pod
