@@ -199,9 +199,10 @@ the winner publishes.
   "servers": {
     "api": "http://localhost:8080",
     "insights": "http://localhost:8081",
-    "web": "http://localhost:8082"
+    "web": "http://localhost:8082",
+    "database": "postgres://postgres@127.0.0.1:8090/myproject"
   },
-  "ports": { "api": 8080, "insights": 8081, "web": 8082 },
+  "ports": { "api": 8080, "insights": 8081, "web": 8082, "database": 8090 },
   "docker": { "startedByRunner": true, "project": "myproject" },
   "config": {
     "watch": true,

@@ -79,6 +79,21 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
   );
 }
 
+/// The loopback TCP URI of the embedded database behind [poolManager], without
+/// its password, or `null` when it serves no TCP listener.
+Uri? embeddedPostgresTcpAddress(DatabasePoolManager poolManager) {
+  if (poolManager is! PostgresPoolManager) return null;
+  final tcp = poolManager.embeddedPostgres?.handle.tcpEndpoint;
+  if (tcp == null) return null;
+  return Uri(
+    scheme: 'postgres',
+    userInfo: tcp.username,
+    host: tcp.host,
+    port: tcp.port,
+    path: '/${tcp.database}',
+  );
+}
+
 /// Stops [poolManager] without waiting for queries still running.
 Future<void> forceStopDatabasePool(DatabasePoolManager poolManager) =>
     poolManager is PostgresPoolManager

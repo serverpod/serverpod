@@ -1300,10 +1300,14 @@ class Serverpod {
       webServer: web,
     );
 
+    final poolManager = _databasePoolManager;
     postServerpodAddresses(
       api: _publicUrl(api),
       insights: insights == null ? null : _publicUrl(insights),
       web: web == null ? null : _publicUrl(web),
+      database: poolManager == null
+          ? null
+          : embeddedPostgresTcpAddress(poolManager)?.toString(),
     );
   }
 
