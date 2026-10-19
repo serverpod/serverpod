@@ -287,6 +287,47 @@ void main() {
   );
 
   test(
+    'Given a database started with one password and a passwords.yaml with '
+    'another, '
+    'when serverpod database start joins it, '
+    'then it warns that the configured password is refused over TCP',
+    () async {
+      serverDirectory = writeServerProject(
+        databasePassword: 'rotated-password',
+        databasePort: databasePort,
+      );
+      var launched = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: Directory(
+            p.join(serverDirectory!.path, '.serverpod', 'pgdata'),
+          ),
+          databaseName: 'serverpod_test',
+          transport: DualTransport(
+            port: databasePort,
+            password: 'launch-password',
+          ),
+          detach: true,
+        ),
+      );
+      addTearDown(launched.stop);
+
+      run = await DatabaseStartRun.start(serverDirectory!);
+
+      expect(run!.output, isNot(contains('TCP URI:')));
+      expect(
+        unwrapped(run!.output),
+        contains(
+          'The embedded database listens on TCP port $databasePort, but the '
+          'process that started it set a different password than the one in '
+          'config/passwords.yaml, so that password is refused. Restart that '
+          'process to apply the current password, or use the Unix socket URI.',
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  test(
     'Given serverpod database start running with a database password, '
     'when a second serverpod database start passes another --port, '
     'then it exits with an error naming the running port',

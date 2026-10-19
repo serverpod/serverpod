@@ -120,7 +120,18 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
       log.info('Unix socket URI: ${postgres.connectionString}');
       var tcpUri = postgres.tcpConnectionUri;
       if (tcpUri != null) {
-        log.info('TCP URI: $tcpUri');
+        if (resolved.launched ||
+            await embeddedPostgresTcpPasswordAuthenticates(postgres)) {
+          log.info('TCP URI: $tcpUri');
+        } else {
+          log.warning(
+            'The embedded database listens on TCP port '
+            '${postgres.tcpEndpoint!.port}, but the process that started it '
+            'set a different password than the one in config/passwords.yaml, '
+            'so that password is refused. Restart that process to apply the '
+            'current password, or use the Unix socket URI.',
+          );
+        }
       } else if (resolved.connectivity.password.isEmpty) {
         log.info(
           'TCP is off because no database password is configured. Set '

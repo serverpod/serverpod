@@ -94,6 +94,30 @@ Uri? embeddedPostgresTcpAddress(DatabasePoolManager poolManager) {
   );
 }
 
+/// Whether the password on [handle]'s TCP endpoint authenticates against the
+/// running database, or `true` when it serves no TCP listener.
+///
+/// An attached handle carries the attaching process's password, which the
+/// launching process may not have set on the role.
+Future<bool> embeddedPostgresTcpPasswordAuthenticates(
+  EmbeddedPostgres handle,
+) async {
+  final tcp = handle.tcpEndpoint;
+  if (tcp == null) return true;
+  try {
+    final connection = await pg.Connection.open(
+      tcp,
+      settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+    );
+    await connection.close();
+    return true;
+  } on pg.ServerException catch (e) {
+    // invalid_password
+    if (e.code == '28P01') return false;
+    rethrow;
+  }
+}
+
 /// Stops [poolManager] without waiting for queries still running.
 Future<void> forceStopDatabasePool(DatabasePoolManager poolManager) =>
     poolManager is PostgresPoolManager
