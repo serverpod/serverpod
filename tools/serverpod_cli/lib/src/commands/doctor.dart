@@ -153,6 +153,17 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
     );
     final sourceLine = sourceLineFor(envFile, home: home);
 
+    // A rerun with nothing new leaves both files alone.
+    final upToDate =
+        envFile.existsSync() &&
+        envFile.readAsStringSync() == envFileContent(entries) &&
+        (startupFile == null ||
+            startupFileSources(startupFile, envFile, home: home));
+    if (upToDate) {
+      if (!quiet) log.info('Nothing for --fix to change.');
+      return _runChecks(environment: _environmentWith(entries));
+    }
+
     if (!quiet) {
       log.info(
         [
@@ -181,13 +192,17 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
       log.info('Open a new terminal for the PATH change to take effect.');
     }
 
+    return _runChecks(environment: _environmentWith(entries));
+  }
+
+  /// The process environment with [entries] first on PATH, as a new shell
+  /// will have after sourcing the env file.
+  Map<String, String> _environmentWith(final List<String> entries) {
     final path = Platform.environment['PATH'] ?? '';
-    return _runChecks(
-      environment: {
-        ...Platform.environment,
-        'PATH': [...entries, if (path.isNotEmpty) path].join(':'),
-      },
-    );
+    return {
+      ...Platform.environment,
+      'PATH': [...entries, if (path.isNotEmpty) path].join(':'),
+    };
   }
 
   Future<bool> _confirm() async {

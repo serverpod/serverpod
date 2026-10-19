@@ -69,7 +69,8 @@ void main() {
 
   test(
     'Given a managed CLI that PATH already selects, '
-    'when choosing PATH entries, then its bin directory is not added',
+    'when choosing PATH entries, then its bin directory is still added so a '
+    'rerun from a shell that sourced the env file produces the same file',
     () {
       final entries = pathEntriesToAdd(
         results: [_flutter(_userFlutter)],
@@ -78,7 +79,7 @@ void main() {
         serverpodDirectory: _serverpodDirectory,
       );
 
-      expect(entries, isEmpty);
+      expect(entries, [_managedBin]);
     },
   );
 
@@ -156,6 +157,11 @@ void main() {
         ..writeAsStringSync('export EDITOR=vim\n');
       final envFile = File(p.join(home.path, '.serverpod', 'env.sh'));
 
+      final sourcedBefore = startupFileSources(
+        startupFile,
+        envFile,
+        home: home.path,
+      );
       final changedFirst = ensureSourced(startupFile, envFile, home: home.path);
       final changedSecond = ensureSourced(
         startupFile,
@@ -164,8 +170,10 @@ void main() {
       );
       final content = startupFile.readAsStringSync();
 
+      expect(sourcedBefore, isFalse);
       expect(changedFirst, isTrue);
       expect(changedSecond, isFalse);
+      expect(startupFileSources(startupFile, envFile, home: home.path), isTrue);
       expect(content, startsWith('export EDITOR=vim\n'));
       expect(envFileMarker.allMatches(content), hasLength(1));
       expect(

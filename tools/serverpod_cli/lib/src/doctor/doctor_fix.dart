@@ -11,9 +11,11 @@ const envFileMarker = '# Added by `serverpod doctor --fix`.';
 /// The directories `doctor --fix` puts first on PATH, in order.
 ///
 /// Only Serverpod-managed locations qualify: a Flutter SDK the installer put
-/// under [serverpodDirectory], and the `dart install` bin directory when PATH
-/// does not already select the managed CLI. A Flutter the user manages is
-/// theirs to put on PATH.
+/// under [serverpodDirectory], and the `dart install` bin directory once a
+/// managed CLI exists. A Flutter the user manages is theirs to put on PATH.
+///
+/// Decided from what is installed, not from the current PATH: a rerun from a
+/// shell that already sourced the env file must produce the same entries.
 List<String> pathEntriesToAdd({
   required final List<DoctorCheckResult> results,
   required final CliInstallation installation,
@@ -28,8 +30,7 @@ List<String> pathEntriesToAdd({
   return [
     if (flutterRoot != null && p.isWithin(serverpodDirectory, flutterRoot))
       p.join(flutterRoot, 'bin'),
-    if (managedExecutableExists && !installation.pathResolvesToManaged)
-      installation.managedBinDirectory,
+    if (managedExecutableExists) installation.managedBinDirectory,
   ];
 }
 
@@ -47,6 +48,13 @@ File? startupFileFor({
 /// Writes [envFile] so that sourcing it puts [entries] first on PATH, each
 /// once no matter how many times it is sourced.
 void writeEnvFile(final File envFile, final List<String> entries) {
+  envFile
+    ..createSync(recursive: true)
+    ..writeAsStringSync(envFileContent(entries));
+}
+
+/// What [writeEnvFile] writes for [entries].
+String envFileContent(final List<String> entries) {
   final buffer = StringBuffer()
     ..writeln('# Serverpod environment, written by `serverpod doctor --fix`.')
     ..writeln('# Safe to source more than once.');
@@ -58,9 +66,7 @@ void writeEnvFile(final File envFile, final List<String> entries) {
       ..writeln('  *) export PATH=$quoted:"\${PATH}" ;;')
       ..writeln('esac');
   }
-  envFile
-    ..createSync(recursive: true)
-    ..writeAsStringSync(buffer.toString());
+  return buffer.toString();
 }
 
 /// The line that sources [envFile] from a startup file, relative to `$HOME`
@@ -72,6 +78,15 @@ String sourceLineFor(final File envFile, {required final String home}) {
   return '. "$path"';
 }
 
+/// Whether [startupFile] already sources [envFile].
+bool startupFileSources(
+  final File startupFile,
+  final File envFile, {
+  required final String home,
+}) =>
+    startupFile.existsSync() &&
+    startupFile.readAsStringSync().contains(sourceLineFor(envFile, home: home));
+
 /// Appends the line that sources [envFile] to [startupFile], unless it is
 /// already there. Returns whether the file changed.
 bool ensureSourced(
@@ -79,11 +94,8 @@ bool ensureSourced(
   final File envFile, {
   required final String home,
 }) {
+  if (startupFileSources(startupFile, envFile, home: home)) return false;
   final line = sourceLineFor(envFile, home: home);
-  if (startupFile.existsSync() &&
-      startupFile.readAsStringSync().contains(line)) {
-    return false;
-  }
 
   startupFile
     ..createSync(recursive: true)
