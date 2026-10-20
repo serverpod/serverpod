@@ -112,12 +112,14 @@ abstract class EmailFlowController<S extends Enum> extends ChangeNotifier {
   /// for authentication, but a default domain is inferred by the app.
   ///
   /// If [allowEmailAliases] is `false`, users will not be able to use email
-  /// aliases (e.g. email+alias@example.com). This is a good practice to avoid
-  /// a single user creating multiple accounts.
+  /// aliases (e.g. email+alias@example.com), to keep a single user from
+  /// creating multiple accounts. Aliases are allowed by default, since they
+  /// are commonly used, e.g. to test an app with several accounts on one
+  /// inbox.
   static void validateEmail(
     String email, {
     bool allowTopLevelDomains = false,
-    bool allowEmailAliases = false,
+    bool allowEmailAliases = true,
   }) {
     if (!EmailValidator.validate(email, allowTopLevelDomains)) {
       throw const InvalidEmailException('Invalid email address');

@@ -71,26 +71,14 @@ class EmailOtpAuthController extends EmailFlowController<EmailOtpFlowScreen> {
   final bool allowPasswordSignIn;
 
   /// Creates a passwordless email authentication controller.
-  ///
-  /// Unlike `EmailAuthController`, the default [emailValidation] accepts email
-  /// aliases, e.g. email+alias@example.com. Provide a custom [emailValidation]
-  /// to reject them.
   EmailOtpAuthController({
     required super.client,
     this.allowPasswordSignIn = false,
     super.onAuthenticated,
     super.onError,
-    void Function(String email)? emailValidation,
+    super.emailValidation,
     super.passwordRequirements,
-  }) : super(
-         startScreen: EmailOtpFlowScreen.start,
-         emailValidation:
-             emailValidation ??
-             (email) => EmailFlowController.validateEmail(
-               email,
-               allowEmailAliases: true,
-             ),
-       );
+  }) : super(startScreen: EmailOtpFlowScreen.start);
 
   bool _isPasswordSignInExpanded = false;
 
