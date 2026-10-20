@@ -1090,6 +1090,152 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given an existing email account and an otp login that was verified but expired before it was finished',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      late String otpLoginToken;
+      const verificationCode = '123456';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            sendOtpLoginVerificationCode: _ignoreOtpCode,
+            otpLoginVerificationCodeGenerator: () => verificationCode,
+          ),
+        );
+
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(allowedPassword),
+        );
+
+        final otpLoginRequestId = await fixture.emailIdp.startOtpLogin(
+          session,
+          email: email,
+        );
+        otpLoginToken = (await fixture.emailIdp.verifyOtpLoginCode(
+          session,
+          otpLoginRequestId: otpLoginRequestId,
+          verificationCode: verificationCode,
+        )).token;
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when finishOtpLogin is called then it throws EmailAccountRequestException with reason "expired" and the request is deleted',
+        () async {
+          await withClock(
+            Clock.fixed(
+              clock.now().add(
+                fixture.config.otpLoginVerificationCodeLifetime +
+                    const Duration(seconds: 1),
+              ),
+            ),
+            () async {
+              await expectLater(
+                fixture.emailIdp.finishOtpLogin(
+                  session,
+                  otpLoginToken: otpLoginToken,
+                ),
+                throwsA(
+                  isA<EmailAccountRequestException>().having(
+                    (final e) => e.reason,
+                    'reason',
+                    EmailAccountRequestExceptionReason.expired,
+                  ),
+                ),
+              );
+            },
+          );
+
+          expect(await EmailAccountOtpLoginRequest.db.count(session), 0);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given no email account and an otp login that was verified but expired before it was finished',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      late String otpLoginToken;
+      const verificationCode = '123456';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            sendOtpLoginVerificationCode: _ignoreOtpCode,
+            otpLoginVerificationCodeGenerator: () => verificationCode,
+          ),
+        );
+
+        final otpLoginRequestId = await fixture.emailIdp.startOtpLogin(
+          session,
+          email: email,
+        );
+        otpLoginToken = (await fixture.emailIdp.verifyOtpLoginCode(
+          session,
+          otpLoginRequestId: otpLoginRequestId,
+          verificationCode: verificationCode,
+        )).token;
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when finishOtpRegistration is called then it throws EmailAccountRequestException with reason "expired" and no account is created',
+        () async {
+          await withClock(
+            Clock.fixed(
+              clock.now().add(
+                fixture.config.otpLoginVerificationCodeLifetime +
+                    const Duration(seconds: 1),
+              ),
+            ),
+            () async {
+              await expectLater(
+                fixture.emailIdp.finishOtpRegistration(
+                  session,
+                  otpLoginToken: otpLoginToken,
+                ),
+                throwsA(
+                  isA<EmailAccountRequestException>().having(
+                    (final e) => e.reason,
+                    'reason',
+                    EmailAccountRequestExceptionReason.expired,
+                  ),
+                ),
+              );
+            },
+          );
+
+          expect(
+            await fixture.emailIdp.admin.findAccount(session, email: email),
+            isNull,
+          );
+          expect(await EmailAccountOtpLoginRequest.db.count(session), 0);
+        },
+      );
+    },
+  );
 }
 
 void _ignoreOtpCode(
