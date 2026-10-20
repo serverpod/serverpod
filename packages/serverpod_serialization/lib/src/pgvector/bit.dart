@@ -84,7 +84,7 @@ class Bit extends IterableBase<bool> {
       other is Bit && other._len == _len && other._data.equals(_data);
 
   @override
-  int get hashCode => Object.hash(_len, _data);
+  int get hashCode => Object.hash(_len, Object.hashAll(_data));
 }
 
 class _BitIterator implements Iterator<bool> {
