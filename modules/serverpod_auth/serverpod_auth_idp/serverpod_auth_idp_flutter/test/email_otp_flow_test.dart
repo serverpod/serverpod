@@ -589,67 +589,69 @@ void main() {
     },
   );
 
-  group('Given a SignInWidget', () {
-    testWidgets(
-      'when the server only exposes the password based email endpoint, '
-      'then the email sign-in uses the password based flow.',
-      (tester) async {
-        await pumpWidget(
-          tester,
-          SignInWidget(client: _TestClient(exposesOtp: false)),
-          width: 600,
-        );
+  testWidgets(
+    'Given a client for a server that only exposes the password based email '
+    'endpoint, '
+    'when rendering the SignInWidget, '
+    'then the email sign-in uses the password based flow.',
+    (tester) async {
+      await pumpWidget(
+        tester,
+        SignInWidget(client: _TestClient(exposesOtp: false)),
+        width: 600,
+      );
 
-        expect(find.byType(OtpStartForm), findsNothing);
-        expect(find.byType(StartRegistrationForm), findsOneWidget);
-      },
-    );
+      expect(find.byType(OtpStartForm), findsNothing);
+      expect(find.byType(StartRegistrationForm), findsOneWidget);
+    },
+  );
 
-    testWidgets(
-      'when the server exposes the passwordless email endpoint, '
-      'then the email sign-in uses the passwordless flow with the callbacks of '
-      'the SignInWidget.',
-      (tester) async {
-        void onAuthenticated() {}
-        void onError(Object error) {}
-        await pumpWidget(
-          tester,
-          SignInWidget(
-            client: _TestClient(),
-            onAuthenticated: onAuthenticated,
-            onError: onError,
-          ),
-        );
+  testWidgets(
+    'Given a client for a server that exposes the passwordless email '
+    'endpoint, '
+    'when rendering the SignInWidget with callbacks, '
+    'then the email sign-in uses the passwordless flow with those callbacks.',
+    (tester) async {
+      void onAuthenticated() {}
+      void onError(Object error) {}
+      await pumpWidget(
+        tester,
+        SignInWidget(
+          client: _TestClient(),
+          onAuthenticated: onAuthenticated,
+          onError: onError,
+        ),
+      );
 
-        expect(find.byType(OtpStartForm), findsOneWidget);
-        final otpWidget = tester.widget<EmailOtpSignInWidget>(
-          find.byType(EmailOtpSignInWidget),
-        );
-        expect(otpWidget.onAuthenticated, onAuthenticated);
-        expect(otpWidget.onError, onError);
-      },
-    );
+      expect(find.byType(OtpStartForm), findsOneWidget);
+      final otpWidget = tester.widget<EmailOtpSignInWidget>(
+        find.byType(EmailOtpSignInWidget),
+      );
+      expect(otpWidget.onAuthenticated, onAuthenticated);
+      expect(otpWidget.onError, onError);
+    },
+  );
 
-    testWidgets(
-      'when the server exposes the passwordless email endpoint and an '
-      'emailSignInWidget is provided, '
-      'then the provided password based widget is used.',
-      (tester) async {
-        final client = _TestClient();
-        await pumpWidget(
-          tester,
-          SignInWidget(
-            client: client,
-            emailSignInWidget: EmailSignInWidget(client: client),
-          ),
-          width: 600,
-        );
+  testWidgets(
+    'Given a client for a server that exposes the passwordless email '
+    'endpoint, '
+    'when rendering the SignInWidget with an emailSignInWidget, '
+    'then the provided password based widget is used.',
+    (tester) async {
+      final client = _TestClient();
+      await pumpWidget(
+        tester,
+        SignInWidget(
+          client: client,
+          emailSignInWidget: EmailSignInWidget(client: client),
+        ),
+        width: 600,
+      );
 
-        expect(find.byType(OtpStartForm), findsNothing);
-        expect(find.byType(StartRegistrationForm), findsOneWidget);
-      },
-    );
-  });
+      expect(find.byType(OtpStartForm), findsNothing);
+      expect(find.byType(StartRegistrationForm), findsOneWidget);
+    },
+  );
 
   test(
     'Given a server only exposing the password based email endpoint, '
