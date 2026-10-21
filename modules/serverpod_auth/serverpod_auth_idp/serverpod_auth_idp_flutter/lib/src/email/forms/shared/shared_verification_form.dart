@@ -46,6 +46,11 @@ class SharedVerificationForm extends StatefulWidget {
   /// Configuration for the verification code input.
   final VerificationCodeConfig verificationCodeConfig;
 
+  /// Optional text for the action requesting a new code.
+  ///
+  /// If not provided, defaults to [ResendCodeButton.defaultLabel].
+  final String? resendCodeLabel;
+
   /// Whether to place the action right below the content, growing with it,
   /// instead of at the bottom of a fixed height form.
   final bool inlineAction;
@@ -59,6 +64,7 @@ class SharedVerificationForm extends StatefulWidget {
     required this.verificationCodeConfig,
     this.messageText,
     this.verifyButtonLabel,
+    this.resendCodeLabel,
     this.inlineAction = false,
     super.key,
   });
@@ -124,6 +130,7 @@ class _SharedVerificationFormState extends State<SharedVerificationForm> {
         ResendCodeButton(
           onResendPressed: controller.resendVerificationCode,
           countdownDuration: config.resendCountdownDuration,
+          label: widget.resendCodeLabel ?? ResendCodeButton.defaultLabel,
         ),
       ],
     );

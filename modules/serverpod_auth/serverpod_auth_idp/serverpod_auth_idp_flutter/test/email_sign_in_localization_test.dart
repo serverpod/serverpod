@@ -249,31 +249,6 @@ void main() {
       expect(find.text('W_PRIVACY'), findsOneWidget);
     },
   );
-
-  testWidgets(
-    'Given SignInLocalizationProvider with a custom resend code text, '
-    'when building ResendCodeButton, '
-    'then the custom text is shown.',
-    (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SignInLocalizationProvider(
-              email: EmailSignInTexts.defaults.copyWith(
-                resendCode: 'W_RESEND',
-              ),
-              child: ResendCodeButton(
-                onResendPressed: () async {},
-                countdownDuration: Duration.zero,
-              ),
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('W_RESEND'), findsOneWidget);
-    },
-  );
 }
 
 class _TestClient extends ServerpodClientShared {

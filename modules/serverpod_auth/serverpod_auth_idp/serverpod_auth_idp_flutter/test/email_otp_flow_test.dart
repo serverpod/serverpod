@@ -164,6 +164,38 @@ void main() {
   );
 
   testWidgets(
+    'Given a custom resend code text in the passwordless texts, '
+    'when the verification screen is shown, '
+    'then the resend action uses the custom text.',
+    (tester) async {
+      final controller = EmailOtpAuthController(client: _TestClient());
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SignInLocalizationProvider(
+              emailWithOtp: EmailWithOtpSignInTexts.defaults.copyWith(
+                verifyTitle: 'Code',
+                verificationMessage: 'Enter code',
+                resendCode: 'W_RESEND',
+              ),
+              child: SizedBox(
+                width: 320,
+                child: EmailOtpSignInWidget(controller: controller),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await requestCode(tester, controller);
+
+      expect(find.textContaining('W_RESEND'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
     'Given an EmailSignInWidget with default configuration, '
     'when it is shown, '
     'then the password based registration screen is displayed.',

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../../localization/sign_in_localization_provider.dart';
 import '../gaps.dart';
 
 /// A widget that displays a "didn't receive? Send a new code" button.
@@ -17,10 +16,19 @@ class ResendCodeButton extends StatefulWidget {
   /// The duration of the countdown timer. Defaults to 1 minute.
   final Duration countdownDuration;
 
+  /// The text of the button, followed by the remaining countdown.
+  ///
+  /// Defaults to [defaultLabel].
+  final String label;
+
+  /// The default English [label].
+  static const defaultLabel = "Didn't receive? Send a new code";
+
   /// Creates a [ResendCodeButton] widget.
   const ResendCodeButton({
     required this.onResendPressed,
     this.countdownDuration = const Duration(minutes: 1),
+    this.label = defaultLabel,
     super.key,
   });
 
@@ -92,7 +100,7 @@ class _ResendCodeButtonState extends State<ResendCodeButton> {
   @override
   Widget build(BuildContext context) {
     final isEnabled = _remainingSeconds == 0 && !_isResending;
-    final label = context.emailSignInTexts.resendCode;
+    final label = widget.label;
 
     return Column(
       children: [
