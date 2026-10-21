@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
-import '../business/email_idp.dart';
 import 'email_idp_base_endpoint.dart';
 
 /// Base endpoint for email-based accounts with passwordless login, where users
@@ -77,9 +76,6 @@ abstract class EmailOtpIdpBaseEndpoint extends EmailIdpBaseEndpoint {
   /// Completes a passwordless login for an existing account and returns a new
   /// session.
   ///
-  /// The issued token uses the [EmailIdp.otpMethod] method, to tell it apart
-  /// from sessions created with a password.
-  ///
   /// Throws an [EmailAccountRequestException] in case of errors, with reason:
   /// - [EmailAccountRequestExceptionReason.expired] if the login request has
   ///   already expired.
@@ -103,9 +99,6 @@ abstract class EmailOtpIdpBaseEndpoint extends EmailIdpBaseEndpoint {
   /// Must only be called after the user accepted the terms. The [password] is
   /// optional, and may only be set if
   /// [EmailAccountOtpVerificationResult.allowPassword] was `true`.
-  ///
-  /// The issued token uses the [EmailIdp.otpMethod] method, to tell it apart
-  /// from sessions created with a password.
   ///
   /// Throws an [EmailAccountRequestException] in case of errors, with reason:
   /// - [EmailAccountRequestExceptionReason.expired] if the login request has

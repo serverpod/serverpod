@@ -20,18 +20,8 @@ import 'email_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class EmailIdp implements IdentityProvider {
   /// The method used when authenticating with the Email identity provider.
-  ///
-  /// Used for tokens issued after authenticating with a password.
   @override
   String get method => 'email';
-
-  /// The method used for tokens issued after a passwordless login with a
-  /// one-time password sent to the user's email.
-  ///
-  /// It differs from [method] so that sessions can be audited by how they were
-  /// authenticated, e.g. to tell whether a compromised account was accessed
-  /// through the password or through the email inbox.
-  static const String otpMethod = 'email_otp';
 
   /// Admin operations to work with email-backed accounts.
   final EmailIdpAdmin admin;
@@ -93,16 +83,12 @@ class EmailIdp implements IdentityProvider {
               transaction: transaction,
             );
 
-            // Tokens from passwordless logins are revoked as well, since a
-            // password reset may be in response to a compromised account.
-            for (final tokenMethod in [method, otpMethod]) {
-              await _tokenManager.revokeAllTokens(
-                session,
-                authUserId: authUserId,
-                method: tokenMethod,
-                transaction: transaction,
-              );
-            }
+            await _tokenManager.revokeAllTokens(
+              session,
+              authUserId: authUserId,
+              method: method,
+              transaction: transaction,
+            );
 
             return authUserId;
           }),
@@ -375,7 +361,7 @@ class EmailIdp implements IdentityProvider {
             return _tokenManager.issueToken(
               session,
               authUserId: authUserId,
-              method: otpMethod,
+              method: method,
               scopes: authUser.scopes,
               transaction: transaction,
             );
@@ -414,7 +400,7 @@ class EmailIdp implements IdentityProvider {
             return _tokenManager.issueToken(
               session,
               authUserId: result.authUserId,
-              method: otpMethod,
+              method: method,
               scopes: result.scopes,
               transaction: transaction,
             );

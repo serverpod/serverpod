@@ -367,7 +367,7 @@ void main() {
         });
 
         test(
-          'then finishOtpLogin signs in the existing user with a token tagged with the otp method',
+          'then finishOtpLogin signs in the existing user with a token tagged with the email method',
           () async {
             final authSuccess = await fixture.emailIdp.finishOtpLogin(
               session,
@@ -380,7 +380,9 @@ void main() {
               session,
               authUserId: authUserId,
             );
-            expect(tokens.map((final t) => t.method), [EmailIdp.otpMethod]);
+            expect(tokens.map((final t) => t.method), [
+              fixture.emailIdp.method,
+            ]);
           },
         );
 
@@ -460,24 +462,6 @@ void main() {
           },
         );
       });
-
-      test(
-        'when the user logs in with the password then the token is tagged with the password method',
-        () async {
-          await fixture.emailIdp.login(
-            session,
-            email: email,
-            password: allowedPassword,
-          );
-
-          final tokens = await fixture.tokenManager.listTokens(
-            session,
-            authUserId: authUserId,
-          );
-          expect(tokens.map((final t) => t.method), [fixture.emailIdp.method]);
-          expect(fixture.emailIdp.method, isNot(EmailIdp.otpMethod));
-        },
-      );
     },
   );
 
@@ -583,13 +567,13 @@ void main() {
           expect(profile?.email, email);
         });
 
-        test('then the token is tagged with the otp method', () async {
+        test('then the token is tagged with the email method', () async {
           final tokens = await fixture.tokenManager.listTokens(
             session,
             authUserId: authSuccess.authUserId,
           );
 
-          expect(tokens.map((final t) => t.method), [EmailIdp.otpMethod]);
+          expect(tokens.map((final t) => t.method), [fixture.emailIdp.method]);
         });
 
         test(
@@ -782,6 +766,7 @@ void main() {
       late EmailIdpTestFixture fixture;
       late UuidValue authUserId;
       const verificationCode = '12345678';
+      const otpCode = '123456';
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -790,6 +775,7 @@ void main() {
             secretHashPepper: 'pepper',
             sendOtpLoginVerificationCode: _ignoreOtpCode,
             passwordResetVerificationCodeGenerator: () => verificationCode,
+            otpLoginVerificationCodeGenerator: () => otpCode,
           ),
         );
         final authUser = await fixture.authUsers.create(session);
@@ -801,13 +787,24 @@ void main() {
           password: EmailAccountPassword.fromString(allowedPassword),
         );
 
-        for (final method in [fixture.emailIdp.method, EmailIdp.otpMethod]) {
-          await fixture.tokenManager.issueToken(
-            session,
-            authUserId: authUserId,
-            method: method,
-          );
-        }
+        await fixture.emailIdp.login(
+          session,
+          email: email,
+          password: allowedPassword,
+        );
+        final otpLoginRequestId = await fixture.emailIdp.startOtpLogin(
+          session,
+          email: email,
+        );
+        final verificationResult = await fixture.emailIdp.verifyOtpLoginCode(
+          session,
+          otpLoginRequestId: otpLoginRequestId,
+          verificationCode: otpCode,
+        );
+        await fixture.emailIdp.finishOtpLogin(
+          session,
+          otpLoginToken: verificationResult.token,
+        );
       });
 
       tearDown(() async {
