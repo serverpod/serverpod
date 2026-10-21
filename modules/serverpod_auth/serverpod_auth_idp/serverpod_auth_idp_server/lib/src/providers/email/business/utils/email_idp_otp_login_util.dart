@@ -442,16 +442,23 @@ class EmailIdpOtpLoginUtil {
   /// limit on codes that are not used, so users signing in repeatedly are not
   /// locked out. Only the owner of the email can complete a request, so codes
   /// requested by others still count towards the limit.
+  ///
+  /// Throws an [EmailAccountRequestNotFoundException] if the request was
+  /// already deleted by a concurrent completion, so that each verified code
+  /// completes a single login.
   Future<void> _deleteCompletedRequest(
     final Session session,
     final EmailAccountOtpLoginRequest request, {
     required final Transaction transaction,
   }) async {
-    await EmailAccountOtpLoginRequest.db.deleteRow(
+    final deleted = await EmailAccountOtpLoginRequest.db.deleteWhere(
       session,
-      request,
+      where: (final t) => t.id.equals(request.id!),
       transaction: transaction,
     );
+    if (deleted.isEmpty) {
+      throw EmailAccountRequestNotFoundException();
+    }
     await _rateLimitUtil.deleteAttempts(
       session,
       key: request.email,
