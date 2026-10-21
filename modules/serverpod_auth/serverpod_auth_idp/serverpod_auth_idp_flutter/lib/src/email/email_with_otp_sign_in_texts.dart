@@ -19,7 +19,6 @@ class EmailWithOtpSignInTexts {
     required this.verificationMessage,
     required this.verifyAction,
     required this.createAccountTitle,
-    required this.createAccountMessage,
     required this.addPassword,
     required this.removePassword,
     required this.passwordLabel,
@@ -37,7 +36,6 @@ class EmailWithOtpSignInTexts {
         'We sent a sign-in code to your email. Enter it below to continue.',
     verifyAction: 'Continue',
     createAccountTitle: 'Create your account',
-    createAccountMessage: 'No account exists for this email yet.',
     addPassword: 'Add a password (optional)',
     removePassword: 'Continue without a password',
     passwordLabel: 'Password',
@@ -69,9 +67,6 @@ class EmailWithOtpSignInTexts {
   /// Title on the screen creating an account for an email without one.
   final String createAccountTitle;
 
-  /// Message shown on the screen creating an account.
-  final String createAccountMessage;
-
   /// Text for showing the optional password field when creating an account.
   final String addPassword;
 
@@ -94,7 +89,6 @@ class EmailWithOtpSignInTexts {
     String? verificationMessage,
     String? verifyAction,
     String? createAccountTitle,
-    String? createAccountMessage,
     String? addPassword,
     String? removePassword,
     String? passwordLabel,
@@ -109,7 +103,6 @@ class EmailWithOtpSignInTexts {
       verificationMessage: verificationMessage ?? this.verificationMessage,
       verifyAction: verifyAction ?? this.verifyAction,
       createAccountTitle: createAccountTitle ?? this.createAccountTitle,
-      createAccountMessage: createAccountMessage ?? this.createAccountMessage,
       addPassword: addPassword ?? this.addPassword,
       removePassword: removePassword ?? this.removePassword,
       passwordLabel: passwordLabel ?? this.passwordLabel,
@@ -129,7 +122,6 @@ class EmailWithOtpSignInTexts {
         other.verificationMessage == verificationMessage &&
         other.verifyAction == verifyAction &&
         other.createAccountTitle == createAccountTitle &&
-        other.createAccountMessage == createAccountMessage &&
         other.addPassword == addPassword &&
         other.removePassword == removePassword &&
         other.passwordLabel == passwordLabel &&
@@ -146,7 +138,6 @@ class EmailWithOtpSignInTexts {
     verificationMessage,
     verifyAction,
     createAccountTitle,
-    createAccountMessage,
     addPassword,
     removePassword,
     passwordLabel,

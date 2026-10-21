@@ -87,15 +87,9 @@ class _OtpCompleteRegistrationFormState
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            otpTexts.createAccountMessage,
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.left,
-          ),
           // The terms come first so they stay visible while the password
           // requirements expand below the optional password.
-          if (hasTermsAndConditions) ...[
-            smallGap,
+          if (hasTermsAndConditions)
             SizedBox(
               height: 40,
               child: TermsAndPrivacyText(
@@ -107,9 +101,8 @@ class _OtpCompleteRegistrationFormState
                         value ?? false,
               ),
             ),
-          ],
           if (allowPassword) ...[
-            smallGap,
+            if (hasTermsAndConditions) smallGap,
             Align(
               alignment: Alignment.centerLeft,
               child: HyperlinkTextButton(
