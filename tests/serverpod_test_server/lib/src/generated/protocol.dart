@@ -17,6 +17,8 @@ import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _iom2gwyu;
+import 'package:serverpod_test_server/src/futureCalls/test_retry_policies.dart'
+    as _irwwg01u;
 import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/parent.dart'
     as _ieub4zqi;
 import 'package:serverpod_test_server/src/generated/simple_data.dart'
@@ -116,6 +118,8 @@ import 'future_calls_generated_models/test_generated_call_hello_model.dart'
     as _ifspsmem;
 import 'future_calls_generated_models/test_generated_call_invoke_model.dart'
     as _i3yv7lzj;
+import 'future_calls_generated_models/test_retry_call_fail_model.dart'
+    as _iu5opqcr;
 import 'immutable/immutable_child_object.dart' as _isas41s9;
 import 'immutable/immutable_child_object_with_no_additional_fields.dart'
     as _i8ali8rk;
@@ -618,6 +622,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilmnz413.TestGeneratedCallExecuteWithTriggerModel>,
       _is.getType<_ifspsmem.TestGeneratedCallHelloModel>,
       _is.getType<_i3yv7lzj.TestGeneratedCallInvokeModel>,
+      _is.getType<_iu5opqcr.TestRetryCallFailModel>,
       _is.getType<_isas41s9.ImmutableChildObject>,
       _is.getType<_i8ali8rk.ImmutableChildObjectWithNoAdditionalFields>,
       _is.getType<_ib4436rb.ImmutableObject>,
@@ -857,6 +862,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilmnz413.TestGeneratedCallExecuteWithTriggerModel?>,
       _is.getType<_ifspsmem.TestGeneratedCallHelloModel?>,
       _is.getType<_i3yv7lzj.TestGeneratedCallInvokeModel?>,
+      _is.getType<_iu5opqcr.TestRetryCallFailModel?>,
       _is.getType<_isas41s9.ImmutableChildObject?>,
       _is.getType<_i8ali8rk.ImmutableChildObjectWithNoAdditionalFields?>,
       _is.getType<_ib4436rb.ImmutableObject?>,
@@ -1606,6 +1612,10 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilwf0zl1.ProtocolCustomClass>,
       _is.getType<_ilwf0zl1.ExternalCustomClass>,
       _is.getType<_ilwf0zl1.FreezedCustomClass>,
+      _is.getType<_irwwg01u.TestRetryPolicy>,
+      _is.getType<_irwwg01u.TestRetryPolicyWithDoubling>,
+      _is.getType<_irwwg01u.TestCountingRetryPolicy>,
+      _is.getType<_irwwg01u.TestThrowingRetryPolicy>,
       _is.getType<_ilwf0zl1.CustomClass?>,
       _is.getType<_ilwf0zl1.CustomClass2?>,
       _is.getType<_ilwf0zl1.CustomClassWithoutProtocolSerialization?>,
@@ -1614,6 +1624,10 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ilwf0zl1.ProtocolCustomClass?>,
       _is.getType<_ilwf0zl1.ExternalCustomClass?>,
       _is.getType<_ilwf0zl1.FreezedCustomClass?>,
+      _is.getType<_irwwg01u.TestRetryPolicy?>,
+      _is.getType<_irwwg01u.TestRetryPolicyWithDoubling?>,
+      _is.getType<_irwwg01u.TestCountingRetryPolicy?>,
+      _is.getType<_irwwg01u.TestThrowingRetryPolicy?>,
       _is.getType<List<_i685tvwm.SimpleData>?>,
       _is.getType<(String, _ieub4zqi.PolymorphicParent)>,
       _is.getType<(int?,)?>,
@@ -8583,6 +8597,9 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _i3yv7lzj.TestGeneratedCallInvokeModel) {
       return _i3yv7lzj.TestGeneratedCallInvokeModel.fromJson(data) as T;
     }
+    if (t == _iu5opqcr.TestRetryCallFailModel) {
+      return _iu5opqcr.TestRetryCallFailModel.fromJson(data) as T;
+    }
     if (t == _isas41s9.ImmutableChildObject) {
       return _isas41s9.ImmutableChildObject.fromJson(data) as T;
     }
@@ -9403,6 +9420,12 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _is.getType<_i3yv7lzj.TestGeneratedCallInvokeModel?>()) {
       return (data != null
               ? _i3yv7lzj.TestGeneratedCallInvokeModel.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_iu5opqcr.TestRetryCallFailModel?>()) {
+      return (data != null
+              ? _iu5opqcr.TestRetryCallFailModel.fromJson(data)
               : null)
           as T;
     }
@@ -14092,6 +14115,18 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _ilwf0zl1.FreezedCustomClass) {
       return _ilwf0zl1.FreezedCustomClass.fromJson(data) as T;
     }
+    if (t == _irwwg01u.TestRetryPolicy) {
+      return _irwwg01u.TestRetryPolicy.fromJson(data) as T;
+    }
+    if (t == _irwwg01u.TestRetryPolicyWithDoubling) {
+      return _irwwg01u.TestRetryPolicyWithDoubling.fromJson(data) as T;
+    }
+    if (t == _irwwg01u.TestCountingRetryPolicy) {
+      return _irwwg01u.TestCountingRetryPolicy.fromJson(data) as T;
+    }
+    if (t == _irwwg01u.TestThrowingRetryPolicy) {
+      return _irwwg01u.TestThrowingRetryPolicy.fromJson(data) as T;
+    }
     if (t == _is.getType<_ilwf0zl1.CustomClass?>()) {
       return (data != null ? _ilwf0zl1.CustomClass.fromJson(data) : null) as T;
     }
@@ -14134,6 +14169,28 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (t == _is.getType<_ilwf0zl1.FreezedCustomClass?>()) {
       return (data != null ? _ilwf0zl1.FreezedCustomClass.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_irwwg01u.TestRetryPolicy?>()) {
+      return (data != null ? _irwwg01u.TestRetryPolicy.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_irwwg01u.TestRetryPolicyWithDoubling?>()) {
+      return (data != null
+              ? _irwwg01u.TestRetryPolicyWithDoubling.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_irwwg01u.TestCountingRetryPolicy?>()) {
+      return (data != null
+              ? _irwwg01u.TestCountingRetryPolicy.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_irwwg01u.TestThrowingRetryPolicy?>()) {
+      return (data != null
+              ? _irwwg01u.TestThrowingRetryPolicy.fromJson(data)
+              : null)
           as T;
     }
     if (t == _is.getType<List<_i685tvwm.SimpleData>?>()) {
@@ -14327,6 +14384,10 @@ class Protocol extends _is.DatabaseSerializationManager
       _ilwf0zl1.ProtocolCustomClass => 'ProtocolCustomClass',
       _ilwf0zl1.ExternalCustomClass => 'ExternalCustomClass',
       _ilwf0zl1.FreezedCustomClass => 'FreezedCustomClass',
+      _irwwg01u.TestRetryPolicy => 'TestRetryPolicy',
+      _irwwg01u.TestRetryPolicyWithDoubling => 'TestRetryPolicyWithDoubling',
+      _irwwg01u.TestCountingRetryPolicy => 'TestCountingRetryPolicy',
+      _irwwg01u.TestThrowingRetryPolicy => 'TestThrowingRetryPolicy',
       _ihs9bjzx.ByIndexEnumWithNameValue => 'ByIndexEnumWithNameValue',
       _iwdug2n0.ByNameEnumWithNameValue => 'ByNameEnumWithNameValue',
       _ik6ri27s.CourseUuid => 'CourseUuid',
@@ -14412,6 +14473,7 @@ class Protocol extends _is.DatabaseSerializationManager
         'TestGeneratedCallExecuteWithTriggerModel',
       _ifspsmem.TestGeneratedCallHelloModel => 'TestGeneratedCallHelloModel',
       _i3yv7lzj.TestGeneratedCallInvokeModel => 'TestGeneratedCallInvokeModel',
+      _iu5opqcr.TestRetryCallFailModel => 'TestRetryCallFailModel',
       _isas41s9.ImmutableChildObject => 'ImmutableChildObject',
       _i8ali8rk.ImmutableChildObjectWithNoAdditionalFields =>
         'ImmutableChildObjectWithNoAdditionalFields',
@@ -14599,6 +14661,18 @@ class Protocol extends _is.DatabaseSerializationManager
       );
     }
 
+    if (data.runtimeType == _irwwg01u.TestRetryPolicy) {
+      return 'TestRetryPolicy';
+    }
+    if (data.runtimeType == _irwwg01u.TestRetryPolicyWithDoubling) {
+      return 'TestRetryPolicyWithDoubling';
+    }
+    if (data.runtimeType == _irwwg01u.TestCountingRetryPolicy) {
+      return 'TestCountingRetryPolicy';
+    }
+    if (data.runtimeType == _irwwg01u.TestThrowingRetryPolicy) {
+      return 'TestThrowingRetryPolicy';
+    }
     switch (data) {
       case _ilwf0zl1.CustomClass():
         return 'CustomClass';
@@ -14778,6 +14852,8 @@ class Protocol extends _is.DatabaseSerializationManager
         return 'TestGeneratedCallHelloModel';
       case _i3yv7lzj.TestGeneratedCallInvokeModel():
         return 'TestGeneratedCallInvokeModel';
+      case _iu5opqcr.TestRetryCallFailModel():
+        return 'TestRetryCallFailModel';
       case _isas41s9.ImmutableChildObject():
         return 'ImmutableChildObject';
       case _i8ali8rk.ImmutableChildObjectWithNoAdditionalFields():
@@ -15219,6 +15295,18 @@ class Protocol extends _is.DatabaseSerializationManager
     if (dataClassName == 'FreezedCustomClass') {
       return deserialize<_ilwf0zl1.FreezedCustomClass>(data['data']);
     }
+    if (dataClassName == 'TestRetryPolicy') {
+      return deserialize<_irwwg01u.TestRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'TestRetryPolicyWithDoubling') {
+      return deserialize<_irwwg01u.TestRetryPolicyWithDoubling>(data['data']);
+    }
+    if (dataClassName == 'TestCountingRetryPolicy') {
+      return deserialize<_irwwg01u.TestCountingRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'TestThrowingRetryPolicy') {
+      return deserialize<_irwwg01u.TestThrowingRetryPolicy>(data['data']);
+    }
     if (dataClassName == 'ByIndexEnumWithNameValue') {
       return deserialize<_ihs9bjzx.ByIndexEnumWithNameValue>(data['data']);
     }
@@ -15467,6 +15555,9 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (dataClassName == 'TestGeneratedCallInvokeModel') {
       return deserialize<_i3yv7lzj.TestGeneratedCallInvokeModel>(data['data']);
+    }
+    if (dataClassName == 'TestRetryCallFailModel') {
+      return deserialize<_iu5opqcr.TestRetryCallFailModel>(data['data']);
     }
     if (dataClassName == 'ImmutableChildObject') {
       return deserialize<_isas41s9.ImmutableChildObject>(data['data']);

@@ -1381,4 +1381,76 @@ class ExampleFutureCall extends FutureCall {
       });
     },
   );
+
+  group(
+    'Given future call classes that override shouldRetry,'
+    'when analyzed,',
+    () {
+      var collector = CodeGenerationCollector();
+      late List<FutureCallDefinition> futureCallDefinitions;
+
+      setUpAll(() async {
+        var testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        File(path.join(testDirectory.path, 'future_calls.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+import 'dart:async';
+
+import 'package:serverpod/serverpod.dart';
+
+class AsyncShouldRetryFutureCall extends FutureCall {
+  Future<void> run(Session session) async {}
+
+  @override
+  Future<bool> shouldRetry(
+    Session session,
+    FutureCallRetryContext context,
+  ) async => false;
+}
+
+class SyncShouldRetryFutureCall extends FutureCall {
+  Future<void> run(Session session) async {}
+
+  @override
+  FutureOr<bool> shouldRetry(
+    Session session,
+    FutureCallRetryContext context,
+  ) => false;
+}
+''');
+
+        var analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test(
+        'then no validation errors are reported.',
+        () {
+          expect(collector.errors, isEmpty);
+        },
+      );
+
+      test(
+        'then shouldRetry is not a method of the future calls.',
+        () {
+          expect(
+            futureCallDefinitions.map(
+              (futureCall) => [
+                for (var method in futureCall.methods) method.name,
+              ],
+            ),
+            [
+              ['run'],
+              ['run'],
+            ],
+          );
+        },
+      );
+    },
+  );
 }
