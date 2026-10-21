@@ -31,9 +31,8 @@ class SharedSetPasswordForm extends StatefulWidget {
   /// Widget to display at the bottom of the form.
   final Widget bottomText;
 
-  /// Whether to place the action right below the content, growing with it,
-  /// instead of at the bottom of a fixed height form.
-  final bool inlineAction;
+  /// Whether the content scrolls when it does not fit the form.
+  final bool scrollableContent;
 
   /// Creates a [SharedSetPasswordForm] widget.
   const SharedSetPasswordForm({
@@ -44,7 +43,7 @@ class SharedSetPasswordForm extends StatefulWidget {
     required this.actionButtonLabel,
     required this.onActionPressed,
     required this.bottomText,
-    this.inlineAction = false,
+    this.scrollableContent = false,
   });
 
   @override
@@ -75,7 +74,7 @@ class _SharedSetPasswordFormState extends State<SharedSetPasswordForm> {
     final isValidPassword = passwordRequirements.isValid(password);
 
     return SharedFormLayout(
-      inlineAction: widget.inlineAction,
+      scrollableContent: widget.scrollableContent,
       title: widget.title,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

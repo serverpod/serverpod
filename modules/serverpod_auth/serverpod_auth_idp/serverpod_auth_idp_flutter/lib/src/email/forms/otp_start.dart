@@ -10,15 +10,15 @@ import '../../localization/sign_in_localization_provider.dart';
 import '../email_flow_controller.dart';
 import '../email_otp_auth_controller.dart';
 import 'shared/shared_email_text_field.dart';
+import 'shared/shared_form_layout.dart';
 import 'widgets/expandable_section.dart';
-import 'widgets/form_inline_action_layout.dart';
 
 /// Start form of the passwordless email authentication flow.
 ///
-/// Displays an email field with the action to request a one-time password
-/// right below it. If [EmailOtpAuthController.allowPasswordSignIn] is `true`,
-/// users can expand a password field to sign in with their password instead,
-/// which pushes the action down and turns it into a sign-in action.
+/// Displays an email field and the action to request a one-time password. If
+/// [EmailOtpAuthController.allowPasswordSignIn] is `true`, users can expand a
+/// password field to sign in with their password instead, which turns the
+/// action into a sign-in action.
 class OtpStartForm extends StatelessWidget {
   /// The controller that manages authentication state and logic.
   final EmailOtpAuthController controller;
@@ -46,7 +46,8 @@ class OtpStartForm extends StatelessWidget {
           : null;
     }
 
-    return FormInlineActionLayout(
+    return SharedFormLayout(
+      scrollableContent: true,
       title: otpTexts.startTitle,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

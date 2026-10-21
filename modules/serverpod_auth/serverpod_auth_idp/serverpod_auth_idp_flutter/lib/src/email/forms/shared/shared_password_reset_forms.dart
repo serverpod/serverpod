@@ -22,16 +22,15 @@ class SharedRequestPasswordResetForm extends StatelessWidget {
   /// Optional widget to display below the action button.
   final Widget? bottomText;
 
-  /// Whether to place the action right below the content, growing with it,
-  /// instead of at the bottom of a fixed height form.
-  final bool inlineAction;
+  /// Whether the content scrolls when it does not fit the form.
+  final bool scrollableContent;
 
   /// Creates a [SharedRequestPasswordResetForm] widget.
   const SharedRequestPasswordResetForm({
     required this.controller,
     required this.onBackToSignIn,
     this.bottomText,
-    this.inlineAction = false,
+    this.scrollableContent = false,
     super.key,
   });
 
@@ -40,7 +39,7 @@ class SharedRequestPasswordResetForm extends StatelessWidget {
     final texts = context.emailSignInTexts;
 
     return SharedFormLayout(
-      inlineAction: inlineAction,
+      scrollableContent: scrollableContent,
       title: texts.resetPasswordTitle,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -79,15 +78,14 @@ class SharedCompletePasswordResetForm extends StatelessWidget {
   /// Navigates to the sign-in screen of the flow.
   final VoidCallback onBackToSignIn;
 
-  /// Whether to place the action right below the content, growing with it,
-  /// instead of at the bottom of a fixed height form.
-  final bool inlineAction;
+  /// Whether the content scrolls when it does not fit the form.
+  final bool scrollableContent;
 
   /// Creates a [SharedCompletePasswordResetForm] widget.
   const SharedCompletePasswordResetForm({
     required this.controller,
     required this.onBackToSignIn,
-    this.inlineAction = false,
+    this.scrollableContent = false,
     super.key,
   });
 
@@ -102,7 +100,7 @@ class SharedCompletePasswordResetForm extends StatelessWidget {
       actionButtonLabel: texts.resetPassword,
       onActionPressed: controller.finishPasswordReset,
       bottomText: SharedBackToSignInButton(onPressed: onBackToSignIn),
-      inlineAction: inlineAction,
+      scrollableContent: scrollableContent,
     );
   }
 }

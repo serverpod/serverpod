@@ -51,9 +51,8 @@ class SharedVerificationForm extends StatefulWidget {
   /// If not provided, defaults to [ResendCodeButton.defaultLabel].
   final String? resendCodeLabel;
 
-  /// Whether to place the action right below the content, growing with it,
-  /// instead of at the bottom of a fixed height form.
-  final bool inlineAction;
+  /// Whether the content scrolls when it does not fit the form.
+  final bool scrollableContent;
 
   /// Creates a [SharedVerificationForm] widget.
   const SharedVerificationForm({
@@ -65,7 +64,7 @@ class SharedVerificationForm extends StatefulWidget {
     this.messageText,
     this.verifyButtonLabel,
     this.resendCodeLabel,
-    this.inlineAction = false,
+    this.scrollableContent = false,
     super.key,
   });
 
@@ -144,7 +143,7 @@ class _SharedVerificationFormState extends State<SharedVerificationForm> {
     );
 
     return SharedFormLayout(
-      inlineAction: widget.inlineAction,
+      scrollableContent: widget.scrollableContent,
       title: widget.title,
       content: content,
       actionButton: actionButton,

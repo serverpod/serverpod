@@ -109,7 +109,7 @@ class _EmailOtpFlowViewState extends State<EmailOtpFlowView> {
         onBackToSignIn: _backToSignIn,
         verifyButtonLabel: otpTexts.verifyAction,
         resendCodeLabel: otpTexts.resendCode,
-        inlineAction: true,
+        scrollableContent: true,
         verificationCodeConfig: widget.otpVerificationCodeConfig,
       ),
       EmailOtpFlowScreen.completeRegistration => OtpCompleteRegistrationForm(
@@ -120,7 +120,7 @@ class _EmailOtpFlowViewState extends State<EmailOtpFlowView> {
       EmailOtpFlowScreen.requestPasswordReset => SharedRequestPasswordResetForm(
         controller: _controller,
         onBackToSignIn: _backToSignIn,
-        inlineAction: true,
+        scrollableContent: true,
       ),
       EmailOtpFlowScreen.verifyPasswordReset => SharedVerificationForm(
         title: texts.verifyResetCodeTitle,
@@ -130,14 +130,14 @@ class _EmailOtpFlowViewState extends State<EmailOtpFlowView> {
         onBackToSignIn: _backToSignIn,
         verifyButtonLabel: texts.verify,
         resendCodeLabel: otpTexts.resendCode,
-        inlineAction: true,
+        scrollableContent: true,
         verificationCodeConfig: widget.verificationCodeConfig,
       ),
       EmailOtpFlowScreen.completePasswordReset =>
         SharedCompletePasswordResetForm(
           controller: _controller,
           onBackToSignIn: _backToSignIn,
-          inlineAction: true,
+          scrollableContent: true,
         ),
     };
   }

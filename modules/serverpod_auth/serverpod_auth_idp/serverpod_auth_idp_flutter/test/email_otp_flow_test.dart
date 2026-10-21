@@ -487,7 +487,8 @@ void main() {
   testWidgets(
     'Given a narrow EmailOtpSignInWidget and a long verification message, '
     'when a code is requested, '
-    'then the verification screen grows to fit without overflowing.',
+    'then the verification screen keeps the action in place without '
+    'overflowing.',
     (tester) async {
       final controller = EmailOtpAuthController(
         client: _TestClient(accountExists: true),
@@ -520,7 +521,7 @@ void main() {
         ),
       );
       expect(buttonRect.bottom, lessThanOrEqualTo(formRect.bottom));
-      expect(formRect.height, greaterThan(330));
+      expect(formRect.height, 330);
     },
   );
 
@@ -727,7 +728,8 @@ void main() {
 
     testWidgets(
       'when the user sets a password on the account creation screen, '
-      'then the password is sent with the registration.',
+      'then the action stays in place and the password is sent with the '
+      'registration.',
       (tester) async {
         final client = _TestClient(accountExists: false);
         final controller = EmailOtpAuthController(
@@ -755,10 +757,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.byType(PasswordField), findsOneWidget);
-        expect(
-          tester.getTopLeft(createAccountButton).dy,
-          greaterThan(buttonTopBefore),
-        );
+        expect(tester.getTopLeft(createAccountButton).dy, buttonTopBefore);
 
         controller.passwordController.text = strongPassword;
         await tester.pumpAndSettle();

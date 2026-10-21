@@ -11,8 +11,8 @@ import '../../localization/sign_in_localization_provider.dart';
 import '../email_flow_controller.dart';
 import '../email_otp_auth_controller.dart';
 import 'shared/shared_back_to_sign_in_button.dart';
+import 'shared/shared_form_layout.dart';
 import 'widgets/expandable_section.dart';
-import 'widgets/form_inline_action_layout.dart';
 import 'widgets/terms_and_privacy.dart';
 
 /// Form completing an account created through the passwordless flow.
@@ -82,7 +82,8 @@ class _OtpCompleteRegistrationFormState
         password.isEmpty ||
         passwordRequirements.isValid(password);
 
-    return FormInlineActionLayout(
+    return SharedFormLayout(
+      scrollableContent: true,
       title: otpTexts.createAccountTitle,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
