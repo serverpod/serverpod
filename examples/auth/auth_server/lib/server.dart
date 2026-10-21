@@ -129,6 +129,9 @@ void run(List<String> args) async {
   await pod.start();
 }
 
+// Used by the password based registration of `EmailSignInWidget`, and to send
+// the one-time passwords of `EmailOtpSignInWidget` when
+// `sendOtpLoginVerificationCode` is not set.
 void _sendRegistrationCode(
   Session session, {
   required String email,
@@ -141,6 +144,9 @@ void _sendRegistrationCode(
   session.log('[EmailIDP] Registration code ($email): $verificationCode');
 }
 
+// Only needed if users can sign in with a password, which is always the case
+// with `EmailSignInWidget`, and with `allowPasswordSignIn` on
+// `EmailOtpSignInWidget`.
 void _sendPasswordResetCode(
   Session session, {
   required String email,
@@ -153,6 +159,8 @@ void _sendPasswordResetCode(
   session.log('[EmailIDP] Password reset code ($email): $verificationCode');
 }
 
+// Used by the passwordless sign-in of `EmailOtpSignInWidget`, enabled by
+// extending `EmailOtpIdpBaseEndpoint`.
 void _sendOtpLoginCode(
   Session session, {
   required String email,
