@@ -9,27 +9,40 @@ import '../localization/sign_in_localization_provider_widget.dart';
 /// the password reset screens, are set through [EmailSignInTexts].
 @immutable
 class EmailWithOtpSignInTexts {
-  /// Creates a new [EmailWithOtpSignInTexts] configuration, with default
-  /// English texts for the omitted values.
+  /// Creates a new [EmailWithOtpSignInTexts] configuration.
   const EmailWithOtpSignInTexts({
-    this.startTitle = 'Sign In with email',
-    this.sendCode = 'Send code',
-    this.signInWithPassword = 'Sign in with password',
-    this.signInWithCode = 'Sign in with a code',
-    this.verifyTitle = 'Check your email',
-    this.verificationMessage =
-        'We sent a sign-in code to your email. Enter it below to continue.',
-    this.verifyAction = 'Continue',
-    this.createAccountTitle = 'Create your account',
-    this.createAccountMessage = 'No account exists for this email yet.',
-    this.addPassword = 'Add a password (optional)',
-    this.removePassword = 'Continue without a password',
-    this.passwordLabel = 'Password',
-    this.createAccount = 'Create account',
+    required this.startTitle,
+    required this.sendCode,
+    required this.signInWithPassword,
+    required this.signInWithCode,
+    required this.verifyTitle,
+    required this.verificationMessage,
+    required this.verifyAction,
+    required this.createAccountTitle,
+    required this.createAccountMessage,
+    required this.addPassword,
+    required this.removePassword,
+    required this.passwordLabel,
+    required this.createAccount,
   });
 
   /// Default English texts.
-  static const defaults = EmailWithOtpSignInTexts();
+  static const defaults = EmailWithOtpSignInTexts(
+    startTitle: 'Sign In with email',
+    sendCode: 'Send code',
+    signInWithPassword: 'Sign in with password',
+    signInWithCode: 'Sign in with a code',
+    verifyTitle: 'Check your email',
+    verificationMessage:
+        'We sent a sign-in code to your email. Enter it below to continue.',
+    verifyAction: 'Continue',
+    createAccountTitle: 'Create your account',
+    createAccountMessage: 'No account exists for this email yet.',
+    addPassword: 'Add a password (optional)',
+    removePassword: 'Continue without a password',
+    passwordLabel: 'Password',
+    createAccount: 'Create account',
+  );
 
   /// Title on the start screen.
   final String startTitle;

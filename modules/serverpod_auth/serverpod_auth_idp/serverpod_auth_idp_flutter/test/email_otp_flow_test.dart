@@ -28,7 +28,7 @@ void main() {
             email: EmailSignInTexts.defaults.copyWith(
               alreadyHaveAnAccount: 'Member?',
             ),
-            emailWithOtp: const EmailWithOtpSignInTexts(
+            emailWithOtp: EmailWithOtpSignInTexts.defaults.copyWith(
               verifyTitle: 'Code',
               verificationMessage: 'Enter code',
             ),
@@ -145,7 +145,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: SignInLocalizationProvider(
-              emailWithOtp: const EmailWithOtpSignInTexts(
+              emailWithOtp: EmailWithOtpSignInTexts.defaults.copyWith(
                 startTitle: 'W_OTP_TITLE',
                 sendCode: 'W_SEND_CODE',
                 signInWithPassword: 'W_USE_PASSWORD',
@@ -482,7 +482,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: SignInLocalizationProvider(
-              emailWithOtp: EmailWithOtpSignInTexts(
+              emailWithOtp: EmailWithOtpSignInTexts.defaults.copyWith(
                 verifyTitle: 'Code',
                 verificationMessage: 'Enter the code we sent you. ' * 4,
               ),
