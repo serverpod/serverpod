@@ -33,7 +33,8 @@ class EmailWithOtpSignInTexts {
     signInWithCode: 'Sign in with a code',
     verifyTitle: 'Check your email',
     verificationMessage:
-        'We sent a sign-in code to your email. Enter it below to continue.',
+        'A verification email has been sent. Please check your email and '
+        'enter the verification code below.',
     verifyAction: 'Continue',
     createAccountTitle: 'Create your account',
     addPassword: 'Add a password (optional)',
