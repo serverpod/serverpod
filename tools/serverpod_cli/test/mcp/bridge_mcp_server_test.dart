@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dart_mcp/client.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
+import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
@@ -23,7 +24,8 @@ import '../test_util/fake_runner_api.dart';
 /// static surface (apply_migrations, create_migration, hot_reload, hot_restart,
 /// tail_server_logs, tail_flutter_logs, spawn_flutter_app, get_flutter_app_dtd,
 /// serverpod://vm-service) is advertised
-/// upfront regardless of whether the runner is currently up.
+/// upfront regardless of whether the runner is currently up. tail_runner_logs
+/// is the bridge's own, answered from the runner's log file without a runner.
 void main() {
   group(
     'Given a BridgeMcpServer wired to a running runner socket,',
@@ -53,7 +55,10 @@ void main() {
             },
         );
 
-        pair = await _makeBridgePair(runner.socketPath);
+        pair = await _makeBridgePair(
+          runner.socketPath,
+          logPath: serverpodRunnerLogPath(tempServerDir.path),
+        );
       });
 
       tearDown(() async {
@@ -68,7 +73,10 @@ void main() {
         () async {
           await pair.client.callTool(CallToolRequest(name: 'apply_migrations'));
           await pair.dispose();
-          pair = await _makeBridgePair(runner.socketPath);
+          pair = await _makeBridgePair(
+            runner.socketPath,
+            logPath: serverpodRunnerLogPath(tempServerDir.path),
+          );
 
           expect(stopCalls, 0);
         },
@@ -138,6 +146,7 @@ void main() {
         // No runner started: the socket file does not exist yet.
         pair = await _makeBridgePair(
           '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock',
+          logPath: serverpodRunnerLogPath(tempServerDir.path),
         );
       });
 
@@ -164,6 +173,7 @@ void main() {
               'tail_flutter_logs',
               'spawn_flutter_app',
               'get_flutter_app_dtd',
+              'tail_runner_logs',
             }),
           );
         },
@@ -184,6 +194,20 @@ void main() {
       );
 
       test(
+        'when calling tail_runner_logs with no log file, '
+        'then the result is an error naming the missing file',
+        () async {
+          final result = await pair.client.callTool(
+            CallToolRequest(name: 'tail_runner_logs'),
+          );
+          expect(result.isError, isTrue);
+          final text = (result.content.first as TextContent).text;
+          expect(text, contains('No runner log'));
+          expect(text, contains('runner.log'));
+        },
+      );
+
+      test(
         'when reading serverpod://vm-service with no runner, '
         'then the payload encodes a not-running error',
         () async {
@@ -193,6 +217,63 @@ void main() {
           final text = (result.contents.first as TextResourceContents).text;
           final payload = jsonDecode(text) as Map<String, dynamic>;
           expect(payload['error'], 'not-running');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a BridgeMcpServer for a project whose runner left a log file,',
+    () {
+      late Directory tempServerDir;
+      late _Pair pair;
+      final lines = [
+        '--- serverpod runner 123 started ---',
+        '2026-10-12T10:00:00.000 [INFO] Generating code.',
+        '2026-10-12T10:00:01.000 [ERROR] Code generation failed.',
+        'stderr: Unhandled exception: oops',
+      ];
+
+      setUp(() async {
+        tempServerDir = await Directory.systemTemp.createTemp('bt');
+        final logPath = serverpodRunnerLogPath(tempServerDir.path);
+        await File(logPath).parent.create(recursive: true);
+        await File(logPath).writeAsString(lines.join('\n'));
+        // The socket path is a registry link the stopped runner removed.
+        pair = await _makeBridgePair(
+          '${tempServerDir.path}/registry/gone/mcp.sock',
+          logPath: logPath,
+        );
+      });
+
+      tearDown(() async {
+        await pair.dispose();
+        await _safeDelete(tempServerDir);
+      });
+
+      test(
+        'when calling tail_runner_logs with no runner listening, '
+        'then every line of the file is returned, oldest first',
+        () async {
+          final result = await pair.client.callTool(
+            CallToolRequest(name: 'tail_runner_logs'),
+          );
+          expect(result.isError, isNull);
+          final text = (result.content.single as TextContent).text;
+          expect(jsonDecode(text), lines);
+        },
+      );
+
+      test(
+        'when calling tail_runner_logs with a limit below the line count, '
+        'then only the newest lines are returned',
+        () async {
+          final result = await pair.client.callTool(
+            CallToolRequest(name: 'tail_runner_logs', arguments: {'limit': 2}),
+          );
+          expect(result.isError, isNull);
+          final text = (result.content.single as TextContent).text;
+          expect(jsonDecode(text), lines.sublist(2));
         },
       );
     },
@@ -211,7 +292,10 @@ void main() {
 
           final socketPath =
               '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock';
-          final pair = await _makeBridgePair(socketPath);
+          final pair = await _makeBridgePair(
+            socketPath,
+            logPath: serverpodRunnerLogPath(tempServerDir.path),
+          );
           addTearDown(pair.dispose);
 
           // First call: no runner -> not-running.
@@ -256,7 +340,10 @@ void main() {
         tempServerDir = await Directory.systemTemp.createTemp('bt');
         addTearDown(() => _safeDelete(tempServerDir));
         socketPath = '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock';
-        pair = await _makeBridgePair(socketPath);
+        pair = await _makeBridgePair(
+          socketPath,
+          logPath: serverpodRunnerLogPath(tempServerDir.path),
+        );
         addTearDown(pair.dispose);
 
         firstRunner = McpSocketServer(serverDir: tempServerDir.path);
@@ -327,7 +414,10 @@ class _Pair {
   }
 }
 
-Future<_Pair> _makeBridgePair(String socketPath) async {
+Future<_Pair> _makeBridgePair(
+  String socketPath, {
+  required String logPath,
+}) async {
   final clientToBridge = StreamController<String>();
   final bridgeToClient = StreamController<String>();
   final bridgeChannel = StreamChannel<String>(
@@ -339,7 +429,11 @@ Future<_Pair> _makeBridgePair(String socketPath) async {
     clientToBridge.sink,
   );
 
-  final bridge = BridgeMcpServer(bridgeChannel, socketPath: socketPath);
+  final bridge = BridgeMcpServer(
+    bridgeChannel,
+    socketPath: socketPath,
+    logPath: logPath,
+  );
   final client = MCPClient(
     Implementation(name: 'bridge-test-client', version: '0.0.0'),
   ).connectServer(clientChannel);

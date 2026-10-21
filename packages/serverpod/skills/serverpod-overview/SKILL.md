@@ -25,13 +25,14 @@ Each of these feature areas has its own `serverpod-*` skill; use the one that ma
 
 The user runs the server with `serverpod start`, which watches for file changes to run incremental code generation and hot reload the server (and the Flutter app, when the project has one).
 
-Do not check whether the server is running before acting: make the changes and call the `serverpod` MCP tools. When nothing is running, the MCP answers with an explicit "the server is not running" error. Only then, stop and ask the user to start it. NEVER start the server yourself.
+Do not check whether the server is running before acting: make the changes and call the `serverpod` MCP tools. When nothing is running, the MCP answers with an explicit "the server is not running" error. Only then, call `tail_runner_logs` to learn whether it is still starting or why it stopped, and stop and ask the user to start it. NEVER start the server yourself.
 
 ALWAYS use the MCP server instead of the command line. A running `serverpod start` exposes:
 
 - `create_migration` and `apply_migrations` for the database (after you change data models).
 - `create_repair_migration` when the database has drifted out of sync with the migrations. It only writes the repair file; follow up with `apply_migrations`.
 - `tail_server_logs` to read logs from the server.
+- `tail_runner_logs` to read the output of `serverpod start` itself (code generation, compilation, Docker, raw server output). The only tool that also works while the server is starting or after it stopped.
 - `tail_flutter_logs` to read raw stdout/stderr from a Flutter app.
 - `hot_reload` to reload the server and the Flutter app while keeping in-memory state. Only needed with `--no-watch`, since `serverpod start` reloads on file changes.
 - `hot_restart` to restart the server and the Flutter app, dropping in-memory state. ALWAYS call it after doing changes in the Flutter app that may not work with normal hot reload (which is automatically applied).

@@ -23,6 +23,38 @@ const _moduleRef = 'module:';
 const _projectRef = 'project:';
 const _packageRef = 'package:';
 
+/// Grouping of a model list by class name, cached against the list itself.
+final _modelsByClassName =
+    Expando<Map<String, List<SerializableModelDefinition>>>(
+      'modelsByClassName',
+    );
+
+/// [modelDefinitions] grouped by class name, preserving list order within each
+/// group.
+///
+/// Model resolution looks models up by name once per field of every class, and
+/// a lookup that scans the whole list is `O(models)` each time. The grouping is
+/// derived on first use and held against the list, so one resolution pass over
+/// a stable list builds it once.
+///
+/// The caller must not mutate [modelDefinitions] while a derived grouping is
+/// still in use. Resolution passes build a fresh list, so the grouping is only
+/// read by the pass that owns the list it is keyed on, and is collected with
+/// it.
+Map<String, List<SerializableModelDefinition>> modelsByClassName(
+  List<SerializableModelDefinition> modelDefinitions,
+) {
+  var grouped = _modelsByClassName[modelDefinitions];
+  if (grouped != null) return grouped;
+
+  grouped = <String, List<SerializableModelDefinition>>{};
+  for (var model in modelDefinitions) {
+    (grouped[model.className] ??= []).add(model);
+  }
+
+  return _modelsByClassName[modelDefinitions] = grouped;
+}
+
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
   /// The class name of the type.
@@ -830,24 +862,27 @@ class TypeDefinition {
   TypeDefinition applyProtocolReferences(
     List<SerializableModelDefinition> classDefinitions,
   ) {
-    var modelDefinition = classDefinitions
-        .where((c) => c.className == className)
+    // Only the models sharing this type's name can match any of the lookups
+    // below, so narrow to those once instead of walking the whole list four
+    // times. Order within the group is the list's own, keeping `firstOrNull`
+    // selecting what it selected before.
+    var candidates =
+        modelsByClassName(classDefinitions)[className] ??
+        const <SerializableModelDefinition>[];
+
+    var modelDefinition = candidates
         .where((c) => c.type.moduleAlias == defaultModuleAlias)
         .firstOrNull;
     // Resolve shared-package model when url is that package's module alias
     var sharedModelDefinition = (url != null && url != defaultModuleAlias)
-        ? classDefinitions
-              .where((c) => c.className == className)
-              .where((c) => c.type.moduleAlias == url)
-              .firstOrNull
+        ? candidates.where((c) => c.type.moduleAlias == url).firstOrNull
         : null;
     // Resolve shared-package model/enum when type is protocol-scoped but only
     // defined in a shared package (e.g. field type SharedModel or SharedEnum)
     if (modelDefinition == null &&
         sharedModelDefinition == null &&
         (url == defaultModuleAlias || url == null)) {
-      sharedModelDefinition = classDefinitions
-          .where((c) => c.className == className)
+      sharedModelDefinition = candidates
           .where((c) => c.isSharedModel)
           .firstOrNull;
     }
@@ -856,12 +891,8 @@ class TypeDefinition {
     var resolvedModuleAlias = isProjectModel
         ? defaultModuleAlias
         : sharedModelDefinition?.type.moduleAlias ?? moduleAlias;
-    var resolvedModel = classDefinitions
-        .where(
-          (model) =>
-              model.className == className &&
-              model.type.moduleAlias == resolvedModuleAlias,
-        )
+    var resolvedModel = candidates
+        .where((model) => model.type.moduleAlias == resolvedModuleAlias)
         .firstOrNull;
 
     return TypeDefinition(
