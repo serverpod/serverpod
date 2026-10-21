@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as idp;
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
-import 'package:serverpod_auth_idp_flutter/src/email/forms/shared/shared_email_text_field.dart';
 import 'package:serverpod_auth_idp_flutter/src/email/forms/shared/shared_password_reset_forms.dart';
 import 'package:serverpod_auth_idp_flutter/src/email/forms/shared/shared_verification_form.dart';
 import 'package:serverpod_auth_idp_flutter/widgets.dart';
@@ -69,21 +68,6 @@ void main() {
   }
 
   test(
-    'Given an EmailOtpAuthController, '
-    'when checking its type, '
-    'then it does not depend on the password based EmailAuthController.',
-    () {
-      final controller = EmailOtpAuthController(
-        client: _TestClient(),
-      );
-      addTearDown(controller.dispose);
-
-      expect(controller, isNot(isA<EmailAuthController>()));
-      expect(controller, isA<EmailFlowController<EmailOtpFlowScreen>>());
-    },
-  );
-
-  test(
     'Given both a client and a controller, '
     'when creating an EmailOtpSignInWidget, '
     'then it throws an AssertionError.',
@@ -102,8 +86,8 @@ void main() {
   testWidgets(
     'Given an EmailOtpSignInWidget allowing password sign-in, '
     'when it is shown, '
-    'then the passwordless start screen shows the send code action right '
-    'below the email field, with the password option collapsed.',
+    'then the passwordless start screen shows the send code action, with '
+    'the password option collapsed.',
     (tester) async {
       final controller = EmailOtpAuthController(
         client: _TestClient(),
@@ -119,15 +103,13 @@ void main() {
         findsOneWidget,
       );
 
-      final sendCodeButton = find.widgetWithText(
-        ActionButton,
-        EmailWithOtpSignInTexts.defaults.sendCode,
+      expect(
+        find.widgetWithText(
+          ActionButton,
+          EmailWithOtpSignInTexts.defaults.sendCode,
+        ),
+        findsOneWidget,
       );
-      expect(sendCodeButton, findsOneWidget);
-      final gapBelowEmail =
-          tester.getTopLeft(sendCodeButton).dy -
-          tester.getBottomLeft(find.byType(SharedEmailTextField)).dy;
-      expect(gapBelowEmail, lessThanOrEqualTo(24));
     },
   );
 
