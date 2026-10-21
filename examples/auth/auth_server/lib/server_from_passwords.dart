@@ -37,6 +37,9 @@ void run(List<String> args) async {
         sendRegistrationVerificationCode: _sendRegistrationCode,
         sendPasswordResetVerificationCode: _sendPasswordResetCode,
         sendOtpLoginVerificationCode: _sendOtpLoginCode,
+        // Lets users set an optional password when creating an account through
+        // the passwordless sign-in, to also sign in with it.
+        allowPasswordOnOtpRegistration: true,
       ),
       GoogleIdpConfigFromPasswords(),
       PasskeyIdpConfigFromPasswords(),
@@ -54,9 +57,9 @@ void run(List<String> args) async {
   await pod.start();
 }
 
-// Used by the password based registration of `EmailSignInWidget`, and to send
-// the one-time passwords of `EmailOtpSignInWidget` when
-// `sendOtpLoginVerificationCode` is not set.
+// Sends the verification code for registering an account with a password
+// through the `startRegistration` method of the email endpoint. One-time
+// passwords are sent by `_sendOtpLoginCode` instead.
 void _sendRegistrationCode(
   Session session, {
   required String email,
@@ -69,9 +72,8 @@ void _sendRegistrationCode(
   session.log('[EmailIDP] Registration code ($email): $verificationCode');
 }
 
-// Only needed if users can sign in with a password, which is always the case
-// with `EmailSignInWidget`, and with `allowPasswordSignIn` on
-// `EmailOtpSignInWidget`.
+// Sends the code to reset a forgotten password, which users request from the
+// password sign-in of `EmailOtpSignInWidget`.
 void _sendPasswordResetCode(
   Session session, {
   required String email,
@@ -84,8 +86,8 @@ void _sendPasswordResetCode(
   session.log('[EmailIDP] Password reset code ($email): $verificationCode');
 }
 
-// Used by the passwordless sign-in of `EmailOtpSignInWidget`, enabled by
-// extending `EmailOtpIdpBaseEndpoint`.
+// Sends the one-time password users enter to sign in, or to create an account
+// if none exists for the email yet.
 void _sendOtpLoginCode(
   Session session, {
   required String email,
