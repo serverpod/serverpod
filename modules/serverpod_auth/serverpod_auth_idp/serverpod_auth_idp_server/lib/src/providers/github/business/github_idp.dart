@@ -128,6 +128,14 @@ class GitHubIdp implements IdentityProvider {
           }
         }
 
+        await AccountLinkRequests.attachToActiveLinkRequest(
+          session,
+          authUserId: account.authUserId,
+          method: method,
+          newAccount: account.newAccount,
+          transaction: transaction,
+        );
+
         return _tokenIssuer.issueToken(
           session,
           authUserId: account.authUserId,

@@ -4,6 +4,7 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import 'firebase.dart';
+import 'widgets/link_account_sheet.dart';
 import 'widgets/profile_info.dart';
 
 /// Sets up a global client object that can be used to talk to the server from
@@ -203,6 +204,15 @@ class _ConnectedScreenState extends State<ConnectedScreen> {
                 await client.auth.signOutDevice();
               },
               child: const Text('Sign out'),
+            ),
+            OutlinedButton(
+              onPressed: () async {
+                await showLinkAccountSheet(context, client: client);
+                final idps = await client.auth.idp.getConnectedIdps();
+                if (!mounted) return;
+                setState(() => connectedIdps = idps);
+              },
+              child: const Text('Link another sign-in method'),
             ),
 
             connectedIdps == null

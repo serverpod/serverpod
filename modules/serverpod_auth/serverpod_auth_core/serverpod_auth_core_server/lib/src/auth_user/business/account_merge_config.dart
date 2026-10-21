@@ -33,6 +33,7 @@ class AccountMergeConfig {
   /// how they are ordered.
   const AccountMergeConfig.custom({
     required final List<AccountMergeHandler> mergeHooks,
+    this.linkRequestLifetime = _defaultLinkRequestLifetime,
   }) : _mergeHooks = mergeHooks,
        applicationMergeHandler = null;
 
@@ -50,11 +51,24 @@ class AccountMergeConfig {
   /// purposes or to override only some of the default handlers.
   const AccountMergeConfig({
     this.applicationMergeHandler = defaultMergeHandler,
+    this.linkRequestLifetime = _defaultLinkRequestLifetime,
   }) : _mergeHooks = null;
 
   /// Called when two auth users are merged. Application developers should write
   /// their application-specific merge logic here.
   final AccountMergeHandler? applicationMergeHandler;
+
+  /// How long an account link request stays valid.
+  ///
+  /// The window has to cover the whole sign-in with the additional provider,
+  /// which for email means waiting for a verification code to arrive, so this
+  /// is deliberately generous.
+  ///
+  /// See also:
+  ///   - [AccountLinkRequests]
+  final Duration linkRequestLifetime;
+
+  static const _defaultLinkRequestLifetime = Duration(minutes: 15);
 
   final List<AccountMergeHandler>? _mergeHooks;
 
@@ -74,6 +88,37 @@ class AccountMergeConfig {
       defaultIdpMergeHandler,
       defaultCoreDataMergeHandler,
       ?applicationMergeHandler,
+      defaultMergeCleanupHandler,
+    ];
+  }
+
+  /// Whether the application has supplied its own merge logic, either through
+  /// [applicationMergeHandler] or through [AccountMergeConfig.custom].
+  ///
+  /// When this is `false`, merging a pre-existing account would fail on
+  /// [defaultMergeHandler], so account linking rejects such merges up front
+  /// rather than letting them reach the hook chain.
+  bool get hasApplicationMergeHandler =>
+      _mergeHooks != null ||
+      (applicationMergeHandler != null &&
+          !identical(applicationMergeHandler, defaultMergeHandler));
+
+  /// Callbacks to merge an account that was created moments ago, as part of the
+  /// sign-in that linked it to an existing account.
+  ///
+  /// Such an account cannot hold any application data yet, so the throwing
+  /// [defaultMergeHandler] is left out and no application configuration is
+  /// required to link a brand new sign-in method. An application handler that
+  /// was actually configured still runs, since account creation callbacks may
+  /// have written application data for the new user.
+  List<AccountMergeHandler> get newAccountMergeHooks {
+    if (_mergeHooks != null) {
+      return _mergeHooks;
+    }
+    return [
+      defaultIdpMergeHandler,
+      defaultCoreDataMergeHandler,
+      if (hasApplicationMergeHandler) ?applicationMergeHandler,
       defaultMergeCleanupHandler,
     ];
   }

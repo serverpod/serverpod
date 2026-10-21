@@ -4,8 +4,10 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'github_auth_controller.dart';
 import 'github_sign_in_button.dart';
 import 'github_sign_in_style.dart';
+import '../common/account_linking_controller.dart';
 import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
+import '../common/sign_in_completion.dart';
 
 export 'github_sign_in_button.dart';
 export 'github_sign_in_style.dart';
@@ -33,7 +35,7 @@ export 'github_sign_in_style.dart';
 /// ```dart
 /// GitHubSignInWidget(
 ///   controller: controller,
-/// )
+///   )
 /// ```
 class GitHubSignInWidget extends StatefulWidget {
   /// Controls the authentication state and behavior.
@@ -59,6 +61,17 @@ class GitHubSignInWidget extends StatefulWidget {
   ///
   /// Ignored when [controller] is provided.
   final Function(Object error)? onError;
+
+  /// When set, sign-in links to the account the user is currently signed in to.
+  ///
+  /// Ignored when [controller] is provided.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Ignored when [controller] is provided.
+  final OnAuthSuccessCallback? onAuthSuccess;
 
   /// Scopes to request from GitHub.
   ///
@@ -100,6 +113,8 @@ class GitHubSignInWidget extends StatefulWidget {
     this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     this.scopes = GitHubAuthController.defaultScopes,
     this.style = GitHubButtonStyle.black,
     this.size = SignInButtonSize.large,
@@ -135,6 +150,8 @@ class _GitHubSignInWidgetState extends State<GitHubSignInWidget> {
           client: widget.client!,
           onAuthenticated: widget.onAuthenticated,
           onError: widget.onError,
+          accountLinking: widget.accountLinking,
+          onAuthSuccess: widget.onAuthSuccess,
           scopes: widget.scopes,
         );
     _controller.addListener(_onControllerStateChanged);

@@ -16,10 +16,21 @@ class AccountMerger {
     final AccountMergeConfig config = const AccountMergeConfig(),
   }) : _config = config;
 
+  /// Whether the application has supplied its own merge logic.
+  ///
+  /// See [AccountMergeConfig.hasApplicationMergeHandler].
+  bool get hasApplicationMergeHandler => _config.hasApplicationMergeHandler;
+
   /// Merges the accounts of two [AuthUser]s.
   ///
   /// This method invokes the callbacks defined in the
   /// [AccountMergeConfig.mergeHooks].
+  ///
+  /// Set [userToRemoveIsNewlyCreated] when the user being removed was created
+  /// moments ago, as part of the sign-in that is being linked to
+  /// [userToKeepId]. Such a user cannot hold application data of its own, so
+  /// [AccountMergeConfig.newAccountMergeHooks] is used instead and no
+  /// application merge handler is required.
   ///
   /// Throws an [AuthUserNotFoundException] if either user is not found.
   /// Throws an [ArgumentError] if [userToKeepId] and [userToRemoveId] are equal.
@@ -27,6 +38,7 @@ class AccountMerger {
     final Session session, {
     required final UuidValue userToKeepId,
     required final UuidValue userToRemoveId,
+    final bool userToRemoveIsNewlyCreated = false,
     final Transaction? transaction,
   }) async {
     if (userToKeepId == userToRemoveId) {
@@ -59,7 +71,11 @@ class AccountMerger {
         throw AuthUserNotFoundException();
       }
 
-      for (final AccountMergeHandler hook in _config.mergeHooks) {
+      final hooks = userToRemoveIsNewlyCreated
+          ? _config.newAccountMergeHooks
+          : _config.mergeHooks;
+
+      for (final AccountMergeHandler hook in hooks) {
         await hook(
           session,
           userToKeepId: userToKeepId,

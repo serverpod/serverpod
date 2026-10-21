@@ -6,7 +6,9 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../common/account_linking_controller.dart';
 import 'apple_sign_in_service.dart';
+import '../common/sign_in_completion.dart';
 
 /// Controller for managing Apple-based authentication flows.
 ///
@@ -45,6 +47,16 @@ class AppleAuthController extends ChangeNotifier {
   /// Callback when an error occurs during authentication.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Used by account linking, where the signed-in user stays signed in and the
+  /// new sign-in only proves ownership of the account being linked.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// Scopes to request from Apple.
   ///
   /// The default scopes are `email` and `fullName`, which will give access to
@@ -56,6 +68,8 @@ class AppleAuthController extends ChangeNotifier {
     required this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     this.scopes = defaultScopes,
   });
 
@@ -99,6 +113,12 @@ class AppleAuthController extends ChangeNotifier {
     if (!await SignInWithApple.isAvailable()) {
       throw StateError('Sign in with Apple is not available on this platform');
     }
+
+    if (accountLinking != null) {
+      await accountLinking!.start();
+      if (accountLinking!.state != AccountLinkingState.awaitingSignIn) return;
+    }
+
     _setState(AppleAuthState.loading);
 
     try {
@@ -140,10 +160,19 @@ class AppleAuthController extends ChangeNotifier {
         lastName: credential.familyName,
       );
 
-      await client.auth.updateSignedInUser(authSuccess);
+      final didSignIn = await completeSignIn(
+        client,
+        authSuccess,
+        accountLinking: accountLinking,
+        onAuthSuccess: onAuthSuccess,
+      );
 
-      _setState(AppleAuthState.authenticated);
-      onAuthenticated?.call();
+      if (didSignIn) {
+        _setState(AppleAuthState.authenticated);
+        onAuthenticated?.call();
+      } else {
+        _setState(AppleAuthState.idle);
+      }
     } catch (error) {
       _error = error;
       _setState(AppleAuthState.error);

@@ -14,6 +14,8 @@
 import 'dart:async' as _ida;
 import 'dart:io' as _idi;
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_core_server/src/generated/auth_user/models/account_link_result.dart'
+    as _iykq2y7y;
 import 'package:serverpod_auth_core_server/src/generated/profile/models/user_profile_model.dart'
     as _ici3ap1b;
 import 'package:serverpod_test/serverpod_test.dart' as _ist;
@@ -150,6 +152,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final _AccountLinkingEndpoint accountLinking;
+
   late final _StatusEndpoint status;
 
   late final _UserProfileInfoEndpoint userProfileInfo;
@@ -162,6 +166,10 @@ class _InternalTestEndpoints extends TestEndpoints
     _is.SerializationManager serializationManager,
     _is.EndpointDispatch endpoints,
   ) {
+    accountLinking = _AccountLinkingEndpoint(
+      endpoints,
+      serializationManager,
+    );
     status = _StatusEndpoint(
       endpoints,
       serializationManager,
@@ -170,6 +178,112 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+  }
+}
+
+class _AccountLinkingEndpoint {
+  _AccountLinkingEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _is.EndpointDispatch _endpointDispatch;
+
+  final _is.SerializationManager _serializationManager;
+
+  _ida.Future<void> createLinkRequest(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accountLinking',
+            method: 'createLinkRequest',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accountLinking',
+          methodName: 'createLinkRequest',
+          parameters: _ist.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<void> cancelLinkRequest(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accountLinking',
+            method: 'cancelLinkRequest',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accountLinking',
+          methodName: 'cancelLinkRequest',
+          parameters: _ist.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_iykq2y7y.AccountLinkResult> executeLinkRequest(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required String proofToken,
+    required bool approveMerge,
+  }) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accountLinking',
+            method: 'executeLinkRequest',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accountLinking',
+          methodName: 'executeLinkRequest',
+          parameters: _ist.testObjectToJson({
+            'proofToken': proofToken,
+            'approveMerge': approveMerge,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iykq2y7y.AccountLinkResult>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
   }
 }
 

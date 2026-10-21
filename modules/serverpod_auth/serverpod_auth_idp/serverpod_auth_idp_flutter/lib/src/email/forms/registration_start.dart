@@ -80,15 +80,19 @@ class StartRegistrationForm extends StatelessWidget {
         label: texts.continueAction,
         isLoading: controller.isLoading,
       ),
-      bottomText: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(texts.alreadyHaveAnAccount),
-          HyperlinkTextButton(
-            onPressed: () => controller.navigateTo(EmailFlowScreen.login),
-            label: texts.signIn,
-          ),
-        ],
+      bottomText: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(texts.alreadyHaveAnAccount),
+            HyperlinkTextButton(
+              onPressed: () => controller.navigateTo(EmailFlowScreen.login),
+              label: texts.signIn,
+            ),
+          ],
+        ),
       ),
     );
   }

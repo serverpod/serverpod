@@ -5,8 +5,10 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'apple_auth_controller.dart';
 import 'apple_sign_in_button.dart';
 import 'apple_sign_in_style.dart';
+import '../common/account_linking_controller.dart';
 import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
+import '../common/sign_in_completion.dart';
 
 /// A widget that provides Apple Sign-In functionality for all platforms.
 ///
@@ -63,6 +65,17 @@ class AppleSignInWidget extends StatefulWidget {
   /// Ignored when [controller] is provided.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  ///
+  /// Ignored when [controller] is provided.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Ignored when [controller] is provided.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// Scopes to request from Apple.
   ///
   /// The default scopes are `email` and `fullName`, which will give access to
@@ -101,6 +114,8 @@ class AppleSignInWidget extends StatefulWidget {
     this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     this.scopes = AppleAuthController.defaultScopes,
     this.text = SignInButtonTextVariant.continueWith,
     this.style = AppleButtonStyle.black,
@@ -141,6 +156,8 @@ class _AppleSignInWidgetState extends State<AppleSignInWidget> {
           client: widget.client!,
           onAuthenticated: widget.onAuthenticated,
           onError: widget.onError,
+          accountLinking: widget.accountLinking,
+          onAuthSuccess: widget.onAuthSuccess,
           scopes: widget.scopes,
         );
     _controller.addListener(_onControllerStateChanged);

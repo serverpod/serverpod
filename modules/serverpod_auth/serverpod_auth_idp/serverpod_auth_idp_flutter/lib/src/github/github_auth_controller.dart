@@ -4,8 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import '../common/account_linking_controller.dart';
 import '../common/exceptions.dart';
 import 'github_sign_in_service.dart';
+import '../common/sign_in_completion.dart';
 
 /// Controller for managing GitHub-based authentication flows.
 ///
@@ -48,6 +50,16 @@ class GitHubAuthController extends ChangeNotifier {
   /// log, but not passed to the callback.
   final Function(Object error)? onError;
 
+  /// When set, sign-in links to the account the user is currently signed in to.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Used by account linking, where the signed-in user stays signed in and the
+  /// new sign-in only proves ownership of the account being linked.
+  final OnAuthSuccessCallback? onAuthSuccess;
+
   /// Scopes to request from GitHub.
   ///
   /// The default scopes are [`user`, `read:user`, `user:email`], which will give access to
@@ -61,6 +73,8 @@ class GitHubAuthController extends ChangeNotifier {
     required this.client,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     this.scopes = defaultScopes,
   });
 
@@ -108,6 +122,12 @@ class GitHubAuthController extends ChangeNotifier {
   /// state and calls [onError].
   Future<void> signIn() async {
     if (_state == GitHubAuthState.loading) return;
+
+    if (accountLinking != null) {
+      await accountLinking!.start();
+      if (accountLinking!.state != AccountLinkingState.awaitingSignIn) return;
+    }
+
     _setState(GitHubAuthState.loading);
 
     try {
@@ -133,10 +153,19 @@ class GitHubAuthController extends ChangeNotifier {
         redirectUri: signInResult.redirectUri,
       );
 
-      await client.auth.updateSignedInUser(authSuccess);
+      final didSignIn = await completeSignIn(
+        client,
+        authSuccess,
+        accountLinking: accountLinking,
+        onAuthSuccess: onAuthSuccess,
+      );
 
-      _setState(GitHubAuthState.authenticated);
-      onAuthenticated?.call();
+      if (didSignIn) {
+        _setState(GitHubAuthState.authenticated);
+        onAuthenticated?.call();
+      } else {
+        _setState(GitHubAuthState.idle);
+      }
     } catch (error) {
       _handleAuthenticationError(error);
     }
