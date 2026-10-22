@@ -110,16 +110,17 @@ class WatchSession {
 
   final Completer<int> _done = Completer<int>();
 
-  /// Dart file paths from prior compile cycles that were rejected.
-  /// These must be re-invalidated on the next compile attempt since the FES
-  /// rolled back to its last accepted state and no longer knows about them.
+  /// Dart file paths from prior cycles that the FES has not accepted: their
+  /// compile was rejected, or code generation failed before they were compiled.
+  /// These must be invalidated on the next compile attempt since the FES
+  /// rolled back to its last accepted state or never heard about them.
   final Set<String> _pendingPaths = {};
 
   /// Whether a prior `package_config.json` change still needs to be invalidated
-  /// because the compile that carried it failed (and was rolled back). Without
-  /// this, a dependency change that races a transient compile error would be
-  /// dropped, and the new package would stay unresolved until the next
-  /// `package_config.json` write.
+  /// because the compile that carried it failed (and was rolled back) or never
+  /// ran because code generation failed. Without this, a dependency change that
+  /// races a transient error would be dropped, and the new package would stay
+  /// unresolved until the next `package_config.json` write.
   bool _pendingPackageConfig = false;
 
   /// The running server, or `null` while the session is degraded (no server
@@ -239,7 +240,7 @@ class WatchSession {
     // touching the server's closure - and must not reload the server. Always
     // call refreshClosure() when the file changed so the tracker's baseline
     // advances even when we suppress. Only a `none` result downgrades, and a
-    // pending invalidation from a prior failed compile still rides along
+    // pending invalidation from a prior failed cycle still rides along
     // independently (see _pendingPackageConfig in _compileAndReload).
     var serverDepsChanged = event.packageConfigChanged;
     if (event.packageConfigChanged &&
@@ -303,6 +304,20 @@ class WatchSession {
       final genResult = await _generate(affectedPaths);
       if (!genResult.success) {
         log.error('Code generation failed. Server not reloaded.');
+        // Nothing is compiled this cycle, so carry its changes over to the
+        // next compile. Otherwise the FES is never told about them and keeps
+        // compiling their previous content.
+        _pendingPaths.addAll({
+          ...sourceDartFiles,
+          ...genResult.generatedFiles,
+          ...generatedDartFiles,
+        });
+        if (serverDepsChanged) {
+          _pendingPackageConfig = true;
+          // The skipped compile would also have made the hook runner re-read
+          // package_config.json.
+          _nativeAssetsBuilder?.reset();
+        }
         return;
       }
       genOutputFiles = genResult.generatedFiles;
@@ -443,11 +458,12 @@ class WatchSession {
   }) async {
     final compiler = _compiler!;
 
-    // Compile changes. Merge any paths carried over from prior rejected
-    // compiles so the FES re-invalidates them (reject rolls back its state).
+    // Compile changes. Merge any paths carried over from prior cycles whose
+    // compile was rejected or skipped, so the FES invalidates them (reject
+    // rolls back its state).
     final changedPaths = {..._pendingPaths, ...dartFiles};
     // Likewise carry a package_config change forward if a prior compile that
-    // should have invalidated it failed.
+    // should have invalidated it failed or was skipped.
     final invalidatePackageConfig =
         packageConfigChanged || _pendingPackageConfig;
 
