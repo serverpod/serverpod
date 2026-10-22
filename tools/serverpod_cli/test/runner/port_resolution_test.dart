@@ -756,98 +756,102 @@ void main() {
     );
   });
 
-  group('Given the port overrides,', () {
-    test(
-      'when they are applied, '
-      'then every configured listener is asked for zero, public port included',
-      () {
-        expect(
-          portOverrideEnvironment(const {'api': 0, 'insights': 0, 'web': 0}),
-          {
-            'SERVERPOD_API_SERVER_PORT': '0',
-            'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
-            'SERVERPOD_INSIGHTS_SERVER_PORT': '0',
-            'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT': '0',
-            'SERVERPOD_WEB_SERVER_PORT': '0',
-            'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '0',
-          },
-        );
-      },
-    );
-
-    test(
-      'when a listener reuses a port, '
-      'then it and its public port are asked for that port, the rest for zero',
-      () {
-        expect(
-          portOverrideEnvironment(const {'api': 0, 'web': 54321}),
-          {
-            'SERVERPOD_API_SERVER_PORT': '0',
-            'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
-            'SERVERPOD_WEB_SERVER_PORT': '54321',
-            'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '54321',
-          },
-        );
-      },
-    );
-
-    test(
-      'when the pod reports the ports it bound, '
-      'then the overrides pin them, so a restarted pod keeps its address',
-      () {
-        expect(
-          pinResolvedPorts(
-            const {'api': 0, 'web': 0, 'insights': 52003},
-            const ServerpodAddresses(
-              api: 'http://localhost:52001',
-              insights: 'http://localhost:52002',
-            ),
-          ),
-          {'api': 52001, 'web': 0, 'insights': 52003},
-        );
-      },
-    );
-
-    test(
-      'when the project configures no insights or web server, '
-      'then neither is given a port, which would start one',
-      () {
-        expect(portOverrideEnvironment(const {'api': 0}), {
+  test(
+    'Given the port overrides, '
+    'when they are applied, '
+    'then every configured listener is asked for zero, public port included',
+    () {
+      expect(
+        portOverrideEnvironment(const {'api': 0, 'insights': 0, 'web': 0}),
+        {
           'SERVERPOD_API_SERVER_PORT': '0',
           'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
-        });
-      },
-    );
+          'SERVERPOD_INSIGHTS_SERVER_PORT': '0',
+          'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT': '0',
+          'SERVERPOD_WEB_SERVER_PORT': '0',
+          'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '0',
+        },
+      );
+    },
+  );
 
-    test(
-      'when the database listener is overridden, '
-      'then it is asked for that port and has no public port',
-      () {
-        expect(portOverrideEnvironment(const {'api': 0, 'database': 0}), {
+  test(
+    'Given the port overrides, '
+    'when a listener reuses a port, '
+    'then it and its public port are asked for that port, the rest for zero',
+    () {
+      expect(
+        portOverrideEnvironment(const {'api': 0, 'web': 54321}),
+        {
           'SERVERPOD_API_SERVER_PORT': '0',
           'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
-          'SERVERPOD_DATABASE_PORT': '0',
-        });
-      },
-    );
+          'SERVERPOD_WEB_SERVER_PORT': '54321',
+          'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '54321',
+        },
+      );
+    },
+  );
 
-    test(
-      'when the pod reports the database address it serves, '
-      'then the database override pins that port',
-      () {
-        expect(
-          pinResolvedPorts(
-            const {'api': 0, 'database': 0},
-            const ServerpodAddresses(
-              api: 'http://localhost:52001',
-              database: 'postgres://postgres@127.0.0.1:52004/my_project',
-            ),
+  test(
+    'Given the port overrides, '
+    'when the pod reports the ports it bound, '
+    'then the overrides pin them, so a restarted pod keeps its address',
+    () {
+      expect(
+        pinResolvedPorts(
+          const {'api': 0, 'web': 0, 'insights': 52003},
+          const ServerpodAddresses(
+            api: 'http://localhost:52001',
+            insights: 'http://localhost:52002',
           ),
-          {'api': 52001, 'database': 52004},
-        );
-      },
-    );
-  });
+        ),
+        {'api': 52001, 'web': 0, 'insights': 52003},
+      );
+    },
+  );
+
+  test(
+    'Given the port overrides, '
+    'when the project configures no insights or web server, '
+    'then neither is given a port, which would start one',
+    () {
+      expect(portOverrideEnvironment(const {'api': 0}), {
+        'SERVERPOD_API_SERVER_PORT': '0',
+        'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
+      });
+    },
+  );
+
+  test(
+    'Given the port overrides, '
+    'when the database listener is overridden, '
+    'then it is asked for that port and has no public port',
+    () {
+      expect(portOverrideEnvironment(const {'api': 0, 'database': 0}), {
+        'SERVERPOD_API_SERVER_PORT': '0',
+        'SERVERPOD_API_SERVER_PUBLIC_PORT': '0',
+        'SERVERPOD_DATABASE_PORT': '0',
+      });
+    },
+  );
+
+  test(
+    'Given the port overrides, '
+    'when the pod reports the database address it serves, '
+    'then the database override pins that port',
+    () {
+      expect(
+        pinResolvedPorts(
+          const {'api': 0, 'database': 0},
+          const ServerpodAddresses(
+            api: 'http://localhost:52001',
+            database: 'postgres://postgres@127.0.0.1:52004/my_project',
+          ),
+        ),
+        {'api': 52001, 'database': 52004},
+      );
+    },
+  );
 }
 
 /// A port that was free a moment ago.
