@@ -420,7 +420,7 @@ void main() {
   test(
     'Given a project whose database port another process holds, '
     'when serverpod database start passes that port with --port, '
-    'then it exits with an error naming the port',
+    'then it exits with just the error naming the port',
     () async {
       serverDirectory = writeServerProject(
         databasePassword: 'passwords-yaml-database-password',
@@ -446,8 +446,9 @@ void main() {
       ]);
 
       expect(result.exitCode, isNot(0));
+      final output = unwrapped('${result.stdout}\n${result.stderr}');
       expect(
-        unwrapped('${result.stdout}\n${result.stderr}'),
+        output,
         contains(
           'Port $databasePort is already in use, so the local database cannot '
           'accept TCP connections there. Stop the other service on that port '
@@ -457,6 +458,7 @@ void main() {
           'database over its Unix socket only.',
         ),
       );
+      expect(output, isNot(contains('Yikes')));
     },
     timeout: const Timeout(Duration(minutes: 4)),
   );

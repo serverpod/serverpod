@@ -158,6 +158,12 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
     } on _DatabaseStartConfigurationException catch (e) {
       log.error(e.message);
       throw ExitException.error();
+    } on EmbeddedPostgresStartupException catch (e, stackTrace) {
+      log.error(
+        e.message,
+        stackTrace: e.includeStackTrace ? stackTrace : null,
+      );
+      throw ExitException.error();
     } catch (e, stackTrace) {
       log.error(
         formatEmbeddedPostgresFailure(e),
