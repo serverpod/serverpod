@@ -18,8 +18,12 @@ Future<void> _deleteAll(Session session) async {
   await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
 }
 
-void main() async {
-  var session = await IntegrationTestServer().session();
+void main() {
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => closeTestSession(session));
 
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
@@ -13,26 +14,33 @@ import '../../../../test_util/file_system_entity_helpers.dart';
 
 final config = GeneratorConfigBuilder().build();
 
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
+late AnalysisContextCollection collection;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
+    collection = await createCachedAnalysisContextCollection(
+      testProjectDirectory,
+    );
   });
 
   tearDownAll(() async {
+    await collection.dispose();
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
   group(
-    'Given a tracked and analyzed directory with a persistently invalid dart future call file',
+    'Given a tracked and analyzed directory with a persistently invalid dart future call file,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(trackedDirectory.path, 'future_call.dart'),
         );
@@ -46,7 +54,10 @@ class ExampleFutureCall extends FutureCall {
     session.log('Hello \$name');
   }
 ''');
-        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: trackedDirectory,
+          collection: collection,
+        );
         await analyzer.analyze(
           collector: CodeGenerationCollector(),
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -78,15 +89,16 @@ class HelperClass {}
   );
 
   group(
-    'Given a tracked and analyzed directory with an invalid dart future call file',
+    'Given a tracked and analyzed directory with an invalid dart future call file,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File futureCallFile;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         futureCallFile = File(
           path.join(trackedDirectory.path, 'future_call.dart'),
         );
@@ -100,7 +112,10 @@ class ExampleFutureCall extends FutureCall {
     session.log('Hello \$name');
   }
 ''');
-        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: trackedDirectory,
+          collection: collection,
+        );
         await analyzer.analyze(
           collector: CodeGenerationCollector(),
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),
@@ -131,15 +146,16 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a tracked directory with a valid future call file analyzed before any models were provided',
+    'Given a tracked directory with a valid future call file analyzed before any models were provided,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
+      late Directory trackedDirectory;
 
       late File futureCallFile;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         futureCallFile = File(
           path.join(trackedDirectory.path, 'future_call.dart'),
         );
@@ -153,7 +169,10 @@ class ExampleFutureCall extends FutureCall {
   }
 }
 ''');
-        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: trackedDirectory,
+          collection: collection,
+        );
         // Analyzed without models: the file is cached as pending full
         // analysis (hadErrors), the state a fresh up-to-date watch session
         // starts in before any generation has run.
@@ -196,15 +215,15 @@ class HelperClass {}
   );
 
   group(
-    'Given an analyzed future call file cached under its real-cased path',
+    'Given an analyzed future call file cached under its real-cased path,',
     () {
-      var trackedDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory trackedDirectory;
       late File futureCallFile;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        trackedDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         futureCallFile = File(
           path.join(trackedDirectory.path, 'future_call.dart'),
         );
@@ -218,7 +237,10 @@ class ExampleFutureCall extends FutureCall {
   }
 }
 ''');
-        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        analyzer = FutureCallsAnalyzer(
+          directory: trackedDirectory,
+          collection: collection,
+        );
         await analyzer.analyze(
           collector: CodeGenerationCollector(),
           analyzedModels: StatefulAnalyzer(config, []).validateAll(),

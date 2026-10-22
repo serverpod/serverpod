@@ -40,7 +40,7 @@ pg.Endpoint _unixEndpointFor(
   required String database,
   required String username,
 }) => pg.Endpoint(
-  host: shortestPath(
+  host: reachableUnixSocketPath(
     p.join(runDir.absolute.path, '.s.PGSQL.${transport.postmasterPort}'),
   ),
   isUnixSocket: true,
