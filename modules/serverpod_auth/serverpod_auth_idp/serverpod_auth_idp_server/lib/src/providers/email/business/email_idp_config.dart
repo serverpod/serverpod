@@ -48,6 +48,21 @@ typedef SendRegistrationVerificationCodeFunction =
       required Transaction? transaction,
     });
 
+/// Function for sending out the one-time passwords for passwordless logins.
+///
+/// Called for both registered and unregistered email addresses. In the latter
+/// case, verifying the code lets the user create a new account.
+typedef SendOtpLoginVerificationCodeFunction =
+    FutureOr<void> Function(
+      Session session, {
+      required String email,
+      required UuidValue otpLoginRequestId,
+
+      /// The one-time password generated for this login request.
+      required String verificationCode,
+      required Transaction? transaction,
+    });
+
 /// Function to be called after a new email account has been created.
 typedef AfterAccountCreatedFunction =
     FutureOr<void> Function(
@@ -153,6 +168,57 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
   /// Defaults to 16.
   final int secretHashSaltLength;
 
+  /// Function returning the one-time password for passwordless logins.
+  ///
+  /// By default this is a 6 digits numeric code, see
+  /// [defaultOtpVerificationCodeGenerator]. Make sure the client is configured
+  /// for the same code format.
+  final String Function() otpLoginVerificationCodeGenerator;
+
+  /// The time for the one-time password to be valid.
+  ///
+  /// Default is 15 minutes.
+  final Duration otpLoginVerificationCodeLifetime;
+
+  /// How many attempts are permitted for a single one-time password (during
+  /// the [otpLoginVerificationCodeLifetime] window).
+  ///
+  /// Defaults to 3.
+  final int otpLoginVerificationCodeAllowedAttempts;
+
+  /// How many one-time passwords can be requested for the same email.
+  ///
+  /// A successful sign-in or account creation with a one-time password clears
+  /// the requests counted for the email.
+  ///
+  /// Defaults to allowing at most 5 requests in the last 15 minutes.
+  final RateLimit maxOtpLoginAttempts;
+
+  /// Callback to be invoked for sending outgoing one-time password emails, for
+  /// passwordless logins exposed by extending `EmailOtpIdpBaseEndpoint`.
+  /// `ServerpodCloudEmailIdpConfig` sets it.
+  ///
+  /// If it is not set, one-time passwords are sent with
+  /// [sendRegistrationVerificationCode], passing the ID of the login request
+  /// as its `accountRequestId`, and a warning is logged on first use. This
+  /// works for registration emails that only contain the code. Set this
+  /// callback if your registration emails use `accountRequestId`, e.g. in
+  /// links to complete a registration, since those links do not work for a
+  /// login request. Requesting a one-time password fails with a [StateError]
+  /// if neither callback is set.
+  final SendOtpLoginVerificationCodeFunction? sendOtpLoginVerificationCode;
+
+  /// Whether users creating an account through a passwordless login may set a
+  /// password for it.
+  ///
+  /// The client is informed of this setting when the one-time password is
+  /// verified, so the account creation screen can offer the password field
+  /// accordingly. Users can always set a password later through a password
+  /// reset.
+  ///
+  /// Defaults to `false`.
+  final bool allowPasswordOnOtpRegistration;
+
   /// Create a new email account configuration.
   const EmailIdpConfig({
     required this.secretHashPepper,
@@ -180,6 +246,16 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
     ),
     this.secretHashSaltLength = 16,
     this.onAfterAccountCreated,
+    this.otpLoginVerificationCodeGenerator =
+        defaultOtpVerificationCodeGenerator,
+    this.otpLoginVerificationCodeLifetime = const Duration(minutes: 15),
+    this.otpLoginVerificationCodeAllowedAttempts = 3,
+    this.maxOtpLoginAttempts = const RateLimit(
+      timeframe: Duration(minutes: 15),
+      maxAttempts: 5,
+    ),
+    this.sendOtpLoginVerificationCode,
+    this.allowPasswordOnOtpRegistration = false,
   });
 
   @override
@@ -218,6 +294,12 @@ class EmailIdpConfigFromPasswords extends EmailIdpConfig {
     super.maxPasswordResetAttempts,
     super.secretHashSaltLength,
     super.onAfterAccountCreated,
+    super.otpLoginVerificationCodeGenerator,
+    super.otpLoginVerificationCodeLifetime,
+    super.otpLoginVerificationCodeAllowedAttempts,
+    super.maxOtpLoginAttempts,
+    super.sendOtpLoginVerificationCode,
+    super.allowPasswordOnOtpRegistration,
   }) : super(
          secretHashPepper: Serverpod.instance.getPasswordOrThrow(
            'emailSecretHashPepper',

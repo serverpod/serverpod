@@ -16,7 +16,7 @@ const _scloudAuthEmailKey = 'scloudAuthEmailKey';
 /// A function sending a single verification [code] to [email].
 ///
 /// Used internally by [ServerpodCloudEmailIdpConfig] to share the
-/// registration- and password-reset sending logic.
+/// registration, password-reset and OTP login sending logic.
 typedef _SendCodeFunction =
     FutureOr<void> Function(
       Session session, {
@@ -109,6 +109,14 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
           logLabel: 'Password reset',
         ),
       ),
+      sendOtpLoginVerificationCode: _otpLoginSender(
+        _coreSender(
+          appDisplayName: appDisplayName,
+          client: client,
+          emailType: ServerpodCloudEmailType.signup,
+          logLabel: 'Login',
+        ),
+      ),
       onPasswordResetCompleted: onPasswordResetCompleted,
       onAfterAccountCreated: onAfterAccountCreated,
     );
@@ -118,6 +126,7 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
   ServerpodCloudEmailIdpConfig._({
     required super.sendRegistrationVerificationCode,
     required super.sendPasswordResetVerificationCode,
+    required super.sendOtpLoginVerificationCode,
     super.onPasswordResetCompleted,
     super.onAfterAccountCreated,
   });
@@ -195,6 +204,19 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
       final Session session, {
       required final String email,
       required final UuidValue passwordResetRequestId,
+      required final String verificationCode,
+      required final Transaction? transaction,
+    }) => send(session, email: email, code: verificationCode);
+  }
+
+  /// Adapts a shared [send] callback to the OTP login callback signature.
+  static SendOtpLoginVerificationCodeFunction _otpLoginSender(
+    final _SendCodeFunction send,
+  ) {
+    return (
+      final Session session, {
+      required final String email,
+      required final UuidValue otpLoginRequestId,
       required final String verificationCode,
       required final Transaction? transaction,
     }) => send(session, email: email, code: verificationCode);

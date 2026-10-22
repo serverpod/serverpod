@@ -6,6 +6,7 @@ import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
 import 'utils/email_idp_account_utils.dart';
 import 'utils/email_idp_authentication_util.dart';
+import 'utils/email_idp_otp_login_util.dart';
 import 'utils/email_idp_password_reset_util.dart';
 
 /// Email account management functions.
@@ -18,6 +19,7 @@ import 'utils/email_idp_password_reset_util.dart';
 /// - [authentication] - Utilities for authenticating users
 /// - [accountCreation] - Utilities for creating and verifying email accounts
 /// - [passwordReset] - Utilities for resetting passwords
+/// - [otpLogin] - Utilities for passwordless logins with one-time passwords
 ///
 /// For most standard use cases, the methods exposed by [EmailIdp] and
 /// [EmailIdpAdmin] should be sufficient.
@@ -35,6 +37,9 @@ class EmailIdpUtils {
 
   /// {@macro email_idp_authentication_utils}
   late final EmailIdpAuthenticationUtil authentication;
+
+  /// {@macro email_idp_otp_login_util}
+  late final EmailIdpOtpLoginUtil otpLogin;
 
   /// {@macro email_idp_account_utils}
   final EmailIdpAccountUtils account;
@@ -83,6 +88,13 @@ class EmailIdpUtils {
     authentication = EmailIdpAuthenticationUtil(
       hashUtil: hashUtil,
       failedLoginRateLimit: config.failedLoginRateLimit,
+    );
+    otpLogin = EmailIdpOtpLoginUtil(
+      config: EmailIdpOtpLoginUtilsConfig.fromEmailIdpConfig(config),
+      passwordHashUtils: hashUtil,
+      authUsers: authUsers,
+      verificationCodeHash: verificationCodeHash,
+      completionTokenHash: completionTokenHash,
     );
   }
 

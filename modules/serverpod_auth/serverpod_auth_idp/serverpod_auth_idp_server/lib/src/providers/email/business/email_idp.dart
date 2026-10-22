@@ -295,6 +295,119 @@ class EmailIdp implements IdentityProvider {
     );
   }
 
+  /// {@macro email_account_base_endpoint.start_otp_login}
+  Future<UuidValue> startOtpLogin(
+    final Session session, {
+    required final String email,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
+        () => utils.otpLogin.startOtpLogin(
+          session,
+          email: email,
+          transaction: transaction,
+        ),
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.verify_otp_login_code}
+  Future<EmailAccountOtpVerificationResult> verifyOtpLoginCode(
+    final Session session, {
+    required final UuidValue otpLoginRequestId,
+    required final String verificationCode,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
+        () => utils.otpLogin.verifyOtpLoginCode(
+          session,
+          otpLoginRequestId: otpLoginRequestId,
+          verificationCode: verificationCode,
+          transaction: transaction,
+        ),
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.finish_otp_login}
+  Future<AuthSuccess> finishOtpLogin(
+    final Session session, {
+    required final String otpLoginToken,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) =>
+          EmailIdpUtils.withReplacedServerEmailException(() async {
+            final authUserId = await utils.otpLogin.completeOtpLogin(
+              session,
+              otpLoginToken: otpLoginToken,
+              transaction: transaction,
+            );
+
+            final authUser = await _authUsers.get(
+              session,
+              authUserId: authUserId,
+              transaction: transaction,
+            );
+
+            return _tokenManager.issueToken(
+              session,
+              authUserId: authUserId,
+              method: method,
+              scopes: authUser.scopes,
+              transaction: transaction,
+            );
+          }),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.finish_otp_registration}
+  Future<AuthSuccess> finishOtpRegistration(
+    final Session session, {
+    required final String otpLoginToken,
+    final String? password,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) =>
+          EmailIdpUtils.withReplacedServerEmailException(() async {
+            final result = await utils.otpLogin.completeOtpRegistration(
+              session,
+              otpLoginToken: otpLoginToken,
+              password: password,
+              transaction: transaction,
+            );
+
+            await _userProfiles.createUserProfile(
+              session,
+              result.authUserId,
+              UserProfileData(
+                email: result.email,
+              ),
+              transaction: transaction,
+            );
+
+            return _tokenManager.issueToken(
+              session,
+              authUserId: result.authUserId,
+              method: method,
+              scopes: result.scopes,
+              transaction: transaction,
+            );
+          }),
+    );
+  }
+
   /// Determines whether the current session has an associated email account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;

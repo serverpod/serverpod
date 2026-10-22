@@ -45,6 +45,18 @@ client = Client(serverUrl)
 client.auth.initialize();
 ```
 
+## Passwordless email
+
+To sign in with a one-time password sent by email, extend `EmailOtpIdpBaseEndpoint` instead of `EmailIdpBaseEndpoint` on the server. `SignInWidget` then shows `EmailOtpSignInWidget`, which can also be used on its own.
+
+The codes are sent through `EmailIdpConfig.sendOtpLoginVerificationCode`, falling back to `sendRegistrationVerificationCode` when it is not set. Set the OTP callback if the registration emails use `accountRequestId`, e.g. in links.
+
+The code length is not sent to the client, so configure it on both sides. The server generates 6 digit codes by default (`EmailIdpConfig.otpLoginVerificationCodeGenerator`), and the widget's code input defaults to 6 digits too (`EmailOtpSignInWidget(otpVerificationCodeConfig: VerificationCodeConfig(length: ...))`). Change both together.
+
+Customize the texts with `SignInLocalizationProvider(emailWithOtp: EmailWithOtpSignInTexts.defaults.copyWith(...))`.
+
+Customize the resend-code text shared by both email flows with `SignInLocalizationProvider(verificationCodeTexts: VerificationCodeTexts.defaults.copyWith(resendCode: ...))`.
+
 ## Social sign-ins
 
 Each provider needs the user to configure it outside the project (e.g. the GCP console or the Apple developer portal). Follow the official setup guide:
