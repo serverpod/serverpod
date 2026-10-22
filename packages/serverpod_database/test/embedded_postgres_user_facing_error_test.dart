@@ -17,9 +17,9 @@ void main() {
         'Port 8090 is already in use, so the local database cannot accept TCP '
         'connections there. Stop the other service on that port (for example '
         'a Docker database from an earlier setup), change `database.port` in '
-        'the relevant file in `config/`, or remove the database password from '
-        '`config/passwords.yaml` to serve the local database over its Unix '
-        'socket only.\n\n'
+        'the relevant file in `config/`, or leave the database password in '
+        "`config/passwords.yaml` empty (`database: ''`) to serve the local "
+        'database over its Unix socket only.\n\n'
         'To use Docker instead, remove `database.dataPath` from the relevant '
         'file in `config/`, then try again.',
       );
