@@ -82,9 +82,6 @@ class EmailIdpPasswordResetUtil {
       throw EmailPasswordResetEmailNotFoundException();
     }
 
-    // Drop every previous reset for this account. An age filter would keep a
-    // request timestamped in the same clock tick, so the previous code would
-    // stay valid on clocks that do not advance between the two calls.
     await EmailAccountPasswordResetRequest.db.deleteWhere(
       session,
       where: (final t) => t.emailAccountId.equals(account.id!),
@@ -231,10 +228,7 @@ class EmailIdpPasswordResetUtil {
     return account.authUserId;
   }
 
-  /// Deletes password reset requests strictly older than [olderThan].
-  ///
-  /// A request created at exactly `now - olderThan` is kept. [Duration.zero]
-  /// therefore does not remove a request timestamped at the current time.
+  /// Deletes password reset requests older than [olderThan].
   ///
   /// If [olderThan] is `null`, this will remove all expired password reset
   /// requests, as configured by the
@@ -265,11 +259,7 @@ class EmailIdpPasswordResetUtil {
     );
   }
 
-  /// Deletes password reset request attempts strictly older than [olderThan].
-  ///
-  /// An attempt recorded at exactly `now - olderThan` is kept. To remove every
-  /// attempt for an email, including one recorded at the current time, use
-  /// [deleteAllPasswordResetRequestAttempts].
+  /// Deletes password reset request attempts older than [olderThan].
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
   /// window that is checked upon password reset requests, as configured in
@@ -286,23 +276,6 @@ class EmailIdpPasswordResetUtil {
       session,
       olderThan: olderThan ?? _rateLimitUtil.config.timeframe,
       key: email,
-      transaction: transaction,
-    );
-  }
-
-  /// Deletes every password reset attempt recorded for [email].
-  ///
-  /// [deletePasswordResetRequestAttempts] only removes attempts strictly older
-  /// than a cutoff, so it cannot clear an attempt recorded in the current
-  /// clock tick.
-  Future<void> deleteAllPasswordResetRequestAttempts(
-    final Session session, {
-    required final String email,
-    required final Transaction transaction,
-  }) async {
-    await _rateLimitUtil.deleteAttempts(
-      session,
-      key: email.normalizedEmail,
       transaction: transaction,
     );
   }
