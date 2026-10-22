@@ -162,7 +162,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
   }
 
   /// Backs [EmbeddedPostgres.start]. Public only so the abstract class can
-  /// delegate; not part of the package's surface API.
+  /// delegate, not part of the package's surface API.
   static Future<EmbeddedPostgres> start(
     EmbeddedPostgresOptions options,
   ) async {
@@ -180,9 +180,9 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     ensureSecureDirectorySync(runDir.path);
 
     // Serialize launches for this data directory: one caller initializes the
-    // cluster and starts the postmaster; the rest wait, then attach below.
+    // cluster and starts the postmaster. The rest wait, then attach below.
     // A held lock is heartbeated so a slow cold launch (binary download +
-    // initdb) is not mistaken for a leak; a dead holder is reclaimed by PID.
+    // initdb) is not mistaken for a leak. A dead holder is reclaimed by PID.
     final launchLock = await InterProcessLock.acquire(
       p.join(dataRoot.path, 'postgres.launch.lock'),
       staleWhen: const StaleLockPolicy.processLiveness(
@@ -426,8 +426,8 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 
   // libpq form: postgres:///<db>?host=<socket-file-or-dir>&port=..&user=<u>
   // host: '' is required to get the three-slash empty-authority URI
-  // (postgres:///db); otherwise the Uri ctor produces postgres:/db
-  // which libpq rejects.
+  // (postgres:///db). Otherwise the Uri ctor produces postgres:/db, which
+  // libpq rejects.
   Uri get _unixConnectionUri => Uri(
     scheme: 'postgres',
     host: '',
@@ -510,7 +510,7 @@ Future<Transport> _resolveTransport(
 Future<int> _allocateEphemeralPort() async {
   // Standard pre-bind dance: bind :0, read kernel-assigned port, close,
   // hand to PG. There's a small race where another process can grab the
-  // port between close and PG binding; the retry loop in
+  // port between close and PG binding. The retry loop in
   // [_startSupervisorWithPortRetry] handles that.
   var server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
   try {
@@ -595,7 +595,7 @@ Future<void> _ensureDatabase({
       parameters: {'name': databaseName},
     );
     if (rows.isEmpty) {
-      // CREATE DATABASE doesn't accept parameters; rely on the database
+      // CREATE DATABASE doesn't accept parameters. Rely on the database
       // name being a SQL identifier (caller-validated).
       _validateDatabaseName(databaseName);
       await conn.execute('CREATE DATABASE "$databaseName"');

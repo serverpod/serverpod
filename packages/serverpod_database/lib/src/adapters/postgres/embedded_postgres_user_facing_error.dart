@@ -23,7 +23,7 @@ bool shouldReportEmbeddedPostgresFailure(Object error) => switch (error) {
 ///
 /// Expected user-correctable conditions receive a direct remedy. Failures that
 /// indicate a possible Serverpod defect use the standard issue-reporting
-/// guidance; unexpected errors also retain their original diagnostic text.
+/// guidance. Unexpected errors also retain their original diagnostic text.
 String formatEmbeddedPostgresFailure(Object error) {
   final userFacingMessage = switch (error) {
     UnsupportedPlatformException() =>

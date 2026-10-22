@@ -32,7 +32,7 @@ class ClusterStore {
       File(p.join(dataDir.path, 'PG_VERSION')).existsSync();
 
   /// Reads `<dataDir>/PG_VERSION` and returns the major version, or null
-  /// when the file is absent. Trims whitespace; returns null on a malformed
+  /// when the file is absent. Trims whitespace. Returns null on a malformed
   /// (non-integer) value rather than throwing.
   int? get existingMajor {
     var f = File(p.join(dataDir.path, 'PG_VERSION'));
@@ -180,7 +180,7 @@ class ClusterStore {
   ///
   /// Builds the block body from [transport] and the layout convention
   /// (`run/` is a sibling of PGDATA), then merges into the file: if our
-  /// markers exist, the block between them is replaced; otherwise the
+  /// markers exist, the block between them is replaced. Otherwise the
   /// block is appended. Lines outside the block are preserved.
   ///
   /// No-op when the rewrite would produce identical content.
