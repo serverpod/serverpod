@@ -1319,6 +1319,9 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<Map<String, _idt.ByteData>>,
       _isc.getType<Map<String, _idt.ByteData?>>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData>>,
+      _isc.getType<Map<int, _i68e2f8e.SimpleData>>,
+      _isc.getType<Map<int, _i68e2f8e.SimpleData?>>,
+      _isc.getType<Map<int, _i68e2f8e.SimpleData?>?>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData?>>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData>?>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData?>?>,
@@ -1348,6 +1351,7 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<(int, String)?>,
       _isc.getType<(int, _i68e2f8e.SimpleData)>,
       _isc.getType<(int, _i68e2f8e.SimpleData)?>,
+      _isc.getType<(List<_i68e2f8e.SimpleData>, int)>,
       _isc.getType<(Map<String, int>,)>,
       _isc.getType<(Set<(int,)>,)>,
       _isc.getType<Set<(int,)>>,
@@ -1357,6 +1361,7 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<({_i68e2f8e.SimpleData data, int number})>,
       _isc.getType<({_i68e2f8e.SimpleData data, int number})?>,
       _isc.getType<({_i68e2f8e.SimpleData? data, int? number})>,
+      _isc.getType<({int count, List<_i68e2f8e.SimpleData>? rows})?>,
       _isc.getType<({Map<int, int> intIntMap})>,
       _isc.getType<({Set<(bool,)> boolSet})>,
       _isc.getType<Set<(bool,)>>,
@@ -1369,6 +1374,11 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<(int, _i68e2f8e.SimpleData)>,
       _isc.getType<List<(int, _i68e2f8e.SimpleData)?>>,
       _isc.getType<(int, _i68e2f8e.SimpleData)?>,
+      _isc.getType<List<(List<_i68e2f8e.SimpleData>, int)?>>,
+      _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>,
+      _isc.getType<List<(List<_i68e2f8e.SimpleData>, int)?>?>,
+      _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>,
+      _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>,
       _isc.getType<Set<(int, _i68e2f8e.SimpleData)>>,
       _isc.getType<(int, _i68e2f8e.SimpleData)>,
       _isc.getType<Set<(int, _i68e2f8e.SimpleData)?>>,
@@ -5816,6 +5826,41 @@ class Protocol extends _isc.SerializationManager
           )
           as T;
     }
+    if (t == Map<int, _i68e2f8e.SimpleData>) {
+      return Map.fromEntries(
+            (data as List).map(
+              (e) => MapEntry(
+                deserialize<int>(e['k']),
+                deserialize<_i68e2f8e.SimpleData>(e['v']),
+              ),
+            ),
+          )
+          as T;
+    }
+    if (t == Map<int, _i68e2f8e.SimpleData?>) {
+      return Map.fromEntries(
+            (data as List).map(
+              (e) => MapEntry(
+                deserialize<int>(e['k']),
+                deserialize<_i68e2f8e.SimpleData?>(e['v']),
+              ),
+            ),
+          )
+          as T;
+    }
+    if (t == _isc.getType<Map<int, _i68e2f8e.SimpleData?>?>()) {
+      return (data != null
+              ? Map.fromEntries(
+                  (data as List).map(
+                    (e) => MapEntry(
+                      deserialize<int>(e['k']),
+                      deserialize<_i68e2f8e.SimpleData?>(e['v']),
+                    ),
+                  ),
+                )
+              : null)
+          as T;
+    }
     if (t == Map<String, _i68e2f8e.SimpleData?>) {
       return (data as Map).map(
             (k, v) => MapEntry(
@@ -6044,6 +6089,15 @@ class Protocol extends _isc.SerializationManager
                 )
                 as T;
     }
+    if (t == _isc.getType<(List<_i68e2f8e.SimpleData>, int)>()) {
+      return (
+            deserialize<List<_i68e2f8e.SimpleData>>(
+              ((data as Map)['p'] as List)[0],
+            ),
+            deserialize<int>(data['p'][1]),
+          )
+          as T;
+    }
     if (t == _isc.getType<(Map<String, int>,)>()) {
       return (deserialize<Map<String, int>>(((data as Map)['p'] as List)[0]),)
           as T;
@@ -6105,6 +6159,19 @@ class Protocol extends _isc.SerializationManager
                 : deserialize<int>(data['n']['number']),
           )
           as T;
+    }
+    if (t == _isc.getType<({int count, List<_i68e2f8e.SimpleData>? rows})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  count: deserialize<int>(((data as Map)['n'] as Map)['count']),
+                  rows: ((data)['n'] as Map)['rows'] == null
+                      ? null
+                      : deserialize<List<_i68e2f8e.SimpleData>>(
+                          data['n']['rows'],
+                        ),
+                )
+                as T;
     }
     if (t == _isc.getType<({Map<int, int> intIntMap})>()) {
       return (
@@ -6180,6 +6247,55 @@ class Protocol extends _isc.SerializationManager
           : (
                   deserialize<int>(((data as Map)['p'] as List)[0]),
                   deserialize<_i68e2f8e.SimpleData>(data['p'][1]),
+                )
+                as T;
+    }
+    if (t == List<(List<_i68e2f8e.SimpleData>, int)?>) {
+      return (data as List)
+              .map((e) => deserialize<(List<_i68e2f8e.SimpleData>, int)?>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  deserialize<List<_i68e2f8e.SimpleData>>(
+                    ((data as Map)['p'] as List)[0],
+                  ),
+                  deserialize<int>(data['p'][1]),
+                )
+                as T;
+    }
+    if (t == _isc.getType<List<(List<_i68e2f8e.SimpleData>, int)?>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map(
+                      (e) => deserialize<(List<_i68e2f8e.SimpleData>, int)?>(e),
+                    )
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  deserialize<List<_i68e2f8e.SimpleData>>(
+                    ((data as Map)['p'] as List)[0],
+                  ),
+                  deserialize<int>(data['p'][1]),
+                )
+                as T;
+    }
+    if (t == _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  deserialize<List<_i68e2f8e.SimpleData>>(
+                    ((data as Map)['p'] as List)[0],
+                  ),
+                  deserialize<int>(data['p'][1]),
                 )
                 as T;
     }
@@ -9196,6 +9312,14 @@ class Protocol extends _isc.SerializationManager
         ],
       };
     }
+    if (record is (List<_i68e2f8e.SimpleData>, int)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+          record.$2,
+        ],
+      };
+    }
     if (record is (Map<String, int>,)) {
       return {
         "p": [
@@ -9231,6 +9355,14 @@ class Protocol extends _isc.SerializationManager
         "n": {
           "data": record.data?.toJson(),
           "number": record.number,
+        },
+      };
+    }
+    if (record is ({int count, List<_i68e2f8e.SimpleData>? rows})) {
+      return {
+        "n": {
+          "count": record.count,
+          "rows": record.rows?.toJson(),
         },
       };
     }
