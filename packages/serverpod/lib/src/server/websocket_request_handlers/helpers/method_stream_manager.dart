@@ -217,10 +217,12 @@ class MethodStreamManager {
         return;
       }
 
-      // Immediate close of the stream
+      // Immediate close of the stream. Cancelling first stops values from
+      // arriving after the close callback; the cancel future is left unawaited
+      // because the endpoint stream may never finish cancelling.
       _updateCloseReason(streamKey, reason);
-      await context.controller.onCancel?.call();
       unawaited(context.subscription.cancel());
+      await context.controller.onCancel?.call();
     } else {
       var context = _inputStreamContexts.remove(streamKey);
 
