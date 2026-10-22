@@ -217,12 +217,10 @@ class MethodStreamManager {
         return;
       }
 
-      // Immediate close of the stream. Cancelling first stops values from
-      // arriving after the close callback; the cancel future is left unawaited
-      // because the endpoint stream may never finish cancelling.
+      // Immediate close of the stream
       _updateCloseReason(streamKey, reason);
-      unawaited(context.subscription.cancel());
       await context.controller.onCancel?.call();
+      unawaited(context.subscription.cancel());
     } else {
       var context = _inputStreamContexts.remove(streamKey);
 
@@ -377,6 +375,10 @@ class MethodStreamManager {
     late StreamSubscription subscription;
     subscription = outputController.stream.listen(
       (value) async {
+        // The subscription outlives the close callback while the close
+        // cleanup is awaited, so drop anything that arrives after it.
+        if (!_outputStreamContexts.containsKey(streamKey)) return;
+
         _onOutputStreamValue?.call(
           methodStreamId,
           value,
