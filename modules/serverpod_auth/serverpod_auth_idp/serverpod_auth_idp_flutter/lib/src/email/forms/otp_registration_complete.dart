@@ -83,14 +83,63 @@ class _OtpCompleteRegistrationFormState
         passwordRequirements.isValid(password);
 
     return SharedFormLayout(
-      scrollableContent: true,
+      scrollableContent: false,
       title: otpTexts.createAccountTitle,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // The terms come first so they stay visible while the password
-          // requirements expand below the optional password.
-          if (hasTermsAndConditions)
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (allowPassword) ...[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: HyperlinkTextButton(
+                        onPressed: controller.toggleRegistrationPassword,
+                        label: controller.isRegistrationPasswordExpanded
+                            ? otpTexts.removePassword
+                            : otpTexts.addPassword,
+                      ),
+                    ),
+                    ExpandableSection(
+                      expanded: controller.isRegistrationPasswordExpanded,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          tinyGap,
+                          PasswordField(
+                            labelText: otpTexts.passwordLabel,
+                            controller: controller.passwordController,
+                            isLoading: controller.isLoading,
+                          ),
+                          ExpandableSection(
+                            expanded:
+                                password.isNotEmpty &&
+                                passwordRequirements.isNotEmpty,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                tinyGap,
+                                PasswordRequirements(
+                                  password: password,
+                                  requirements: passwordRequirements,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          // Match password registration: keep the terms above the action,
+          // while optional password fields scroll independently.
+          if (hasTermsAndConditions) ...[
             SizedBox(
               height: 40,
               child: TermsAndPrivacyText(
@@ -102,45 +151,7 @@ class _OtpCompleteRegistrationFormState
                         value ?? false,
               ),
             ),
-          if (allowPassword) ...[
-            if (hasTermsAndConditions) smallGap,
-            Align(
-              alignment: Alignment.centerLeft,
-              child: HyperlinkTextButton(
-                onPressed: controller.toggleRegistrationPassword,
-                label: controller.isRegistrationPasswordExpanded
-                    ? otpTexts.removePassword
-                    : otpTexts.addPassword,
-              ),
-            ),
-            ExpandableSection(
-              expanded: controller.isRegistrationPasswordExpanded,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  tinyGap,
-                  PasswordField(
-                    labelText: otpTexts.passwordLabel,
-                    controller: controller.passwordController,
-                    isLoading: controller.isLoading,
-                  ),
-                  ExpandableSection(
-                    expanded:
-                        password.isNotEmpty && passwordRequirements.isNotEmpty,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        tinyGap,
-                        PasswordRequirements(
-                          password: password,
-                          requirements: passwordRequirements,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            smallGap,
           ],
         ],
       ),
