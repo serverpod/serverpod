@@ -15292,6 +15292,35 @@ class _AuthenticatedTestToolsEndpoint {
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
+
+  _ida.Stream<int> broadcastStream(_ist.TestSessionBuilder sessionBuilder) {
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'authenticatedTestTools',
+              method: 'broadcastStream',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'authenticatedTestTools',
+              methodName: 'broadcastStream',
+              arguments: {},
+              requestedInputStreams: [],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
 }
 
 class _UnauthenticatedEndpoint {

@@ -13,6 +13,7 @@ void main() {
   late List<StreamController<int>> controllers;
   late List<Session> sessions;
   late List<Completer<void>> cancellations;
+  late List<String> events;
 
   setUp(() {
     pod = Serverpod(
@@ -28,7 +29,13 @@ void main() {
         ),
       ),
     );
-    manager = MethodStreamManager(request: null);
+    events = [];
+    manager = MethodStreamManager(
+      request: null,
+      onOutputStreamValue: (_, value, _) => events.add('value:$value'),
+      onOutputStreamClosed: (_, reason, _) =>
+          events.add('closed:${reason?.name}'),
+    );
     controllers = [];
     sessions = [];
     cancellations = [];
@@ -48,6 +55,7 @@ void main() {
   });
 
   Future<StreamController<int>> openStream({
+    UuidValue? methodStreamId,
     Future<void> Function()? onCancel,
     FutureOr<void> Function(Session)? onSessionClose,
     Map<String, StreamParameterDescription> inputParameters = const {},
@@ -80,7 +88,7 @@ void main() {
         endpoint: endpoint,
         fullEndpointPath: 'test',
       ),
-      methodStreamId: const Uuid().v4obj(),
+      methodStreamId: methodStreamId ?? const Uuid().v4obj(),
       session: session,
     );
     await listening.future.timeout(const Duration(seconds: 5));
@@ -391,6 +399,68 @@ void main() {
         expect(caughtError, same(error));
       });
     });
+  });
+
+  group('Given an open output stream,', () {
+    late StreamController<int> controller;
+    late UuidValue methodStreamId;
+
+    setUp(() async {
+      methodStreamId = const Uuid().v4obj();
+      controller = await openStream(methodStreamId: methodStreamId);
+    });
+
+    test(
+      'when the stream is closed while the endpoint emits a value, '
+      'then no value is delivered after the stream is reported closed.',
+      () async {
+        final closing = manager.closeStream(
+          endpoint: 'test',
+          method: 'stream',
+          methodStreamId: methodStreamId,
+          reason: CloseReason.done,
+        );
+        controller.add(1);
+        await closing;
+        await Future<void>.delayed(Duration.zero);
+
+        expect(events, ['closed:done']);
+      },
+    );
+  });
+
+  group('Given an output stream whose cancellation never completes,', () {
+    late UuidValue methodStreamId;
+
+    setUp(() async {
+      final release = Completer<void>();
+      cancellations.add(release);
+      methodStreamId = const Uuid().v4obj();
+      await openStream(
+        methodStreamId: methodStreamId,
+        onCancel: () => release.future,
+      );
+    });
+
+    test(
+      'when the stream is closed, '
+      'then closing completes and the stream is reported closed.',
+      () async {
+        await expectLater(
+          manager
+              .closeStream(
+                endpoint: 'test',
+                method: 'stream',
+                methodStreamId: methodStreamId,
+                reason: CloseReason.done,
+              )
+              .timeout(const Duration(seconds: 5)),
+          completes,
+        );
+
+        expect(events, ['closed:done']);
+      },
+    );
   });
 }
 

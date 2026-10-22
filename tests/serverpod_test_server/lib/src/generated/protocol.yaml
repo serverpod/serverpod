@@ -491,6 +491,7 @@ authenticatedTestTools:
   - returnsStream:
   - returnsListFromInputStream:
   - intEchoStream:
+  - broadcastStream:
 unauthenticated:
   - unauthenticatedMethod:
   - unauthenticatedStream:

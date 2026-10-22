@@ -454,4 +454,10 @@ class AuthenticatedTestToolsEndpoint extends Endpoint {
       yield value;
     }
   }
+
+  static final broadcastController = StreamController<int>.broadcast();
+
+  Stream<int> broadcastStream(Session session) async* {
+    yield* broadcastController.stream;
+  }
 }
