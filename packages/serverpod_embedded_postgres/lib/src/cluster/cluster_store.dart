@@ -109,11 +109,11 @@ class ClusterStore {
     required Duration timeout,
   }) async {
     if (password.contains('\n') || password.contains('\r')) {
-      throw ArgumentError.value(
-        password,
-        'password',
+      // Not ArgumentError.value: that would echo the password.
+      throw ArgumentError(
         'must not contain line breaks, since single-user mode reads one '
             'statement per line',
+        'password',
       );
     }
     // ALTER ROLE doesn't accept parameters, so both are quoted by doubling.
