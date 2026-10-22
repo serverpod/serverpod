@@ -209,4 +209,15 @@ void main() {
       expect(vec.every((b) => b), isFalse);
     },
   );
+
+  test(
+    'Given two equal Bits backed by different lists when getting their hashCodes then they match.',
+    () {
+      final a = Bit([true, false, true]);
+      final b = Bit.fromBinary(a.toBinary());
+
+      expect(a, equals(b));
+      expect(a.hashCode, equals(b.hashCode));
+    },
+  );
 }
