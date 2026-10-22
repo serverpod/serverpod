@@ -4,7 +4,9 @@ import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../../interface/database_pool_manager.dart';
 import 'embedded_postgres_user_facing_error.dart';
+import 'postgres_pool_manager.dart';
 
 /// Outcome of [startOrAttachEmbeddedPostgres].
 class ResolvedEmbeddedPostgres {
@@ -14,15 +16,21 @@ class ResolvedEmbeddedPostgres {
   /// statements such as `CREATE DATABASE` / `DROP DATABASE`.
   final PostgresDatabaseConfig connectivity;
 
-  /// Stops the postmaster this call launched, or `null` when it attached to one
-  /// another supervisor already owns. Only invoke it for a non-null value.
-  final Future<void> Function()? stop;
+  /// The postmaster handle, whether launched by this call or attached to.
+  final EmbeddedPostgres handle;
+
+  /// Whether this call launched the postmaster, and so owns [stop].
+  final bool launched;
 
   /// Creates a [ResolvedEmbeddedPostgres].
   const ResolvedEmbeddedPostgres({
     required this.connectivity,
-    required this.stop,
+    required this.handle,
+    required this.launched,
   });
+
+  /// Stops the postmaster when this call launched it, otherwise `null`.
+  Future<void> Function()? get stop => launched ? handle.stop : null;
 }
 
 /// Launches or attaches to the embedded PostgreSQL postmaster backing
@@ -44,15 +52,12 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
 
   final EmbeddedStartResult result;
   try {
-    final configuredPassword = config.password.isEmpty ? null : config.password;
     result = await EmbeddedPostgres.startOrAttach(
       EmbeddedPostgresOptions(
         dataDir: dataDir,
         databaseName: config.name,
         username: config.user,
-        transport: hasUnixSocketSupport()
-            ? UnixTransport(initialPassword: configuredPassword)
-            : TcpTransport(password: configuredPassword),
+        transport: embeddedTransportFor(config),
         detach: false,
         repairStaleLocks: true,
       ),
@@ -69,9 +74,70 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
 
   return ResolvedEmbeddedPostgres(
     connectivity: config._connectivityFrom(result.handle.endpoint),
-    stop: result.launched ? () => result.handle.stop() : null,
+    handle: result.handle,
+    launched: result.launched,
   );
 }
+
+/// The loopback TCP URI of the embedded database behind [poolManager], without
+/// its password, or `null` when it serves no TCP listener.
+Uri? embeddedPostgresTcpAddress(DatabasePoolManager poolManager) {
+  if (poolManager is! PostgresPoolManager) return null;
+  final tcp = poolManager.embeddedPostgres?.handle.tcpEndpoint;
+  if (tcp == null) return null;
+  return Uri(
+    scheme: 'postgres',
+    userInfo: tcp.username,
+    host: tcp.host,
+    port: tcp.port,
+    path: '/${tcp.database}',
+  );
+}
+
+/// Whether the password on [handle]'s TCP endpoint authenticates against the
+/// running database, or `true` when it serves no TCP listener.
+///
+/// An attached handle carries the attaching process's password, which the
+/// launching process may not have set on the role.
+Future<bool> embeddedPostgresTcpPasswordAuthenticates(
+  EmbeddedPostgres handle,
+) async {
+  final tcp = handle.tcpEndpoint;
+  if (tcp == null) return true;
+  try {
+    final connection = await pg.Connection.open(
+      tcp,
+      settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+    );
+    await connection.close();
+    return true;
+  } on pg.ServerException catch (e) {
+    // invalid_password
+    if (e.code == '28P01') return false;
+    rethrow;
+  }
+}
+
+/// Stops [poolManager] without waiting for queries still running.
+Future<void> forceStopDatabasePool(DatabasePoolManager poolManager) =>
+    poolManager is PostgresPoolManager
+    ? poolManager.stop(force: true)
+    : poolManager.stop();
+
+/// How the embedded postmaster for [config] listens.
+///
+/// Always the Unix socket, plus loopback TCP on [config]'s port when a password
+/// is configured. Every process derives the same answer, so start order does
+/// not matter.
+Transport embeddedTransportFor(PostgresDatabaseConfig config) =>
+    config.password.isEmpty
+    ? const UnixTransport()
+    : DualTransport(port: config.port, password: config.password);
+
+/// Whether the embedded postmaster for [config] also listens on loopback TCP.
+bool embeddedPostgresListensOnTcp(PostgresDatabaseConfig config) =>
+    config._embeddedPostgresDataDir() != null &&
+    embeddedTransportFor(config) is DualTransport;
 
 extension on PostgresDatabaseConfig {
   /// The effective PGDATA [Directory] for the embedded PostgreSQL, or `null`

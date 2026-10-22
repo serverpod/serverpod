@@ -59,6 +59,8 @@ import 'package:serverpod_cli/src/util/shutdown_signal.dart';
 import 'package:serverpod_cli/src/util/terminal_modes.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
+import 'package:serverpod_database/embedded.dart'
+    show embeddedPostgresListensOnTcp;
 import 'package:serverpod_shared/process_io.dart' show isProcessAlive;
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:stream_transform/stream_transform.dart';
@@ -813,11 +815,15 @@ Future<_ResolvedPorts?> _resolvePorts({
     );
   }
 
+  final database = serverConfig.database;
   final ports = {
     'api': serverConfig.apiServer.port,
     if (serverConfig.insightsServer != null)
       'insights': serverConfig.insightsServer!.port,
     if (serverConfig.webServer != null) 'web': serverConfig.webServer!.port,
+    if (database is PostgresDatabaseConfig &&
+        embeddedPostgresListensOnTcp(database))
+      'database': database.port,
   };
 
   if (runMode != 'development') {
@@ -828,6 +834,7 @@ Future<_ResolvedPorts?> _resolvePorts({
     serverDir: serverDir,
     ports: ports,
     suggested: suggested,
+    joinable: const {'database'},
   );
 
   if (resolution.hasConflicts) {

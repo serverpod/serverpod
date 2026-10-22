@@ -3,31 +3,67 @@ import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test(
-    'Given an embedded database condition the user can correct, '
-    'when the failure is formatted for Serverpod, '
-    'then it gives the direct remedy and Docker fallback without reporting an internal issue.',
-    () {
-      const failure = StaleClusterException(
-        'internal cluster details',
-        existingMajor: 15,
-        requestedMajor: 16,
-      );
+  group('Given a pinned database port held by another process,', () {
+    const failure = PortInUseException('internal bind details', port: 8090);
 
-      var message = formatEmbeddedPostgresFailure(failure);
+    test(
+      'when the failure is formatted for Serverpod, '
+      'then it names the port and its fixes',
+      () {
+        expect(
+          formatEmbeddedPostgresFailure(failure),
+          'Port 8090 is already in use, so the local database cannot accept '
+          'TCP connections there. Stop the other service on that port (for '
+          'example a Docker database from an earlier setup), change '
+          '`database.port` in the relevant file in `config/`, or leave the '
+          "database password in `config/passwords.yaml` empty (`database: ''`) "
+          'to serve the local database over its Unix socket only.\n\n'
+          'To use Docker instead, remove `database.dataPath` from the relevant '
+          'file in `config/`, then try again.',
+        );
+      },
+    );
 
-      expect(
-        message,
-        'The local database was created with PostgreSQL 15, but this Serverpod '
-        'version uses PostgreSQL 16. If the local data can be discarded, back '
-        'up anything important and delete the configured database data directory '
-        'before retrying.\n\n'
-        'To use Docker instead, remove `database.dataPath` from the relevant '
-        'file in `config/`, then try again.',
-      );
-      expect(shouldReportEmbeddedPostgresFailure(failure), isFalse);
-    },
-  );
+    test(
+      'when the failure is checked for reporting, '
+      'then it is not reported as a bug',
+      () {
+        expect(shouldReportEmbeddedPostgresFailure(failure), isFalse);
+      },
+    );
+  });
+
+  group('Given an embedded database condition the user can correct,', () {
+    const failure = StaleClusterException(
+      'internal cluster details',
+      existingMajor: 15,
+      requestedMajor: 16,
+    );
+
+    test(
+      'when the failure is formatted for Serverpod, '
+      'then it gives the remedy and Docker fallback',
+      () {
+        expect(
+          formatEmbeddedPostgresFailure(failure),
+          'The local database was created with PostgreSQL 15, but this '
+          'Serverpod version uses PostgreSQL 16. If the local data can be '
+          'discarded, back up anything important and delete the configured '
+          'database data directory before retrying.\n\n'
+          'To use Docker instead, remove `database.dataPath` from the relevant '
+          'file in `config/`, then try again.',
+        );
+      },
+    );
+
+    test(
+      'when the failure is checked for reporting, '
+      'then it is not reported as a bug',
+      () {
+        expect(shouldReportEmbeddedPostgresFailure(failure), isFalse);
+      },
+    );
+  });
 
   test(
     'Given an embedded database failure that may be a Serverpod issue, '
