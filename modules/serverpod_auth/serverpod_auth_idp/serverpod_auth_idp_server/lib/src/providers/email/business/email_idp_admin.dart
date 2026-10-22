@@ -81,16 +81,13 @@ class EmailIdpAdmin {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
-        await RateLimitedRequestAttempt.db.deleteWhere(
-          session,
-          where: (final t) =>
-              t.domain.equals('email') &
-              t.source.equals('password_reset') &
-              t.key.equals(email.normalizedEmail),
-          transaction: transaction,
-        );
-      },
+      (final transaction) =>
+          _utils.passwordReset.deletePasswordResetRequestAttempts(
+            session,
+            olderThan: Duration.zero,
+            email: email.normalizedEmail,
+            transaction: transaction,
+          ),
     );
   }
 

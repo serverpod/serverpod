@@ -4,7 +4,6 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import '../../../test_tools/serverpod_test_tools.dart';
-import '../../../test_utils/coarse_clock.dart';
 import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
@@ -39,13 +38,11 @@ void main() {
           email: email,
         );
 
-        passwordResetRequestId = await inTheRecentPast(
-          () => session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-              session,
-              email: email,
-              transaction: transaction,
-            ),
+        passwordResetRequestId = await session.db.transaction(
+          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            session,
+            email: email,
+            transaction: transaction,
           ),
         );
       });
@@ -82,7 +79,8 @@ void main() {
       );
 
       test(
-        'when deleting request that are older than zero then attempting to verify request throws request not found exception',
+        'when deleting all password reset requests, '
+        'then verifying the request throws a request not found exception.',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -145,13 +143,11 @@ void main() {
           email: email,
         );
 
-        passwordResetRequestId = await inTheRecentPast(
-          () => session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-              session,
-              email: email,
-              transaction: transaction,
-            ),
+        passwordResetRequestId = await session.db.transaction(
+          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            session,
+            email: email,
+            transaction: transaction,
           ),
         );
 
@@ -198,7 +194,8 @@ void main() {
       );
 
       test(
-        'when deleting request that are older than zero then attempting to complete request throws request not found exception',
+        'when deleting all password reset requests, '
+        'then completing the request throws a request not found exception.',
         () async {
           await session.db.transaction(
             (final transaction) =>
@@ -349,13 +346,11 @@ void main() {
           email: firstEmail,
         );
         firstEmailAccountId = firstEmailAccount.id!;
-        firstPasswordResetRequestId = await inTheRecentPast(
-          () => session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-              session,
-              email: firstEmail,
-              transaction: transaction,
-            ),
+        firstPasswordResetRequestId = await session.db.transaction(
+          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            session,
+            email: firstEmail,
+            transaction: transaction,
           ),
         );
 
@@ -367,13 +362,11 @@ void main() {
           authUserId: secondAuthUser.id,
           email: secondEmail,
         );
-        secondPasswordResetRequestId = await inTheRecentPast(
-          () => session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-              session,
-              email: secondEmail,
-              transaction: transaction,
-            ),
+        secondPasswordResetRequestId = await session.db.transaction(
+          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            session,
+            email: secondEmail,
+            transaction: transaction,
           ),
         );
       });
@@ -457,7 +450,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a password reset request created at a fixed timestamp',
+    'Given a password reset request created at a fixed timestamp,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -503,7 +496,8 @@ void main() {
       });
 
       test(
-        'when deleting requests older than zero at that same timestamp then the request can still be verified',
+        'when cleaning up with a zero duration in the same clock tick, '
+        'then the request cannot be verified.',
         () async {
           await withClock(Clock.fixed(createdAt), () async {
             await session.db.transaction(
@@ -526,8 +520,131 @@ void main() {
                   ),
             );
 
-            await expectLater(result, completion(isA<String>()));
+            await expectLater(
+              result,
+              throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
+            );
           });
+        },
+      );
+
+      test(
+        'when cleaning up with a zero duration after the clock moves backwards, '
+        'then the request cannot be verified.',
+        () async {
+          final cleanupClock = Clock.fixed(
+            createdAt.subtract(const Duration(minutes: 1)),
+          );
+
+          await withClock(
+            cleanupClock,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.deletePasswordResetRequests(
+                    session,
+                    olderThan: Duration.zero,
+                    emailAccountId: null,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          final result = withClock(
+            Clock.fixed(createdAt),
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.verifyPasswordResetCode(
+                    session,
+                    passwordResetRequestId: passwordResetRequestId,
+                    verificationCode: verificationCode,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
+          );
+        },
+      );
+
+      test(
+        'when cleaning up with a positive duration exactly at the age cutoff, '
+        'then the request can still be verified.',
+        () async {
+          const duration = Duration(minutes: 1);
+          final cleanupClock = Clock.fixed(createdAt.add(duration));
+
+          await withClock(
+            cleanupClock,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.deletePasswordResetRequests(
+                    session,
+                    olderThan: duration,
+                    emailAccountId: null,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          final result = withClock(
+            Clock.fixed(createdAt),
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.verifyPasswordResetCode(
+                    session,
+                    passwordResetRequestId: passwordResetRequestId,
+                    verificationCode: verificationCode,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          await expectLater(result, completion(isA<String>()));
+        },
+      );
+
+      test(
+        'when cleaning up with a positive duration beyond the age cutoff, '
+        'then the request cannot be verified.',
+        () async {
+          const duration = Duration(minutes: 1);
+          final cleanupClock = Clock.fixed(
+            createdAt.add(duration + const Duration(seconds: 1)),
+          );
+
+          await withClock(
+            cleanupClock,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.deletePasswordResetRequests(
+                    session,
+                    olderThan: duration,
+                    emailAccountId: null,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          final result = withClock(
+            Clock.fixed(createdAt),
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.verifyPasswordResetCode(
+                    session,
+                    passwordResetRequestId: passwordResetRequestId,
+                    verificationCode: verificationCode,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
+          );
         },
       );
     },
