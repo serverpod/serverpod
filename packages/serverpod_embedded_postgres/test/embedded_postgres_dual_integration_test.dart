@@ -236,7 +236,7 @@ void main() {
   test(
     'Given a stopped cluster without a role named missing_role, '
     'when it is started with DualTransport as missing_role, '
-    'then the start fails because the role does not exist',
+    'then the start fails naming the missing role but not the password',
     () async {
       var unix = await startWith(const UnixTransport());
       await unix.stop();
@@ -254,37 +254,10 @@ void main() {
           isA<InitializeDatabaseException>().having(
             (e) => e.message,
             'message',
-            contains('role "missing_role" does not exist'),
-          ),
-        ),
-      );
-    },
-    skip: !hasUnixSocketSupport(),
-    timeout: const Timeout(Duration(seconds: 180)),
-  );
-
-  test(
-    'Given a stopped cluster without a role named missing_role, '
-    'when it is started with DualTransport as missing_role, '
-    'then the startup error does not contain the DualTransport password',
-    () async {
-      var unix = await startWith(const UnixTransport());
-      await unix.stop();
-
-      await expectLater(
-        EmbeddedPostgres.start(
-          EmbeddedPostgresOptions(
-            dataDir: pgDataDir,
-            databaseName: 'projectname',
-            username: 'missing_role',
-            transport: const DualTransport(password: 'secret-password'),
-          ),
-        ),
-        throwsA(
-          isA<InitializeDatabaseException>().having(
-            (e) => e.message,
-            'message',
-            isNot(contains('secret-password')),
+            allOf(
+              contains('role "missing_role" does not exist'),
+              isNot(contains('secret-password')),
+            ),
           ),
         ),
       );
