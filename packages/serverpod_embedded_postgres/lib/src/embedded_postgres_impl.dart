@@ -68,8 +68,8 @@ pg.Endpoint _tcpEndpointFor(
 ///   3. [ClusterStore.requireMajorMatch] - fail loudly on cross-major.
 ///   4. [ClusterStore.reconcilePostgresConf] - write our managed block.
 ///   5. [Supervisor.start] - spawn, tail, register signal hooks, await ready.
-///   6. First-run only: connect once and `CREATE DATABASE IF NOT EXISTS`
-///      (idempotent on subsequent starts).
+///   6. Connect once and `CREATE DATABASE` if absent. Every launch, so a
+///      launch that failed after initdb is completed by the next one.
 class EmbeddedPostgresImpl extends EmbeddedPostgres {
   final EmbeddedPostgresOptions _options;
   final SupervisedProcess _supervisor;
@@ -343,18 +343,16 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       },
     );
 
-    if (!hadCluster) {
-      try {
-        await _ensureDatabase(
-          runDir: runDir,
-          transport: resolvedTransport,
-          username: options.username,
-          databaseName: options.databaseName,
-        );
-      } catch (_) {
-        await supervisor.stop();
-        rethrow;
-      }
+    try {
+      await _ensureDatabase(
+        runDir: runDir,
+        transport: resolvedTransport,
+        username: options.username,
+        databaseName: options.databaseName,
+      );
+    } catch (_) {
+      await supervisor.stop();
+      rethrow;
     }
 
     EmbeddedPostgresState.writeAtomic(
@@ -583,8 +581,8 @@ Future<Supervisor> _startSupervisorWithPortRetry({
 }
 
 /// Connects as superuser via the local socket / TCP and `CREATE DATABASE`s
-/// [databaseName] if absent. Skipped on subsequent starts because we only
-/// run this when the cluster was just initialized.
+/// [databaseName] if absent. Runs on every launch: one that fails between
+/// initdb and here leaves an initialized cluster without the database.
 Future<void> _ensureDatabase({
   required Directory runDir,
   required Transport transport,

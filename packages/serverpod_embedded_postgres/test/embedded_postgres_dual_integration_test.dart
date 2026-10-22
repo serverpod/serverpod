@@ -164,6 +164,28 @@ void main() {
   );
 
   test(
+    'Given a fresh cluster whose first start failed on a held port, '
+    'when it is started again after the port was freed, '
+    'then the application database answers queries',
+    () async {
+      var holder = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      var transport = DualTransport(port: holder.port, password: 'pw');
+      await expectLater(
+        startWith(transport),
+        throwsA(isA<PortInUseException>()),
+      );
+      await holder.close();
+
+      var pg_ = await startWith(transport);
+      addTearDown(pg_.stop);
+
+      expect(await selectOne(pg_.tcpEndpoint!), 1);
+    },
+    skip: !hasUnixSocketSupport(),
+    timeout: const Timeout(Duration(seconds: 180)),
+  );
+
+  test(
     'Given a detached DualTransport postmaster, '
     'when its data directory is reattached, '
     'then the socket endpoint is preferred and TCP keeps its port and password',
