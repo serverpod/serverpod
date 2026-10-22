@@ -76,6 +76,22 @@ void main() {
           ),
         );
       });
+
+      test('then registered handler names include the module name.', () {
+        expect(
+          futureCalls,
+          contains("'my_module.CleanupRunFutureCall': CleanupRunFutureCall()"),
+        );
+      });
+
+      test('then scheduling uses the module-qualified handler name.', () {
+        expect(
+          futureCalls,
+          matches(
+            r"_invokeFutureCall\(\s*'my_module.CleanupRunFutureCall',",
+          ),
+        );
+      });
     });
   });
 }
