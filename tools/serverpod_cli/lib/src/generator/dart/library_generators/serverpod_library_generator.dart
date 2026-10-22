@@ -23,7 +23,7 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
       library.directives.add(
         Directive.export(
           'future_calls.dart',
-          show: const ['ServerpodFutureCallsGetter'],
+          show: [_futureCallsGetterExtensionName],
         ),
       );
     }

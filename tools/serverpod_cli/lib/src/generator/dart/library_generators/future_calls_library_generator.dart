@@ -1,6 +1,15 @@
 part of 'library_generator.dart';
 
 extension FutureCallsLibraryGenerator on LibraryGenerator {
+  String get _futureCallsGetterExtensionName =>
+      config.type == PackageType.module
+      ? '${config.name.pascalCase}FutureCallsGetter'
+      : 'ServerpodFutureCallsGetter';
+
+  String get _futureCallsGetterName => config.type == PackageType.module
+      ? '${config.name.camelCase}FutureCalls'
+      : 'futureCalls';
+
   /// Generates the interface for accessing future calls for the server side.
   Library generateServerFutureCalls() {
     var library = LibraryBuilder();
@@ -18,9 +27,9 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
   /// Invokes a future call.
   typedef _InvokeFutureCall = Future<void> Function(String name, $modelType? object);
 
-  extension ServerpodFutureCallsGetter on $serverpod {
+  extension $_futureCallsGetterExtensionName on $serverpod {
   /// Generated future calls.
-  FutureCalls get futureCalls => FutureCalls();
+  FutureCalls get $_futureCallsGetterName => FutureCalls();
 }
 ''';
       }),
