@@ -16,11 +16,14 @@ Future<T> inTheRecentPast<T>(final Future<T> Function() action) {
   );
 }
 
-/// A fixed clock strictly after [lifetime] has elapsed.
-///
-/// Expiry is strict (`expiresAt.isBefore(now)`). Advancing by exactly
-/// [lifetime] is still inside the valid window when the row was created during
-/// the same clock tick as [DateTime.now].
-Clock clockPastLifetime(final Duration lifetime) {
-  return Clock.fixed(DateTime.now().add(lifetime + coarseClockMargin));
+/// Test clocks based on a duration.
+extension CoarseClockDuration on Duration {
+  /// A fixed clock strictly after this duration has elapsed.
+  ///
+  /// Expiry is strict (`expiresAt.isBefore(now)`). Advancing by exactly this
+  /// duration is still inside the valid window when the row was created during
+  /// the same clock tick as [DateTime.now].
+  Clock clockPastLifetime() {
+    return Clock.fixed(DateTime.now().add(this + coarseClockMargin));
+  }
 }

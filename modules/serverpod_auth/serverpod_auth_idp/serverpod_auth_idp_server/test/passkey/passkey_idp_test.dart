@@ -82,7 +82,7 @@ void main() {
         () async {
           await expectLater(
             withClock(
-              clockPastLifetime(passKeyIdp.config.challengeLifetime),
+              passKeyIdp.config.challengeLifetime.clockPastLifetime(),
               () => passKeyIdp.register(
                 session,
                 authUserId: user.id,

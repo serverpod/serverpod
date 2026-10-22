@@ -47,7 +47,7 @@ void main() {
         'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` after the expiration time, then the challenge is removed.',
         () async {
           await withClock(
-            clockPastLifetime(passKeyIdp.config.challengeLifetime),
+            passKeyIdp.config.challengeLifetime.clockPastLifetime(),
             () => passKeyIdp.admin.deleteExpiredChallenges(session),
           );
 
