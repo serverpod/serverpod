@@ -181,7 +181,7 @@ void main() {
 
       test(
         'when calling apply_migrations with no runner, '
-        'then the result is a not-running error asking the user to start serverpod',
+        'then the result is a not-running error pointing at serverpod runner start',
         () async {
           final result = await pair.client.callTool(
             CallToolRequest(name: 'apply_migrations'),
@@ -189,7 +189,7 @@ void main() {
           expect(result.isError, isTrue);
           final text = (result.content.first as TextContent).text;
           expect(text, contains('not running'));
-          expect(text, contains('serverpod start'));
+          expect(text, contains('serverpod runner start'));
         },
       );
 

@@ -45,13 +45,14 @@ base class BridgeMcpServer extends MCPServer
          implementation: _bridgeImplementation,
          instructions:
              'Manage a Serverpod server and its Flutter app running under '
-             '`serverpod start`. Use these tools to read Serverpod and Flutter '
-             'logs, create and apply database migrations, hot reload or restart '
-             "the server and Flutter app, and get the Flutter app's Dart "
-             'Tooling Daemon (DTD) URI. If a tool reports the server is not '
-             'running, call `tail_runner_logs` to see whether it is still '
-             'starting or why it stopped, then ask the user to start it with '
-             '`serverpod start` in the project directory.',
+             'the Serverpod runner. Use these tools to read Serverpod and '
+             'Flutter logs, create and apply database migrations, hot reload '
+             "or restart the server and Flutter app, and get the Flutter app's "
+             'Dart Tooling Daemon (DTD) URI. If a tool reports the server is '
+             'not running, call `tail_runner_logs` to see whether it is still '
+             'starting or why it stopped, then start it with '
+             '`serverpod runner start` in the server package and call the '
+             'tool again.',
        ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
@@ -68,10 +69,10 @@ base class BridgeMcpServer extends MCPServer
     content: [
       TextContent(
         text:
-            'The server is not running with `serverpod start` for this project. '
-            'Call `tail_runner_logs` to see whether it is still starting or '
-            'why it stopped, then ask the user to run `serverpod start` in '
-            'the project directory.',
+            'The server is not running for this project. Call '
+            '`tail_runner_logs` to see whether it is still starting or why it '
+            'stopped, then start it with `serverpod runner start` in the '
+            'server package and call this tool again.',
       ),
     ],
     isError: true,
@@ -85,9 +86,9 @@ base class BridgeMcpServer extends MCPServer
         content: [
           TextContent(
             text:
-                'No runner log at $logPath. A runner spawned by '
-                '`serverpod start` writes one; nothing has been started for '
-                'this project yet.',
+                'No runner log at $logPath. The runner writes one once '
+                'started; nothing has been started for this project yet. '
+                'Start it with `serverpod runner start` in the server package.',
           ),
         ],
         isError: true,
