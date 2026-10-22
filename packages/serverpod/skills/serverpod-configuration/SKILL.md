@@ -21,7 +21,9 @@ apiServer:
   publicScheme: http
 ```
 
-`publicHost`/`publicPort`/`publicScheme` are used for URLs returned to clients.
+`port` is the port the listener binds. `publicHost`/`publicPort`/`publicScheme` are used for URLs returned to clients; a `publicPort` of 0 follows the bound port.
+
+In development the runner keeps the configured ports unless another Serverpod runner on the machine holds them, in which case it binds ephemeral ports (through `SERVERPOD_API_SERVER_PORT` and the matching `_PUBLIC_PORT` variables set to 0) and publishes the real addresses in `serverpod runner status`. See [Several servers at once](../serverpod-overview/SKILL.md#several-servers-at-once) in the overview skill.
 
 ## Database
 
@@ -40,9 +42,9 @@ database:
 
 Password in `passwords.yaml` under run mode or `SERVERPOD_PASSWORD_database`. Optional: `searchPaths`, `maxConnectionCount`, `requireSsl`, `isUnixSocket`.
 
-**Embedded PostgreSQL:** with `dataPath` set, Serverpod launches and manages a PostgreSQL instance in that directory, so nothing has to be installed or run separately. New projects use it for development and testing. `serverpod database start [--mode <mode>] [--port <port>]` boots the same database on its own, without the server.
+**Embedded PostgreSQL:** with `dataPath` set, Serverpod launches and manages a PostgreSQL instance in that directory, so nothing has to be installed or run separately. New projects use it for development and testing. It is reached over a Unix socket, or an ephemeral TCP port where Unix sockets are unavailable, so the configured `port` is not bound and several checkouts can run their own at once. `serverpod database start [--mode <mode>] [--port <port>]` boots the same database on its own, without the server.
 
-Without `dataPath` the database is external, and `serverpod start` starts Docker Compose services when the project has a compose file and PostgreSQL is on localhost (`--docker` / `--no-docker` override this).
+Without `dataPath` the database is external, and the runner (`serverpod start`) starts Docker Compose services when the project has a compose file and PostgreSQL is on localhost (`--docker` / `--no-docker` override this).
 
 ### SQLite
 
