@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../gaps.dart';
+import '../verification_code_texts.dart';
 
 /// A widget that displays a "didn't receive? Send a new code" button.
 ///
@@ -18,17 +19,15 @@ class ResendCodeButton extends StatefulWidget {
 
   /// The text of the button, followed by the remaining countdown.
   ///
-  /// Defaults to [defaultLabel].
-  final String label;
-
-  /// The default English [label].
-  static const defaultLabel = "Didn't receive? Send a new code";
+  /// If omitted, uses [VerificationCodeTexts] from the localization provider
+  /// or its English defaults when no provider is present.
+  final String? label;
 
   /// Creates a [ResendCodeButton] widget.
   const ResendCodeButton({
     required this.onResendPressed,
     this.countdownDuration = const Duration(minutes: 1),
-    this.label = defaultLabel,
+    this.label,
     super.key,
   });
 
@@ -100,7 +99,7 @@ class _ResendCodeButtonState extends State<ResendCodeButton> {
   @override
   Widget build(BuildContext context) {
     final isEnabled = _remainingSeconds == 0 && !_isResending;
-    final label = widget.label;
+    final label = widget.label ?? context.verificationCodeTexts.resendCode;
 
     return Column(
       children: [

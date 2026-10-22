@@ -16,6 +16,7 @@ class SignInLocalizationProvider extends InheritedWidget {
     this.facebook = FacebookSignInTexts.defaults,
     this.anonymous = AnonymousSignInTexts.defaults,
     this.passwordRequirementTexts = PasswordRequirementTexts.defaults,
+    this.verificationCodeTexts = VerificationCodeTexts.defaults,
     required super.child,
     super.key,
   });
@@ -53,6 +54,9 @@ class SignInLocalizationProvider extends InheritedWidget {
   /// Texts for password requirements.
   final PasswordRequirementTexts passwordRequirementTexts;
 
+  /// Texts for verification code controls shared by both email flows.
+  final VerificationCodeTexts verificationCodeTexts;
+
   /// Returns the nearest localization provider in the widget tree, if any.
   static SignInLocalizationProvider? maybeOf(BuildContext context) {
     return context
@@ -81,6 +85,7 @@ class SignInLocalizationProvider extends InheritedWidget {
         oldWidget.microsoft != microsoft ||
         oldWidget.facebook != facebook ||
         oldWidget.anonymous != anonymous ||
-        oldWidget.passwordRequirementTexts != passwordRequirementTexts;
+        oldWidget.passwordRequirementTexts != passwordRequirementTexts ||
+        oldWidget.verificationCodeTexts != verificationCodeTexts;
   }
 }

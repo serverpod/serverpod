@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-import '../common/widgets/buttons/resend_code_button.dart';
 import '../localization/sign_in_localization_provider_widget.dart';
 
 /// Texts for the passwordless email sign-in flow with one-time passwords, see
@@ -8,6 +7,7 @@ import '../localization/sign_in_localization_provider_widget.dart';
 ///
 /// The texts shared with the password based flow, such as the email field and
 /// the password reset screens, are set through [EmailSignInTexts].
+/// The resend code text is set through `VerificationCodeTexts`.
 @immutable
 class EmailWithOtpSignInTexts {
   /// Creates a new [EmailWithOtpSignInTexts] configuration.
@@ -19,7 +19,6 @@ class EmailWithOtpSignInTexts {
     required this.verifyTitle,
     required this.verificationMessage,
     required this.verifyAction,
-    required this.resendCode,
     required this.createAccountTitle,
     required this.addPassword,
     required this.removePassword,
@@ -38,7 +37,6 @@ class EmailWithOtpSignInTexts {
         'A verification email has been sent. Please check your email and '
         'enter the verification code below.',
     verifyAction: 'Continue',
-    resendCode: ResendCodeButton.defaultLabel,
     createAccountTitle: 'Create your account',
     addPassword: 'Add a password (optional)',
     removePassword: 'Continue without a password',
@@ -68,10 +66,6 @@ class EmailWithOtpSignInTexts {
   /// account creation.
   final String verifyAction;
 
-  /// Text for the action requesting a new code on the verification screens.
-  /// The remaining countdown is appended to it.
-  final String resendCode;
-
   /// Title on the screen creating an account for an email without one.
   final String createAccountTitle;
 
@@ -96,7 +90,6 @@ class EmailWithOtpSignInTexts {
     String? verifyTitle,
     String? verificationMessage,
     String? verifyAction,
-    String? resendCode,
     String? createAccountTitle,
     String? addPassword,
     String? removePassword,
@@ -111,7 +104,6 @@ class EmailWithOtpSignInTexts {
       verifyTitle: verifyTitle ?? this.verifyTitle,
       verificationMessage: verificationMessage ?? this.verificationMessage,
       verifyAction: verifyAction ?? this.verifyAction,
-      resendCode: resendCode ?? this.resendCode,
       createAccountTitle: createAccountTitle ?? this.createAccountTitle,
       addPassword: addPassword ?? this.addPassword,
       removePassword: removePassword ?? this.removePassword,
@@ -131,7 +123,6 @@ class EmailWithOtpSignInTexts {
         other.verifyTitle == verifyTitle &&
         other.verificationMessage == verificationMessage &&
         other.verifyAction == verifyAction &&
-        other.resendCode == resendCode &&
         other.createAccountTitle == createAccountTitle &&
         other.addPassword == addPassword &&
         other.removePassword == removePassword &&
@@ -148,7 +139,6 @@ class EmailWithOtpSignInTexts {
     verifyTitle,
     verificationMessage,
     verifyAction,
-    resendCode,
     createAccountTitle,
     addPassword,
     removePassword,

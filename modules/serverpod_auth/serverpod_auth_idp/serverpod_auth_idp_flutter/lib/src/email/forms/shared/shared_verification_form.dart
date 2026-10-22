@@ -48,7 +48,7 @@ class SharedVerificationForm extends StatefulWidget {
 
   /// Optional text for the action requesting a new code.
   ///
-  /// If not provided, defaults to [ResendCodeButton.defaultLabel].
+  /// If omitted, uses [VerificationCodeTexts] from the localization provider.
   final String? resendCodeLabel;
 
   /// Whether the content scrolls when it does not fit the form.
@@ -129,7 +129,7 @@ class _SharedVerificationFormState extends State<SharedVerificationForm> {
         ResendCodeButton(
           onResendPressed: controller.resendVerificationCode,
           countdownDuration: config.resendCountdownDuration,
-          label: widget.resendCodeLabel ?? ResendCodeButton.defaultLabel,
+          label: widget.resendCodeLabel,
         ),
       ],
     );

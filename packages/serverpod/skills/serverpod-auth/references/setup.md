@@ -55,6 +55,8 @@ The code length is not sent to the client, so configure it on both sides. The se
 
 Customize the texts with `SignInLocalizationProvider(emailWithOtp: EmailWithOtpSignInTexts.defaults.copyWith(...))`.
 
+Customize the resend-code text shared by both email flows with `SignInLocalizationProvider(verificationCodeTexts: VerificationCodeTexts.defaults.copyWith(resendCode: ...))`.
+
 ## Social sign-ins
 
 Each provider needs the user to configure it outside the project (e.g. the GCP console or the Apple developer portal). Follow the official setup guide:

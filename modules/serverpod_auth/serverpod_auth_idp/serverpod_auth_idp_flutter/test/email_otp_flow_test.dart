@@ -146,9 +146,9 @@ void main() {
   );
 
   testWidgets(
-    'Given a custom resend code text in the passwordless texts, '
-    'when the verification screen is shown, '
-    'then the resend action uses the custom text.',
+    'Given shared verification code texts, '
+    'when a one-time password is requested, '
+    'then the verification screen uses the shared resend text.',
     (tester) async {
       final controller = EmailOtpAuthController(client: _TestClient());
       addTearDown(controller.dispose);
@@ -159,11 +159,19 @@ void main() {
               emailWithOtp: EmailWithOtpSignInTexts.defaults.copyWith(
                 verifyTitle: 'Code',
                 verificationMessage: 'Enter code',
+              ),
+              verificationCodeTexts: VerificationCodeTexts.defaults.copyWith(
                 resendCode: 'W_RESEND',
               ),
               child: SizedBox(
                 width: 320,
-                child: EmailOtpSignInWidget(controller: controller),
+                child: EmailOtpSignInWidget(
+                  controller: controller,
+                  otpVerificationCodeConfig: const VerificationCodeConfig(
+                    length: 6,
+                    resendCountdownDuration: Duration.zero,
+                  ),
+                ),
               ),
             ),
           ),
@@ -173,7 +181,50 @@ void main() {
 
       await requestCode(tester, controller);
 
-      expect(find.textContaining('W_RESEND'), findsOneWidget);
+      expect(find.text('W_RESEND'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Given shared verification code texts in the passwordless flow, '
+    'when the password reset verification screen is displayed, '
+    'then it uses the shared resend text and existing email texts.',
+    (tester) async {
+      final controller = EmailOtpAuthController(client: _TestClient());
+      addTearDown(controller.dispose);
+      controller.navigateTo(EmailOtpFlowScreen.verifyPasswordReset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SignInLocalizationProvider(
+              email: EmailSignInTexts.defaults.copyWith(
+                verifyResetCodeTitle: 'Reset code',
+                verificationMessage: 'Enter code',
+                verify: 'Verify reset',
+              ),
+              verificationCodeTexts: const VerificationCodeTexts(
+                resendCode: 'Resend reset',
+              ),
+              child: SizedBox(
+                width: 600,
+                child: EmailOtpSignInWidget(
+                  controller: controller,
+                  verificationCodeConfig: const VerificationCodeConfig(
+                    resendCountdownDuration: Duration.zero,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Resend reset'), findsOneWidget);
+      expect(find.text('Reset code'), findsOneWidget);
+      expect(find.text('Enter code'), findsOneWidget);
+      expect(find.text('Verify reset'), findsOneWidget);
     },
   );
 
