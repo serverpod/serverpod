@@ -375,19 +375,28 @@ void main() {
           email: email,
         );
 
-        firstPasswordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
+        // Both requests share one timestamp. Replacing a reset must drop the
+        // previous code even when the clock does not advance between the calls.
+        final resetClock = Clock.fixed(DateTime.now());
+        firstPasswordResetRequestId = await withClock(
+          resetClock,
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           ),
         );
 
-        secondPasswordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
+        secondPasswordResetRequestId = await withClock(
+          resetClock,
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           ),
         );
       });

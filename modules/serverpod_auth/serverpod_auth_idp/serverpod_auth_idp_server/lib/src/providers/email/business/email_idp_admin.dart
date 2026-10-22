@@ -85,7 +85,7 @@ class EmailIdpAdmin {
           _utils.passwordReset.deletePasswordResetRequestAttempts(
             session,
             olderThan: Duration.zero,
-            email: email,
+            email: email.normalizedEmail,
             transaction: transaction,
           ),
     );
