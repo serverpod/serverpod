@@ -1377,6 +1377,9 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<Map<String, _idt.ByteData>>,
       _is.getType<Map<String, _idt.ByteData?>>,
       _is.getType<Map<String, _i685tvwm.SimpleData>>,
+      _is.getType<Map<int, _i685tvwm.SimpleData>>,
+      _is.getType<Map<int, _i685tvwm.SimpleData?>>,
+      _is.getType<Map<int, _i685tvwm.SimpleData?>?>,
       _is.getType<Map<String, _i685tvwm.SimpleData?>>,
       _is.getType<Map<String, _i685tvwm.SimpleData>?>,
       _is.getType<Map<String, _i685tvwm.SimpleData?>?>,
@@ -12685,6 +12688,41 @@ class Protocol extends _is.DatabaseSerializationManager
               deserialize<_i685tvwm.SimpleData>(v),
             ),
           )
+          as T;
+    }
+    if (t == Map<int, _i685tvwm.SimpleData>) {
+      return Map.fromEntries(
+            (data as List).map(
+              (e) => MapEntry(
+                deserialize<int>(e['k']),
+                deserialize<_i685tvwm.SimpleData>(e['v']),
+              ),
+            ),
+          )
+          as T;
+    }
+    if (t == Map<int, _i685tvwm.SimpleData?>) {
+      return Map.fromEntries(
+            (data as List).map(
+              (e) => MapEntry(
+                deserialize<int>(e['k']),
+                deserialize<_i685tvwm.SimpleData?>(e['v']),
+              ),
+            ),
+          )
+          as T;
+    }
+    if (t == _is.getType<Map<int, _i685tvwm.SimpleData?>?>()) {
+      return (data != null
+              ? Map.fromEntries(
+                  (data as List).map(
+                    (e) => MapEntry(
+                      deserialize<int>(e['k']),
+                      deserialize<_i685tvwm.SimpleData?>(e['v']),
+                    ),
+                  ),
+                )
+              : null)
           as T;
     }
     if (t == Map<String, _i685tvwm.SimpleData?>) {

@@ -1319,6 +1319,9 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<Map<String, _idt.ByteData>>,
       _isc.getType<Map<String, _idt.ByteData?>>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData>>,
+      _isc.getType<Map<int, _i68e2f8e.SimpleData>>,
+      _isc.getType<Map<int, _i68e2f8e.SimpleData?>>,
+      _isc.getType<Map<int, _i68e2f8e.SimpleData?>?>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData?>>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData>?>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData?>?>,
@@ -5821,6 +5824,41 @@ class Protocol extends _isc.SerializationManager
               deserialize<_i68e2f8e.SimpleData>(v),
             ),
           )
+          as T;
+    }
+    if (t == Map<int, _i68e2f8e.SimpleData>) {
+      return Map.fromEntries(
+            (data as List).map(
+              (e) => MapEntry(
+                deserialize<int>(e['k']),
+                deserialize<_i68e2f8e.SimpleData>(e['v']),
+              ),
+            ),
+          )
+          as T;
+    }
+    if (t == Map<int, _i68e2f8e.SimpleData?>) {
+      return Map.fromEntries(
+            (data as List).map(
+              (e) => MapEntry(
+                deserialize<int>(e['k']),
+                deserialize<_i68e2f8e.SimpleData?>(e['v']),
+              ),
+            ),
+          )
+          as T;
+    }
+    if (t == _isc.getType<Map<int, _i68e2f8e.SimpleData?>?>()) {
+      return (data != null
+              ? Map.fromEntries(
+                  (data as List).map(
+                    (e) => MapEntry(
+                      deserialize<int>(e['k']),
+                      deserialize<_i68e2f8e.SimpleData?>(e['v']),
+                    ),
+                  ),
+                )
+              : null)
           as T;
     }
     if (t == Map<String, _i68e2f8e.SimpleData?>) {

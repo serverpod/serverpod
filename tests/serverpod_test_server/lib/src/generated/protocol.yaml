@@ -224,6 +224,8 @@ mapParameters:
   - returnByteDataMap:
   - returnByteDataMapNullableByteDatas:
   - returnSimpleDataMap:
+  - returnIntSimpleDataMap:
+  - returnNullableIntSimpleDataMapNullableSimpleData:
   - returnSimpleDataMapNullableSimpleData:
   - returnSimpleDataMapNullable:
   - returnNullableSimpleDataMapNullableSimpleData:

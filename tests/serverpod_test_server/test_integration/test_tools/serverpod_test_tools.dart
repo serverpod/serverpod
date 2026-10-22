@@ -6541,7 +6541,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) => _igqrxdcj.Protocol().deserialize<Map<int, int>>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<int, int>>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -6610,7 +6614,11 @@ class _MapParametersEndpoint {
             )
             .then(
               (map) => _igqrxdcj.Protocol()
-                  .deserialize<Map<_izdri23a.TestEnum, int>>(map),
+                  .deserialize<Map<_izdri23a.TestEnum, int>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(map),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -6991,6 +6999,89 @@ class _MapParametersEndpoint {
     });
   }
 
+  _ida.Future<Map<int, _i685tvwm.SimpleData>> returnIntSimpleDataMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<int, _i685tvwm.SimpleData> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnIntSimpleDataMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnIntSimpleDataMap',
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (map) => _igqrxdcj.Protocol()
+                  .deserialize<Map<int, _i685tvwm.SimpleData>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(map),
+                    ),
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<int, _i685tvwm.SimpleData?>?>
+  returnNullableIntSimpleDataMapNullableSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<int, _i685tvwm.SimpleData?>? map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnNullableIntSimpleDataMapNullableSimpleData',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnNullableIntSimpleDataMapNullableSimpleData',
+          parameters: _ist.testObjectToJson({
+            'map': map == null
+                ? null
+                : _igqrxdcj.Protocol().mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (map) => _igqrxdcj.Protocol()
+                  .deserialize<Map<int, _i685tvwm.SimpleData?>?>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(map),
+                    ),
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _ida.Future<Map<String, _i685tvwm.SimpleData?>>
   returnSimpleDataMapNullableSimpleData(
     _ist.TestSessionBuilder sessionBuilder,
@@ -7257,8 +7348,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) =>
-                  _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -7295,8 +7389,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) =>
-                  _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>?>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>?>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -7331,7 +7428,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -7368,7 +7469,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>?>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>?>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {

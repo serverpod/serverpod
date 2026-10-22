@@ -4315,6 +4315,59 @@ class Endpoints extends _is.EndpointDispatch {
                         params['map'],
                       ),
         ),
+        'returnIntSimpleDataMap': _is.MethodConnector(
+          name: 'returnIntSimpleDataMap',
+          params: {
+            'map': _is.ParameterDescription(
+              name: 'map',
+              type: _is.getType<Map<int, _i685tvwm.SimpleData>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['mapParameters']
+                          as _i7zzrcbk.MapParametersEndpoint)
+                      .returnIntSimpleDataMap(
+                        session,
+                        params['map'],
+                      )
+                      .then(
+                        (container) =>
+                            _igqrxdcj.Protocol().mapContainerToJson(container),
+                      ),
+        ),
+        'returnNullableIntSimpleDataMapNullableSimpleData': _is.MethodConnector(
+          name: 'returnNullableIntSimpleDataMapNullableSimpleData',
+          params: {
+            'map': _is.ParameterDescription(
+              name: 'map',
+              type: _is.getType<Map<int, _i685tvwm.SimpleData?>?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['mapParameters']
+                          as _i7zzrcbk.MapParametersEndpoint)
+                      .returnNullableIntSimpleDataMapNullableSimpleData(
+                        session,
+                        params['map'],
+                      )
+                      .then(
+                        (container) => container == null
+                            ? null
+                            : _igqrxdcj.Protocol().mapContainerToJson(
+                                container,
+                              ),
+                      ),
+        ),
         'returnSimpleDataMapNullableSimpleData': _is.MethodConnector(
           name: 'returnSimpleDataMapNullableSimpleData',
           params: {

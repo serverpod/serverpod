@@ -1924,6 +1924,23 @@ class EndpointMapParameters extends _isc.EndpointRef {
     {'map': map},
   );
 
+  _ida.Future<Map<int, _i68e2f8e.SimpleData>> returnIntSimpleDataMap(
+    Map<int, _i68e2f8e.SimpleData> map,
+  ) => caller.callServerEndpoint<Map<int, _i68e2f8e.SimpleData>>(
+    'mapParameters',
+    'returnIntSimpleDataMap',
+    {'map': _iza9lbb5.Protocol().mapContainerToJson(map)},
+  );
+
+  _ida.Future<Map<int, _i68e2f8e.SimpleData?>?>
+  returnNullableIntSimpleDataMapNullableSimpleData(
+    Map<int, _i68e2f8e.SimpleData?>? map,
+  ) => caller.callServerEndpoint<Map<int, _i68e2f8e.SimpleData?>?>(
+    'mapParameters',
+    'returnNullableIntSimpleDataMapNullableSimpleData',
+    {'map': map == null ? null : _iza9lbb5.Protocol().mapContainerToJson(map)},
+  );
+
   _ida.Future<Map<String, _i68e2f8e.SimpleData?>>
   returnSimpleDataMapNullableSimpleData(
     Map<String, _i68e2f8e.SimpleData?> map,
