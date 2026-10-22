@@ -1008,7 +1008,7 @@ return deserializeByClassName(value);
       library.directives.add(
         Directive.export(
           'future_calls.dart',
-          show: const ['ServerpodFutureCallsGetter'],
+          show: [_futureCallsGetterExtensionName],
         ),
       );
     }

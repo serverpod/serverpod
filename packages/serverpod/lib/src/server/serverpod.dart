@@ -908,10 +908,21 @@ class Serverpod {
 
     if (_futureCallManager != null) {
       _internalLogVerbose('Initializing future calls.');
-      endpoints.futureCalls?.initialize(
-        _futureCallManager!,
-        serverId,
-      );
+      final initializedModules = <String>{};
+
+      void initializeFutureCalls(EndpointDispatch dispatch) {
+        dispatch.futureCalls?.initialize(_futureCallManager!, serverId);
+
+        for (final module in dispatch.modules.entries) {
+          // A transitive dependency can occur in more than one module's
+          // dispatch. Register its handlers only once with the shared manager.
+          if (initializedModules.add(module.key)) {
+            initializeFutureCalls(module.value);
+          }
+        }
+      }
+
+      initializeFutureCalls(endpoints);
     }
 
     // Start maintenance tasks. If we are running in maintenance mode, we
