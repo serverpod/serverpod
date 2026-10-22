@@ -164,6 +164,26 @@ void main() {
   );
 
   test(
+    'Given a port held on the IPv6 loopback only, '
+    'when a cluster is started with DualTransport pinned to that port, '
+    'then it answers queries over TCP on the IPv4 loopback',
+    () async {
+      var holder = await ServerSocket.bind(InternetAddress.loopbackIPv6, 0);
+      addTearDown(holder.close);
+
+      var pg_ = await startWith(
+        DualTransport(port: holder.port, password: 'pw'),
+      );
+      addTearDown(pg_.stop);
+
+      expect(pg_.tcpEndpoint!.port, holder.port);
+      expect(await selectOne(pg_.tcpEndpoint!), 1);
+    },
+    skip: !hasUnixSocketSupport(),
+    timeout: const Timeout(Duration(seconds: 120)),
+  );
+
+  test(
     'Given a fresh cluster whose first start failed on a held port, '
     'when it is started again after the port was freed, '
     'then the application database answers queries',

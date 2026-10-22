@@ -473,28 +473,23 @@ void _deleteIfExists(File file) {
 String? _readIfExists(File file) =>
     file.existsSync() ? file.readAsStringSync() : null;
 
-/// Whether nothing answers on [port] at either loopback address.
+/// Whether nothing answers on [port] at `127.0.0.1`, the only address the
+/// postmaster binds. A listener on the IPv6 loopback alone does not conflict.
 ///
 /// Connects rather than binds: `SO_REUSEADDR` lets a loopback bind share a port
 /// with a listener on all addresses on macOS.
 Future<bool> _isLoopbackPortFree(int port) async {
-  for (var address in [
-    InternetAddress.loopbackIPv4,
-    InternetAddress.loopbackIPv6,
-  ]) {
-    try {
-      var probe = await Socket.connect(
-        address,
-        port,
-        timeout: const Duration(milliseconds: 300),
-      );
-      probe.destroy();
-      return false;
-    } on SocketException {
-      // Nothing listens on this address.
-    }
+  try {
+    var probe = await Socket.connect(
+      InternetAddress.loopbackIPv4,
+      port,
+      timeout: const Duration(milliseconds: 300),
+    );
+    probe.destroy();
+    return false;
+  } on SocketException {
+    return true;
   }
-  return true;
 }
 
 /// [requested] with its TCP port and password filled in.
