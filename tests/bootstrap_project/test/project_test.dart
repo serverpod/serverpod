@@ -636,6 +636,42 @@ void main() async {
             reason: 'Flutter main file does not exist.',
           );
         });
+
+        test('has an Android application ID derived from the project name', () {
+          final gradleFile = ['build.gradle.kts', 'build.gradle']
+              .map(
+                (name) => File(
+                  path.join(tempPath, flutterDir, 'android', 'app', name),
+                ),
+              )
+              .firstWhere((file) => file.existsSync());
+
+          expect(
+            gradleFile.readAsStringSync(),
+            contains(
+              'com.serverpod.space.${projectName}_flutter',
+            ),
+          );
+        });
+
+        test('has an iOS bundle ID derived from the project name', () {
+          final pbxproj = File(
+            path.join(
+              tempPath,
+              flutterDir,
+              'ios',
+              'Runner.xcodeproj',
+              'project.pbxproj',
+            ),
+          );
+
+          expect(
+            pbxproj.readAsStringSync(),
+            contains(
+              'com.serverpod.space.${projectName}Flutter',
+            ),
+          );
+        });
       });
 
       group('then the client project', () {
