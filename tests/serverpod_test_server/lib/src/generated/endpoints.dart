@@ -9686,6 +9686,21 @@ class Endpoints extends _is.EndpointDispatch {
                         streamParams['stream']!.cast<int>(),
                       ),
         ),
+        'broadcastStream': _is.MethodStreamConnector(
+          name: 'broadcastStream',
+          params: {},
+          streamParams: {},
+          returnType: _is.MethodStreamReturnType.streamType,
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) =>
+                  (endpoints['authenticatedTestTools']
+                          as _itdztv0y.AuthenticatedTestToolsEndpoint)
+                      .broadcastStream(session),
+        ),
       },
     );
     connectors['unauthenticated'] = _is.EndpointConnector(

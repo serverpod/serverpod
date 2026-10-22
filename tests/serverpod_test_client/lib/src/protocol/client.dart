@@ -4301,6 +4301,14 @@ class EndpointAuthenticatedTestTools extends _isc.EndpointRef {
         {},
         {'stream': stream},
       );
+
+  _ida.Stream<int> broadcastStream() =>
+      caller.callStreamingServerEndpoint<_ida.Stream<int>, int>(
+        'authenticatedTestTools',
+        'broadcastStream',
+        {},
+        {},
+      );
 }
 
 /// {@category Endpoint}
