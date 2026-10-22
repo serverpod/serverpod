@@ -347,6 +347,7 @@ recordParameters:
   - returnNullableIntStringRecord:
   - returnIntSimpleDataRecord:
   - returnNullableIntSimpleDataRecord:
+  - returnRecordOfSimpleDataList:
   - returnStringKeyedMapRecord:
   - returnNonStringKeyedMapRecord:
   - returnSetWithNestedRecordRecord:
@@ -355,6 +356,7 @@ recordParameters:
   - returnRecordOfNamedIntAndObject:
   - returnNullableRecordOfNamedIntAndObject:
   - returnRecordOfNamedNullableIntAndNullableObject:
+  - returnNullableNamedRecordOfSimpleDataList:
   - returnNamedNonStringKeyedMapRecord:
   - returnNamedSetWithNestedRecordRecord:
   - returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord:
@@ -362,6 +364,7 @@ recordParameters:
   - returnNullableRecordTypedef:
   - returnListOfIntSimpleDataRecord:
   - returnListOfNullableIntSimpleDataRecord:
+  - returnNullableListOfRecordOfSimpleDataList:
   - returnSetOfIntSimpleDataRecord:
   - returnSetOfNullableIntSimpleDataRecord:
   - returnNullableSetOfIntSimpleDataRecord:

@@ -1406,6 +1406,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<(int, String)?>,
       _is.getType<(int, _i685tvwm.SimpleData)>,
       _is.getType<(int, _i685tvwm.SimpleData)?>,
+      _is.getType<(List<_i685tvwm.SimpleData>, int)>,
       _is.getType<(Map<String, int>,)>,
       _is.getType<(Set<(int,)>,)>,
       _is.getType<Set<(int,)>>,
@@ -1415,6 +1416,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<({_i685tvwm.SimpleData data, int number})>,
       _is.getType<({_i685tvwm.SimpleData data, int number})?>,
       _is.getType<({_i685tvwm.SimpleData? data, int? number})>,
+      _is.getType<({int count, List<_i685tvwm.SimpleData>? rows})?>,
       _is.getType<({Map<int, int> intIntMap})>,
       _is.getType<({Set<(bool,)> boolSet})>,
       _is.getType<Set<(bool,)>>,
@@ -1427,6 +1429,11 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<(int, _i685tvwm.SimpleData)>,
       _is.getType<List<(int, _i685tvwm.SimpleData)?>>,
       _is.getType<(int, _i685tvwm.SimpleData)?>,
+      _is.getType<List<(List<_i685tvwm.SimpleData>, int)?>>,
+      _is.getType<(List<_i685tvwm.SimpleData>, int)?>,
+      _is.getType<List<(List<_i685tvwm.SimpleData>, int)?>?>,
+      _is.getType<(List<_i685tvwm.SimpleData>, int)?>,
+      _is.getType<(List<_i685tvwm.SimpleData>, int)?>,
       _is.getType<Set<(int, _i685tvwm.SimpleData)>>,
       _is.getType<(int, _i685tvwm.SimpleData)>,
       _is.getType<Set<(int, _i685tvwm.SimpleData)?>>,
@@ -12908,6 +12915,15 @@ class Protocol extends _is.DatabaseSerializationManager
                 )
                 as T;
     }
+    if (t == _is.getType<(List<_i685tvwm.SimpleData>, int)>()) {
+      return (
+            deserialize<List<_i685tvwm.SimpleData>>(
+              ((data as Map)['p'] as List)[0],
+            ),
+            deserialize<int>(data['p'][1]),
+          )
+          as T;
+    }
     if (t == _is.getType<(Map<String, int>,)>()) {
       return (deserialize<Map<String, int>>(((data as Map)['p'] as List)[0]),)
           as T;
@@ -12969,6 +12985,19 @@ class Protocol extends _is.DatabaseSerializationManager
                 : deserialize<int>(data['n']['number']),
           )
           as T;
+    }
+    if (t == _is.getType<({int count, List<_i685tvwm.SimpleData>? rows})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  count: deserialize<int>(((data as Map)['n'] as Map)['count']),
+                  rows: ((data)['n'] as Map)['rows'] == null
+                      ? null
+                      : deserialize<List<_i685tvwm.SimpleData>>(
+                          data['n']['rows'],
+                        ),
+                )
+                as T;
     }
     if (t == _is.getType<({Map<int, int> intIntMap})>()) {
       return (
@@ -13044,6 +13073,55 @@ class Protocol extends _is.DatabaseSerializationManager
           : (
                   deserialize<int>(((data as Map)['p'] as List)[0]),
                   deserialize<_i685tvwm.SimpleData>(data['p'][1]),
+                )
+                as T;
+    }
+    if (t == List<(List<_i685tvwm.SimpleData>, int)?>) {
+      return (data as List)
+              .map((e) => deserialize<(List<_i685tvwm.SimpleData>, int)?>(e))
+              .toList()
+          as T;
+    }
+    if (t == _is.getType<(List<_i685tvwm.SimpleData>, int)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  deserialize<List<_i685tvwm.SimpleData>>(
+                    ((data as Map)['p'] as List)[0],
+                  ),
+                  deserialize<int>(data['p'][1]),
+                )
+                as T;
+    }
+    if (t == _is.getType<List<(List<_i685tvwm.SimpleData>, int)?>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map(
+                      (e) => deserialize<(List<_i685tvwm.SimpleData>, int)?>(e),
+                    )
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == _is.getType<(List<_i685tvwm.SimpleData>, int)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  deserialize<List<_i685tvwm.SimpleData>>(
+                    ((data as Map)['p'] as List)[0],
+                  ),
+                  deserialize<int>(data['p'][1]),
+                )
+                as T;
+    }
+    if (t == _is.getType<(List<_i685tvwm.SimpleData>, int)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  deserialize<List<_i685tvwm.SimpleData>>(
+                    ((data as Map)['p'] as List)[0],
+                  ),
+                  deserialize<int>(data['p'][1]),
                 )
                 as T;
     }
@@ -16495,6 +16573,14 @@ class Protocol extends _is.DatabaseSerializationManager
         ],
       };
     }
+    if (record is (List<_i685tvwm.SimpleData>, int)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+          record.$2,
+        ],
+      };
+    }
     if (record is (Map<String, int>,)) {
       return {
         "p": [
@@ -16530,6 +16616,14 @@ class Protocol extends _is.DatabaseSerializationManager
         "n": {
           "data": record.data?.toJson(),
           "number": record.number,
+        },
+      };
+    }
+    if (record is ({int count, List<_i685tvwm.SimpleData>? rows})) {
+      return {
+        "n": {
+          "count": record.count,
+          "rows": record.rows?.toJson(),
         },
       };
     }

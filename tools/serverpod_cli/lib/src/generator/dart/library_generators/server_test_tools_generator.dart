@@ -947,7 +947,16 @@ extension on Expression {
                 .newInstance([])
                 .property('deserialize')
                 .call(
-                  [refer('record')],
+                  [
+                    // The dispatcher maps records to JSON containers, but
+                    // their values may still contain model instances.
+                    refer('jsonDecode', 'dart:convert').call([
+                      refer(
+                        'SerializationManager',
+                        serverpodUrl(true),
+                      ).property('encodeForProtocol').call([refer('record')]),
+                    ]),
+                  ],
                   {},
                   [returnType.generics.single.reference(true, config: config)],
                 )
