@@ -243,12 +243,6 @@ void main() {
         MethodStreaming.delayedStreamResponseController =
             delayedStreamResponseCompleter;
 
-        delayedStreamResponseCompleter.future.then(
-          (StreamController controller) => controller.onCancel = () {
-            delayedStreamIsCanceled.complete();
-          },
-        );
-
         await server.startWithDatabase();
         webSocket = await WebSocket.connect(
           Uri.parse(server.methodWebSocketUrl),
@@ -263,6 +257,13 @@ void main() {
             inputStreams: [],
           ),
         );
+
+        // Install the observer before sending close: producer cancellation can
+        // happen synchronously, before a pending future.then callback runs.
+        final controller = await delayedStreamResponseCompleter.future.timeout(
+          const Duration(seconds: 10),
+        );
+        controller.onCancel = delayedStreamIsCanceled.complete;
       });
 
       tearDown(() async {
