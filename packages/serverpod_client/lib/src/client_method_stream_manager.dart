@@ -56,6 +56,9 @@ final class ClientMethodStreamManager {
   /// the server.
   final Map<String, _OutboundStreamContext> _outboundStreams = {};
 
+  /// Opens that may still be awaiting credentials, an upgrade or acceptance.
+  final _pendingOpens = <_MethodStreamOpenState>{};
+
   /// Creates a new [ClientMethodStreamManager].
   ClientMethodStreamManager({
     required Duration connectionTimeout,
@@ -75,6 +78,11 @@ final class ClientMethodStreamManager {
   ///
   /// If an error is provided, it will be added to all inbound streams.
   Future<void> closeAllConnections([Object? error]) async {
+    // Invalidate pre-connection work before waiting for socket cleanup. A late
+    // credential or refresh result must not reopen a connection after shutdown.
+    for (final opening in _pendingOpens.toList()) {
+      opening.close(error);
+    }
     await _lock.synchronized(() async {
       _cancelKeepAlive();
       var webSocket = _webSocket;
@@ -100,22 +108,33 @@ final class ClientMethodStreamManager {
     MethodStreamConnectionDetails connectionDetails,
   ) async {
     final openState = _MethodStreamOpenState();
+    _pendingOpens.add(openState);
     try {
-      return await _openMethodStream(connectionDetails, openState);
-    } on OpenMethodStreamException catch (e) {
-      final authKeyProvider = connectionDetails.authKeyProvider;
+      try {
+        return await _openMethodStream(connectionDetails, openState);
+      } on OpenMethodStreamException catch (e) {
+        final authKeyProvider = connectionDetails.authKeyProvider;
 
-      // A first failure here with 401 can be due to an access token expiration.
-      // We will retry only once in such case, and only if the `authKeyProvider`
-      // exposes a `refreshAuthKey` method (like JWT).
-      if (e.responseType == OpenMethodStreamResponseType.authenticationFailed &&
-          authKeyProvider is RefresherClientAuthKeyProvider) {
-        final refreshResult = await authKeyProvider.refreshAuthKey();
-        if (refreshResult == RefreshAuthKeyResult.success) {
-          return _openMethodStream(connectionDetails, openState);
+        // Retry an expired access token once when the provider supports refresh.
+        if (e.responseType ==
+                OpenMethodStreamResponseType.authenticationFailed &&
+            authKeyProvider is RefresherClientAuthKeyProvider) {
+          openState.throwIfClosed();
+          final refreshResult = await openState.wait(
+            authKeyProvider.refreshAuthKey(),
+          );
+          if (refreshResult == RefreshAuthKeyResult.success) {
+            return await _openMethodStream(connectionDetails, openState);
+          }
         }
+        rethrow;
       }
-      rethrow;
+    } on _MethodStreamOpenCancelled {
+      // The output listener cancelled before the method was sent.
+      return;
+    } finally {
+      _pendingOpens.remove(openState);
+      _tryCloseConnection();
     }
   }
 
@@ -123,19 +142,19 @@ final class ClientMethodStreamManager {
     MethodStreamConnectionDetails connectionDetails,
     _MethodStreamOpenState openState,
   ) async {
-    // Resolve credentials before reserving a socket or registering an open.
+    // Resolve credentials before reserving a socket or sending the method.
     // Cancellation during credential lookup must not start a new method.
     connectionDetails.outputController.onCancel = openState.cancel;
-    if (openState.cancelled) return;
-    final authentication =
-        await connectionDetails.authKeyProvider?.authHeaderValue;
-    if (openState.cancelled) return;
+    openState.throwIfClosed();
+    final authentication = await openState.wait(
+      connectionDetails.authKeyProvider?.authHeaderValue ??
+          Future<String?>.value(),
+    );
 
-    if (_webSocket == null) await _connectSynchronized();
-    if (openState.cancelled) {
-      _tryCloseConnection();
-      return;
+    if (_webSocket == null) {
+      await openState.wait(_connectSynchronized(openState));
     }
+    openState.throwIfClosed();
     final webSocket = _webSocket;
     if (webSocket == null) throw const WebSocketClosedException();
 
@@ -201,7 +220,8 @@ final class ClientMethodStreamManager {
       }
       // An accepted method may already have finished or disconnected while
       // the opening caller was resuming. Its output owns that result.
-      if (!identical(_inboundStreams[inboundStreamKey], inboundStreamContext)) {
+      if (!identical(_inboundStreams[inboundStreamKey], inboundStreamContext) ||
+          openState.isClosed) {
         return;
       }
     } catch (error) {
@@ -238,7 +258,9 @@ final class ClientMethodStreamManager {
   }
 
   void _tryCloseConnection() {
-    if (_inboundStreams.isEmpty && _outboundStreams.isEmpty) {
+    if (_inboundStreams.isEmpty &&
+        _outboundStreams.isEmpty &&
+        !_pendingOpens.any((opening) => !opening.isClosed)) {
       unawaited(_closeConnectionIfUnused());
     }
   }
@@ -250,7 +272,11 @@ final class ClientMethodStreamManager {
   /// the lock. In that case the connection must be kept open.
   Future<void> _closeConnectionIfUnused() async {
     await _lock.synchronized(() async {
-      if (_inboundStreams.isNotEmpty || _outboundStreams.isNotEmpty) return;
+      if (_inboundStreams.isNotEmpty ||
+          _outboundStreams.isNotEmpty ||
+          _pendingOpens.any((opening) => !opening.isClosed)) {
+        return;
+      }
       _cancelKeepAlive();
       var webSocket = _webSocket;
       _webSocket = null;
@@ -672,8 +698,9 @@ final class ClientMethodStreamManager {
     });
   }
 
-  Future<void> _connectSynchronized() async {
+  Future<void> _connectSynchronized(_MethodStreamOpenState openState) async {
     await _lock.synchronized(() async {
+      openState.throwIfClosed();
       if (_webSocket != null) return;
 
       var webSocket =
@@ -749,9 +776,36 @@ final class ClientMethodStreamManager {
 }
 
 class _MethodStreamOpenState {
-  bool cancelled = false;
+  final _closed = Completer<void>();
+  Object? _closeError;
 
-  void cancel() => cancelled = true;
+  bool get isClosed => _closed.isCompleted;
+
+  void cancel() => close(const _MethodStreamOpenCancelled());
+
+  void close([Object? error]) {
+    if (isClosed) return;
+    _closeError = error ?? const WebSocketClosedException();
+    _closed.complete();
+  }
+
+  void throwIfClosed() {
+    if (isClosed) throw _closeError!;
+  }
+
+  Future<T> wait<T>(Future<T> operation) async {
+    final result = await Future.any([
+      operation,
+      _closed.future.then<T>((_) => throw _closeError!),
+    ]);
+    // Closure may race with an operation whose result was already queued.
+    throwIfClosed();
+    return result;
+  }
+}
+
+class _MethodStreamOpenCancelled implements Exception {
+  const _MethodStreamOpenCancelled();
 }
 
 class _InboundStreamContext {

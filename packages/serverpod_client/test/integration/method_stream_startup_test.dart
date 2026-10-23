@@ -10,6 +10,7 @@ import 'package:serverpod_client/src/method_stream/method_stream_connection_deta
 import 'package:test/test.dart';
 
 import '../test_utils/test_auth_key_providers.dart';
+import '../test_utils/test_serverpod_client.dart' show TestServerpodClient;
 
 void main() {
   late _Server server;
@@ -419,6 +420,149 @@ void main() {
     },
   );
 
+  group('Given a public streaming call awaiting credentials,', () {
+    late TestServerpodClient client;
+    late _DeferredAuthKeyProvider provider;
+    late StreamController<int> input;
+    late Completer<void> done;
+    late List<Object> errors;
+    late bool inputListened;
+
+    setUp(() async {
+      provider = _DeferredAuthKeyProvider();
+      client = TestServerpodClient(
+        host: server.uri.replace(scheme: 'http'),
+        authKeyProvider: provider,
+      );
+      inputListened = false;
+      input = StreamController<int>(onListen: () => inputListened = true)
+        ..add(42);
+      done = Completer<void>();
+      errors = [];
+      final output =
+          client.callStreamingServerEndpoint<Stream<int>, int>(
+                'example',
+                'waitingForCredentials',
+                {},
+                {'events': input.stream},
+              )
+              as Stream<int>;
+      output.listen((_) {}, onError: errors.add, onDone: done.complete);
+      await provider.requested.future;
+    });
+
+    tearDown(() async {
+      await client.closeStreamingMethodConnections();
+      client.close();
+      final drained = input.stream.drain<void>();
+      await input.close();
+      await drained;
+    });
+
+    group('when connections close before the credentials are released,', () {
+      late int socketsBeforeRelease;
+      late List<Object> errorsBeforeRelease;
+      late bool finishedBeforeRelease;
+      late List<String> methods;
+      late int replacementValue;
+
+      setUp(() async {
+        await client.closeStreamingMethodConnections();
+        await done.future.timeout(const Duration(seconds: 2));
+        finishedBeforeRelease = done.isCompleted;
+        errorsBeforeRelease = List.of(errors);
+        socketsBeforeRelease = server.connections;
+        provider.value.complete('Bearer late');
+
+        // A fresh public call also provides a wire barrier after late lookup.
+        final replacement =
+            client.callStreamingServerEndpoint<Stream<int>, int>(
+                  'example',
+                  'replacement',
+                  {},
+                  {},
+                  authenticated: false,
+                )
+                as Stream<int>;
+        final firstValue = replacement.first;
+        final request = await server.nextOpen.future;
+        server.accept(request);
+        request.socket.add(
+          MethodStreamMessage.buildMessage(
+            connectionId: request.command.connectionId,
+            endpoint: request.command.endpoint,
+            method: request.command.method,
+            object: 7,
+            serializationManager: _Serialization(),
+          ),
+        );
+        replacementValue = await firstValue;
+        methods = server.opens
+            .map((request) => request.command.method)
+            .toList();
+      });
+
+      test(
+        'then the original output terminates once before lookup completes.',
+        () {
+          expect(finishedBeforeRelease, isTrue);
+          expect(errorsBeforeRelease, [isA<WebSocketClosedException>()]);
+          expect(errors, hasLength(1));
+        },
+      );
+
+      test(
+        'then late credentials do not open the old method or consume its input.',
+        () {
+          expect(socketsBeforeRelease, 0);
+          expect(methods, ['replacement']);
+          expect(inputListened, isFalse);
+        },
+      );
+
+      test('then a new call after shutdown still opens and receives data.', () {
+        expect(replacementValue, 7);
+      });
+    });
+  });
+
+  test(
+    'Given authentication refresh awaiting a result, '
+    'when all connections close before refresh succeeds, '
+    'then opening fails promptly and the late refresh cannot retry the method.',
+    () async {
+      final provider = TestRefresherAuthKeyProvider()..setAuthKey('expired');
+      final refreshing = Completer<void>();
+      final refreshed = Completer<RefreshAuthKeyResult>();
+      provider.setRefresh(() {
+        refreshing.complete();
+        return refreshed.future;
+      });
+      final failure = _errorOf(
+        manager.openMethodStream(_call(authKeyProvider: provider)),
+      );
+      final first = await server.nextOpen.future;
+      server.respond(first, OpenMethodStreamResponseType.authenticationFailed);
+      await refreshing.future;
+
+      await manager.closeAllConnections();
+      final error = await failure.timeout(const Duration(seconds: 2));
+      refreshed.complete(RefreshAuthKeyResult.success);
+      server.nextOpen = Completer<_Open>();
+      final replacement = manager.openMethodStream(
+        _call(method: 'replacement'),
+      );
+      server.accept(await server.nextOpen.future);
+      await replacement;
+
+      expect(error, isA<WebSocketClosedException>());
+      expect(server.opens.map((request) => request.command.method), [
+        'stream',
+        'replacement',
+      ]);
+    },
+  );
+
   group(
     'Given a timed-out method and an accepted peer on the same socket,',
     () {
@@ -612,7 +756,11 @@ class _TestException extends SerializableException {}
 
 class _DeferredAuthKeyProvider implements ClientAuthKeyProvider {
   final value = Completer<String?>();
+  final requested = Completer<void>();
 
   @override
-  Future<String?> get authHeaderValue => value.future;
+  Future<String?> get authHeaderValue {
+    if (!requested.isCompleted) requested.complete();
+    return value.future;
+  }
 }
