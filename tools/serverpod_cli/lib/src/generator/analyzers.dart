@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/protocol_feature_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
-    show FutureCallDefinition, futureCallModelsDirectoryName;
+    show FutureCallDefinition;
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
@@ -582,33 +582,17 @@ class Analyzers {
         ...generatedProtocolFiles,
       };
 
-      // When doing protocol-only generation, we need to preserve existing model
-      // files from the generation stamp so they don't get cleaned up.
+      // A protocol-only run writes no model files, but the protocol it just
+      // wrote refers to every current model, so their files must survive the
+      // cleanup. Derived from the models rather than read from the stamp: a
+      // failed run writes model files without stamping them.
       if (!requirements.generateModels) {
-        final previouslyGeneratedModelsDirs = [
-          p.joinAll(config.generatedServeModelPathParts),
-          p.joinAll(config.generatedDartClientModelPathParts),
-          ...config.generatedSharedModelsPaths,
-        ];
-
-        // Keep previous model files so they don't get deleted.
-        final previousFiles = readGenerationStamp(config);
-        var previousModelFiles = previousFiles.where(
-          (f) => previouslyGeneratedModelsDirs.any((dir) => p.isWithin(dir, f)),
+        final modelFiles = ServerpodCodeGenerator.serializableModelPaths(
+          models: allModels,
+          config: config,
         );
-
-        // When future call parameter models are regenerated, the ones
-        // left over from the previous run are stale and should be cleaned.
-        if (requirements.generateFutureCallModels) {
-          previousModelFiles = previousModelFiles.where(
-            (f) => !p.split(f).contains(futureCallModelsDirectoryName),
-          );
-        }
-
-        allGeneratedFiles.addAll(previousModelFiles);
-        log.debug(
-          'Preserving ${previousModelFiles.length} existing model files from stamp.',
-        );
+        allGeneratedFiles.addAll(modelFiles);
+        log.debug('Preserving ${modelFiles.length} existing model files.');
       }
 
       await ServerpodCodeGenerator.cleanPreviouslyGeneratedFiles(
