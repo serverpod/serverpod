@@ -1,7 +1,7 @@
 // This file is generated. Do not modify, instead edit the files in the
 // templates/pubspecs directory.
 
-const templateVersion = '4.1.0-beta.3';
+const templateVersion = '4.1.0-rc.1';
 const productionMode = false;
 
 /// The Flutter SDK constraint this CLI version was released against.
