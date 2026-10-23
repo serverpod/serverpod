@@ -32,6 +32,9 @@ base class BridgeMcpServer extends MCPServer
   /// registry link the runner removes when it stops.
   final String logPath;
 
+  /// The canonical absolute path of the server package this bridge serves.
+  final String serverDir;
+
   final ServerpodIssueReporter _issueReporter;
 
   final MCPClient _client = MCPClient(_bridgeImplementation);
@@ -44,20 +47,23 @@ base class BridgeMcpServer extends MCPServer
     super.channel, {
     required this.socketPath,
     required this.logPath,
+    required this.serverDir,
     ServerpodIssueReporter? issueReporter,
   }) : _issueReporter = issueReporter ?? ServerpodIssueReporter(),
        super.fromStreamChannel(
          implementation: _bridgeImplementation,
          instructions:
-             'Manage a Serverpod server and its Flutter app running under '
-             '`serverpod start`. Use these tools to read Serverpod and Flutter '
-             'logs, create and apply database migrations, hot reload or restart '
-             "the server and Flutter app, and get the Flutter app's Dart "
-             'Tooling Daemon (DTD) URI. If a tool reports the server is not '
-             'running, call `tail_runner_logs` to see whether it is still '
-             'starting or why it stopped, then ask the user to start it with '
-             '`serverpod start` in the project directory. Report any '
-             'Serverpod bug you hit with `report_serverpod_issue`.',
+             'Manage the Serverpod server in $serverDir and its Flutter app, '
+             'running under the Serverpod runner. This bridge serves that '
+             'server package only, whatever the current directory is. Use '
+             'these tools to read Serverpod and Flutter logs, create and apply '
+             'database migrations, hot reload or restart the server and '
+             "Flutter app, and get the Flutter app's Dart Tooling Daemon (DTD) "
+             'URI. If a tool reports the server is not running, call '
+             '`tail_runner_logs` to see whether it is still starting or why '
+             'it stopped, then run `serverpod runner start` with '
+             '`--directory` set to `$serverDir` and call the tool again. '
+             'Report any Serverpod bug you hit with `report_serverpod_issue`.',
        ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
@@ -80,10 +86,10 @@ base class BridgeMcpServer extends MCPServer
     content: [
       TextContent(
         text:
-            'The server is not running with `serverpod start` for this project. '
-            'Call `tail_runner_logs` to see whether it is still starting or '
-            'why it stopped, then ask the user to run `serverpod start` in '
-            'the project directory.',
+            'The server in $serverDir is not running. Call '
+            '`tail_runner_logs` to see whether it is still starting or why it '
+            'stopped, then run `serverpod runner start` with '
+            '`--directory` set to `$serverDir` and call this tool again.',
       ),
     ],
     isError: true,
@@ -97,9 +103,10 @@ base class BridgeMcpServer extends MCPServer
         content: [
           TextContent(
             text:
-                'No runner log at $logPath. A runner spawned by '
-                '`serverpod start` writes one; nothing has been started for '
-                'this project yet.',
+                'No runner log at $logPath. The runner writes one once '
+                'started; nothing has been started for this project yet. '
+                'Run `serverpod runner start` with `--directory` set to '
+                '`$serverDir`.',
           ),
         ],
         isError: true,

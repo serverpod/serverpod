@@ -7,7 +7,7 @@ description: Upgrade Serverpod — minor/patch updates, major upgrades (2.x to 3
 
 Requirements for this Serverpod version: Dart 3.12.2+, Flutter 3.44.4+. Check the release notes for the version being installed.
 
-Use the same pinned Serverpod version across all packages. Use the CLI to do the upgrade. Ask the user to start the server with `serverpod start` after the upgrade. NEVER update the CLI tooling, instead STOP and ask the user to do it.
+Use the same pinned Serverpod version across all packages. Use the CLI to do the upgrade. Restart the runner after the upgrade: `serverpod runner stop`, then `serverpod runner start`. NEVER update the CLI tooling, instead STOP and ask the user to do it.
 
 1. Check the latest version of Serverpod: https://pub.dev/packages/serverpod (unless the user has requested a specific version).
 2. Run `serverpod version` to verify that the tooling has the correct version. If not, STOP and ask the user to install the correct version (`dart install serverpod_cli` for latest or `dart install serverpod_cli 3.x.x` for specific version).
@@ -17,7 +17,7 @@ Use the same pinned Serverpod version across all packages. Use the CLI to do the
 6. Run `serverpod create-migration`.
 7. Run `dart analyze` in the root of the project and address any issues.
 8. Ensure that the Dockerfile uses at least `FROM dart:3.12.2 AS build`.
-9. Inform the user that the upgrade is complete and they should start the server with `serverpod start`.
+9. Restart the runner with `serverpod runner stop` and `serverpod runner start` in the server package, and inform the user that the upgrade is complete.
 
 ## Major upgrade: Serverpod 3.x to 4.0
 

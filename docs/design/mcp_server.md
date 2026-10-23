@@ -104,7 +104,7 @@ Bridge-local tools:
 
 The runner's MCP socket binds only once its stack is up, after Docker, code generation and the first compile, and the in-memory log history dies with the runner. The log file is what remains while the runner is starting and after it stopped or crashed, so the bridge reads it directly rather than forwarding. The path comes from the server directory, not the socket path: on a long project path the socket is reached through a registry link, and the runner removes that link when it stops.
 
-When no runner is listening, tool forwarders return an error telling the agent to check `tail_runner_logs` and then start the server with `serverpod start`, and the resource reader returns a `not-running` marker. As soon as a runner is up, the next call connects and succeeds - no client-side reconnect step is needed.
+When no runner is listening, tool forwarders return an error telling the agent to check `tail_runner_logs` and then start the server with `serverpod runner start`, and the resource reader returns a `not-running` marker. As soon as a runner is up, the next call connects and succeeds - no client-side reconnect step is needed.
 
 For per-resource updates, the bridge subscribes to each forwarded resource on connect and re-emits `notifications/resources/updated` to the client. Resources that don't support subscription are silently skipped (reads still work).
 

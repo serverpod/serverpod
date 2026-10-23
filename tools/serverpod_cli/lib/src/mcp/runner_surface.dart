@@ -1,4 +1,4 @@
-/// MCP tools and resources exposed by `serverpod start`.
+/// MCP tools and resources exposed by the runner.
 library;
 
 import 'package:dart_mcp/server.dart';
@@ -107,8 +107,8 @@ const _flutterAppIdDescription =
 final Tool tailFlutterLogsTool = Tool(
   name: 'tail_flutter_logs',
   description:
-      'Return recent raw stdout/stderr lines for a Flutter app started from '
-      '`serverpod start`, newest last.',
+      'Return recent raw stdout/stderr lines for a Flutter app started by '
+      'the runner, newest last.',
   inputSchema: Schema.object(
     properties: {
       'limit': Schema.int(
@@ -140,8 +140,8 @@ final Tool spawnFlutterAppTool = Tool(
 final Tool getFlutterAppDtdTool = Tool(
   name: 'get_flutter_app_dtd',
   description:
-      'Return the Dart Tooling Daemon (DTD) URI for Flutter apps started from '
-      '`serverpod start`. The JSON object is keyed by app id — the same ids '
+      'Return the Dart Tooling Daemon (DTD) URI for Flutter apps started by '
+      'the runner. The JSON object is keyed by app id — the same ids '
       'used as keys under `serverpod: flutter_apps:` in the server pubspec. '
       'Apps that have not been launched are absent from the map; apps that '
       'have not published their DTD yet map to null; apps that have published '
@@ -165,7 +165,7 @@ final Tool tailRunnerLogsTool = Tool(
   name: 'tail_runner_logs',
   description:
       'Return the last lines of the runner log file, which records everything '
-      '`serverpod start` printed: code generation, compilation, Docker, the '
+      'the runner printed: code generation, compilation, Docker, the '
       "server's raw stdout/stderr and Flutter output. Newest last, with a "
       '`--- serverpod runner <pid> started ---` line at the start of each run. '
       'Unlike the other tools, this works while the server is still starting '
