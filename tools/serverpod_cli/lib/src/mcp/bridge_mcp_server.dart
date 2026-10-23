@@ -31,7 +31,7 @@ base class BridgeMcpServer extends MCPServer
   /// registry link the runner removes when it stops.
   final String logPath;
 
-  /// The server package this bridge serves, as given to `--server-dir`.
+  /// The canonical absolute path of the server package this bridge serves.
   final String serverDir;
 
   final MCPClient _client = MCPClient(_bridgeImplementation);
@@ -56,8 +56,8 @@ base class BridgeMcpServer extends MCPServer
              "Flutter app, and get the Flutter app's Dart Tooling Daemon (DTD) "
              'URI. If a tool reports the server is not running, call '
              '`tail_runner_logs` to see whether it is still starting or why '
-             'it stopped, then start it with `serverpod runner start` in '
-             'that server package and call the tool again.',
+             'it stopped, then run `serverpod runner start` with '
+             '`--directory` set to `$serverDir` and call the tool again.',
        ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
@@ -76,8 +76,8 @@ base class BridgeMcpServer extends MCPServer
         text:
             'The server in $serverDir is not running. Call '
             '`tail_runner_logs` to see whether it is still starting or why it '
-            'stopped, then start it with `serverpod runner start` in that '
-            'server package and call this tool again.',
+            'stopped, then run `serverpod runner start` with '
+            '`--directory` set to `$serverDir` and call this tool again.',
       ),
     ],
     isError: true,
@@ -93,7 +93,8 @@ base class BridgeMcpServer extends MCPServer
             text:
                 'No runner log at $logPath. The runner writes one once '
                 'started; nothing has been started for this project yet. '
-                'Start it with `serverpod runner start` in the server package.',
+                'Run `serverpod runner start` with `--directory` set to '
+                '`$serverDir`.',
           ),
         ],
         isError: true,
