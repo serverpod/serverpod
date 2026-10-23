@@ -79,6 +79,7 @@ class McpCommand extends ServerpodCommand<McpOption> {
       channel,
       socketPath: socketPath,
       logPath: serverpodRunnerLogPath(serverDir.path),
+      serverDir: serverDir.path,
     );
     await server.done;
   }

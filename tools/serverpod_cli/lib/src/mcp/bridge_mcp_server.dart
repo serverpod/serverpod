@@ -31,6 +31,9 @@ base class BridgeMcpServer extends MCPServer
   /// registry link the runner removes when it stops.
   final String logPath;
 
+  /// The server package this bridge serves, as given to `--server-dir`.
+  final String serverDir;
+
   final MCPClient _client = MCPClient(_bridgeImplementation);
 
   ServerConnection? _connection;
@@ -41,18 +44,20 @@ base class BridgeMcpServer extends MCPServer
     super.channel, {
     required this.socketPath,
     required this.logPath,
+    required this.serverDir,
   }) : super.fromStreamChannel(
          implementation: _bridgeImplementation,
          instructions:
-             'Manage a Serverpod server and its Flutter app running under '
-             'the Serverpod runner. Use these tools to read Serverpod and '
-             'Flutter logs, create and apply database migrations, hot reload '
-             "or restart the server and Flutter app, and get the Flutter app's "
-             'Dart Tooling Daemon (DTD) URI. If a tool reports the server is '
-             'not running, call `tail_runner_logs` to see whether it is still '
-             'starting or why it stopped, then start it with '
-             '`serverpod runner start` in the server package and call the '
-             'tool again.',
+             'Manage the Serverpod server in $serverDir and its Flutter app, '
+             'running under the Serverpod runner. This bridge serves that '
+             'server package only, whatever the current directory is. Use '
+             'these tools to read Serverpod and Flutter logs, create and apply '
+             'database migrations, hot reload or restart the server and '
+             "Flutter app, and get the Flutter app's Dart Tooling Daemon (DTD) "
+             'URI. If a tool reports the server is not running, call '
+             '`tail_runner_logs` to see whether it is still starting or why '
+             'it stopped, then start it with `serverpod runner start` in '
+             'that server package and call the tool again.',
        ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
@@ -69,9 +74,9 @@ base class BridgeMcpServer extends MCPServer
     content: [
       TextContent(
         text:
-            'The server is not running for this project. Call '
+            'The server in $serverDir is not running. Call '
             '`tail_runner_logs` to see whether it is still starting or why it '
-            'stopped, then start it with `serverpod runner start` in the '
+            'stopped, then start it with `serverpod runner start` in that '
             'server package and call this tool again.',
       ),
     ],
