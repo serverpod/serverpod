@@ -1,0 +1,100 @@
+name: Test install script
+
+# Builds the bootstrap bundle from this checkout and runs install.sh against
+# it on a clean Ubuntu container and on a macOS runner, so the installer is
+# exercised end to end without a published release.
+on:
+  pull_request:
+    paths:
+      - "tools/serverpod_cli/install/**"
+      - "tools/serverpod_cli/lib/src/doctor/**"
+      - "tools/serverpod_cli/lib/src/commands/doctor.dart"
+      - ".github/workflows/test-install-script.yaml"
+  push:
+    branches:
+      - main
+    paths:
+      - "tools/serverpod_cli/install/**"
+      - "tools/serverpod_cli/lib/src/doctor/**"
+      - "tools/serverpod_cli/lib/src/commands/doctor.dart"
+      - ".github/workflows/test-install-script.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: Lint the install scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Run shellcheck
+        run: |
+          shellcheck --shell=sh --severity=style \
+            tools/serverpod_cli/install/install.sh \
+            tools/serverpod_cli/install/test/verify_install.sh
+          shellcheck --severity=style \
+            tools/serverpod_cli/install/build_bootstrap.sh \
+            tools/serverpod_cli/install/test/linux_container.sh
+
+  build:
+    name: Build bootstrap bundle (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: ubuntu-latest, platform: linux-x64 }
+          - { runner: macos-15, platform: macos-arm64 }
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
+      - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
+        with:
+          sdk: "3.13.0"
+      - name: Build the bundle
+        run: bash tools/serverpod_cli/install/build_bootstrap.sh "${{ matrix.platform }}" "$RUNNER_TEMP/bootstrap"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bootstrap-${{ matrix.platform }}
+          path: ${{ runner.temp }}/bootstrap/*
+          retention-days: 1
+
+  install-linux:
+    name: Install on a clean Ubuntu container
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: bootstrap-linux-x64
+          path: bundle
+      - name: Run the installer as a fresh user
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE/tools/serverpod_cli/install:/install:ro" \
+            -v "$GITHUB_WORKSPACE/bundle:/bundle:ro" \
+            ubuntu:24.04 bash /install/test/linux_container.sh
+
+  install-macos:
+    name: Install on macOS
+    needs: build
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: bootstrap-macos-arm64
+          path: bundle
+      - name: Run the installer
+        env:
+          SHELL: /bin/zsh
+          SERVERPOD_BOOTSTRAP_BUNDLE: ${{ github.workspace }}/bundle/serverpod-bootstrap-macos-arm64.tar.gz
+        run: |
+          sh tools/serverpod_cli/install/install.sh --yes
+          sh tools/serverpod_cli/install/test/verify_install.sh \
+            tools/serverpod_cli/install/install.sh "$HOME/.zshrc"

@@ -88,6 +88,8 @@ commands:
   - name: doctor
     flags:
       --json: "Print the results as JSON instead of text."
+      --fix: "Write ~/.serverpod/env.sh with the PATH entries Serverpod needs and source it from your shell startup file. Asks before changing anything unless --yes is given."
+      -y, --yes: "Approve the changes --fix proposes without asking."
 
   - name: quickstart
     flags:
