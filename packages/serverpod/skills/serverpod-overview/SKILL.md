@@ -36,7 +36,7 @@ All of them resolve the server package from the current directory, or take `--di
 Do not check whether the server is running before acting: make the changes and call the `serverpod` MCP tools. When nothing is running, the MCP answers with an explicit "the server is not running" error. Then:
 
 1. Call `tail_runner_logs` to learn whether a runner is still starting or why it stopped.
-2. If none is running, run `serverpod runner start` in the server package. It returns zero once the server is up. It returns non-zero when the project does not build (the runner stays up and, with watch on, the default, starts the server once a change makes it build), when a configured port is held by something other than a Serverpod runner, or when Docker refused. Fix the cause instead of retrying.
+2. If none is running, run `serverpod runner start` in the server package. It returns zero once the server is up. It returns non-zero when the project does not build (the runner stays up and, with watch on, the default, starts the server once a change makes it build), when a configured port is held by something other than a Serverpod runner, or when Docker refused. Fix the cause instead of retrying. The one exception is a `serverpod runner start` your shell killed on a timeout before it returned: the runner keeps starting in the background, and running the command again waits for it.
 3. Call the MCP tool again. The MCP reconnects by itself.
 
 Leave the runner running when you are done; the user attaches to it with `serverpod start`. Run `serverpod runner stop` only when asked. Starting the stack with `--watch`, `--flutter`, `--docker` or server arguments that differ from the running runner's fails and names the difference; stop that runner first.
