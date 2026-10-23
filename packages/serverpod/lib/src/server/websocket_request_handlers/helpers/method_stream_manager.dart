@@ -219,8 +219,17 @@ class MethodStreamManager {
 
       // Immediate close of the stream
       _updateCloseReason(streamKey, reason);
-      await context.controller.onCancel?.call();
-      unawaited(context.subscription.cancel());
+      // Cancel addStream's producer before closing its inputs. The producer
+      // may own paused input subscriptions that only cancellation can release.
+      await context.subscription
+          .cancel()
+          .then<void>((_) {})
+          .timeout(
+            _closeTimeout,
+            onTimeout: () async {
+              await context.controller.onCancel?.call();
+            },
+          );
     } else {
       var context = _inputStreamContexts.remove(streamKey);
 

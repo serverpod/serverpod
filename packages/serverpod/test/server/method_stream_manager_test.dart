@@ -110,11 +110,14 @@ void main() {
     () {
       late bool canceled;
       late bool closed;
+      late UuidValue methodStreamId;
 
       setUp(() async {
         canceled = false;
         closed = false;
+        methodStreamId = const Uuid().v4obj();
         await openStream(
+          methodStreamId: methodStreamId,
           onCancel: () {
             canceled = true;
             return Future.wait<void>([]);
@@ -128,6 +131,22 @@ void main() {
         'then the stream is canceled and its session closes.',
         () async {
           await manager.closeAllStreams();
+
+          expect(canceled, isTrue);
+          expect(closed, isTrue);
+        },
+      );
+
+      test(
+        'when the individual stream is closed, '
+        'then the stream is canceled and its session closes.',
+        () async {
+          await manager.closeStream(
+            endpoint: 'test',
+            method: 'stream',
+            methodStreamId: methodStreamId,
+            reason: CloseReason.done,
+          );
 
           expect(canceled, isTrue);
           expect(closed, isTrue);
@@ -454,7 +473,7 @@ void main() {
                 methodStreamId: methodStreamId,
                 reason: CloseReason.done,
               )
-              .timeout(const Duration(seconds: 5)),
+              .timeout(const Duration(seconds: 9)),
           completes,
         );
 
