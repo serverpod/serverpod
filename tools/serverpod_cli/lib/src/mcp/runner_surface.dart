@@ -220,10 +220,13 @@ final Tool reportServerpodIssueTool = Tool(
             'personal data.',
         maxLength: 50000,
       ),
-      'type': Schema.string(
-        enumValues: ['bug', 'feedback'],
-        defaultValue: 'feedback',
-      ),
+      // A raw map, as `enumValues` is deprecated in newer dart_mcp versions
+      // and `defaultValue` is missing from older ones.
+      'type': const StringSchema.fromMap({
+        'type': 'string',
+        'enum': ['bug', 'feedback'],
+        'default': 'feedback',
+      }),
     },
     required: ['title', 'description'],
   ),
