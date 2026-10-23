@@ -67,7 +67,7 @@ If the database is in an inconsistent state, a repair migration brings it back t
 
 ALWAYS use the MCP server if it is available. When it reports that the server is not running, call `tail_runner_logs`, then run `serverpod runner start` when no runner is running, then call the tools again.
 
-### ONLY if the runner cannot bring the server up
+### ONLY if the MCP is not available or the runner cannot bring the server up
 
 ```bash
 # Use the `--mode` flag to specify the run mode
