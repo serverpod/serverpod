@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
 import 'package:serverpod_cli/src/generator/yaml/endpoint_description_generator.dart';
@@ -54,22 +53,14 @@ abstract class ServerpodCodeGenerator {
     return (all: allFiles.keys.toList(), written: written);
   }
 
-  /// The paths [generateSerializableModels] writes for [models], without
-  /// generating their content.
+  /// The paths [generateSerializableModels] writes for [models], from every
+  /// [CodeGenerator], without generating their content.
   static Set<String> serializableModelPaths({
     required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
   }) => {
-    for (var model in models)
-      if (model.isSharedModel) ...[
-        if (config.sharedModelsSourcePathsParts.containsKey(
-          model.sharedPackageName,
-        ))
-          model.getFullFilePath(config, serverCode: false),
-      ] else ...[
-        model.getFullFilePath(config, serverCode: true),
-        if (!model.serverOnly) model.getFullFilePath(config, serverCode: false),
-      ],
+    for (var generator in _generators)
+      ...generator.serializableModelPaths(models: models, config: config),
   };
 
   /// Generate from [CodeGenerator.generateProtocolCode] for all

@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
@@ -12,7 +13,7 @@ import '../test_util/builders/model_class_definition_builder.dart';
 
 void main() {
   test(
-    'Given plain, server-only and shared models, '
+    'Given plain, server-only, shared and sealed models, '
     'when comparing serializableModelPaths with what the generators write, '
     'then the paths are the same.',
     () {
@@ -24,7 +25,23 @@ void main() {
           })
           .withModules([])
           .build();
+      final event = ModelClassDefinitionBuilder()
+          .withClassName('Event')
+          .withFileName('event')
+          .withSimpleField('name', 'String')
+          .withIsSealed(true)
+          .build();
+      final internalEvent = ModelClassDefinitionBuilder()
+          .withClassName('InternalEvent')
+          .withFileName('internal_event')
+          .withSimpleField('secret', 'String')
+          .withServerOnly(true)
+          .withExtendsClass(event)
+          .build();
+      event.childClasses.add(ResolvedInheritanceDefinition(internalEvent));
       final models = [
+        event,
+        internalEvent,
         ModelClassDefinitionBuilder()
             .withClassName('Plain')
             .withFileName('plain')
@@ -70,8 +87,9 @@ void main() {
               .generateSerializableModelsCode(models: models, config: config)
               .keys,
       };
-      // Plain on server and client, Secret on the server, Shared in its package.
-      expect(written, hasLength(4));
+      // Event and its server-only part on both sides, Plain on both sides,
+      // Secret on the server, Shared in its package.
+      expect(written, hasLength(8));
       expect(paths, equals(written));
     },
   );
