@@ -24,10 +24,6 @@ final class ClientMethodStreamManager {
   /// The host of the WebSocket server.
   final Uri _webSocketHost;
 
-  /// Timer used to cancel the connection attempt if it takes too long.
-  /// If null, no connection attempt is in progress.
-  Timer? _connectionTimer;
-
   /// Timer used to send periodic pings to the server.
   Timer? _pingTimer;
 
@@ -39,9 +35,6 @@ final class ClientMethodStreamManager {
 
   final Duration _pingInterval;
   final Duration _idleTimeout;
-
-  /// Completer that is completed when the handshake is complete.
-  Completer _handshakeComplete = Completer();
 
   /// The timeout for the connection attempt.
   final Duration _connectionTimeout;
@@ -83,7 +76,7 @@ final class ClientMethodStreamManager {
   /// If an error is provided, it will be added to all inbound streams.
   Future<void> closeAllConnections([Object? error]) async {
     await _lock.synchronized(() async {
-      _cancelConnectionTimer();
+      _cancelKeepAlive();
       var webSocket = _webSocket;
       _webSocket = null;
       await _closeAllStreams(error);
@@ -106,8 +99,9 @@ final class ClientMethodStreamManager {
   Future<void> openMethodStream(
     MethodStreamConnectionDetails connectionDetails,
   ) async {
+    final openState = _MethodStreamOpenState();
     try {
-      return await _openMethodStream(connectionDetails);
+      return await _openMethodStream(connectionDetails, openState);
     } on OpenMethodStreamException catch (e) {
       final authKeyProvider = connectionDetails.authKeyProvider;
 
@@ -118,7 +112,7 @@ final class ClientMethodStreamManager {
           authKeyProvider is RefresherClientAuthKeyProvider) {
         final refreshResult = await authKeyProvider.refreshAuthKey();
         if (refreshResult == RefreshAuthKeyResult.success) {
-          return _openMethodStream(connectionDetails);
+          return _openMethodStream(connectionDetails, openState);
         }
       }
       rethrow;
@@ -127,8 +121,23 @@ final class ClientMethodStreamManager {
 
   Future<void> _openMethodStream(
     MethodStreamConnectionDetails connectionDetails,
+    _MethodStreamOpenState openState,
   ) async {
+    // Resolve credentials before reserving a socket or registering an open.
+    // Cancellation during credential lookup must not start a new method.
+    connectionDetails.outputController.onCancel = openState.cancel;
+    if (openState.cancelled) return;
+    final authentication =
+        await connectionDetails.authKeyProvider?.authHeaderValue;
+    if (openState.cancelled) return;
+
     if (_webSocket == null) await _connectSynchronized();
+    if (openState.cancelled) {
+      _tryCloseConnection();
+      return;
+    }
+    final webSocket = _webSocket;
+    if (webSocket == null) throw const WebSocketClosedException();
 
     var connectionId = const Uuid().v4obj();
 
@@ -147,34 +156,18 @@ final class ClientMethodStreamManager {
 
     _inboundStreams[inboundStreamKey] = inboundStreamContext;
 
-    var openCommand = OpenMethodStreamCommand.buildMessage(
-      connectionId: connectionId,
-      endpoint: connectionDetails.endpoint,
-      method: connectionDetails.method,
-      args: connectionDetails.args,
-      inputStreams: parameterStreams,
-      authentication: await connectionDetails.authKeyProvider?.authHeaderValue,
-      authMode: connectionDetails.webAuthMode,
-    );
-
-    _addMessageToWebSocket(openCommand);
-    var openResponse = await inboundStreamContext.openCompleter.future;
-
-    if (openResponse != OpenMethodStreamResponseType.success) {
-      _inboundStreams.remove(inboundStreamKey);
-      _tryCloseConnection();
-      throw OpenMethodStreamException(openResponse);
-    }
-
     connectionDetails.outputController.onCancel = () async {
-      _addMessageToWebSocket(
-        CloseMethodStreamCommand.buildMessage(
-          connectionId: connectionId,
-          endpoint: connectionDetails.endpoint,
-          method: connectionDetails.method,
-          reason: CloseReason.done,
-        ),
-      );
+      openState.cancel();
+      if (identical(_webSocket, webSocket)) {
+        _addMessageToWebSocket(
+          CloseMethodStreamCommand.buildMessage(
+            connectionId: connectionId,
+            endpoint: connectionDetails.endpoint,
+            method: connectionDetails.method,
+            reason: CloseReason.done,
+          ),
+        );
+      }
 
       await _tryCloseInboundStream(
         endpoint: connectionDetails.endpoint,
@@ -184,6 +177,57 @@ final class ClientMethodStreamManager {
       );
       _tryCloseConnection();
     };
+
+    try {
+      var openCommand = OpenMethodStreamCommand.buildMessage(
+        connectionId: connectionId,
+        endpoint: connectionDetails.endpoint,
+        method: connectionDetails.method,
+        args: connectionDetails.args,
+        inputStreams: parameterStreams,
+        authentication: authentication,
+        authMode: connectionDetails.webAuthMode,
+      );
+
+      _addMessageToWebSocket(openCommand);
+      final openResponse = await inboundStreamContext.openCompleter.future
+          .timeout(
+            _connectionTimeout,
+            onTimeout: () => throw const ConnectionAttemptTimedOutException(),
+          );
+
+      if (openResponse != OpenMethodStreamResponseType.success) {
+        throw OpenMethodStreamException(openResponse);
+      }
+      // An accepted method may already have finished or disconnected while
+      // the opening caller was resuming. Its output owns that result.
+      if (!identical(_inboundStreams[inboundStreamKey], inboundStreamContext)) {
+        return;
+      }
+    } catch (error) {
+      _inboundStreams.remove(inboundStreamKey);
+      // Keep observing cancellation while authentication is being refreshed.
+      connectionDetails.outputController.onCancel = openState.cancel;
+      try {
+        if (error is ConnectionAttemptTimedOutException &&
+            identical(_webSocket, webSocket)) {
+          webSocket.sink.add(
+            CloseMethodStreamCommand.buildMessage(
+              connectionId: connectionId,
+              endpoint: connectionDetails.endpoint,
+              method: connectionDetails.method,
+              reason: CloseReason.error,
+            ),
+          );
+        }
+      } on Object {
+        // A socket that has already closed cannot receive cancellation.
+        // Preserve the opening error while still releasing local resources.
+      } finally {
+        _tryCloseConnection();
+      }
+      rethrow;
+    }
 
     _buildOutboundStreams(
       streams: connectionDetails.parameterStreams,
@@ -207,7 +251,7 @@ final class ClientMethodStreamManager {
   Future<void> _closeConnectionIfUnused() async {
     await _lock.synchronized(() async {
       if (_inboundStreams.isNotEmpty || _outboundStreams.isNotEmpty) return;
-      _cancelConnectionTimer();
+      _cancelKeepAlive();
       var webSocket = _webSocket;
       _webSocket = null;
       await webSocket?.sink.close();
@@ -224,9 +268,7 @@ final class ClientMethodStreamManager {
   }) =>
       '$connectionId:$endpoint:$method${parameter != null ? ':$parameter' : ''}';
 
-  void _cancelConnectionTimer() {
-    _connectionTimer?.cancel();
-    _connectionTimer = null;
+  void _cancelKeepAlive() {
     _pingTimer?.cancel();
     _pingTimer = null;
     _idleTimeoutTimer?.cancel();
@@ -238,10 +280,19 @@ final class ClientMethodStreamManager {
   /// If an exception is provided, it will be added to the inbound stream
   /// controller.
   Future<void> _closeAllStreams([Object? exception]) async {
-    var inputControllers = _inboundStreams.values
-        .map((c) => c.controller)
-        .toList();
+    final contexts = _inboundStreams.values.toList();
     _inboundStreams.clear();
+    final inputControllers = <StreamController>[];
+    for (final context in contexts) {
+      if (context.opened) {
+        inputControllers.add(context.controller);
+      } else if (!context.openCompleter.isCompleted) {
+        // Before acceptance, the opening caller owns error delivery.
+        context.openCompleter.completeError(
+          exception ?? const WebSocketClosedException(),
+        );
+      }
+    }
 
     // Remove onCancel callbacks to prevent controllers from
     // sending a close command to the server.
@@ -404,6 +455,15 @@ final class ClientMethodStreamManager {
       return;
     }
 
+    if (!inboundStreamContext.opened) {
+      if (!inboundStreamContext.openCompleter.isCompleted) {
+        inboundStreamContext.openCompleter.completeError(
+          const ConnectionClosedException(),
+        );
+      }
+      return;
+    }
+
     // Remove the onCancel callback to prevent the controller from sending
     // a close message to the server.
     inboundStreamContext.controller.onCancel = null;
@@ -488,6 +548,10 @@ final class ClientMethodStreamManager {
 
     if (inboundStreamContext.openCompleter.isCompleted) return;
 
+    // Record acceptance before completing the future: a close or disconnect
+    // can follow immediately, before the opening caller resumes.
+    inboundStreamContext.opened =
+        message.responseType == OpenMethodStreamResponseType.success;
     inboundStreamContext.openCompleter.complete(message.responseType);
   }
 
@@ -505,6 +569,13 @@ final class ClientMethodStreamManager {
       return;
     }
 
+    if (!inboundStreamContext.opened) {
+      if (!inboundStreamContext.openCompleter.isCompleted) {
+        inboundStreamContext.openCompleter.completeError(message.exception);
+      }
+      return;
+    }
+
     if (!inboundStreamContext.controller.isClosed) {
       inboundStreamContext.controller.addError(message.exception);
     }
@@ -518,9 +589,6 @@ final class ClientMethodStreamManager {
     try {
       await for (String jsonData in webSocket.stream) {
         _resetIdleTimeout();
-        if (!_handshakeComplete.isCompleted) {
-          _handshakeComplete.complete();
-        }
 
         WebSocketMessage message;
         try {
@@ -597,7 +665,7 @@ final class ClientMethodStreamManager {
   ) async {
     await _lock.synchronized(() async {
       if (_webSocket != null && !identical(_webSocket, webSocket)) return;
-      _cancelConnectionTimer();
+      _cancelKeepAlive();
       _webSocket = null;
       await _closeAllStreams(error);
       await webSocket.sink.close();
@@ -623,21 +691,10 @@ final class ClientMethodStreamManager {
             },
           );
 
-      webSocket.sink.add(PingCommand.buildMessage());
-      _connectionTimer = Timer(_connectionTimeout, () {
-        if (!_handshakeComplete.isCompleted) {
-          webSocket.sink.close();
-          _handshakeComplete.completeError('');
-        }
-      });
-
-      _handshakeComplete = Completer();
-      unawaited(_listenToWebSocketStream(webSocket));
-
-      await _handshakeComplete.future.catchError(
-        (e, s) => throw const ConnectionAttemptTimedOutException(),
-      );
+      // Method acceptance confirms liveness and authorization. A separate
+      // startup ping would add a round trip before that request can be sent.
       _webSocket = webSocket;
+      unawaited(_listenToWebSocketStream(webSocket));
       _startKeepAlive();
     });
   }
@@ -691,7 +748,14 @@ final class ClientMethodStreamManager {
   }
 }
 
+class _MethodStreamOpenState {
+  bool cancelled = false;
+
+  void cancel() => cancelled = true;
+}
+
 class _InboundStreamContext {
+  bool opened = false;
   final StreamController controller;
   final List<String> parameterStreams;
   final Completer<OpenMethodStreamResponseType> openCompleter =
