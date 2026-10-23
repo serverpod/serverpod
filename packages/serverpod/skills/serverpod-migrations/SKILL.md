@@ -7,7 +7,7 @@ description: Serverpod database migrations — when and how to create/apply/repa
 
 Serverpod has a migration system that generates SQL for changes to models with `table` in `.spy.yaml`. The migrations are applied:
 
-- When the `apply_migrations` tool is called via the `serverpod` MCP. Typically during development with the Serverpod runner running (`serverpod start` or `serverpod runner start`, see the [Serverpod Overview](../serverpod-overview/SKILL.md) skill).
+- When the `apply_migrations` tool is called via the `serverpod` MCP. Typically during development with the Serverpod runner running (`serverpod start` or `serverpod runner start`).
 - When the server is started with `dart run bin/main.dart --apply-migrations` flag. Typically when running the server in production.
 
 ## When migrations are needed
@@ -29,7 +29,7 @@ When the server is running under the runner use the `serverpod` MCP to:
 1. Create a migration using the `create_migration` tool.
 2. Apply the migration using the `apply_migrations` tool.
 
-ALWAYS use the MCP server if it is available. When it reports that the server is not running, follow the three steps in the [Serverpod Overview](../serverpod-overview/SKILL.md) skill: `tail_runner_logs`, then `serverpod runner start` in the server package when no runner is running, then the tools again.
+ALWAYS use the MCP server if it is available. When it reports that the server is not running, call `tail_runner_logs`, then run `serverpod runner start` in the server package when no runner is running, then call the tools again.
 
 ### ONLY if the MCP is not available or the runner cannot bring the server up
 
@@ -65,7 +65,7 @@ If the database is in an inconsistent state, a repair migration brings it back t
 1. Create the repair migration using the `create_repair_migration` tool. Optional arguments: `version` (target migration version, defaults to the latest), `tag`, and `force` (required for destructive changes, or when no drift is detected).
 2. Apply it using the `apply_migrations` tool, which applies both pending and repair migrations without restarting the server.
 
-ALWAYS use the MCP server if it is available. When it reports that the server is not running, follow the three steps in the [Serverpod Overview](../serverpod-overview/SKILL.md) skill: `tail_runner_logs`, then `serverpod runner start` when no runner is running, then the tools again.
+ALWAYS use the MCP server if it is available. When it reports that the server is not running, call `tail_runner_logs`, then run `serverpod runner start` when no runner is running, then call the tools again.
 
 ### ONLY if the runner cannot bring the server up
 
