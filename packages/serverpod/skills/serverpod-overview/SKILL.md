@@ -39,7 +39,7 @@ Do not check whether the server is running before acting: make the changes and c
 2. If none is running, run `serverpod runner start` in the server package. It returns zero once the server is up. It returns non-zero when the project does not build (the runner stays up and, with watch on, the default, starts the server once a change makes it build), when a configured port is held by something other than a Serverpod runner, or when Docker refused. Fix the cause instead of retrying. The one exception is a `serverpod runner start` your shell killed on a timeout before it returned: the runner keeps starting in the background, and running the command again waits for it.
 3. Call the MCP tool again. The MCP reconnects by itself.
 
-Leave the runner running when you are done; the user attaches to it with `serverpod start`. Run `serverpod runner stop` only when asked. Starting the stack with `--watch`, `--flutter`, `--docker` or server arguments that differ from the running runner's fails and names the difference; stop that runner first.
+Leave the runner running when you are done; the user attaches to it with `serverpod start`. Run `serverpod runner stop` only when asked. Starting the stack with `--watch`, `--target`, `--flutter`, `--docker` or server arguments that differ from the running runner's fails and names the difference; stop that runner first.
 
 ALWAYS use the MCP server instead of the command line. A running runner exposes:
 
