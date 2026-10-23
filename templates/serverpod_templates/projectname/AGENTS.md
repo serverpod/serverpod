@@ -25,7 +25,7 @@ While running, the runner watches for file changes to run incremental code gener
 
 Calling `serverpod generate` directly is not needed, but might be useful to troubleshoot when an incremental generation fails.
 
-ALWAYS use the MCP server instead of the command line. Use the MCP server to:
+ALWAYS use the MCP server instead of the command line for the tasks below. The `serverpod runner` commands are the exception: they manage the stack itself. Use the MCP server to:
 
 <!-- {{#database}} -->
 - `create_migration` and `apply_migrations` for database (after you change data models).
