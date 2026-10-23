@@ -100,9 +100,11 @@ class _OutputStreamContext implements _StreamContext {
 
   final StreamSubscription subscription;
 
+  final Future<void> Function() closeStreams;
+
   CloseReason? closeReason;
 
-  _OutputStreamContext(this.controller, this.subscription);
+  _OutputStreamContext(this.controller, this.subscription, this.closeStreams);
 }
 
 abstract interface class _StreamContext {
@@ -147,6 +149,7 @@ class MethodStreamManager {
 
   final Map<String, _InputStreamContext> _inputStreamContexts = {};
   final Map<String, _OutputStreamContext> _outputStreamContexts = {};
+  final Map<String, Future<void>> _closingOutputStreams = {};
 
   final _OnOutputStreamValue? _onOutputStreamValue;
   final _OnOutputStreamError? _onOutputStreamError;
@@ -174,27 +177,59 @@ class MethodStreamManager {
         .toList();
     _inputStreamContexts.clear();
 
-    var outboundStreamContexts = _outputStreamContexts.values.toList();
+    var outboundStreamContexts = _outputStreamContexts.entries.toList();
     _outputStreamContexts.clear();
 
-    var closeSubscriptionFutures = outboundStreamContexts.map(
-      // cancel() may return a Future with a narrower runtime type, such as
-      // Future<List<void>>. Normalize it before supplying a void timeout handler.
-      (c) => c.subscription
-          .cancel()
-          .then<void>((_) {})
-          .timeout(
-            _closeTimeout,
-            onTimeout: () async {
-              await c.controller.onCancel?.call();
-            },
-          ),
-    );
-
     await Future.wait([
-      ...closeSubscriptionFutures,
+      ..._closingOutputStreams.values,
+      for (final entry in outboundStreamContexts)
+        _cancelOutputStream(entry.key, entry.value),
       _closeControllers(inputControllers),
     ]);
+  }
+
+  Future<void> _cancelOutputStream(
+    String streamKey,
+    _OutputStreamContext context,
+  ) {
+    final pending = _closingOutputStreams[streamKey];
+    if (pending != null) return pending;
+
+    final closed = Completer<void>();
+    _closingOutputStreams[streamKey] = closed.future;
+
+    Future<void> close() async {
+      // Start cancellation before closing inputs so paused producers can
+      // release their subscriptions. Do not await it before closing inputs:
+      // an async generator may itself be waiting for an input's done event.
+      await Future.wait([
+        // Normalize narrower runtime futures before attaching a void timeout.
+        context.subscription
+            .cancel()
+            .then<void>((_) {})
+            .timeout(
+              _closeTimeout,
+              onTimeout: () async {
+                await context.controller.onCancel?.call();
+              },
+            ),
+        context.closeStreams(),
+      ]);
+    }
+
+    unawaited(
+      close().then(
+        (_) {
+          _closingOutputStreams.remove(streamKey);
+          closed.complete();
+        },
+        onError: (Object error, StackTrace stackTrace) {
+          _closingOutputStreams.remove(streamKey);
+          closed.completeError(error, stackTrace);
+        },
+      ),
+    );
+    return closed.future;
   }
 
   Future<void> closeStream({
@@ -211,6 +246,9 @@ class MethodStreamManager {
       methodStreamId: methodStreamId,
     );
     if (parameter == null) {
+      final pending = _closingOutputStreams[streamKey];
+      if (pending != null) return pending;
+
       var context = _outputStreamContexts[streamKey];
 
       if (context == null) {
@@ -219,17 +257,7 @@ class MethodStreamManager {
 
       // Immediate close of the stream
       _updateCloseReason(streamKey, reason);
-      // Cancel addStream's producer before closing its inputs. The producer
-      // may own paused input subscriptions that only cancellation can release.
-      await context.subscription
-          .cancel()
-          .then<void>((_) {})
-          .timeout(
-            _closeTimeout,
-            onTimeout: () async {
-              await context.controller.onCancel?.call();
-            },
-          );
+      await _cancelOutputStream(streamKey, context);
     } else {
       var context = _inputStreamContexts.remove(streamKey);
 
@@ -344,7 +372,13 @@ class MethodStreamManager {
     Session session,
     UuidValue methodStreamId,
   ) async {
-    bool isCancelled = false;
+    Future<void>? closingStreams;
+    Future<void> closeStreams() => closingStreams ??= _closeOutboundStream(
+      methodStreamCallContext,
+      methodStreamId,
+    );
+
+    Future<void>? closingSession;
     var revokedAuthenticationHandler =
         await _RevokedAuthenticationHandler.createIfAuthenticationIsRequired(
           methodStreamCallContext.endpoint,
@@ -358,21 +392,17 @@ class MethodStreamManager {
         );
 
     var outputController = StreamController(
-      onCancel: () async {
-        /// Guard against multiple calls to onCancel
-        /// This is required because we invoke the onCancel
-        /// method manually if the stream is closed by a timeout
-        /// or a request from the client.
-        if (isCancelled) return;
-        isCancelled = true;
+      // The timeout fallback and late producer cancellation join the same
+      // cleanup, including any asynchronous session-close listeners.
+      onCancel: () => closingSession ??= () async {
         session.serverpod.logVerbose(
           'Cancelling method output stream for ${methodStreamCallContext.fullEndpointPath}.'
           '${methodStreamCallContext.method.name}, id $methodStreamId',
         );
         await revokedAuthenticationHandler?.destroy(session);
-        await _closeOutboundStream(methodStreamCallContext, methodStreamId);
+        await closeStreams();
         await session.close();
-      },
+      }(),
     );
 
     var streamKey = _buildStreamKey(
@@ -429,6 +459,7 @@ class MethodStreamManager {
     var outputStreamContext = _OutputStreamContext(
       outputController,
       subscription,
+      closeStreams,
     );
     _outputStreamContexts[_buildStreamKey(
           endpoint: methodStreamCallContext.fullEndpointPath,
