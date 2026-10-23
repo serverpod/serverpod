@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_mcp/client.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
+import 'package:serverpod_cli/src/mcp/serverpod_issue_reporter.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:stream_channel/stream_channel.dart';
@@ -174,6 +177,7 @@ void main() {
               'spawn_flutter_app',
               'get_flutter_app_dtd',
               'tail_runner_logs',
+              'report_serverpod_issue',
             }),
           );
         },
@@ -276,6 +280,138 @@ void main() {
           expect(jsonDecode(text), lines.sublist(2));
         },
       );
+    },
+  );
+
+  group(
+    'Given a BridgeMcpServer with no runner and a feedback service that creates issues,',
+    () {
+      late Directory tempServerDir;
+      late _Pair pair;
+      late List<http.Request> sent;
+
+      setUp(() async {
+        tempServerDir = await Directory.systemTemp.createTemp('bt');
+        sent = [];
+        pair = await _makeBridgePair(
+          '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock',
+          logPath: serverpodRunnerLogPath(tempServerDir.path),
+          issueReporter: _reporterResponding(201, onRequest: sent.add),
+        );
+      });
+
+      tearDown(() async {
+        await pair.dispose();
+        await _safeDelete(tempServerDir);
+      });
+
+      test(
+        'when calling report_serverpod_issue for a bug, '
+        'then the report is sent with the MCP client that filed it',
+        () async {
+          final result = await pair.client.callTool(
+            CallToolRequest(
+              name: 'report_serverpod_issue',
+              arguments: {
+                'title': '  Migration drops index  ',
+                'description': 'Renaming a column drops its index.',
+                'type': 'bug',
+              },
+            ),
+          );
+
+          expect(result.isError, isNull);
+          final text = (result.content.single as TextContent).text;
+          expect(text, contains('Report sent'));
+          final body = jsonDecode(sent.single.body) as Map<String, dynamic>;
+          expect(body, containsPair('title', 'Migration drops index'));
+          expect(
+            body,
+            containsPair('description', 'Renaming a column drops its index.'),
+          );
+          expect(body, containsPair('type', 'bug'));
+          expect(
+            body['context'],
+            allOf(
+              containsPair('agent', 'bridge-test-client'),
+              containsPair('agentVersion', '0.0.0'),
+              contains('mcpVersion'),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when calling report_serverpod_issue without a type, '
+        'then it is sent as feedback',
+        () async {
+          await pair.client.callTool(
+            CallToolRequest(
+              name: 'report_serverpod_issue',
+              arguments: {
+                'title': 'Migration tools are hard to discover',
+                'description': 'It took a while to find `create_migration`.',
+              },
+            ),
+          );
+
+          final body = jsonDecode(sent.single.body) as Map<String, dynamic>;
+          expect(body, containsPair('type', 'feedback'));
+        },
+      );
+
+      test(
+        'when calling report_serverpod_issue with a blank description, '
+        'then the result is an error and nothing is sent',
+        () async {
+          final result = await pair.client.callTool(
+            CallToolRequest(
+              name: 'report_serverpod_issue',
+              arguments: {'title': 'Migration drops index', 'description': ' '},
+            ),
+          );
+
+          expect(result.isError, isTrue);
+          expect(sent, isEmpty);
+        },
+      );
+    },
+  );
+
+  test(
+    'Given a BridgeMcpServer with a feedback service that rejects the report as invalid, '
+    'when calling report_serverpod_issue, '
+    'then the result is an error with the service message for the agent to fix',
+    () async {
+      final pair = await _makeOfflineBridgePair(
+        _reporterResponding(400, body: {'error': '"title" is too long.'}),
+      );
+
+      final result = await _callReport(pair);
+
+      expect(result.isError, isTrue);
+      final text = (result.content.single as TextContent).text;
+      expect(text, contains('"title" is too long.'));
+      expect(text, contains('call again'));
+    },
+  );
+
+  test(
+    'Given a BridgeMcpServer with a feedback service that fails internally, '
+    'when calling report_serverpod_issue, '
+    'then the result is an error suggesting one retry and GitHub issues',
+    () async {
+      final pair = await _makeOfflineBridgePair(
+        _reporterResponding(500, body: {'error': 'Something went wrong.'}),
+      );
+
+      final result = await _callReport(pair);
+
+      expect(result.isError, isTrue);
+      final text = (result.content.single as TextContent).text;
+      expect(text, contains('HTTP 500'));
+      expect(text, contains('retry once'));
+      expect(text, contains('github.com/serverpod/serverpod/issues'));
     },
   );
 
@@ -417,6 +553,7 @@ class _Pair {
 Future<_Pair> _makeBridgePair(
   String socketPath, {
   required String logPath,
+  ServerpodIssueReporter? issueReporter,
 }) async {
   final clientToBridge = StreamController<String>();
   final bridgeToClient = StreamController<String>();
@@ -433,6 +570,7 @@ Future<_Pair> _makeBridgePair(
     bridgeChannel,
     socketPath: socketPath,
     logPath: logPath,
+    issueReporter: issueReporter,
   );
   final client = MCPClient(
     Implementation(name: 'bridge-test-client', version: '0.0.0'),
@@ -451,6 +589,44 @@ Future<_Pair> _makeBridgePair(
 
   return _Pair(bridge, client);
 }
+
+ServerpodIssueReporter _reporterResponding(
+  int status, {
+  Object? body,
+  void Function(http.Request)? onRequest,
+}) => ServerpodIssueReporter(
+  url: Uri.parse('https://feedback.test/feedback'),
+  client: MockClient((request) async {
+    onRequest?.call(request);
+    return http.Response(body == null ? '' : jsonEncode(body), status);
+  }),
+);
+
+/// A bridge with no runner, cleaned up when the test ends.
+Future<_Pair> _makeOfflineBridgePair(
+  ServerpodIssueReporter issueReporter,
+) async {
+  final tempServerDir = await Directory.systemTemp.createTemp('bt');
+  addTearDown(() => _safeDelete(tempServerDir));
+  final pair = await _makeBridgePair(
+    '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock',
+    logPath: serverpodRunnerLogPath(tempServerDir.path),
+    issueReporter: issueReporter,
+  );
+  addTearDown(pair.dispose);
+  return pair;
+}
+
+Future<CallToolResult> _callReport(_Pair pair) => pair.client.callTool(
+  CallToolRequest(
+    name: 'report_serverpod_issue',
+    arguments: {
+      'title': 'Migration drops index',
+      'description': 'Renaming a column drops its index.',
+      'type': 'bug',
+    },
+  ),
+);
 
 Future<void> _safeDelete(Directory dir) async {
   try {
