@@ -23,7 +23,7 @@ apiServer:
 
 `port` is the port the listener binds. `publicHost`/`publicPort`/`publicScheme` are used for URLs returned to clients; a `publicPort` of 0 follows the bound port.
 
-In development the runner keeps the configured ports unless another Serverpod runner on the machine holds them, in which case it binds ephemeral ports (through `SERVERPOD_API_SERVER_PORT`, its siblings and `SERVERPOD_DATABASE_PORT`; the `_PUBLIC_PORT` variables of the api, insights and web listeners carry the same value, so URLs returned to clients use the bound port) and publishes the real addresses in `serverpod runner status`. See [Several servers at once](../serverpod-overview/SKILL.md#several-servers-at-once) in the overview skill.
+In development the Serverpod runner keeps the configured ports unless another runner on the machine holds them, in which case it binds ephemeral ports (through `SERVERPOD_API_SERVER_PORT`, its siblings and `SERVERPOD_DATABASE_PORT`; the `_PUBLIC_PORT` variables of the api, insights and web listeners carry the same value, so URLs returned to clients use the bound port) and publishes the real addresses in `serverpod runner status`. See [Several servers at once](../serverpod-overview/SKILL.md#several-servers-at-once) in the overview skill.
 
 ## Database
 

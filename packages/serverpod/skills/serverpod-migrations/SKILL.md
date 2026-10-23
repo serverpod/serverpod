@@ -7,7 +7,7 @@ description: Serverpod database migrations — when and how to create/apply/repa
 
 Serverpod has a migration system that generates SQL for changes to models with `table` in `.spy.yaml`. The migrations are applied:
 
-- When the `apply_migrations` tool is called via the `serverpod` MCP. Typically during development with a running runner (`serverpod start` or `serverpod runner start`).
+- When the `apply_migrations` tool is called via the `serverpod` MCP. Typically during development with the Serverpod runner running (`serverpod start` or `serverpod runner start`, see the [Serverpod Overview](../serverpod-overview/SKILL.md) skill).
 - When the server is started with `dart run bin/main.dart --apply-migrations` flag. Typically when running the server in production.
 
 ## When migrations are needed
