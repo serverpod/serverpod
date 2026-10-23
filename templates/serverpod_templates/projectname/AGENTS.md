@@ -49,7 +49,7 @@ NEVER edit generated code. The server's `lib/src/generated/` directory and the w
 Migrations are a narrow exception: the `migration.sql` of a generated migration MAY be edited by hand when the generated SQL would lose data — to add a data transformation, or to reach a destructive change through non-destructive steps. Never touch the other files in the migration directory, and keep the schema the SQL ends up with identical to `definition.sql` — new databases are created from that file and never run `migration.sql`.
 <!-- {{/database}} -->
 
-Only when `serverpod runner start` cannot bring the server up, fall back to the CLI in the server package:
+Only when the MCP is not available or `serverpod runner start` cannot bring the server up, fall back to the CLI in the server package:
 
 - `serverpod generate` to regenerate the client and the generated server code.
 <!-- {{#database}} -->
