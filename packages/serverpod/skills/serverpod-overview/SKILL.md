@@ -63,7 +63,7 @@ The packages usually share a `config/development.yaml` with the same ports (8080
 
 A configured port held by anything other than a Serverpod runner, such as a server started by hand with `dart run bin/main.dart`, is an error: stop that process or change the port in `config/development.yaml`.
 
-The embedded PostgreSQL (`database.dataPath`) is per checkout. It listens on its Unix socket, and on loopback TCP at `database.port` when the run mode has a database password. That port is a fourth listener: it moves aside with the server ports, and `status` prints the database address. A database this checkout already runs, started by `serverpod database start`, is joined rather than moved. Only a project that uses the Docker Compose database shares host ports, and the compose project is named after the server directory, so a second checkout of such a project collides on the containers themselves, not only on the host ports: give its server directory another name, or use an embedded database.
+The embedded PostgreSQL (`database.dataPath`) is per checkout. It listens on its Unix socket, and on loopback TCP at `database.port` when the run mode has a database password. That port is a fourth listener: it moves aside with the server ports, and `status` prints the database address. A database this checkout already runs, started by `serverpod database start`, is joined rather than moved. Only a project that uses the Docker Compose database shares host ports, and the compose project is named after the server directory, so two checkouts of such a project would share one set of containers. Run one such checkout at a time: stop the other checkout's runner before starting this one.
 
 ## Working on the project with no running instance
 
