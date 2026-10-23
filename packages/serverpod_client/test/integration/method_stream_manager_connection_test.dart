@@ -54,19 +54,22 @@ void main() async {
     },
   );
 
-  group('Given non responsive websocket server', () {
+  group('Given a server withholding method acceptance,', () {
     Completer<Uri> callbackUrlFuture;
     late Uri webSocketHost;
     late Future<void> Function() closeServer;
-    late int pingCommandsReceived;
+    late int openCommandsReceived;
     setUp(() async {
-      pingCommandsReceived = 0;
+      openCommandsReceived = 0;
       callbackUrlFuture = Completer<Uri>();
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
           webSocket.textEvents.listen((event) {
-            pingCommandsReceived++;
-            // Do nothing
+            final message = WebSocketMessage.fromJsonString(
+              event,
+              TestSerializationManager(),
+            );
+            if (message is OpenMethodStreamCommand) openCommandsReceived++;
           });
         },
         onConnected: (host) {
@@ -80,7 +83,8 @@ void main() async {
     tearDown(() async => await closeServer());
 
     test(
-      'when trying to open method stream then ConnectionAttemptTimedOutException is thrown.',
+      'when a method is opened, '
+      'then opening fails with ConnectionAttemptTimedOutException.',
       () async {
         var streamManager = ClientMethodStreamManager(
           connectionTimeout: const Duration(milliseconds: 100),
@@ -98,7 +102,8 @@ void main() async {
     );
 
     test(
-      'when trying to open multiple method streams then a connection attempt is made for each method stream.',
+      'when multiple methods are opened, '
+      'then each method sends its own open command.',
       () async {
         var streamManager = ClientMethodStreamManager(
           connectionTimeout: const Duration(milliseconds: 100),
@@ -120,7 +125,7 @@ void main() async {
           (error, stackTrace) => Future.value([]),
         );
 
-        expect(pingCommandsReceived, 5);
+        expect(openCommandsReceived, 5);
       },
     );
   });
@@ -233,7 +238,8 @@ void main() async {
 
     tearDown(() async => await closeServer());
     test(
-      'when trying to open multiple method streams at once then single connection is validated using ping commands.',
+      'when multiple methods are opened, '
+      'then they open without a startup ping.',
       () async {
         var streamManager = ClientMethodStreamManager(
           connectionTimeout: const Duration(milliseconds: 100),
@@ -252,7 +258,7 @@ void main() async {
           openMethodStream(),
           openMethodStream(),
         ]);
-        expect(pingCommandsReceived, 1);
+        expect(pingCommandsReceived, 0);
       },
     );
   });
