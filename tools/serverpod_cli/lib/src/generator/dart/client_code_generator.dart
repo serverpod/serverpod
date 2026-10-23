@@ -25,16 +25,27 @@ class DartClientCodeGenerator extends CodeGenerator {
       config: config,
     );
 
+    return clientSideGenerator.generateCode(_modelContext(models, config));
+  }
+
+  @override
+  Set<String> serializableModelPaths({
+    required List<SerializableModelDefinition> models,
+    required GeneratorConfig config,
+  }) => {
+    for (var entry in _modelContext(models, config).entries)
+      entry.model.getFullFilePath(config, serverCode: false),
+  };
+
+  static ModelAllocatorContext _modelContext(
+    List<SerializableModelDefinition> models,
+    GeneratorConfig config,
+  ) {
     var clientClasses = models
         .where((element) => !element.serverOnly && !element.isSharedModel)
         .toList();
 
-    var modelAllocatorContext = ModelAllocatorContext.build(
-      clientClasses,
-      config,
-    );
-
-    return clientSideGenerator.generateCode(modelAllocatorContext);
+    return ModelAllocatorContext.build(clientClasses, config);
   }
 
   @override
