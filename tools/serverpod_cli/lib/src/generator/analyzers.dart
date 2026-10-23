@@ -582,10 +582,9 @@ class Analyzers {
         ...generatedProtocolFiles,
       };
 
-      // A protocol-only run writes no model files, but the protocol it just
-      // wrote refers to every current model, so their files must survive the
-      // cleanup. Derived from the models rather than read from the stamp: a
-      // failed run writes model files without stamping them.
+      // The protocol refers to every current model, so a protocol-only run
+      // keeps their files. Derived from the models, not the stamp, which a
+      // failed run does not write.
       if (!requirements.generateModels) {
         final modelFiles = ServerpodCodeGenerator.serializableModelPaths(
           models: allModels,

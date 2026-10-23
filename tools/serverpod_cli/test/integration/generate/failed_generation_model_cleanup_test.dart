@@ -32,7 +32,6 @@ class GreetingEndpoint extends Endpoint {
 }
 ''';
 
-      /// Whether the generation stamp lists both generated files of the model.
       bool stampListsModel() {
         final stamp = readGenerationStamp(config);
         return stamp.contains(serverModelFile.path) &&
@@ -129,8 +128,6 @@ fields:
       group(
         'when the endpoint is fixed and incremental generation runs again,',
         () {
-          late GenerateResult result;
-
           setUp(() async {
             endpointFile.writeAsStringSync(endpointSource);
             result = await generateIncrementally({endpointFile.path});
