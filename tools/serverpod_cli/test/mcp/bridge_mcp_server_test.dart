@@ -284,19 +284,27 @@ void main() {
   );
 
   group(
-    'Given a BridgeMcpServer with no runner and a feedback service that creates issues,',
+    'Given a BridgeMcpServer with no runner listening,',
     () {
       late Directory tempServerDir;
       late _Pair pair;
-      late List<http.Request> sent;
+      late List<http.Request> requests;
+      late http.Response response;
 
       setUp(() async {
         tempServerDir = await Directory.systemTemp.createTemp('bt');
-        sent = [];
+        requests = [];
+        response = http.Response('', 201);
         pair = await _makeBridgePair(
           '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock',
           logPath: serverpodRunnerLogPath(tempServerDir.path),
-          issueReporter: _reporterResponding(201, onRequest: sent.add),
+          issueReporter: ServerpodIssueReporter(
+            url: Uri.parse('https://feedback.test/feedback'),
+            client: MockClient((request) async {
+              requests.add(request);
+              return response;
+            }),
+          ),
         );
       });
 
@@ -305,113 +313,232 @@ void main() {
         await _safeDelete(tempServerDir);
       });
 
-      test(
-        'when calling report_serverpod_issue for a bug, '
-        'then the report is sent with the MCP client that filed it',
-        () async {
-          final result = await pair.client.callTool(
-            CallToolRequest(
-              name: 'report_serverpod_issue',
-              arguments: {
-                'title': '  Migration drops index  ',
-                'description': 'Renaming a column drops its index.',
-                'type': 'bug',
-              },
-            ),
+      group('with a feedback service that creates issues,', () {
+        group('when calling report_serverpod_issue for a bug,', () {
+          late CallToolResult result;
+
+          setUp(() async {
+            result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration drops index',
+                  'description': 'Renaming a column drops its index.',
+                  'type': 'bug',
+                },
+              ),
+            );
+          });
+
+          test('then the result is not an error', () {
+            expect(result.isError, isNull);
+          });
+
+          test('then the result says the report was sent', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('Report sent'),
+            );
+          });
+
+          test(
+            'then the report is sent with its title, description and type',
+            () {
+              final body =
+                  jsonDecode(requests.single.body) as Map<String, dynamic>;
+              expect(body, containsPair('title', 'Migration drops index'));
+              expect(
+                body,
+                containsPair(
+                  'description',
+                  'Renaming a column drops its index.',
+                ),
+              );
+              expect(body, containsPair('type', 'bug'));
+            },
           );
 
-          expect(result.isError, isNull);
-          final text = (result.content.single as TextContent).text;
-          expect(text, contains('Report sent'));
-          final body = jsonDecode(sent.single.body) as Map<String, dynamic>;
-          expect(body, containsPair('title', 'Migration drops index'));
-          expect(
-            body,
-            containsPair('description', 'Renaming a column drops its index.'),
-          );
-          expect(body, containsPair('type', 'bug'));
-          expect(
-            body['context'],
-            allOf(
-              containsPair('agent', 'bridge-test-client'),
-              containsPair('agentVersion', '0.0.0'),
-              contains('mcpVersion'),
-            ),
-          );
-        },
-      );
-
-      test(
-        'when calling report_serverpod_issue without a type, '
-        'then it is sent as feedback',
-        () async {
-          await pair.client.callTool(
-            CallToolRequest(
-              name: 'report_serverpod_issue',
-              arguments: {
-                'title': 'Migration tools are hard to discover',
-                'description': 'It took a while to find `create_migration`.',
-              },
-            ),
+          test(
+            'then the report context names the MCP client that filed it',
+            () {
+              final body =
+                  jsonDecode(requests.single.body) as Map<String, dynamic>;
+              expect(
+                body['context'],
+                allOf(
+                  containsPair('agent', 'bridge-test-client'),
+                  containsPair('agentVersion', '0.0.0'),
+                ),
+              );
+            },
           );
 
-          final body = jsonDecode(sent.single.body) as Map<String, dynamic>;
-          expect(body, containsPair('type', 'feedback'));
-        },
-      );
+          test('then the report context holds the MCP protocol version', () {
+            final body =
+                jsonDecode(requests.single.body) as Map<String, dynamic>;
+            expect(
+              body['context'],
+              containsPair(
+                'mcpVersion',
+                ProtocolVersion.latestSupported.versionString,
+              ),
+            );
+          });
+        });
 
-      test(
-        'when calling report_serverpod_issue with a blank description, '
-        'then the result is an error and nothing is sent',
-        () async {
-          final result = await pair.client.callTool(
-            CallToolRequest(
-              name: 'report_serverpod_issue',
-              arguments: {'title': 'Migration drops index', 'description': ' '},
-            ),
+        test(
+          'when calling report_serverpod_issue without a type, '
+          'then the report is sent as feedback',
+          () async {
+            await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration tools are hard to discover',
+                  'description': 'It took a while to find `create_migration`.',
+                },
+              ),
+            );
+
+            final body =
+                jsonDecode(requests.single.body) as Map<String, dynamic>;
+            expect(body, containsPair('type', 'feedback'));
+          },
+        );
+
+        test(
+          'when calling report_serverpod_issue with a title padded by whitespace, '
+          'then the report is sent with the title trimmed',
+          () async {
+            await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': '  Migration drops index  ',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+
+            final body =
+                jsonDecode(requests.single.body) as Map<String, dynamic>;
+            expect(body, containsPair('title', 'Migration drops index'));
+          },
+        );
+
+        group(
+          'when calling report_serverpod_issue with a blank description,',
+          () {
+            late CallToolResult result;
+
+            setUp(() async {
+              result = await pair.client.callTool(
+                CallToolRequest(
+                  name: 'report_serverpod_issue',
+                  arguments: {
+                    'title': 'Migration drops index',
+                    'description': ' ',
+                  },
+                ),
+              );
+            });
+
+            test('then the result is an error', () {
+              expect(result.isError, isTrue);
+            });
+
+            test('then no report is sent', () {
+              expect(requests, isEmpty);
+            });
+          },
+        );
+      });
+
+      group('with a feedback service that rejects the report as invalid,', () {
+        setUp(() {
+          response = http.Response(
+            jsonEncode({'error': '"title" is too long.'}),
+            400,
           );
+        });
 
-          expect(result.isError, isTrue);
-          expect(sent, isEmpty);
-        },
-      );
-    },
-  );
+        group('when calling report_serverpod_issue,', () {
+          late CallToolResult result;
 
-  test(
-    'Given a BridgeMcpServer with a feedback service that rejects the report as invalid, '
-    'when calling report_serverpod_issue, '
-    'then the result is an error with the service message for the agent to fix',
-    () async {
-      final pair = await _makeOfflineBridgePair(
-        _reporterResponding(400, body: {'error': '"title" is too long.'}),
-      );
+          setUp(() async {
+            result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration drops index',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+          });
 
-      final result = await _callReport(pair);
+          test('then the result is an error', () {
+            expect(result.isError, isTrue);
+          });
 
-      expect(result.isError, isTrue);
-      final text = (result.content.single as TextContent).text;
-      expect(text, contains('"title" is too long.'));
-      expect(text, contains('call again'));
-    },
-  );
+          test('then the result holds the service error message', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('"title" is too long.'),
+            );
+          });
 
-  test(
-    'Given a BridgeMcpServer with a feedback service that fails internally, '
-    'when calling report_serverpod_issue, '
-    'then the result is an error suggesting one retry and GitHub issues',
-    () async {
-      final pair = await _makeOfflineBridgePair(
-        _reporterResponding(500, body: {'error': 'Something went wrong.'}),
-      );
+          test('then the result asks the agent to fix it and call again', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('Fix it and call again'),
+            );
+          });
+        });
+      });
 
-      final result = await _callReport(pair);
+      group('with a feedback service that fails internally,', () {
+        setUp(() {
+          response = http.Response(
+            jsonEncode({'error': 'Something went wrong.'}),
+            500,
+          );
+        });
 
-      expect(result.isError, isTrue);
-      final text = (result.content.single as TextContent).text;
-      expect(text, contains('HTTP 500'));
-      expect(text, contains('retry once'));
-      expect(text, contains('github.com/serverpod/serverpod/issues'));
+        group('when calling report_serverpod_issue,', () {
+          late CallToolResult result;
+
+          setUp(() async {
+            result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration drops index',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+          });
+
+          test('then the result is an error', () {
+            expect(result.isError, isTrue);
+          });
+
+          test('then the result suggests retrying once later', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('retry once later'),
+            );
+          });
+
+          test('then the result points the user to GitHub issues', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('https://github.com/serverpod/serverpod/issues'),
+            );
+          });
+        });
+      });
     },
   );
 
@@ -589,44 +716,6 @@ Future<_Pair> _makeBridgePair(
 
   return _Pair(bridge, client);
 }
-
-ServerpodIssueReporter _reporterResponding(
-  int status, {
-  Object? body,
-  void Function(http.Request)? onRequest,
-}) => ServerpodIssueReporter(
-  url: Uri.parse('https://feedback.test/feedback'),
-  client: MockClient((request) async {
-    onRequest?.call(request);
-    return http.Response(body == null ? '' : jsonEncode(body), status);
-  }),
-);
-
-/// A bridge with no runner, cleaned up when the test ends.
-Future<_Pair> _makeOfflineBridgePair(
-  ServerpodIssueReporter issueReporter,
-) async {
-  final tempServerDir = await Directory.systemTemp.createTemp('bt');
-  addTearDown(() => _safeDelete(tempServerDir));
-  final pair = await _makeBridgePair(
-    '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock',
-    logPath: serverpodRunnerLogPath(tempServerDir.path),
-    issueReporter: issueReporter,
-  );
-  addTearDown(pair.dispose);
-  return pair;
-}
-
-Future<CallToolResult> _callReport(_Pair pair) => pair.client.callTool(
-  CallToolRequest(
-    name: 'report_serverpod_issue',
-    arguments: {
-      'title': 'Migration drops index',
-      'description': 'Renaming a column drops its index.',
-      'type': 'bug',
-    },
-  ),
-);
 
 Future<void> _safeDelete(Directory dir) async {
   try {
