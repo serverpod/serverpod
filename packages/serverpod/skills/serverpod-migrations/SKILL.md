@@ -29,7 +29,7 @@ When the server is running under the runner use the `serverpod` MCP to:
 1. Create a migration using the `create_migration` tool.
 2. Apply the migration using the `apply_migrations` tool.
 
-ALWAYS use the MCP server if it is available. When it reports that the server is not running, start the runner with `serverpod runner start` in the server package (see the [Serverpod Overview](../serverpod-overview/SKILL.md) skill) and call the tools again.
+ALWAYS use the MCP server if it is available. When it reports that the server is not running, follow the three steps in the [Serverpod Overview](../serverpod-overview/SKILL.md) skill: `tail_runner_logs`, then `serverpod runner start` in the server package when no runner is running, then the tools again.
 
 ### ONLY if the runner cannot bring the server up
 
@@ -65,7 +65,7 @@ If the database is in an inconsistent state, a repair migration brings it back t
 1. Create the repair migration using the `create_repair_migration` tool. Optional arguments: `version` (target migration version, defaults to the latest), `tag`, and `force` (required for destructive changes, or when no drift is detected).
 2. Apply it using the `apply_migrations` tool, which applies both pending and repair migrations without restarting the server.
 
-ALWAYS use the MCP server if it is available. When it reports that the server is not running, start the runner with `serverpod runner start` and call the tools again.
+ALWAYS use the MCP server if it is available. When it reports that the server is not running, follow the three steps in the [Serverpod Overview](../serverpod-overview/SKILL.md) skill: `tail_runner_logs`, then `serverpod runner start` when no runner is running, then the tools again.
 
 ### ONLY if the runner cannot bring the server up
 
