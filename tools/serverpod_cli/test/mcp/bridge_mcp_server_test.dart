@@ -58,6 +58,7 @@ void main() {
         pair = await _makeBridgePair(
           runner.socketPath,
           logPath: serverpodRunnerLogPath(tempServerDir.path),
+          serverDir: tempServerDir.path,
         );
       });
 
@@ -76,6 +77,7 @@ void main() {
           pair = await _makeBridgePair(
             runner.socketPath,
             logPath: serverpodRunnerLogPath(tempServerDir.path),
+            serverDir: tempServerDir.path,
           );
 
           expect(stopCalls, 0);
@@ -147,6 +149,7 @@ void main() {
         pair = await _makeBridgePair(
           '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock',
           logPath: serverpodRunnerLogPath(tempServerDir.path),
+          serverDir: tempServerDir.path,
         );
       });
 
@@ -181,7 +184,7 @@ void main() {
 
       test(
         'when calling apply_migrations with no runner, '
-        'then the result is a not-running error asking the user to start serverpod',
+        'then the result is a not-running error pointing at serverpod runner start',
         () async {
           final result = await pair.client.callTool(
             CallToolRequest(name: 'apply_migrations'),
@@ -189,7 +192,7 @@ void main() {
           expect(result.isError, isTrue);
           final text = (result.content.first as TextContent).text;
           expect(text, contains('not running'));
-          expect(text, contains('serverpod start'));
+          expect(text, contains('serverpod runner start'));
         },
       );
 
@@ -243,6 +246,7 @@ void main() {
         pair = await _makeBridgePair(
           '${tempServerDir.path}/registry/gone/mcp.sock',
           logPath: logPath,
+          serverDir: tempServerDir.path,
         );
       });
 
@@ -295,6 +299,7 @@ void main() {
           final pair = await _makeBridgePair(
             socketPath,
             logPath: serverpodRunnerLogPath(tempServerDir.path),
+            serverDir: tempServerDir.path,
           );
           addTearDown(pair.dispose);
 
@@ -343,6 +348,7 @@ void main() {
         pair = await _makeBridgePair(
           socketPath,
           logPath: serverpodRunnerLogPath(tempServerDir.path),
+          serverDir: tempServerDir.path,
         );
         addTearDown(pair.dispose);
 
@@ -417,6 +423,7 @@ class _Pair {
 Future<_Pair> _makeBridgePair(
   String socketPath, {
   required String logPath,
+  required String serverDir,
 }) async {
   final clientToBridge = StreamController<String>();
   final bridgeToClient = StreamController<String>();
@@ -433,6 +440,7 @@ Future<_Pair> _makeBridgePair(
     bridgeChannel,
     socketPath: socketPath,
     logPath: logPath,
+    serverDir: serverDir,
   );
   final client = MCPClient(
     Implementation(name: 'bridge-test-client', version: '0.0.0'),
