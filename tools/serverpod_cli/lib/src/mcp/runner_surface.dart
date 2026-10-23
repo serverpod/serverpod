@@ -195,3 +195,39 @@ final List<Tool> runnerStaticTools = [
 ];
 
 final List<Resource> runnerStaticResources = [vmServiceResource];
+
+/// Answered by the `serverpod mcp-server` bridge itself, not the runner, so
+/// issues that keep the server from starting can still be reported.
+final Tool reportServerpodIssueTool = Tool(
+  name: 'report_serverpod_issue',
+  description:
+      'Report a bug or send feedback to the Serverpod team. Use it whenever '
+      'you hit a problem in anything Serverpod provides (the framework, CLI, '
+      'modules, Serverpod Cloud, these tools, or unmodified generated code), '
+      "even after working around it. Not for issues in the user's own code. "
+      'Environment details are added automatically.',
+  inputSchema: Schema.object(
+    properties: {
+      'title': Schema.string(
+        description: 'One-line summary.',
+        maxLength: 200,
+      ),
+      'description': Schema.string(
+        description:
+            'Markdown: what happened versus what you expected, steps to '
+            'reproduce, and relevant errors. For bugs, add a diagnosis: '
+            'likely root cause, evidence, and confidence. No secrets or '
+            'personal data.',
+        maxLength: 50000,
+      ),
+      // A raw map, as `enumValues` is deprecated in newer dart_mcp versions
+      // and `defaultValue` is missing from older ones.
+      'type': const StringSchema.fromMap({
+        'type': 'string',
+        'enum': ['bug', 'feedback'],
+        'default': 'feedback',
+      }),
+    },
+    required: ['title', 'description'],
+  ),
+);

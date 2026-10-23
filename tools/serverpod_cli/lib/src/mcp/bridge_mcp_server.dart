@@ -6,6 +6,7 @@ import 'package:dart_mcp/client.dart';
 import 'package:dart_mcp/server.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/mcp/runner_surface.dart';
+import 'package:serverpod_cli/src/mcp/serverpod_issue_reporter.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' show connectUnixSocket;
 
@@ -34,6 +35,8 @@ base class BridgeMcpServer extends MCPServer
   /// The canonical absolute path of the server package this bridge serves.
   final String serverDir;
 
+  final ServerpodIssueReporter _issueReporter;
+
   final MCPClient _client = MCPClient(_bridgeImplementation);
 
   ServerConnection? _connection;
@@ -45,7 +48,9 @@ base class BridgeMcpServer extends MCPServer
     required this.socketPath,
     required this.logPath,
     required this.serverDir,
-  }) : super.fromStreamChannel(
+    ServerpodIssueReporter? issueReporter,
+  }) : _issueReporter = issueReporter ?? ServerpodIssueReporter(),
+       super.fromStreamChannel(
          implementation: _bridgeImplementation,
          instructions:
              'Manage the Serverpod server in $serverDir and its Flutter app, '
@@ -57,18 +62,25 @@ base class BridgeMcpServer extends MCPServer
              'URI. If a tool reports the server is not running, call '
              '`tail_runner_logs` to see whether it is still starting or why '
              'it stopped, then run `serverpod runner start` with '
-             '`--directory` set to `$serverDir` and call the tool again.',
+             '`--directory` set to `$serverDir` and call the tool again. '
+             'Report any Serverpod bug you hit with `report_serverpod_issue`.',
        ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
     }
     registerTool(tailRunnerLogsTool, _tailRunnerLogs);
+    registerTool(reportServerpodIssueTool, _reportServerpodIssue);
     for (final resource in runnerStaticResources) {
       addResource(resource, _makeResourceReader(resource.uri));
     }
   }
 
   bool get _isConnected => _connection != null;
+
+  CallToolResult _textResult(String text, {bool? isError}) => CallToolResult(
+    content: [TextContent(text: text)],
+    isError: isError,
+  );
 
   CallToolResult _notRunningError() => CallToolResult(
     content: [
@@ -109,6 +121,53 @@ base class BridgeMcpServer extends MCPServer
         ? lines
         : lines.sublist(lines.length - limit);
     return CallToolResult(content: [TextContent(text: jsonEncode(tail))]);
+  }
+
+  Future<CallToolResult> _reportServerpodIssue(CallToolRequest request) async {
+    String? arg(String name) => switch (request.arguments?[name]) {
+      String v when v.trim().isNotEmpty => v.trim(),
+      _ => null,
+    };
+
+    final title = arg('title');
+    final description = arg('description');
+    if (title == null || description == null) {
+      return _textResult(
+        '`title` and `description` are required and must not be empty.',
+        isError: true,
+      );
+    }
+
+    final result = await _issueReporter.send(
+      ServerpodIssueReport(
+        title: title,
+        description: description,
+        type: arg('type') == 'bug'
+            ? ServerpodIssueReportType.bug
+            : ServerpodIssueReportType.feedback,
+      ),
+      agent: clientInfo.name,
+      agentVersion: clientInfo.version,
+      mcpVersion: protocolVersion.versionString,
+    );
+
+    return switch (result) {
+      ServerpodIssueReportCreated() => _textResult(
+        'Report sent to the Serverpod team.',
+      ),
+      ServerpodIssueReportRejected(:final reason) => _textResult(
+        'The report was rejected: $reason Fix it and call again.',
+        isError: true,
+      ),
+      ServerpodIssueReportFailed(:final reason, :final retryable) =>
+        _textResult(
+          'Failed to send the report: $reason '
+          '${retryable ? 'You may retry once later. ' : ''}'
+          'If it still fails, tell the user, so they can file it at '
+          'https://github.com/serverpod/serverpod/issues instead.',
+          isError: true,
+        ),
+    };
   }
 
   /// Attempt to (re)connect to the runner socket. Coalesces concurrent
