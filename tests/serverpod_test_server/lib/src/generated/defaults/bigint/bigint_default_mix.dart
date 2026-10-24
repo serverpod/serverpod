@@ -80,7 +80,7 @@ abstract class BigIntDefaultMix
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   BigIntDefaultMix copyWith({
-    int? id,
+    Object? id = _Undefined,
     BigInt? bigIntDefaultAndDefaultModel,
     BigInt? bigIntDefaultAndDefaultPersist,
     BigInt? bigIntDefaultModelAndDefaultPersist,

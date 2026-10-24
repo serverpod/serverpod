@@ -87,12 +87,12 @@ abstract class GeneratedRelationEmployee
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   GeneratedRelationEmployee copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     int? customCompanyId,
     _ipeijyfj.GeneratedRelationCompany? company =
         const _UndefinedGeneratedRelationEmployee$company(),
-    int? customPreviousCompanyId,
+    Object? customPreviousCompanyId = _Undefined,
     _ipeijyfj.GeneratedRelationCompany? previousCompany =
         const _UndefinedGeneratedRelationEmployee$company(),
   });

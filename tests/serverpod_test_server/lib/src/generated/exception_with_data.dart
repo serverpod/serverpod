@@ -60,7 +60,7 @@ abstract class ExceptionWithData
     String? message,
     DateTime? creationDate,
     List<String>? errorFields,
-    int? someNullableField,
+    Object? someNullableField = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

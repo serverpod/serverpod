@@ -75,7 +75,7 @@ abstract class DurationDefaultModel
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   DurationDefaultModel copyWith({
-    int? id,
+    Object? id = _Undefined,
     Duration? durationDefaultModel,
     Duration? durationDefaultModelNull = const _isc.$UndefinedDuration(),
   });

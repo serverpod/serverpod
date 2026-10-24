@@ -83,7 +83,7 @@ abstract class ObjectWithHalfVector
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithHalfVector copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.HalfVector? halfVector,
     _isc.HalfVector? halfVectorNullable = const _isc.$UndefinedHalfVector(),
     _isc.HalfVector? halfVectorIndexedHnsw,

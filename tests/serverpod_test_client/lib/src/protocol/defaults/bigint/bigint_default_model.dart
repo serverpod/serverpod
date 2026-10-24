@@ -61,9 +61,9 @@ abstract class BigIntDefaultModel
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   BigIntDefaultModel copyWith({
-    int? id,
+    Object? id = _Undefined,
     BigInt? bigIntDefaultModelStr,
-    BigInt? bigIntDefaultModelStrNull,
+    Object? bigIntDefaultModelStrNull = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

@@ -79,7 +79,7 @@ abstract class EnrollmentInt
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   EnrollmentInt copyWith({
-    int? id,
+    Object? id = _Undefined,
     _is.UuidValue? studentId,
     _iu6t4rw4.StudentUuid? student = const _UndefinedEnrollmentInt$student(),
     _is.UuidValue? courseId,

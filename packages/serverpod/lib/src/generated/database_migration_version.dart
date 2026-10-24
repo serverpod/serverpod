@@ -60,7 +60,7 @@ abstract class DatabaseMigrationVersion
   @override
   @_is.useResult
   DatabaseMigrationVersion copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? module,
     String? version,
     DateTime? timestamp = const _is.$UndefinedDateTime(),

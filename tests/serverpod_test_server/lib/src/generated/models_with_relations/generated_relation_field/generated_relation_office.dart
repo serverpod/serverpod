@@ -70,7 +70,7 @@ abstract class GeneratedRelationOffice
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   GeneratedRelationOffice copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? address,
     int? customCompanyId,
     _ipeijyfj.GeneratedRelationCompany? company =

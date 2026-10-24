@@ -55,9 +55,9 @@ abstract class TableWithExplicitColumnName
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   TableWithExplicitColumnName copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? userName,
-    String? description,
+    Object? description = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

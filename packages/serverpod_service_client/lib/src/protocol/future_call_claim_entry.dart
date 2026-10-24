@@ -55,8 +55,8 @@ abstract class FutureCallClaimEntry
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   FutureCallClaimEntry copyWith({
-    int? id,
-    int? futureCallId,
+    Object? id = _Undefined,
+    Object? futureCallId = _Undefined,
     DateTime? lastHeartbeatTime,
   });
   @override

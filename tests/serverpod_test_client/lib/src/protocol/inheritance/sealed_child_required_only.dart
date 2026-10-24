@@ -40,7 +40,7 @@ abstract class SealedChildOnlyRequired
   @override
   @_isc.useResult
   SealedChildOnlyRequired copyWith({
-    Object? nullableField,
+    Object? nullableField = _Undefined,
     String? requiredField,
   });
   @override

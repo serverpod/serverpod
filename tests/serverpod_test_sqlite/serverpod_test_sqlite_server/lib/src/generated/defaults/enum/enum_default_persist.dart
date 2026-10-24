@@ -65,9 +65,9 @@ abstract class EnumDefaultPersist
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   EnumDefaultPersist copyWith({
-    int? id,
-    _iwklobdz.ByNameEnum? byNameEnumDefaultPersist,
-    _ido5z594.ByIndexEnum? byIndexEnumDefaultPersist,
+    Object? id = _Undefined,
+    Object? byNameEnumDefaultPersist = _Undefined,
+    Object? byIndexEnumDefaultPersist = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

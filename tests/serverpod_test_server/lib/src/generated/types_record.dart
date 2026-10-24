@@ -234,32 +234,26 @@ abstract class TypesRecord
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   TypesRecord copyWith({
-    (int,)? anInt,
-    (bool,)? aBool,
-    (double,)? aDouble,
-    (DateTime,)? aDateTime,
-    (String,)? aString,
-    (_idt.ByteData,)? aByteData,
-    (Duration,)? aDuration,
-    (_is.UuidValue,)? aUuid,
-    (Uri,)? aUri,
-    (BigInt,)? aBigInt,
-    (_ionapfu9.TestEnum,)? anEnum,
-    (_i7liykk2.TestEnumStringified,)? aStringifiedEnum,
-    (List<int>,)? aList,
-    (Map<int, int>,)? aMap,
-    (Set<int>,)? aSet,
-    (_i0zisc0t.SimpleData,)? aSimpleData,
-    ({_i0zisc0t.SimpleData namedModel})? aNamedModel,
-    (_i0zisc0t.SimpleData, {_i0zisc0t.SimpleData namedModel})?
-    aPositionalAndNamedModel,
-    ((int, String), {(int, String) namedNestedRecord})? aNestedRecord,
-    (
-      (List<(_i0zisc0t.SimpleData,)>,), {
-      (_i0zisc0t.SimpleData, Map<String, _i0zisc0t.SimpleData>)
-      namedNestedRecord,
-    })?
-    aNestedContainers,
+    Object? anInt = _Undefined,
+    Object? aBool = _Undefined,
+    Object? aDouble = _Undefined,
+    Object? aDateTime = _Undefined,
+    Object? aString = _Undefined,
+    Object? aByteData = _Undefined,
+    Object? aDuration = _Undefined,
+    Object? aUuid = _Undefined,
+    Object? aUri = _Undefined,
+    Object? aBigInt = _Undefined,
+    Object? anEnum = _Undefined,
+    Object? aStringifiedEnum = _Undefined,
+    Object? aList = _Undefined,
+    Object? aMap = _Undefined,
+    Object? aSet = _Undefined,
+    Object? aSimpleData = _Undefined,
+    Object? aNamedModel = _Undefined,
+    Object? aPositionalAndNamedModel = _Undefined,
+    Object? aNestedRecord = _Undefined,
+    Object? aNestedContainers = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

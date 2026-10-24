@@ -206,7 +206,7 @@ void main() {
             () {
               expect(
                 copyWithMethod?.parameters?.toSource(),
-                '({String? name, int? age})',
+                '({String? name, Object? age = _Undefined})',
               );
             },
             skip: copyWithMethod == null,
@@ -419,7 +419,7 @@ void main() {
             () {
               expect(
                 copyWithMethod?.parameters?.toSource(),
-                '({String? name, int? parentDefault, int? age, int? childDefault})',
+                '({String? name, int? parentDefault, Object? age = _Undefined, int? childDefault})',
               );
             },
             skip: copyWithMethod == null,

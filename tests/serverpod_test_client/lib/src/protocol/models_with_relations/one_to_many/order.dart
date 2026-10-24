@@ -68,7 +68,7 @@ abstract class Order
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Order copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? description,
     int? customerId,
     _i3fqgdb1.Customer? customer = const _UndefinedOrder$customer(),

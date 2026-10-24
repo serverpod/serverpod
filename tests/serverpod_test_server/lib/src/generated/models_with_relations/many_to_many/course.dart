@@ -59,7 +59,7 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Course copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_im07rq0v.Enrollment>? enrollments =
         const _is.$UndefinedList<_im07rq0v.Enrollment>(),

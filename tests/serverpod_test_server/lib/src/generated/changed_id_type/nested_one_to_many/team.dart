@@ -77,7 +77,7 @@ abstract class TeamInt
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   TeamInt copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     _is.UuidValue? arenaId = const _is.$UndefinedUuidValue(),
     _izqzqdtt.ArenaUuid? arena = const _UndefinedTeamInt$arena(),

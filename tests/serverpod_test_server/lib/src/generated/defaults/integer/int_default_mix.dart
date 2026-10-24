@@ -64,7 +64,7 @@ abstract class IntDefaultMix
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   IntDefaultMix copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? intDefaultAndDefaultModel,
     int? intDefaultAndDefaultPersist,
     int? intDefaultModelAndDefaultPersist,

@@ -83,12 +83,12 @@ abstract class ColumnDefinition
   @_iss.useResult
   ColumnDefinition copyWith({
     String? name,
-    String? fieldName,
+    Object? fieldName = _Undefined,
     _isd.ColumnType? columnType,
     bool? isNullable,
-    String? columnDefault,
-    String? dartType,
-    int? vectorDimension,
+    Object? columnDefault = _Undefined,
+    Object? dartType = _Undefined,
+    Object? vectorDimension = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

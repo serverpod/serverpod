@@ -97,12 +97,12 @@ abstract class ObjectWithEnumEnhanced
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectWithEnumEnhanced copyWith({
-    int? id,
+    Object? id = _Undefined,
     _it39smib.TestEnumEnhanced? byIndex,
-    _it39smib.TestEnumEnhanced? nullableByIndex,
+    Object? nullableByIndex = _Undefined,
     List<_it39smib.TestEnumEnhanced>? byIndexList,
     _izw460bh.TestEnumEnhancedByName? byName,
-    _izw460bh.TestEnumEnhancedByName? nullableByName,
+    Object? nullableByName = _Undefined,
     List<_izw460bh.TestEnumEnhancedByName>? byNameList,
   });
   @override

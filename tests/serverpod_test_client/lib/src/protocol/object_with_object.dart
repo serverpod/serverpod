@@ -118,7 +118,7 @@ abstract class ObjectWithObject
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectWithObject copyWith({
-    int? id,
+    Object? id = _Undefined,
     _i0zisc0t.SimpleData? data,
     _i0zisc0t.SimpleData? nullableData =
         const _UndefinedObjectWithObject$nullableData(),

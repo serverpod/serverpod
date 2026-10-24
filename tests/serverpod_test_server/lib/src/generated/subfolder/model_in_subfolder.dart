@@ -146,19 +146,19 @@ abstract class ModelInSubfolder
   ModelInSubfolder copyWith({
     _ikr9iqn0.Nullability? classField =
         const _UndefinedModelInSubfolder$classField(),
-    _i105ky7k.TestEnumStringified? enumField,
+    Object? enumField = _Undefined,
     List<_i105ky7k.TestEnumStringified>? enumListField =
         const _is.$UndefinedList<_i105ky7k.TestEnumStringified>(),
-    (_i105ky7k.TestEnumStringified,)? enumRecordField,
+    Object? enumRecordField = _Undefined,
     List<(_i105ky7k.TestEnumStringified,)>? enumRecordListField =
         const _is.$UndefinedList<(_i105ky7k.TestEnumStringified,)>(),
-    (_iom2gwyu.ModuleClass,)? moduleClassRecordField,
-    (_ikr9iqn0.Nullability,)? classRecordField,
-    ({_i105ky7k.TestEnumStringified value})? enumNamedRecordField,
+    Object? moduleClassRecordField = _Undefined,
+    Object? classRecordField = _Undefined,
+    Object? enumNamedRecordField = _Undefined,
     List<({_i105ky7k.TestEnumStringified value})>? enumNamedRecordListField =
         const _is.$UndefinedList<({_i105ky7k.TestEnumStringified value})>(),
-    ({_iom2gwyu.ModuleClass value})? moduleClassNamedRecordField,
-    ({_ikr9iqn0.Nullability value})? classNamedRecordField,
+    Object? moduleClassNamedRecordField = _Undefined,
+    Object? classNamedRecordField = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

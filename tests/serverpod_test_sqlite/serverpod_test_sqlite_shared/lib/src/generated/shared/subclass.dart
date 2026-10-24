@@ -62,7 +62,7 @@ abstract class SharedSubclass extends _iqfgygbv.SharedModel
   SharedSubclass copyWith({
     _iss.UuidValue? id,
     String? name,
-    Object? data,
+    Object? data = _Undefined,
     DateTime? createdAt,
     String? sharedSubclassField,
     _iqfgygbv.SharedEnum? sharedEnumField,

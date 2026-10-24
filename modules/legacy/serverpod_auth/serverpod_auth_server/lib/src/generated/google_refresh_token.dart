@@ -56,7 +56,7 @@ abstract class GoogleRefreshToken
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   GoogleRefreshToken copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? userId,
     String? refreshToken,
   });

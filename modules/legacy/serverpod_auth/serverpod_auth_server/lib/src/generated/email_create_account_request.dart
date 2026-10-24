@@ -71,7 +71,7 @@ abstract class EmailCreateAccountRequest
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   EmailCreateAccountRequest copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? userName,
     String? email,
     String? hash,

@@ -81,7 +81,7 @@ abstract class DateTimeDefaultMix
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   DateTimeDefaultMix copyWith({
-    int? id,
+    Object? id = _Undefined,
     DateTime? dateTimeDefaultAndDefaultModel,
     DateTime? dateTimeDefaultAndDefaultPersist,
     DateTime? dateTimeDefaultModelAndDefaultPersist,

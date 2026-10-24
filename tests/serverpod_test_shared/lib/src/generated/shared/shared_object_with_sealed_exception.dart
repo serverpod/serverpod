@@ -59,7 +59,7 @@ abstract class SharedObjectWithSealedException
   @_iss.useResult
   SharedObjectWithSealedException copyWith({
     _ilwf0zl1.SharedSealedAppException? sealedField,
-    _ilwf0zl1.SharedSealedAppException? nullableSealedField,
+    Object? nullableSealedField = _Undefined,
     List<_ilwf0zl1.SharedSealedAppException>? sealedList,
   });
   @override

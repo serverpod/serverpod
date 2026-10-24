@@ -81,7 +81,7 @@ abstract class UriDefaultMix
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   UriDefaultMix copyWith({
-    int? id,
+    Object? id = _Undefined,
     Uri? uriDefaultAndDefaultModel,
     Uri? uriDefaultAndDefaultPersist,
     Uri? uriDefaultModelAndDefaultPersist,

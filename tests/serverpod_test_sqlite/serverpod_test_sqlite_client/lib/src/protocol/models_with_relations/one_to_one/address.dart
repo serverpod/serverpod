@@ -67,9 +67,9 @@ abstract class Address
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Address copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? street,
-    int? inhabitantId,
+    Object? inhabitantId = _Undefined,
     _igho3lba.Citizen? inhabitant = const _UndefinedAddress$inhabitant(),
   });
   @override

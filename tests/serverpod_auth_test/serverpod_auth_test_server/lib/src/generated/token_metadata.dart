@@ -89,14 +89,14 @@ abstract class TokenMetadata
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   TokenMetadata copyWith({
-    int? id,
+    Object? id = _Undefined,
     _is.UuidValue? refreshTokenId,
     _iacs.RefreshToken? refreshToken =
         const _UndefinedTokenMetadata$refreshToken(),
     String? deviceName,
-    String? ipAddress,
-    String? userAgent,
-    String? metadata,
+    Object? ipAddress = _Undefined,
+    Object? userAgent = _Undefined,
+    Object? metadata = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

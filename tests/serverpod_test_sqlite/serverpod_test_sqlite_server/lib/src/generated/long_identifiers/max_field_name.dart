@@ -51,7 +51,7 @@ abstract class MaxFieldName
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   MaxFieldName copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
   });
   @override

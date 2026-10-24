@@ -53,7 +53,7 @@ abstract class LongImplicitIdField
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   LongImplicitIdField copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
   });
   @override

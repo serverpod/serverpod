@@ -73,12 +73,12 @@ abstract class FkRelationEmployee
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   FkRelationEmployee copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     int? companyId,
     _ikyus01r.FkRelationCompany? company =
         const _UndefinedFkRelationEmployee$company(),
-    int? previousCompanyId,
+    Object? previousCompanyId = _Undefined,
     _ikyus01r.FkRelationCompany? previousCompany =
         const _UndefinedFkRelationEmployee$company(),
   });

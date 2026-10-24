@@ -105,8 +105,8 @@ abstract class FirebaseAccount
     _is.UuidValue? authUserId,
     _iacs.AuthUser? authUser = const _UndefinedFirebaseAccount$authUser(),
     DateTime? created,
-    String? email,
-    String? phone,
+    Object? email = _Undefined,
+    Object? phone = _Undefined,
     String? userIdentifier,
   });
   @override

@@ -151,7 +151,7 @@ abstract class RefreshToken
     _is.UuidValue? authUserId,
     _ivyervu7.AuthUser? authUser = const _UndefinedRefreshToken$authUser(),
     Set<String>? scopeNames,
-    String? extraClaims,
+    Object? extraClaims = _Undefined,
     String? method,
     _idt.ByteData? fixedSecret,
     String? rotatingSecretHash,

@@ -67,7 +67,7 @@ abstract class MigrationsApplyResult
   @_iss.useResult
   MigrationsApplyResult copyWith({
     List<String>? migrationsApplied = const _iss.$UndefinedList<String>(),
-    String? repairMigrationApplied,
+    Object? repairMigrationApplied = _Undefined,
     bool? databaseMatchesTargetState,
   });
   @override

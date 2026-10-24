@@ -52,7 +52,7 @@ abstract class ModuleClass
   ModuleClass copyWith({
     String? name,
     int? data,
-    (bool,)? record,
+    Object? record = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

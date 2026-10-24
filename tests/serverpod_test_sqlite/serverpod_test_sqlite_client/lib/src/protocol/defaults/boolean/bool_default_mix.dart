@@ -70,7 +70,7 @@ abstract class BoolDefaultMix
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   BoolDefaultMix copyWith({
-    int? id,
+    Object? id = _Undefined,
     bool? boolDefaultAndDefaultModel,
     bool? boolDefaultAndDefaultPersist,
     bool? boolDefaultModelAndDefaultPersist,

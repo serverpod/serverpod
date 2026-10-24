@@ -49,8 +49,8 @@ abstract class BigIntDefaultPersist
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   BigIntDefaultPersist copyWith({
-    int? id,
-    BigInt? bigIntDefaultPersistStr,
+    Object? id = _Undefined,
+    Object? bigIntDefaultPersistStr = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

@@ -57,7 +57,7 @@ abstract class RelationToMultipleMaxFieldName
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   RelationToMultipleMaxFieldName copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     List<_ipoh7twa.MultipleMaxFieldName>? multipleMaxFieldNames =
         const _isc.$UndefinedList<_ipoh7twa.MultipleMaxFieldName>(),

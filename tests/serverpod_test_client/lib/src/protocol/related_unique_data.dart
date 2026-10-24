@@ -58,7 +58,7 @@ abstract class RelatedUniqueData
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   RelatedUniqueData copyWith({
-    int? id,
+    Object? id = _Undefined,
     int? uniqueDataId,
     _iufhyrjh.UniqueData? uniqueData =
         const _UndefinedRelatedUniqueData$uniqueData(),

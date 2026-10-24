@@ -57,7 +57,7 @@ abstract class ObjectWithUuid
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ObjectWithUuid copyWith({
-    int? id,
+    Object? id = _Undefined,
     _is.UuidValue? uuid,
     _is.UuidValue? uuidNullable = const _is.$UndefinedUuidValue(),
   });

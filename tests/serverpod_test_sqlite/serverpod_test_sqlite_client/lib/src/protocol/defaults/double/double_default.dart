@@ -49,9 +49,9 @@ abstract class DoubleDefault
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   DoubleDefault copyWith({
-    int? id,
+    Object? id = _Undefined,
     double? doubleDefault,
-    double? doubleDefaultNull,
+    Object? doubleDefaultNull = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

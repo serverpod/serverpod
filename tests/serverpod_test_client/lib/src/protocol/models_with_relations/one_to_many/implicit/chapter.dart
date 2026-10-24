@@ -42,7 +42,7 @@ abstract class Chapter
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Chapter copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? title,
   });
   @override

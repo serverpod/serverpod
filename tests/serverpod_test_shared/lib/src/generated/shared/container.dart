@@ -177,14 +177,14 @@ abstract class SharedContainer
     _ilwf0zl1.SharedSubclass? sharedSubclassNullable =
         const _UndefinedSharedContainer$sharedSubclassNullable(),
     _ilwf0zl1.SharedEnum? sharedEnum,
-    _ilwf0zl1.SharedEnum? sharedEnumNullable,
+    Object? sharedEnumNullable = _Undefined,
     _ilwf0zl1.SharedSealedParent? sharedSealedParent,
-    _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable,
+    Object? sharedSealedParentNullable = _Undefined,
     _ilwf0zl1.SharedSealedChild? sharedSealedChild,
     _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable =
         const _UndefinedSharedContainer$sharedSealedChildNullable(),
     _ilwf0zl1.SharedSealedAppException? sharedSealedAppException,
-    _ilwf0zl1.SharedSealedAppException? sharedSealedAppExceptionNullable,
+    Object? sharedSealedAppExceptionNullable = _Undefined,
     _ilwf0zl1.SharedNotFoundException? sharedNotFoundException,
     _ilwf0zl1.SharedNotFoundException? sharedNotFoundExceptionNullable =
         const _UndefinedSharedContainer$sharedNotFoundExceptionNullable(),

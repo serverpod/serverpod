@@ -117,18 +117,18 @@ abstract class CloudStorageEntry
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   CloudStorageEntry copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? storageId,
     String? path,
     DateTime? addedTime,
     DateTime? expiration = const _is.$UndefinedDateTime(),
     _idt.ByteData? byteData,
     bool? verified,
-    String? contentType,
-    String? cacheControl,
-    String? contentDisposition,
-    String? contentEncoding,
-    String? customMetadata,
+    Object? contentType = _Undefined,
+    Object? cacheControl = _Undefined,
+    Object? contentDisposition = _Undefined,
+    Object? contentEncoding = _Undefined,
+    Object? customMetadata = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

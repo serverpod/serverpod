@@ -79,12 +79,12 @@ abstract class ChallengeTracker
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ChallengeTracker copyWith({
-    int? id,
+    Object? id = _Undefined,
     _is.UuidValue? secretChallengeId,
     _iais.SecretChallenge? secretChallenge =
         const _UndefinedChallengeTracker$secretChallenge(),
     DateTime? trackedAt,
-    String? notes,
+    Object? notes = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

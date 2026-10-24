@@ -65,7 +65,7 @@ abstract class DateTimeDefaultPersist
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   DateTimeDefaultPersist copyWith({
-    int? id,
+    Object? id = _Undefined,
     DateTime? dateTimeDefaultPersistNow = const _is.$UndefinedDateTime(),
     DateTime? dateTimeDefaultPersistStr = const _is.$UndefinedDateTime(),
   });

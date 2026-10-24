@@ -53,9 +53,9 @@ abstract class Service
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Service copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    String? description,
+    Object? description = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

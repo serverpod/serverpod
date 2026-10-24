@@ -65,9 +65,9 @@ abstract class Town implements _is.TableRow<int?>, _is.ProtocolSerialization {
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   Town copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? mayorId,
+    Object? mayorId = _Undefined,
     _igho3lba.Citizen? mayor = const _UndefinedTown$mayor(),
   });
   @override

@@ -55,8 +55,8 @@ abstract class BleedChild
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   BleedChild copyWith({
-    int? id,
-    String? bleedingText,
+    Object? id = _Undefined,
+    Object? bleedingText = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

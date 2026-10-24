@@ -42,7 +42,7 @@ abstract class EmailPasswordReset
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   EmailPasswordReset copyWith({
-    String? userName,
+    Object? userName = _Undefined,
     String? email,
   });
   @override

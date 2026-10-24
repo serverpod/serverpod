@@ -75,7 +75,7 @@ abstract class GeneratedRelationCompany
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   GeneratedRelationCompany copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
     _im57bsix.GeneratedRelationOffice? office =
         const _UndefinedGeneratedRelationCompany$office(),

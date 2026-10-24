@@ -47,9 +47,9 @@ abstract class ObjectFieldScopes
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ObjectFieldScopes copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? normal,
-    String? api,
+    Object? api = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

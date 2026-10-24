@@ -66,7 +66,7 @@ abstract class UuidDefaultPersist
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UuidDefaultPersist copyWith({
-    int? id,
+    Object? id = _Undefined,
     _isc.UuidValue? uuidDefaultPersistRandom = const _isc.$UndefinedUuidValue(),
     _isc.UuidValue? uuidDefaultPersistRandomV7 =
         const _isc.$UndefinedUuidValue(),

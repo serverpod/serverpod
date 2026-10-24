@@ -235,7 +235,7 @@ abstract class SharedModelContainer
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   SharedModelContainer copyWith({
-    int? id,
+    Object? id = _Undefined,
     _ilwf0zl1.SharedModel? sharedModel,
     _ilwf0zl1.SharedModel? sharedModelWithModuleAlias,
     _ilwf0zl1.SharedModel? sharedModelNullable =
@@ -246,9 +246,9 @@ abstract class SharedModelContainer
     _ilwf0zl1.SharedSubclass? sharedSubclassNullable =
         const _UndefinedSharedModelContainer$sharedSubclassNullable(),
     _ilwf0zl1.SharedEnum? sharedEnum,
-    _ilwf0zl1.SharedEnum? sharedEnumNullable,
+    Object? sharedEnumNullable = _Undefined,
     _ilwf0zl1.SharedSealedParent? sharedSealedParent,
-    _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable,
+    Object? sharedSealedParentNullable = _Undefined,
     _ilwf0zl1.SharedSealedChild? sharedSealedChild,
     _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable =
         const _UndefinedSharedModelContainer$sharedSealedChildNullable(),

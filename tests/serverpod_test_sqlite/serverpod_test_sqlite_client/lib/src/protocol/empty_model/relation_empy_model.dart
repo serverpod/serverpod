@@ -58,7 +58,7 @@ abstract class RelationEmptyModel
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   RelationEmptyModel copyWith({
-    int? id,
+    Object? id = _Undefined,
     List<_iq60yogb.EmptyModelRelationItem>? items =
         const _isc.$UndefinedList<_iq60yogb.EmptyModelRelationItem>(),
   });

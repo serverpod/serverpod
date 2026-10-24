@@ -89,14 +89,14 @@ abstract class SessionMetadata
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   SessionMetadata copyWith({
-    int? id,
+    Object? id = _Undefined,
     _is.UuidValue? serverSideSessionId,
     _iacs.ServerSideSession? serverSideSession =
         const _UndefinedSessionMetadata$serverSideSession(),
     String? deviceName,
-    String? ipAddress,
-    String? userAgent,
-    String? metadata,
+    Object? ipAddress = _Undefined,
+    Object? userAgent = _Undefined,
+    Object? metadata = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

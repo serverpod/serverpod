@@ -48,8 +48,8 @@ abstract class IntDefaultPersist
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   IntDefaultPersist copyWith({
-    int? id,
-    int? intDefaultPersist,
+    Object? id = _Undefined,
+    Object? intDefaultPersist = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

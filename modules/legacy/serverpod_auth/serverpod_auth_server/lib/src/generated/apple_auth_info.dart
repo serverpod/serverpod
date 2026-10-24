@@ -67,7 +67,7 @@ abstract class AppleAuthInfo
   @_is.useResult
   AppleAuthInfo copyWith({
     String? userIdentifier,
-    String? email,
+    Object? email = _Undefined,
     String? fullName,
     String? nickname,
     String? identityToken,

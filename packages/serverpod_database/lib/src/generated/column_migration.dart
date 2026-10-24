@@ -74,12 +74,12 @@ abstract class ColumnMigration
   @_iss.useResult
   ColumnMigration copyWith({
     String? columnName,
-    String? newColumnName,
+    Object? newColumnName = _Undefined,
     bool? addNullable,
     bool? removeNullable,
     bool? changeDefault,
-    String? newDefault,
-    _isd.ColumnType? newType,
+    Object? newDefault = _Undefined,
+    Object? newType = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

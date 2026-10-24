@@ -23,7 +23,7 @@ sealed class SealedParentNullableField
   /// Returns a shallow copy of this [SealedParentNullableField]
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
-  SealedParentNullableField copyWith({String? nullableField});
+  SealedParentNullableField copyWith({Object? nullableField = _Undefined});
 }
 
 class _Undefined {}

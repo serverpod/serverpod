@@ -50,9 +50,9 @@ abstract class UserProfileData
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   UserProfileData copyWith({
-    String? userName,
-    String? fullName,
-    String? email,
+    Object? userName = _Undefined,
+    Object? fullName = _Undefined,
+    Object? email = _Undefined,
   });
   @override
   Map<String, dynamic> toJson() {

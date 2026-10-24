@@ -59,7 +59,7 @@ abstract class ObjectWithSealedException
   @_isc.useResult
   ObjectWithSealedException copyWith({
     _iaxkp5y4.SealedAppException? sealedField,
-    _iaxkp5y4.SealedAppException? nullableSealedField,
+    Object? nullableSealedField = _Undefined,
     List<_iaxkp5y4.SealedAppException>? sealedList,
   });
   @override

@@ -59,9 +59,9 @@ abstract class Contractor
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   Contractor copyWith({
-    int? id,
+    Object? id = _Undefined,
     String? name,
-    int? serviceIdField,
+    Object? serviceIdField = _Undefined,
     _iml73r3x.Service? service = const _UndefinedContractor$service(),
   });
   @override
