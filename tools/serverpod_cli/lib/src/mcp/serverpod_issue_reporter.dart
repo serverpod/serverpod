@@ -67,18 +67,21 @@ final class ServerpodIssueReportFailed extends ServerpodIssueReportResult {
 /// plain HTTP, together with details about the environment they were filed
 /// from.
 class ServerpodIssueReporter {
-  final Uri url;
+  /// Null when [serverpodIssueReportUrlEnvVar] holds an invalid URL; every
+  /// [send] then fails.
+  final Uri? url;
   final Duration timeout;
   final http.Client? _client;
 
-  /// [client] stands in for the real network in tests. [url] defaults to
-  /// [serverpodIssueReportUrlEnvVar] when set, else
-  /// [defaultServerpodIssueReportUrl].
+  /// [client] and [environment] stand in for the real network and process
+  /// environment in tests. [url] defaults to [serverpodIssueReportUrlEnvVar]
+  /// in [environment] when set, else [defaultServerpodIssueReportUrl].
   ServerpodIssueReporter({
     Uri? url,
     http.Client? client,
+    Map<String, String>? environment,
     this.timeout = const Duration(seconds: 10),
-  }) : url = url ?? _urlFromEnvironment(),
+  }) : url = url ?? urlFromEnvironment(environment ?? Platform.environment),
        _client = client;
 
   /// Sends [report], tagging it with the [agent] (MCP client name) that filed
@@ -89,6 +92,13 @@ class ServerpodIssueReporter {
     String? agentVersion,
     String? mcpVersion,
   }) async {
+    final url = this.url;
+    if (url == null) {
+      return const ServerpodIssueReportFailed(
+        '$serverpodIssueReportUrlEnvVar is not a valid URL.',
+      );
+    }
+
     final body = jsonEncode({
       'title': report.title,
       'description': report.description,
@@ -143,12 +153,15 @@ class ServerpodIssueReporter {
     }
   }
 
-  static Uri _urlFromEnvironment() {
-    final override = Platform.environment[serverpodIssueReportUrlEnvVar];
+  /// The service URL [environment] selects: [serverpodIssueReportUrlEnvVar]
+  /// when set, else [defaultServerpodIssueReportUrl]. Null when the variable
+  /// holds an invalid URL.
+  static Uri? urlFromEnvironment(Map<String, String> environment) {
+    final override = environment[serverpodIssueReportUrlEnvVar];
     if (override == null || override.isEmpty) {
       return defaultServerpodIssueReportUrl;
     }
-    return Uri.parse(override);
+    return Uri.tryParse(override);
   }
 
   /// Decodes [body] as a JSON object, or null when it is not one.
