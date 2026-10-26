@@ -41,9 +41,13 @@ sealed class ServerpodIssueReportResult {
   const ServerpodIssueReportResult();
 }
 
-/// The service created an issue for the report.
+/// The service created an issue for the report. [url] and [id] identify
+/// that issue when the service returns them.
 final class ServerpodIssueReportCreated extends ServerpodIssueReportResult {
-  const ServerpodIssueReportCreated();
+  final String? url;
+  final String? id;
+
+  const ServerpodIssueReportCreated({this.url, this.id});
 }
 
 /// The service rejected the report as invalid. [reason] is the service's own
@@ -67,28 +71,38 @@ final class ServerpodIssueReportFailed extends ServerpodIssueReportResult {
 /// plain HTTP, together with details about the environment they were filed
 /// from.
 class ServerpodIssueReporter {
-  final Uri url;
+  /// Null when [serverpodIssueReportUrlEnvVar] holds an invalid URL.
+  final Uri? url;
   final Duration timeout;
   final http.Client? _client;
 
-  /// [client] stands in for the real network in tests. [url] defaults to
-  /// [serverpodIssueReportUrlEnvVar] when set, else
-  /// [defaultServerpodIssueReportUrl].
+  /// [client] and [environment] stand in for the real network and process
+  /// environment in tests. [url] defaults to [serverpodIssueReportUrlEnvVar]
+  /// in [environment] when set, else [defaultServerpodIssueReportUrl].
   ServerpodIssueReporter({
     Uri? url,
     http.Client? client,
+    Map<String, String>? environment,
     this.timeout = const Duration(seconds: 10),
-  }) : url = url ?? _urlFromEnvironment(),
+  }) : url = url ?? urlFromEnvironment(environment ?? Platform.environment),
        _client = client;
 
   /// Sends [report], tagging it with the [agent] (MCP client name) that filed
   /// it, the agent's version and the negotiated [mcpVersion]. Never throws.
+  /// Fails without sending when [url] is null.
   Future<ServerpodIssueReportResult> send(
     ServerpodIssueReport report, {
     String? agent,
     String? agentVersion,
     String? mcpVersion,
   }) async {
+    final url = this.url;
+    if (url == null) {
+      return const ServerpodIssueReportFailed(
+        '$serverpodIssueReportUrlEnvVar is not a valid URL.',
+      );
+    }
+
     final body = jsonEncode({
       'title': report.title,
       'description': report.description,
@@ -117,18 +131,24 @@ class ServerpodIssueReporter {
             body: body,
           )
           .timeout(timeout);
-      return switch (response.statusCode) {
-        201 => const ServerpodIssueReportCreated(),
-        400 => ServerpodIssueReportRejected(
-          _jsonObject(response.body)?['error']?.toString() ??
-              'The report is invalid.',
+      final status = response.statusCode;
+      final json = _jsonObject(response.body);
+      final error = json?['error']?.toString();
+      return switch (status) {
+        >= 200 && < 300 => ServerpodIssueReportCreated(
+          url: json?['url']?.toString(),
+          id: json?['id']?.toString(),
         ),
-        >= 500 => ServerpodIssueReportFailed(
-          'The feedback service failed with HTTP ${response.statusCode}.',
+        400 || 413 || 422 => ServerpodIssueReportRejected(
+          error ?? 'The report is invalid.',
+        ),
+        408 || 429 || >= 500 => ServerpodIssueReportFailed(
+          'The feedback service failed with HTTP $status.',
           retryable: true,
         ),
-        final status => ServerpodIssueReportFailed(
-          'The feedback service responded with HTTP $status.',
+        _ => ServerpodIssueReportFailed(
+          'The feedback service responded with HTTP $status'
+          '${error == null ? '.' : ': $error'}',
         ),
       };
     } on TimeoutException {
@@ -143,12 +163,15 @@ class ServerpodIssueReporter {
     }
   }
 
-  static Uri _urlFromEnvironment() {
-    final override = Platform.environment[serverpodIssueReportUrlEnvVar];
+  /// The service URL [environment] selects: [serverpodIssueReportUrlEnvVar]
+  /// when set, else [defaultServerpodIssueReportUrl]. Null when the variable
+  /// holds an invalid URL.
+  static Uri? urlFromEnvironment(Map<String, String> environment) {
+    final override = environment[serverpodIssueReportUrlEnvVar];
     if (override == null || override.isEmpty) {
       return defaultServerpodIssueReportUrl;
     }
-    return Uri.parse(override);
+    return Uri.tryParse(override);
   }
 
   /// Decodes [body] as a JSON object, or null when it is not one.

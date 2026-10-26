@@ -69,7 +69,13 @@ base class BridgeMcpServer extends MCPServer
       registerTool(tool, _makeToolForwarder(tool.name));
     }
     registerTool(tailRunnerLogsTool, _tailRunnerLogs);
-    registerTool(reportServerpodIssueTool, _reportServerpodIssue);
+    // dart_mcp echoes the whole argument in its maxLength error, and it
+    // checks before trimming. _reportServerpodIssue checks the lengths.
+    registerTool(
+      reportServerpodIssueTool,
+      _reportServerpodIssue,
+      validateArguments: false,
+    );
     for (final resource in runnerStaticResources) {
       addResource(resource, _makeResourceReader(resource.uri));
     }
@@ -137,6 +143,20 @@ base class BridgeMcpServer extends MCPServer
         isError: true,
       );
     }
+    if (title.length > reportServerpodIssueTitleMaxLength) {
+      return _textResult(
+        '`title` is ${title.length} characters; at most '
+        '$reportServerpodIssueTitleMaxLength are allowed.',
+        isError: true,
+      );
+    }
+    if (description.length > reportServerpodIssueDescriptionMaxLength) {
+      return _textResult(
+        '`description` is ${description.length} characters; at most '
+        '$reportServerpodIssueDescriptionMaxLength are allowed.',
+        isError: true,
+      );
+    }
 
     final result = await _issueReporter.send(
       ServerpodIssueReport(
@@ -152,8 +172,13 @@ base class BridgeMcpServer extends MCPServer
     );
 
     return switch (result) {
-      ServerpodIssueReportCreated() => _textResult(
-        'Report sent to the Serverpod team.',
+      ServerpodIssueReportCreated(:final url, :final id) => _textResult(
+        'Report sent to the Serverpod team.'
+        '${url != null
+            ? ' Issue: $url'
+            : id != null
+            ? ' Issue id: $id'
+            : ''}',
       ),
       ServerpodIssueReportRejected(:final reason) => _textResult(
         'The report was rejected: $reason Fix it and call again.',

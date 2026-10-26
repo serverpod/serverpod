@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
+import 'package:serverpod_cli/src/mcp/runner_surface.dart';
 import 'package:serverpod_cli/src/mcp/serverpod_issue_reporter.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -413,7 +414,7 @@ void main() {
 
         test(
           'when calling report_serverpod_issue with a title padded by whitespace, '
-          'then the report is sent with the title trimmed',
+          'then the report is sent with the title trimmed.',
           () async {
             await pair.client.callTool(
               CallToolRequest(
@@ -428,6 +429,63 @@ void main() {
             final body =
                 jsonDecode(requests.single.body) as Map<String, dynamic>;
             expect(body, containsPair('title', 'Migration drops index'));
+          },
+        );
+
+        test(
+          'when calling report_serverpod_issue with a title of the maximum length padded by whitespace, '
+          'then the report is sent with the title trimmed.',
+          () async {
+            final title = 'x' * reportServerpodIssueTitleMaxLength;
+
+            await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': '  $title  ',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+
+            final body =
+                jsonDecode(requests.single.body) as Map<String, dynamic>;
+            expect(body, containsPair('title', title));
+          },
+        );
+
+        group(
+          'when calling report_serverpod_issue with a description over the maximum length,',
+          () {
+            late CallToolResult result;
+
+            setUp(() async {
+              result = await pair.client.callTool(
+                CallToolRequest(
+                  name: 'report_serverpod_issue',
+                  arguments: {
+                    'title': 'Migration drops index',
+                    'description':
+                        'y' * (reportServerpodIssueDescriptionMaxLength + 1),
+                  },
+                ),
+              );
+            });
+
+            test(
+              'then the result is an error stating the length and the limit.',
+              () {
+                expect(result.isError, isTrue);
+                expect(
+                  (result.content.single as TextContent).text,
+                  '`description` is 50001 characters; at most 50000 are allowed.',
+                );
+              },
+            );
+
+            test('then no report is sent.', () {
+              expect(requests, isEmpty);
+            });
           },
         );
 
@@ -455,6 +513,37 @@ void main() {
             test('then no report is sent', () {
               expect(requests, isEmpty);
             });
+          },
+        );
+      });
+
+      group('with a feedback service that returns the created issue url,', () {
+        setUp(() {
+          response = http.Response(
+            jsonEncode({'url': 'https://linear.app/serverpod/issue/SP-123'}),
+            201,
+          );
+        });
+
+        test(
+          'when calling report_serverpod_issue, '
+          'then the result holds the url.',
+          () async {
+            final result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration drops index',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+
+            expect(
+              (result.content.single as TextContent).text,
+              'Report sent to the Serverpod team. '
+              'Issue: https://linear.app/serverpod/issue/SP-123',
+            );
           },
         );
       });

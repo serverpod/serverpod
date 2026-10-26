@@ -16,6 +16,85 @@ const _report = ServerpodIssueReport(
 final _url = Uri.parse('https://feedback.test/feedback');
 
 void main() {
+  test(
+    'Given an environment without the issue report URL variable, '
+    'when resolving the service URL, '
+    'then it is the default.',
+    () {
+      expect(
+        ServerpodIssueReporter.urlFromEnvironment({}),
+        defaultServerpodIssueReportUrl,
+      );
+    },
+  );
+
+  test(
+    'Given an environment with a valid issue report URL, '
+    'when resolving the service URL, '
+    'then it is the override.',
+    () {
+      expect(
+        ServerpodIssueReporter.urlFromEnvironment({
+          serverpodIssueReportUrlEnvVar: 'http://localhost:8099/feedback',
+        }),
+        Uri.parse('http://localhost:8099/feedback'),
+      );
+    },
+  );
+
+  test(
+    'Given an environment with a malformed issue report URL, '
+    'when resolving the service URL, '
+    'then it is null.',
+    () {
+      expect(
+        ServerpodIssueReporter.urlFromEnvironment({
+          serverpodIssueReportUrlEnvVar: 'http://[::1',
+        }),
+        isNull,
+      );
+    },
+  );
+
+  group('Given a ServerpodIssueReporter with a malformed URL override,', () {
+    late List<http.Request> requests;
+    late ServerpodIssueReporter reporter;
+
+    setUp(() {
+      requests = [];
+      reporter = ServerpodIssueReporter(
+        environment: {serverpodIssueReportUrlEnvVar: 'http://[::1'},
+        client: MockClient((request) async {
+          requests.add(request);
+          return http.Response('', 201);
+        }),
+      );
+    });
+
+    test(
+      'when sending a report, '
+      'then it fails naming the environment variable.',
+      () async {
+        final result = await reporter.send(_report);
+
+        expect(
+          result,
+          isA<ServerpodIssueReportFailed>().having(
+            (r) => r.reason,
+            'reason',
+            'SERVERPOD_ISSUE_REPORT_URL is not a valid URL.',
+          ),
+        );
+      },
+    );
+
+    test('when sending a report, then nothing is posted.', () async {
+      await reporter.send(_report);
+
+      expect(requests, isEmpty);
+    });
+  });
+
   group('Given a ServerpodIssueReporter,', () {
     late List<http.Request> requests;
     late ServerpodIssueReporter reporter;
@@ -45,8 +124,13 @@ void main() {
           );
         });
 
-        test('then it is created', () {
-          expect(result, isA<ServerpodIssueReportCreated>());
+        test('then it is created without an issue url or id.', () {
+          expect(
+            result,
+            isA<ServerpodIssueReportCreated>()
+                .having((r) => r.url, 'url', isNull)
+                .having((r) => r.id, 'id', isNull),
+          );
         });
 
         test('then it is posted to the service url', () {
@@ -115,6 +199,148 @@ void main() {
           expect(
             (body['context'] as Map<String, dynamic>).keys,
             isNot(anyOf(contains('agent'), contains('mcpVersion'))),
+          );
+        },
+      );
+    });
+
+    group('with a service that returns the created issue,', () {
+      setUp(() {
+        reporter = ServerpodIssueReporter(
+          url: _url,
+          client: MockClient(
+            (_) async => http.Response(
+              jsonEncode({
+                'id': 'SP-123',
+                'url': 'https://linear.app/serverpod/issue/SP-123',
+              }),
+              201,
+            ),
+          ),
+        );
+      });
+
+      test(
+        'when sending a report, '
+        'then it is created with the issue url and id.',
+        () async {
+          final result = await reporter.send(_report);
+
+          expect(
+            result,
+            isA<ServerpodIssueReportCreated>()
+                .having(
+                  (r) => r.url,
+                  'url',
+                  'https://linear.app/serverpod/issue/SP-123',
+                )
+                .having((r) => r.id, 'id', 'SP-123'),
+          );
+        },
+      );
+    });
+
+    group('with a service that answers 200 to a created issue,', () {
+      setUp(() {
+        reporter = ServerpodIssueReporter(
+          url: _url,
+          client: MockClient((_) async => http.Response('{}', 200)),
+        );
+      });
+
+      test('when sending a report, then it is created.', () async {
+        final result = await reporter.send(_report);
+
+        expect(result, isA<ServerpodIssueReportCreated>());
+      });
+    });
+
+    group('with a service that rejects the report as too large,', () {
+      setUp(() {
+        reporter = ServerpodIssueReporter(
+          url: _url,
+          client: MockClient(
+            (_) async => http.Response(
+              jsonEncode({'error': '"description" is too long.'}),
+              413,
+            ),
+          ),
+        );
+      });
+
+      test(
+        'when sending a report, '
+        'then it is rejected with the service error message.',
+        () async {
+          final result = await reporter.send(_report);
+
+          expect(
+            result,
+            isA<ServerpodIssueReportRejected>().having(
+              (r) => r.reason,
+              'reason',
+              '"description" is too long.',
+            ),
+          );
+        },
+      );
+    });
+
+    group('with a service that rate limits the report,', () {
+      setUp(() {
+        reporter = ServerpodIssueReporter(
+          url: _url,
+          client: MockClient((_) async => http.Response('', 429)),
+        );
+      });
+
+      test(
+        'when sending a report, '
+        'then it fails as retryable.',
+        () async {
+          final result = await reporter.send(_report);
+
+          expect(
+            result,
+            isA<ServerpodIssueReportFailed>().having(
+              (r) => r.retryable,
+              'retryable',
+              isTrue,
+            ),
+          );
+        },
+      );
+    });
+
+    group('with a service that refuses the request with an error message,', () {
+      setUp(() {
+        reporter = ServerpodIssueReporter(
+          url: _url,
+          client: MockClient(
+            (_) async => http.Response(
+              jsonEncode({'error': 'Unknown client.'}),
+              403,
+            ),
+          ),
+        );
+      });
+
+      test(
+        'when sending a report, '
+        'then it fails as not retryable with the service error message.',
+        () async {
+          final result = await reporter.send(_report);
+
+          expect(
+            result,
+            isA<ServerpodIssueReportFailed>()
+                .having((r) => r.retryable, 'retryable', isFalse)
+                .having(
+                  (r) => r.reason,
+                  'reason',
+                  'The feedback service responded with HTTP 403: '
+                      'Unknown client.',
+                ),
           );
         },
       );
