@@ -127,18 +127,20 @@ class ServerpodIssueReporter {
             body: body,
           )
           .timeout(timeout);
-      return switch (response.statusCode) {
-        201 => const ServerpodIssueReportCreated(),
-        400 => ServerpodIssueReportRejected(
-          _jsonObject(response.body)?['error']?.toString() ??
-              'The report is invalid.',
+      final status = response.statusCode;
+      final error = _jsonObject(response.body)?['error']?.toString();
+      return switch (status) {
+        >= 200 && < 300 => const ServerpodIssueReportCreated(),
+        400 || 413 || 422 => ServerpodIssueReportRejected(
+          error ?? 'The report is invalid.',
         ),
-        >= 500 => ServerpodIssueReportFailed(
-          'The feedback service failed with HTTP ${response.statusCode}.',
+        408 || 429 || >= 500 => ServerpodIssueReportFailed(
+          'The feedback service failed with HTTP $status.',
           retryable: true,
         ),
-        final status => ServerpodIssueReportFailed(
-          'The feedback service responded with HTTP $status.',
+        _ => ServerpodIssueReportFailed(
+          'The feedback service responded with HTTP $status'
+          '${error == null ? '.' : ': $error'}',
         ),
       };
     } on TimeoutException {
