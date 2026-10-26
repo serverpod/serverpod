@@ -1,5 +1,5 @@
 import 'package:serverpod/protocol.dart';
-import 'package:serverpod/server.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
 import 'package:test/test.dart';
 
@@ -93,6 +93,60 @@ void main() {
             Protocol(),
           ),
           {},
+        );
+      },
+    );
+  });
+
+  group('Given single DateTime parameter description', () {
+    var parameterDescriptions = {
+      'arg1': ParameterDescription(
+        name: 'arg1',
+        type: DateTime,
+        nullable: false,
+      ),
+    };
+
+    test(
+      'when parsing malformed date then an InvalidParametersException without the value is thrown.',
+      () {
+        expect(
+          () => parseParameters(
+            {'arg1': 'not-a-date'},
+            parameterDescriptions,
+            Protocol(),
+          ),
+          throwsA(
+            isA<InvalidParametersException>().having(
+              (e) => e.message,
+              'message',
+              'Invalid value for parameter: arg1',
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  group('Given single UuidValue parameter description', () {
+    var parameterDescriptions = {
+      'arg1': ParameterDescription(
+        name: 'arg1',
+        type: UuidValue,
+        nullable: false,
+      ),
+    };
+
+    test(
+      'when parsing malformed uuid then an InvalidParametersException is thrown.',
+      () {
+        expect(
+          () => parseParameters(
+            {'arg1': 'not-a-uuid'},
+            parameterDescriptions,
+            Protocol(),
+          ),
+          throwsA(isA<InvalidParametersException>()),
         );
       },
     );
