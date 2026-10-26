@@ -16,36 +16,45 @@ const _report = ServerpodIssueReport(
 final _url = Uri.parse('https://feedback.test/feedback');
 
 void main() {
-  group('Given an environment without the issue report URL variable,', () {
-    test('when resolving the service URL, then it is the default.', () {
+  test(
+    'Given an environment without the issue report URL variable, '
+    'when resolving the service URL, '
+    'then it is the default.',
+    () {
       expect(
         ServerpodIssueReporter.urlFromEnvironment({}),
         defaultServerpodIssueReportUrl,
       );
-    });
-  });
+    },
+  );
 
-  group('Given an environment with a valid issue report URL,', () {
-    test('when resolving the service URL, then it is the override.', () {
+  test(
+    'Given an environment with a valid issue report URL, '
+    'when resolving the service URL, '
+    'then it is the override.',
+    () {
       expect(
         ServerpodIssueReporter.urlFromEnvironment({
           serverpodIssueReportUrlEnvVar: 'http://localhost:8099/feedback',
         }),
         Uri.parse('http://localhost:8099/feedback'),
       );
-    });
-  });
+    },
+  );
 
-  group('Given an environment with a malformed issue report URL,', () {
-    test('when resolving the service URL, then it is null.', () {
+  test(
+    'Given an environment with a malformed issue report URL, '
+    'when resolving the service URL, '
+    'then it is null.',
+    () {
       expect(
         ServerpodIssueReporter.urlFromEnvironment({
           serverpodIssueReportUrlEnvVar: 'http://[::1',
         }),
         isNull,
       );
-    });
-  });
+    },
+  );
 
   group('Given a ServerpodIssueReporter with a malformed URL override,', () {
     late List<http.Request> requests;
@@ -73,7 +82,7 @@ void main() {
           isA<ServerpodIssueReportFailed>().having(
             (r) => r.reason,
             'reason',
-            contains(serverpodIssueReportUrlEnvVar),
+            'SERVERPOD_ISSUE_REPORT_URL is not a valid URL.',
           ),
         );
       },
@@ -326,7 +335,12 @@ void main() {
             result,
             isA<ServerpodIssueReportFailed>()
                 .having((r) => r.retryable, 'retryable', isFalse)
-                .having((r) => r.reason, 'reason', contains('Unknown client.')),
+                .having(
+                  (r) => r.reason,
+                  'reason',
+                  'The feedback service responded with HTTP 403: '
+                      'Unknown client.',
+                ),
           );
         },
       );
