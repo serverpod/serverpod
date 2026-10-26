@@ -26,7 +26,7 @@ dependencies:
   # does not compile against.
   sqlite3_web: '>=0.9.4 <0.9.5'
   sqlite_async: ^0.14.4
-  sqlparser: ^0.44.3
+  sqlparser: ^0.45.1
 
 dev_dependencies:
   serverpod_lints: 4.1.0-rc.1
