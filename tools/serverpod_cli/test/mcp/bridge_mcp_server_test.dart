@@ -412,8 +412,34 @@ void main() {
         );
 
         test(
+          'when calling report_serverpod_issue and the service returns the issue url, '
+          'then the result holds the url.',
+          () async {
+            response = http.Response(
+              jsonEncode({'url': 'https://linear.app/serverpod/issue/SP-123'}),
+              201,
+            );
+
+            final result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration drops index',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+
+            expect(
+              (result.content.single as TextContent).text,
+              contains('https://linear.app/serverpod/issue/SP-123'),
+            );
+          },
+        );
+
+        test(
           'when calling report_serverpod_issue with a title padded by whitespace, '
-          'then the report is sent with the title trimmed',
+          'then the report is sent with the title trimmed.',
           () async {
             await pair.client.callTool(
               CallToolRequest(

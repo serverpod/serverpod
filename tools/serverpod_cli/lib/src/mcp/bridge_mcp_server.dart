@@ -152,8 +152,13 @@ base class BridgeMcpServer extends MCPServer
     );
 
     return switch (result) {
-      ServerpodIssueReportCreated() => _textResult(
-        'Report sent to the Serverpod team.',
+      ServerpodIssueReportCreated(:final url, :final id) => _textResult(
+        'Report sent to the Serverpod team.'
+        '${url != null
+            ? ' Issue: $url'
+            : id != null
+            ? ' Issue id: $id'
+            : ''}',
       ),
       ServerpodIssueReportRejected(:final reason) => _textResult(
         'The report was rejected: $reason Fix it and call again.',

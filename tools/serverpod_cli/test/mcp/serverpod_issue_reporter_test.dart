@@ -115,8 +115,13 @@ void main() {
           );
         });
 
-        test('then it is created', () {
-          expect(result, isA<ServerpodIssueReportCreated>());
+        test('then it is created without an issue url or id.', () {
+          expect(
+            result,
+            isA<ServerpodIssueReportCreated>()
+                .having((r) => r.url, 'url', isNull)
+                .having((r) => r.id, 'id', isNull),
+          );
         });
 
         test('then it is posted to the service url', () {
@@ -185,6 +190,42 @@ void main() {
           expect(
             (body['context'] as Map<String, dynamic>).keys,
             isNot(anyOf(contains('agent'), contains('mcpVersion'))),
+          );
+        },
+      );
+    });
+
+    group('with a service that returns the created issue,', () {
+      setUp(() {
+        reporter = ServerpodIssueReporter(
+          url: _url,
+          client: MockClient(
+            (_) async => http.Response(
+              jsonEncode({
+                'id': 'SP-123',
+                'url': 'https://linear.app/serverpod/issue/SP-123',
+              }),
+              201,
+            ),
+          ),
+        );
+      });
+
+      test(
+        'when sending a report, '
+        'then it is created with the issue url and id.',
+        () async {
+          final result = await reporter.send(_report);
+
+          expect(
+            result,
+            isA<ServerpodIssueReportCreated>()
+                .having(
+                  (r) => r.url,
+                  'url',
+                  'https://linear.app/serverpod/issue/SP-123',
+                )
+                .having((r) => r.id, 'id', 'SP-123'),
           );
         },
       );

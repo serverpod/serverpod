@@ -41,9 +41,13 @@ sealed class ServerpodIssueReportResult {
   const ServerpodIssueReportResult();
 }
 
-/// The service created an issue for the report.
+/// The service created an issue for the report. [url] and [id] are the
+/// issue's, when the service returns them.
 final class ServerpodIssueReportCreated extends ServerpodIssueReportResult {
-  const ServerpodIssueReportCreated();
+  final String? url;
+  final String? id;
+
+  const ServerpodIssueReportCreated({this.url, this.id});
 }
 
 /// The service rejected the report as invalid. [reason] is the service's own
@@ -128,9 +132,13 @@ class ServerpodIssueReporter {
           )
           .timeout(timeout);
       final status = response.statusCode;
-      final error = _jsonObject(response.body)?['error']?.toString();
+      final json = _jsonObject(response.body);
+      final error = json?['error']?.toString();
       return switch (status) {
-        >= 200 && < 300 => const ServerpodIssueReportCreated(),
+        >= 200 && < 300 => ServerpodIssueReportCreated(
+          url: json?['url']?.toString(),
+          id: json?['id']?.toString(),
+        ),
         400 || 413 || 422 => ServerpodIssueReportRejected(
           error ?? 'The report is invalid.',
         ),
