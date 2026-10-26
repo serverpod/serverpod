@@ -69,6 +69,8 @@ base class BridgeMcpServer extends MCPServer
       registerTool(tool, _makeToolForwarder(tool.name));
     }
     registerTool(tailRunnerLogsTool, _tailRunnerLogs);
+    // dart_mcp echoes the whole argument in its maxLength error, and it
+    // checks before trimming. _reportServerpodIssue checks the lengths.
     registerTool(
       reportServerpodIssueTool,
       _reportServerpodIssue,

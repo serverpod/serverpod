@@ -204,9 +204,6 @@ const reportServerpodIssueDescriptionMaxLength = 50000;
 
 /// Answered by the `serverpod mcp-server` bridge itself, not the runner, so
 /// issues that keep the server from starting can still be reported.
-///
-/// Registered with argument validation off: the bridge checks the lengths
-/// after trimming and answers without echoing the values.
 final Tool reportServerpodIssueTool = Tool(
   name: 'report_serverpod_issue',
   description:

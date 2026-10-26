@@ -41,8 +41,8 @@ sealed class ServerpodIssueReportResult {
   const ServerpodIssueReportResult();
 }
 
-/// The service created an issue for the report. [url] and [id] are the
-/// issue's, when the service returns them.
+/// The service created an issue for the report. [url] and [id] identify
+/// that issue when the service returns them.
 final class ServerpodIssueReportCreated extends ServerpodIssueReportResult {
   final String? url;
   final String? id;
@@ -71,8 +71,7 @@ final class ServerpodIssueReportFailed extends ServerpodIssueReportResult {
 /// plain HTTP, together with details about the environment they were filed
 /// from.
 class ServerpodIssueReporter {
-  /// Null when [serverpodIssueReportUrlEnvVar] holds an invalid URL; every
-  /// [send] then fails.
+  /// Null when [serverpodIssueReportUrlEnvVar] holds an invalid URL.
   final Uri? url;
   final Duration timeout;
   final http.Client? _client;
@@ -90,6 +89,7 @@ class ServerpodIssueReporter {
 
   /// Sends [report], tagging it with the [agent] (MCP client name) that filed
   /// it, the agent's version and the negotiated [mcpVersion]. Never throws.
+  /// Fails without sending when [url] is null.
   Future<ServerpodIssueReportResult> send(
     ServerpodIssueReport report, {
     String? agent,
