@@ -196,8 +196,17 @@ final List<Tool> runnerStaticTools = [
 
 final List<Resource> runnerStaticResources = [vmServiceResource];
 
+/// Longest `title` [reportServerpodIssueTool] accepts, after trimming.
+const reportServerpodIssueTitleMaxLength = 200;
+
+/// Longest `description` [reportServerpodIssueTool] accepts, after trimming.
+const reportServerpodIssueDescriptionMaxLength = 50000;
+
 /// Answered by the `serverpod mcp-server` bridge itself, not the runner, so
 /// issues that keep the server from starting can still be reported.
+///
+/// Registered with argument validation off: the bridge checks the lengths
+/// after trimming and answers without echoing the values.
 final Tool reportServerpodIssueTool = Tool(
   name: 'report_serverpod_issue',
   description:
@@ -210,7 +219,7 @@ final Tool reportServerpodIssueTool = Tool(
     properties: {
       'title': Schema.string(
         description: 'One-line summary.',
-        maxLength: 200,
+        maxLength: reportServerpodIssueTitleMaxLength,
       ),
       'description': Schema.string(
         description:
@@ -218,7 +227,7 @@ final Tool reportServerpodIssueTool = Tool(
             'reproduce, and relevant errors. For bugs, add a diagnosis: '
             'likely root cause, evidence, and confidence. No secrets or '
             'personal data.',
-        maxLength: 50000,
+        maxLength: reportServerpodIssueDescriptionMaxLength,
       ),
       // A raw map, as `enumValues` is deprecated in newer dart_mcp versions
       // and `defaultValue` is missing from older ones.

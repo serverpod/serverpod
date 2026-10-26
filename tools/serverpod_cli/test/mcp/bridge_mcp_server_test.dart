@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
+import 'package:serverpod_cli/src/mcp/runner_surface.dart';
 import 'package:serverpod_cli/src/mcp/serverpod_issue_reporter.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -454,6 +455,68 @@ void main() {
             final body =
                 jsonDecode(requests.single.body) as Map<String, dynamic>;
             expect(body, containsPair('title', 'Migration drops index'));
+          },
+        );
+
+        test(
+          'when calling report_serverpod_issue with a title of the maximum length padded by whitespace, '
+          'then the report is sent.',
+          () async {
+            final title = 'x' * reportServerpodIssueTitleMaxLength;
+
+            final result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': '  $title  ',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+
+            expect(result.isError, isNull);
+            final body =
+                jsonDecode(requests.single.body) as Map<String, dynamic>;
+            expect(body, containsPair('title', title));
+          },
+        );
+
+        group(
+          'when calling report_serverpod_issue with a description over the maximum length,',
+          () {
+            late CallToolResult result;
+
+            setUp(() async {
+              result = await pair.client.callTool(
+                CallToolRequest(
+                  name: 'report_serverpod_issue',
+                  arguments: {
+                    'title': 'Migration drops index',
+                    'description':
+                        'y' * (reportServerpodIssueDescriptionMaxLength + 1),
+                  },
+                ),
+              );
+            });
+
+            test('then the result is an error naming the limit.', () {
+              expect(result.isError, isTrue);
+              expect(
+                (result.content.single as TextContent).text,
+                contains('$reportServerpodIssueDescriptionMaxLength'),
+              );
+            });
+
+            test('then the result does not echo the description.', () {
+              expect(
+                (result.content.single as TextContent).text.length,
+                lessThan(500),
+              );
+            });
+
+            test('then no report is sent.', () {
+              expect(requests, isEmpty);
+            });
           },
         );
 

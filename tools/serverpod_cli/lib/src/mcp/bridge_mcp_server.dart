@@ -69,7 +69,11 @@ base class BridgeMcpServer extends MCPServer
       registerTool(tool, _makeToolForwarder(tool.name));
     }
     registerTool(tailRunnerLogsTool, _tailRunnerLogs);
-    registerTool(reportServerpodIssueTool, _reportServerpodIssue);
+    registerTool(
+      reportServerpodIssueTool,
+      _reportServerpodIssue,
+      validateArguments: false,
+    );
     for (final resource in runnerStaticResources) {
       addResource(resource, _makeResourceReader(resource.uri));
     }
@@ -134,6 +138,20 @@ base class BridgeMcpServer extends MCPServer
     if (title == null || description == null) {
       return _textResult(
         '`title` and `description` are required and must not be empty.',
+        isError: true,
+      );
+    }
+    if (title.length > reportServerpodIssueTitleMaxLength) {
+      return _textResult(
+        '`title` is ${title.length} characters; at most '
+        '$reportServerpodIssueTitleMaxLength are allowed.',
+        isError: true,
+      );
+    }
+    if (description.length > reportServerpodIssueDescriptionMaxLength) {
+      return _textResult(
+        '`description` is ${description.length} characters; at most '
+        '$reportServerpodIssueDescriptionMaxLength are allowed.',
         isError: true,
       );
     }
