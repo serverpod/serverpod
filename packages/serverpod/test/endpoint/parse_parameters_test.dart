@@ -98,6 +98,54 @@ void main() {
     );
   });
 
+  group('Given single int parameter description', () {
+    var parameterDescriptions = {
+      'arg1': ParameterDescription(
+        name: 'arg1',
+        type: int,
+        nullable: false,
+      ),
+    };
+
+    test(
+      'when parsing a String value then an InvalidParametersException is thrown.',
+      () {
+        expect(
+          () => parseParameters(
+            {'arg1': 'not an int'},
+            parameterDescriptions,
+            Protocol(),
+          ),
+          throwsA(isA<InvalidParametersException>()),
+        );
+      },
+    );
+  });
+
+  group('Given single String parameter description', () {
+    var parameterDescriptions = {
+      'arg1': ParameterDescription(
+        name: 'arg1',
+        type: String,
+        nullable: false,
+      ),
+    };
+
+    test(
+      'when parsing an int value then an InvalidParametersException is thrown.',
+      () {
+        expect(
+          () => parseParameters(
+            {'arg1': 42},
+            parameterDescriptions,
+            Protocol(),
+          ),
+          throwsA(isA<InvalidParametersException>()),
+        );
+      },
+    );
+  });
+
   group('Given single DateTime parameter description', () {
     var parameterDescriptions = {
       'arg1': ParameterDescription(
