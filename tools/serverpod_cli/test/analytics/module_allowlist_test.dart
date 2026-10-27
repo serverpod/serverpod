@@ -54,6 +54,18 @@ void main() {
 
   test(
     'Given the official module allowlist, '
+    'when its names are checked, '
+    'then the offline sync module is included.',
+    () {
+      expect(
+        officialServerpodModules,
+        contains('serverpod_offline_sync'),
+      );
+    },
+  );
+
+  test(
+    'Given the official module allowlist, '
     'when its names are compared with ModuleConfig naming, '
     'then every entry uses the stripped server-package form.',
     () {
