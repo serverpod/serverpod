@@ -1,6 +1,15 @@
 part of 'library_generator.dart';
 
 extension FutureCallsLibraryGenerator on LibraryGenerator {
+  String get _futureCallsGetterExtensionName =>
+      config.type == PackageType.module
+      ? '${config.name.pascalCase}FutureCallsGetter'
+      : 'ServerpodFutureCallsGetter';
+
+  String get _futureCallsGetterName => config.type == PackageType.module
+      ? '${config.name.camelCase}FutureCalls'
+      : 'futureCalls';
+
   /// Generates the interface for accessing future calls for the server side.
   Library generateServerFutureCalls() {
     var library = LibraryBuilder();
@@ -18,9 +27,9 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
   /// Invokes a future call.
   typedef _InvokeFutureCall = Future<void> Function(String name, $modelType? object);
 
-  extension ServerpodFutureCallsGetter on $serverpod {
+  extension $_futureCallsGetterExtensionName on $serverpod {
   /// Generated future calls.
-  FutureCalls get futureCalls => FutureCalls();
+  FutureCalls get $_futureCallsGetterName => FutureCalls();
 }
 ''';
       }),
@@ -262,7 +271,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
               for (var futureCall in futureCalls)
                 for (var method in futureCall.methods)
                   if (!futureCall.isAbstract)
-                    _getFutureCallClassName(
+                    _getFutureCallRegistrationName(
                       futureCall.name,
                       method.name,
                     ): refer(
@@ -595,7 +604,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
           refer('_invokeFutureCall')
               .call([
                 literalString(
-                  _getFutureCallClassName(futureClassName, method.name),
+                  _getFutureCallRegistrationName(futureClassName, method.name),
                 ),
                 if (method.futureCallMethodParameter != null)
                   refer('object')
@@ -630,6 +639,19 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
       ..write('FutureCall');
 
     return buffer.toString();
+  }
+
+  String _getFutureCallRegistrationName(
+    String futureCallName,
+    String methodName,
+  ) {
+    final className = _getFutureCallClassName(futureCallName, methodName);
+
+    // Modules share a manager with their host and other modules, which may
+    // define identically named future calls.
+    return config.type == PackageType.module
+        ? '${config.name}.$className'
+        : className;
   }
 
   String _getNullableClassName(String className) {

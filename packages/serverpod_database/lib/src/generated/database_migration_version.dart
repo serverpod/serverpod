@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// Represents a version of a database migration.
 class DatabaseMigrationVersionModel
@@ -50,12 +48,12 @@ class DatabaseMigrationVersionModel
   DatabaseMigrationVersionModel copyWith({
     String? module,
     String? version,
-    DateTime? timestamp = const _issu.$UndefinedDateTime(),
+    DateTime? timestamp = const _iss.$UndefinedDateTime(),
   }) {
     return DatabaseMigrationVersionModel(
       module: module ?? this.module,
       version: version ?? this.version,
-      timestamp: timestamp is _issu.UndefinedSentinel
+      timestamp: timestamp is _iss.UndefinedSentinel
           ? this.timestamp
           : timestamp,
     );

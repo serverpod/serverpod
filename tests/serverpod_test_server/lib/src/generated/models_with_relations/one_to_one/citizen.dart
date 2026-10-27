@@ -8,13 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, depend_on_referenced_packages
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/one_to_one/address.dart' as _i5rzbc0r;
 import '../../models_with_relations/one_to_one/company.dart' as _i2fdza8t;
@@ -165,12 +163,12 @@ abstract class Citizen
 
 class _Undefined {}
 
-class _UndefinedCitizen$address extends _issu.UndefinedSentinel
+class _UndefinedCitizen$address extends _is.UndefinedSentinel
     implements _i5rzbc0r.Address {
   const _UndefinedCitizen$address();
 }
 
-class _UndefinedCitizen$company extends _issu.UndefinedSentinel
+class _UndefinedCitizen$company extends _is.UndefinedSentinel
     implements _i2fdza8t.Company {
   const _UndefinedCitizen$company();
 }
@@ -210,15 +208,15 @@ class _CitizenImpl extends Citizen {
     return Citizen(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _issu.UndefinedSentinel
+      address: address is _is.UndefinedSentinel
           ? this.address?.copyWith()
           : address,
       companyId: companyId ?? this.companyId,
-      company: company is _issu.UndefinedSentinel
+      company: company is _is.UndefinedSentinel
           ? this.company?.copyWith()
           : company,
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
-      oldCompany: oldCompany is _issu.UndefinedSentinel
+      oldCompany: oldCompany is _is.UndefinedSentinel
           ? this.oldCompany?.copyWith()
           : oldCompany,
     );

@@ -4315,6 +4315,59 @@ class Endpoints extends _is.EndpointDispatch {
                         params['map'],
                       ),
         ),
+        'returnIntSimpleDataMap': _is.MethodConnector(
+          name: 'returnIntSimpleDataMap',
+          params: {
+            'map': _is.ParameterDescription(
+              name: 'map',
+              type: _is.getType<Map<int, _i685tvwm.SimpleData>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['mapParameters']
+                          as _i7zzrcbk.MapParametersEndpoint)
+                      .returnIntSimpleDataMap(
+                        session,
+                        params['map'],
+                      )
+                      .then(
+                        (container) =>
+                            _igqrxdcj.Protocol().mapContainerToJson(container),
+                      ),
+        ),
+        'returnNullableIntSimpleDataMapNullableSimpleData': _is.MethodConnector(
+          name: 'returnNullableIntSimpleDataMapNullableSimpleData',
+          params: {
+            'map': _is.ParameterDescription(
+              name: 'map',
+              type: _is.getType<Map<int, _i685tvwm.SimpleData?>?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['mapParameters']
+                          as _i7zzrcbk.MapParametersEndpoint)
+                      .returnNullableIntSimpleDataMapNullableSimpleData(
+                        session,
+                        params['map'],
+                      )
+                      .then(
+                        (container) => container == null
+                            ? null
+                            : _igqrxdcj.Protocol().mapContainerToJson(
+                                container,
+                              ),
+                      ),
+        ),
         'returnSimpleDataMapNullableSimpleData': _is.MethodConnector(
           name: 'returnSimpleDataMapNullableSimpleData',
           params: {
@@ -6735,6 +6788,31 @@ class Endpoints extends _is.EndpointDispatch {
                             _igqrxdcj.Protocol().mapRecordToJson(record),
                       ),
         ),
+        'returnRecordOfSimpleDataList': _is.MethodConnector(
+          name: 'returnRecordOfSimpleDataList',
+          params: {
+            'rows': _is.ParameterDescription(
+              name: 'rows',
+              type: _is.getType<List<_i685tvwm.SimpleData>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['recordParameters']
+                          as _ib1glaoo.RecordParametersEndpoint)
+                      .returnRecordOfSimpleDataList(
+                        session,
+                        params['rows'],
+                      )
+                      .then(
+                        (record) =>
+                            _igqrxdcj.Protocol().mapRecordToJson(record),
+                      ),
+        ),
         'returnStringKeyedMapRecord': _is.MethodConnector(
           name: 'returnStringKeyedMapRecord',
           params: {
@@ -6935,6 +7013,32 @@ class Endpoints extends _is.EndpointDispatch {
                             _igqrxdcj.Protocol().mapRecordToJson(record),
                       ),
         ),
+        'returnNullableNamedRecordOfSimpleDataList': _is.MethodConnector(
+          name: 'returnNullableNamedRecordOfSimpleDataList',
+          params: {
+            'record': _is.ParameterDescription(
+              name: 'record',
+              type: _is
+                  .getType<({int count, List<_i685tvwm.SimpleData>? rows})?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['recordParameters']
+                          as _ib1glaoo.RecordParametersEndpoint)
+                      .returnNullableNamedRecordOfSimpleDataList(
+                        session,
+                        params['record'],
+                      )
+                      .then(
+                        (record) =>
+                            _igqrxdcj.Protocol().mapRecordToJson(record),
+                      ),
+        ),
         'returnNamedNonStringKeyedMapRecord': _is.MethodConnector(
           name: 'returnNamedNonStringKeyedMapRecord',
           params: {
@@ -7111,6 +7215,34 @@ class Endpoints extends _is.EndpointDispatch {
                       .then(
                         (container) =>
                             _igqrxdcj.Protocol().mapContainerToJson(container),
+                      ),
+        ),
+        'returnNullableListOfRecordOfSimpleDataList': _is.MethodConnector(
+          name: 'returnNullableListOfRecordOfSimpleDataList',
+          params: {
+            'records': _is.ParameterDescription(
+              name: 'records',
+              type: _is.getType<List<(List<_i685tvwm.SimpleData>, int)?>?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['recordParameters']
+                          as _ib1glaoo.RecordParametersEndpoint)
+                      .returnNullableListOfRecordOfSimpleDataList(
+                        session,
+                        params['records'],
+                      )
+                      .then(
+                        (container) => container == null
+                            ? null
+                            : _igqrxdcj.Protocol().mapContainerToJson(
+                                container,
+                              ),
                       ),
         ),
         'returnSetOfIntSimpleDataRecord': _is.MethodConnector(
@@ -9685,6 +9817,21 @@ class Endpoints extends _is.EndpointDispatch {
                         session,
                         streamParams['stream']!.cast<int>(),
                       ),
+        ),
+        'broadcastStream': _is.MethodStreamConnector(
+          name: 'broadcastStream',
+          params: {},
+          streamParams: {},
+          returnType: _is.MethodStreamReturnType.streamType,
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) =>
+                  (endpoints['authenticatedTestTools']
+                          as _itdztv0y.AuthenticatedTestToolsEndpoint)
+                      .broadcastStream(session),
         ),
       },
     );

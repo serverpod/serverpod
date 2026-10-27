@@ -127,9 +127,19 @@ Together with `--no-attach` it is ignored, since nothing renders.
 
 ### Lifetime
 
-Detaching a UI does not stop the runner, whoever started it. `serverpod runner
-stop` or `Shift+Q` in the UI stops the stack, next to the `Q` that only
-detaches.
+The `serverpod start` that spawned the runner owns it and stops it on leaving:
+`Q`, `Shift+Q` or Ctrl+C in the UI, and SIGINT or SIGTERM on the log stream.
+Nothing else owns a runner. `serverpod start --no-attach` and `serverpod runner
+start` return and leave it running, and `serverpod mcp-server` never spawns
+one.
+
+A client that attached to a runner already running leaves it running by
+default. `Q` in the UI opens a dialog, in which `Q` leaves and `Shift+Q` stops
+the runner, and a signal to the log stream only detaches. `Shift+Q` in the UI
+and `serverpod runner stop` stop the stack from any client.
+
+A runner that is still starting stops only at its next checkpoint, so asking
+a second time leaves the client at once.
 
 The runner stopping ends the session for every attached UI. It announces the
 stop with the exit code it is leaving with, and a UI leaves with that code.
@@ -141,9 +151,9 @@ leaves with exit code 1, since nothing will announce a code. The log stream
 does the same.
 
 > [!NOTE]
-> The rejected alternative is to shut down on detach when the detaching invocation
-spawned the runner. That keeps Ctrl+C closer to its current behaviour, but the
-same key then stops the server or does not, depending on how the session began.
+> The rejected alternative is to never stop the runner on detach, whoever
+started it. The same key then always means the same thing, but a developer who
+starts the stack and quits leaves a server running behind them.
 
 ## Architecture
 
@@ -189,18 +199,24 @@ the winner publishes.
   "servers": {
     "api": "http://localhost:8080",
     "insights": "http://localhost:8081",
-    "web": "http://localhost:8082"
+    "web": "http://localhost:8082",
+    "database": "postgres://postgres@127.0.0.1:8090/myproject"
   },
-  "ports": { "api": 8080, "insights": 8081, "web": 8082 },
+  "ports": { "api": 8080, "insights": 8081, "web": 8082, "database": 8090 },
   "docker": { "startedByRunner": true, "project": "myproject" },
   "config": {
     "watch": true,
     "flutter": true,
     "docker": true,
     "serverArgs": ["--mode", "production"]
-  }
+  },
+  "spawnId": "6f1d2c3b-8a4e-4b5c-9d7e-0a1b2c3d4e5f"
 }
 ```
+
+`spawnId` is the id `start` passed when spawning the runner, and what `start`
+matches a published manifest on. The `pid` cannot serve, since `dart` runs a
+program in a child of the process it was spawned as.
 
 The manifest is read by
 
@@ -406,6 +422,16 @@ manifest. Unconditional ephemeral ports would also avoid collisions, at the cost
 of an address that changes on every restart. The three listeners fall back as a
 block rather than independently.
 
+The embedded database's loopback TCP port is a fourth listener when the pod
+serves one, that is when the development config has a `dataPath` and a database
+password. It moves aside with the block through `SERVERPOD_DATABASE_PORT`, is
+pinned from the `servers.database` address the pod reports, and is suggested to
+the next runner like the others. Unlike the others, a live listener on its
+configured port is not a conflict the runner reports: the runner cannot tell a
+database this worktree already runs, started by `serverpod database start` and
+joined by the pod, from a foreign holder, which the pod refuses with a message
+naming the port. Only a sibling runner's claim moves it aside.
+
 Fallback applies when another Serverpod runner holds or has claimed the port.
 A runner claims its ports in its manifest as soon as it has resolved them,
 before Docker and the first compile, and the `servers` addresses its pod
@@ -508,8 +534,9 @@ features and logs at the same level.
 
 - In the runner, SIGINT and SIGTERM trigger a graceful shutdown, as the headless
   path does today.
-- In an attached client, SIGINT detaches and cannot reach the pod.
-- Ordinary shutdown goes over the protocol, from `serverpod runner stop`.
+- In an attached client, SIGINT cannot reach the pod.
+- Ordinary shutdown goes over the protocol, from `serverpod runner stop` or
+  the client that owns the runner.
 
 ### Flutter apps
 

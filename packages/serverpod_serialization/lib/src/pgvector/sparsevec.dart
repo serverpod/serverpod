@@ -154,5 +154,6 @@ class SparseVector extends IterableBase<double> {
       other.values.equals(values);
 
   @override
-  int get hashCode => Object.hash(dimensions, indices, values);
+  int get hashCode =>
+      Object.hash(dimensions, Object.hashAll(indices), Object.hashAll(values));
 }

@@ -434,6 +434,38 @@ workspace:
     );
 
     test(
+      'Given a commented workspace declaration, '
+      'when searching from below that pubspec, '
+      'then it still finds the server above',
+      () async {
+        await d.dir('server', [
+          d.file('pubspec.yaml', '''
+name: server
+dependencies:
+  serverpod: ^2.0.0
+'''),
+          d.dir('subdir', [
+            d.file('pubspec.yaml', '''
+name: generated_project
+#workspace: #--UNCOMMENT_LINE--#
+#  - generated_project_client #--UNCOMMENT_LINE--#
+#  - generated_project_server #--UNCOMMENT_LINE--#
+'''),
+            d.dir('secondSubdir', []),
+          ]),
+        ]).create();
+
+        var searchDir = Directory(
+          path.join(d.sandbox, 'server', 'subdir', 'secondSubdir'),
+        );
+        var result = ServerDirectoryFinder.search(searchDir);
+
+        expect(result, isNotNull);
+        expect(path.basename(result!.path), equals('server'));
+      },
+    );
+
+    test(
       'Given at repository root with .git, '
       'when searching from root, '
       'then it does not check siblings outside the repository',

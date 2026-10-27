@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../models_with_list_relations/organization.dart' as _i0ptycc3;
 import '../models_with_list_relations/person.dart' as _ijqkgw0m;
@@ -68,9 +66,9 @@ abstract class City
     int? id,
     String? name,
     List<_ijqkgw0m.Person>? citizens =
-        const _issu.$UndefinedList<_ijqkgw0m.Person>(),
+        const _isc.$UndefinedList<_ijqkgw0m.Person>(),
     List<_i0ptycc3.Organization>? organizations =
-        const _issu.$UndefinedList<_i0ptycc3.Organization>(),
+        const _isc.$UndefinedList<_i0ptycc3.Organization>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -129,17 +127,17 @@ class _CityImpl extends City {
     Object? id = _Undefined,
     String? name,
     List<_ijqkgw0m.Person>? citizens =
-        const _issu.$UndefinedList<_ijqkgw0m.Person>(),
+        const _isc.$UndefinedList<_ijqkgw0m.Person>(),
     List<_i0ptycc3.Organization>? organizations =
-        const _issu.$UndefinedList<_i0ptycc3.Organization>(),
+        const _isc.$UndefinedList<_i0ptycc3.Organization>(),
   }) {
     return City(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      citizens: citizens is _issu.UndefinedSentinel
+      citizens: citizens is _isc.UndefinedSentinel
           ? this.citizens?.map((e0) => e0.copyWith()).toList()
           : citizens,
-      organizations: organizations is _issu.UndefinedSentinel
+      organizations: organizations is _isc.UndefinedSentinel
           ? this.organizations?.map((e0) => e0.copyWith()).toList()
           : organizations,
     );

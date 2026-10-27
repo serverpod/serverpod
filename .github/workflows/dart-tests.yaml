@@ -441,7 +441,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Assert the Windows bundle artifact exists
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           # Use the public API so artifacts remain downloadable on partial reruns.
           github-token: ${{ github.token }}
@@ -556,7 +556,7 @@ jobs:
       # output in a deterministic log for the outer step to print.
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install pstools --no-progress -y --limit-output --checksum "2B10B3D9DAE0403B06D90B13BFB53E723A8B14A788F78CDFD43A445D8991415E"
+        uses: ./.github/actions/use-psexec
       - name: Prep run script (Windows)
         if: matrix.os == 'windows-latest'
         env:
@@ -605,7 +605,7 @@ jobs:
           working_directory: packages/serverpod_embedded_postgres
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install pstools --no-progress -y --limit-output --checksum "2B10B3D9DAE0403B06D90B13BFB53E723A8B14A788F78CDFD43A445D8991415E"
+        uses: ./.github/actions/use-psexec
       - name: Prep run script (Windows)
         # Postgres refuses to run with an Administrators-group token.
         if: matrix.os == 'windows-latest'
@@ -1047,7 +1047,7 @@ jobs:
           working_directory: tests/bootstrap_project
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install pstools --no-progress -y --limit-output --checksum "2B10B3D9DAE0403B06D90B13BFB53E723A8B14A788F78CDFD43A445D8991415E"
+        uses: ./.github/actions/use-psexec
       - name: Prep run script (Windows)
         if: matrix.os == 'windows-latest'
         env:

@@ -8,12 +8,10 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:typed_data' as _idt;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import 'test_enum.dart' as _ionapfu9;
 import 'test_enum_stringified.dart' as _i7liykk2;
@@ -232,30 +230,30 @@ abstract class Types
     int? anInt,
     bool? aBool,
     double? aDouble,
-    DateTime? aDateTime = const _issu.$UndefinedDateTime(),
+    DateTime? aDateTime = const _isc.$UndefinedDateTime(),
     String? aString,
     _idt.ByteData? aByteData,
-    Duration? aDuration = const _issu.$UndefinedDuration(),
-    _isc.UuidValue? aUuid = const _issu.$UndefinedUuidValue(),
-    Uri? aUri = const _issu.$UndefinedUri(),
+    Duration? aDuration = const _isc.$UndefinedDuration(),
+    _isc.UuidValue? aUuid = const _isc.$UndefinedUuidValue(),
+    Uri? aUri = const _isc.$UndefinedUri(),
     BigInt? aBigInt,
-    _isc.Vector? aVector = const _issu.$UndefinedVector(),
-    _isc.HalfVector? aHalfVector = const _issu.$UndefinedHalfVector(),
-    _isc.SparseVector? aSparseVector = const _issu.$UndefinedSparseVector(),
-    _isc.Bit? aBit = const _issu.$UndefinedBit(),
+    _isc.Vector? aVector = const _isc.$UndefinedVector(),
+    _isc.HalfVector? aHalfVector = const _isc.$UndefinedHalfVector(),
+    _isc.SparseVector? aSparseVector = const _isc.$UndefinedSparseVector(),
+    _isc.Bit? aBit = const _isc.$UndefinedBit(),
     _isc.GeographyPoint? aGeographyPoint =
-        const _issu.$UndefinedGeographyPoint(),
+        const _isc.$UndefinedGeographyPoint(),
     _isc.GeographyLineString? aGeographyLineString =
-        const _issu.$UndefinedGeographyLineString(),
+        const _isc.$UndefinedGeographyLineString(),
     _isc.GeographyPolygon? aGeographyPolygon =
-        const _issu.$UndefinedGeographyPolygon(),
+        const _isc.$UndefinedGeographyPolygon(),
     _isc.GeographyGeometryCollection? aGeographyGeometryCollection =
-        const _issu.$UndefinedGeographyGeometryCollection(),
+        const _isc.$UndefinedGeographyGeometryCollection(),
     _ionapfu9.TestEnum? anEnum,
     _i7liykk2.TestEnumStringified? aStringifiedEnum,
-    List<int>? aList = const _issu.$UndefinedList<int>(),
-    Map<int, int>? aMap = const _issu.$UndefinedMap<int, int>(),
-    Set<int>? aSet = const _issu.$UndefinedSet<int>(),
+    List<int>? aList = const _isc.$UndefinedList<int>(),
+    Map<int, int>? aMap = const _isc.$UndefinedMap<int, int>(),
+    Set<int>? aSet = const _isc.$UndefinedSet<int>(),
     (String, {Uri? optionalUri})? aRecord,
   });
   @override
@@ -404,30 +402,30 @@ class _TypesImpl extends Types {
     Object? anInt = _Undefined,
     Object? aBool = _Undefined,
     Object? aDouble = _Undefined,
-    DateTime? aDateTime = const _issu.$UndefinedDateTime(),
+    DateTime? aDateTime = const _isc.$UndefinedDateTime(),
     Object? aString = _Undefined,
     Object? aByteData = _Undefined,
-    Duration? aDuration = const _issu.$UndefinedDuration(),
-    _isc.UuidValue? aUuid = const _issu.$UndefinedUuidValue(),
-    Uri? aUri = const _issu.$UndefinedUri(),
+    Duration? aDuration = const _isc.$UndefinedDuration(),
+    _isc.UuidValue? aUuid = const _isc.$UndefinedUuidValue(),
+    Uri? aUri = const _isc.$UndefinedUri(),
     Object? aBigInt = _Undefined,
-    _isc.Vector? aVector = const _issu.$UndefinedVector(),
-    _isc.HalfVector? aHalfVector = const _issu.$UndefinedHalfVector(),
-    _isc.SparseVector? aSparseVector = const _issu.$UndefinedSparseVector(),
-    _isc.Bit? aBit = const _issu.$UndefinedBit(),
+    _isc.Vector? aVector = const _isc.$UndefinedVector(),
+    _isc.HalfVector? aHalfVector = const _isc.$UndefinedHalfVector(),
+    _isc.SparseVector? aSparseVector = const _isc.$UndefinedSparseVector(),
+    _isc.Bit? aBit = const _isc.$UndefinedBit(),
     _isc.GeographyPoint? aGeographyPoint =
-        const _issu.$UndefinedGeographyPoint(),
+        const _isc.$UndefinedGeographyPoint(),
     _isc.GeographyLineString? aGeographyLineString =
-        const _issu.$UndefinedGeographyLineString(),
+        const _isc.$UndefinedGeographyLineString(),
     _isc.GeographyPolygon? aGeographyPolygon =
-        const _issu.$UndefinedGeographyPolygon(),
+        const _isc.$UndefinedGeographyPolygon(),
     _isc.GeographyGeometryCollection? aGeographyGeometryCollection =
-        const _issu.$UndefinedGeographyGeometryCollection(),
+        const _isc.$UndefinedGeographyGeometryCollection(),
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
-    List<int>? aList = const _issu.$UndefinedList<int>(),
-    Map<int, int>? aMap = const _issu.$UndefinedMap<int, int>(),
-    Set<int>? aSet = const _issu.$UndefinedSet<int>(),
+    List<int>? aList = const _isc.$UndefinedList<int>(),
+    Map<int, int>? aMap = const _isc.$UndefinedMap<int, int>(),
+    Set<int>? aSet = const _isc.$UndefinedSet<int>(),
     Object? aRecord = _Undefined,
   }) {
     return Types(
@@ -435,50 +433,50 @@ class _TypesImpl extends Types {
       anInt: anInt is int? ? anInt : this.anInt,
       aBool: aBool is bool? ? aBool : this.aBool,
       aDouble: aDouble is double? ? aDouble : this.aDouble,
-      aDateTime: aDateTime is _issu.UndefinedSentinel
+      aDateTime: aDateTime is _isc.UndefinedSentinel
           ? this.aDateTime
           : aDateTime,
       aString: aString is String? ? aString : this.aString,
       aByteData: aByteData is _idt.ByteData?
           ? aByteData
           : this.aByteData?.clone(),
-      aDuration: aDuration is _issu.UndefinedSentinel
+      aDuration: aDuration is _isc.UndefinedSentinel
           ? this.aDuration
           : aDuration,
-      aUuid: aUuid is _issu.UndefinedSentinel ? this.aUuid : aUuid,
-      aUri: aUri is _issu.UndefinedSentinel ? this.aUri : aUri,
+      aUuid: aUuid is _isc.UndefinedSentinel ? this.aUuid : aUuid,
+      aUri: aUri is _isc.UndefinedSentinel ? this.aUri : aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
-      aVector: aVector is _issu.UndefinedSentinel
+      aVector: aVector is _isc.UndefinedSentinel
           ? this.aVector?.clone()
           : aVector,
-      aHalfVector: aHalfVector is _issu.UndefinedSentinel
+      aHalfVector: aHalfVector is _isc.UndefinedSentinel
           ? this.aHalfVector?.clone()
           : aHalfVector,
-      aSparseVector: aSparseVector is _issu.UndefinedSentinel
+      aSparseVector: aSparseVector is _isc.UndefinedSentinel
           ? this.aSparseVector?.clone()
           : aSparseVector,
-      aBit: aBit is _issu.UndefinedSentinel ? this.aBit?.clone() : aBit,
-      aGeographyPoint: aGeographyPoint is _issu.UndefinedSentinel
+      aBit: aBit is _isc.UndefinedSentinel ? this.aBit?.clone() : aBit,
+      aGeographyPoint: aGeographyPoint is _isc.UndefinedSentinel
           ? this.aGeographyPoint
           : aGeographyPoint,
-      aGeographyLineString: aGeographyLineString is _issu.UndefinedSentinel
+      aGeographyLineString: aGeographyLineString is _isc.UndefinedSentinel
           ? this.aGeographyLineString
           : aGeographyLineString,
-      aGeographyPolygon: aGeographyPolygon is _issu.UndefinedSentinel
+      aGeographyPolygon: aGeographyPolygon is _isc.UndefinedSentinel
           ? this.aGeographyPolygon
           : aGeographyPolygon,
       aGeographyGeometryCollection:
-          aGeographyGeometryCollection is _issu.UndefinedSentinel
+          aGeographyGeometryCollection is _isc.UndefinedSentinel
           ? this.aGeographyGeometryCollection
           : aGeographyGeometryCollection,
       anEnum: anEnum is _ionapfu9.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i7liykk2.TestEnumStringified?
           ? aStringifiedEnum
           : this.aStringifiedEnum,
-      aList: aList is _issu.UndefinedSentinel
+      aList: aList is _isc.UndefinedSentinel
           ? this.aList?.map((e0) => e0).toList()
           : aList,
-      aMap: aMap is _issu.UndefinedSentinel
+      aMap: aMap is _isc.UndefinedSentinel
           ? this.aMap?.map(
               (
                 key0,
@@ -489,7 +487,7 @@ class _TypesImpl extends Types {
               ),
             )
           : aMap,
-      aSet: aSet is _issu.UndefinedSentinel
+      aSet: aSet is _isc.UndefinedSentinel
           ? this.aSet?.map((e0) => e0).toSet()
           : aSet,
       aRecord: aRecord is (String, {Uri? optionalUri})?

@@ -95,6 +95,11 @@ final class EmailIdpTestFixture {
           where: (final _) => Constant.bool(true),
           transaction: transaction,
         ),
+        EmailAccountOtpLoginRequest.db.deleteWhere(
+          session,
+          where: (final _) => Constant.bool(true),
+          transaction: transaction,
+        ),
         RateLimitedRequestAttempt.db.deleteWhere(
           session,
           where: (final t) => t.domain.equals('email'),
@@ -121,5 +126,6 @@ final class EmailIdpTestFixture {
       emailIdp.utils.passwordReset;
   EmailIdpAccountCreationUtil get accountCreationUtil =>
       emailIdp.utils.accountCreation;
+  EmailIdpOtpLoginUtil get otpLoginUtil => emailIdp.utils.otpLogin;
   EmailIdpConfig get config => emailIdp.config;
 }

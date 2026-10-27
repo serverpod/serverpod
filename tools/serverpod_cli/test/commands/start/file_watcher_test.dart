@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:test/test.dart';
@@ -101,6 +102,84 @@ void main() {
           expect(event.dartFiles.first, contains('generated.dart'));
         },
       );
+    },
+  );
+
+  group('Given a custom entrypoint outside the watched directories,', () {
+    late File entrypoint;
+    late FileWatcher watcher;
+
+    setUp(() async {
+      entrypoint = File(p.join(tempDir.path, 'tool', 'enterprise.dart'));
+      await entrypoint.parent.create();
+      await entrypoint.writeAsString('void main() {}');
+      watcher = FileWatcher(
+        watchPaths: [p.join(tempDir.path, 'lib')],
+        persistentFilePaths: [entrypoint.path],
+        debounceDelay: const Duration(milliseconds: 20),
+        missingFilePollingDelay: const Duration(milliseconds: 20),
+      );
+    });
+
+    test(
+      'when its source is edited, '
+      'then the entrypoint is reported as a Dart change.',
+      () async {
+        final nextEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
+
+        await entrypoint.writeAsString("void main() { print('edited'); }");
+        final event = await nextEvent.timeout(const Duration(seconds: 5));
+
+        expect(event.dartFiles, {p.canonicalize(entrypoint.path)});
+        expect(event.modelFiles, isEmpty);
+        expect(event.staticFilesChanged, isFalse);
+      },
+    );
+
+    test(
+      'when its file is deleted and recreated, '
+      'then both changes are reported for compilation.',
+      () async {
+        final events = StreamQueue(watcher.onFilesChanged);
+        addTearDown(() => events.cancel(immediate: true));
+        final nextDeletion = events.next;
+        await watcher.ready;
+
+        await entrypoint.delete();
+        final deletion = await nextDeletion.timeout(const Duration(seconds: 5));
+        final nextRecreation = events.next;
+        await entrypoint.writeAsString('void main() {}');
+        final recreation = await nextRecreation.timeout(
+          const Duration(seconds: 5),
+        );
+
+        expect(deletion.dartFiles, {p.canonicalize(entrypoint.path)});
+        expect(recreation.dartFiles, {p.canonicalize(entrypoint.path)});
+      },
+    );
+  });
+
+  test(
+    'Given a missing custom entrypoint, '
+    'when its file is created, '
+    'then it is reported as a Dart change.',
+    () async {
+      final entrypoint = File(p.join(tempDir.path, 'tool', 'enterprise.dart'));
+      final watcher = FileWatcher(
+        watchPaths: [p.join(tempDir.path, 'lib')],
+        persistentFilePaths: [entrypoint.path],
+        debounceDelay: const Duration(milliseconds: 20),
+        missingFilePollingDelay: const Duration(milliseconds: 20),
+      );
+      final nextEvent = watcher.onFilesChanged.first;
+      await watcher.ready;
+
+      await entrypoint.parent.create();
+      await entrypoint.writeAsString('void main() {}');
+      final event = await nextEvent.timeout(const Duration(seconds: 5));
+
+      expect(event.dartFiles, {p.canonicalize(entrypoint.path)});
     },
   );
 

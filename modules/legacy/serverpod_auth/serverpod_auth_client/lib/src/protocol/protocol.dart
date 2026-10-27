@@ -42,7 +42,8 @@ export 'user_info_public.dart';
 export 'user_settings_config.dart';
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _isc.SerializationManager
+    implements _isc.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -50,6 +51,44 @@ class Protocol extends _isc.SerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_isc.SerializationManager> _hostProtocols = {};
+
+  @override
+  _isc.ProtocolDeserialization get deserializationMetadata =>
+      _isc.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _isc.getType<_iy492fk4.AppleAuthInfo>,
+          _isc.getType<_i8lzboul.AuthKey>,
+          _isc.getType<_ika0ufek.AuthenticationFailReason>,
+          _isc.getType<_i6gspdjt.AuthenticationResponse>,
+          _isc.getType<_il95bqq6.EmailAuth>,
+          _isc.getType<_ilnsxyj8.EmailCreateAccountRequest>,
+          _isc.getType<_iaz0raab.EmailFailedSignIn>,
+          _isc.getType<_iiusgova.EmailPasswordReset>,
+          _isc.getType<_ifm8n60r.EmailReset>,
+          _isc.getType<_is585jau.GoogleRefreshToken>,
+          _isc.getType<_i0mx5j5p.UserImage>,
+          _isc.getType<_iliwsvmu.UserInfo>,
+          _isc.getType<_iabwsxht.UserInfoPublic>,
+          _isc.getType<_i5rdiffu.UserSettingsConfig>,
+          _isc.getType<_iy492fk4.AppleAuthInfo?>,
+          _isc.getType<_i8lzboul.AuthKey?>,
+          _isc.getType<_ika0ufek.AuthenticationFailReason?>,
+          _isc.getType<_i6gspdjt.AuthenticationResponse?>,
+          _isc.getType<_il95bqq6.EmailAuth?>,
+          _isc.getType<_ilnsxyj8.EmailCreateAccountRequest?>,
+          _isc.getType<_iaz0raab.EmailFailedSignIn?>,
+          _isc.getType<_iiusgova.EmailPasswordReset?>,
+          _isc.getType<_ifm8n60r.EmailReset?>,
+          _isc.getType<_is585jau.GoogleRefreshToken?>,
+          _isc.getType<_i0mx5j5p.UserImage?>,
+          _isc.getType<_iliwsvmu.UserInfo?>,
+          _isc.getType<_iabwsxht.UserInfoPublic?>,
+          _isc.getType<_i5rdiffu.UserSettingsConfig?>,
+          _isc.getType<List<String>>,
+        ],
+        modules: const [],
+      );
 
   void registerHostProtocol(
     String projectName,

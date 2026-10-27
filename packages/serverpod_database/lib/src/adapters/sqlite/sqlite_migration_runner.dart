@@ -18,9 +18,18 @@ class SqliteDatabaseMigrationRunner extends MigrationRunner {
     await session.db.unsafeExecute('PRAGMA foreign_keys=OFF');
     try {
       await session.db.transaction((transaction) async {
+        final schemaBefore = await _schemaVersion(session, transaction);
         await action(transaction);
         if (runMode == 'development') {
           await _verifyForeignKeyIntegrity(session, transaction);
+        }
+        if (await _schemaVersion(session, transaction) != schemaBefore) {
+          // Publish statistics with the schema change, before readers reload
+          // the new schema. A no-op migration does not need maintenance.
+          await session.db.unsafeExecute(
+            'PRAGMA optimize',
+            transaction: transaction,
+          );
         }
       });
     } finally {
@@ -28,6 +37,14 @@ class SqliteDatabaseMigrationRunner extends MigrationRunner {
     }
   }
 }
+
+Future<Object?> _schemaVersion(
+  DatabaseSession session,
+  Transaction transaction,
+) async => (await session.db.unsafeQuery(
+  'PRAGMA schema_version',
+  transaction: transaction,
+)).single.toColumnMap()['schema_version'];
 
 Future<void> _verifyForeignKeyIntegrity(
   DatabaseSession session,

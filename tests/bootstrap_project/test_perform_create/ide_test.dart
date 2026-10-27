@@ -34,10 +34,9 @@ void main() {
         expect(agentsMd.readAsStringSync(), isNotEmpty);
       });
 
-      test('then the created project has CLAUDE.md', () {
+      test('then the created project does not have CLAUDE.md', () {
         final claudeMd = File(p.join(project.projectRoot, 'CLAUDE.md'));
-        expect(claudeMd.existsSync(), isTrue);
-        expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+        expect(claudeMd.existsSync(), isFalse);
       });
 
       test('then the created project has agent skills installed', () {

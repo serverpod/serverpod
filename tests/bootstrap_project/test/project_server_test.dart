@@ -227,12 +227,11 @@ void main() async {
             expect(agentsMd.readAsStringSync(), isNotEmpty);
           });
 
-          test('then the workspace has CLAUDE.md file', () {
+          test('then the workspace does not have CLAUDE.md file', () {
             final claudeMd = File(
               path.join(tempPath, projectName, 'CLAUDE.md'),
             );
-            expect(claudeMd.existsSync(), isTrue);
-            expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+            expect(claudeMd.existsSync(), isFalse);
           });
 
           test('then the workspace has agent skills installed', () {
@@ -697,6 +696,22 @@ void main() async {
               ).existsSync(),
               isTrue,
               reason: 'analyze.yml workflow does not exist.',
+            );
+          });
+
+          test('then the .github directory has deploy workflow', () {
+            expect(
+              File(
+                path.join(
+                  tempPath,
+                  projectName,
+                  '.github',
+                  'workflows',
+                  'deploy.yml',
+                ),
+              ).existsSync(),
+              isTrue,
+              reason: 'deploy.yml workflow does not exist.',
             );
           });
 

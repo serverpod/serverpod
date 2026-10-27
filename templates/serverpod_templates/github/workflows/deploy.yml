@@ -1,0 +1,56 @@
+name: Deploy to Serverpod Cloud
+
+# Deploys the server when commits land on the `deploy` branch, or when run
+# manually from the Actions tab. One-time setup:
+#
+#   1. In projectname_server, run `serverpod cloud launch` and commit the
+#      scloud.yaml it creates.
+#   2. Run `serverpod cloud auth create-token` and add the token as a
+#      repository secret named SERVERPOD_CLOUD_TOKEN. Tokens expire after 30
+#      days without use unless created with `--no-idle-ttl`.
+#   3. Push to the deploy branch: `git push origin main:deploy`.
+#
+# https://docs.serverpod.dev/cloud/guides/deploy-from-ci-with-github-actions
+
+on:
+  push:
+    branches: [deploy]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Queue deploys instead of running two at once.
+concurrency:
+  group: serverpod-cloud-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: 'CLI_VERSION'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # The pre-deploy hooks in scloud.yaml (`serverpod generate` and
+      # `serverpod run flutter_build`) need the Serverpod CLI on the PATH.
+      - name: Install Serverpod CLI
+        run: |
+          dart install serverpod_cli@$VERSION
+          # `dart install` puts executables in the Dart data home, which is not
+          # on the PATH of a GitHub runner.
+          echo "${XDG_STATE_HOME:-$HOME/.local/state}/Dart/install/bin" >> "$GITHUB_PATH"
+
+      - uses: serverpod/serverpod_cloud_deploy@v1
+        with:
+          token: ${{ secrets.SERVERPOD_CLOUD_TOKEN }}
+          project_dir: projectname_server

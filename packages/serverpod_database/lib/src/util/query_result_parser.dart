@@ -70,19 +70,11 @@ Map<String, Map<Object, List<Map<String, dynamic>>>> mapListToQueryById(
   Table relativeRelationTable,
   String foreignFieldName,
 ) {
-  var mappedLists = resolvedList.fold<Map<Object, List<Map<String, dynamic>>>>(
-    {},
-    (mappedResult, row) {
-      var id = row[foreignFieldName];
-
-      mappedResult.update(
-        id,
-        (value) => [...value, row],
-        ifAbsent: () => [row],
-      );
-      return mappedResult;
-    },
-  );
+  var mappedLists = <Object, List<Map<String, dynamic>>>{};
+  for (var row in resolvedList) {
+    var id = row[foreignFieldName];
+    mappedLists.putIfAbsent(id, () => []).add(row);
+  }
 
   return {relativeRelationTable.queryPrefix: mappedLists};
 }

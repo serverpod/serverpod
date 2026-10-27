@@ -85,7 +85,7 @@ class EmailIdpAdmin {
           _utils.passwordReset.deletePasswordResetRequestAttempts(
             session,
             olderThan: Duration.zero,
-            email: email,
+            email: email.normalizedEmail,
             transaction: transaction,
           ),
     );
@@ -103,6 +103,40 @@ class EmailIdpAdmin {
         session,
         olderThan: null,
         emailAccountId: null,
+        transaction: transaction,
+      ),
+    );
+  }
+
+  /// {@macro email_idp_otp_login_util.delete_expired_otp_login_requests}
+  Future<void> deleteExpiredOtpLoginRequests(
+    final Session session, {
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.otpLogin.deleteExpiredOtpLoginRequests(
+        session,
+        transaction: transaction,
+      ),
+    );
+  }
+
+  /// {@macro email_idp_otp_login_util.delete_otp_login_attempts}
+  Future<void> deleteOtpLoginAttempts(
+    final Session session, {
+    final Duration? olderThan,
+    final String? email,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.otpLogin.deleteOtpLoginAttempts(
+        session,
+        olderThan: olderThan,
+        email: email,
         transaction: transaction,
       ),
     );

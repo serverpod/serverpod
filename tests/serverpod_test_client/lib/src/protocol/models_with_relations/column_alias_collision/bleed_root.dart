@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/column_alias_collision/bleed_child.dart'
     as _i2rsfnut;
@@ -145,7 +143,7 @@ abstract class BleedRoot
 class _Undefined {}
 
 class _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun24
-    extends _issu.UndefinedSentinel
+    extends _isc.UndefinedSentinel
     implements _i2rsfnut.BleedChild {
   const _UndefinedBleedRoot$childRelationWithExtremelyLongFieldNameForcingTrun24();
 }
@@ -189,14 +187,14 @@ class _BleedRootImpl extends BleedRoot {
       firstChildId: firstChildId is int? ? firstChildId : this.firstChildId,
       childRelationWithExtremelyLongFieldNameForcingTrun24:
           childRelationWithExtremelyLongFieldNameForcingTrun24
-              is _issu.UndefinedSentinel
+              is _isc.UndefinedSentinel
           ? this.childRelationWithExtremelyLongFieldNameForcingTrun24
                 ?.copyWith()
           : childRelationWithExtremelyLongFieldNameForcingTrun24,
       secondChildId: secondChildId is int? ? secondChildId : this.secondChildId,
       childRelationWithExtremelyLongFieldNameForcingTrun23:
           childRelationWithExtremelyLongFieldNameForcingTrun23
-              is _issu.UndefinedSentinel
+              is _isc.UndefinedSentinel
           ? this.childRelationWithExtremelyLongFieldNameForcingTrun23
                 ?.copyWith()
           : childRelationWithExtremelyLongFieldNameForcingTrun23,

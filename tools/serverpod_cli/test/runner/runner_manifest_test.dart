@@ -18,8 +18,10 @@ RunnerManifest _manifest({
   Map<String, int>? ports,
   RunnerDocker? docker,
   RunnerConfig? config,
+  String? spawnId,
 }) => RunnerManifest(
   pid: pid,
+  spawnId: spawnId,
   projectId: 'a3d3a8b2-4f6c-5d1e-9b7a-2c8f0e1d3a5b',
   vmService: vmService,
   servers: servers,
@@ -68,6 +70,7 @@ void main() {
             docker: true,
             serverArgs: ['--mode', 'production'],
           ),
+          spawnId: 'spawn-1',
         );
 
         final decoded = RunnerManifest.fromJson(
@@ -89,6 +92,7 @@ void main() {
         expect(decoded.config.watch, isFalse);
         expect(decoded.config.flutter, isFalse);
         expect(decoded.config.serverArgs, ['--mode', 'production']);
+        expect(decoded.spawnId, 'spawn-1');
       },
     );
 
@@ -240,6 +244,32 @@ void main() {
         expect(running.differencesFrom(asked), ['--watch']);
       },
     );
+
+    test(
+      'when an invocation asks for a different target, then it names it',
+      () {
+        const asked = RunnerConfig(
+          watch: true,
+          flutter: true,
+          target: 'bin/main_enterprise.dart',
+          serverArgs: ['--mode', 'production'],
+        );
+
+        expect(running.differencesFrom(asked), ['--target']);
+      },
+    );
+
+    test('when a custom target is saved, then it survives a round trip', () {
+      const config = RunnerConfig(
+        watch: true,
+        flutter: true,
+        target: 'bin/main_enterprise.dart',
+        serverArgs: [],
+      );
+
+      expect(RunnerConfig.fromJson(config.toJson()).target, config.target);
+      expect(RunnerConfig.fromJson(const {}).target, 'bin/main.dart');
+    });
 
     test(
       'when an invocation asks for Docker and the runner started without it, '
@@ -515,6 +545,23 @@ void main() {
   );
 
   group('Given a runner configuration spawning a serve command,', () {
+    test('when a custom target is selected, then it is forwarded', () {
+      const config = RunnerConfig(
+        watch: true,
+        flutter: true,
+        target: 'bin/main_enterprise.dart',
+        serverArgs: [],
+      );
+
+      expect(
+        config.toServeArgs(directory: '/srv'),
+        containsAllInOrder([
+          '--target',
+          'bin/main_enterprise.dart',
+        ]),
+      );
+    });
+
     test(
       'when the arguments are built, '
       'then every stack-shaping option is stated explicitly',

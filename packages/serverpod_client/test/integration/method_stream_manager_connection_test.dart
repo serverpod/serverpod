@@ -4,6 +4,7 @@
 library;
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:relic/relic.dart';
 import 'package:serverpod_client/serverpod_client.dart';
@@ -38,7 +39,8 @@ void main() async {
     'Given no websocket server when attempting to connect then WebSocketConnectException is thrown.',
     () {
       var streamManager = ClientMethodStreamManager(
-        connectionTimeout: const Duration(milliseconds: 100),
+        // Windows takes ~2s to report a refused connection.
+        connectionTimeout: const Duration(seconds: 5),
         webSocketHost: Uri.parse('ws://localhost:12345'),
         serializationManager: TestSerializationManager(),
       );
@@ -119,6 +121,74 @@ void main() async {
         );
 
         expect(pingCommandsReceived, 5);
+      },
+    );
+  });
+
+  group('Given a server that never answers the websocket upgrade', () {
+    late ServerSocket server;
+    late List<Socket> acceptedSockets;
+    late Uri webSocketHost;
+
+    setUp(() async {
+      acceptedSockets = [];
+      server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      server.listen((socket) {
+        acceptedSockets.add(socket);
+        socket.listen((_) {});
+      });
+      webSocketHost = Uri.parse(
+        'ws://${InternetAddress.loopbackIPv4.host}:${server.port}',
+      );
+    });
+
+    tearDown(() async {
+      for (var socket in acceptedSockets) {
+        socket.destroy();
+      }
+      await server.close();
+    });
+
+    test(
+      'when trying to open method stream then ConnectionAttemptTimedOutException is thrown.',
+      () async {
+        var streamManager = ClientMethodStreamManager(
+          connectionTimeout: const Duration(milliseconds: 100),
+          webSocketHost: webSocketHost,
+          serializationManager: TestSerializationManager(),
+        );
+
+        await expectLater(
+          streamManager.openMethodStream(
+            MethodStreamConnectionDetailsBuilder().build(),
+          ),
+          throwsA(isA<ConnectionAttemptTimedOutException>()),
+        );
+      },
+    );
+
+    test(
+      'when trying to open multiple method streams then a connection attempt is made for each method stream.',
+      () async {
+        var streamManager = ClientMethodStreamManager(
+          connectionTimeout: const Duration(milliseconds: 100),
+          webSocketHost: webSocketHost,
+          serializationManager: TestSerializationManager(),
+        );
+
+        Future<void> openMethodStream() async => streamManager.openMethodStream(
+          MethodStreamConnectionDetailsBuilder().build(),
+        );
+
+        await Future.wait([
+          openMethodStream(),
+          openMethodStream(),
+          openMethodStream(),
+        ]).onError<ConnectionAttemptTimedOutException>(
+          (error, stackTrace) => Future.value([]),
+        );
+
+        expect(acceptedSockets, hasLength(3));
       },
     );
   });

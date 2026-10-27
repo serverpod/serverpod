@@ -50,7 +50,8 @@ export 'profile/models/user_profile_model.dart';
 export 'session/models/server_side_session_info.dart';
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _isc.SerializationManager
+    implements _isc.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -58,6 +59,52 @@ class Protocol extends _isc.SerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_isc.SerializationManager> _hostProtocols = {};
+
+  @override
+  _isc.ProtocolDeserialization get deserializationMetadata =>
+      _isc.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _isc.getType<_iwlenhk6.AuthUser>,
+          _isc.getType<_idjlnenv.AuthUserBlockedException>,
+          _isc.getType<_ievhec41.AuthUserModel>,
+          _isc.getType<_ihi15zs1.AuthUserNotFoundException>,
+          _isc.getType<_i52qy4mw.AuthStrategy>,
+          _isc.getType<_ioaqzt9u.AuthSuccess>,
+          _isc.getType<_iymqi1d6.SignInWhileAuthenticatedException>,
+          _isc.getType<_i8d4wdsw.JwtTokenInfo>,
+          _isc.getType<_i35co9vj.RefreshTokenExpiredException>,
+          _isc.getType<_ik27atqz.RefreshTokenInvalidSecretException>,
+          _isc.getType<_i20y3j39.RefreshTokenMalformedException>,
+          _isc.getType<_in48f3pc.RefreshTokenNotFoundException>,
+          _isc.getType<_i6w0tdii.TokenPair>,
+          _isc.getType<_ichiyqlu.UserProfile>,
+          _isc.getType<_isbbac0p.UserProfileData>,
+          _isc.getType<_iu5nhigv.UserProfileImage>,
+          _isc.getType<_iw6ug6lb.UserProfileModel>,
+          _isc.getType<_izgso6n0.ServerSideSessionInfo>,
+          _isc.getType<_iwlenhk6.AuthUser?>,
+          _isc.getType<_idjlnenv.AuthUserBlockedException?>,
+          _isc.getType<_ievhec41.AuthUserModel?>,
+          _isc.getType<_ihi15zs1.AuthUserNotFoundException?>,
+          _isc.getType<_i52qy4mw.AuthStrategy?>,
+          _isc.getType<_ioaqzt9u.AuthSuccess?>,
+          _isc.getType<_iymqi1d6.SignInWhileAuthenticatedException?>,
+          _isc.getType<_i8d4wdsw.JwtTokenInfo?>,
+          _isc.getType<_i35co9vj.RefreshTokenExpiredException?>,
+          _isc.getType<_ik27atqz.RefreshTokenInvalidSecretException?>,
+          _isc.getType<_i20y3j39.RefreshTokenMalformedException?>,
+          _isc.getType<_in48f3pc.RefreshTokenNotFoundException?>,
+          _isc.getType<_i6w0tdii.TokenPair?>,
+          _isc.getType<_ichiyqlu.UserProfile?>,
+          _isc.getType<_isbbac0p.UserProfileData?>,
+          _isc.getType<_iu5nhigv.UserProfileImage?>,
+          _isc.getType<_iw6ug6lb.UserProfileModel?>,
+          _isc.getType<_izgso6n0.ServerSideSessionInfo?>,
+          _isc.getType<Set<String>>,
+        ],
+        modules: const [],
+      );
 
   void registerHostProtocol(
     String projectName,

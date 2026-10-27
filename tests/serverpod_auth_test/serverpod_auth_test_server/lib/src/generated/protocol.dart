@@ -32,12 +32,40 @@ export 'session_metadata.dart';
 export 'token_metadata.dart';
 export 'user_data.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
+
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_iglfdn1p.ChallengeTracker>,
+          _is.getType<_i9enq514.SessionMetadata>,
+          _is.getType<_iziuxo06.TokenMetadata>,
+          _is.getType<_iq4j08kb.UserData>,
+          _is.getType<_iglfdn1p.ChallengeTracker?>,
+          _is.getType<_i9enq514.SessionMetadata?>,
+          _is.getType<_iziuxo06.TokenMetadata?>,
+          _is.getType<_iq4j08kb.UserData?>,
+          _is.getType<List<String?>>,
+          _is.getType<Set<String>>,
+          _is.getType<({_idt.ByteData challenge, _is.UuidValue id})>,
+        ],
+        modules: const [
+          _iabs.Protocol.new,
+          _iacs.Protocol.new,
+          _iais.Protocol.new,
+          _iams.Protocol.new,
+          _i1n3uhu0.Protocol.new,
+          _isp.Protocol.new,
+        ],
+      );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
     _isp.TableDefinition(
@@ -385,24 +413,15 @@ class Protocol extends _is.DatabaseSerializationManager {
           )
           as T;
     }
-    try {
-      return _iabs.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _iacs.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _iais.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _iams.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _i1n3uhu0.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 

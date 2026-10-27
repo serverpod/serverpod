@@ -42,8 +42,8 @@ const podVmServiceUnreachable =
     'could neither learn its addresses nor reload it. Stopping the server.';
 
 const previousCompileInterrupted =
-    'A previous compilation was interrupted; discarding the cached build and '
-    'recompiling from scratch.';
+    'A previous compilation failed or was interrupted; discarding the cached '
+    'build and recompiling from scratch.';
 
 /// Shown when the server crashed booting from the cached kernel.
 const cachedBuildCrashedOnBoot =

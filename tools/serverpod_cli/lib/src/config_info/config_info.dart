@@ -27,7 +27,7 @@ class ConfigInfo {
     }
 
     return '${insightsServer.publicScheme}://'
-        '${insightsServer.publicHost}:${insightsServer.port}/';
+        '${insightsServer.publicHost}:${insightsServer.publicPort}/';
   }
 
   /// Service client for the insights server at [address].

@@ -61,6 +61,59 @@ void main() {
     );
 
     test(
+      'when a column is added in the target table then mismatches include added column',
+      () {
+        var tableA = TableDefinition(
+          name: 'test_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'id',
+              columnType: ColumnType.integer,
+              isNullable: true,
+              dartType: 'int',
+            ),
+          ],
+          foreignKeys: [],
+          indexes: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'test_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'id',
+              columnType: ColumnType.integer,
+              isNullable: true,
+              dartType: 'int',
+            ),
+            ColumnDefinition(
+              name: 'age',
+              columnType: ColumnType.integer,
+              isNullable: true,
+              dartType: 'int?',
+            ),
+          ],
+          foreignKeys: [],
+          indexes: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first.subs, isEmpty);
+        expect(mismatches.first, isA<ColumnComparisonWarning>());
+        expect(mismatches.first.expected, isNull);
+        expect(mismatches.first.found, equals('age'));
+        expect(mismatches.first.isMissing, isFalse);
+        expect(mismatches.first.isAdded, isTrue);
+      },
+    );
+
+    test(
       'when columns have different types then mismatches include column type mismatch',
       () {
         var tableA = TableDefinition(

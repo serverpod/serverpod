@@ -70,6 +70,10 @@ extension TableDefinitionUtils on TableDefinition {
 /// Comparison methods for [TableDefinition].
 extension TableComparisons on TableDefinition {
   /// Compares this table definition with [other], returning a list of mismatches.
+  ///
+  /// This definition is the expected one and [other] the one found. Columns,
+  /// indexes and foreign keys that only exist in this definition are reported
+  /// as missing, and those that only exist in [other] are reported as added.
   List<ComparisonWarning> like(TableDefinition other) {
     List<ComparisonWarning> mismatches = [];
 
@@ -125,6 +129,18 @@ extension TableComparisons on TableDefinition {
       }
     }
 
+    for (var otherColumn in other.columns) {
+      if (!containsColumnNamed(otherColumn.name)) {
+        mismatches.add(
+          ColumnComparisonWarning(
+            name: otherColumn.name,
+            expected: null,
+            found: otherColumn.name,
+          ),
+        );
+      }
+    }
+
     for (var index in indexes) {
       var otherIndex = other.findIndexNamed(index.indexName, ignoreCase: true);
       if (otherIndex == null) {
@@ -144,6 +160,18 @@ extension TableComparisons on TableDefinition {
             ).addSubs(indexMismatches),
           );
         }
+      }
+    }
+
+    for (var otherIndex in other.indexes) {
+      if (findIndexNamed(otherIndex.indexName, ignoreCase: true) == null) {
+        mismatches.add(
+          IndexComparisonWarning(
+            name: otherIndex.indexName,
+            expected: null,
+            found: otherIndex.indexName,
+          ),
+        );
       }
     }
 
@@ -172,6 +200,22 @@ extension TableComparisons on TableDefinition {
             ).addSubs(foreignKeyMismatches),
           );
         }
+      }
+    }
+
+    for (var otherForeignKey in other.foreignKeys) {
+      var foreignKey = findForeignKeyDefinitionNamed(
+        otherForeignKey.constraintName,
+        ignoreCase: true,
+      );
+      if (foreignKey == null) {
+        mismatches.add(
+          ForeignKeyComparisonWarning(
+            name: otherForeignKey.constraintName,
+            expected: null,
+            found: otherForeignKey.constraintName,
+          ),
+        );
       }
     }
 

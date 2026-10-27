@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:meta/meta.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
@@ -30,7 +33,13 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   /// Tracks the PRAGMA future kicked off by [start]
   Future<void>? _startedFuture;
+  Future<void>? _stoppingFuture;
   bool _databaseStopped = false;
+  Timer? _optimizationTimer;
+  Future<void>? _optimization;
+
+  /// Interval between planner-statistics maintenance runs.
+  final Duration optimizationInterval;
 
   /// The SQLite database instance.
   ///
@@ -55,13 +64,17 @@ class SqlitePoolManager implements DatabasePoolManager {
   /// database session.
   SqlitePoolManager(
     DatabaseSerializationManager serializationManager,
-    this.config,
-  ) {
+    this.config, {
+    this.optimizationInterval = const Duration(days: 1),
+  }) {
     _serializationManager = serializationManager;
   }
 
   @override
   void start() {
+    if (_stoppingFuture != null) {
+      throw StateError('Database is stopping. Await stop() before restarting.');
+    }
     _databaseStopped = false;
     _startedFuture ??= _bootstrap();
   }
@@ -73,27 +86,87 @@ class SqlitePoolManager implements DatabasePoolManager {
     final db = SqliteDatabase(
       path: config.filePath,
       options: SqliteOptions(
+        // Reuse statements only within bounded batches, avoiding retention of
+        // literal-bearing SQL across operations.
+        preparedStatementCacheSize: 0,
         maxReaders:
             config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
       ),
     );
     _db = db;
     await db.execute('PRAGMA foreign_keys = ON');
+    await _runOptimization(db);
+    if (!_databaseStopped) {
+      _optimizationTimer = Timer.periodic(optimizationInterval, (_) {
+        unawaited(_runOptimization(db));
+      });
+    }
+  }
+
+  Future<void> _runOptimization(SqliteDatabase db) =>
+      _optimization ??= _optimize(db).whenComplete(() => _optimization = null);
+
+  Future<void> _optimize(SqliteDatabase db) async {
+    try {
+      // Most SELECTs run on readers, so inspect all tables (0x10000), run
+      // ANALYZE if useful (0x02), and keep its temporary analysis limit (0x10).
+      await db.execute('PRAGMA optimize=0x10012');
+      // Release the writer before requesting reader leases. An exclusive pool
+      // request can deadlock a transaction that needs an independent reader.
+      // These are best-effort refreshes; a busy reader can refresh next time.
+      for (var i = 0; i < db.maxReaders; i++) {
+        await _refreshReader(db);
+      }
+    } catch (error, stackTrace) {
+      log.warning(
+        'SQLite planner maintenance failed.',
+        metadata: {'error': error.toString(), 'stackTrace': '$stackTrace'},
+      );
+    }
+  }
+
+  Future<void> _refreshReader(SqliteDatabase db) async {
+    try {
+      await db.readLock((reader) async {
+        // RESET disables schema writes and reloads the in-memory schema; it
+        // does not enable writable_schema or modify the database schema.
+        await reader.getAll('PRAGMA writable_schema=RESET');
+      }, lockTimeout: const Duration(seconds: 1));
+    } on AbortException {
+      // Maintenance must not wait indefinitely for a busy reader.
+    }
   }
 
   @override
-  Future<void> get started => _startedFuture ??= _bootstrap();
+  Future<void> get started {
+    if (_databaseStopped) {
+      return Future.error(
+        StateError('Database stopped. Call `start()` again to restart.'),
+      );
+    }
+    return _startedFuture ??= _bootstrap();
+  }
 
   /// Closes the database.
   @override
-  Future<void> stop() async {
+  Future<void> stop() =>
+      _stoppingFuture ??= _stop().whenComplete(() => _stoppingFuture = null);
+
+  Future<void> _stop() async {
     _databaseStopped = true;
-    final db = _db;
-
-    _db = null;
-    _startedFuture = null;
-
-    await db?.close();
+    _optimizationTimer?.cancel();
+    _optimizationTimer = null;
+    // Bootstrap may still be initializing the pool. Do not close its handles
+    // while startup maintenance is running, or leave a timer behind it.
+    try {
+      await _startedFuture;
+      await _optimization;
+    } finally {
+      final db = _db;
+      _db = null;
+      _startedFuture = null;
+      await db?.close();
+    }
   }
 
   /// Tests the database connection.

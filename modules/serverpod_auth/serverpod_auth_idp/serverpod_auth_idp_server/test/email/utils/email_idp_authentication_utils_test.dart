@@ -5,6 +5,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import '../../test_tools/serverpod_test_tools.dart';
+import '../../test_utils/coarse_clock.dart';
 import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
@@ -275,12 +276,14 @@ void main() {
 
         authenticationUtil = fixture.authenticationUtil;
 
-        final result = session.db.transaction(
-          (final transaction) => authenticationUtil.authenticate(
-            session,
-            email: email,
-            password: '$password-incorrect',
-            transaction: transaction,
+        final result = inTheRecentPast(
+          () => session.db.transaction(
+            (final transaction) => authenticationUtil.authenticate(
+              session,
+              email: email,
+              password: '$password-incorrect',
+              transaction: transaction,
+            ),
           ),
         );
 
@@ -578,12 +581,14 @@ void main() {
 
         authenticationUtil = fixture.authenticationUtil;
 
-        final result = session.db.transaction(
-          (final transaction) => authenticationUtil.authenticate(
-            session,
-            email: email,
-            password: '$password-incorrect',
-            transaction: transaction,
+        final result = inTheRecentPast(
+          () => session.db.transaction(
+            (final transaction) => authenticationUtil.authenticate(
+              session,
+              email: email,
+              password: '$password-incorrect',
+              transaction: transaction,
+            ),
           ),
         );
 

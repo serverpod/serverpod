@@ -5,6 +5,7 @@ import '../../../../../core.dart';
 import '../../util/email_string_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
+import 'secret_challenge_exception_mapping.dart';
 
 /// {@template email_idp_password_reset_util}
 /// Class for handling password reset operations in the email account module.
@@ -229,42 +230,60 @@ class EmailIdpPasswordResetUtil {
     return account.authUserId;
   }
 
-  /// Deletes password reset requests older than [olderThan].
+  /// Deletes password reset requests according to [olderThan].
+  ///
+  /// If [olderThan] is [Duration.zero], this removes all matching requests,
+  /// including those timestamped at or after the current time.
   ///
   /// If [olderThan] is `null`, this will remove all expired password reset
   /// requests, as configured by the
   /// [EmailIdpConfig.passwordResetVerificationCodeLifetime].
   ///
+  /// Other durations remove only requests strictly older than [olderThan].
+  ///
   /// If [emailAccountId] is provided, only requests for the given email account
   /// will be deleted.
   Future<void> deletePasswordResetRequests(
     final Session session, {
-    required Duration? olderThan,
+    required final Duration? olderThan,
     required final UuidValue? emailAccountId,
     required final Transaction transaction,
   }) async {
-    olderThan ??= _config.passwordResetVerificationCodeLifetime;
-
-    final lastValidDateTime = clock.now().subtract(olderThan);
+    final lastValidDateTime = olderThan == Duration.zero
+        ? null
+        : clock.now().subtract(
+            olderThan ?? _config.passwordResetVerificationCodeLifetime,
+          );
 
     await EmailAccountPasswordResetRequest.db.deleteWhere(
       session,
       where: (final t) {
-        var expression = t.createdAt < lastValidDateTime;
+        Expression expression = Constant.bool(true);
+
+        if (lastValidDateTime != null) {
+          expression &= t.createdAt < lastValidDateTime;
+        }
+
         if (emailAccountId != null) {
           expression &= t.emailAccountId.equals(emailAccountId);
         }
+
         return expression;
       },
       transaction: transaction,
     );
   }
 
-  /// Deletes password reset request attempts older than [olderThan].
+  /// Deletes password reset request attempts according to [olderThan].
+  ///
+  /// If [olderThan] is [Duration.zero], this removes all matching attempts,
+  /// including those timestamped at or after the current time.
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
   /// window that is checked upon password reset requests, as configured in
   /// [EmailIdpConfig.maxPasswordResetAttempts].timeframe.
+  ///
+  /// Other durations remove only attempts strictly older than [olderThan].
   ///
   /// If [email] is provided, only attempts for the given email will be deleted.
   Future<void> deletePasswordResetRequestAttempts(
@@ -275,7 +294,9 @@ class EmailIdpPasswordResetUtil {
   }) async {
     await _rateLimitUtil.deleteAttempts(
       session,
-      olderThan: olderThan ?? _rateLimitUtil.config.timeframe,
+      olderThan: olderThan == Duration.zero
+          ? null
+          : olderThan ?? _rateLimitUtil.config.timeframe,
       key: email,
       transaction: transaction,
     );
@@ -408,28 +429,7 @@ class EmailIdpPasswordResetUtil {
   /// Replaces challenge-related exceptions by email-specific exceptions.
   Future<T> withReplacedSecretChallengeException<T>(
     final Future<T> Function() fn,
-  ) async {
-    try {
-      return await fn();
-    } on SecretChallengeException catch (e) {
-      throw switch (e) {
-        ChallengeRequestNotFoundException() =>
-          EmailPasswordResetRequestNotFoundException(),
-        ChallengeAlreadyUsedException() =>
-          EmailPasswordResetVerificationCodeAlreadyUsedException(),
-        ChallengeInvalidVerificationCodeException() =>
-          EmailPasswordResetInvalidVerificationCodeException(),
-        ChallengeExpiredException() =>
-          EmailPasswordResetRequestExpiredException(),
-        ChallengeNotVerifiedException() =>
-          EmailPasswordResetNotVerifiedException(),
-        ChallengeInvalidCompletionTokenException() =>
-          EmailPasswordResetInvalidVerificationCodeException(),
-        ChallengeRateLimitExceededException() =>
-          EmailPasswordResetTooManyVerificationAttemptsException(),
-      };
-    }
-  }
+  ) => withEmailPasswordResetExceptions(fn);
 }
 
 /// Configuration options for the [EmailIdpPasswordResetUtil] class.

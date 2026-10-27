@@ -16,7 +16,7 @@ Future<void> main(List<String> args) async {
     host: args[0],
   );
   initializeCliAnalytics(
-    CliAnalytics(analytics: analytics, commandAnalytics: analytics),
+    CliAnalytics(analytics: analytics),
   );
   initializeLogger();
   final runner = ServerpodCommandRunner.createCommandRunner(

@@ -8,6 +8,46 @@ import '../test_util.dart';
 void main() {
   initTestClientSession();
 
+  group('Given rows with distinct values, ', () {
+    setUp(() async {
+      await SimpleData.db.insert(session, [
+        SimpleData(num: 1),
+        SimpleData(num: 2),
+        SimpleData(num: 3),
+        SimpleData(num: 4),
+      ]);
+    });
+
+    group(
+      'when updating without returning rows using descending order and pagination, ',
+      () {
+        late List<SimpleData> returned;
+        late List<SimpleData> stored;
+
+        setUp(() async {
+          returned = await SimpleData.db.updateWhere(
+            session,
+            columnValues: (t) => [t.num(10)],
+            where: (t) => t.num > 0,
+            orderBy: (t) => t.num.desc(),
+            limit: 2,
+            offset: 1,
+            noReturn: true,
+          );
+          stored = await SimpleData.db.find(session, orderBy: (t) => t.id);
+        });
+
+        test('then no models are returned.', () {
+          expect(returned, isEmpty);
+        });
+
+        test('then only the selected rows change.', () {
+          expect(stored.map((row) => row.num), [1, 10, 10, 4]);
+        });
+      },
+    );
+  });
+
   group(
     'Given database entries with basic matching criteria',
     () {

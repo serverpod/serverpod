@@ -17,6 +17,7 @@ import 'package:serverpod_cli/src/commands/status.dart';
 import 'package:serverpod_cli/src/commands/stop.dart';
 import 'package:serverpod_cli/src/runner/runner_log_file.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/shutdown_signal.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
@@ -46,9 +47,9 @@ class RunnerCommand extends ServerpodCommand<OptionDefinition> {
 enum RunnerStartOption<V> implements OptionDefinition<V> {
   watch<bool>(runnerWatchOption),
   directory<String>(runnerDirectoryOption),
+  target<String>(runnerTargetOption),
   docker<bool>(runnerDockerOption),
-  flutter<bool>(runnerFlutterOption),
-  ;
+  flutter<bool>(runnerFlutterOption);
 
   const RunnerStartOption(this.option);
 
@@ -87,12 +88,13 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
   Future<void> runWithConfig(
     Configuration<RunnerStartOption> commandConfig,
   ) async {
-    final (:serverDir, :manifest) = await bringUpRunner(
+    final (:serverDir, :manifest, spawned: _) = await bringUpRunner(
       directory: commandConfig.value(RunnerStartOption.directory),
       asked: RunnerConfig(
         watch: commandConfig.value(RunnerStartOption.watch),
         flutter: commandConfig.value(RunnerStartOption.flutter),
         docker: commandConfig.optionalValue(RunnerStartOption.docker),
+        target: commandConfig.value(RunnerStartOption.target),
         serverArgs: argResults?.rest ?? const [],
       ),
       useTui: false,
@@ -107,6 +109,7 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
 enum RunnerServeOption<V> implements OptionDefinition<V> {
   watch<bool>(runnerWatchOption),
   directory<String>(runnerDirectoryOption),
+  target<String>(runnerTargetOption),
   docker<bool>(runnerDockerOption),
   flutter<bool>(runnerFlutterOption),
   detached(
@@ -119,7 +122,14 @@ enum RunnerServeOption<V> implements OptionDefinition<V> {
           'runner with no stdio to inherit.',
     ),
   ),
-  ;
+  spawnId(
+    StringOption(
+      argName: 'spawn-id',
+      helpText:
+          'An id to publish in the manifest. Passed by `serverpod start` to '
+          'recognize the runner it spawned.',
+    ),
+  );
 
   const RunnerServeOption(this.option);
 
@@ -201,14 +211,19 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
         interactive: false,
       );
       final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+      // The project pin is a property of the server directory, not of the
+      // directory the runner was launched from.
+      rescopeSdkResolver(Directory(serverDir));
 
       final result = await setupWatchLoop(
         config: config,
         serverDir: serverDir,
         serverArgs: ServerArgsRef(argResults?.rest ?? []),
+        target: commandConfig.value(RunnerServeOption.target),
         watch: commandConfig.value(RunnerServeOption.watch),
         docker: commandConfig.optionalValue(RunnerServeOption.docker),
         launchFlutterApp: commandConfig.value(RunnerServeOption.flutter),
+        spawnId: commandConfig.optionalValue(RunnerServeOption.spawnId),
         shutdown: shutdown,
         logHistory: logHistory,
         serverStdoutSink: logHistory.serverOutputSink(

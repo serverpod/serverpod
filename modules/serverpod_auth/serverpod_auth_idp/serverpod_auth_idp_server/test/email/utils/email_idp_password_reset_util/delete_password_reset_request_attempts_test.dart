@@ -8,12 +8,13 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given max password reset attempt within timeframe has been reached for user',
+    'Given a user reached the password reset rate limit at a fixed time,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
+      final attemptClock = Clock.fixed(DateTime.utc(2026, 1, 1));
       const maxPasswordResetAttempts = RateLimit(
         maxAttempts: 1,
         timeframe: Duration(hours: 1),
@@ -37,12 +38,14 @@ void main() {
           email: email,
         );
 
-        // Make initial request to hit the rate limit
-        await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
+        await withClock(
+          attemptClock,
+          () => session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           ),
         );
       });
@@ -52,23 +55,132 @@ void main() {
       });
 
       test(
-        'when deleting password reset attempts without older than then user can still not request password reset',
+        'when cleaning up with a null duration, '
+        'then the user remains rate limited.',
         () async {
-          await session.db.transaction(
-            (final transaction) =>
-                fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
-                  session,
-                  olderThan: null,
-                  email: null,
-                  transaction: transaction,
-                ),
+          await withClock(attemptClock, () async {
+            await session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
+                    session,
+                    olderThan: null,
+                    email: null,
+                    transaction: transaction,
+                  ),
+            );
+
+            final result = session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.startPasswordReset(
+                    session,
+                    email: email,
+                    transaction: transaction,
+                  ),
+            );
+
+            await expectLater(
+              result,
+              throwsA(isA<EmailPasswordResetTooManyAttemptsException>()),
+            );
+          });
+        },
+      );
+
+      test(
+        'when cleaning up with a zero duration in the same clock tick, '
+        'then the user can request another password reset.',
+        () async {
+          await withClock(attemptClock, () async {
+            await session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
+                    session,
+                    olderThan: Duration.zero,
+                    email: null,
+                    transaction: transaction,
+                  ),
+            );
+
+            final result = session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.startPasswordReset(
+                    session,
+                    email: email,
+                    transaction: transaction,
+                  ),
+            );
+
+            await expectLater(result, completion(isA<UuidValue>()));
+          });
+        },
+      );
+
+      test(
+        'when cleaning up with a zero duration after the clock moves backwards, '
+        'then the user can request another password reset.',
+        () async {
+          final cleanupClock = Clock.fixed(
+            attemptClock.now().subtract(const Duration(minutes: 1)),
           );
 
-          final result = session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-              session,
-              email: email,
-              transaction: transaction,
+          await withClock(
+            cleanupClock,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
+                    session,
+                    olderThan: Duration.zero,
+                    email: email,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          final result = withClock(
+            attemptClock,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.startPasswordReset(
+                    session,
+                    email: email,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          await expectLater(result, completion(isA<UuidValue>()));
+        },
+      );
+
+      test(
+        'when cleaning up with a positive duration exactly at the age cutoff, '
+        'then the user remains rate limited.',
+        () async {
+          const duration = Duration(minutes: 1);
+          final cleanupClock = Clock.fixed(attemptClock.now().add(duration));
+
+          await withClock(
+            cleanupClock,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
+                    session,
+                    olderThan: duration,
+                    email: email,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          final result = withClock(
+            attemptClock,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.startPasswordReset(
+                    session,
+                    email: email,
+                    transaction: transaction,
+                  ),
             ),
           );
 
@@ -80,23 +192,36 @@ void main() {
       );
 
       test(
-        'when deleting password reset attempts that are older than zero then can request password reset',
+        'when cleaning up with a positive duration beyond the age cutoff, '
+        'then the user can request another password reset.',
         () async {
-          await session.db.transaction(
-            (final transaction) =>
-                fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
-                  session,
-                  olderThan: Duration.zero,
-                  email: null,
-                  transaction: transaction,
-                ),
+          const duration = Duration(minutes: 1);
+          final cleanupClock = Clock.fixed(
+            attemptClock.now().add(duration + const Duration(seconds: 1)),
           );
 
-          final result = session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
-              session,
-              email: email,
-              transaction: transaction,
+          await withClock(
+            cleanupClock,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
+                    session,
+                    olderThan: duration,
+                    email: email,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          final result = withClock(
+            attemptClock,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.startPasswordReset(
+                    session,
+                    email: email,
+                    transaction: transaction,
+                  ),
             ),
           );
 

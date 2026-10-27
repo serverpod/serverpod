@@ -106,6 +106,12 @@ class ServerWatchState extends TuiState {
   /// Whether the help overlay is visible.
   bool showHelp = false;
 
+  /// Whether this session spawned the runner, so quitting stops it.
+  bool ownsRunner = false;
+
+  /// Whether the dialog asking to leave or stop the runner is visible.
+  bool showQuitDialog = false;
+
   /// Whether stack traces attached to log entries are shown inline.
   ///
   /// When false, an error entry that carries a trace shows a compact

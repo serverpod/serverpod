@@ -763,6 +763,12 @@ class ServerTestToolsGenerator {
         ),
         Parameter(
           (p) => p
+            ..name = 'ephemeralDatabase'
+            ..named = true
+            ..type = refer('bool?'),
+        ),
+        Parameter(
+          (p) => p
             ..name = 'databaseInterceptor'
             ..named = true
             ..type = refer('DatabaseInterceptor?', serverpodUrl(true)),
@@ -821,6 +827,8 @@ class ServerTestToolsGenerator {
                         'applyMigrations': config.isDatabaseEnabled
                             ? refer('applyMigrations')
                             : literalBool(false),
+                        if (config.isDatabaseEnabled)
+                          'ephemeralDatabase': refer('ephemeralDatabase'),
                         'isDatabaseEnabled': literalBool(
                           config.isDatabaseEnabled,
                         ),
@@ -917,6 +925,16 @@ extension on ParameterDefinition {
 }
 
 extension on Expression {
+  /// Converts nested values to JSON-compatible objects for the protocol.
+  Expression serializeForProtocol() {
+    return refer('jsonDecode', 'dart:convert').call([
+      refer(
+        'SerializationManager',
+        serverpodUrl(true),
+      ).property('encodeForProtocol').call([this]),
+    ]);
+  }
+
   /// Adds deserialization for record and non-String map return types if needed,
   /// else cast into the desired return type.
   Expression transformReturnType(
@@ -939,7 +957,7 @@ extension on Expression {
                 .newInstance([])
                 .property('deserialize')
                 .call(
-                  [refer('record')],
+                  [refer('record').serializeForProtocol()],
                   {},
                   [returnType.generics.single.reference(true, config: config)],
                 )
@@ -963,7 +981,7 @@ extension on Expression {
                 .newInstance([])
                 .property('deserialize')
                 .call(
-                  [refer('map')],
+                  [refer('map').serializeForProtocol()],
                   {},
                   [returnType.generics.single.reference(true, config: config)],
                 )

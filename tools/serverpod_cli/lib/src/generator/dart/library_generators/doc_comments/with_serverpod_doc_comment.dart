@@ -5,6 +5,9 @@ const _withServerpodDocCommentsByParameter = {
       'Whether pending migrations should be applied when starting Serverpod. Defaults to `true`',
   'enableSessionLogging':
       'Whether session logging should be enabled. Defaults to `false`',
+  'ephemeralDatabase': '''
+Whether this group gets its own empty database, created when the group starts and dropped when it finishes. Defaults to `true`.
+Set this to `false` to use the database configured for [runMode], including a previously seeded database. [configOverride] can still replace that database. The configured database is not created or dropped, so groups that share it cannot run in parallel. [rollbackDatabase] still controls whether writes inside the group are rolled back.''',
   'rollbackDatabase': '''
 Options for when to rollback the database during the test lifecycle.
 By default `withServerpod` does all database operations inside a transaction that is rolled back after each `test` case.

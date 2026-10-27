@@ -63,6 +63,10 @@ final class FutureCallMethodDefinition extends MethodDefinition {
   });
 }
 
+/// Name of the directory, inside the generated models directory, that holds
+/// the models generated from future call parameters.
+const futureCallModelsDirectoryName = 'future_calls_generated_models';
+
 /// Describes parameters of a [FutureCallMethodDefinition]
 /// which should be used to generate [SerializableModel] interfaces.
 class FutureCallParameterDefinition {
@@ -99,7 +103,7 @@ class FutureCallParameterDefinition {
   SerializableModelDefinition toSerializableModel() {
     return ModelClassDefinition(
       fileName: p.join(
-        'future_calls_generated_models',
+        futureCallModelsDirectoryName,
         type.className.snakeCase,
       ),
       sourceFileName: '',

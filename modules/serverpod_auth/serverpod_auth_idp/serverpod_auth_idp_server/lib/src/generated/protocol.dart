@@ -26,6 +26,10 @@ import 'providers/anonymous/models/exceptions/anonymous_account_blocked_exceptio
     as _ig3ph7nw;
 import 'providers/apple/models/apple_account.dart' as _i9aj4p8a;
 import 'providers/email/models/email_account.dart' as _i047o257;
+import 'providers/email/models/email_account_otp_login_request.dart'
+    as _iebzmhjq;
+import 'providers/email/models/email_account_otp_verification_result.dart'
+    as _i1jfpoxd;
 import 'providers/email/models/email_account_password_reset_request.dart'
     as _iouphhkf;
 import 'providers/email/models/email_account_request.dart' as _iaib0xb9;
@@ -76,6 +80,8 @@ export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exceptio
 export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart';
 export 'providers/apple/models/apple_account.dart';
 export 'providers/email/models/email_account.dart';
+export 'providers/email/models/email_account_otp_login_request.dart';
+export 'providers/email/models/email_account_otp_verification_result.dart';
 export 'providers/email/models/email_account_password_reset_request.dart';
 export 'providers/email/models/email_account_request.dart';
 export 'providers/email/models/exceptions/email_account_login_exception.dart';
@@ -103,7 +109,8 @@ export 'providers/passkey/models/passkey_login_request.dart';
 export 'providers/passkey/models/passkey_public_key_not_found_exception.dart';
 export 'providers/passkey/models/passkey_registration_request.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -111,6 +118,91 @@ class Protocol extends _is.DatabaseSerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_is.SerializationManager> _hostProtocols = {};
+
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_iddjx2hh.RateLimitedRequestAttempt>,
+          _is.getType<_ihjuvfpt.SecretChallenge>,
+          _is.getType<_i5yjjpde.AnonymousAccount>,
+          _is.getType<_ite257iv.AnonymousAccountBlockedException>,
+          _is.getType<_ig3ph7nw.AnonymousAccountBlockedExceptionReason>,
+          _is.getType<_i9aj4p8a.AppleAccount>,
+          _is.getType<_i047o257.EmailAccount>,
+          _is.getType<_iebzmhjq.EmailAccountOtpLoginRequest>,
+          _is.getType<_i1jfpoxd.EmailAccountOtpVerificationResult>,
+          _is.getType<_iouphhkf.EmailAccountPasswordResetRequest>,
+          _is.getType<_iaib0xb9.EmailAccountRequest>,
+          _is.getType<_ij1yj4f1.EmailAccountLoginException>,
+          _is.getType<_ihd5znj2.EmailAccountLoginExceptionReason>,
+          _is.getType<_i7yyr103.EmailAccountPasswordResetException>,
+          _is.getType<_io8tbstn.EmailAccountPasswordResetExceptionReason>,
+          _is.getType<_iqtw285f.EmailAccountRequestException>,
+          _is.getType<_isgeino8.EmailAccountRequestExceptionReason>,
+          _is.getType<_i92zrjf0.FacebookAccessTokenVerificationException>,
+          _is.getType<_ivl5gkpe.FacebookAccount>,
+          _is.getType<_i923yrzc.FirebaseAccount>,
+          _is.getType<_imswdwet.FirebaseEmailNotVerifiedException>,
+          _is.getType<_i14hfyiz.FirebaseIdTokenVerificationException>,
+          _is.getType<_i8u0zfwn.GitHubAccessTokenVerificationException>,
+          _is.getType<_i3l39it4.GitHubAccount>,
+          _is.getType<_inlwg89o.GoogleAccount>,
+          _is.getType<_iyz9kvht.GoogleIdTokenVerificationException>,
+          _is.getType<_i0bj371b.MicrosoftAccessTokenVerificationException>,
+          _is.getType<_i8aemsss.MicrosoftAccount>,
+          _is.getType<_iha3dd74.PasskeyAccount>,
+          _is.getType<_ini0eg2j.PasskeyChallenge>,
+          _is.getType<_ihzslz1a.PasskeyChallengeExpiredException>,
+          _is.getType<_ihzssrx9.PasskeyChallengeNotFoundException>,
+          _is.getType<_itcmwg9u.PasskeyLoginRequest>,
+          _is.getType<_isvo2sb5.PasskeyPublicKeyNotFoundException>,
+          _is.getType<_izjoggd8.PasskeyRegistrationRequest>,
+          _is.getType<_iddjx2hh.RateLimitedRequestAttempt?>,
+          _is.getType<_ihjuvfpt.SecretChallenge?>,
+          _is.getType<_i5yjjpde.AnonymousAccount?>,
+          _is.getType<_ite257iv.AnonymousAccountBlockedException?>,
+          _is.getType<_ig3ph7nw.AnonymousAccountBlockedExceptionReason?>,
+          _is.getType<_i9aj4p8a.AppleAccount?>,
+          _is.getType<_i047o257.EmailAccount?>,
+          _is.getType<_iebzmhjq.EmailAccountOtpLoginRequest?>,
+          _is.getType<_i1jfpoxd.EmailAccountOtpVerificationResult?>,
+          _is.getType<_iouphhkf.EmailAccountPasswordResetRequest?>,
+          _is.getType<_iaib0xb9.EmailAccountRequest?>,
+          _is.getType<_ij1yj4f1.EmailAccountLoginException?>,
+          _is.getType<_ihd5znj2.EmailAccountLoginExceptionReason?>,
+          _is.getType<_i7yyr103.EmailAccountPasswordResetException?>,
+          _is.getType<_io8tbstn.EmailAccountPasswordResetExceptionReason?>,
+          _is.getType<_iqtw285f.EmailAccountRequestException?>,
+          _is.getType<_isgeino8.EmailAccountRequestExceptionReason?>,
+          _is.getType<_i92zrjf0.FacebookAccessTokenVerificationException?>,
+          _is.getType<_ivl5gkpe.FacebookAccount?>,
+          _is.getType<_i923yrzc.FirebaseAccount?>,
+          _is.getType<_imswdwet.FirebaseEmailNotVerifiedException?>,
+          _is.getType<_i14hfyiz.FirebaseIdTokenVerificationException?>,
+          _is.getType<_i8u0zfwn.GitHubAccessTokenVerificationException?>,
+          _is.getType<_i3l39it4.GitHubAccount?>,
+          _is.getType<_inlwg89o.GoogleAccount?>,
+          _is.getType<_iyz9kvht.GoogleIdTokenVerificationException?>,
+          _is.getType<_i0bj371b.MicrosoftAccessTokenVerificationException?>,
+          _is.getType<_i8aemsss.MicrosoftAccount?>,
+          _is.getType<_iha3dd74.PasskeyAccount?>,
+          _is.getType<_ini0eg2j.PasskeyChallenge?>,
+          _is.getType<_ihzslz1a.PasskeyChallengeExpiredException?>,
+          _is.getType<_ihzssrx9.PasskeyChallengeNotFoundException?>,
+          _is.getType<_itcmwg9u.PasskeyLoginRequest?>,
+          _is.getType<_isvo2sb5.PasskeyPublicKeyNotFoundException?>,
+          _is.getType<_izjoggd8.PasskeyRegistrationRequest?>,
+          _is.getType<Map<String, String>>,
+          _is.getType<Map<String, String>?>,
+          _is.getType<({_idt.ByteData challenge, _is.UuidValue id})>,
+        ],
+        modules: const [
+          _iacs.Protocol.new,
+          _isp.Protocol.new,
+        ],
+      );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
     _isp.TableDefinition(
@@ -317,6 +409,86 @@ class Protocol extends _is.DatabaseSerializationManager {
       indexes: [
         _isp.IndexDefinition(
           indexName: 'serverpod_auth_idp_email_account_email',
+          tableSpace: null,
+          elements: [
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'email',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'serverpod_auth_idp_email_account_otp_login_request',
+      dartName: 'EmailAccountOtpLoginRequest',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'random_v7',
+        ),
+        _isp.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'now',
+        ),
+        _isp.ColumnDefinition(
+          name: 'email',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'challengeId',
+          columnType: _isp.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _isp.ColumnDefinition(
+          name: 'completeChallengeId',
+          columnType: _isp.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName:
+              'serverpod_auth_idp_email_account_otp_login_request_fk_0',
+          columns: ['challengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _isp.ForeignKeyDefinition(
+          constraintName:
+              'serverpod_auth_idp_email_account_otp_login_request_fk_1',
+          columns: ['completeChallengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _isp.IndexDefinition(
+          indexName: 'serverpod_auth_idp_email_account_otp_login_request_email',
           tableSpace: null,
           elements: [
             _isp.IndexElementDefinition(
@@ -1126,6 +1298,12 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _i047o257.EmailAccount) {
       return _i047o257.EmailAccount.fromJson(data) as T;
     }
+    if (t == _iebzmhjq.EmailAccountOtpLoginRequest) {
+      return _iebzmhjq.EmailAccountOtpLoginRequest.fromJson(data) as T;
+    }
+    if (t == _i1jfpoxd.EmailAccountOtpVerificationResult) {
+      return _i1jfpoxd.EmailAccountOtpVerificationResult.fromJson(data) as T;
+    }
     if (t == _iouphhkf.EmailAccountPasswordResetRequest) {
       return _iouphhkf.EmailAccountPasswordResetRequest.fromJson(data) as T;
     }
@@ -1239,6 +1417,18 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (t == _is.getType<_i047o257.EmailAccount?>()) {
       return (data != null ? _i047o257.EmailAccount.fromJson(data) : null) as T;
+    }
+    if (t == _is.getType<_iebzmhjq.EmailAccountOtpLoginRequest?>()) {
+      return (data != null
+              ? _iebzmhjq.EmailAccountOtpLoginRequest.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_i1jfpoxd.EmailAccountOtpVerificationResult?>()) {
+      return (data != null
+              ? _i1jfpoxd.EmailAccountOtpVerificationResult.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _is.getType<_iouphhkf.EmailAccountPasswordResetRequest?>()) {
       return (data != null
@@ -1415,12 +1605,15 @@ class Protocol extends _is.DatabaseSerializationManager {
           )
           as T;
     }
-    try {
-      return _iacs.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 
@@ -1435,6 +1628,9 @@ class Protocol extends _is.DatabaseSerializationManager {
         'AnonymousAccountBlockedExceptionReason',
       _i9aj4p8a.AppleAccount => 'AppleAccount',
       _i047o257.EmailAccount => 'EmailAccount',
+      _iebzmhjq.EmailAccountOtpLoginRequest => 'EmailAccountOtpLoginRequest',
+      _i1jfpoxd.EmailAccountOtpVerificationResult =>
+        'EmailAccountOtpVerificationResult',
       _iouphhkf.EmailAccountPasswordResetRequest =>
         'EmailAccountPasswordResetRequest',
       _iaib0xb9.EmailAccountRequest => 'EmailAccountRequest',
@@ -1506,6 +1702,10 @@ class Protocol extends _is.DatabaseSerializationManager {
         return 'AppleAccount';
       case _i047o257.EmailAccount():
         return 'EmailAccount';
+      case _iebzmhjq.EmailAccountOtpLoginRequest():
+        return 'EmailAccountOtpLoginRequest';
+      case _i1jfpoxd.EmailAccountOtpVerificationResult():
+        return 'EmailAccountOtpVerificationResult';
       case _iouphhkf.EmailAccountPasswordResetRequest():
         return 'EmailAccountPasswordResetRequest';
       case _iaib0xb9.EmailAccountRequest():
@@ -1596,6 +1796,14 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (dataClassName == 'EmailAccount') {
       return deserialize<_i047o257.EmailAccount>(data['data']);
+    }
+    if (dataClassName == 'EmailAccountOtpLoginRequest') {
+      return deserialize<_iebzmhjq.EmailAccountOtpLoginRequest>(data['data']);
+    }
+    if (dataClassName == 'EmailAccountOtpVerificationResult') {
+      return deserialize<_i1jfpoxd.EmailAccountOtpVerificationResult>(
+        data['data'],
+      );
     }
     if (dataClassName == 'EmailAccountPasswordResetRequest') {
       return deserialize<_iouphhkf.EmailAccountPasswordResetRequest>(
@@ -1794,6 +2002,8 @@ class Protocol extends _is.DatabaseSerializationManager {
         return _i9aj4p8a.AppleAccount.t;
       case _i047o257.EmailAccount:
         return _i047o257.EmailAccount.t;
+      case _iebzmhjq.EmailAccountOtpLoginRequest:
+        return _iebzmhjq.EmailAccountOtpLoginRequest.t;
       case _iouphhkf.EmailAccountPasswordResetRequest:
         return _iouphhkf.EmailAccountPasswordResetRequest.t;
       case _iaib0xb9.EmailAccountRequest:

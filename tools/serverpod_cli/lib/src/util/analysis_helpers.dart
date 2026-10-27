@@ -17,13 +17,24 @@ Future<Set<String>> refreshAnalysisContext(
   Iterable<String> changedFiles,
 ) async {
   final context = collection.contexts.single; // current invariant
-  final known = context.contextRoot.analyzedFiles().toList();
+  // Analysis passes that have nothing to invalidate still call this; indexing
+  // the context's files for them would be the whole cost of the call.
+  if (changedFiles.isEmpty) {
+    await context.applyPendingFileChanges();
+    return {};
+  }
+
+  // Indexed by canonical path instead of searched linearly: this runs for
+  // every analysis pass, and a full generate hands it every source file, so a
+  // pairwise comparison against every analyzed file is quadratic.
+  final knownByCanonicalPath = <String, String>{};
+  for (final path in context.contextRoot.analyzedFiles()) {
+    knownByCanonicalPath.putIfAbsent(p.canonicalize(path), () => path);
+  }
   final resolved = {
     for (final changedFile in changedFiles)
-      known.firstWhere(
-        (path) => p.equals(path, changedFile),
-        orElse: () => p.normalize(File(changedFile).absolute.path),
-      ),
+      knownByCanonicalPath[p.canonicalize(changedFile)] ??
+          p.normalize(File(changedFile).absolute.path),
   };
   for (final path in resolved) {
     context.changeFile(path);
@@ -32,18 +43,35 @@ Future<Set<String>> refreshAnalysisContext(
   return resolved;
 }
 
+/// Whether [path] sits inside any of [directories].
+///
+/// Used to keep this project's own generated output out of the sets of files
+/// scanned for endpoint and future call declarations. The generated code still
+/// has to reach the analysis context, so that endpoints referencing it resolve
+/// against current content; it just never declares what those scans look for.
+bool isWithinAnyDirectory(String path, Set<String> directories) {
+  if (directories.isEmpty) return false;
+  final absolutePath = p.absolute(path);
+  return directories.any((directory) => p.isWithin(directory, absolutePath));
+}
+
 /// Creates an [AnalysisContextCollection] for the given [directory].
 ///
 /// Pass [resourceProvider] to back the collection with something other than
 /// the physical file system (e.g. an overlay provider that shadows files
 /// with in-memory content).
+///
+/// Pass [sdkPath] to analyse against a specific Dart SDK; defaults to the SDK
+/// running this CLI. Callers that also compile the project must pass the
+/// resolved SDK so analysis and compilation agree.
 AnalysisContextCollection createAnalysisContextCollection(
   Directory directory, {
   ResourceProvider? resourceProvider,
+  String? sdkPath,
 }) {
   return AnalysisContextCollection(
     includedPaths: [directory.absolute.path],
     resourceProvider: resourceProvider ?? PhysicalResourceProvider.INSTANCE,
-    sdkPath: getSdkPath(),
+    sdkPath: sdkPath ?? getSdkPath(),
   );
 }

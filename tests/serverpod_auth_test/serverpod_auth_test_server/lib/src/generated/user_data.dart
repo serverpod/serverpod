@@ -8,8 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, depend_on_referenced_packages
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -18,7 +17,6 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
     as _ik2mg1i3;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class UserData
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -139,7 +137,7 @@ abstract class UserData
 
 class _Undefined {}
 
-class _UndefinedUserData$authUser extends _issu.UndefinedSentinel
+class _UndefinedUserData$authUser extends _is.UndefinedSentinel
     implements _iacs.AuthUser {
   const _UndefinedUserData$authUser();
 }
@@ -173,7 +171,7 @@ class _UserDataImpl extends UserData {
     return UserData(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _issu.UndefinedSentinel
+      authUser: authUser is _is.UndefinedSentinel
           ? this.authUser?.copyWith()
           : authUser,
       displayName: displayName ?? this.displayName,

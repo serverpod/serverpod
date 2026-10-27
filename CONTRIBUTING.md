@@ -251,3 +251,5 @@ We encourage you to support others in their Serverpod projects by sharing your k
 ## Contributing with issues
 
 Help us make Serverpod better by filing [issue](https://github.com/serverpod/serverpod/issues/new/choose) for bugs, feature requests, or improvements. When filing an issue, please provide as much information as possible to help us understand the problem or suggestion.
+
+To report a security vulnerability, do not open a public issue. Follow the [security policy](SECURITY.md) instead.

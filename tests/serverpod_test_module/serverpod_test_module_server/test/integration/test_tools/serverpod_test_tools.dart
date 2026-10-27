@@ -15,6 +15,10 @@ import 'dart:async' as _ida;
 import 'dart:io' as _idi;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test/serverpod_test.dart' as _ist;
+import 'package:serverpod_test_module_server/src/generated/future_calls.dart'
+    as _ipo399sr;
+import 'package:serverpod_test_module_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _im9z7j8o;
 import 'package:serverpod_test_module_server/src/generated/module_class.dart'
     as _i6f0lekx;
 import 'package:serverpod_test_module_server/src/generated/module_feature/models/my_feature_model.dart'
@@ -43,6 +47,9 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// [applyMigrations] Whether pending migrations should be applied when starting Serverpod. Defaults to `true`
 ///
 /// [enableSessionLogging] Whether session logging should be enabled. Defaults to `false`
+///
+/// [ephemeralDatabase] Whether this group gets its own empty database, created when the group starts and dropped when it finishes. Defaults to `true`.
+/// Set this to `false` to use the database configured for [runMode], including a previously seeded database. [configOverride] can still replace that database. The configured database is not created or dropped, so groups that share it cannot run in parallel. [rollbackDatabase] still controls whether writes inside the group are rolled back.
 ///
 /// [rollbackDatabase] Options for when to rollback the database during the test lifecycle.
 /// By default `withServerpod` does all database operations inside a transaction that is rolled back after each `test` case.
@@ -113,6 +120,7 @@ void withServerpod(
   _is.ServerpodConfig Function(_is.ServerpodConfig)? configOverride,
   _is.DatabaseInterceptor? databaseInterceptor,
   bool? enableSessionLogging,
+  bool? ephemeralDatabase,
   _is.ExperimentalFeatures? experimentalFeatures,
   _ist.RollbackDatabase? rollbackDatabase,
   String? runMode,
@@ -131,6 +139,7 @@ void withServerpod(
       serializationManager: Protocol(),
       runMode: runMode,
       applyMigrations: applyMigrations,
+      ephemeralDatabase: ephemeralDatabase,
       isDatabaseEnabled: true,
       serverpodLoggingMode: serverpodLoggingMode,
       testServerOutputMode: testServerOutputMode,
@@ -149,6 +158,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final futureCalls = _FutureCalls();
+
   late final _ConcreteBaseEndpoint concreteBase;
 
   late final _ModuleEndpoint module;
@@ -200,6 +211,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
   }
+}
+
+class _FutureCalls {
+  late final testGeneratedCall = _TestGeneratedCallFutureCall();
 }
 
 class _ConcreteBaseEndpoint {
@@ -767,5 +782,24 @@ class _MyModuleFeatureEndpoint {
         await _localUniqueSession.close();
       }
     });
+  }
+}
+
+class _TestGeneratedCallFutureCall {
+  Future<void> hello(
+    _ist.TestSessionBuilder sessionBuilder,
+    String name,
+  ) async {
+    var object = _im9z7j8o.TestGeneratedCallHelloModel(name: name);
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
+    try {
+      await _ipo399sr.TestGeneratedCallHelloFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
   }
 }

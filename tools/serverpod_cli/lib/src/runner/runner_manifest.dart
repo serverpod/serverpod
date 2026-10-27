@@ -27,6 +27,7 @@ class RunnerManifest {
     this.docker,
     this.stage = RunnerStage.running,
     this.exitCode,
+    this.spawnId,
   });
 
   final int protocolVersion;
@@ -60,6 +61,10 @@ class RunnerManifest {
   /// The code the runner exited with, once it has finished.
   final int? exitCode;
 
+  /// The id `serverpod start` spawned this runner under, to tell it from a
+  /// rival's. Null for a runner started by hand.
+  final String? spawnId;
+
   /// Whether the runner that wrote this has finished.
   ///
   /// A runner still tearing down publishes [RunnerStage.stopping] alone.
@@ -85,6 +90,7 @@ class RunnerManifest {
     docker: docker ?? this.docker,
     stage: stage ?? this.stage,
     exitCode: exitCode ?? this.exitCode,
+    spawnId: spawnId,
   );
 
   Map<String, Object?> toJson() => {
@@ -99,6 +105,7 @@ class RunnerManifest {
     if (ports != null) 'ports': ports,
     if (docker != null) 'docker': docker!.toJson(),
     'config': config.toJson(),
+    if (spawnId != null) 'spawnId': spawnId,
   };
 
   static RunnerManifest fromJson(Map<String, Object?> json) => RunnerManifest(
@@ -122,6 +129,7 @@ class RunnerManifest {
       _ => null,
     },
     config: RunnerConfig.fromJson(_map(json['config']) ?? const {}),
+    spawnId: json['spawnId'] as String?,
   );
 
   Future<void> writeTo(String serverDir) async {
@@ -189,12 +197,14 @@ class RunnerConfig {
     required this.watch,
     required this.flutter,
     required this.serverArgs,
+    this.target = 'bin/main.dart',
     this.docker,
   });
 
   final bool watch;
   final bool flutter;
   final List<String> serverArgs;
+  final String target;
 
   /// Whether the stack runs Docker Compose, null when a request left it open.
   final bool? docker;
@@ -202,6 +212,7 @@ class RunnerConfig {
   /// The option names on which this differs from the requested [other].
   List<String> differencesFrom(RunnerConfig other) => [
     if (watch != other.watch) '--watch',
+    if (target != other.target) '--target',
     if (flutter != other.flutter) '--flutter',
     if (other.docker != null && docker != other.docker) '--docker',
     if (!_serverArgsEqual.equals(serverArgs, other.serverArgs))
@@ -213,6 +224,7 @@ class RunnerConfig {
     return [
       '--directory',
       directory,
+      if (target != 'bin/main.dart') ...['--target', target],
       if (watch) '--watch' else '--no-watch',
       if (flutter) '--flutter' else '--no-flutter',
       if (docker == true) '--docker',
@@ -223,6 +235,7 @@ class RunnerConfig {
 
   Map<String, Object?> toJson() => {
     'watch': watch,
+    'target': target,
     'flutter': flutter,
     if (docker != null) 'docker': docker,
     'serverArgs': serverArgs,
@@ -230,6 +243,7 @@ class RunnerConfig {
 
   static RunnerConfig fromJson(Map<String, Object?> json) => RunnerConfig(
     watch: json['watch'] as bool? ?? true,
+    target: json['target'] as String? ?? 'bin/main.dart',
     flutter: json['flutter'] as bool? ?? true,
     docker: json['docker'] as bool?,
     serverArgs: switch (json['serverArgs']) {

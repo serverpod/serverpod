@@ -458,4 +458,27 @@ void main() {
       });
     },
   );
+
+  test(
+    'Given a foreign key with multiple columns, '
+    'when toInlineSql is called, '
+    'then each column is quoted separately.',
+    () {
+      var foreignKey = ForeignKeyDefinition(
+        constraintName: 'child_fk_0',
+        columns: ['tenantId', 'parentId'],
+        referenceTable: 'parent',
+        referenceTableSchema: 'public',
+        referenceColumns: ['tenantId', 'id'],
+      );
+
+      expect(
+        foreignKey.toInlineSql(),
+        contains(
+          'FOREIGN KEY ("tenantId", "parentId") '
+          'REFERENCES "parent" ("tenantId", "id")',
+        ),
+      );
+    },
+  );
 }

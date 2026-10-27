@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
+import 'package:serverpod_cli/src/util/dart_install.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/file_system_entity_helpers.dart';
@@ -227,6 +228,17 @@ void main() {
         expect(tracker.refreshClosure(), PackageDependencyChange.none);
       },
     );
+
+    test(
+      'when local package lib directories are listed, '
+      'then only packages in the server closure are included',
+      () {
+        expect(tracker.localPackageLibDirs(), {
+          p.join(wsDir, 'app_server', 'lib'),
+          p.join(tempDir.path, 'third_party', 'dep_server', 'lib'),
+        });
+      },
+    );
   });
 
   test(
@@ -342,6 +354,35 @@ void main() {
       },
     );
   });
+
+  test(
+    'Given a server dependency resolved from the pub cache, '
+    'when local package lib directories are listed, '
+    'then the pub cache package is excluded',
+    () async {
+      await createSyntheticDartTool();
+      writeGraph(minimalGraph());
+      final cachedDep = p.join(pubCacheDirectory!, 'hosted', 'dep-1.0.0');
+      write(
+        p.join(syntheticDartTool, 'package_config.json'),
+        jsonEncode({
+          'configVersion': 2,
+          'packages': [
+            {'name': 'app_server', 'rootUri': '../', 'packageUri': 'lib/'},
+            {
+              'name': 'dep',
+              'rootUri': Uri.directory(cachedDep).toString(),
+              'packageUri': 'lib/',
+            },
+          ],
+        }),
+      );
+
+      expect(createSyntheticTracker().localPackageLibDirs(), {
+        p.join(tempDir.path, 'lib'),
+      });
+    },
+  );
 
   group('Given a seeded synthetic graph,', () {
     test(

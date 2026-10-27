@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 /// The log filter is used when searching for specific log entries.
 abstract class SessionLogFilter
@@ -97,8 +95,8 @@ abstract class SessionLogFilter
     bool? error,
     bool? open,
     int? lastSessionLogId,
-    DateTime? startTime = const _issu.$UndefinedDateTime(),
-    DateTime? endTime = const _issu.$UndefinedDateTime(),
+    DateTime? startTime = const _isc.$UndefinedDateTime(),
+    DateTime? endTime = const _isc.$UndefinedDateTime(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -175,8 +173,8 @@ class _SessionLogFilterImpl extends SessionLogFilter {
     bool? error,
     bool? open,
     Object? lastSessionLogId = _Undefined,
-    DateTime? startTime = const _issu.$UndefinedDateTime(),
-    DateTime? endTime = const _issu.$UndefinedDateTime(),
+    DateTime? startTime = const _isc.$UndefinedDateTime(),
+    DateTime? endTime = const _isc.$UndefinedDateTime(),
   }) {
     return SessionLogFilter(
       endpoint: endpoint is String? ? endpoint : this.endpoint,
@@ -188,10 +186,10 @@ class _SessionLogFilterImpl extends SessionLogFilter {
       lastSessionLogId: lastSessionLogId is int?
           ? lastSessionLogId
           : this.lastSessionLogId,
-      startTime: startTime is _issu.UndefinedSentinel
+      startTime: startTime is _isc.UndefinedSentinel
           ? this.startTime
           : startTime,
-      endTime: endTime is _issu.UndefinedSentinel ? this.endTime : endTime,
+      endTime: endTime is _isc.UndefinedSentinel ? this.endTime : endTime,
     );
   }
 }

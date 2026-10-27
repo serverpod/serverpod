@@ -28,6 +28,7 @@ import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/status.dart'
     show printServerUris, resolveRunnerOrExit;
+import 'package:serverpod_cli/src/commands/stop.dart' show awaitRunnerShutdown;
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
@@ -39,7 +40,7 @@ import 'package:serverpod_cli/src/runner/local_runner_api.dart';
 import 'package:serverpod_cli/src/runner/port_resolution.dart';
 import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart'
-    show RunnerUnreachableException;
+    show RunnerClient, RunnerUnreachableException;
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/runner/runner_lock.dart';
@@ -52,14 +53,18 @@ import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_cli/src/runner/runner_socket_server.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/legacy_model_files.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/shutdown_signal.dart';
 import 'package:serverpod_cli/src/util/terminal_modes.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
+import 'package:serverpod_database/embedded.dart'
+    show embeddedPostgresListensOnTcp;
 import 'package:serverpod_shared/process_io.dart' show isProcessAlive;
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:stream_transform/stream_transform.dart';
+import 'package:uuid/uuid.dart';
 import 'package:vm_service/vm_service.dart'
     show Event, EventStreams, RPCError, VmService;
 import 'package:vm_service/vm_service_io.dart';
@@ -68,6 +73,7 @@ import 'package:vm_service/vm_service_io.dart';
 enum StartOption<V> implements OptionDefinition<V> {
   watch<bool>(runnerWatchOption),
   directory<String>(runnerDirectoryOption),
+  target<String>(runnerTargetOption),
   docker<bool>(runnerDockerOption),
   attach(
     FlagOption(
@@ -87,8 +93,7 @@ enum StartOption<V> implements OptionDefinition<V> {
           '--no-attach, since nothing renders.',
     ),
   ),
-  flutter<bool>(runnerFlutterOption),
-  ;
+  flutter<bool>(runnerFlutterOption);
 
   const StartOption(this.option);
 
@@ -129,20 +134,29 @@ class StartCommand extends ServerpodCommand<StartOption> {
   ) async {
     final attaching = commandConfig.value(StartOption.attach);
     final useTui = commandConfig.value(StartOption.tui) && terminalSupportsTui;
-    final (:serverDir, :manifest) = await bringUpRunner(
+    // A signal while a spawned runner comes up is held until it can be
+    // stopped, since leaving at once would orphan it.
+    final shutdown = ShutdownSignal(listenForSignals: attaching);
+    final (:serverDir, :manifest, :spawned) = await bringUpRunner(
       directory: commandConfig.value(StartOption.directory),
       asked: RunnerConfig(
         watch: commandConfig.value(StartOption.watch),
         flutter: commandConfig.value(StartOption.flutter),
         docker: commandConfig.optionalValue(StartOption.docker),
+        target: commandConfig.value(StartOption.target),
         serverArgs: argResults?.rest ?? const [],
       ),
       useTui: useTui,
       global: serverpodRunner.globalConfiguration,
-    );
+    ).whenComplete(shutdown.dispose);
 
     if (!attaching) {
       await reportStackUp(serverDir, manifest);
+      return;
+    }
+
+    if (shutdown.isShutdown) {
+      if (spawned) await stopInterruptedRunner(serverDir, manifest);
       return;
     }
 
@@ -153,10 +167,46 @@ class StartCommand extends ServerpodCommand<StartOption> {
         projectId: manifest.projectId,
       ),
       useTui: useTui,
+      ownsRunner: spawned,
       waitForRunner: const Duration(seconds: 5),
       onUnreachable: (e) => explainUnreachableRunner(serverDir, manifest, e),
     );
     if (exitCode != 0) throw ExitException(exitCode);
+  }
+}
+
+/// Stops the runner [manifest] names, for a start interrupted while it came up.
+@visibleForTesting
+Future<void> stopInterruptedRunner(
+  String serverDir,
+  RunnerManifest manifest,
+) async {
+  log.info('Interrupted. Stopping the runner (pid ${manifest.pid}).');
+  final client = RunnerClient(
+    socketPath: runnerSocketPath(
+      serverDir,
+      serverpodTuiSocketName,
+      projectId: manifest.projectId,
+    ),
+  );
+  try {
+    await client.connect();
+    await client.stop();
+  } catch (e) {
+    log.error('Stopping the runner failed: $e');
+    throw ExitException.error();
+  } finally {
+    await client.close();
+  }
+  final stopped = await log.progress(
+    'Waiting for the runner (pid ${manifest.pid}) to stop',
+    () => awaitRunnerShutdown(serverDir),
+  );
+  if (!stopped) {
+    log.warning(
+      'The runner accepted the stop but is still shutting down. '
+      'Check `serverpod runner status`.',
+    );
   }
 }
 
@@ -207,7 +257,8 @@ Future<GeneratorConfig> loadRunnerProjectConfig({
 
 /// Loads the project under [directory] and brings its runner up per [asked],
 /// forwarding what [global] says about verbosity and interactivity.
-Future<({String serverDir, RunnerManifest manifest})> bringUpRunner({
+Future<({String serverDir, RunnerManifest manifest, bool spawned})>
+bringUpRunner({
   required String directory,
   required RunnerConfig asked,
   required bool useTui,
@@ -218,14 +269,14 @@ Future<({String serverDir, RunnerManifest manifest})> bringUpRunner({
     interactive: global.optionalValue(GlobalOption.interactive),
   );
   final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-  final manifest = await ensureRunner(
+  final (:manifest, :spawned) = await ensureRunner(
     config: config,
     serverDir: serverDir,
     asked: asked,
     useTui: useTui,
     globalArgs: runnerServeGlobalArgs(global),
   );
-  return (serverDir: serverDir, manifest: manifest);
+  return (serverDir: serverDir, manifest: manifest, spawned: spawned);
 }
 
 /// Waits for the stack behind [manifest] and prints how to reach it.
@@ -234,9 +285,10 @@ Future<void> reportStackUp(String serverDir, RunnerManifest manifest) async =>
 
 /// Returns the manifest of the runner serving [serverDir], spawning one.
 ///
+/// `spawned` is whether this call started that runner, not one found running.
 /// Waits up to [lockWait] for a runner that holds the lock to answer or stop.
 /// Exits for a runner with options other than [asked], or one still stopping.
-Future<RunnerManifest> ensureRunner({
+Future<({RunnerManifest manifest, bool spawned})> ensureRunner({
   required GeneratorConfig config,
   required String serverDir,
   required RunnerConfig asked,
@@ -286,7 +338,7 @@ Future<RunnerManifest> ensureRunner({
         );
         throw ExitException.error();
       }
-      return manifest;
+      return (manifest: manifest, spawned: false);
 
     case NoRunner():
       // The runner would report this only in its log, and exit with zero.
@@ -299,21 +351,23 @@ Future<RunnerManifest> ensureRunner({
         throw ExitException(0);
       }
 
-      return await _spawnRunner(
-            config: config,
-            serverDir: serverDir,
-            asked: asked,
-            globalArgs: globalArgs,
-            useTui: useTui,
-          ) ??
-          await ensureRunner(
-            config: config,
-            serverDir: serverDir,
-            asked: asked,
-            useTui: useTui,
-            globalArgs: globalArgs,
-            lockWait: lockWait,
-          );
+      final spawned = await _spawnRunner(
+        config: config,
+        serverDir: serverDir,
+        asked: asked,
+        globalArgs: globalArgs,
+        useTui: useTui,
+      );
+      if (spawned != null) return (manifest: spawned, spawned: true);
+
+      return ensureRunner(
+        config: config,
+        serverDir: serverDir,
+        asked: asked,
+        useTui: useTui,
+        globalArgs: globalArgs,
+        lockWait: lockWait,
+      );
   }
 }
 
@@ -487,6 +541,7 @@ Future<RunnerManifest?> _spawnRunner({
     ),
   );
 
+  final spawnId = const Uuid().v4();
   final process = await Process.start(
     Platform.resolvedExecutable,
     [
@@ -495,6 +550,8 @@ Future<RunnerManifest?> _spawnRunner({
       'runner',
       'serve',
       '--detached',
+      '--spawn-id',
+      spawnId,
       ...asked.toServeArgs(directory: serverDir),
     ],
     // Sockets bind by relative path, which fits the socket address limit.
@@ -502,7 +559,11 @@ Future<RunnerManifest?> _spawnRunner({
     mode: ProcessStartMode.detached,
   );
 
-  switch (await awaitRunnerManifest(serverDir, pid: process.pid)) {
+  switch (await awaitRunnerManifest(
+    serverDir,
+    pid: process.pid,
+    spawnId: spawnId,
+  )) {
     case RunnerPublished(:final manifest):
       return manifest;
     case RunnerTaken():
@@ -567,16 +628,19 @@ final class RunnerTimedOut extends RunnerStartOutcome {
 ///
 /// A detached runner has no exit code to await, so this watches its [pid].
 /// A dead [pid] while the lock is held lost the race, so the wait goes on.
+/// Manifests are matched by [spawnId], since `dart` runs a script in a child
+/// of the spawned process, whose pid the runner then never publishes.
 @visibleForTesting
 Future<RunnerStartOutcome> awaitRunnerManifest(
   String serverDir, {
   required int pid,
+  required String spawnId,
   Duration timeout = _runnerStartTimeout,
 }) async {
   final waited = Stopwatch()..start();
   while (true) {
     switch (await resolveRunner(serverDir)) {
-      case LiveRunner(:final manifest) when manifest.pid != pid:
+      case LiveRunner(:final manifest) when manifest.spawnId != spawnId:
         return const RunnerTaken();
       case LiveRunner(:final manifest)
           when manifest.stage == RunnerStage.stopping:
@@ -584,7 +648,7 @@ Future<RunnerStartOutcome> awaitRunnerManifest(
       case LiveRunner(:final manifest):
         return RunnerPublished(manifest);
       case NoRunner(:final staleManifest)
-          when staleManifest?.pid == pid &&
+          when staleManifest?.spawnId == spawnId &&
               staleManifest?.stage == RunnerStage.stopping:
         return RunnerAborted(staleManifest?.exitCode ?? 1);
       case NoRunner() || IncompatibleRunner():
@@ -751,11 +815,15 @@ Future<_ResolvedPorts?> _resolvePorts({
     );
   }
 
+  final database = serverConfig.database;
   final ports = {
     'api': serverConfig.apiServer.port,
     if (serverConfig.insightsServer != null)
       'insights': serverConfig.insightsServer!.port,
     if (serverConfig.webServer != null) 'web': serverConfig.webServer!.port,
+    if (database is PostgresDatabaseConfig &&
+        embeddedPostgresListensOnTcp(database))
+      'database': database.port,
   };
 
   if (runMode != 'development') {
@@ -766,6 +834,7 @@ Future<_ResolvedPorts?> _resolvePorts({
     serverDir: serverDir,
     ports: ports,
     suggested: suggested,
+    joinable: const {'database'},
   );
 
   if (resolution.hasConflicts) {
@@ -910,9 +979,11 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   required GeneratorConfig config,
   required String serverDir,
   required ServerArgsRef serverArgs,
+  String target = 'bin/main.dart',
   required bool watch,
   required bool? docker,
   required bool launchFlutterApp,
+  String? spawnId,
   required ShutdownSignal shutdown,
   // Session-wide log retention. Filled here rather than by the presentation
   // layer, so the MCP log tools serve the same content with and without the
@@ -939,6 +1010,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   }
 
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
+  log.info('Server entrypoint: $target');
 
   final RunnerLock lock;
   try {
@@ -981,8 +1053,10 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         watch: watch,
         flutter: launchFlutterApp,
         docker: startDocker,
+        target: target,
         serverArgs: requestedServerArgs,
       ),
+      spawnId: spawnId,
     ),
   );
   Future<void> releaseRunnerHold({required int exitCode}) async {
@@ -1076,8 +1150,14 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
     serverArgs.value = _withApplyMigrations(serverArgs.value);
 
+    final resolvedDartSdk = await sdkResolver.dartSdk;
+
     // Unprimed, to overlap the staleness check. generateIfStale primes it.
-    final analyzersFuture = IsolatedAnalyzers.create(config, prime: false);
+    final analyzersFuture = IsolatedAnalyzers.create(
+      config,
+      prime: false,
+      dartSdkPath: resolvedDartSdk,
+    );
     Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
     // A failed analyzer future must not skip the rest of the rollback.
@@ -1118,12 +1198,14 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
     KernelCompiler? compiler;
     NativeAssetsBuilder? nativeAssetsBuilder;
-    String? dartExecutable;
+    // Seeded for `--no-watch`; watch mode takes the compiler's, from the same
+    // SDK root.
+    String? dartExecutable = dartExecutableIn(resolvedDartSdk);
     String? serverDartToolDir;
     // Null reloads the pod on every package_config.json change.
     PackageDependencyTracker? serverDependencyTracker;
+    final entryPoint = p.join(serverDir, target);
     if (watch) {
-      final entryPoint = p.join(serverDir, 'bin', 'main.dart');
       final initialDill = p.join(serverpodToolDir, 'server.dill');
       // One root for compiler, hooks and watcher. KernelCompiler says why.
       final projectRoot = await discoverProjectRootFrom(serverDir);
@@ -1136,6 +1218,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         entryPoint: entryPoint,
         outputDill: initialDill,
         packagesPath: packageConfigPath,
+        sdkRoot: resolvedDartSdk,
       );
       rollback = ({int exitCode = 1}) async {
         await localCompiler.dispose();
@@ -1158,12 +1241,26 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         return const WatchLoopAborted(1);
       }
 
+      // Built now, so the first package_config.json change has a baseline.
+      final serverResolutionDartTool =
+          PackageDependencyTracker.resolveDartToolDir(
+            serverDir,
+            packageName: config.serverPackage,
+          );
+      serverDependencyTracker = serverResolutionDartTool == null
+          ? null
+          : PackageDependencyTracker(
+              dartToolDir: serverResolutionDartTool,
+              packageName: config.serverPackage,
+            );
+
       await localCompiler.start();
 
       if (buildOk) {
-        if (!await localCompiler.compileIfNeeded(
-          config.watchPaths(includeWeb: true, includeClientPackage: true),
-        )) {
+        if (!await localCompiler.compileIfNeeded({
+          ...config.watchPaths(includeWeb: true, includeClientPackage: true),
+          ...?serverDependencyTracker?.localPackageLibDirs(),
+        })) {
           // Back to the empty state, so recovery does a full compile.
           await localCompiler.reject();
           log.error('Initial compilation failed.');
@@ -1179,19 +1276,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       compiler = localCompiler;
       nativeAssetsBuilder = localBuilder;
       dartExecutable = localCompiler.dartExecutable;
-
-      // Built now, so the first package_config.json change has a baseline.
-      final serverResolutionDartTool =
-          PackageDependencyTracker.resolveDartToolDir(
-            serverDir,
-            packageName: config.serverPackage,
-          );
-      serverDependencyTracker = serverResolutionDartTool == null
-          ? null
-          : PackageDependencyTracker(
-              dartToolDir: serverResolutionDartTool,
-              packageName: config.serverPackage,
-            );
     }
 
     // Initialized even without `--flutter`, for the apps' IDE info files.
@@ -1242,6 +1326,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     Future<ServerProcess> serverProcessFactory(String? dillPath) async {
       final serverProcess = ServerProcess(
         serverDir: serverDir,
+        target: target,
         serverArgs: serverArgs.value,
         dartExecutable: dartExecutable,
         enableVmService: true,
@@ -1328,6 +1413,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
           ?flutterManager.packageGraphPathFor(app.id),
       ];
       final watcher = FileWatcher(
+        persistentFilePaths: [entryPoint],
         watchPaths: buildWatchPaths(
           config: config,
           flutterApps: currentApps,
@@ -1350,13 +1436,12 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     session = WatchSession(
       compiler: compiler,
       nativeAssetsBuilder: nativeAssetsBuilder,
-      generate: (affectedPaths, requirements) async {
+      generate: (affectedPaths) async {
         return analyzeAndGenerate(
           analyzers: await analyzersFuture,
           config: config,
           affectedPaths: affectedPaths,
           incremental: true,
-          requirements: requirements,
         );
       },
       fullGenerate: () async {

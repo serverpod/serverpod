@@ -17,12 +17,24 @@ import 'example.dart' as _itx02h2p;
 export 'example.dart';
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _isc.SerializationManager
+    implements _isc.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
+
+  @override
+  _isc.ProtocolDeserialization get deserializationMetadata =>
+      _isc.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _isc.getType<_itx02h2p.Example>,
+          _isc.getType<_itx02h2p.Example?>,
+        ],
+        modules: const [_i312scxx.Protocol.new],
+      );
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -57,9 +69,15 @@ class Protocol extends _isc.SerializationManager {
     if (t == _isc.getType<_itx02h2p.Example?>()) {
       return (data != null ? _itx02h2p.Example.fromJson(data) : null) as T;
     }
-    try {
-      return _i312scxx.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 

@@ -187,6 +187,49 @@ void main() {
     );
 
     test(
+      'when the runner drops without announcing a stop, '
+      'then the UI no longer owns it, as a reconnect reaches another one',
+      () async {
+        final binding = RunnerStateBinding(
+          client: client,
+          holder: holder,
+          onStopRequested: () {},
+        )..bind();
+        addTearDown(binding.dispose);
+        holder.state.ownsRunner = true;
+
+        final lost = client.connectionChanges.firstWhere((up) => !up);
+        await server.close();
+        await lost;
+
+        expect(holder.state.ownsRunner, isFalse);
+      },
+    );
+
+    test(
+      'when the UI asks to stop the stack again before the runner stops, '
+      'then it leaves on its own without asking the runner twice',
+      () async {
+        var leftOnItsOwn = false;
+        var stops = 0;
+        startingRunner.onStop = () async => stops++;
+        final binding = RunnerStateBinding(
+          client: client,
+          holder: holder,
+          onStopRequested: () => leftOnItsOwn = true,
+        )..bind();
+        addTearDown(binding.dispose);
+
+        holder.stopStack!();
+        await waitFor(() => stops == 1);
+        holder.stopStack!();
+
+        expect(leftOnItsOwn, isTrue);
+        expect(stops, 1);
+      },
+    );
+
+    test(
       'when an app is still launching and the UI asks to stop it, '
       'then the stop reaches the runner, the key being offered while launching',
       () async {

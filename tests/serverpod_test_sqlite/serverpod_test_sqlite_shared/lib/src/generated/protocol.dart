@@ -22,7 +22,8 @@ export 'shared/subclass.dart';
 export 'shared/model.dart';
 export 'shared/shared_table_record.dart';
 
-class Protocol extends _isd.DatabaseSerializationManager {
+class Protocol extends _isd.DatabaseSerializationManager
+    implements _isd.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -30,6 +31,23 @@ class Protocol extends _isd.DatabaseSerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_iss.SerializationManager> _hostProtocols = {};
+
+  @override
+  _iss.ProtocolDeserialization get deserializationMetadata =>
+      _iss.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _iss.getType<_i1mrs6ww.SharedEnum>,
+          _iss.getType<_iuvt222f.SharedSubclass>,
+          _iss.getType<_iwajn61k.SharedModel>,
+          _iss.getType<_itms6rpy.SharedTableRecord>,
+          _iss.getType<_i1mrs6ww.SharedEnum?>,
+          _iss.getType<_iuvt222f.SharedSubclass?>,
+          _iss.getType<_iwajn61k.SharedModel?>,
+          _iss.getType<_itms6rpy.SharedTableRecord?>,
+        ],
+        modules: const [_isd.Protocol.new],
+      );
 
   static List<_isd.TableDefinition> get targetTableDefinitions => [
     _isd.TableDefinition(
@@ -137,9 +155,15 @@ class Protocol extends _isd.DatabaseSerializationManager {
       return (data != null ? _itms6rpy.SharedTableRecord.fromJson(data) : null)
           as T;
     }
-    try {
-      return _isd.Protocol().deserialize<T>(data, t);
-    } on _iss.DeserializationTypeNotFoundException catch (_) {}
+    final modules = dataClassName == null
+        ? deserializationMetadata.modulesForType(t)
+        : deserializationMetadata.modules;
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _iss.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 

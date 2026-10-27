@@ -76,7 +76,8 @@ export 'table_definition.dart';
 export 'table_migration.dart';
 export 'vector_distance_function.dart';
 
-class Protocol extends _iss.SerializationManager {
+class Protocol extends _iss.SerializationManager
+    implements _iss.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -84,6 +85,92 @@ class Protocol extends _iss.SerializationManager {
   static final Protocol _instance = Protocol._();
 
   final Set<_iss.SerializationManager> _hostProtocols = {};
+
+  @override
+  _iss.ProtocolDeserialization get deserializationMetadata =>
+      _iss.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _iss.getType<_iix79rrm.BulkData>,
+          _iss.getType<_i6ksrbgg.BulkDataException>,
+          _iss.getType<_i5qwhk8q.BulkQueryColumnDescription>,
+          _iss.getType<_iehqmka8.BulkQueryResult>,
+          _iss.getType<_i2sdi2ed.ColumnDefinition>,
+          _iss.getType<_iyvv4rq3.ColumnMigration>,
+          _iss.getType<_i4ua1ejo.ColumnType>,
+          _iss.getType<_i1k8jo17.DatabaseDefinition>,
+          _iss.getType<_i2pwr6iz.DatabaseDefinitions>,
+          _iss.getType<_ije4ra3g.DatabaseMigration>,
+          _iss.getType<_ib6ced2r.DatabaseMigrationAction>,
+          _iss.getType<_if91rmm0.DatabaseMigrationActionType>,
+          _iss.getType<_i2x83mx1.DatabaseMigrationVersionModel>,
+          _iss.getType<_i14avsk8.DatabaseMigrationWarning>,
+          _iss.getType<_iwrp118f.DatabaseMigrationWarningType>,
+          _iss.getType<_itb06st2.DeferrableConstraint>,
+          _iss.getType<_iwiq4jz5.EnumSerialization>,
+          _iss.getType<_illmf2iz.Filter>,
+          _iss.getType<_iuvcfldi.FilterConstraint>,
+          _iss.getType<_ioh6182a.FilterConstraintType>,
+          _iss.getType<_i4d2ox9e.ForeignKeyAction>,
+          _iss.getType<_imvri9vh.ForeignKeyDefinition>,
+          _iss.getType<_itqha47z.ForeignKeyMatchType>,
+          _iss.getType<_ip0ed67z.GinOperatorClass>,
+          _iss.getType<_i1hq2rno.IndexDefinition>,
+          _iss.getType<_iljgnmzh.IndexElementDefinition>,
+          _iss.getType<_i7xr2xwk.IndexElementDefinitionType>,
+          _iss.getType<_irowguds.MigrationsApplyResult>,
+          _iss.getType<_id9bvszm.TableDefinition>,
+          _iss.getType<_ifqv8t7l.TableMigration>,
+          _iss.getType<_i5i4fyxu.VectorDistanceFunction>,
+          _iss.getType<_iix79rrm.BulkData?>,
+          _iss.getType<_i6ksrbgg.BulkDataException?>,
+          _iss.getType<_i5qwhk8q.BulkQueryColumnDescription?>,
+          _iss.getType<_iehqmka8.BulkQueryResult?>,
+          _iss.getType<_i2sdi2ed.ColumnDefinition?>,
+          _iss.getType<_iyvv4rq3.ColumnMigration?>,
+          _iss.getType<_i4ua1ejo.ColumnType?>,
+          _iss.getType<_i1k8jo17.DatabaseDefinition?>,
+          _iss.getType<_i2pwr6iz.DatabaseDefinitions?>,
+          _iss.getType<_ije4ra3g.DatabaseMigration?>,
+          _iss.getType<_ib6ced2r.DatabaseMigrationAction?>,
+          _iss.getType<_if91rmm0.DatabaseMigrationActionType?>,
+          _iss.getType<_i2x83mx1.DatabaseMigrationVersionModel?>,
+          _iss.getType<_i14avsk8.DatabaseMigrationWarning?>,
+          _iss.getType<_iwrp118f.DatabaseMigrationWarningType?>,
+          _iss.getType<_itb06st2.DeferrableConstraint?>,
+          _iss.getType<_iwiq4jz5.EnumSerialization?>,
+          _iss.getType<_illmf2iz.Filter?>,
+          _iss.getType<_iuvcfldi.FilterConstraint?>,
+          _iss.getType<_ioh6182a.FilterConstraintType?>,
+          _iss.getType<_i4d2ox9e.ForeignKeyAction?>,
+          _iss.getType<_imvri9vh.ForeignKeyDefinition?>,
+          _iss.getType<_itqha47z.ForeignKeyMatchType?>,
+          _iss.getType<_ip0ed67z.GinOperatorClass?>,
+          _iss.getType<_i1hq2rno.IndexDefinition?>,
+          _iss.getType<_iljgnmzh.IndexElementDefinition?>,
+          _iss.getType<_i7xr2xwk.IndexElementDefinitionType?>,
+          _iss.getType<_irowguds.MigrationsApplyResult?>,
+          _iss.getType<_id9bvszm.TableDefinition?>,
+          _iss.getType<_ifqv8t7l.TableMigration?>,
+          _iss.getType<_i5i4fyxu.VectorDistanceFunction?>,
+          _iss.getType<List<_isd.BulkQueryColumnDescription>>,
+          _iss.getType<List<_isd.TableDefinition>>,
+          _iss.getType<List<_isd.DatabaseMigrationVersionModel>>,
+          _iss.getType<List<_isd.DatabaseMigrationAction>>,
+          _iss.getType<List<_isd.DatabaseMigrationWarning>>,
+          _iss.getType<List<String>>,
+          _iss.getType<List<_isd.FilterConstraint>>,
+          _iss.getType<List<_isd.IndexElementDefinition>>,
+          _iss.getType<Map<String, String>>,
+          _iss.getType<Map<String, String>?>,
+          _iss.getType<List<String>?>,
+          _iss.getType<List<_isd.ColumnDefinition>>,
+          _iss.getType<List<_isd.ForeignKeyDefinition>>,
+          _iss.getType<List<_isd.IndexDefinition>>,
+          _iss.getType<List<_isd.ColumnMigration>>,
+        ],
+        modules: const [],
+      );
 
   void registerHostProtocol(
     String projectName,

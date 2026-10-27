@@ -3,6 +3,10 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
+import 'package:serverpod_cli/src/util/copy_directory.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
@@ -26,7 +30,7 @@ void main() async {
     } catch (e) {}
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
@@ -36,7 +40,8 @@ void main() async {
     });
 
     test(
-      'when creating a new project then the project is created successfully and can be booted',
+      'when creating a new project, '
+      'then it is created, boots and frees the database port on exit',
       () async {
         createProcess = await startServerpodCli(
           [
@@ -60,19 +65,31 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
+        var databasePort = await freeLoopbackPort();
         var startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
           workingDirectory: commandRoot,
+          environment: {
+            ServerpodEnv.databasePort.envVariable: '$databasePort',
+          },
         );
 
         var startProjectExitCode = await startProjectProcess.exitCode;
         expect(startProjectExitCode, 0);
+
+        await expectLater(
+          ServerSocket.bind(
+            InternetAddress.loopbackIPv4,
+            databasePort,
+          ).then((socket) => socket.close()),
+          completes,
+        );
       },
     );
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
@@ -84,7 +101,8 @@ void main() async {
     });
 
     test(
-      'when creating a new project then the project can be booted without applying migrations',
+      'when creating a new project, '
+      'then the project can be booted without applying migrations',
       () async {
         createProcess = await startServerpodCli(
           [
@@ -112,6 +130,10 @@ void main() async {
           'dart',
           ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
+          environment: {
+            ServerpodEnv.databasePort.envVariable:
+                '${await freeLoopbackPort()}',
+          },
         );
 
         var serverStarted = false;
@@ -614,6 +636,42 @@ void main() async {
             reason: 'Flutter main file does not exist.',
           );
         });
+
+        test('has an Android application ID derived from the project name', () {
+          final gradleFile = ['build.gradle.kts', 'build.gradle']
+              .map(
+                (name) => File(
+                  path.join(tempPath, flutterDir, 'android', 'app', name),
+                ),
+              )
+              .firstWhere((file) => file.existsSync());
+
+          expect(
+            gradleFile.readAsStringSync(),
+            contains(
+              'com.serverpod.space.${projectName}_flutter',
+            ),
+          );
+        });
+
+        test('has an iOS bundle ID derived from the project name', () {
+          final pbxproj = File(
+            path.join(
+              tempPath,
+              flutterDir,
+              'ios',
+              'Runner.xcodeproj',
+              'project.pbxproj',
+            ),
+          );
+
+          expect(
+            pbxproj.readAsStringSync(),
+            contains(
+              'com.serverpod.space.${projectName}Flutter',
+            ),
+          );
+        });
       });
 
       group('then the client project', () {
@@ -721,6 +779,22 @@ void main() async {
             ).existsSync(),
             isTrue,
             reason: 'analyze.yml workflow does not exist.',
+          );
+        });
+
+        test('has deploy workflow', () {
+          expect(
+            File(
+              path.join(
+                tempPath,
+                projectName,
+                '.github',
+                'workflows',
+                'deploy.yml',
+              ),
+            ).existsSync(),
+            isTrue,
+            reason: 'deploy.yml workflow does not exist.',
           );
         });
       });
@@ -863,10 +937,9 @@ void main() async {
           expect(agentsMd.readAsStringSync(), isNotEmpty);
         });
 
-        test('has CLAUDE.md', () {
+        test('does not have CLAUDE.md', () {
           final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
-          expect(claudeMd.existsSync(), isTrue);
-          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+          expect(claudeMd.existsSync(), isFalse);
         });
 
         test('has agent skills installed', () {
@@ -1144,7 +1217,7 @@ void main() async {
     );
   });
 
-  group('Given a created project', () {
+  group('Given a created project,', () {
     late String projectName;
     late String commandRoot;
 
@@ -1175,54 +1248,10 @@ void main() async {
     test(
       'when building the server Dockerfile then the image is built successfully',
       () async {
-        // Temporarily remove parameters from server.dart that have not been
-        // published yet, because the Dockerfile won't have access to the local
-        // override. Once published, we can remove these.
-        final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
-        final serverSource = serverFile.readAsStringSync();
-        const wasmHeaders = 'enableWasmHeaders: false,';
-        // TODO: Remove once Session.alert is published.
-        const sessionAlert = 'session.alert(';
-        // TODO: Remove once ServerpodCloudEmailIdpConfig is published. The
-        // published serverpod_auth_idp_server does not have it yet, so swap it
-        // for the published-compatible EmailIdpConfigFromPasswords (its send
-        // callbacks are optional, so the no-argument form compiles).
-        final cloudEmailConfig = RegExp(
-          r'ServerpodCloudEmailIdpConfig\([^)]*\)',
-        );
-        // TODO: Remove once StaticRoute.withCacheBusting is published.
-        const staticRouteCacheBusting =
-            "StaticRoute.withCacheBusting(cacheBustingConfig)";
-
-        serverFile.writeAsStringSync(
-          serverSource
-              .replaceAll(wasmHeaders, '')
-              .replaceAll(sessionAlert, 'session.log(')
-              .replaceAll(cloudEmailConfig, 'EmailIdpConfigFromPasswords()')
-              .replaceAll(
-                staticRouteCacheBusting,
-                "StaticRoute.directory(Directory(Uri(path: 'web/static').toFilePath()))",
-              ),
-        );
-
-        // TODO: Remove once DeserializationClassNameNotFoundException is
-        // published. The generated protocol references the local exception,
-        // while the Docker build resolves the currently published packages.
-        final protocolFile = File(
-          path.join(
-            commandRoot,
-            'lib',
-            'src',
-            'generated',
-            'protocol.dart',
-          ),
-        );
-        final protocolSource = protocolFile.readAsStringSync();
-        protocolFile.writeAsStringSync(
-          protocolSource.replaceAll(
-            RegExp(r'_i\w+\.DeserializationClassNameNotFoundException'),
-            'FormatException',
-          ),
+        _addLocalPackageOverrides(
+          projectRoot: path.join(tempPath, projectName),
+          serverPackage: '${projectName}_server',
+          repositoryRoot: rootPath,
         );
 
         final dockerBuildProcess = await startProcess(
@@ -1252,7 +1281,7 @@ void main() async {
     );
 
     test(
-      'when running tests then example unit and integration tests passes',
+      'when running tests, then example unit and integration tests passes',
       () async {
         var testProcess = await startProcess(
           'dart',
@@ -1262,6 +1291,10 @@ void main() async {
             projectName,
             "${projectName}_server",
           ),
+          environment: {
+            ServerpodEnv.databasePort.envVariable:
+                '${await freeLoopbackPort()}',
+          },
         );
 
         await expectLater(testProcess.exitCode, completion(0));
@@ -1322,7 +1355,7 @@ void main() async {
   });
 
   group(
-    'Given a created project and a running pod',
+    'Given a created project and a running pod,',
     () {
       final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
@@ -1350,6 +1383,10 @@ void main() async {
           'dart',
           ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
+          environment: {
+            ServerpodEnv.databasePort.envVariable:
+                '${await freeLoopbackPort()}',
+          },
           keywords: ['Webserver listening on'],
         );
       });
@@ -1424,5 +1461,63 @@ void main() async {
     skip: Platform.isWindows
         ? 'Windows does not support postgres in github actions'
         : null,
+  );
+}
+
+void _addLocalPackageOverrides({
+  required String projectRoot,
+  required String serverPackage,
+  required String repositoryRoot,
+}) {
+  final server = parsePubspec(
+    File(path.join(projectRoot, serverPackage, 'pubspec.yaml')),
+  );
+  final localPackageRoots = {
+    for (final name in [server.name, ...server.devDependencies.keys])
+      ...PackageDependencyTracker(
+        dartToolDir: path.join(projectRoot, '.dart_tool'),
+        packageName: name,
+      ).localPackageLibDirs().map(path.dirname),
+  };
+
+  final overrides = <DependencyUpdate>[];
+  final repository = path.normalize(path.absolute(repositoryRoot));
+  for (final packageRoot in localPackageRoots.toList()..sort()) {
+    if (!path.isWithin(repository, packageRoot)) continue;
+
+    final package = parsePubspec(File(path.join(packageRoot, 'pubspec.yaml')));
+    final destination = path.join('local_packages', package.name);
+    copyDirectory(
+      Directory(packageRoot),
+      Directory(path.join(projectRoot, destination)),
+      ignoreFileNames: const {
+        '.dart_tool',
+        '.git',
+        '.serverpod',
+        'build',
+        'pubspec_overrides.yaml',
+      },
+    );
+    overrides.add((
+      name: package.name,
+      source: DependencySource.path(destination),
+      type: DependencyType.override,
+    ));
+  }
+
+  File(path.join(projectRoot, 'pubspec_overrides.yaml')).writeAsStringSync(
+    addDependencyToPubspec('{}\n', additions: overrides),
+  );
+
+  // Keep the generated Dockerfile, but include this checkout's dependencies
+  // before its pub get so the build uses the same APIs as the generator.
+  final dockerfile = File(path.join(projectRoot, serverPackage, 'Dockerfile'));
+  dockerfile.writeAsStringSync(
+    dockerfile.readAsStringSync().replaceFirst(
+      'RUN dart pub get',
+      'COPY local_packages local_packages\n'
+          'COPY pubspec_overrides.yaml .\n'
+          'RUN dart pub get',
+    ),
   );
 }

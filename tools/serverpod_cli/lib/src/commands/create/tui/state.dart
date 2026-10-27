@@ -9,7 +9,6 @@ class CreateConfigState extends TuiState {
     this.startingTemplate, {
     this.configs = ServerpodCreateConfig.values,
     TemplateContext? defaults,
-    this.requireIde = false,
   }) : defaults = defaults ?? TemplateContext() {
     // The starting template is set as the initial
     // selected option for ServerpodCreateConfig.template.
@@ -34,10 +33,6 @@ class CreateConfigState extends TuiState {
   /// not affected and resolve from the form as usual.
   final TemplateContext defaults;
 
-  /// Whether at least one IDE must be selected
-  /// before the project can be created.
-  final bool requireIde;
-
   late final form = MultiScreenFormState(configs);
 
   bool _creatingProject = false;
@@ -52,14 +47,6 @@ class CreateConfigState extends TuiState {
   ServerpodTemplateType get template =>
       form.getSelectedOptionFor(ServerpodCreateConfig.template)?.toTemplate ??
       startingTemplate;
-
-  /// True when all required selections are made
-  /// and the project can be created.
-  bool get canCreate {
-    if (!requireIde) return true;
-    final selectedIdes = form.getSelectedOptionsFor(ServerpodCreateConfig.ide);
-    return selectedIdes != null && selectedIdes.isNotEmpty;
-  }
 
   /// Called when project creation starts.
   /// This transitions the UI to a log viewer.

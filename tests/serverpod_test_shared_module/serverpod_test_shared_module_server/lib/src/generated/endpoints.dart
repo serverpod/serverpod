@@ -11,8 +11,15 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_shared_module_server/src/generated/future_calls.dart'
+    as _in8bpk14;
+export 'future_calls.dart' show ServerpodTestSharedModuleFutureCallsGetter;
 
 class Endpoints extends _is.EndpointDispatch {
   @override
   void initializeEndpoints(_is.Server server) {}
+  @override
+  _is.FutureCallDispatch? get futureCalls {
+    return _in8bpk14.FutureCalls();
+  }
 }

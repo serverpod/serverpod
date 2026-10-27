@@ -122,6 +122,9 @@ void main() {
         port: redis.port,
         requireSsl: false,
         password: 'password',
+        // Outlasts the subscription wait limit, so the stalled AUTH is still
+        // pending when the publish is released.
+        connectTimeout: const Duration(seconds: 30),
       );
       await controller.start();
       redis.holdConfirmations = true;

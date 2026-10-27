@@ -18,6 +18,13 @@ const runnerDirectoryOption = StringOption(
   helpText: 'The server directory.',
 );
 
+const runnerTargetOption = StringOption(
+  argName: 'target',
+  argAbbrev: 't',
+  defaultsTo: 'bin/main.dart',
+  helpText: 'The server entrypoint, relative to the server directory.',
+);
+
 const runnerDockerOption = FlagOption(
   argName: 'docker',
   helpText: 'Start Docker Compose services if a compose file exists.',

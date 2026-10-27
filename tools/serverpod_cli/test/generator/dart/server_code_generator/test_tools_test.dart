@@ -76,6 +76,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
@@ -119,6 +120,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [ephemeralDatabase] '),
           );
           expect(
             testToolsFile,
@@ -341,6 +346,10 @@ void main() {
             testToolsFile,
             isNot(contains('/// [rollbackDatabase]')),
           );
+          expect(
+            testToolsFile,
+            isNot(contains('/// [ephemeralDatabase]')),
+          );
         },
       );
     },
@@ -386,6 +395,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
@@ -429,6 +439,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [ephemeralDatabase] '),
           );
           expect(
             testToolsFile,
@@ -539,6 +553,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
@@ -582,6 +597,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [ephemeralDatabase] '),
           );
           expect(
             testToolsFile,
@@ -714,6 +733,176 @@ void main() {
         'then the method body contains a call to the correct endpoint method.',
         () {
           expect(testToolsFile, contains('getMethodCallContext('));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning a record, '
+    'when generating test tools,',
+    () {
+      late String testToolsFile;
+
+      setUpAll(() {
+        final recordType = TypeDefinitionBuilder().withRecordOf([
+          TypeDefinitionBuilder().withClassName('int').build(),
+        ]).build();
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [
+            EndpointDefinitionBuilder()
+                .withClassName('TestingEndpoint')
+                .withName('testing')
+                .withMethods([
+                  MethodDefinitionBuilder()
+                      .withName('returnRecord')
+                      .withReturnType(
+                        TypeDefinitionBuilder()
+                            .withClassName('Future')
+                            .withGenerics([recordType])
+                            .build(),
+                      )
+                      .buildMethodCallDefinition(),
+                ])
+                .build(),
+          ],
+          models: [],
+          futureCalls: [],
+        );
+
+        testToolsFile = generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        )[expectedFileName]!;
+      });
+
+      test(
+        'then the return value is protocol-encoded before deserialization.',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'\(record\) => _i[a-z0-9]+\.Protocol\(\)\s*'
+              r'\.deserialize<\(int,\)>\(\s*'
+              r'_idc\.jsonDecode\(\s*'
+              r'_is\.SerializationManager\.encodeForProtocol\(record\),?\s*'
+              r'\),?\s*\)',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning a list of records, '
+    'when generating test tools,',
+    () {
+      late String testToolsFile;
+
+      setUpAll(() {
+        final recordType = TypeDefinitionBuilder().withRecordOf([
+          TypeDefinitionBuilder().withClassName('int').build(),
+        ]).build();
+        final listType = TypeDefinitionBuilder()
+            .withClassName('List')
+            .withGenerics([recordType])
+            .build();
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [
+            EndpointDefinitionBuilder()
+                .withClassName('TestingEndpoint')
+                .withName('testing')
+                .withMethods([
+                  MethodDefinitionBuilder()
+                      .withName('returnRecords')
+                      .withReturnType(
+                        TypeDefinitionBuilder()
+                            .withClassName('Future')
+                            .withGenerics([listType])
+                            .build(),
+                      )
+                      .buildMethodCallDefinition(),
+                ])
+                .build(),
+          ],
+          models: [],
+          futureCalls: [],
+        );
+
+        testToolsFile = generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        )[expectedFileName]!;
+      });
+
+      test(
+        'then the return value is protocol-encoded before deserialization.',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'\(record\) => _i[a-z0-9]+\.Protocol\(\)\s*'
+              r'\.deserialize<List<\(int,\)>>\(\s*'
+              r'_idc\.jsonDecode\(\s*'
+              r'_is\.SerializationManager\.encodeForProtocol\(record\),?\s*'
+              r'\),?\s*\)',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning an integer-keyed map, '
+    'when generating test tools,',
+    () {
+      late String testToolsFile;
+
+      setUpAll(() {
+        final mapType = TypeDefinitionBuilder().withMapOf('int', 'int').build();
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [
+            EndpointDefinitionBuilder()
+                .withClassName('TestingEndpoint')
+                .withName('testing')
+                .withMethods([
+                  MethodDefinitionBuilder()
+                      .withName('returnMap')
+                      .withReturnType(
+                        TypeDefinitionBuilder()
+                            .withClassName('Future')
+                            .withGenerics([mapType])
+                            .build(),
+                      )
+                      .buildMethodCallDefinition(),
+                ])
+                .build(),
+          ],
+          models: [],
+          futureCalls: [],
+        );
+
+        testToolsFile = generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        )[expectedFileName]!;
+      });
+
+      test(
+        'then the return value is protocol-encoded before deserialization.',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'\(map\) => _i[a-z0-9]+\.Protocol\(\)\s*'
+              r'\.deserialize<Map<int, int>>\(\s*'
+              r'_idc\.jsonDecode\(\s*'
+              r'_is\.SerializationManager\.encodeForProtocol\(map\),?\s*'
+              r'\),?\s*\)',
+            ),
+          );
         },
       );
     },
@@ -1914,6 +2103,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
@@ -1998,6 +2188,7 @@ void main() {
               r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? ephemeralDatabase,\n'
               r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'

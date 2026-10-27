@@ -17,13 +17,12 @@ void main(List<String> args) {
     version: 'test-version',
     host: args[0],
   );
-  final commands = CompoundAnalytics([posthog]);
+
   initializeCliAnalytics(
-    CliAnalytics(analytics: posthog, commandAnalytics: commands)
-      ..enabled = true,
+    CliAnalytics(analytics: posthog)..enabled = true,
   );
   final config = buildAnalyticsTestConfig(args[1]);
-  commands.track(event: 'start');
+  posthog.track(event: 'start');
   unawaited(
     cliAnalytics.captureSessionStart(
       config: config,

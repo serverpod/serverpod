@@ -1,9 +1,73 @@
+## 4.1.0-rc.1
+
+feat: Starts embedded PostgreSQL with both TCP and Unix socket support.
+feat: Adds passwordless OTP login to the email identity provider.
+feat: Adds support for FVM and other Flutter/Dart installation sources on the CLI.
+feat: Exposes the runner logs through a `tail_runner_logs` MCP tool.
+feat: Adds the `serverpod doctor` command for local environment diagnostics.
+fix: Prevents unrelated models from being deleted due to subsequent generate failures.
+fix: Fixes wrong serialization of models in record and map responses on the test framework.
+fix: Keeps password-reset cleanup deterministic on coarse clocks.
+fix: Hashes `pgvector` types by value to match equality. ([@RaphaelFakhri](https://github.com/RaphaelFakhri))
+fix: Drops method stream values that arrive after the stream is closed.
+fix: Compiles file changes that arrived with a failed code generation. ([@BiAksoy](https://github.com/BiAksoy))
+fix: Properly initializes module future calls on projects.
+fix: Reuses the cached upgrade prompt only for the CLI version that wrote it.
+fix: Clears generation staleness state together on the `serverpod clean` command.
+fix: Raises analyzer dependency ceiling to support primary constructors.
+fix: Ignores foreign key violations for concurrent future call claims.
+fix: Fixes future call generation when using only basic Dart types on parameters.
+perf: Improves JSON encoding and decoding performance by using utf8 directly.
+perf: Greatly improves `serverpod generate` performance on one-shot and incremental runs.
+chore: Creates project-specific application IDs for new projects.
+chore: Updates the skills and agent instructions to use the `serverpod runner` command.
+
+## 4.1.0-beta.3
+
+- feat: Adds support for custom target entrypoints in runner commands. ([@mathis6787](https://github.com/mathis6787))
+- fix: Stops the runner on quit when `serverpod start` spawned it.
+- fix: Normalizes method stream cancellation futures before timeout. ([@donavonguyot](https://github.com/donavonguyot))
+- fix: Prevents exiting the server on development when the startup database integrity check fails.
+- fix: Improves type-safety of generated `copyWith` constructors by using typed sentinels.
+- perf: Improves file uploader performance by using streamed uploads instead of buffered uploads.
+- perf: Speeds up deserialization of shared and module models by ~x3.
+- perf: Speeds up SQLite operations from ~1.1x to ~55x.
+- chore: Adds a Serverpod Cloud deploy workflow to the project template
+
+Also includes all fixes from 4.0.3 and 4.0.4. Version 4.1.0-beta.2 was skipped due to a packaging issue.
+
 ## 4.1.0-beta.1
 
 - feat: Adds `serverpod runner` command with `start`, `attach`, `status` and `stop` subcommands.
 - feat: Allows `serverpod start` and `serverpod mcp-server` to attach to an already running server.
 - feat: Exposes `Model.db.watch` for reactive ORM operations on the client.
 - fix: Reports a missing Flutter app package when launching from `serverpod start`.
+
+## 4.0.4
+
+- fix: Adds `serverpod clean` command to delete stale cached server kernels.
+- fix: Quotes column in composites foreign keys separately. ([@mackings](https://github.com/mackings))
+- fix: Validates `SetNull` and `SetDefault` relation actions against the foreign key column type.
+- fix: Stops tearing down Flutter apps on slow heartbeat replies.
+- fix: Resets the Redis connecting flag when the error handler throws.
+- fix: Times out method stream connection when the WebSocket upgrade is never answered.
+- fix: Restores two-way table comparison in the database integrity check. ([@BiAksoy](https://github.com/BiAksoy))
+- fix: Ignores commented workspace declarations during project discovery. ([@donavonguyot](https://github.com/donavonguyot))
+- fix: Invalidates the cached kernel when local dependencies change.
+- chore: Stops generating `CLAUDE.md` in favor of `AGENTS.md`.
+- chore: Redesigns the serverpod create TUI as sequential prompts with IDE/agent selection first.
+
+## 4.0.3
+
+- fix: Prints the reason why `serverpod start` stopped after the TUI ends with an error.
+- fix: Fixes the CLI using the private port to connect to Insights.
+- fix: Allows opting out of ephemeral database on tests.
+- fix: Stops reporting database integrity errors for unmanaged tables.
+- fix: Defers the profile image foreign key check to commit to fix Postgres dump restore.
+- fix: Standardizes the future call feature flag name to `futureCall.executionEnabled`.
+- fix: Exposes missing `futureCall.enabled` flag to completely disable scheduling future calls.
+- fix: Fixes Windows paths comparison in the endpoint and future call analyzers.
+- perf: Reduces the cost of argon2 usage for a better experience on low-end VMs.
 
 ## 4.0.2
 
