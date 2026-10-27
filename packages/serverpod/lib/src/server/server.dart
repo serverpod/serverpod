@@ -616,8 +616,6 @@ class Server implements RouterInjectable {
           cookies: session.responseCookies,
         );
       } catch (e, stackTrace) {
-        // Note: In case of malformed argument, the method connector may throw,
-        // which may be argued is not an "application space" exception.
         serverpod.internalSubmitEvent(
           ExceptionEvent(e, stackTrace),
           space: OriginSpace.application,
