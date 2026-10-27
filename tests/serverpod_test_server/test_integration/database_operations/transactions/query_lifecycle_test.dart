@@ -135,6 +135,60 @@ void main() {
           session = sessionBuilder.build();
         });
 
+        group('when a query timeout escapes the transaction callback,', () {
+          late int insertedId;
+          late DatabaseResult nextResult;
+          Object? queryError;
+
+          setUpAll(() async {
+            try {
+              await session.db.transaction((transaction) async {
+                final row = await SimpleData.db.insertRow(
+                  session,
+                  SimpleData(num: 33),
+                  transaction: transaction,
+                );
+                insertedId = row.id!;
+
+                await session.db.unsafeQuery(
+                  'SELECT pg_sleep(30)',
+                  timeoutInSeconds: 1,
+                  transaction: transaction,
+                );
+              });
+            } catch (error) {
+              queryError = error;
+            }
+
+            nextResult = await session.db.transaction((transaction) {
+              return session.db.unsafeQuery(
+                'SELECT count(*), 42 FROM simple_data WHERE id = @id',
+                parameters: QueryParameters.named({'id': insertedId}),
+                transaction: transaction,
+              );
+            });
+          });
+
+          test('then PostgreSQL reports query cancellation.', () {
+            expect(
+              queryError,
+              isA<DatabaseQueryException>().having(
+                (error) => error.code,
+                'SQLSTATE',
+                '57014',
+              ),
+            );
+          });
+
+          test('then the inserted row is rolled back.', () {
+            expect(nextResult.single[0], 0);
+          });
+
+          test('then a new transaction can query the database.', () {
+            expect(nextResult.single[1], 42);
+          });
+        });
+
         group('when a query timeout is handled inside the transaction,', () {
           late int originalBackend;
           late int insertedId;
