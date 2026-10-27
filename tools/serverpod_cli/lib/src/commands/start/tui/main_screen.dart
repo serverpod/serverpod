@@ -33,6 +33,7 @@ class MainScreen extends StatelessComponent {
     required this.onStopOrCloseAppTab,
     required this.onToggleStackTrace,
     required this.onOpenAppUrl,
+    required this.onTogglePinnedOperations,
   });
 
   final ServerWatchState state;
@@ -70,6 +71,10 @@ class MainScreen extends StatelessComponent {
   /// Opens the running app's published URL in the browser, invoked by
   /// clicking the URL in the app tab's status line.
   final void Function(AppLogTab tab) onOpenAppUrl;
+
+  /// Shows or hides the pinned operation groups beyond the first few,
+  /// invoked by clicking the fold row below them.
+  final VoidCallback onTogglePinnedOperations;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
     (
@@ -301,8 +306,12 @@ class MainScreen extends StatelessComponent {
     );
   }
 
+  /// Pinned rows shown before the fold row takes the last slot.
+  static const _visibleOperationGroups = 2;
+
   /// One row per distinct operation label under a rule, with a muted count
-  /// of how many share it.
+  /// of how many share it. Past three groups the rest fold into a clickable
+  /// row so the pane above keeps its height.
   Component _buildPinnedOperations(ServerpodThemeData st) {
     final groups = <String, (TrackedOperation, int)>{};
     for (final op in state.activeOperations.values) {
@@ -310,10 +319,18 @@ class MainScreen extends StatelessComponent {
       groups[op.label] = (first, count + 1);
     }
 
+    final foldable = groups.length > _visibleOperationGroups + 1;
+    final folded = foldable && !state.expandPinnedOperations;
+    final shown = folded
+        ? groups.values.take(_visibleOperationGroups)
+        : groups.values;
+    final hidden = groups.values.skip(_visibleOperationGroups);
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Divider(color: st.subtleDivider, indent: -1, endIndent: -1),
-        for (final (first, count) in groups.values)
+        for (final (first, count) in shown)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 1),
             child: Row(
@@ -332,7 +349,47 @@ class MainScreen extends StatelessComponent {
               ],
             ),
           ),
+        if (foldable)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1),
+            child: _buildOperationsFold(
+              st,
+              folded: folded,
+              hiddenGroups: hidden.length,
+              hiddenOperations: hidden.fold(0, (sum, g) => sum + g.$2),
+            ),
+          ),
       ],
+    );
+  }
+
+  Component _buildOperationsFold(
+    ServerpodThemeData st, {
+    required bool folded,
+    required int hiddenGroups,
+    required int hiddenOperations,
+  }) {
+    return GestureDetector(
+      onTap: onTogglePinnedOperations,
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: folded
+                  ? '▸ + $hiddenGroups more ($hiddenOperations running) '
+                  : '▾ ',
+              style: TextStyle(
+                color: st.debugLevel,
+                fontWeight: FontWeight.dim,
+              ),
+            ),
+            TextSpan(
+              text: folded ? 'Expand' : 'Collapse',
+              style: TextStyle(color: st.brightText),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

@@ -716,6 +716,61 @@ void main() {
     });
   });
 
+  group('Given streams open on five endpoints', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpOperations([
+        for (var i = 0; i < 5; i++) ...['STREAM e$i.watch', 'STREAM e$i.watch'],
+      ]);
+    });
+
+    test('then the first two are pinned and the rest fold into one row', () {
+      final ts = tester.terminalState;
+
+      expect(ts.containsText('STREAM e0.watch'), isTrue);
+      expect(ts.containsText('STREAM e1.watch'), isTrue);
+      expect(ts.containsText('STREAM e2.watch'), isFalse);
+      expect(ts.containsText('\u25b8 + 3 more (6 running) Expand'), isTrue);
+      // The fold row takes the third and last slot below the rule, flush
+      // left with the spinner column.
+      final first = ts.findText('STREAM e0.watch').first;
+      final fold = ts.findText('▸').first;
+      expect(fold.y, first.y + 2);
+      expect(fold.x, first.x - 2);
+    });
+
+    test('when the fold row is clicked then every group shows', () async {
+      final expand = tester.terminalState.findText('Expand').first;
+      await tester.tap(expand.x, expand.y);
+      await tester.pump();
+
+      final ts = tester.terminalState;
+      expect(ts.containsText('STREAM e2.watch'), isTrue);
+      expect(ts.containsText('STREAM e4.watch'), isTrue);
+      expect(ts.containsText('\u25be Collapse'), isTrue);
+      expect(ts.containsText('Expand'), isFalse);
+      expect(ts.containsText('server-log-line'), isTrue);
+
+      final collapse = ts.findText('Collapse').first;
+      await tester.tap(collapse.x, collapse.y);
+      await tester.pump();
+
+      expect(tester.terminalState.containsText('STREAM e2.watch'), isFalse);
+      expect(tester.terminalState.containsText('Expand'), isTrue);
+    });
+  });
+
+  test('Given streams open on three endpoints then none fold', () async {
+    final tester = await _pumpOperations([
+      for (var i = 0; i < 3; i++) 'STREAM e$i.watch',
+    ]);
+    final ts = tester.terminalState;
+
+    expect(ts.containsText('STREAM e2.watch'), isTrue);
+    expect(ts.containsText('Expand'), isFalse);
+  });
+
   test(
     'Given one active operation then it is pinned without a count',
     () async {
