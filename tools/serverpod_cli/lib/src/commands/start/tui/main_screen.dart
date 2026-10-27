@@ -301,35 +301,37 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  /// The most recently started operation under a rule, with a muted count of
-  /// the rest. A single pinned row keeps the log pane its full height however
-  /// many streams a client holds open.
+  /// One row per distinct operation label under a rule, with a muted count
+  /// of how many share it.
   Component _buildPinnedOperations(ServerpodThemeData st) {
-    final operations = state.activeOperations.values;
-    final newest = operations.last;
-    final hidden = operations.length - 1;
+    final groups = <String, (TrackedOperation, int)>{};
+    for (final op in state.activeOperations.values) {
+      final (first, count) = groups[op.label] ?? (op, 0);
+      groups[op.label] = (first, count + 1);
+    }
 
     return Column(
       children: [
         Divider(color: st.subtleDivider, indent: -1, endIndent: -1),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 1),
-          child: Row(
-            children: [
-              Expanded(
-                child: TrackedOperationWidget(
-                  key: ValueKey(newest.id),
-                  operation: newest,
+        for (final (first, count) in groups.values)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TrackedOperationWidget(
+                    key: ValueKey(first.label),
+                    operation: first,
+                  ),
                 ),
-              ),
-              if (hidden > 0)
-                Text(
-                  '+ $hidden more',
-                  style: const TextStyle(fontWeight: FontWeight.dim),
-                ),
-            ],
+                if (count > 1)
+                  Text(
+                    '×$count',
+                    style: const TextStyle(fontWeight: FontWeight.dim),
+                  ),
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

@@ -11,20 +11,19 @@ import 'package:test/test.dart';
 /// title label does not render it, so its presence proves a real tab bar.
 const _tabBarRule = '━';
 
-/// Adds [count] active operations labelled `op-0`..`op-N` to [state], in
-/// start order.
-void _addOperations(ServerWatchState state, int count) {
-  for (var i = 0; i < count; i++) {
+/// Adds one active operation per entry of [labels] to [state], in order.
+void _addOperations(ServerWatchState state, List<String> labels) {
+  for (final (i, label) in labels.indexed) {
     state.activeOperations['op-$i'] = TrackedOperation(
       id: 'op-$i',
-      label: 'op-$i',
+      label: label,
     );
   }
 }
 
-/// Builds a state with a server log line and [operations] active operations,
-/// then pumps it in the merged layout.
-Future<NoctermTester> _pumpOperations(int operations) async {
+/// Builds a state with a server log line and an active operation per entry
+/// of [operations], then pumps it in the merged layout.
+Future<NoctermTester> _pumpOperations(List<String> operations) async {
   final state = ServerWatchState();
   state.showSplash = false;
   state.serverReady = true;
@@ -41,8 +40,12 @@ Future<NoctermTester> _pumpOperations(int operations) async {
 }
 
 /// Builds a state with a server log line and two companion app tabs (Admin
-/// focused), plus [operations] active operations, then pumps it at [size].
-Future<NoctermTester> _pumpAppsLayout(Size size, {int operations = 0}) async {
+/// focused), plus an active operation per entry of [operations], then pumps
+/// it at [size].
+Future<NoctermTester> _pumpAppsLayout(
+  Size size, {
+  List<String> operations = const [],
+}) async {
   final state = ServerWatchState();
   _addOperations(state, operations);
   state.showSplash = false;
@@ -676,69 +679,71 @@ void main() {
     },
   );
 
-  group('Given twelve active operations', () {
+  group('Given twelve streams open on two endpoints', () {
     late NoctermTester tester;
 
     setUp(() async {
-      tester = await _pumpOperations(12);
+      tester = await _pumpOperations([
+        for (var i = 0; i < 8; i++) 'STREAM board.watchTasks',
+        for (var i = 0; i < 4; i++) 'STREAM drive.watch',
+      ]);
     });
 
-    test('then only the newest operation is pinned, with a muted count', () {
+    test('then each endpoint is pinned once with a muted count', () {
       final ts = tester.terminalState;
 
-      expect(ts.containsText('op-11'), isTrue);
-      expect(ts.containsText('op-10'), isFalse);
-      expect(ts.containsText('+ 11 more'), isTrue);
+      final tasks = ts.findText('STREAM board.watchTasks');
+      final drive = ts.findText('STREAM drive.watch');
+      expect(tasks, hasLength(1));
+      expect(drive, hasLength(1));
+      expect(tasks.first.y, lessThan(drive.first.y));
+      expect(ts.containsText('×8'), isTrue);
+      expect(ts.containsText('×4'), isTrue);
     });
 
     test('then the log pane keeps its content', () {
       final ts = tester.terminalState;
 
-      // One pinned row instead of twelve: the log pane is not squeezed out.
       expect(ts.containsText('server-log-line'), isTrue);
     });
 
-    test('then a rule above the pinned row tees into the outer border', () {
+    test('then a rule above the pinned rows tees into the outer border', () {
       final ts = tester.terminalState;
 
-      final ruleRow = ts.findText('op-11').first.y - 1;
+      final ruleRow = ts.findText('STREAM board.watchTasks').first.y - 1;
       expect(ts.getTextAt(0, ruleRow, length: 1), '├');
       expect(ts.getTextAt(99, ruleRow, length: 1), '┤');
     });
   });
 
-  group('Given one active operation', () {
-    late NoctermTester tester;
-
-    setUp(() async {
-      tester = await _pumpOperations(1);
-    });
-
-    test('then it is pinned without a count', () {
+  test(
+    'Given one active operation then it is pinned without a count',
+    () async {
+      final tester = await _pumpOperations(['Hot reloading']);
       final ts = tester.terminalState;
 
-      expect(ts.containsText('op-0'), isTrue);
-      expect(ts.containsText('more'), isFalse);
-    });
-  });
+      expect(ts.containsText('Hot reloading'), isTrue);
+      expect(ts.containsText('×'), isFalse);
+    },
+  );
 
-  group('Given two active operations in the side-by-side layout', () {
-    late NoctermTester tester;
-
-    setUp(() async {
-      tester = await _pumpAppsLayout(const Size(200, 30), operations: 2);
-    });
-
-    test('then the pinned row spans both panes below the rule', () {
+  test(
+    'Given two distinct operations in the side-by-side layout '
+    'then the pinned rows span both panes below the rule',
+    () async {
+      final tester = await _pumpAppsLayout(
+        const Size(200, 30),
+        operations: ['STREAM drive.watch', 'Hot reloading'],
+      );
       final ts = tester.terminalState;
 
-      final ruleRow = ts.findText('op-1').first.y - 1;
+      final ruleRow = ts.findText('STREAM drive.watch').first.y - 1;
       expect(ts.getTextAt(0, ruleRow, length: 1), '├');
       expect(ts.getTextAt(199, ruleRow, length: 1), '┤');
       // The pane divider ends above the rule rather than crossing it.
       final dividerX = ts.findText('┬').first.x;
       expect(ts.getTextAt(dividerX, ruleRow, length: 1), '─');
-      expect(ts.containsText('+ 1 more'), isTrue);
-    });
-  });
+      expect(ts.containsText('Hot reloading'), isTrue);
+    },
+  );
 }
