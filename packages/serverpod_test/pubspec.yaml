@@ -16,7 +16,11 @@ resolution: workspace
 dependencies:
   meta: ^1.15.0
   path: ^1.8.3
-  postgres: ^3.5.16
+  # Draft integration for #5916; use a hosted release before publishing.
+  postgres:
+    git:
+      url: https://github.com/marcelomendoncasoares/postgresql-dart.git
+      ref: 79560a928c6b9307e89fe52f368f68dfce01eb79
   serverpod: 4.1.0-rc.1
   serverpod_database: 4.1.0-rc.1
   serverpod_lints: 4.1.0-rc.1
