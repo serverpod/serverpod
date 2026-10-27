@@ -389,6 +389,10 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
             _rebuild();
             _keepToggledEntryInView(entry);
           },
+          onTogglePinnedOperations: () {
+            state.expandPinnedOperations = !state.expandPinnedOperations;
+            _rebuild();
+          },
         ),
       ),
     );
