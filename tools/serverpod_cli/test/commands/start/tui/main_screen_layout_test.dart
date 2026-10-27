@@ -11,10 +11,40 @@ import 'package:test/test.dart';
 /// title label does not render it, so its presence proves a real tab bar.
 const _tabBarRule = '━';
 
-/// Builds a state with a server log line and two companion app tabs (Admin
-/// focused), then pumps it at [size].
-Future<NoctermTester> _pumpAppsLayout(Size size) async {
+/// Adds [count] active operations labelled `op-0`..`op-N` to [state], in
+/// start order.
+void _addOperations(ServerWatchState state, int count) {
+  for (var i = 0; i < count; i++) {
+    state.activeOperations['op-$i'] = TrackedOperation(
+      id: 'op-$i',
+      label: 'op-$i',
+    );
+  }
+}
+
+/// Builds a state with a server log line and [operations] active operations,
+/// then pumps it in the merged layout.
+Future<NoctermTester> _pumpOperations(int operations) async {
   final state = ServerWatchState();
+  state.showSplash = false;
+  state.serverReady = true;
+  state.logHistory.add(
+    LogEntry(
+      time: DateTime(2026),
+      level: LogLevel.info,
+      message: 'server-log-line',
+      scope: LogScope.root('server'),
+    ),
+  );
+  _addOperations(state, operations);
+  return _pump(state, const Size(100, 24));
+}
+
+/// Builds a state with a server log line and two companion app tabs (Admin
+/// focused), plus [operations] active operations, then pumps it at [size].
+Future<NoctermTester> _pumpAppsLayout(Size size, {int operations = 0}) async {
+  final state = ServerWatchState();
+  _addOperations(state, operations);
   state.showSplash = false;
   state.serverReady = true;
   state.logHistory.add(
@@ -645,4 +675,70 @@ void main() {
       );
     },
   );
+
+  group('Given twelve active operations', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpOperations(12);
+    });
+
+    test('then only the newest operation is pinned, with a muted count', () {
+      final ts = tester.terminalState;
+
+      expect(ts.containsText('op-11'), isTrue);
+      expect(ts.containsText('op-10'), isFalse);
+      expect(ts.containsText('+ 11 more'), isTrue);
+    });
+
+    test('then the log pane keeps its content', () {
+      final ts = tester.terminalState;
+
+      // One pinned row instead of twelve: the log pane is not squeezed out.
+      expect(ts.containsText('server-log-line'), isTrue);
+    });
+
+    test('then a rule above the pinned row tees into the outer border', () {
+      final ts = tester.terminalState;
+
+      final ruleRow = ts.findText('op-11').first.y - 1;
+      expect(ts.getTextAt(0, ruleRow, length: 1), '├');
+      expect(ts.getTextAt(99, ruleRow, length: 1), '┤');
+    });
+  });
+
+  group('Given one active operation', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpOperations(1);
+    });
+
+    test('then it is pinned without a count', () {
+      final ts = tester.terminalState;
+
+      expect(ts.containsText('op-0'), isTrue);
+      expect(ts.containsText('more'), isFalse);
+    });
+  });
+
+  group('Given two active operations in the side-by-side layout', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpAppsLayout(const Size(200, 30), operations: 2);
+    });
+
+    test('then the pinned row spans both panes below the rule', () {
+      final ts = tester.terminalState;
+
+      final ruleRow = ts.findText('op-1').first.y - 1;
+      expect(ts.getTextAt(0, ruleRow, length: 1), '├');
+      expect(ts.getTextAt(199, ruleRow, length: 1), '┤');
+      // The pane divider ends above the rule rather than crossing it.
+      final dividerX = ts.findText('┬').first.x;
+      expect(ts.getTextAt(dividerX, ruleRow, length: 1), '─');
+      expect(ts.containsText('+ 1 more'), isTrue);
+    });
+  });
 }

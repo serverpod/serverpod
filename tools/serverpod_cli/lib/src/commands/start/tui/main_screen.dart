@@ -131,15 +131,7 @@ class MainScreen extends StatelessComponent {
                                         : _buildMergedColumn(st),
                                   ),
                                   if (state.activeOperations.isNotEmpty)
-                                    ...state.activeOperations.values.map(
-                                      (op) => Padding(
-                                        padding: const EdgeInsets.only(left: 1),
-                                        child: TrackedOperationWidget(
-                                          key: ValueKey(op.id),
-                                          operation: op,
-                                        ),
-                                      ),
-                                    ),
+                                    _buildPinnedOperations(st),
                                   if (state.alert case final alert?) ...[
                                     const SizedBox(height: 1),
                                     Divider(
@@ -304,6 +296,39 @@ class MainScreen extends StatelessComponent {
         Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: paneLayer,
+        ),
+      ],
+    );
+  }
+
+  /// The most recently started operation under a rule, with a muted count of
+  /// the rest. A single pinned row keeps the log pane its full height however
+  /// many streams a client holds open.
+  Component _buildPinnedOperations(ServerpodThemeData st) {
+    final operations = state.activeOperations.values;
+    final newest = operations.last;
+    final hidden = operations.length - 1;
+
+    return Column(
+      children: [
+        Divider(color: st.subtleDivider, indent: -1, endIndent: -1),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 1),
+          child: Row(
+            children: [
+              Expanded(
+                child: TrackedOperationWidget(
+                  key: ValueKey(newest.id),
+                  operation: newest,
+                ),
+              ),
+              if (hidden > 0)
+                Text(
+                  '+ $hidden more',
+                  style: const TextStyle(fontWeight: FontWeight.dim),
+                ),
+            ],
+          ),
         ),
       ],
     );
