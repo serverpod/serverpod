@@ -44,7 +44,7 @@ Future<void> startPostgres({
       binaryCache: binaryCache,
     ),
   );
-  File('$root/ready.json').writeAsStringSync(
-    jsonEncode({'port': postgres.endpoint.port}),
-  );
+  File('$root/ready.json.tmp')
+    ..writeAsStringSync(jsonEncode({'port': postgres.endpoint.port}))
+    ..renameSync('$root/ready.json');
 }

@@ -232,6 +232,7 @@ void main() {
       owner.stdin.writeln('exit');
       expect(await owner.exitCode, 0);
       await _waitForPortRelease(port);
+      await _waitUntil(() => !borrowed.handle.isRunning);
       expect(borrowed.handle.isRunning, isFalse);
       await expectLater(selectOne(borrowed.handle.endpoint), throwsException);
       final replacement = await EmbeddedPostgres.startOrAttach(options);

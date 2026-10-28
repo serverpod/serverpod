@@ -136,6 +136,10 @@ if [ "$(process_identity "$postmaster")" != "$postmaster_identity" ]; then
   printf 'Postmaster exited or changed identity before watchdog startup.\n' >&2
   exit 1
 fi
+if ! /bin/sleep 0; then
+  printf 'The parent-exit watchdog requires /bin/sleep.\n' >&2
+  exit 1
+fi
 printf 'ready\n'
 exec </dev/null >/dev/null 2>&1
 
@@ -149,7 +153,7 @@ while [ "$(process_identity "$postmaster")" = "$postmaster_identity" ]; do
     fi
     exit
   fi
-  /bin/sleep 1
+  /bin/sleep 1 || exit 1
 done
 ''';
 
