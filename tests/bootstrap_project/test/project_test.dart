@@ -1291,10 +1291,6 @@ void main() async {
             projectName,
             "${projectName}_server",
           ),
-          environment: {
-            ServerpodEnv.databasePort.envVariable:
-                '${await freeLoopbackPort()}',
-          },
         );
 
         await expectLater(testProcess.exitCode, completion(0));
