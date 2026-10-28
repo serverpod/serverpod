@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/upgrade/cli_installation.dart';
 import 'package:serverpod_cli/src/doctor/doctor_check.dart';
@@ -25,7 +27,66 @@ CliInstallation _installation({
   pathResolvesToManaged: pathResolvesToManaged,
 );
 
+/// Lays out what `dart install serverpod_cli@[version]` leaves behind in a
+/// temp directory, and returns the bin entry it writes.
+String _createManagedInstall(final String version) {
+  final root = Directory.systemTemp.createTempSync('serverpod_install');
+  addTearDown(() => root.deleteSync(recursive: true));
+
+  final bundleBin = Directory(
+    p.join(
+      root.path,
+      'app-bundles',
+      'serverpod_cli',
+      'hosted',
+      version,
+      'bundle',
+      'bin',
+    ),
+  )..createSync(recursive: true);
+  final binDir = Directory(p.join(root.path, 'bin'))..createSync();
+
+  if (Platform.isWindows) {
+    final target = p.join(bundleBin.path, 'serverpod.exe');
+    File(target).writeAsStringSync('');
+    final entry = p.join(binDir.path, 'serverpod.bat');
+    File(entry).writeAsStringSync(
+      '@ECHO OFF\r\n'
+      'REM target_file_path_marker\r\n'
+      '"$target" %*\r\n'
+      'EXIT /B %ERRORLEVEL%\r\n',
+    );
+    return entry;
+  }
+
+  final target = p.join(bundleBin.path, 'serverpod');
+  File(target).writeAsStringSync('');
+  final entry = p.join(binDir.path, 'serverpod');
+  Link(entry).createSync(target);
+  return entry;
+}
+
 void main() {
+  test(
+    'Given the bin entry dart install wrote, '
+    'when reading the installed version, then it comes from the bundle path',
+    () {
+      final entry = _createManagedInstall('4.0.4');
+
+      expect(ServerpodCliCheck.installedVersion(entry), '4.0.4');
+    },
+  );
+
+  test(
+    'Given no bin entry, when reading the installed version, then it is null',
+    () {
+      expect(
+        ServerpodCliCheck.installedVersion(p.join(_managed, 'missing')),
+        isNull,
+      );
+    },
+  );
+
   test(
     'Given no serverpod on PATH and none installed, '
     'when evaluating, then the status is missing with an install remedy',
@@ -82,7 +143,7 @@ void main() {
 
   test(
     'Given PATH selecting the managed install, '
-    'when evaluating, then the status is ready',
+    'when evaluating, then the status is ready with the version it reported',
     () {
       final result = ServerpodCliCheck.evaluate(
         _installation(
@@ -90,11 +151,31 @@ void main() {
           onPath: _managed,
           pathResolvesToManaged: true,
         ),
+        version: '4.0.4',
       );
 
       expect(result.status, DoctorStatus.ready);
-      expect(result.version, isNotNull);
+      expect(result.version, '4.0.4');
       expect(result.path, _managed);
+      expect(result.message, contains('Serverpod 4.0.4'));
+    },
+  );
+
+  test(
+    'Given a managed install off PATH while another CLI runs the check, '
+    'when evaluating, then the status is misconfigured, not missing',
+    () {
+      final result = ServerpodCliCheck.evaluate(
+        _installation(
+          kind: CliInstallationKind.source,
+          onPath: null,
+          pathResolvesToManaged: false,
+        ),
+        managedExecutableExists: true,
+      );
+
+      expect(result.status, DoctorStatus.misconfigured);
+      expect(result.remedy, contains(p.dirname(_managed)));
     },
   );
 }
