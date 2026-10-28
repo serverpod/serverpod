@@ -20,6 +20,8 @@ class ResolvedEmbeddedPostgres {
   final EmbeddedPostgres handle;
 
   /// Whether this call launched the postmaster, and so owns [stop].
+  /// An attached handle borrows the launching OS process's lifetime; attaching
+  /// does not keep a non-detached postmaster alive after its launcher exits.
   final bool launched;
 
   /// Creates a [ResolvedEmbeddedPostgres].

@@ -16,14 +16,24 @@ Future<void> main(List<String> args) async {
       '${Platform.environment['PG_TEST_ROOT']}/isolate_exited',
     ).writeAsStringSync('');
   } else {
-    await startPostgres(detach: args.single == 'detach');
+    await startPostgres(
+      detach: args.single == 'detach',
+      binaryCache: args.single == 'cache-path'
+          ? Directory(
+              '${EmbeddedPostgres.defaultBinaryCache().path.replaceAll(r'\', '/')}/.',
+            )
+          : null,
+    );
   }
 
   await stdin.first;
   exit(0);
 }
 
-Future<void> startPostgres({bool detach = false}) async {
+Future<void> startPostgres({
+  bool detach = false,
+  Directory? binaryCache,
+}) async {
   final root = Platform.environment['PG_TEST_ROOT']!;
   final postgres = await EmbeddedPostgres.start(
     EmbeddedPostgresOptions(
@@ -31,6 +41,7 @@ Future<void> startPostgres({bool detach = false}) async {
       databaseName: 'lifetime_test',
       transport: const TcpTransport(password: 'test-password'),
       detach: detach,
+      binaryCache: binaryCache,
     ),
   );
   File('$root/ready.json').writeAsStringSync(

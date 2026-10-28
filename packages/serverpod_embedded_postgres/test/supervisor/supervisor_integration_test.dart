@@ -73,9 +73,10 @@ void main() {
           isA<CrashedException>()
               .having((error) => error.exitCode, 'exitCode', isNot(0))
               .having(
-                (error) => error.logTail,
+                (error) =>
+                    error.logTail.map((line) => line.replaceAll(r'\', '/')),
                 'logTail',
-                contains(contains(missingData.path)),
+                contains(contains(missingData.path.replaceAll(r'\', '/'))),
               ),
         ),
       );

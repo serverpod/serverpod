@@ -92,7 +92,9 @@ class Supervisor implements SupervisedProcess {
     required File logFile,
     required bool detach,
   }) async {
-    var executable = p.absolute(binExecutable(installDir, 'postgres'));
+    var executable = p.normalize(
+      p.absolute(binExecutable(installDir, 'postgres')),
+    );
 
     _rotateLog(logFile);
     var ring = LogBuffer();
@@ -168,6 +170,10 @@ class Supervisor implements SupervisedProcess {
         } catch (_) {
           // A postmaster that exits before the watchdog can observe it still
           // needs its PostgreSQL error (and log), not a watchdog setup error.
+          await _waitWithDeadline(
+            supervisor._exitCompleter.future,
+            const Duration(seconds: 1),
+          );
           await _throwIfCrashed(supervisor);
           rethrow;
         }

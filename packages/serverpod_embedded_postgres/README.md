@@ -113,8 +113,16 @@ select a server project explicitly.
 By default, an independent watchdog stops PostgreSQL when its owning Dart VM
 exits, including normal test completion or abrupt termination. The watchdog
 tracks the OS process, so disposing one test isolate leaves the shared database
-available to other suites in the same VM. It uses `/bin/sh` and `ps` on POSIX
-and PowerShell on Windows.
+available to other suites in the same VM. It uses `/bin/sh` and `/proc` on Linux,
+`/bin/sh` and the system `ps` on macOS, and PowerShell on Windows. Linux process
+identity uses start ticks since boot, so wall-clock corrections do not affect it.
+If the watchdog cannot start, database startup fails with an error rather than
+leaving an unsupervised postmaster.
+
+Attaching from another OS process borrows the launching process's database;
+it does not extend its lifetime. To keep it available after the launcher exits,
+the launcher must use `detach: true`. This also applies to separate concurrent
+`dart test` invocations or test suites running in separate OS processes.
 
 Set `detach: true` to keep the postmaster alive after your Dart VM
 exits, then reconnect from a fresh process:

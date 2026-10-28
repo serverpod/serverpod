@@ -15,6 +15,8 @@ import 'options.dart';
 
 /// A managed PostgreSQL postmaster running as a child process of this Dart
 /// VM (or detached, if [EmbeddedPostgresOptions.detach] was set).
+/// Attached handles borrow the launching process's lifetime; they do not
+/// keep a non-detached postmaster running after its launcher exits.
 ///
 /// One Dart call boots a real PG instance, persistent across restarts, with
 /// no Docker dependency and no fixed TCP port allocation. See the package
@@ -41,7 +43,9 @@ abstract class EmbeddedPostgres {
   /// [EmbeddedStartResult.launched] reports which path was taken, so callers
   /// know whether they own the postmaster's lifecycle. Only the launcher
   /// should [stop] it; an attached client calling [stop] would tear down a
-  /// postmaster another process owns.
+  /// postmaster another process owns. Attaching does not extend that lifetime:
+  /// unless the launcher used [EmbeddedPostgresOptions.detach], its exit stops
+  /// the database even while other OS processes are attached.
   ///
   /// Rethrows [start]'s [PostmasterLockBusyException] if the live postmaster
   /// disappears before [attach] can latch onto it.
@@ -49,8 +53,10 @@ abstract class EmbeddedPostgres {
     EmbeddedPostgresOptions opts,
   ) => EmbeddedPostgresImpl.startOrAttach(opts);
 
-  /// Reattaches to a postmaster started with [EmbeddedPostgresOptions.detach]
-  /// set.
+  /// Attaches to a running postmaster without taking ownership of its lifetime.
+  ///
+  /// If the launcher did not set [EmbeddedPostgresOptions.detach], the database
+  /// stops when that launching OS process exits, even with attached clients.
   ///
   /// Only [tcpEndpoint] needs [password], which defaults to the one [start]
   /// generated. Throws [AttachException] when no live postmaster or state file
@@ -155,7 +161,9 @@ class EmbeddedStartResult {
   /// `true` if this call spawned the postmaster (so [handle] supervises it and
   /// [EmbeddedPostgres.stop] shuts it down); `false` if it attached to a
   /// postmaster another supervisor already owns (stopping [handle] would tear
-  /// down a process this caller does not own).
+  /// down a process this caller does not own). An attached handle does not
+  /// extend the postmaster's lifetime beyond its launcher unless the launcher
+  /// set [EmbeddedPostgresOptions.detach].
   final bool launched;
 
   /// Creates an [EmbeddedStartResult].
