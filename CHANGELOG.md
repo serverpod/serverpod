@@ -1,3 +1,18 @@
+## Unreleased
+
+- fix: Uses available ports for embedded test databases in new server and module projects.
+
+### Upgrade note
+
+For existing projects using embedded PostgreSQL in tests, set `database.port` to
+`0` in the server package's `config/test.yaml` and keep `database.dataPath` and the
+other database settings. Each project's test database can then use an available
+port, allowing tests from different projects to run concurrently. Updating the
+CLI or dependencies does not rewrite existing configuration files.
+
+For externally managed PostgreSQL, including Docker, keep the database's actual
+port instead. No change to `config/development.yaml` is required.
+
 ## 4.1.0-rc.1
 
 feat: Starts embedded PostgreSQL with both TCP and Unix socket support.
