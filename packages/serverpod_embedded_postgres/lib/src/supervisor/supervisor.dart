@@ -163,7 +163,14 @@ class Supervisor implements SupervisedProcess {
 
     try {
       if (!detach) {
-        await watchParentExit(identity);
+        try {
+          await watchParentExit(identity);
+        } catch (_) {
+          // A postmaster that exits before the watchdog can observe it still
+          // needs its PostgreSQL error (and log), not a watchdog setup error.
+          await _throwIfCrashed(supervisor);
+          rethrow;
+        }
 
         void hookSignal(ProcessSignal sig) {
           signalSubs.add(
@@ -284,24 +291,7 @@ Future<void> _waitForReady({
   var deadline = DateTime.now().add(timeout);
 
   while (DateTime.now().isBefore(deadline)) {
-    if (supervisor._exitCompleter.isCompleted) {
-      var code = await supervisor._exitCompleter.future;
-      // Race window: another postmaster grabbed the lock between our
-      // pre-spawn check and this child's startup. PG's own message is
-      // localised, so the grep is best-effort - but converging on a typed
-      // exception here keeps callers off the log text.
-      if (_logTailIndicatesLockBusy(supervisor.logTail)) {
-        throw const PostmasterLockBusyException(
-          'postmaster.pid was acquired by another process between '
-          'pre-spawn check and supervisor start.',
-        );
-      }
-      throw CrashedException(
-        'postgres exited with code $code before becoming ready.',
-        code,
-        supervisor.logTail,
-      );
-    }
+    await _throwIfCrashed(supervisor);
 
     if (_isReady(supervisor)) return;
 
@@ -312,6 +302,27 @@ Future<void> _waitForReady({
     'postgres did not become ready within ${timeout.inSeconds}s.',
     supervisor.logTail,
   );
+}
+
+Future<void> _throwIfCrashed(Supervisor supervisor) async {
+  if (supervisor._exitCompleter.isCompleted) {
+    var code = await supervisor._exitCompleter.future;
+    // Race window: another postmaster grabbed the lock between our
+    // pre-spawn check and this child's startup. PG's own message is
+    // localised, so the grep is best-effort - but converging on a typed
+    // exception here keeps callers off the log text.
+    if (_logTailIndicatesLockBusy(supervisor.logTail)) {
+      throw const PostmasterLockBusyException(
+        'postmaster.pid was acquired by another process between '
+        'pre-spawn check and supervisor start.',
+      );
+    }
+    throw CrashedException(
+      'postgres exited with code $code before becoming ready.',
+      code,
+      supervisor.logTail,
+    );
+  }
 }
 
 /// Postmaster readiness: scan the captured log tail for PG's own

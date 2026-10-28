@@ -51,6 +51,39 @@ void main() {
     if (dataRoot.existsSync()) dataRoot.deleteSync(recursive: true);
   });
 
+  test(
+    'Given a postmaster with a nonexistent data directory, '
+    'when it crashes before the parent watchdog starts, '
+    'then startup reports the PostgreSQL crash and its log.',
+    () async {
+      final missingData = Directory(p.join(dataRoot.path, 'missing'));
+
+      await expectLater(
+        Supervisor.start(
+          installDir: installDir,
+          dataDir: missingData,
+          runDir: runDir,
+          transport: const UnixTransport(),
+          startTimeout: const Duration(seconds: 30),
+          pidFile: pidFile,
+          logFile: logFile,
+          detach: false,
+        ),
+        throwsA(
+          isA<CrashedException>()
+              .having((error) => error.exitCode, 'exitCode', isNot(0))
+              .having(
+                (error) => error.logTail,
+                'logTail',
+                contains(contains(missingData.path)),
+              ),
+        ),
+      );
+
+      expect(pidFile.existsSync(), isFalse);
+    },
+  );
+
   // Tests below use UnixTransport. Skip on platforms without Dart UDS
   // support (Windows < Dart 3.11).
   var udsSkip = hasUnixSocketSupport()
