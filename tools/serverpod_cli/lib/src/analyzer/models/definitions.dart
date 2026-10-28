@@ -1,5 +1,6 @@
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/table_name_utils.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -282,8 +283,9 @@ final class ModelClassDefinition extends ClassDefinition {
   List<SerializableModelIndexDefinition> get inheritedIndexes {
     var inherited = parentClass?.indexesIncludingInherited ?? [];
     if (tableName == null) return inherited;
+    var prefix = unqualifiedTableName(tableName!);
     return [
-      for (var index in inherited) index.copyWithPrefix(tableName!),
+      for (var index in inherited) index.copyWithPrefix(prefix),
     ];
   }
 
@@ -539,7 +541,8 @@ class SerializableModelFieldDefinition {
     List<String> indexColumnNames,
   ) {
     const suffix = '__unique_idx';
-    var baseName = '${tableName}__${indexColumnNames.join('__')}';
+    var baseName =
+        '${unqualifiedTableName(tableName)}__${indexColumnNames.join('__')}';
 
     return truncateIdentifier(
           baseName,

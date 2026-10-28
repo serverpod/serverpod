@@ -96,4 +96,29 @@ void main() {
       });
     },
   );
+
+  test(
+    'Given a class with a schema-qualified table on both sides when '
+    'generating client code then the table class keeps the qualified name.',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withTableName('auth.$tableName')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      expect(
+        codeMap[expectedFilePath],
+        contains("tableName: 'auth.$tableName'"),
+      );
+    },
+  );
 }
