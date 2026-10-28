@@ -58,7 +58,12 @@ class EmbeddedPostgresOptions {
   final Duration startTimeout;
 
   /// If `true`, the postmaster survives parent process exit (no shutdown
-  /// hooks registered). Reattach later via [EmbeddedPostgres.attach].
+  /// hooks or parent watchdog registered). Reattach later via
+  /// [EmbeddedPostgres.attach].
+  ///
+  /// Otherwise an independent watchdog stops the postmaster when the owning
+  /// OS process exits, including normal test completion and abrupt termination.
+  /// Disposing the launching isolate does not stop a shared postmaster.
   ///
   /// Use case: long-lived dev DB across many short `dart test` invocations.
   /// Default: `false`.

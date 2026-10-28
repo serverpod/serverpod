@@ -110,6 +110,12 @@ select a server project explicitly.
 
 ## Detach + attach for cross-VM dev DBs
 
+By default, an independent watchdog stops PostgreSQL when its owning Dart VM
+exits, including normal test completion or abrupt termination. The watchdog
+tracks the OS process, so disposing one test isolate leaves the shared database
+available to other suites in the same VM. It uses `/bin/sh` and `ps` on POSIX
+and PowerShell on Windows.
+
 Set `detach: true` to keep the postmaster alive after your Dart VM
 exits, then reconnect from a fresh process:
 

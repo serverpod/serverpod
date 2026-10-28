@@ -8,6 +8,7 @@ import '../binary/executable.dart';
 import '../exceptions.dart';
 import '../transport.dart';
 import 'log_buffer.dart';
+import 'parent_exit_watchdog.dart';
 import 'pg_ctl.dart';
 import 'process_identity.dart';
 import 'supervised_process.dart';
@@ -91,7 +92,7 @@ class Supervisor implements SupervisedProcess {
     required File logFile,
     required bool detach,
   }) async {
-    var executable = binExecutable(installDir, 'postgres');
+    var executable = p.absolute(binExecutable(installDir, 'postgres'));
 
     _rotateLog(logFile);
     var ring = LogBuffer();
@@ -112,7 +113,7 @@ class Supervisor implements SupervisedProcess {
 
     var process = await Process.start(
       executable,
-      ['-D', dataDir.path],
+      ['-D', dataDir.absolute.path],
       mode: ProcessStartMode.normal,
       environment: environment,
     );
@@ -160,23 +161,25 @@ class Supervisor implements SupervisedProcess {
       signalSubs: signalSubs,
     );
 
-    if (!detach) {
-      void hookSignal(ProcessSignal sig) {
-        signalSubs.add(
-          sig.watch().listen((_) async {
-            await supervisor.stop();
-            exit(128 + (sig == ProcessSignal.sigint ? 2 : 15));
-          }),
-        );
-      }
-
-      hookSignal(ProcessSignal.sigint);
-      if (!Platform.isWindows) {
-        hookSignal(ProcessSignal.sigterm);
-      }
-    }
-
     try {
+      if (!detach) {
+        await watchParentExit(identity);
+
+        void hookSignal(ProcessSignal sig) {
+          signalSubs.add(
+            sig.watch().listen((_) async {
+              await supervisor.stop();
+              exit(128 + (sig == ProcessSignal.sigint ? 2 : 15));
+            }),
+          );
+        }
+
+        hookSignal(ProcessSignal.sigint);
+        if (!Platform.isWindows) {
+          hookSignal(ProcessSignal.sigterm);
+        }
+      }
+
       await _waitForReady(supervisor: supervisor, timeout: startTimeout);
     } catch (_) {
       // Best-effort cleanup so a failed start doesn't leave a postmaster
