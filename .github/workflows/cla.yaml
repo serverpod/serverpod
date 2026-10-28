@@ -7,30 +7,18 @@ on:
 
 jobs:
   CLAssistant:
+    if: github.repository == 'serverpod/serverpod' # skip on forks
     runs-on: ubuntu-latest
     steps:
       - name: "Serverpod CLA Assistant"
         if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'
-        # Beta Release
-        uses: cla-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.1.3-beta
+        uses: contributor-assistant/github-action@v2.6.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # the below token should have repo scope and must be manually added by you in the repository's secret
           PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         with:
           path-to-signatures: 'signatures/version1/cla.json'
-          path-to-document: 'https://github.com/serverpod/serverpod/blob/master/CLA.md' # e.g. a CLA or a DCO document
-          # branch should not be protected
-          branch: 'main'
-          allowlist: #user1,bot*
-
-         #below are the optional inputs - If the optional inputs are not given, then default values will be taken
+          path-to-document: 'https://github.com/serverpod/serverpod/blob/master/CLA.md'
+          branch: 'main' # on serverpod/cla_signatures
           remote-organization-name: serverpod
           remote-repository-name:  cla_signatures
-          #create-file-commit-message: 'For example: Creating file for storing CLA Signatures'
-          #signed-commit-message: 'For example: $contributorName has signed the CLA in #$pullRequestNo'
-          #custom-notsigned-prcomment: 'pull request comment with Introductory message to ask new contributors to sign'
-          #custom-pr-sign-comment: 'The signature to be committed in order to sign the CLA'
-          #custom-allsigned-prcomment: 'pull request comment when all contributors has signed, defaults to **CLA Assistant Lite bot** All Contributors have signed the CLA.'
-          #lock-pullrequest-aftermerge: false - if you don't want this bot to automatically lock the pull request after merging (default - true)
-          #use-dco-flag: true - If you are using DCO instead of CLA
