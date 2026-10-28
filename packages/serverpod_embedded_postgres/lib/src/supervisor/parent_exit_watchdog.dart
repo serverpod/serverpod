@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'pg_ctl.dart';
 import 'process_identity.dart';
 
@@ -43,17 +45,38 @@ Future<void> watchParentExit(ProcessIdentity identity) async {
     'SERVERPOD_WATCH_PG_CTL': pgCtlForPostgresExecutable(
       identity.executable,
     ).path,
+    if (Platform.isWindows)
+      'SERVERPOD_WATCH_SCRIPT': base64.encode([
+        for (final unit in _windowsWatchdog.codeUnits) ...[
+          unit & 0xff,
+          unit >> 8,
+        ],
+      ]),
   };
 
   final watcher = await Process.start(
-    Platform.isWindows ? 'powershell.exe' : '/bin/sh',
     Platform.isWindows
-        ? ['-NoProfile', '-NonInteractive', '-Command', _windowsWatchdog]
+        ? p.join(
+            Platform.environment['SystemRoot'] ?? r'C:\Windows',
+            'System32',
+            'WindowsPowerShell',
+            'v1.0',
+            'powershell.exe',
+          )
+        : '/bin/sh',
+    Platform.isWindows
+        ? ['-NoProfile', '-NonInteractive', '-Command', _windowsBootstrap]
         : ['-c', _posixWatchdog],
     environment: environment,
     // Survive both isolate disposal and terminal signals. No Dart executable
     // or package sources are needed, including in an AOT-compiled application.
-    mode: ProcessStartMode.detachedWithStdio,
+    // Windows PowerShell cannot initialize with DETACHED_PROCESS. A short-lived
+    // bootstrap uses CREATE_NO_WINDOW instead, then exits after its independent
+    // child is ready. Keeping the watcher itself in normal mode would keep the
+    // owning VM alive through Dart's process-exit pipe.
+    mode: Platform.isWindows
+        ? ProcessStartMode.normal
+        : ProcessStartMode.detachedWithStdio,
   );
 
   final errors = watcher.stderr.transform(utf8.decoder).join();
@@ -62,7 +85,7 @@ Future<void> watchParentExit(ProcessIdentity identity) async {
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .first
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 20));
     if (ready != 'ready') {
       throw StateError('Unexpected parent-exit watchdog response: $ready');
     }
@@ -155,6 +178,35 @@ while [ "$(process_identity "$postmaster")" = "$postmaster_identity" ]; do
   fi
   /bin/sleep 1 || exit 1
 done
+''';
+
+const _windowsBootstrap = r'''
+$ErrorActionPreference = 'Stop'
+$info = New-Object System.Diagnostics.ProcessStartInfo
+$info.FileName = "$PSHOME\powershell.exe"
+$info.Arguments = '-NoProfile -NonInteractive -EncodedCommand ' + $env:SERVERPOD_WATCH_SCRIPT
+$info.UseShellExecute = $false
+$info.CreateNoWindow = $true
+$info.RedirectStandardOutput = $true
+$info.RedirectStandardError = $true
+$watchdog = [Diagnostics.Process]::Start($info)
+try {
+  $errors = $watchdog.StandardError.ReadToEndAsync()
+  $ready = $watchdog.StandardOutput.ReadLineAsync()
+  if (-not $ready.Wait(10000)) {
+    throw 'Timed out starting the parent-exit watchdog.'
+  }
+  if ($ready.Result -ne 'ready') {
+    if (-not $watchdog.HasExited) { $watchdog.Kill() }
+    throw ('Parent-exit watchdog failed: ' + $errors.GetAwaiter().GetResult())
+  }
+  [Console]::WriteLine('ready')
+} catch {
+  if (-not $watchdog.HasExited) { $watchdog.Kill() }
+  throw
+} finally {
+  $watchdog.Dispose()
+}
 ''';
 
 // Holding Process handles prevents PID reuse while the watchdog is watching.

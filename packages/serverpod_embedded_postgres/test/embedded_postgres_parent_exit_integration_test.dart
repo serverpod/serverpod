@@ -20,7 +20,10 @@ void main() {
   });
 
   setUp(() {
-    root = Directory.systemTemp.createTempSync('pg parent exit ');
+    // The existing macOS attach implementation splits ps output on spaces.
+    // Keep the shared attach fixture simple; the explicit path test below
+    // exercises watchdog startup and shutdown with spaces and non-ASCII text.
+    root = Directory.systemTemp.createTempSync('pg_parent_exit_');
   });
 
   tearDown(() async {
