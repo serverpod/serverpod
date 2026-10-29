@@ -134,6 +134,29 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<({_idt.ByteData challenge, _isc.UuidValue id})>,
         ],
         modules: const [_iacc.Protocol.new],
+        classNames: const [
+          'AnonymousAccountBlockedException',
+          'AnonymousAccountBlockedExceptionReason',
+          'EmailAccountOtpVerificationResult',
+          'EmailAccountLoginException',
+          'EmailAccountLoginExceptionReason',
+          'EmailAccountPasswordResetException',
+          'EmailAccountPasswordResetExceptionReason',
+          'EmailAccountRequestException',
+          'EmailAccountRequestExceptionReason',
+          'FacebookAccessTokenVerificationException',
+          'FirebaseEmailNotVerifiedException',
+          'FirebaseIdTokenVerificationException',
+          'GitHubAccessTokenVerificationException',
+          'GoogleIdTokenVerificationException',
+          'MicrosoftAccessTokenVerificationException',
+          'PasskeyChallengeExpiredException',
+          'PasskeyChallengeNotFoundException',
+          'PasskeyLoginRequest',
+          'PasskeyPublicKeyNotFoundException',
+          'PasskeyRegistrationRequest',
+        ],
+        classNamePrefix: 'serverpod_auth_idp.',
       );
 
   void registerHostProtocol(
@@ -143,13 +166,11 @@ class Protocol extends _isc.SerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth_idp.')) return className;
-    return className.substring(19);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth_idp.',
+      );
 
   @override
   T deserialize<T>(
@@ -157,8 +178,11 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth_idp.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -377,9 +401,10 @@ class Protocol extends _isc.SerializationManager
           )
           as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -585,6 +610,12 @@ class Protocol extends _isc.SerializationManager
     }
     if (dataClassName == 'PasskeyRegistrationRequest') {
       return deserialize<_izjoggd8.PasskeyRegistrationRequest>(data['data']);
+    }
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
+      return _iacc.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(20),
+      });
     }
     return super.deserializeByClassName(data);
   }

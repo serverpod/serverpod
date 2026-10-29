@@ -36,6 +36,8 @@ class Protocol extends _isd.DatabaseSerializationManager
           _iss.getType<dynamic>,
         ],
         modules: const [],
+        classNames: const ['SharedModuleTable'],
+        classNamePrefix: 'serverpod_test_shared_module.',
       );
 
   static List<_isd.TableDefinition> get targetTableDefinitions => [
@@ -78,14 +80,11 @@ class Protocol extends _isd.DatabaseSerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_test_shared_module.'))
-      return className;
-    return className.substring(29);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _iss.ProtocolDeserialization.normalizeClassName(
+        _iss.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_test_shared_module.',
+      );
 
   @override
   T deserialize<T>(
@@ -93,8 +92,11 @@ class Protocol extends _isd.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _iss.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _iss.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_test_shared_module.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({

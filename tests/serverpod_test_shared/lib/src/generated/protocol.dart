@@ -84,6 +84,21 @@ class Protocol extends _isd.DatabaseSerializationManager
           _iss.getType<List<_ilwf0zl1.SharedSealedAppException>>,
         ],
         modules: const [],
+        classNames: const [
+          'SharedContainer',
+          'DynamicOnShared',
+          'SharedEnum',
+          'SharedException',
+          'SharedExtendedAppException',
+          'SharedBaseAppException',
+          'SharedSubclass',
+          'SharedModel',
+          'SharedSealedChild',
+          'SharedNotFoundException',
+          'SharedValidationException',
+          'SharedObjectWithSealedException',
+          'SharedTableRecord',
+        ],
       );
 
   static List<_isd.TableDefinition> get targetTableDefinitions => [
@@ -139,11 +154,8 @@ class Protocol extends _isd.DatabaseSerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _iss.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -151,8 +163,8 @@ class Protocol extends _isd.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _iss.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({

@@ -88,6 +88,23 @@ class Protocol extends _is.DatabaseSerializationManager
           _is.getType<List<String>>,
         ],
         modules: const [_isp.Protocol.new],
+        classNames: const [
+          'AppleAuthInfo',
+          'AuthKey',
+          'AuthenticationFailReason',
+          'AuthenticationResponse',
+          'EmailAuth',
+          'EmailCreateAccountRequest',
+          'EmailFailedSignIn',
+          'EmailPasswordReset',
+          'EmailReset',
+          'GoogleRefreshToken',
+          'UserImage',
+          'UserInfo',
+          'UserInfoPublic',
+          'UserSettingsConfig',
+        ],
+        classNamePrefix: 'serverpod_auth.',
       );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
@@ -566,13 +583,11 @@ class Protocol extends _is.DatabaseSerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth.')) return className;
-    return className.substring(15);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth.',
+      );
 
   @override
   T deserialize<T>(
@@ -580,8 +595,11 @@ class Protocol extends _is.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -697,9 +715,10 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -827,8 +846,10 @@ class Protocol extends _is.DatabaseSerializationManager
       return deserialize<_i5rdiffu.UserSettingsConfig>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     return super.deserializeByClassName(data);
   }

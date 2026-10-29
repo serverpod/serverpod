@@ -34,13 +34,11 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<_itx02h2p.Example?>,
         ],
         modules: const [_i312scxx.Protocol.new],
+        classNames: const ['Example'],
       );
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -48,8 +46,8 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -69,9 +67,10 @@ class Protocol extends _isc.SerializationManager
     if (t == _isc.getType<_itx02h2p.Example?>()) {
       return (data != null ? _itx02h2p.Example.fromJson(data) : null) as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -121,8 +120,10 @@ class Protocol extends _isc.SerializationManager
       return deserialize<_itx02h2p.Example>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
-      data['className'] = dataClassName.substring(15);
-      return _i312scxx.Protocol().deserializeByClassName(data);
+      return _i312scxx.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(15),
+      });
     }
     return super.deserializeByClassName(data);
   }
