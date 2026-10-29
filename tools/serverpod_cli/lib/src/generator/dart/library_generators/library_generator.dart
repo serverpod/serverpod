@@ -167,9 +167,49 @@ class LibraryGenerator {
     final deserializationGenerator = ProtocolDeserializationGenerator(
       runtimeUrl: serverpodUrl(serverCode),
     );
+    final deserializationType = refer(
+      'ProtocolDeserialization',
+      serverpodUrl(serverCode),
+    );
+    final classNamePrefix = config.type != PackageType.server
+        ? '${config.name}.'
+        : null;
+
+    Expression normalizeClassName(Expression className) {
+      if (classNamePrefix == null) return className;
+
+      return deserializationType
+          .property('normalizeClassName')
+          .call(
+            [className],
+            {'prefix': literalString(classNamePrefix)},
+          );
+    }
 
     var nonModelStreamTypes = protocolDefinition
         .getNonModelOrPrimitiveStreamTypes(modules: config.modules);
+
+    final localClassDeserializers = [
+      for (var extraClass in config.extraClasses)
+        (
+          extraClass.className,
+          extraClass.reference(serverCode, config: config),
+        ),
+      for (var classInfo in unsealedModels)
+        (
+          classInfo.className,
+          refer(classInfo.className, TypeDefinition.getRef(classInfo)),
+        ),
+    ];
+    final streamClassDeserializers = [
+      for (var containerType in nonModelStreamTypes)
+        (
+          containerType.classNameWithGenericsForProtocol(
+            modules: config.modules,
+          ),
+          containerType.reference(serverCode, config: config),
+        ),
+    ];
 
     final shouldExtendDatabaseSerializationManager =
         serverCode ||
@@ -315,6 +355,11 @@ class LibraryGenerator {
       deserializationGenerator.metadata(
         types: deserializers.keys,
         modules: deserializationModules,
+        classNames: [
+          for (var (name, _) in localClassDeserializers) name,
+          for (var (name, _) in streamClassDeserializers) name,
+        ],
+        classNamePrefix: classNamePrefix,
       ),
     );
 
@@ -382,7 +427,6 @@ class LibraryGenerator {
           ..static = true
           ..name = 'getClassNameFromObjectJson'
           ..returns = refer('String?')
-          ..lambda = false
           ..requiredParameters.add(
             Parameter(
               (p) => p
@@ -390,19 +434,10 @@ class LibraryGenerator {
                 ..type = refer('dynamic'),
             ),
           )
-          ..body = Block.of([
-            const Code(
-              'if (data is! Map) return null;'
-              "final className = data['__className__'] as String?;",
-            ),
-            (config.type != PackageType.server)
-                ? Code(
-                    'if (className == null) return null;'
-                    "if (!className.startsWith('${config.name}.')) return className;"
-                    'return className.substring(${config.name.length + 1});',
-                  )
-                : const Code('return className;'),
-          ]),
+          ..lambda = true
+          ..body = normalizeClassName(
+            deserializationType.property('readClassName').call([refer('data')]),
+          ).code,
       ),
       Method(
         (m) => m
@@ -425,12 +460,22 @@ class LibraryGenerator {
             ),
           )
           ..body = Block.of([
+            const Code('t ??= T;'),
+            declareFinal('rawDataClassName')
+                .assign(
+                  deserializationType.property('readClassName').call([
+                    refer('data'),
+                  ]),
+                )
+                .statement,
+            declareFinal('dataClassName')
+                .assign(
+                  normalizeClassName(refer('rawDataClassName')),
+                )
+                .statement,
             Code.scope(
               (a) =>
                   '''
-            t ??= T;
-
-            final dataClassName = getClassNameFromObjectJson(data);
             if (dataClassName != null && dataClassName != getClassNameForType(t)) {
               try {
                 return deserializeByClassName({
@@ -455,7 +500,9 @@ class LibraryGenerator {
               ]),
             ),
             if (deserializationModules.isNotEmpty)
-              deserializationGenerator.moduleFallback(),
+              deserializationGenerator.moduleFallback(
+                className: refer('rawDataClassName'),
+              ),
             const Code('return super.deserialize<T>(data,t);'),
           ]),
       ),
@@ -473,21 +520,8 @@ class LibraryGenerator {
           )
           ..body = Block.of([
             const Code('return switch (type) {'),
-            if (unsealedModels.isNotEmpty ||
-                config.extraClasses.isNotEmpty) ...[
-              for (var extraClass in config.extraClasses)
-                Code.scope(
-                  (a) =>
-                      '${a(extraClass.reference(serverCode, config: config))} => '
-                      '\'${extraClass.className}\',',
-                ),
-              for (var classInfo in unsealedModels)
-                Code.scope(
-                  (a) =>
-                      '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))} => '
-                      '\'${classInfo.className}\',',
-                ),
-            ],
+            for (var (name, type) in localClassDeserializers)
+              Code.scope((a) => "${a(type)} => '$name',"),
             const Code('_ => null };'),
           ]),
       ),
@@ -514,32 +548,17 @@ class LibraryGenerator {
               return (data['__className__'] as String).replaceFirst('${config.name}.', '');
             }
           '''),
-            if (unsealedModels.isNotEmpty ||
-                config.extraClasses.isNotEmpty) ...[
+            if (localClassDeserializers.isNotEmpty) ...[
               const Code('switch (data) {'),
-              for (var extraClass in config.extraClasses)
-                Code.scope(
-                  (a) =>
-                      'case ${a(extraClass.reference(serverCode, config: config))}():'
-                      '  return \'${extraClass.className}\';',
-                ),
-              for (var classInfo in unsealedModels)
-                Code.scope(
-                  (a) =>
-                      'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}():'
-                      '  return \'${classInfo.className}\';',
-                ),
+              for (var (name, type) in localClassDeserializers)
+                Code.scope((a) => "case ${a(type)}():\nreturn '$name';"),
               const Code('}'),
             ],
-            for (var containerType in nonModelStreamTypes)
+            for (var (name, type) in streamClassDeserializers)
               Block.of([
-                const Code('if(data is '),
-                containerType.reference(serverCode, config: config).code,
-                const Code(') {'),
-                Code(
-                  'return \'${containerType.classNameWithGenericsForProtocol(modules: config.modules)}\';',
-                ),
-                const Code('}'),
+                const Code('if (data is '),
+                type.code,
+                Code(") {\nreturn '$name';\n}"),
               ]),
             if (config.type != PackageType.module)
               for (var module in config.modules)
@@ -587,26 +606,16 @@ class LibraryGenerator {
               'if (dataClassName is! String) {'
               'return super.deserializeByClassName(data);}',
             ),
-            for (var extraClass in config.extraClasses)
-              Code.scope(
-                (a) =>
-                    'if(dataClassName == \'${extraClass.className}\'){'
-                    'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}',
+            for (var (name, type) in localClassDeserializers)
+              _buildDeserializeByLocalClassName(name, type),
+            for (var module in config.modules)
+              _buildDeserializeByClassNameDelegation(
+                module.dartImportUrl(serverCode),
+                module.name,
               ),
-            for (var classInfo in unsealedModels)
-              Code.scope(
-                (a) =>
-                    'if(dataClassName == \'${classInfo.className}\'){'
-                    'return deserialize<${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}>(data[\'data\']);}',
-              ),
-            if (config.type != PackageType.module)
-              for (var module in config.modules)
-                _buildDeserializeByClassNameDelegation(
-                  module.dartImportUrl(serverCode),
-                  module.name,
-                ),
             if (!sharedPackage)
-              for (var packageName in config.sharedModelsSourcePathsParts.keys)
+              for (var packageName
+                  in config.sharedModelsSourcePathsParts.keys) ...[
                 if (config.type == PackageType.module)
                   _buildDeserializeByClassNameForwarding(
                     'package:$packageName/$packageName.dart',
@@ -619,20 +628,18 @@ class LibraryGenerator {
                         : 'package:$packageName/$packageName.dart',
                     packageName,
                   ),
+                if (config.type == PackageType.internal)
+                  _buildDeserializeByClassNameForwarding(
+                    'package:$packageName/$packageName.dart',
+                  ),
+              ],
             if (config.name != 'serverpod' && serverCode)
               _buildDeserializeByClassNameDelegation(
                 serverpodProtocolUrl(serverCode),
                 'serverpod',
               ),
-            for (final containerType in nonModelStreamTypes) ...[
-              Code(
-                "if (dataClassName == '${containerType.classNameWithGenericsForProtocol(modules: config.modules)}') {",
-              ),
-              const Code('return deserialize<'),
-              containerType.reference(serverCode, config: config).code,
-              const Code('>(data[\'data\']);'),
-              const Code('}'),
-            ],
+            for (var (name, type) in streamClassDeserializers)
+              _buildDeserializeByLocalClassName(name, type),
             const Code('return super.deserializeByClassName(data);'),
           ]),
       ),
@@ -790,15 +797,23 @@ class LibraryGenerator {
     String projectName,
   ) {
     return Block.of([
-      Code(
-        'if(dataClassName.startsWith(\'$projectName.\')){'
-        'data[\'className\'] = dataClassName.substring(${projectName.length + 1});',
-      ),
       Code.scope(
         (a) =>
-            'return ${a(refer('Protocol', protocolImportPath))}().deserializeByClassName(data);',
+            '''if (dataClassName.startsWith('$projectName.')) {
+  return ${a(refer('Protocol', protocolImportPath))}().deserializeByClassName({
+    ...data,
+    'className': dataClassName.substring(${projectName.length + 1}),
+  });
+}''',
       ),
-      const Code('}'),
+    ]);
+  }
+
+  Block _buildDeserializeByLocalClassName(String name, Reference type) {
+    return Block.of([
+      Code("if (dataClassName == '$name') {\nreturn deserialize<"),
+      type.code,
+      const Code(">(data['data']);\n}"),
     ]);
   }
 
