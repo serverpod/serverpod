@@ -649,7 +649,7 @@ void main() async {
           expect(
             gradleFile.readAsStringSync(),
             contains(
-              'com.serverpod.space.${projectName}_flutter',
+              'space.serverpod.${projectName}_flutter',
             ),
           );
         });
@@ -668,7 +668,7 @@ void main() async {
           expect(
             pbxproj.readAsStringSync(),
             contains(
-              'com.serverpod.space.${projectName}Flutter',
+              'space.serverpod.${projectName}Flutter',
             ),
           );
         });
