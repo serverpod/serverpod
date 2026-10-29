@@ -1,4 +1,4 @@
-# projectname_flutter
+# projectname
 
 A new Flutter project with Serverpod.
 
