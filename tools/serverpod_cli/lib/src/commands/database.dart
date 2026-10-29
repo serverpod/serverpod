@@ -208,6 +208,7 @@ Future<ResolvedEmbeddedPostgres> _startFromServerpodConfig({
 
   var resolved = await startOrAttachEmbeddedPostgres(
     databaseConfig.withResolvedLocalPath(serverDir),
+    enableTcp: true,
   );
   if (resolved == null) {
     throw _DatabaseStartConfigurationException(

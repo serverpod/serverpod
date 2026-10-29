@@ -7,7 +7,9 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
+import 'package:serverpod_database/embedded.dart';
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../test_util/endpoint_validation_helpers.dart';
@@ -218,6 +220,133 @@ void main() {
           expect(result.first.first, 1);
         },
       );
+    },
+    timeout: const Timeout(Duration(minutes: 4)),
+  );
+
+  group(
+    'Given a project with a stored password and a stopped database initialized over Unix only,',
+    () {
+      const databasePassword = 'passwords-yaml-database-password';
+      late Directory serverDirectory;
+      late int databasePort;
+      late bool initiallyUnixOnly;
+      late bool initiallyWithoutRolePassword;
+
+      setUpAll(() async {
+        databasePort = await freeLoopbackPort();
+        serverDirectory = writeServerProject(
+          databasePassword: databasePassword,
+          databasePort: databasePort,
+        );
+        final passwords = PasswordManager(
+          runMode: 'development',
+        ).loadPasswords(serverDir: serverDirectory.path);
+        final config =
+            ServerpodConfig.load(
+                  'development',
+                  null,
+                  passwords,
+                  serverDir: serverDirectory.path,
+                ).database!
+                as PostgresDatabaseConfig;
+        final initialized = (await startOrAttachEmbeddedPostgres(
+          config.withResolvedLocalPath(serverDirectory.path),
+        ))!;
+
+        try {
+          initiallyUnixOnly =
+              initialized.connectivity.isUnixSocket &&
+              initialized.handle.tcpEndpoint == null;
+          final connection = await pg.Connection.open(
+            initialized.handle.endpoint,
+            settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+          );
+          try {
+            final role = await connection.execute(
+              'SELECT rolpassword IS NULL FROM pg_authid WHERE rolname = current_user',
+            );
+            initiallyWithoutRolePassword = role.first.first as bool;
+            await connection.execute('CREATE TABLE preserved (value integer)');
+            await connection.execute('INSERT INTO preserved VALUES (42)');
+          } finally {
+            await connection.close();
+          }
+        } finally {
+          await initialized.stop?.call();
+        }
+      });
+
+      group('when serverpod database start restarts the same database,', () {
+        late Object? persistedValue;
+        Object? wrongPasswordError;
+
+        setUpAll(() async {
+          await startDatabase(serverDirectory);
+          final connection = await pg.Connection.open(
+            pg.Endpoint(
+              host: '127.0.0.1',
+              port: databasePort,
+              database: 'serverpod_test',
+              username: 'postgres',
+              password: databasePassword,
+            ),
+            settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+          );
+          try {
+            final result = await connection.execute(
+              'SELECT value FROM preserved',
+            );
+            persistedValue = result.first.first;
+          } finally {
+            await connection.close();
+          }
+
+          try {
+            final unauthorized = await pg.Connection.open(
+              pg.Endpoint(
+                host: '127.0.0.1',
+                port: databasePort,
+                database: 'serverpod_test',
+                username: 'postgres',
+                password: 'wrong-password',
+              ),
+              settings: const pg.ConnectionSettings(
+                sslMode: pg.SslMode.disable,
+              ),
+            );
+            await unauthorized.close();
+          } on pg.ServerException catch (error) {
+            wrongPasswordError = error;
+          }
+        });
+
+        test(
+          'then the initial launch had no TCP listener or role password.',
+          () {
+            expect(initiallyUnixOnly, isTrue);
+            expect(initiallyWithoutRolePassword, isTrue);
+          },
+        );
+
+        test(
+          'then the stored password accesses the existing data over TCP.',
+          () {
+            expect(persistedValue, 42);
+          },
+        );
+
+        test('then TCP rejects an incorrect password.', () {
+          expect(
+            wrongPasswordError,
+            isA<pg.ServerException>().having(
+              (error) => error.code,
+              'code',
+              '28P01',
+            ),
+          );
+        });
+      });
     },
     timeout: const Timeout(Duration(minutes: 4)),
   );

@@ -14,14 +14,13 @@ import 'package:test/test.dart';
 
 void main() {
   group(
-    'Given a server config with a passwords.yaml password and a free port,',
+    'Given a server config with a passwords.yaml password and an occupied TCP port,',
     () {
       const databasePassword = 'passwords-yaml-database-password';
       late Directory serverDir;
       late int databasePort;
       late PostgresDatabaseConfig databaseConfig;
       DatabasePoolManager? poolManager;
-      pg.Connection? connection;
 
       setUp(() async {
         serverDir = Directory.systemTemp.createTempSync(
@@ -32,7 +31,7 @@ void main() {
           0,
         );
         databasePort = portReservation.port;
-        await portReservation.close();
+        addTearDown(portReservation.close);
         var configDir = Directory(p.join(serverDir.path, 'config'))
           ..createSync();
         File(p.join(configDir.path, 'development.yaml')).writeAsStringSync('''
@@ -69,7 +68,6 @@ development:
       });
 
       tearDown(() async {
-        await connection?.close();
         await poolManager?.stop();
         if (serverDir.existsSync()) {
           serverDir.deleteSync(recursive: true);
@@ -78,25 +76,12 @@ development:
 
       test(
         'when the database pool manager starts the embedded database, '
-        'then the configured password authenticates over TCP on that port',
+        'then it serves no TCP listener.',
         () async {
           poolManager!.start();
           await poolManager!.started;
 
-          connection = await pg.Connection.open(
-            pg.Endpoint(
-              host: '127.0.0.1',
-              port: databasePort,
-              database: databaseConfig.name,
-              username: databaseConfig.user,
-              password: databasePassword,
-            ),
-            settings: const pg.ConnectionSettings(
-              sslMode: pg.SslMode.disable,
-            ),
-          );
-          var result = await connection!.execute('SELECT 1');
-          expect(result.first.first, 1);
+          expect(embeddedPostgresTcpAddress(poolManager!), isNull);
         },
         timeout: const Timeout(Duration(seconds: 180)),
       );
