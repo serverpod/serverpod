@@ -4,6 +4,7 @@ import 'package:bootstrap_project/src/util.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_server/lib/test_util/custom_matcher.dart';
@@ -134,6 +135,24 @@ void main() {
           final config = File(p.join(project.serverDir, 'config', 'test.yaml'));
           final content = await config.readAsString();
           expect(content, contains('user: postgres'));
+        },
+      );
+
+      test(
+        'then the embedded test database requests an available TCP port.',
+        () {
+          final config = ServerpodConfig.load(
+            'test',
+            null,
+            PasswordManager(
+              runMode: 'test',
+            ).loadPasswords(serverDir: project.serverDir),
+            serverDir: project.serverDir,
+          );
+          final database = config.database as PostgresDatabaseConfig;
+
+          expect(database.dataPath, p.join('.serverpod', 'test', 'pgdata'));
+          expect(database.port, 0);
         },
       );
     },
@@ -291,6 +310,25 @@ void main() {
           );
         },
       );
+
+      test(
+        'then the embedded test database requests an available TCP port.',
+        () {
+          final config = ServerpodConfig.load(
+            'test',
+            null,
+            PasswordManager(
+              runMode: 'test',
+            ).loadPasswords(serverDir: project.serverDir),
+            serverDir: project.serverDir,
+          );
+          final database = config.database as PostgresDatabaseConfig;
+
+          expect(database.dataPath, p.join('.serverpod', 'test', 'pgdata'));
+          expect(database.port, 0);
+        },
+      );
+
       group(
         'then the server config for test',
         () {
