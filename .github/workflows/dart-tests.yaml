@@ -122,7 +122,7 @@ jobs:
         shell: bash
         run: tar -C "$GITHUB_WORKSPACE/.cli-build/bundle" -czf serverpod-cli.tgz .
       - name: Upload the CLI bundle
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: serverpod-cli-${{ runner.os }}
           path: serverpod-cli.tgz
@@ -157,7 +157,7 @@ jobs:
       - name: Pack the pod bundle
         run: tar -C "$GITHUB_WORKSPACE/.pod-build/bundle" -czf pod.tgz .
       - name: Upload the pod bundle
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: pod-${{ matrix.pod }}
           path: pod.tgz
@@ -420,7 +420,7 @@ jobs:
         run: tar -C .pg-cache -czf pg-bundle.tgz .
       - name: Upload bundle for test jobs
         if: steps.pgcache.outputs.cache-hit == 'true' || matrix.os != 'windows-latest' || steps.build_win.outcome == 'success' || steps.download.outcome == 'success'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         continue-on-error: ${{ matrix.os == 'windows-latest' }}
         with:
           name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
