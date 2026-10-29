@@ -1661,6 +1661,271 @@ class Protocol extends _is.DatabaseSerializationManager
       _ilwf0zl1.Protocol.new,
       _isp.Protocol.new,
     ],
+    classNames: const [
+      'CustomClass',
+      'CustomClass2',
+      'CustomClassWithoutProtocolSerialization',
+      'CustomClassWithProtocolSerialization',
+      'CustomClassWithProtocolSerializationMethod',
+      'ProtocolCustomClass',
+      'ExternalCustomClass',
+      'FreezedCustomClass',
+      'ByIndexEnumWithNameValue',
+      'ByNameEnumWithNameValue',
+      'CourseUuid',
+      'EnrollmentInt',
+      'StudentUuid',
+      'ArenaUuid',
+      'PlayerUuid',
+      'TeamInt',
+      'CommentInt',
+      'CustomerInt',
+      'OrderUuid',
+      'AddressUuid',
+      'CitizenInt',
+      'CompanyUuid',
+      'TownInt',
+      'ChangedIdTypeSelf',
+      'ServerOnlyChangedIdFieldClass',
+      'BigIntDefault',
+      'BigIntDefaultMix',
+      'BigIntDefaultModel',
+      'BigIntDefaultPersist',
+      'BoolDefault',
+      'BoolDefaultMix',
+      'BoolDefaultModel',
+      'BoolDefaultPersist',
+      'DateTimeDefault',
+      'DateTimeDefaultMix',
+      'DateTimeDefaultModel',
+      'DateTimeDefaultPersist',
+      'DoubleDefault',
+      'DoubleDefaultMix',
+      'DoubleDefaultModel',
+      'DoubleDefaultPersist',
+      'DurationDefault',
+      'DurationDefaultMix',
+      'DurationDefaultModel',
+      'DurationDefaultPersist',
+      'EnumDefault',
+      'EnumDefaultMix',
+      'EnumDefaultModel',
+      'EnumDefaultPersist',
+      'ByIndexEnum',
+      'ByNameEnum',
+      'DefaultValueEnum',
+      'DefaultException',
+      'IntDefault',
+      'IntDefaultMix',
+      'IntDefaultModel',
+      'IntDefaultPersist',
+      'StringDefault',
+      'StringDefaultMix',
+      'StringDefaultModel',
+      'StringDefaultPersist',
+      'UriDefault',
+      'UriDefaultMix',
+      'UriDefaultModel',
+      'UriDefaultPersist',
+      'UuidDefault',
+      'UuidDefaultMix',
+      'UuidDefaultModel',
+      'UuidDefaultPersist',
+      'DeferrableRelationInitiallyDeferred',
+      'DeferrableRelationInitiallyImmediate',
+      'DeferrableRelationParent',
+      'EmptyModel',
+      'EmptyModelRelationItem',
+      'EmptyModelWithTable',
+      'RelationEmptyModel',
+      'ExceptionWithData',
+      'ChildClassExplicitColumn',
+      'NonTableParentClass',
+      'ModifiedColumnName',
+      'Department',
+      'Employee',
+      'Contractor',
+      'Service',
+      'TableWithExplicitColumnName',
+      'TestGeneratedCallByeModel',
+      'TestGeneratedCallExecuteWithTriggerModel',
+      'TestGeneratedCallHelloModel',
+      'TestGeneratedCallInvokeModel',
+      'ImmutableChildObject',
+      'ImmutableChildObjectWithNoAdditionalFields',
+      'ImmutableObject',
+      'ImmutableObjectWithImmutableObject',
+      'ImmutableObjectWithList',
+      'ImmutableObjectWithMap',
+      'ImmutableObjectWithMultipleFields',
+      'ImmutableObjectWithNoFields',
+      'ImmutableObjectWithRecord',
+      'ImmutableObjectWithTable',
+      'ImmutableObjectWithTwentyFields',
+      'ChildClass',
+      'ServerOnlyChildClass',
+      'ChildWithDefault',
+      'ChildWithInheritedId',
+      'ChildClassWithoutId',
+      'ServerOnlyChildClassWithoutId',
+      'ExtendedAppException',
+      'BaseAppException',
+      'NotFoundException',
+      'ValidationException',
+      'ParentClass',
+      'GrandparentClass',
+      'ParentClassWithoutId',
+      'GrandparentClassWithId',
+      'ChildEntity',
+      'BaseEntity',
+      'ParentEntity',
+      'NonServerOnlyParentClass',
+      'ParentWithChangedId',
+      'ParentWithDefault',
+      'PolymorphicGrandChild',
+      'PolymorphicChild',
+      'PolymorphicChildContainer',
+      'ModulePolymorphicChildContainer',
+      'SimilarButNotParent',
+      'PolymorphicParent',
+      'UnrelatedToPolymorphism',
+      'SealedGrandChild',
+      'SealedChild',
+      'SealedChildOnlyRequired',
+      'SealedOtherChild',
+      'CityWithLongTableName',
+      'OrganizationWithLongTableName',
+      'PersonWithLongTableName',
+      'MaxFieldName',
+      'LongImplicitIdField',
+      'LongImplicitIdFieldCollection',
+      'RelationToMultipleMaxFieldName',
+      'UserNote',
+      'UserNoteCollection',
+      'UserNoteCollectionWithALongName',
+      'UserNoteWithALongName',
+      'MultipleMaxFieldName',
+      'City',
+      'Organization',
+      'Person',
+      'BleedChild',
+      'BleedRoot',
+      'FkRelationCompany',
+      'FkRelationEmployee',
+      'FkRelationOffice',
+      'GeneratedRelationCompany',
+      'GeneratedRelationEmployee',
+      'GeneratedRelationOffice',
+      'Course',
+      'Enrollment',
+      'Student',
+      'ObjectUser',
+      'ParentUser',
+      'Arena',
+      'Player',
+      'Team',
+      'Comment',
+      'Customer',
+      'Book',
+      'Chapter',
+      'Order',
+      'Address',
+      'Citizen',
+      'Company',
+      'Town',
+      'Blocking',
+      'Member',
+      'Cat',
+      'Post',
+      'ModuleDatatype',
+      'MyFeatureModel',
+      'MyTriggerType',
+      'Nullability',
+      'NullsDistinctData',
+      'ObjectFieldPersist',
+      'ObjectFieldScopes',
+      'ObjectWithBit',
+      'ObjectWithByteData',
+      'ObjectWithCustomClass',
+      'ObjectWithDuration',
+      'ObjectWithDynamic',
+      'ObjectWithEnum',
+      'ObjectWithEnumEnhanced',
+      'ObjectWithGeographyGeometryCollection',
+      'ObjectWithGeographyLineString',
+      'ObjectWithGeographyPoint',
+      'ObjectWithGeographyPolygon',
+      'ObjectWithHalfVector',
+      'ObjectWithIndex',
+      'ObjectWithJsonb',
+      'ObjectWithJsonbClassLevel',
+      'ObjectWithMaps',
+      'ObjectWithNullableCustomClass',
+      'ObjectWithObject',
+      'ObjectWithParent',
+      'ObjectWithSealedClass',
+      'ObjectWithSealedException',
+      'ObjectWithSelfParent',
+      'ObjectWithSparseVector',
+      'ObjectWithUuid',
+      'ObjectWithVector',
+      'Record',
+      'RelatedUniqueData',
+      'ExceptionWithRequiredField',
+      'ModelWithRequiredField',
+      'ScopeNoneFields',
+      'ScopeServerOnlyFieldChild',
+      'ScopeServerOnlyField',
+      'Article',
+      'ArticleList',
+      'DefaultServerOnlyClass',
+      'DefaultServerOnlyEnum',
+      'NotServerOnlyClass',
+      'NotServerOnlyEnum',
+      'ServerOnlyClass',
+      'ServerOnlyEnum',
+      'ServerOnlyClassField',
+      'ServerOnlyDefault',
+      'SessionAuthInfo',
+      'SharedModelContainer',
+      'SharedModelSubclass',
+      'SimpleData',
+      'SimpleDataList',
+      'SimpleDataMap',
+      'SimpleDataObject',
+      'SimpleDateTime',
+      'ModelInSubfolder',
+      'TestEnum',
+      'TestEnumDefaultSerialization',
+      'TestEnumEnhanced',
+      'TestEnumEnhancedByName',
+      'TestEnumStringified',
+      'Types',
+      'TypesList',
+      'TypesMap',
+      'TypesRecord',
+      'TypesSet',
+      'TypesSetRequired',
+      'UniqueData',
+      'UniqueDataWithNonPersist',
+      'UpsertTestModel',
+      'List<int>',
+      'List<SimpleData>',
+      'List<serverpod_auth.UserInfo>',
+      'List<SimpleData>?',
+      'List<SimpleData?>',
+      'Set<int>',
+      'Set<SimpleData>',
+      'List<Set<SimpleData>>',
+      '(String,PolymorphicParent)',
+      '(int?,)?',
+      'List<((int,String),{(SimpleData,double) namedSubRecord})?>?',
+      '(int?,serverpod_test_module.ProjectStreamingClass?)',
+      '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))',
+      'List<(String,int)>',
+      '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))?',
+      'List<(String,int)>?',
+    ],
   );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
@@ -8322,11 +8587,8 @@ class Protocol extends _is.DatabaseSerializationManager
     ..._isp.Protocol.targetTableDefinitions,
   ];
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -8334,8 +8596,8 @@ class Protocol extends _is.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -14418,9 +14680,10 @@ class Protocol extends _is.DatabaseSerializationManager
           )
           as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -16075,24 +16338,34 @@ class Protocol extends _is.DatabaseSerializationManager
       return deserialize<_iwbeyn4p.UpsertTestModel>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
-      data['className'] = dataClassName.substring(15);
-      return _i1n3uhu0.Protocol().deserializeByClassName(data);
+      return _i1n3uhu0.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(15),
+      });
     }
     if (dataClassName.startsWith('serverpod_test_module.')) {
-      data['className'] = dataClassName.substring(22);
-      return _iom2gwyu.Protocol().deserializeByClassName(data);
+      return _iom2gwyu.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(22),
+      });
     }
     if (dataClassName.startsWith('serverpod_test_shared_module.')) {
-      data['className'] = dataClassName.substring(29);
-      return _iyx9etqn.Protocol().deserializeByClassName(data);
+      return _iyx9etqn.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(29),
+      });
     }
     if (dataClassName.startsWith('serverpod_test_shared.')) {
-      data['className'] = dataClassName.substring(22);
-      return _ilwf0zl1.Protocol().deserializeByClassName(data);
+      return _ilwf0zl1.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(22),
+      });
     }
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     if (dataClassName == 'List<int>') {
       return deserialize<List<int>>(data['data']);

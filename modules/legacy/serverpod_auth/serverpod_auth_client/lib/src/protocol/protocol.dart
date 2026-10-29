@@ -88,6 +88,23 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<List<String>>,
         ],
         modules: const [],
+        classNames: const [
+          'AppleAuthInfo',
+          'AuthKey',
+          'AuthenticationFailReason',
+          'AuthenticationResponse',
+          'EmailAuth',
+          'EmailCreateAccountRequest',
+          'EmailFailedSignIn',
+          'EmailPasswordReset',
+          'EmailReset',
+          'GoogleRefreshToken',
+          'UserImage',
+          'UserInfo',
+          'UserInfoPublic',
+          'UserSettingsConfig',
+        ],
+        classNamePrefix: 'serverpod_auth.',
       );
 
   void registerHostProtocol(
@@ -97,13 +114,11 @@ class Protocol extends _isc.SerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth.')) return className;
-    return className.substring(15);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth.',
+      );
 
   @override
   T deserialize<T>(
@@ -111,8 +126,11 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
