@@ -1,47 +1,39 @@
-## 4.1.0-rc.1
+## 4.1.0
 
-feat: Starts embedded PostgreSQL with both TCP and Unix socket support.
-feat: Adds passwordless OTP login to the email identity provider.
-feat: Adds support for FVM and other Flutter/Dart installation sources on the CLI.
-feat: Exposes the runner logs through a `tail_runner_logs` MCP tool.
-feat: Adds the `serverpod doctor` command for local environment diagnostics.
-fix: Prevents unrelated models from being deleted due to subsequent generate failures.
-fix: Fixes wrong serialization of models in record and map responses on the test framework.
-fix: Keeps password-reset cleanup deterministic on coarse clocks.
-fix: Hashes `pgvector` types by value to match equality. ([@RaphaelFakhri](https://github.com/RaphaelFakhri))
-fix: Drops method stream values that arrive after the stream is closed.
-fix: Compiles file changes that arrived with a failed code generation. ([@BiAksoy](https://github.com/BiAksoy))
-fix: Properly initializes module future calls on projects.
-fix: Reuses the cached upgrade prompt only for the CLI version that wrote it.
-fix: Clears generation staleness state together on the `serverpod clean` command.
-fix: Raises analyzer dependency ceiling to support primary constructors.
-fix: Ignores foreign key violations for concurrent future call claims.
-fix: Fixes future call generation when using only basic Dart types on parameters.
-perf: Improves JSON encoding and decoding performance by using utf8 directly.
-perf: Greatly improves `serverpod generate` performance on one-shot and incremental runs.
-chore: Creates project-specific application IDs for new projects.
-chore: Updates the skills and agent instructions to use the `serverpod runner` command.
-
-## 4.1.0-beta.3
-
+- feat: Allows embedded PostgreSQL to start with simultaneous TCP and Unix socket support.
+- feat: Adds passwordless OTP login to the email identity provider.
+- feat: Adds support for FVM and other Flutter/Dart installation sources on the CLI.
+- feat: Exposes the runner logs through a `tail_runner_logs` MCP tool.
+- feat: Adds the `serverpod doctor` command for local environment diagnostics.
 - feat: Adds support for custom target entrypoints in runner commands. ([@mathis6787](https://github.com/mathis6787))
+- feat: Adds `serverpod runner` command with `start`, `attach`, `status` and `stop` subcommands.
+- feat: Allows `serverpod start` and `serverpod mcp-server` to attach to an already running server.
+- feat: Exposes `Model.db.watch` for reactive ORM operations on the client.
+- fix: Prevents unrelated models from being deleted due to subsequent generate failures.
+- fix: Fixes wrong serialization of models in record and map responses on the test framework.
+- fix: Keeps password-reset cleanup deterministic on coarse clocks.
+- fix: Hashes `pgvector` types by value to match equality. ([@RaphaelFakhri](https://github.com/RaphaelFakhri))
+- fix: Drops method stream values that arrive after the stream is closed.
+- fix: Compiles file changes that arrived with a failed code generation. ([@BiAksoy](https://github.com/BiAksoy))
+- fix: Properly initializes module future calls on projects.
+- fix: Reuses the cached upgrade prompt only for the CLI version that wrote it.
+- fix: Clears generation staleness state together on the `serverpod clean` command.
+- fix: Raises analyzer dependency ceiling to support primary constructors.
+- fix: Ignores foreign key violations for concurrent future call claims.
+- fix: Fixes future call generation when using only basic Dart types on parameters.
 - fix: Stops the runner on quit when `serverpod start` spawned it.
 - fix: Normalizes method stream cancellation futures before timeout. ([@donavonguyot](https://github.com/donavonguyot))
 - fix: Prevents exiting the server on development when the startup database integrity check fails.
 - fix: Improves type-safety of generated `copyWith` constructors by using typed sentinels.
+- fix: Reports a missing Flutter app package when launching from `serverpod start`.
+- perf: Improves JSON encoding and decoding performance by using utf8 directly.
+- perf: Greatly improves `serverpod generate` performance on one-shot and incremental runs.
 - perf: Improves file uploader performance by using streamed uploads instead of buffered uploads.
 - perf: Speeds up deserialization of shared and module models by ~x3.
 - perf: Speeds up SQLite operations from ~1.1x to ~55x.
+- chore: Creates project-specific application IDs for new projects.
+- chore: Updates the skills and agent instructions to use the `serverpod runner` command.
 - chore: Adds a Serverpod Cloud deploy workflow to the project template
-
-Also includes all fixes from 4.0.3 and 4.0.4. Version 4.1.0-beta.2 was skipped due to a packaging issue.
-
-## 4.1.0-beta.1
-
-- feat: Adds `serverpod runner` command with `start`, `attach`, `status` and `stop` subcommands.
-- feat: Allows `serverpod start` and `serverpod mcp-server` to attach to an already running server.
-- feat: Exposes `Model.db.watch` for reactive ORM operations on the client.
-- fix: Reports a missing Flutter app package when launching from `serverpod start`.
 
 ## 4.0.4
 
