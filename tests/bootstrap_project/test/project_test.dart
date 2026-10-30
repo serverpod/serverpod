@@ -487,6 +487,17 @@ void main() async {
       });
 
       group('then the flutter project', () {
+        test('has the project name as its package name', () {
+          final pubspec = File(
+            path.join(tempPath, flutterDir, 'pubspec.yaml'),
+          );
+
+          expect(
+            parsePubspec(pubspec).name,
+            projectName,
+          );
+        });
+
         test('folder is created', () {
           expect(
             Directory(path.join(tempPath, flutterDir)).existsSync(),
@@ -649,7 +660,7 @@ void main() async {
           expect(
             gradleFile.readAsStringSync(),
             contains(
-              'com.serverpod.space.${projectName}_flutter',
+              'space.serverpod.$projectName',
             ),
           );
         });
@@ -668,7 +679,7 @@ void main() async {
           expect(
             pbxproj.readAsStringSync(),
             contains(
-              'com.serverpod.space.${projectName}Flutter',
+              'space.serverpod.$projectName',
             ),
           );
         });
