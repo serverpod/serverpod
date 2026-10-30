@@ -170,6 +170,8 @@ dart test -x integration      # Only unit tests
 
 Only when a run actually fails to reach the database is it worth opening `config/test.yaml`: a `database` section with `host`/`port` and no `dataPath` points at an external database, which does have to be running (`docker compose up -d` starts the one the project ships). With `dataPath` or `filePath` set, fix the configuration or runtime instead — starting Docker will not help.
 
+Each test run boots a server and its own database, so concurrent operations add up quickly. Be mindful of the machine's resources when running multiple test suites concurrently.
+
 ## Project structure
 
 Keep tests organized:
