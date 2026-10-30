@@ -23,7 +23,7 @@ apiServer:
 
 `port` is the port the listener binds. `publicHost`/`publicPort`/`publicScheme` are used for URLs returned to clients; a `publicPort` of 0 follows the bound port.
 
-In development the Serverpod runner keeps the configured ports unless another runner on the machine holds them, in which case it binds ephemeral ports (through `SERVERPOD_API_SERVER_PORT`, its siblings and `SERVERPOD_DATABASE_PORT`; the `_PUBLIC_PORT` variables of the api, insights and web listeners carry the same value, so URLs returned to clients use the bound port) and publishes the real addresses in `serverpod runner status`. See [Several servers at once](../serverpod-overview/SKILL.md#several-servers-at-once) in the overview skill.
+In development the Serverpod runner keeps the configured API, Insights and web ports unless another runner on the machine holds them, in which case it binds ephemeral ports through `SERVERPOD_API_SERVER_PORT`, `SERVERPOD_INSIGHTS_SERVER_PORT` and `SERVERPOD_WEB_SERVER_PORT`. Their `_PUBLIC_PORT` variables carry the same value, so URLs returned to clients use the bound port. The runner publishes the real addresses in `serverpod runner status`. See [Several servers at once](../serverpod-overview/SKILL.md#several-servers-at-once) in the overview skill.
 
 ## Database
 
@@ -42,7 +42,9 @@ database:
 
 Password in `passwords.yaml` under run mode or `SERVERPOD_PASSWORD_database`. Optional: `searchPaths`, `maxConnectionCount`, `requireSsl`, `isUnixSocket`.
 
-**Embedded PostgreSQL:** with `dataPath` set, Serverpod launches and manages a PostgreSQL instance in that directory, so nothing has to be installed or run separately. New projects use it for development and testing. It listens on its Unix socket, plus loopback TCP on `port` when the run mode has a database password. In development the runner moves that port aside with the server ports when another Serverpod runner holds it, so several checkouts can run their own at once. `serverpod database start [--mode <mode>] [--port <port>]` boots the same database on its own, without the server, or joins the one the server already runs.
+**Embedded PostgreSQL:** with `dataPath` set, Serverpod launches and manages a PostgreSQL instance in that directory, so nothing has to be installed or run separately. New projects use it for development and testing. Automatic server and test startup uses only the Unix socket, even when a database password is configured, so the runner does not reserve or move the database TCP port.
+
+For TCP access, configure a database password for the run mode, stop the running embedded database and its owning process, then run `serverpod database start [--mode <mode>] [--port <port>]` before starting the server again in another terminal. When launching a database, this command enables both the Unix socket and loopback TCP on `port`, or the `--port` override. Without a password it serves only the Unix socket. Joining a running database preserves its current listeners; it cannot add TCP to a database that the server already started over Unix only.
 
 Without `dataPath` the database is external, and the runner (`serverpod start`) starts Docker Compose services when the project has a compose file and PostgreSQL is on localhost (`--docker` / `--no-docker` override this).
 

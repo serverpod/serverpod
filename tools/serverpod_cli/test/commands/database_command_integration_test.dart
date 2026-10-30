@@ -381,8 +381,10 @@ void main() {
             unwrapped(output),
             contains(
               'TCP is off because no database password is configured. Set '
-              '`database` for this run mode in config/passwords.yaml to also '
-              'listen on the configured port.',
+              '`database` for this run mode in config/passwords.yaml. Stop the '
+              'running embedded database and its owning process, then run '
+              '`serverpod database start --mode development` before starting '
+              'the server again.',
             ),
           );
         },
@@ -394,7 +396,7 @@ void main() {
   test(
     'Given a project with a database password and a socket-only database, '
     'when serverpod database start joins it, '
-    'then it says the process that started the database did not enable TCP',
+    'then it explains how to restart with TCP enabled.',
     () async {
       var serverDirectory = writeServerProject(
         databasePassword: 'passwords-yaml-database-password',
@@ -408,9 +410,10 @@ void main() {
       expect(
         unwrapped(output),
         contains(
-          'TCP is off because the process that started the database did not '
-          'enable it. Restart that process to also listen on the configured '
-          'port.',
+          'TCP is off because the running database only serves its Unix '
+          'socket. Stop the running embedded database and its owning process, '
+          'then run `serverpod database start --mode development` before '
+          'starting the server again.',
         ),
       );
     },
