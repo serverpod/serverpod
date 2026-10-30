@@ -31,7 +31,12 @@ Scripts _buildScripts(String scriptsText) =>
 void main() {
   // Use Unicode glyphs for better and consistent visual output
   // (Not default on windows)
-  glyph.ascii = false;
+  late bool previousAscii;
+  setUpAll(() {
+    previousAscii = glyph.ascii;
+    glyph.ascii = false;
+  });
+  tearDownAll(() => glyph.ascii = previousAscii);
   test(
     'Given a name and command, '
     'when creating a Script, '

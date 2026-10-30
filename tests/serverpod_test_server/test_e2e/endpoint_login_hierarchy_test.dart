@@ -6,7 +6,13 @@ import 'package:test/test.dart';
 
 void main() {
   var authKeyProvider = TestAuthKeyManager();
-  var client = Client(serverUrl)..authKeyProvider = authKeyProvider;
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl)..authKeyProvider = authKeyProvider;
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   setUp(() async {
     await client.authentication.removeAllUsers();

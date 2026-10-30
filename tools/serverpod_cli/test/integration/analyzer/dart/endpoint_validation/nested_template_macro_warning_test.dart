@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
@@ -12,19 +13,25 @@ import '../../../../test_util/endpoint_validation_helpers.dart';
 import '../../../../test_util/file_system_entity_helpers.dart';
 
 late Directory testProjectDirectory;
+late AnalysisContextCollection collection;
 
 void main() {
   setUpAll(() async {
     testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory);
+    collection = await createCachedAnalysisContextCollection(
+      testProjectDirectory,
+    );
   });
 
   tearDownAll(() async {
+    await collection.dispose();
     await testProjectDirectory.deleteWithRetry(recursive: true);
   });
 
   group(
-    'Given an endpoint with nested template in class documentation when analyzed',
+    'Given an endpoint with nested template in class documentation, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -52,7 +59,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -88,7 +95,8 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint with nested template in method documentation when analyzed',
+    'Given an endpoint with nested template in method documentation, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -116,7 +124,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -148,7 +156,7 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given an endpoint with nested macro in template when analyzed', () {
+  group('Given an endpoint with nested macro in template, when analyzed,', () {
     var collector = CodeGenerationCollector();
     late Directory testDirectory;
 
@@ -174,7 +182,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
@@ -203,7 +211,8 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-    'Given an endpoint with both nested template and nested macro when analyzed',
+    'Given an endpoint with both nested template and nested macro, '
+    'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
       late Directory testDirectory;
@@ -235,7 +244,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory, collection: collection);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 

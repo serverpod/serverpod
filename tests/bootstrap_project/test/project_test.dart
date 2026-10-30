@@ -8,15 +8,20 @@ import 'package:serverpod_cli/src/util/copy_directory.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 import '../lib/src/util.dart';
 
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
+  final tempPath = path.join(
+    Directory.systemTemp.path,
+    'spb_${const Uuid().v4().substring(0, 8)}',
+  );
 
   setUpAll(() async {
+    Directory(tempPath).createSync(recursive: true);
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',

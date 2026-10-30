@@ -2,7 +2,13 @@ import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client('http://localhost:8080/');
+  late Client client;
+  setUpAll(() {
+    client = Client('http://localhost:8080/');
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   group('Given a client with multiple endpoints', () {
     test('when getEndpointOfType is called with a unique endpoint type '

@@ -1,10 +1,15 @@
+import 'package:serverpod/serverpod.dart' show Session;
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod/database.dart' as db;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
-void main() async {
-  var session = await IntegrationTestServer().session();
+void main() {
+  late Session session;
+  setUpAll(() async {
+    session = await IntegrationTestServer().session();
+  });
+  tearDownAll(() => session.close());
   group('Given models with one to many relation', () {
     tearDown(() async {
       await Order.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
