@@ -76,23 +76,12 @@ development:
 
       test(
         'when the database pool manager starts the embedded database, '
-        'then it serves no TCP listener.',
+        'then it serves no TCP listener and its connection test passes',
         () async {
           poolManager!.start();
           await poolManager!.started;
 
           expect(embeddedPostgresTcpAddress(poolManager!), isNull);
-        },
-        timeout: const Timeout(Duration(seconds: 180)),
-      );
-
-      test(
-        'when the database pool manager starts the embedded database, '
-        'then its connection test passes',
-        () async {
-          poolManager!.start();
-          await poolManager!.started;
-
           expect(await poolManager!.testConnection(), isTrue);
         },
         timeout: const Timeout(Duration(seconds: 180)),
