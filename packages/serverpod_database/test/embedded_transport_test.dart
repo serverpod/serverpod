@@ -26,12 +26,12 @@ void main() {
   test(
     'Given an embedded database config with a password and port 8090, '
     'when the transport is derived, '
-    'then only the Unix socket is served without reserving the TCP port.',
+    'then only the Unix socket is served.',
     () {
-      final databaseConfig = config(password: 'secret', port: 8090);
-
-      expect(embeddedTransportFor(databaseConfig), isA<UnixTransport>());
-      expect(embeddedPostgresListensOnTcp(databaseConfig), isFalse);
+      expect(
+        embeddedTransportFor(config(password: 'secret', port: 8090)),
+        isA<UnixTransport>(),
+      );
     },
   );
 
