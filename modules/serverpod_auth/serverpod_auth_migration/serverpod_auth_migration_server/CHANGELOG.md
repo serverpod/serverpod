@@ -24,6 +24,10 @@ And more! Check the detailed changelog below for the complete list of new featur
 - fix: Normalizes method stream cancellation futures before timeout. ([@donavonguyot](https://github.com/donavonguyot))
 - fix: Prevents exiting the server on development when the startup database integrity check fails.
 - fix: Improves type-safety of generated `copyWith` constructors by using typed sentinels.
+- fix: Returns 400 instead of 500 for malformed endpoint argument values. ([@vchrisb](https://github.com/vchrisb))
+- fix: Returns field names from `updateWhere` and `updateById` on models with explicit column names. ([@vchrisb](https://github.com/vchrisb))
+- fix: Skips error reporting when sending on an already closed method stream WebSocket. ([@uveshm003](https://github.com/uveshm003))
+- fix: Marks `MethodCallSession.body` as deprecated in favor of `queryParameters` and `request`.
 - perf: Improves JSON encoding and decoding performance by using utf8 directly.
 - perf: Improves file uploader performance by using streamed uploads instead of buffered uploads.
 - perf: Speeds up deserialization of shared and module models by ~x3.
@@ -49,6 +53,7 @@ And more! Check the detailed changelog below for the complete list of new featur
 - fix: Raises analyzer dependency ceiling to support primary constructors.
 - fix: Stops the runner on quit when `serverpod start` spawned it.
 - fix: Reports a missing Flutter app package when launching from `serverpod start`.
+- fix: Uses available ports for test databases on new projects.
 - perf: Greatly improves `serverpod generate` performance on one-shot and incremental runs.
 - chore: Creates project-specific application IDs for new projects.
 - chore: Updates the skills and agent instructions to use the `serverpod runner` command.
@@ -78,6 +83,7 @@ And more! Check the detailed changelog below for the complete list of new featur
 - fix: Standardizes the future call feature flag name to `futureCall.executionEnabled`.
 - fix: Exposes missing `futureCall.enabled` flag to completely disable scheduling future calls.
 - fix: Fixes Windows paths comparison in the endpoint and future call analyzers.
+- fix: Gives `hooks_runner` the `dart.exe` path on Windows.
 - perf: Reduces the cost of argon2 usage for a better experience on low-end VMs.
 
 ## 4.0.2
