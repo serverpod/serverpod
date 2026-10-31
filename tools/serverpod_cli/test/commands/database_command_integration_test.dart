@@ -527,10 +527,7 @@ void main() {
           'Port ${holder.port} is already in use, so the local database '
           'cannot accept TCP connections there. Stop the other service on '
           'that port (for example a Docker database from an earlier setup), '
-          'change `database.port` in the relevant file in `config/`, or leave '
-          'the database password in `config/passwords.yaml` empty '
-          "(`database: ''`) to serve the local database over its Unix socket "
-          'only.',
+          'or change `database.port` in the relevant file in `config/`.',
         ),
       );
       expect(output, isNot(contains('Yikes')));
