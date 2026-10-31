@@ -381,10 +381,8 @@ void main() {
             unwrapped(output),
             contains(
               'TCP is off because no database password is configured. Set '
-              '`database` for this run mode in config/passwords.yaml. Stop the '
-              'running embedded database and its owning process, then run '
-              '`serverpod database start --mode development` before starting '
-              'the server again.',
+              '`database` for this run mode in config/passwords.yaml, then '
+              'restart this command.',
             ),
           );
         },
@@ -411,9 +409,9 @@ void main() {
         unwrapped(output),
         contains(
           'TCP is off because the running database only serves its Unix '
-          'socket. Stop the running embedded database and its owning process, '
-          'then run `serverpod database start --mode development` before '
-          'starting the server again.',
+          'socket. To enable it, stop the running embedded database and its '
+          'owning process, then run `serverpod database start --mode '
+          'development` before starting the server again.',
         ),
       );
     },

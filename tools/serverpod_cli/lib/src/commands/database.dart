@@ -133,20 +133,20 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
             'current password, or use the Unix socket URI.',
           );
         }
-      } else if (resolved.connectivity.password.isEmpty) {
-        log.info(
-          'TCP is off because no database password is configured. Set '
-          '`database` for this run mode in config/passwords.yaml. Stop the '
-          'running embedded database and its owning process, then run '
-          '`serverpod database start --mode $runMode` before starting the '
-          'server again.',
-        );
       } else {
+        // A joined database keeps the listeners its owner chose.
+        var restartHint = resolved.launched
+            ? 'restart this command.'
+            : 'stop the running embedded database and its owning process, '
+                  'then run `serverpod database start --mode $runMode` before '
+                  'starting the server again.';
         log.info(
-          'TCP is off because the running database only serves its Unix '
-          'socket. Stop the running embedded database and its owning process, '
-          'then run `serverpod database start --mode $runMode` before '
-          'starting the server again.',
+          resolved.connectivity.password.isEmpty
+              ? 'TCP is off because no database password is configured. Set '
+                    '`database` for this run mode in config/passwords.yaml, '
+                    'then $restartHint'
+              : 'TCP is off because the running database only serves its '
+                    'Unix socket. To enable it, $restartHint',
         );
       }
       log.info(
