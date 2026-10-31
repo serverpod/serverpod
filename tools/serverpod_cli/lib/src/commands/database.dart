@@ -104,9 +104,10 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
     }
 
     try {
+      var runMode = commandConfig.value(DatabaseStartOption.mode);
       var resolved = await _startFromServerpodConfig(
         serverDirectory: serverDirectory,
-        runMode: commandConfig.value(DatabaseStartOption.mode),
+        runMode: runMode,
         port: commandConfig.optionalValue(DatabaseStartOption.port),
       );
       var postgres = resolved.handle;
@@ -132,17 +133,20 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
             'current password, or use the Unix socket URI.',
           );
         }
-      } else if (resolved.connectivity.password.isEmpty) {
-        log.info(
-          'TCP is off because no database password is configured. Set '
-          '`database` for this run mode in config/passwords.yaml to also '
-          'listen on the configured port.',
-        );
       } else {
+        // A joined database keeps the listeners its owner chose.
+        var restartHint = resolved.launched
+            ? 'restart this command.'
+            : 'stop the running embedded database and its owning process, '
+                  'then run `serverpod database start --mode $runMode` before '
+                  'starting the server again.';
         log.info(
-          'TCP is off because the process that started the database did not '
-          'enable it. Restart that process to also listen on the configured '
-          'port.',
+          resolved.connectivity.password.isEmpty
+              ? 'TCP is off because no database password is configured. Set '
+                    '`database` for this run mode in config/passwords.yaml, '
+                    'then $restartHint'
+              : 'TCP is off because the running database only serves its '
+                    'Unix socket. To enable it, $restartHint',
         );
       }
       log.info(
@@ -208,6 +212,7 @@ Future<ResolvedEmbeddedPostgres> _startFromServerpodConfig({
 
   var resolved = await startOrAttachEmbeddedPostgres(
     databaseConfig.withResolvedLocalPath(serverDir),
+    enableTcp: true,
   );
   if (resolved == null) {
     throw _DatabaseStartConfigurationException(

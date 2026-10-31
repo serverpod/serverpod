@@ -199,10 +199,9 @@ the winner publishes.
   "servers": {
     "api": "http://localhost:8080",
     "insights": "http://localhost:8081",
-    "web": "http://localhost:8082",
-    "database": "postgres://postgres@127.0.0.1:8090/myproject"
+    "web": "http://localhost:8082"
   },
-  "ports": { "api": 8080, "insights": 8081, "web": 8082, "database": 8090 },
+  "ports": { "api": 8080, "insights": 8081, "web": 8082 },
   "docker": { "startedByRunner": true, "project": "myproject" },
   "config": {
     "watch": true,
@@ -412,9 +411,9 @@ conflicting commands, such as overlapping `applyMigrations` calls.
 
 ### Address publication
 
-The pod's listeners stay on TCP. Browsers cannot connect to a Unix socket, and
-the auto-refresh script from [`hot_reload.md`](hot_reload.md) polls
-`GET /__dev/version` over an ordinary HTTP origin.
+The pod's API, Insights and web listeners stay on TCP. Browsers cannot connect
+to a Unix socket, and the auto-refresh script from [`hot_reload.md`](hot_reload.md)
+polls `GET /__dev/version` over an ordinary HTTP origin.
 
 The runner binds the ports from `config/development.yaml`, falls back to
 ephemeral ports when they are taken, and publishes the resolved addresses in the
@@ -422,15 +421,20 @@ manifest. Unconditional ephemeral ports would also avoid collisions, at the cost
 of an address that changes on every restart. The three listeners fall back as a
 block rather than independently.
 
-The embedded database's loopback TCP port is a fourth listener when the pod
-serves one, that is when the development config has a `dataPath` and a database
-password. It moves aside with the block through `SERVERPOD_DATABASE_PORT`, is
-pinned from the `servers.database` address the pod reports, and is suggested to
-the next runner like the others. Unlike the others, a live listener on its
-configured port is not a conflict the runner reports: the runner cannot tell a
-database this worktree already runs, started by `serverpod database start` and
-joined by the pod, from a foreign holder, which the pod refuses with a message
-naming the port. Only a sibling runner's claim moves it aside.
+Automatic embedded-database startup uses only the Unix socket, even when the
+config has a database password. The runner therefore does not claim or move a
+database TCP port with the three HTTP listeners, and the pod reports no
+`servers.database` address for a Unix-only database.
+
+`serverpod database start` explicitly enables loopback TCP when launching a
+database with a configured password, using `database.port` or its `--port`
+override. To enable TCP for an existing Unix-only database, stop the database
+and its owning process, run that command for the appropriate mode, then start
+the server again. A pod that joins this database uses its Unix socket and
+reports its TCP address in `servers.database`. Attaching to a running database
+keeps its listeners unchanged; starting the command after the pod does not add
+a TCP listener. The runner does not move this explicitly started database's
+TCP port when another checkout claims an HTTP port.
 
 Fallback applies when another Serverpod runner holds or has claimed the port.
 A runner claims its ports in its manifest as soon as it has resolved them,
