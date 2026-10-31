@@ -89,14 +89,16 @@ class CreateRepairMigrationCommand
 
     File? repairMigration;
     try {
+      // Only a pod started without a runner still binds the configured port.
+      final insightsAddress =
+          await reportedInsightsAddress(
+            serverDir,
+            command: 'creating a repair migration',
+          ) ??
+          ConfigInfo(mode, serverDir: serverDir).configuredInsightsAddress;
+      log.info('Connecting to server at $insightsAddress');
+
       await log.progress('Creating repair migration', () async {
-        // Only a pod started without a runner still binds the configured port.
-        final insightsAddress =
-            await reportedInsightsAddress(
-              serverDir,
-              command: 'creating a repair migration',
-            ) ??
-            ConfigInfo(mode, serverDir: serverDir).configuredInsightsAddress;
         repairMigration = await createRepairMigrationAction(
           config: config,
           tag: tag,

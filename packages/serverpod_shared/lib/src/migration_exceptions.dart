@@ -29,15 +29,21 @@ class MigrationLiveDatabaseDefinitionException implements Exception {
   /// The exception that was thrown.
   final String exception;
 
+  /// The address of the server the schema was fetched from, if known.
+  final String? address;
+
   /// Creates a new [MigrationLiveDatabaseDefinitionException].
   MigrationLiveDatabaseDefinitionException({
     required this.exception,
+    this.address,
   });
 
   @override
-  String toString() =>
-      'Unable to fetch live database schema from server. Make sure the '
-      'server is running and is connected to the database.\n$exception';
+  String toString() {
+    var server = address == null ? 'server' : 'server at $address';
+    return 'Unable to fetch live database schema from $server. Make sure the '
+        'server is running and is connected to the database.\n$exception';
+  }
 }
 
 /// Exception thrown when writing a migration fails.
