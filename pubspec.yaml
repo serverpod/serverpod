@@ -30,6 +30,28 @@ dev_dependencies:
   melos: ^8.0.0
   sort_pubspec_dependencies: ^0.0.2
 
+dependency_overrides:
+  relic:
+    git:
+      url: https://github.com/nielsenko/relic.git
+      ref: fix-read-max-length-cancel
+      path: packages/relic
+  relic_core:
+    git:
+      url: https://github.com/nielsenko/relic.git
+      ref: fix-read-max-length-cancel
+      path: packages/relic_core
+  relic_headers:
+    git:
+      url: https://github.com/nielsenko/relic.git
+      ref: fix-read-max-length-cancel
+      path: packages/relic_headers
+  relic_io:
+    git:
+      url: https://github.com/nielsenko/relic.git
+      ref: fix-read-max-length-cancel
+      path: packages/relic_io
+
 melos:
   command:
     bootstrap:
