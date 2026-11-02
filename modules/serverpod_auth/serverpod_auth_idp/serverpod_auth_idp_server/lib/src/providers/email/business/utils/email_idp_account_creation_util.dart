@@ -23,6 +23,7 @@ class EmailIdpAccountCreationUtil {
   final Argon2HashUtil _hashUtils;
   final EmailIdpAccountCreationUtilsConfig _config;
   final AuthUsers _authUsers;
+  final DatabaseRateLimiter _rateLimitUtil;
   late final SecretChallengeUtil<EmailAccountRequest> _challengeUtil;
 
   /// Creates a new [EmailIdpAccountCreationUtil] instance.
@@ -34,7 +35,15 @@ class EmailIdpAccountCreationUtil {
     final Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _authUsers = authUsers,
-       _hashUtils = passwordHashUtils {
+       _hashUtils = passwordHashUtils,
+       _rateLimitUtil = DatabaseRateLimiter(
+         RateLimiterConfig(
+           domain: 'email',
+           source: 'account_creation',
+           maxAttempts: config.maxRegistrationAttempts.maxAttempts,
+           timeframe: config.maxRegistrationAttempts.timeframe,
+         ),
+       ) {
     _challengeUtil = SecretChallengeUtil(
       verificationConfig: _getVerificationConfig(),
       completionConfig: _getCompletionConfig(),
@@ -55,7 +64,15 @@ class EmailIdpAccountCreationUtil {
   /// The method will throw the following [EmailAccountRequestServerException]
   /// subclasses:
   /// - [EmailAccountRequestInvalidEmailException] if the email address is not valid.
+  /// - [EmailAccountRequestVerificationTooManyAttemptsException] if too many
+  ///   registrations have been started for the email address.
   /// - [EmailAccountAlreadyRegisteredException] if the email address is already registered.
+  ///
+  /// Each registration attempt for a valid email address will be logged to the
+  /// database outside of the [transaction] and can not be rolled back, so the
+  /// throttling will always be enforced. Attempts are counted before checking
+  /// whether the email address is already registered, so that the rate limit
+  /// does not leak which email addresses are registered.
   ///
   /// It is important that the caller does not leak the existence of the
   /// account request to the outside client.
@@ -73,6 +90,10 @@ class EmailIdpAccountCreationUtil {
 
     if (!EmailValidator.validate(email)) {
       throw EmailAccountRequestInvalidEmailException();
+    }
+
+    if (!await _rateLimitUtil.tryRecordAttempt(session, key: email)) {
+      throw EmailAccountRequestVerificationTooManyAttemptsException();
     }
 
     final existingAccountCount = await EmailAccount.db.count(
@@ -323,6 +344,34 @@ class EmailIdpAccountCreationUtil {
     );
   }
 
+  /// Deletes registration attempts according to [olderThan].
+  ///
+  /// If [olderThan] is [Duration.zero], this removes all matching attempts,
+  /// including those timestamped at or after the current time.
+  ///
+  /// If [olderThan] is `null`, this will remove all attempts outside the time
+  /// window that is checked upon registration requests, as configured in
+  /// [EmailIdpConfig.maxRegistrationAttempts].timeframe.
+  ///
+  /// Other durations remove only attempts strictly older than [olderThan].
+  ///
+  /// If [email] is provided, only attempts for the given email will be deleted.
+  Future<void> deleteRegistrationAttempts(
+    final Session session, {
+    required final Duration? olderThan,
+    required final String? email,
+    required final Transaction transaction,
+  }) async {
+    await _rateLimitUtil.deleteAttempts(
+      session,
+      olderThan: olderThan == Duration.zero
+          ? null
+          : olderThan ?? _rateLimitUtil.config.timeframe,
+      key: email?.normalizedEmail,
+      transaction: transaction,
+    );
+  }
+
   /// {@template email_idp_account_creation_util.find_active_email_account_request}
   /// Checks whether an email account request is still pending, and if so
   /// returns the associated request.
@@ -463,6 +512,9 @@ class EmailIdpAccountCreationUtilsConfig {
   /// The number of allowed attempts to verify the registration code.
   final int registrationVerificationCodeAllowedAttempts;
 
+  /// The maximum number of registration attempts allowed within the timeframe.
+  final RateLimit maxRegistrationAttempts;
+
   /// Function for sending the registration verification code.
   final SendRegistrationVerificationCodeFunction?
   sendRegistrationVerificationCode;
@@ -473,6 +525,7 @@ class EmailIdpAccountCreationUtilsConfig {
     required this.registrationVerificationCodeGenerator,
     required this.registrationVerificationCodeLifetime,
     required this.registrationVerificationCodeAllowedAttempts,
+    required this.maxRegistrationAttempts,
     required this.sendRegistrationVerificationCode,
     required this.onAfterAccountCreated,
   });
@@ -490,6 +543,7 @@ class EmailIdpAccountCreationUtilsConfig {
           config.registrationVerificationCodeLifetime,
       registrationVerificationCodeAllowedAttempts:
           config.registrationVerificationCodeAllowedAttempts,
+      maxRegistrationAttempts: config.maxRegistrationAttempts,
       sendRegistrationVerificationCode: config.sendRegistrationVerificationCode,
       onAfterAccountCreated: config.onAfterAccountCreated,
     );

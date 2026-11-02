@@ -69,6 +69,46 @@ class EmailIdpAdmin {
     );
   }
 
+  /// Deletes all registration attempts for an email.
+  ///
+  /// This is useful when you want to allow a user to start a new registration
+  /// even though they have hit the rate limit.
+  Future<void> deleteRegistrationAttemptsForEmail(
+    final Session session, {
+    required final String email,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.accountCreation.deleteRegistrationAttempts(
+        session,
+        olderThan: Duration.zero,
+        email: email,
+        transaction: transaction,
+      ),
+    );
+  }
+
+  /// Deletes all registration attempts outside the time window that is checked
+  /// upon registration requests, as configured in
+  /// [EmailIdpConfig.maxRegistrationAttempts].
+  Future<void> deleteExpiredRegistrationAttempts(
+    final Session session, {
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.accountCreation.deleteRegistrationAttempts(
+        session,
+        olderThan: null,
+        email: null,
+        transaction: transaction,
+      ),
+    );
+  }
+
   /// Deletes all password reset request attempts for an email.
   ///
   /// This is useful when you want to allow a user to request a new password

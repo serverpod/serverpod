@@ -1,4 +1,6 @@
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
@@ -304,6 +306,281 @@ void main() {
           expect(newRequest.createdAt, isNotNull);
         });
       });
+    },
+  );
+
+  withServerpod(
+    'Given registration attempts matching the rate limit',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      late int sentVerificationCodes;
+      const email = 'test@serverpod.dev';
+      const maxRegistrationAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
+      );
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        sentVerificationCodes = 0;
+
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxRegistrationAttempts: maxRegistrationAttempts,
+            sendRegistrationVerificationCode:
+                (
+                  final session, {
+                  required final String email,
+                  required final UuidValue accountRequestId,
+                  required final String verificationCode,
+                  required final Transaction? transaction,
+                }) {
+                  sentVerificationCodes++;
+                },
+          ),
+        );
+
+        // Make initial request to hit the rate limit
+        await session.db.transaction(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when starting registration with same email within timeframe then it throws too many attempts exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.startRegistration(
+                  session,
+                  email: email,
+                  transaction: transaction,
+                ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestVerificationTooManyAttemptsException>(),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when starting registration with same email within timeframe then no additional verification code is sent',
+        () async {
+          try {
+            await session.db.transaction(
+              (final transaction) =>
+                  fixture.accountCreationUtil.startRegistration(
+                    session,
+                    email: email,
+                    transaction: transaction,
+                  ),
+            );
+          } on EmailAccountRequestVerificationTooManyAttemptsException catch (
+            _
+          ) {
+            // Expected
+          }
+
+          expect(sentVerificationCodes, equals(1));
+        },
+      );
+
+      test(
+        'when starting registration with same email in different casing within timeframe then it throws too many attempts exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.startRegistration(
+                  session,
+                  email: '  ${email.toUpperCase()}  ',
+                  transaction: transaction,
+                ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestVerificationTooManyAttemptsException>(),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when starting registration with a different email then it succeeds and returns account request id',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.startRegistration(
+                  session,
+                  email: 'other-$email',
+                  transaction: transaction,
+                ),
+          );
+
+          await expectLater(result, completion(isA<UuidValue>()));
+        },
+      );
+
+      test(
+        'when starting registration with same email outside of timeframe then it succeeds and returns account request id',
+        () async {
+          await withClock(
+            Clock.fixed(DateTime.now().add(maxRegistrationAttempts.timeframe)),
+            () async {
+              final result = await session.db.transaction(
+                (final transaction) =>
+                    fixture.accountCreationUtil.startRegistration(
+                      session,
+                      email: email,
+                      transaction: transaction,
+                    ),
+              );
+
+              expect(result, isNotNull);
+            },
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given registration has been started for an already registered email past rate limit',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const maxRegistrationAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
+      );
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxRegistrationAttempts: maxRegistrationAttempts,
+          ),
+        );
+
+        final authUser = await fixture.authUsers.create(session);
+
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+        );
+
+        // Make initial request to hit the rate limit
+        try {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.startRegistration(
+                  session,
+                  email: email,
+                  transaction: transaction,
+                ),
+          );
+        } on EmailAccountAlreadyRegisteredException catch (_) {
+          // Expected
+        }
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when starting registration with same email then it throws too many attempts exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.startRegistration(
+                  session,
+                  email: email,
+                  transaction: transaction,
+                ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestVerificationTooManyAttemptsException>(),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a rate limit of one registration attempt',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxRegistrationAttempts: RateLimit(
+              maxAttempts: 1,
+              timeframe: Duration(hours: 1),
+            ),
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when starting registration with invalid email then the attempt is not counted',
+        () async {
+          for (var i = 0; i < 2; i++) {
+            try {
+              await session.db.transaction(
+                (final transaction) =>
+                    fixture.accountCreationUtil.startRegistration(
+                      session,
+                      email: 'not-an-email',
+                      transaction: transaction,
+                    ),
+              );
+            } on EmailAccountRequestInvalidEmailException catch (_) {
+              // Expected
+            }
+          }
+
+          final attempts = await RateLimitedRequestAttempt.db.count(
+            session,
+            where: (final t) =>
+                t.domain.equals('email') & t.source.equals('account_creation'),
+          );
+          expect(attempts, isZero);
+        },
+      );
     },
   );
 }

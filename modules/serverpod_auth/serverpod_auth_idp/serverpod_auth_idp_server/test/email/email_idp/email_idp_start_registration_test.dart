@@ -211,4 +211,121 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given no email account with maximum allowed registration attempts',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'newuser@serverpod.dev';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxRegistrationAttempts: RateLimit(
+              maxAttempts: 1,
+              timeframe: Duration(hours: 1),
+            ),
+          ),
+        );
+
+        // Make initial request to hit the rate limit
+        await fixture.emailIdp.startRegistration(
+          session,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when start registration is called with same email then it throws EmailAccountRequestException with reason "tooManyAttempts"',
+        () async {
+          final result = fixture.emailIdp.startRegistration(
+            session,
+            email: email,
+          );
+
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.tooManyAttempts,
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given an existing email account with maximum allowed registration attempts',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxRegistrationAttempts: RateLimit(
+              maxAttempts: 1,
+              timeframe: Duration(hours: 1),
+            ),
+          ),
+        );
+
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+
+        // Make initial request to hit the rate limit
+        await fixture.emailIdp.startRegistration(
+          session,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when start registration is called with same email then it throws EmailAccountRequestException with reason "tooManyAttempts" to not leak that the email is registered',
+        () async {
+          final result = fixture.emailIdp.startRegistration(
+            session,
+            email: email,
+          );
+
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.tooManyAttempts,
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 }

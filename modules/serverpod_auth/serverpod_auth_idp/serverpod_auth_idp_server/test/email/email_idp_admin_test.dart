@@ -1,5 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
@@ -299,6 +300,7 @@ void main() {
 
   withServerpod(
     'Given an existing account request',
+    rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -831,6 +833,142 @@ void main() {
             result,
             throwsA(isA<EmailAccountNotFoundException>()),
           );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given email with maximum number of allowed registration attempts',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      late Clock attemptClock;
+      const email = 'test@serverpod.dev';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxRegistrationAttempts: RateLimit(
+              maxAttempts: 1,
+              timeframe: Duration(hours: 1),
+            ),
+          ),
+        );
+
+        // Same timestamp as the cleanup below. Clearing the rate limit must
+        // remove an attempt recorded in the current clock tick.
+        attemptClock = Clock.fixed(DateTime.now());
+        await withClock(
+          attemptClock,
+          () => session.db.transaction(
+            (final transaction) => fixture.emailIdp.startRegistration(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when deleteRegistrationAttemptsForEmail is called then user can start registration again',
+        () async {
+          await withClock(attemptClock, () async {
+            await session.db.transaction(
+              (final transaction) =>
+                  fixture.emailIdp.admin.deleteRegistrationAttemptsForEmail(
+                    session,
+                    email: email.toUpperCase(),
+                    transaction: transaction,
+                  ),
+            );
+
+            final result = session.db.transaction(
+              (final transaction) => fixture.emailIdp.startRegistration(
+                session,
+                email: email,
+                transaction: transaction,
+              ),
+            );
+
+            await expectLater(result, completion(isA<UuidValue>()));
+          });
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given an expired and an active registration attempt',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const expiredEmail = 'expired@serverpod.dev';
+      const activeEmail = 'active@serverpod.dev';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxRegistrationAttempts: RateLimit(
+              maxAttempts: 1,
+              timeframe: Duration(hours: 1),
+            ),
+          ),
+        );
+
+        await withClock(
+          Clock.fixed(DateTime.now().subtract(const Duration(hours: 2))),
+          () => session.db.transaction(
+            (final transaction) => fixture.emailIdp.startRegistration(
+              session,
+              email: expiredEmail,
+              transaction: transaction,
+            ),
+          ),
+        );
+
+        await session.db.transaction(
+          (final transaction) => fixture.emailIdp.startRegistration(
+            session,
+            email: activeEmail,
+            transaction: transaction,
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when deleteExpiredRegistrationAttempts is called then only the expired attempt is deleted',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.deleteExpiredRegistrationAttempts(
+                  session,
+                  transaction: transaction,
+                ),
+          );
+
+          final attempts = await RateLimitedRequestAttempt.db.find(
+            session,
+            where: (final t) =>
+                t.domain.equals('email') & t.source.equals('account_creation'),
+          );
+
+          expect(attempts.map((final a) => a.key), [activeEmail]);
         },
       );
     },

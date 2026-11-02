@@ -162,6 +162,17 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
   /// Defaults to allowing at most 3 attempts in the last hour.
   final RateLimit maxPasswordResetAttempts;
 
+  /// How many registration attempts are allowed for the same email.
+  ///
+  /// Every call to start a registration with a valid email counts as an
+  /// attempt, including calls for already registered emails, which do not send
+  /// a verification code. Calls rejected by this limit are not counted, so
+  /// they do not extend the lockout. This limits how many verification emails
+  /// can be sent to the same address.
+  ///
+  /// Defaults to allowing at most 3 attempts in the last hour.
+  final RateLimit maxRegistrationAttempts;
+
   /// The length in bytes of the random salt generated for each hashed secret.
   ///
   /// Must be at least 8, the shortest salt Argon2 accepts.
@@ -244,6 +255,10 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
       timeframe: Duration(hours: 1),
       maxAttempts: 3,
     ),
+    this.maxRegistrationAttempts = const RateLimit(
+      timeframe: Duration(hours: 1),
+      maxAttempts: 3,
+    ),
     this.secretHashSaltLength = 16,
     this.onAfterAccountCreated,
     this.otpLoginVerificationCodeGenerator =
@@ -292,6 +307,7 @@ class EmailIdpConfigFromPasswords extends EmailIdpConfig {
     super.failedLoginRateLimit,
     super.passwordValidationFunction,
     super.maxPasswordResetAttempts,
+    super.maxRegistrationAttempts,
     super.secretHashSaltLength,
     super.onAfterAccountCreated,
     super.otpLoginVerificationCodeGenerator,

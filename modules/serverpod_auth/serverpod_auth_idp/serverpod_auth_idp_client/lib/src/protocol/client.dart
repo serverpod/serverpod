@@ -110,9 +110,14 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
   /// sent to [email] with a verification link, which the user must open to
   /// complete the registration.
   ///
-  /// Always returns a account request ID, which can be used to complete the
+  /// Returns an account request ID, which can be used to complete the
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
+  ///
+  /// Throws an [EmailAccountRequestException] with reason
+  /// [EmailAccountRequestExceptionReason.tooManyAttempts] if too many
+  /// registrations have been started for [email] within the configured
+  /// timeframe.
   _ida.Future<_isc.UuidValue> startRegistration({required String email});
 
   /// Verifies an account request code and returns a token
@@ -320,9 +325,14 @@ abstract class EndpointEmailOtpIdpBase extends EndpointEmailIdpBase {
   /// sent to [email] with a verification link, which the user must open to
   /// complete the registration.
   ///
-  /// Always returns a account request ID, which can be used to complete the
+  /// Returns an account request ID, which can be used to complete the
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
+  ///
+  /// Throws an [EmailAccountRequestException] with reason
+  /// [EmailAccountRequestExceptionReason.tooManyAttempts] if too many
+  /// registrations have been started for [email] within the configured
+  /// timeframe.
   @override
   _ida.Future<_isc.UuidValue> startRegistration({required String email});
 

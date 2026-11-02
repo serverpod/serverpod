@@ -26,8 +26,8 @@ enum EmailAccountRequestExceptionReason implements _isc.SerializableModel {
   /// match the configured policy.
   policyViolation,
 
-  /// Exception to be thrown when attempting to complete an email account
-  /// request too many times.
+  /// Exception to be thrown when attempting to start or complete an email
+  /// account request too many times.
   tooManyAttempts,
 
   /// Unknown error occurred.

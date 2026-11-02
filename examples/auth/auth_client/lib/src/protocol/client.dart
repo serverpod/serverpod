@@ -217,9 +217,14 @@ class EndpointEmailIdp extends _iaic.EndpointEmailOtpIdpBase {
   /// sent to [email] with a verification link, which the user must open to
   /// complete the registration.
   ///
-  /// Always returns a account request ID, which can be used to complete the
+  /// Returns an account request ID, which can be used to complete the
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
+  ///
+  /// Throws an [EmailAccountRequestException] with reason
+  /// [EmailAccountRequestExceptionReason.tooManyAttempts] if too many
+  /// registrations have been started for [email] within the configured
+  /// timeframe.
   @override
   _ida.Future<_isc.UuidValue> startRegistration({required String email}) =>
       caller.callServerEndpoint<_isc.UuidValue>(
