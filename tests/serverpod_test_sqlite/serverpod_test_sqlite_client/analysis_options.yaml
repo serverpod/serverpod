@@ -1,2 +1,6 @@
+linter:
+  rules:
+    avoid_final_parameters: true
+
 formatter:
   trailing_commas: preserve
