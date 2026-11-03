@@ -11,7 +11,7 @@ void main() {
   withServerpod(
     'Given an existing auth user',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue authUserId;
@@ -34,20 +34,19 @@ void main() {
         'when createEmailAuthentication is called with valid parameters then it creates email authentication that can be used to authenticate',
         () async {
           final emailAccountId = await session.db.transaction(
-            (final transaction) =>
-                fixture.emailIdp.admin.createEmailAuthentication(
-                  session,
-                  authUserId: authUserId,
-                  email: email,
-                  password: password,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.emailIdp.admin.createEmailAuthentication(
+              session,
+              authUserId: authUserId,
+              email: email,
+              password: password,
+              transaction: transaction,
+            ),
           );
 
           expect(emailAccountId, isA<UuidValue>());
 
           final authResult = await session.db.transaction(
-            (final transaction) => fixture.authenticationUtil.authenticate(
+            (transaction) => fixture.authenticationUtil.authenticate(
               session,
               email: email,
               password: password,
@@ -62,8 +61,8 @@ void main() {
   );
 
   withServerpod('Given an email account', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late EmailIdpTestFixture fixture;
@@ -89,7 +88,7 @@ void main() {
       'when findAccount is called with uppercase email then it finds email account',
       () async {
         final result = await session.db.transaction(
-          (final transaction) => fixture.emailIdp.admin.findAccount(
+          (transaction) => fixture.emailIdp.admin.findAccount(
             session,
             email: email.toUpperCase(),
             transaction: transaction,
@@ -103,8 +102,8 @@ void main() {
   });
 
   withServerpod('Given an email account without password', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late EmailIdpTestFixture fixture;
@@ -130,7 +129,7 @@ void main() {
 
     test('when findAccount is called then hasPassword is false', () async {
       final result = await session.db.transaction(
-        (final transaction) => fixture.emailIdp.admin.findAccount(
+        (transaction) => fixture.emailIdp.admin.findAccount(
           session,
           email: email,
           transaction: transaction,
@@ -145,7 +144,7 @@ void main() {
       'when setPassword is called with uppercase email then it sets password',
       () async {
         await session.db.transaction(
-          (final transaction) => fixture.emailIdp.admin.setPassword(
+          (transaction) => fixture.emailIdp.admin.setPassword(
             session,
             email: email.toUpperCase(),
             password: 'NewPassword123!',
@@ -155,7 +154,7 @@ void main() {
 
         // Verify password was set
         final result = await session.db.transaction(
-          (final transaction) => fixture.emailIdp.admin.findAccount(
+          (transaction) => fixture.emailIdp.admin.findAccount(
             session,
             email: email,
             transaction: transaction,
@@ -170,7 +169,7 @@ void main() {
   withServerpod(
     'Given an email account with password',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -196,7 +195,7 @@ void main() {
 
       test('when findAccount is called then hasPassword is true', () async {
         final result = await session.db.transaction(
-          (final transaction) => fixture.emailIdp.admin.findAccount(
+          (transaction) => fixture.emailIdp.admin.findAccount(
             session,
             email: email,
             transaction: transaction,
@@ -212,7 +211,7 @@ void main() {
   withServerpod(
     'Given expired password reset request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -249,7 +248,7 @@ void main() {
         // Create an expired password reset request using startPasswordReset
         await withClock(clockBeforeTimeframe, () async {
           expiredRequestId = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.startPasswordReset(
+            (transaction) => fixture.emailIdp.startPasswordReset(
               session,
               email: email,
               transaction: transaction,
@@ -267,7 +266,7 @@ void main() {
         () async {
           // Delete expired requests
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.emailIdp.admin.deleteExpiredPasswordResetRequests(
                   session,
                   transaction: transaction,
@@ -278,7 +277,7 @@ void main() {
           final result = withClock(
             clockBeforeTimeframe,
             () => session.db.transaction(
-              (final transaction) =>
+              (transaction) =>
                   fixture.emailIdp.utils.passwordReset.verifyPasswordResetCode(
                     session,
                     passwordResetRequestId: expiredRequestId,
@@ -299,7 +298,7 @@ void main() {
 
   withServerpod(
     'Given an existing account request',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -309,7 +308,7 @@ void main() {
         fixture = EmailIdpTestFixture();
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.emailIdp.startRegistration(
+          (transaction) => fixture.emailIdp.startRegistration(
             session,
             email: 'test@serverpod.dev',
             transaction: transaction,
@@ -325,7 +324,7 @@ void main() {
         'when findActiveEmailAccountRequest is called then it returns the request',
         () async {
           final result = await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.emailIdp.admin.findActiveEmailAccountRequest(
                   session,
                   accountRequestId: accountRequestId,
@@ -342,7 +341,7 @@ void main() {
         'when deleteEmailAccountRequestById is called then it deletes the request',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.emailIdp.admin.deleteEmailAccountRequestById(
                   session,
                   accountRequestId,
@@ -363,7 +362,7 @@ void main() {
 
   withServerpod(
     'Given no email account exists',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -378,7 +377,7 @@ void main() {
 
       test('when findAccount is called then it returns null', () async {
         final result = await session.db.transaction(
-          (final transaction) => fixture.emailIdp.admin.findAccount(
+          (transaction) => fixture.emailIdp.admin.findAccount(
             session,
             email: 'nonexistent@serverpod.dev',
             transaction: transaction,
@@ -392,7 +391,7 @@ void main() {
         'when setPassword is called then it throws EmailAccountNotFoundException',
         () async {
           final result = session.db.transaction(
-            (final transaction) => fixture.emailIdp.admin.setPassword(
+            (transaction) => fixture.emailIdp.admin.setPassword(
               session,
               email: 'nonexistent@serverpod.dev',
               password: 'Password123!',
@@ -411,7 +410,7 @@ void main() {
 
   withServerpod(
     'Given no account request exists',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -428,7 +427,7 @@ void main() {
         'when findActiveEmailAccountRequest is called then it returns null',
         () async {
           final result = await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.emailIdp.admin.findActiveEmailAccountRequest(
                   session,
                   accountRequestId: const Uuid().v4obj(),
@@ -445,7 +444,7 @@ void main() {
   withServerpod(
     'Given email account with maximum number of allowed password reset attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late Clock attemptClock;
@@ -479,7 +478,7 @@ void main() {
         await withClock(
           attemptClock,
           () => session.db.transaction(
-            (final transaction) => fixture.emailIdp.startPasswordReset(
+            (transaction) => fixture.emailIdp.startPasswordReset(
               session,
               email: email,
               transaction: transaction,
@@ -497,7 +496,7 @@ void main() {
         () async {
           await withClock(attemptClock, () async {
             await session.db.transaction(
-              (final transaction) => fixture.emailIdp.admin
+              (transaction) => fixture.emailIdp.admin
                   .deletePasswordResetRequestsAttemptsForEmail(
                     session,
                     email: email,
@@ -506,7 +505,7 @@ void main() {
             );
 
             final result = session.db.transaction(
-              (final transaction) => fixture.emailIdp.startPasswordReset(
+              (transaction) => fixture.emailIdp.startPasswordReset(
                 session,
                 email: email,
                 transaction: transaction,
@@ -523,7 +522,7 @@ void main() {
   withServerpod(
     'Given email account with maximum number allowed failed login attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -554,7 +553,7 @@ void main() {
         try {
           await inTheRecentPast(
             () => session.db.transaction(
-              (final transaction) => fixture.emailIdp.login(
+              (transaction) => fixture.emailIdp.login(
                 session,
                 email: email,
                 password: 'WrongPassword123!',
@@ -575,16 +574,15 @@ void main() {
         'when deleteFailedLoginAttempts is called with older than zero then user can login again',
         () async {
           await session.db.transaction(
-            (final transaction) =>
-                fixture.emailIdp.admin.deleteFailedLoginAttempts(
-                  session,
-                  olderThan: const Duration(microseconds: 0),
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.emailIdp.admin.deleteFailedLoginAttempts(
+              session,
+              olderThan: const Duration(microseconds: 0),
+              transaction: transaction,
+            ),
           );
 
           final result = session.db.transaction(
-            (final transaction) => fixture.emailIdp.login(
+            (transaction) => fixture.emailIdp.login(
               session,
               email: email,
               password: password,
@@ -600,15 +598,14 @@ void main() {
         'when deleteFailedLoginAttempts is called without older than user is still blocked from logging in',
         () async {
           await session.db.transaction(
-            (final transaction) =>
-                fixture.emailIdp.admin.deleteFailedLoginAttempts(
-                  session,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.emailIdp.admin.deleteFailedLoginAttempts(
+              session,
+              transaction: transaction,
+            ),
           );
 
           final result = session.db.transaction(
-            (final transaction) => fixture.emailIdp.login(
+            (transaction) => fixture.emailIdp.login(
               session,
               email: email,
               password: password,
@@ -625,7 +622,7 @@ void main() {
   withServerpod(
     'Given an email account with password and password reset request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue authUserId;
@@ -647,7 +644,7 @@ void main() {
         );
 
         await session.db.transaction(
-          (final transaction) => fixture.emailIdp.startPasswordReset(
+          (transaction) => fixture.emailIdp.startPasswordReset(
             session,
             email: email,
             transaction: transaction,
@@ -663,7 +660,7 @@ void main() {
         'when deleteEmailAccount is called with lowercase email then account is deleted',
         () async {
           await session.db.transaction(
-            (final transaction) => fixture.emailIdp.admin.deleteEmailAccount(
+            (transaction) => fixture.emailIdp.admin.deleteEmailAccount(
               session,
               email: email,
               transaction: transaction,
@@ -671,7 +668,7 @@ void main() {
           );
 
           final result = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.admin.findAccount(
+            (transaction) => fixture.emailIdp.admin.findAccount(
               session,
               email: email,
               transaction: transaction,
@@ -686,7 +683,7 @@ void main() {
         'when deleteEmailAccount is called with uppercase email then account is deleted',
         () async {
           await session.db.transaction(
-            (final transaction) => fixture.emailIdp.admin.deleteEmailAccount(
+            (transaction) => fixture.emailIdp.admin.deleteEmailAccount(
               session,
               email: email.toUpperCase(),
               transaction: transaction,
@@ -694,7 +691,7 @@ void main() {
           );
 
           final result = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.admin.findAccount(
+            (transaction) => fixture.emailIdp.admin.findAccount(
               session,
               email: email,
               transaction: transaction,
@@ -715,7 +712,7 @@ void main() {
           expect(resetRequestsBefore.length, greaterThan(0));
 
           await session.db.transaction(
-            (final transaction) => fixture.emailIdp.admin.deleteEmailAccount(
+            (transaction) => fixture.emailIdp.admin.deleteEmailAccount(
               session,
               email: email,
               transaction: transaction,
@@ -734,7 +731,7 @@ void main() {
         'when deleteEmailAccountByAuthUserId is called then account is deleted',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.emailIdp.admin.deleteEmailAccountByAuthUserId(
                   session,
                   authUserId: authUserId,
@@ -743,7 +740,7 @@ void main() {
           );
 
           final result = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.admin.findAccount(
+            (transaction) => fixture.emailIdp.admin.findAccount(
               session,
               email: email,
               transaction: transaction,
@@ -764,7 +761,7 @@ void main() {
           expect(resetRequestsBefore.length, greaterThan(0));
 
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.emailIdp.admin.deleteEmailAccountByAuthUserId(
                   session,
                   authUserId: authUserId,
@@ -784,7 +781,7 @@ void main() {
 
   withServerpod(
     'Given no email account exists',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -801,7 +798,7 @@ void main() {
         'when deleteEmailAccount is called then it throws EmailAccountNotFoundException',
         () async {
           final result = session.db.transaction(
-            (final transaction) => fixture.emailIdp.admin.deleteEmailAccount(
+            (transaction) => fixture.emailIdp.admin.deleteEmailAccount(
               session,
               email: 'nonexistent@serverpod.dev',
               transaction: transaction,
@@ -819,7 +816,7 @@ void main() {
         'when deleteEmailAccountByAuthUserId is called then it throws EmailAccountNotFoundException',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.emailIdp.admin.deleteEmailAccountByAuthUserId(
                   session,
                   authUserId: const Uuid().v4obj(),

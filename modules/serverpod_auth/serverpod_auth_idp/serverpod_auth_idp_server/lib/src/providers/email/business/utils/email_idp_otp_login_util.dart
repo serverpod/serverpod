@@ -32,11 +32,11 @@ class EmailIdpOtpLoginUtil {
 
   /// Creates a new [EmailIdpOtpLoginUtil] instance.
   EmailIdpOtpLoginUtil({
-    required final EmailIdpOtpLoginUtilsConfig config,
-    required final Argon2HashUtil passwordHashUtils,
-    required final AuthUsers authUsers,
-    final Argon2HashUtil? verificationCodeHash,
-    final Argon2HashUtil? completionTokenHash,
+    required EmailIdpOtpLoginUtilsConfig config,
+    required Argon2HashUtil passwordHashUtils,
+    required AuthUsers authUsers,
+    Argon2HashUtil? verificationCodeHash,
+    Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _passwordHashUtil = passwordHashUtils,
        _authUsers = authUsers,
@@ -81,9 +81,9 @@ class EmailIdpOtpLoginUtil {
   /// [verifyOtpLoginCode] together with the one-time password.
   /// {@endtemplate}
   Future<UuidValue> startOtpLogin(
-    final Session session, {
+    Session session, {
     required String email,
-    required final Transaction transaction,
+    required Transaction transaction,
   }) async {
     if (_config.sendOtpLoginVerificationCode == null &&
         _config.sendRegistrationVerificationCode == null) {
@@ -107,7 +107,7 @@ class EmailIdpOtpLoginUtil {
 
     await EmailAccountOtpLoginRequest.db.deleteWhere(
       session,
-      where: (final t) => t.email.equals(email),
+      where: (t) => t.email.equals(email),
       transaction: transaction,
     );
 
@@ -143,11 +143,11 @@ class EmailIdpOtpLoginUtil {
   bool _hasLoggedRegistrationSenderFallback = false;
 
   Future<void> _sendVerificationCode(
-    final Session session, {
-    required final String email,
-    required final UuidValue otpLoginRequestId,
-    required final String verificationCode,
-    required final Transaction transaction,
+    Session session, {
+    required String email,
+    required UuidValue otpLoginRequestId,
+    required String verificationCode,
+    required Transaction transaction,
   }) async {
     final sendOtpLoginVerificationCode = _config.sendOtpLoginVerificationCode;
     if (sendOtpLoginVerificationCode != null) {
@@ -205,10 +205,10 @@ class EmailIdpOtpLoginUtil {
   /// [EmailAccountOtpVerificationResult.accountExists].
   /// {@endtemplate}
   Future<EmailAccountOtpVerificationResult> verifyOtpLoginCode(
-    final Session session, {
-    required final UuidValue otpLoginRequestId,
-    required final String verificationCode,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue otpLoginRequestId,
+    required String verificationCode,
+    required Transaction transaction,
   }) async {
     final token = await withEmailAccountRequestExceptions(
       () => _challengeUtil.verifyChallenge(
@@ -257,9 +257,9 @@ class EmailIdpOtpLoginUtil {
   ///   already expired.
   /// {@endtemplate}
   Future<UuidValue> completeOtpLogin(
-    final Session session, {
-    required final String otpLoginToken,
-    required final Transaction transaction,
+    Session session, {
+    required String otpLoginToken,
+    required Transaction transaction,
   }) async {
     final request = await _completeChallenge(
       session,
@@ -312,10 +312,10 @@ class EmailIdpOtpLoginUtil {
   ///   for the email in the meantime.
   /// {@endtemplate}
   Future<EmailIdpCompleteOtpRegistrationResult> completeOtpRegistration(
-    final Session session, {
-    required final String otpLoginToken,
-    required final String? password,
-    required final Transaction transaction,
+    Session session, {
+    required String otpLoginToken,
+    required String? password,
+    required Transaction transaction,
   }) async {
     if (password != null) {
       if (!_config.allowPasswordOnOtpRegistration ||
@@ -384,8 +384,8 @@ class EmailIdpOtpLoginUtil {
   /// Deletes expired one-time password login requests.
   /// {@endtemplate}
   Future<void> deleteExpiredOtpLoginRequests(
-    final Session session, {
-    required final Transaction transaction,
+    Session session, {
+    required Transaction transaction,
   }) async {
     final lastValidDateTime = clock.now().subtract(
       _config.otpLoginVerificationCodeLifetime,
@@ -393,7 +393,7 @@ class EmailIdpOtpLoginUtil {
 
     await EmailAccountOtpLoginRequest.db.deleteWhere(
       session,
-      where: (final t) => t.createdAt < lastValidDateTime,
+      where: (t) => t.createdAt < lastValidDateTime,
       transaction: transaction,
     );
   }
@@ -410,10 +410,10 @@ class EmailIdpOtpLoginUtil {
   /// though they hit the rate limit.
   /// {@endtemplate}
   Future<void> deleteOtpLoginAttempts(
-    final Session session, {
-    final Duration? olderThan,
-    final String? email,
-    required final Transaction transaction,
+    Session session, {
+    Duration? olderThan,
+    String? email,
+    required Transaction transaction,
   }) async {
     await _rateLimitUtil.deleteAttempts(
       session,
@@ -424,13 +424,13 @@ class EmailIdpOtpLoginUtil {
   }
 
   Future<EmailAccount?> _findAccount(
-    final Session session, {
-    required final String email,
-    required final Transaction transaction,
+    Session session, {
+    required String email,
+    required Transaction transaction,
   }) {
     return EmailAccount.db.findFirstRow(
       session,
-      where: (final t) => t.email.equals(email),
+      where: (t) => t.email.equals(email),
       transaction: transaction,
     );
   }
@@ -447,13 +447,13 @@ class EmailIdpOtpLoginUtil {
   /// already deleted by a concurrent completion, so that each verified code
   /// completes a single login.
   Future<void> _deleteCompletedRequest(
-    final Session session,
-    final EmailAccountOtpLoginRequest request, {
-    required final Transaction transaction,
+    Session session,
+    EmailAccountOtpLoginRequest request, {
+    required Transaction transaction,
   }) async {
     final deleted = await EmailAccountOtpLoginRequest.db.deleteWhere(
       session,
-      where: (final t) => t.id.equals(request.id!),
+      where: (t) => t.id.equals(request.id!),
       transaction: transaction,
     );
     if (deleted.isEmpty) {
@@ -467,9 +467,9 @@ class EmailIdpOtpLoginUtil {
   }
 
   Future<EmailAccountOtpLoginRequest> _completeChallenge(
-    final Session session, {
-    required final String token,
-    required final Transaction transaction,
+    Session session, {
+    required String token,
+    required Transaction transaction,
   }) {
     return withEmailAccountRequestExceptions(
       () => _challengeUtil.completeChallenge(
@@ -488,13 +488,13 @@ class EmailIdpOtpLoginUtil {
           domain: 'email',
           source: 'otp_login_verification',
           maxAttempts: _config.otpLoginVerificationCodeAllowedAttempts,
-          onRateLimitExceeded: (final session, final key) =>
+          onRateLimitExceeded: (session, key) =>
               _onRateLimitExceeded(session, UuidValue.withValidation(key)),
         ),
       ),
       getRequest: _getRequest,
-      isAlreadyUsed: (final request) => request.completeChallenge != null,
-      getChallenge: (final request) {
+      isAlreadyUsed: (request) => request.completeChallenge != null,
+      getChallenge: (request) {
         final challenge = request.challenge;
         if (challenge == null) {
           throw StateError('Challenge is required for OTP login verification');
@@ -511,29 +511,28 @@ class EmailIdpOtpLoginUtil {
   _getCompletionConfig() {
     return SecretChallengeCompletionConfig(
       getRequest: _getRequest,
-      getCompletionChallenge: (final request) => request.completeChallenge,
+      getCompletionChallenge: (request) => request.completeChallenge,
       isExpired: _isRequestExpired,
       onExpired: EmailAccountOtpLoginRequest.db.deleteRow,
     );
   }
 
   Future<void> _onRateLimitExceeded(
-    final Session session,
-    final UuidValue requestId,
+    Session session,
+    UuidValue requestId,
   ) async {
     await EmailAccountOtpLoginRequest.db.deleteWhere(
       session,
       // Only delete requests that have not been verified yet.
-      where: (final t) =>
-          t.id.equals(requestId) & t.completeChallengeId.equals(null),
+      where: (t) => t.id.equals(requestId) & t.completeChallengeId.equals(null),
       // passing no transaction, so this will not be rolled back
     );
   }
 
   Future<EmailAccountOtpLoginRequest?> _getRequest(
-    final Session session,
-    final UuidValue requestId, {
-    required final Transaction? transaction,
+    Session session,
+    UuidValue requestId, {
+    required Transaction? transaction,
   }) {
     return EmailAccountOtpLoginRequest.db.findById(
       session,
@@ -546,7 +545,7 @@ class EmailIdpOtpLoginUtil {
     );
   }
 
-  bool _isRequestExpired(final EmailAccountOtpLoginRequest request) {
+  bool _isRequestExpired(EmailAccountOtpLoginRequest request) {
     final expiresAt = request.createdAt.add(
       _config.otpLoginVerificationCodeLifetime,
     );
@@ -558,17 +557,17 @@ class EmailIdpOtpLoginUtil {
   /// Throws [EmailAccountRequestVerificationCodeAlreadyUsedException] if a
   /// completion challenge has already been linked.
   Future<void> _linkCompleteChallenge(
-    final Session session,
-    final EmailAccountOtpLoginRequest request,
-    final SecretChallenge completeChallenge, {
-    required final Transaction? transaction,
+    Session session,
+    EmailAccountOtpLoginRequest request,
+    SecretChallenge completeChallenge, {
+    required Transaction? transaction,
   }) async {
     final updated = await EmailAccountOtpLoginRequest.db.updateWhere(
       session,
-      columnValues: (final t) => [
+      columnValues: (t) => [
         t.completeChallengeId(completeChallenge.id!),
       ],
-      where: (final t) =>
+      where: (t) =>
           t.id.equals(request.id!) & t.completeChallengeId.equals(null),
       transaction: transaction,
     );
@@ -626,7 +625,7 @@ class EmailIdpOtpLoginUtilsConfig {
   /// Creates a new [EmailIdpOtpLoginUtilsConfig] instance from an
   /// [EmailIdpConfig] instance.
   factory EmailIdpOtpLoginUtilsConfig.fromEmailIdpConfig(
-    final EmailIdpConfig config,
+    EmailIdpConfig config,
   ) {
     return EmailIdpOtpLoginUtilsConfig(
       otpLoginVerificationCodeGenerator:

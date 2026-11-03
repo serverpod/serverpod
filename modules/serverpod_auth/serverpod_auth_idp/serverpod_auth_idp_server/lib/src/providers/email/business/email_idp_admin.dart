@@ -11,21 +11,21 @@ class EmailIdpAdmin {
 
   /// Creates a new instance of [EmailIdpAdmin].
   EmailIdpAdmin({
-    required final EmailIdpUtils utils,
+    required EmailIdpUtils utils,
   }) : _utils = utils;
 
   /// {@macro email_idp_account_creation_util.create_email_authentication}
   Future<UuidValue> createEmailAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String email,
-    required final String? password,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String email,
+    required String? password,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => _utils.accountCreation.createEmailAuthentication(
+      (transaction) => _utils.accountCreation.createEmailAuthentication(
         session,
         authUserId: authUserId,
         email: email,
@@ -37,35 +37,33 @@ class EmailIdpAdmin {
 
   /// {@macro email_idp_account_creation_util.delete_email_account_request_by_id}
   Future<void> deleteEmailAccountRequestById(
-    final Session session,
-    final UuidValue accountRequestId, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue accountRequestId, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          _utils.accountCreation.deleteEmailAccountRequestById(
-            session,
-            accountRequestId,
-            transaction: transaction,
-          ),
+      (transaction) => _utils.accountCreation.deleteEmailAccountRequestById(
+        session,
+        accountRequestId,
+        transaction: transaction,
+      ),
     );
   }
 
   /// {@macro email_idp_account_creation_util.delete_expired_account_requests}
   Future<void> deleteExpiredAccountRequests(
-    final Session session, {
-    final Transaction? transaction,
+    Session session, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          _utils.accountCreation.deleteExpiredAccountRequests(
-            session,
-            transaction: transaction,
-          ),
+      (transaction) => _utils.accountCreation.deleteExpiredAccountRequests(
+        session,
+        transaction: transaction,
+      ),
     );
   }
 
@@ -74,32 +72,31 @@ class EmailIdpAdmin {
   /// This is useful when you want to allow a user to request a new password
   /// even though they have hit the rate limit.
   Future<void> deletePasswordResetRequestsAttemptsForEmail(
-    final Session session, {
-    required final String email,
-    final Transaction? transaction,
+    Session session, {
+    required String email,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          _utils.passwordReset.deletePasswordResetRequestAttempts(
-            session,
-            olderThan: Duration.zero,
-            email: email.normalizedEmail,
-            transaction: transaction,
-          ),
+      (transaction) => _utils.passwordReset.deletePasswordResetRequestAttempts(
+        session,
+        olderThan: Duration.zero,
+        email: email.normalizedEmail,
+        transaction: transaction,
+      ),
     );
   }
 
   /// Deletes all expired password reset requests.
   Future<void> deleteExpiredPasswordResetRequests(
-    final Session session, {
-    final Transaction? transaction,
+    Session session, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => _utils.passwordReset.deletePasswordResetRequests(
+      (transaction) => _utils.passwordReset.deletePasswordResetRequests(
         session,
         olderThan: null,
         emailAccountId: null,
@@ -110,13 +107,13 @@ class EmailIdpAdmin {
 
   /// {@macro email_idp_otp_login_util.delete_expired_otp_login_requests}
   Future<void> deleteExpiredOtpLoginRequests(
-    final Session session, {
-    final Transaction? transaction,
+    Session session, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => _utils.otpLogin.deleteExpiredOtpLoginRequests(
+      (transaction) => _utils.otpLogin.deleteExpiredOtpLoginRequests(
         session,
         transaction: transaction,
       ),
@@ -125,15 +122,15 @@ class EmailIdpAdmin {
 
   /// {@macro email_idp_otp_login_util.delete_otp_login_attempts}
   Future<void> deleteOtpLoginAttempts(
-    final Session session, {
-    final Duration? olderThan,
-    final String? email,
-    final Transaction? transaction,
+    Session session, {
+    Duration? olderThan,
+    String? email,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => _utils.otpLogin.deleteOtpLoginAttempts(
+      (transaction) => _utils.otpLogin.deleteOtpLoginAttempts(
         session,
         olderThan: olderThan,
         email: email,
@@ -144,14 +141,14 @@ class EmailIdpAdmin {
 
   /// {@macro email_idp_authentication_utils.delete_failed_login_attempts}
   Future<void> deleteFailedLoginAttempts(
-    final Session session, {
-    final Duration? olderThan,
-    final Transaction? transaction,
+    Session session, {
+    Duration? olderThan,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => _utils.authentication.deleteFailedLoginAttempts(
+      (transaction) => _utils.authentication.deleteFailedLoginAttempts(
         session,
         olderThan: olderThan,
         transaction: transaction,
@@ -168,14 +165,14 @@ class EmailIdpAdmin {
   /// Throws an [EmailAccountNotFoundException] if no account exists for the
   /// given email address.
   Future<void> deleteEmailAccount(
-    final Session session, {
-    required final String email,
-    final Transaction? transaction,
+    Session session, {
+    required String email,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final deleted = await _utils.account.deleteAccount(
           session,
           email: email,
@@ -199,14 +196,14 @@ class EmailIdpAdmin {
   /// Throws an [EmailAccountNotFoundException] if no accounts exist for the
   /// given auth user ID.
   Future<void> deleteEmailAccountByAuthUserId(
-    final Session session, {
-    required final UuidValue authUserId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final deleted = await _utils.account.deleteAccount(
           session,
           email: null,
@@ -223,14 +220,14 @@ class EmailIdpAdmin {
 
   /// Gets an email authentication exists for the given email address.
   Future<EmailAccount?> findAccount(
-    final Session session, {
-    required final String email,
-    final Transaction? transaction,
+    Session session, {
+    required String email,
+    Transaction? transaction,
   }) async {
     return (await DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => _utils.account.listAccounts(
+      (transaction) => _utils.account.listAccounts(
         session,
         email: email,
         transaction: transaction,
@@ -240,19 +237,18 @@ class EmailIdpAdmin {
 
   /// {@macro email_idp_account_creation_util.find_active_email_account_request}
   Future<EmailAccountRequest?> findActiveEmailAccountRequest(
-    final Session session, {
-    required final UuidValue accountRequestId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue accountRequestId,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          _utils.accountCreation.findActiveEmailAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
+      (transaction) => _utils.accountCreation.findActiveEmailAccountRequest(
+        session,
+        accountRequestId: accountRequestId,
+        transaction: transaction,
+      ),
     );
   }
 
@@ -264,15 +260,15 @@ class EmailIdpAdmin {
   /// Throws an [EmailAccountNotFoundException] in case no account exists for
   /// the given email address.
   Future<void> setPassword(
-    final Session session, {
+    Session session, {
     required String email,
-    required final String password,
-    final Transaction? transaction,
+    required String password,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         email = email.normalizedEmail;
 
         final account = (await _utils.account.listAccounts(

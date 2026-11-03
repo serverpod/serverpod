@@ -12,10 +12,10 @@ import 'jwt_config.dart';
 class JwtUtil {
   /// Creates a new [JwtUtil] instance.
   JwtUtil({
-    required final Duration accessTokenLifetime,
-    required final String? issuer,
-    required final JwtAlgorithm algorithm,
-    required final List<JwtAlgorithm> fallbackVerificationAlgorithms,
+    required Duration accessTokenLifetime,
+    required String? issuer,
+    required JwtAlgorithm algorithm,
+    required List<JwtAlgorithm> fallbackVerificationAlgorithms,
   }) : _accessTokenLifetime = accessTokenLifetime,
        _issuer = issuer,
        _algorithm = algorithm,
@@ -34,7 +34,7 @@ class JwtUtil {
   /// on the refresh token configuration, they will be set on a claim named
   /// "dev.serverpod.scopeNames". Any extra claims configured with the refresh
   /// token will be added as top-level claims.
-  String createJwt(final RefreshToken refreshToken) {
+  String createJwt(RefreshToken refreshToken) {
     final extraClaims = refreshToken.extraClaims != null
         ? (jsonDecode(refreshToken.extraClaims!) as Map).cast<String, dynamic>()
         : null;
@@ -109,7 +109,7 @@ class JwtUtil {
   ///
   /// Throws in case of any validation failures (e.g. invalid signature or changed issuer, etc.) and in any case when parsing the expected contained data fails.
   /// In practice, when this is used via [Jwt.authenticationHandler], these errors will all be caught and a `null` `AuthenticationInfo?` will be returned instead.
-  VerifiedJwtData verifyJwt(final String accessToken) {
+  VerifiedJwtData verifyJwt(String accessToken) {
     final jwt = _verifyJwt(accessToken);
     final allClaims = (jwt.payload as Map).cast<String, dynamic>();
 
@@ -153,7 +153,7 @@ class JwtUtil {
 
     final extraClaims = Map.fromEntries(
       allClaims.entries.where(
-        (final e) =>
+        (e) =>
             !_registeredClaims.contains(e.key) &&
             e.key != _serverpodScopeNamesClaimKey &&
             e.key != _serverpodRefreshTokenIdClaimKey,
@@ -170,13 +170,13 @@ class JwtUtil {
   }
 
   /// Extracts the expiration date from a JWT token.
-  DateTime extractExpirationDate(final String accessToken) {
+  DateTime extractExpirationDate(String accessToken) {
     final jwt = _verifyJwt(accessToken);
     final payload = (jwt.payload as Map).cast<String, dynamic>();
     return _extractExpirationDate(payload);
   }
 
-  DateTime _extractExpirationDate(final Map<String, dynamic> payload) {
+  DateTime _extractExpirationDate(Map<String, dynamic> payload) {
     final exp = payload['exp'];
     if (exp is! num) throw ArgumentError('JWT payload missing "exp" key');
     final expMillis = (exp * 1000).toInt();
@@ -187,7 +187,7 @@ class JwtUtil {
   ///
   /// If reading with the primary algorithm fails, the fallbacks (if configured) are tried in order.
   /// In case none of the keys work, the exception from the first algorithm is thrown.
-  dart_jsonwebtoken.JWT _verifyJwt(final String accessToken) {
+  dart_jsonwebtoken.JWT _verifyJwt(String accessToken) {
     final allAlgorithms = [_algorithm, ..._fallbackVerificationAlgorithms];
     Object? firstError;
 
@@ -210,7 +210,7 @@ class JwtUtil {
   ///
   /// Used as the `kid` value in JWT headers for ES512 tokens so that
   /// consumers can efficiently select the correct key from a JWKS endpoint.
-  static String _computeKid(final dart_jsonwebtoken.ECPublicKey publicKey) {
+  static String _computeKid(dart_jsonwebtoken.ECPublicKey publicKey) {
     final jwk = publicKey.toJWK();
     // RFC 7638 members in lexicographic order, no whitespace.
     final input = jsonEncode({

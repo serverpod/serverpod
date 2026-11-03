@@ -45,14 +45,14 @@ String generateRandomString([int length = 32]) {
 }
 
 /// Generates a list of secure random bytes of the specified length.
-Uint8List generateRandomBytes(final int length) {
+Uint8List generateRandomBytes(int length) {
   return Uint8List.fromList(
-    List<int>.generate(length, (final int i) => _random.nextInt(256)),
+    List<int>.generate(length, (int i) => _random.nextInt(256)),
   );
 }
 
 /// Checks whether the 2 given lists contain the same data.
-bool uint8ListAreEqual(final Uint8List a, final Uint8List b) {
+bool uint8ListAreEqual(Uint8List a, Uint8List b) {
   if (a.length != b.length) {
     return false;
   }

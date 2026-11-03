@@ -88,7 +88,7 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
 
   /// Default validation function for extracted Google account details.
   static void validateGoogleAccountDetails(
-    final GoogleAccountDetails accountDetails,
+    GoogleAccountDetails accountDetails,
   ) {
     if (accountDetails.name == null ||
         accountDetails.fullName == null ||
@@ -103,7 +103,7 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
   /// fields when the `openid` scope is requested. The `id_token` is preserved
   /// in [OAuth2PkceTokenResponse.raw] for subsequent JWKS verification.
   static OAuth2PkceTokenResponse parseTokenResponse(
-    final Map<String, dynamic> responseBody,
+    Map<String, dynamic> responseBody,
   ) {
     final error = responseBody['error'] as String?;
     if (error != null) {
@@ -126,9 +126,9 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
 
   @override
   GoogleIdp build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   }) {
     return GoogleIdp(
       this,
@@ -205,7 +205,7 @@ final class GoogleClientSecret {
   ///     ...
   /// }
   ///
-  factory GoogleClientSecret.fromJson(final Map<String, dynamic> json) {
+  factory GoogleClientSecret.fromJson(Map<String, dynamic> json) {
     if (json['web'] == null) {
       throw const FormatException('Missing "web" section');
     }
@@ -237,7 +237,7 @@ final class GoogleClientSecret {
   /// Creates a new instance of [GoogleClientSecret] from a JSON string.
   /// The string is expected to follow the format described in
   /// [GoogleClientSecret.fromJson].
-  factory GoogleClientSecret.fromJsonString(final String jsonString) {
+  factory GoogleClientSecret.fromJsonString(String jsonString) {
     final data = jsonDecode(jsonString);
     if (data is! Map<String, dynamic>) {
       throw const FormatException('Not a JSON (map) object');
@@ -249,7 +249,7 @@ final class GoogleClientSecret {
   /// Creates a new instance of [GoogleClientSecret] from a JSON file.
   /// The file is expected to follow the format described in
   /// [GoogleClientSecret.fromJson].
-  factory GoogleClientSecret.fromJsonFile(final File file) {
+  factory GoogleClientSecret.fromJsonFile(File file) {
     final jsonString = file.readAsStringSync();
     return GoogleClientSecret.fromJsonString(jsonString);
   }

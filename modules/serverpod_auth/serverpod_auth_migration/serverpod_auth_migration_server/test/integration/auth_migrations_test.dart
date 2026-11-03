@@ -28,8 +28,8 @@ void main() {
   });
 
   withServerpod('Given a legacy `serverpod_auth` email-based user account,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     const email = 'User@serverpod.DEV';
     const password = 'Somepassword123!';
@@ -77,7 +77,7 @@ void main() {
 
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account migrated with `migrateUsers`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'User@serverpod.DEV';
       const password = 'Somepassword123!';
 
@@ -101,10 +101,10 @@ void main() {
           session,
           userMigration:
               (
-                final session, {
-                required final newAuthUserId,
-                required final oldUserId,
-                final transaction,
+                session, {
+                required newAuthUserId,
+                required oldUserId,
+                transaction,
               }) async {
                 assert(migratedUsers[oldUserId] == null);
                 migratedUsers[oldUserId] = newAuthUserId;
@@ -158,8 +158,7 @@ void main() {
           final emailAccount = await new_auth_email.EmailAccount.db
               .findFirstRow(
                 session,
-                where: (final t) =>
-                    t.authUserId.equals(migratedUsers.values.single),
+                where: (t) => t.authUserId.equals(migratedUsers.values.single),
               );
 
           expect(emailAccount, isNotNull);
@@ -194,8 +193,8 @@ void main() {
   );
 
   withServerpod('Given five legacy `serverpod_auth` email-based user accounts,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UserMigrationFunction userMigration;
@@ -207,10 +206,10 @@ void main() {
 
       userMigration =
           (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
+            session, {
+            required newAuthUserId,
+            required oldUserId,
+            transaction,
           }) async {
             migratedUsers[oldUserId] = newAuthUserId;
           };
@@ -267,7 +266,7 @@ void main() {
 
   withServerpod(
     'Given a legacy `serverpod_auth` social-login-based user account migrated with `migrateUsers`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const externalUserIdentifier = 'Apple-UserId-123';
 
       late Session session;
@@ -298,10 +297,10 @@ void main() {
           session,
           userMigration:
               (
-                final session, {
-                required final newAuthUserId,
-                required final oldUserId,
-                final transaction,
+                session, {
+                required newAuthUserId,
+                required oldUserId,
+                transaction,
               }) async {
                 assert(migratedUsers[oldUserId] == null);
                 migratedUsers[oldUserId] = newAuthUserId;
@@ -373,7 +372,7 @@ void main() {
 
   withServerpod(
     'Given a legacy user with sessions migrated with importSessions enabled,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late legacy_auth.AuthKey targetAuthKey;
 

@@ -9,7 +9,7 @@ const coarseClockMargin = Duration(seconds: 1);
 /// Age filters keep a row whose timestamp equals the cutoff
 /// (`createdAt < now - olderThan`). A row written and then deleted inside one
 /// clock tick would otherwise survive `olderThan: Duration.zero`.
-Future<T> inTheRecentPast<T>(final Future<T> Function() action) {
+Future<T> inTheRecentPast<T>(Future<T> Function() action) {
   return withClock(
     Clock.fixed(DateTime.now().subtract(coarseClockMargin)),
     action,

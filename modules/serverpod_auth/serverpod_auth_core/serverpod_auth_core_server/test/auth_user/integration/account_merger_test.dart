@@ -21,7 +21,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with the default merge hooks and an application merge handler that captures the merged user ids, and two auth users,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -38,10 +38,10 @@ void main() {
           config: AccountMergeConfig(
             applicationMergeHandler:
                 (
-                  final session, {
-                  required final userToKeepId,
-                  required final userToRemoveId,
-                  required final transaction,
+                  session, {
+                  required userToKeepId,
+                  required userToRemoveId,
+                  required transaction,
                 }) {
                   capturedUserToKeepId = userToKeepId;
                   capturedUserToRemoveId = userToRemoveId;
@@ -76,7 +76,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with custom merge hooks that capture the merged user ids and replace the cleanup handler with one that keeps the user to remove, and two auth users,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -97,19 +97,19 @@ void main() {
               AccountMergeConfig.defaultIdpMergeHandler,
               AccountMergeConfig.defaultCoreDataMergeHandler,
               (
-                final session, {
-                required final userToKeepId,
-                required final userToRemoveId,
-                required final transaction,
+                session, {
+                required userToKeepId,
+                required userToRemoveId,
+                required transaction,
               }) {
                 capturedUserToKeepId = userToKeepId;
                 capturedUserToRemoveId = userToRemoveId;
               },
               (
-                final session, {
-                required final userToKeepId,
-                required final userToRemoveId,
-                required final transaction,
+                session, {
+                required userToKeepId,
+                required userToRemoveId,
+                required transaction,
               }) {
                 cleanUpInvoked = true;
               },
@@ -151,7 +151,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with a no-op application merge handler, a user to keep with the admin scope, and a user to remove with the test scope that owns a refresh token and a profile,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -226,7 +226,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with a no-op application merge handler and two auth users with a profile each, where only the user to remove has a user name and an email,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -278,7 +278,7 @@ void main() {
           () async {
             final profile = await UserProfile.db.findFirstRow(
               session,
-              where: (final t) => t.authUserId.equals(userToKeep.id),
+              where: (t) => t.authUserId.equals(userToKeep.id),
             );
 
             expect(profile?.fullName, 'Keep Name');
@@ -290,7 +290,7 @@ void main() {
           () async {
             final profile = await UserProfile.db.findFirstRow(
               session,
-              where: (final t) => t.authUserId.equals(userToKeep.id),
+              where: (t) => t.authUserId.equals(userToKeep.id),
             );
 
             expect(profile, isNotNull);
@@ -304,7 +304,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with custom merge hooks that run two application hooks before the default cleanup handler, and two auth users,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -327,19 +327,19 @@ void main() {
               AccountMergeConfig.defaultIdpMergeHandler,
               AccountMergeConfig.defaultCoreDataMergeHandler,
               (
-                final session, {
-                required final userToKeepId,
-                required final userToRemoveId,
-                required final transaction,
+                session, {
+                required userToKeepId,
+                required userToRemoveId,
+                required transaction,
               }) async {
                 firstHookUserToKeepId = userToKeepId;
                 firstHookUserToRemoveId = userToRemoveId;
               },
               (
-                final session, {
-                required final userToKeepId,
-                required final userToRemoveId,
-                required final transaction,
+                session, {
+                required userToKeepId,
+                required userToRemoveId,
+                required transaction,
               }) {
                 secondHookUserToKeepId = userToKeepId;
                 secondHookUserToRemoveId = userToRemoveId;
@@ -380,7 +380,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with a no-op application merge handler and a user to keep that does not exist,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToRemove;
@@ -415,7 +415,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with a no-op application merge handler and a user to remove that does not exist,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -450,7 +450,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with a no-op application merge handler and a single auth user,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel authUser;
@@ -479,12 +479,12 @@ void main() {
             throwsA(
               isA<ArgumentError>()
                   .having(
-                    (final error) => error.name,
+                    (error) => error.name,
                     'name',
                     'userToRemoveId',
                   )
                   .having(
-                    (final error) => error.message,
+                    (error) => error.message,
                     'message',
                     'The user to remove must be different from the user to keep.',
                   ),
@@ -514,7 +514,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with the default application merge handler and two auth users,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -547,7 +547,7 @@ void main() {
 
   withServerpod(
     'Given two registered identity providers where the first one blocks the user to remove and the second one fails, and two auth users,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -585,7 +585,7 @@ void main() {
             ),
             throwsA(
               isA<StateError>().having(
-                (final error) => error.message,
+                (error) => error.message,
                 'message',
                 'Identity provider merge failed.',
               ),
@@ -640,7 +640,7 @@ void main() {
 
   withServerpod(
     'Given an account merger whose application merge handler fails after core migration, a user to keep with the admin scope, and a user to remove with the source scope that owns a refresh token,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -656,10 +656,10 @@ void main() {
           accountMergeConfig: AccountMergeConfig(
             applicationMergeHandler:
                 (
-                  final session, {
-                  required final userToKeepId,
-                  required final userToRemoveId,
-                  required final transaction,
+                  session, {
+                  required userToKeepId,
+                  required userToRemoveId,
+                  required transaction,
                 }) => throw StateError('Application merge failed.'),
           ),
         );
@@ -686,7 +686,7 @@ void main() {
         'when merging within an existing transaction, '
         'then the core migration is rolled back to its savepoint.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await expectLater(
               () => accountMerger.merge(
                 session,
@@ -696,7 +696,7 @@ void main() {
               ),
               throwsA(
                 isA<StateError>().having(
-                  (final error) => error.message,
+                  (error) => error.message,
                   'message',
                   'Application merge failed.',
                 ),
@@ -733,10 +733,10 @@ void main() {
 /// Application merge handler which leaves the merged users untouched, so that
 /// only the default merge hooks affect the outcome of a merge.
 void _noOpApplicationMergeHandler(
-  final Session session, {
-  required final UuidValue userToKeepId,
-  required final UuidValue userToRemoveId,
-  required final Transaction transaction,
+  Session session, {
+  required UuidValue userToKeepId,
+  required UuidValue userToRemoveId,
+  required Transaction transaction,
 }) {}
 
 class _BlockingMergeIdentityProvider implements IdentityProvider {
@@ -745,15 +745,15 @@ class _BlockingMergeIdentityProvider implements IdentityProvider {
 
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     await AuthUser.db.updateWhere(
       session,
-      where: (final t) => t.id.equals(userToRemoveId),
-      columnValues: (final t) => [t.blocked(true)],
+      where: (t) => t.id.equals(userToRemoveId),
+      columnValues: (t) => [t.blocked(true)],
       transaction: transaction,
     );
   }
@@ -765,10 +765,10 @@ class _ThrowingMergeIdentityProvider implements IdentityProvider {
 
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     throw StateError('Identity provider merge failed.');
   }

@@ -10,7 +10,7 @@ void main() {
   withServerpod(
     'Given account request within verification code lifetime',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -29,7 +29,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -45,7 +45,7 @@ void main() {
         'when deleting expired account requests then request can still be verified',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.deleteExpiredAccountRequests(
                   session,
                   transaction: transaction,
@@ -54,7 +54,7 @@ void main() {
 
           // Should still succeed
           final result = session.db.transaction(
-            (final transaction) => fixture.emailIdp.verifyRegistrationCode(
+            (transaction) => fixture.emailIdp.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,
@@ -71,7 +71,7 @@ void main() {
   withServerpod(
     'Given expired account request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -100,12 +100,11 @@ void main() {
         accountRequestId = await withClock(
           clockBeforeTimeframe,
           () => session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: email,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           ),
         );
       });
@@ -121,7 +120,7 @@ void main() {
         'when deleting expired account requests then attempting to verify expired request within requests timeframe throws request not found exception',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.deleteExpiredAccountRequests(
                   session,
                   transaction: transaction,
@@ -130,7 +129,7 @@ void main() {
 
           await withClock(clockBeforeTimeframe, () async {
             final result = session.db.transaction(
-              (final transaction) =>
+              (transaction) =>
                   fixture.accountCreationUtil.verifyRegistrationCode(
                     session,
                     accountRequestId: accountRequestId,

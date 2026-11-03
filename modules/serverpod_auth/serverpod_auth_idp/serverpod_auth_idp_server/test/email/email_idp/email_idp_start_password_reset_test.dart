@@ -9,7 +9,7 @@ void main() {
   withServerpod(
     'Given an existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -79,7 +79,7 @@ void main() {
   withServerpod(
     'Given existing email account with maximum allowed password reset requests',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -129,7 +129,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.tooManyAttempts,
               ),
@@ -143,7 +143,7 @@ void main() {
   withServerpod(
     'Given no email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -188,7 +188,7 @@ void main() {
               passwordResetRequestIdFuture,
               completion(
                 isA<UuidValue>().having(
-                  (final uuid) => uuid.version,
+                  (uuid) => uuid.version,
                   'version',
                   equals(capturedPasswordResetRequestId.version),
                 ),
@@ -203,7 +203,7 @@ void main() {
   withServerpod(
     'Given pending password reset request that was not verified',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -278,7 +278,7 @@ void main() {
   withServerpod(
     'Given maximum allowed password reset requests for non-existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -319,7 +319,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.tooManyAttempts,
               ),

@@ -52,10 +52,10 @@ final class Argon2HashUtil {
   /// [hashSaltLength] is the length of the salt to generate (in bytes).
   /// [parameters] is the hash parameters used when creating new hashes,
   Argon2HashUtil({
-    required final String hashPepper,
-    final List<String> fallbackHashPeppers = const [],
-    required final int hashSaltLength,
-    final Argon2HashParameters? parameters,
+    required String hashPepper,
+    List<String> fallbackHashPeppers = const [],
+    required int hashSaltLength,
+    Argon2HashParameters? parameters,
   }) : this._(
          hashPepper: hashPepper,
          fallbackHashPeppers: fallbackHashPeppers,
@@ -72,9 +72,9 @@ final class Argon2HashUtil {
   /// is unchanged, so servers on an earlier version still validate these
   /// hashes. Hashes stored at a higher cost validate here too.
   Argon2HashUtil.forRandomSecrets({
-    required final String hashPepper,
-    final List<String> fallbackHashPeppers = const [],
-    required final int hashSaltLength,
+    required String hashPepper,
+    List<String> fallbackHashPeppers = const [],
+    required int hashSaltLength,
   }) : this._(
          hashPepper: hashPepper,
          fallbackHashPeppers: fallbackHashPeppers,
@@ -84,11 +84,11 @@ final class Argon2HashUtil {
        );
 
   Argon2HashUtil._({
-    required final String hashPepper,
-    required final List<String> fallbackHashPeppers,
-    required final int hashSaltLength,
-    required final Argon2HashParameters parameters,
-    required final int minSecretLength,
+    required String hashPepper,
+    required List<String> fallbackHashPeppers,
+    required int hashSaltLength,
+    required Argon2HashParameters parameters,
+    required int minSecretLength,
   }) : _hashPeppers = [
          utf8.encode(hashPepper),
          ...fallbackHashPeppers.map(utf8.encode),
@@ -114,7 +114,7 @@ final class Argon2HashUtil {
   ///
   /// Returns a PHC-formatted string: `$argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}`
   Future<String> createHashFromString({
-    required final String secret,
+    required String secret,
     @protected Uint8List? salt,
   }) async {
     salt ??= generateRandomBytes(_hashSaltLength);
@@ -138,7 +138,7 @@ final class Argon2HashUtil {
   ///
   /// Returns a PHC-formatted string: `$argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}${base64Hash}`
   Future<String> createHashFromBytes({
-    required final Uint8List secret,
+    required Uint8List secret,
     @protected Uint8List? salt,
   }) async {
     salt ??= generateRandomBytes(_hashSaltLength);
@@ -160,8 +160,8 @@ final class Argon2HashUtil {
   /// Tries the primary pepper first, then falls back to the fallback peppers
   /// if provided.
   Future<bool> validateHashFromString({
-    required final String secret,
-    required final String hashString,
+    required String secret,
+    required String hashString,
   }) async {
     final secretBytes = utf8.encode(secret);
     return _validateHashFromHashedString(
@@ -177,8 +177,8 @@ final class Argon2HashUtil {
   /// Tries the primary pepper first, then falls back to the fallback peppers
   /// if provided.
   Future<bool> validateHashFromBytes({
-    required final Uint8List secret,
-    required final String hashString,
+    required Uint8List secret,
+    required String hashString,
   }) async {
     return _validateHashFromHashedString(
       secret: secret,
@@ -187,8 +187,8 @@ final class Argon2HashUtil {
   }
 
   Future<bool> _validateHashFromHashedString({
-    required final Uint8List secret,
-    required final String hashString,
+    required Uint8List secret,
+    required String hashString,
   }) async {
     final _HashResult parsed;
     try {
@@ -216,9 +216,9 @@ final class Argon2HashUtil {
   }
 
   Future<_HashResult> _createHash({
-    required final Uint8List secret,
-    required final Uint8List salt,
-    required final Uint8List pepper,
+    required Uint8List secret,
+    required Uint8List salt,
+    required Uint8List pepper,
   }) {
     assert(
       secret.length >= _minSecretLength,
@@ -238,13 +238,13 @@ final class Argon2HashUtil {
   }
 
   static Future<_HashResult> _createHashWithParameters({
-    required final Uint8List secret,
-    required final Uint8List salt,
-    required final Uint8List pepper,
-    required final int memory,
-    required final int iterations,
-    required final int lanes,
-    required final int desiredKeyLength,
+    required Uint8List secret,
+    required Uint8List salt,
+    required Uint8List pepper,
+    required int memory,
+    required int iterations,
+    required int lanes,
+    required int desiredKeyLength,
   }) {
     return Isolate.run(() async {
       final hashBytes = await _deriveNatively(
@@ -269,13 +269,13 @@ final class Argon2HashUtil {
   }
 
   static Future<Uint8List> _deriveNatively({
-    required final Uint8List secret,
-    required final Uint8List salt,
-    required final Uint8List pepper,
-    required final int memory,
-    required final int iterations,
-    required final int lanes,
-    required final int desiredKeyLength,
+    required Uint8List secret,
+    required Uint8List salt,
+    required Uint8List pepper,
+    required int memory,
+    required int iterations,
+    required int lanes,
+    required int desiredKeyLength,
   }) async {
     final native.Argon2 argon2;
     try {
@@ -348,7 +348,7 @@ class _HashResult {
   /// Parses a PHC-formatted hash string into a [_HashResult].
   ///
   /// Throws [ArgumentError] if the string format is invalid.
-  factory _HashResult.fromPhcHashString(final String hashString) {
+  factory _HashResult.fromPhcHashString(String hashString) {
     final argumentError = ArgumentError.value(
       hashString,
       'hashString',
@@ -432,7 +432,7 @@ final class Argon2HashParameters {
   /// [desiredKeyLength] is the output hash length in bytes (default: 32 = 256 bits).
   Argon2HashParameters({
     this.memory = 1 << 12,
-    final int? lanes,
+    int? lanes,
     this.iterations = 3,
     this.desiredKeyLength = 32,
   }) : lanes = lanes ?? Platform.numberOfProcessors;

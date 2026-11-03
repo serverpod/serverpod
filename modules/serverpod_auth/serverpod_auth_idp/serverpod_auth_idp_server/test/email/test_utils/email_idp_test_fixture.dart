@@ -4,12 +4,12 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 
 sealed class EmailAccountPassword {
   static EmailAccountPasswordHash fromPasswordHash(
-    final String passwordHash,
+    String passwordHash,
   ) {
     return EmailAccountPasswordHash(passwordHash);
   }
 
-  static EmailAccountPasswordString fromString(final String password) {
+  static EmailAccountPasswordString fromString(String password) {
     return EmailAccountPasswordString(password);
   }
 }
@@ -33,7 +33,7 @@ final class EmailIdpTestFixture {
   final AuthUsers authUsers = const AuthUsers();
 
   EmailIdpTestFixture({
-    final EmailIdpConfig config = const EmailIdpConfig(
+    EmailIdpConfig config = const EmailIdpConfig(
       secretHashPepper: 'pepper',
     ),
     TokenManager? tokenManager,
@@ -55,10 +55,10 @@ final class EmailIdpTestFixture {
   }
 
   Future<EmailAccount> createEmailAccount(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String email,
-    final EmailAccountPassword? password,
+    Session session, {
+    required UuidValue authUserId,
+    required String email,
+    EmailAccountPassword? password,
   }) async {
     final passwordHash = switch (password) {
       final EmailAccountPasswordHash password => password.passwordHash,
@@ -77,42 +77,42 @@ final class EmailIdpTestFixture {
     );
   }
 
-  Future<void> tearDown(final Session session) async {
-    await session.db.transaction((final transaction) async {
+  Future<void> tearDown(Session session) async {
+    await session.db.transaction((transaction) async {
       await Future.wait([
         EmailAccount.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
           transaction: transaction,
         ),
         EmailAccountPasswordResetRequest.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
           transaction: transaction,
         ),
         EmailAccountRequest.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
           transaction: transaction,
         ),
         EmailAccountOtpLoginRequest.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
           transaction: transaction,
         ),
         RateLimitedRequestAttempt.db.deleteWhere(
           session,
-          where: (final t) => t.domain.equals('email'),
+          where: (t) => t.domain.equals('email'),
           transaction: transaction,
         ),
         SecretChallenge.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
           transaction: transaction,
         ),
         AuthUser.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
           transaction: transaction,
         ),
       ]);

@@ -42,12 +42,12 @@ void main() {
         valueReceivedCompleter = Completer<int>();
 
         streamSubscription = stream.listen(
-          (final event) {
+          (event) {
             if (!valueReceivedCompleter.isCompleted) {
               valueReceivedCompleter.complete(event);
             }
           },
-          onError: (final e) {
+          onError: (e) {
             if (!streamClosedCompleter.isCompleted) {
               streamClosedCompleter.complete(e);
             }

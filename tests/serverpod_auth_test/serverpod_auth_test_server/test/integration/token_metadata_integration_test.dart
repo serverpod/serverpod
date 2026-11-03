@@ -8,7 +8,7 @@ import 'test_tools/serverpod_test_tools.dart';
 void main() {
   withServerpod(
     'Given an AuthServices configured with a ServerSideSessions with onSessionCreated callback that attaches custom metadata to the session',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
 
@@ -19,10 +19,10 @@ void main() {
               sessionKeyHashPepper: 'test-pepper',
               onSessionCreated:
                   (
-                    final session, {
-                    required final authUserId,
-                    required final serverSideSessionId,
-                    required final transaction,
+                    session, {
+                    required authUserId,
+                    required serverSideSessionId,
+                    required transaction,
                   }) async {
                     await SessionMetadata.db.insertRow(
                       session,
@@ -75,7 +75,7 @@ void main() {
 
   withServerpod(
     'Given an AuthServices configured with a JwtConfig with onRefreshTokenCreated callback that attaches custom metadata to the refresh token',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
 
@@ -89,10 +89,10 @@ void main() {
               ),
               onRefreshTokenCreated:
                   (
-                    final session, {
-                    required final authUserId,
-                    required final refreshTokenId,
-                    required final transaction,
+                    session, {
+                    required authUserId,
+                    required refreshTokenId,
+                    required transaction,
                   }) async {
                     await TokenMetadata.db.insertRow(
                       session,
@@ -145,7 +145,7 @@ void main() {
 
   withServerpod(
     'Given an AuthServices configured with a ServerSideSessions with onSessionCreated callback that attaches custom metadata from the session dynamic userObject',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
 
@@ -156,10 +156,10 @@ void main() {
               sessionKeyHashPepper: 'test-pepper',
               onSessionCreated:
                   (
-                    final session, {
-                    required final authUserId,
-                    required final serverSideSessionId,
-                    required final transaction,
+                    session, {
+                    required authUserId,
+                    required serverSideSessionId,
+                    required transaction,
                   }) async {
                     final object = session.userObject as Map<String, dynamic>;
                     final deviceName = object['deviceName'] as String;
@@ -220,7 +220,7 @@ void main() {
 
   withServerpod(
     'Given an AuthSuccess generated from a ServerSideSessions with no onSessionCreated callback',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthSuccess authSuccess;
 
@@ -273,7 +273,7 @@ void main() {
 
   withServerpod(
     'Given an AuthSuccess generated from a JwtConfig with no onRefreshTokenCreated callback',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthSuccess authSuccess;
 

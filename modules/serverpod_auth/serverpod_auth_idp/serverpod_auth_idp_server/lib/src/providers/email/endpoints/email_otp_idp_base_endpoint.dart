@@ -37,8 +37,8 @@ abstract class EmailOtpIdpBaseEndpoint extends EmailIdpBaseEndpoint {
   ///   one-time passwords have been requested for the email.
   /// {@endtemplate}
   Future<UuidValue> startOtpLogin(
-    final Session session, {
-    required final String email,
+    Session session, {
+    required String email,
   }) async {
     return emailIdp.startOtpLogin(session, email: email);
   }
@@ -61,9 +61,9 @@ abstract class EmailOtpIdpBaseEndpoint extends EmailIdpBaseEndpoint {
   ///   the given [otpLoginRequestId] or [verificationCode] is invalid.
   /// {@endtemplate}
   Future<EmailAccountOtpVerificationResult> verifyOtpLoginCode(
-    final Session session, {
-    required final UuidValue otpLoginRequestId,
-    required final String verificationCode,
+    Session session, {
+    required UuidValue otpLoginRequestId,
+    required String verificationCode,
   }) async {
     return emailIdp.verifyOtpLoginCode(
       session,
@@ -85,8 +85,8 @@ abstract class EmailOtpIdpBaseEndpoint extends EmailIdpBaseEndpoint {
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   /// {@endtemplate}
   Future<AuthSuccess> finishOtpLogin(
-    final Session session, {
-    required final String otpLoginToken,
+    Session session, {
+    required String otpLoginToken,
   }) async {
     return emailIdp.finishOtpLogin(session, otpLoginToken: otpLoginToken);
   }
@@ -111,9 +111,9 @@ abstract class EmailOtpIdpBaseEndpoint extends EmailIdpBaseEndpoint {
   /// Returns a session for the newly created user.
   /// {@endtemplate}
   Future<AuthSuccess> finishOtpRegistration(
-    final Session session, {
-    required final String otpLoginToken,
-    final String? password,
+    Session session, {
+    required String otpLoginToken,
+    String? password,
   }) async {
     return emailIdp.finishOtpRegistration(
       session,

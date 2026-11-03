@@ -13,7 +13,7 @@ void main() {
   withServerpod(
     'Given a verified account request exists',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -34,15 +34,15 @@ void main() {
           config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
-            passwordValidationFunction: (final password) =>
+            passwordValidationFunction: (password) =>
                 password == allowedPassword,
             onAfterAccountCreated:
                 (
-                  final session, {
-                  required final String email,
-                  required final UuidValue authUserId,
-                  required final UuidValue emailAccountId,
-                  required final Transaction? transaction,
+                  session, {
+                  required String email,
+                  required UuidValue authUserId,
+                  required UuidValue emailAccountId,
+                  required Transaction? transaction,
                 }) async {
                   capturedAccountCreatedDataCompleter.complete(
                     CapturedAccountCreatedData(
@@ -56,7 +56,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -64,13 +64,12 @@ void main() {
         );
 
         verificationToken = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyRegistrationCode(
-                session,
-                accountRequestId: accountRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
-              ),
+          (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
         );
       });
 
@@ -85,7 +84,7 @@ void main() {
           completeAccountCreationFuture;
           setUp(() async {
             completeAccountCreationFuture = session.db.transaction(
-              (final transaction) =>
+              (transaction) =>
                   fixture.accountCreationUtil.completeAccountCreation(
                     session,
                     completeAccountCreationToken: verificationToken,
@@ -103,17 +102,17 @@ void main() {
                 completion(
                   isA<EmailIdpCompleteAccountCreationResult>()
                       .having(
-                        (final result) => result.authUserId,
+                        (result) => result.authUserId,
                         'authUserId',
                         isA<UuidValue>(),
                       )
                       .having(
-                        (final result) => result.accountRequestId,
+                        (result) => result.accountRequestId,
                         'accountRequestId',
                         isA<UuidValue>(),
                       )
                       .having(
-                        (final result) => result.email,
+                        (result) => result.email,
                         'email',
                         equals(email),
                       ),
@@ -154,7 +153,7 @@ void main() {
               final result = await completeAccountCreationFuture;
 
               final authResult = await session.db.transaction(
-                (final transaction) => fixture.authenticationUtil.authenticate(
+                (transaction) => fixture.authenticationUtil.authenticate(
                   session,
                   email: email,
                   password: allowedPassword,
@@ -172,7 +171,7 @@ void main() {
         'when complete account creation is called with invalid password then it throws password policy violation exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.completeAccountCreation(
                   session,
                   completeAccountCreationToken: verificationToken,
@@ -192,7 +191,7 @@ void main() {
         'when complete account creation is called with invalid verification token then it throws invalid verification code exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.completeAccountCreation(
                   session,
                   completeAccountCreationToken: '$verificationToken-invalid',
@@ -221,7 +220,7 @@ void main() {
             ),
             () async {
               final result = session.db.transaction(
-                (final transaction) =>
+                (transaction) =>
                     fixture.accountCreationUtil.completeAccountCreation(
                       session,
                       completeAccountCreationToken: verificationToken,
@@ -244,7 +243,7 @@ void main() {
   withServerpod(
     'Given an unverified account request exists',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -263,7 +262,7 @@ void main() {
 
         // Create account request but DON'T verify it
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -280,7 +279,7 @@ void main() {
           );
 
           final result = session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.completeAccountCreation(
                   session,
                   completeAccountCreationToken: fakeToken,
@@ -301,7 +300,7 @@ void main() {
   withServerpod(
     'Given no account request exists',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -318,7 +317,7 @@ void main() {
         'when complete account creation is called with invalid verification token then it throws invalid verification code exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.completeAccountCreation(
                   session,
                   completeAccountCreationToken: 'invalid',
@@ -346,7 +345,7 @@ void main() {
           );
 
           final result = session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.completeAccountCreation(
                   session,
                   completeAccountCreationToken: mockedToken,

@@ -55,7 +55,7 @@ void main() {
           () => authSuccess.jwtRefreshTokenId,
           throwsA(
             isA<FormatException>().having(
-              (final e) => e.message,
+              (e) => e.message,
               'message',
               contains('cookie-mode sign-in'),
             ),

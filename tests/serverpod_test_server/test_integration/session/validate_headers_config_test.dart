@@ -49,7 +49,7 @@ void main() {
 
       setUpAll(() async {
         server = IntegrationTestServer.create(
-          authenticationHandler: (final session, final token) async {
+          authenticationHandler: (session, token) async {
             if (token == _testToken) {
               return AuthenticationInfo(
                 _testUserId,
@@ -182,7 +182,7 @@ void main() {
           ),
           validateHeaders: false,
         ),
-        authenticationHandler: (final session, final token) async {
+        authenticationHandler: (session, token) async {
           if (token == _testToken) {
             return AuthenticationInfo(
               _testUserId,

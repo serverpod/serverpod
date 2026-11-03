@@ -33,7 +33,7 @@ void main() {
 
   withServerpod(
     'Given no users,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       tearDown(() async {
         await _cleanUpDatabase(sessionBuilder.build());
       });
@@ -48,11 +48,11 @@ void main() {
             secretHashPepper: 'test',
             sendRegistrationVerificationCode:
                 (
-                  final session, {
-                  required final accountRequestId,
-                  required final email,
-                  required final transaction,
-                  required final verificationCode,
+                  session, {
+                  required accountRequestId,
+                  required email,
+                  required transaction,
+                  required verificationCode,
                 }) {
                   receivedVerificationCode = verificationCode;
                   receivedAccountRequestId = accountRequestId;
@@ -92,7 +92,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountLoginException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountLoginExceptionReason.invalidCredentials,
               ),
@@ -117,7 +117,7 @@ void main() {
 
           attempts = await RateLimitedRequestAttempt.db.find(
             session,
-            where: (final t) =>
+            where: (t) =>
                 t.domain.equals('email') &
                 t.source.equals('password_reset') &
                 t.key.equals(email),
@@ -149,11 +149,11 @@ void main() {
             ),
             sendPasswordResetVerificationCode:
                 (
-                  final session, {
-                  required final email,
-                  required final passwordResetRequestId,
-                  required final transaction,
-                  required final verificationCode,
+                  session, {
+                  required email,
+                  required passwordResetRequestId,
+                  required transaction,
+                  required verificationCode,
                 }) {
                   receivedVerificationCode = verificationCode;
                   receivedPasswordResetRequestId = passwordResetRequestId;
@@ -184,7 +184,7 @@ void main() {
           expect(
             await EmailAccountPasswordResetRequest.db.findFirstRow(
               sessionBuilder.build(),
-              where: (final t) => t.id.equals(clientReceivedRequestId!),
+              where: (t) => t.id.equals(clientReceivedRequestId!),
             ),
             isNull,
           );
@@ -197,7 +197,7 @@ void main() {
   withServerpod(
     'Given a pending account request,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late UuidValue receivedAccountRequestId;
       late String receivedVerificationCode;
       const verificationCodeLifetime = Duration(minutes: 15);
@@ -207,11 +207,11 @@ void main() {
           secretHashPepper: 'test',
           sendRegistrationVerificationCode:
               (
-                final session, {
-                required final accountRequestId,
-                required final email,
-                required final transaction,
-                required final verificationCode,
+                session, {
+                required accountRequestId,
+                required email,
+                required transaction,
+                required verificationCode,
               }) {
                 receivedAccountRequestId = accountRequestId;
                 receivedVerificationCode = verificationCode;
@@ -289,7 +289,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountRequestExceptionReason.expired,
               ),
@@ -310,7 +310,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -334,7 +334,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -348,7 +348,7 @@ void main() {
   withServerpod(
     'Given an invalid account request id,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       tearDown(() async {
         await _cleanUpDatabase(sessionBuilder.build());
       });
@@ -365,7 +365,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -378,7 +378,7 @@ void main() {
 
   withServerpod(
     'Given an active account,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
       String? receivedVerificationCode;
@@ -396,21 +396,21 @@ void main() {
           secretHashPepper: 'test',
           sendRegistrationVerificationCode:
               (
-                final session, {
-                required final accountRequestId,
-                required final email,
-                required final transaction,
-                required final verificationCode,
+                session, {
+                required accountRequestId,
+                required email,
+                required transaction,
+                required verificationCode,
               }) {
                 receivedVerificationCode = verificationCode;
               },
           sendPasswordResetVerificationCode:
               (
-                final session, {
-                required final email,
-                required final passwordResetRequestId,
-                required final transaction,
-                required final verificationCode,
+                session, {
+                required email,
+                required passwordResetRequestId,
+                required transaction,
+                required verificationCode,
               }) {
                 receivedPasswordResetCode = verificationCode;
               },
@@ -455,7 +455,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountLoginException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountLoginExceptionReason.invalidCredentials,
               ),
@@ -489,7 +489,7 @@ void main() {
           expect(
             await EmailAccountRequest.db.findFirstRow(
               sessionBuilder.build(),
-              where: (final t) => t.id.equals(clientReceivedRequestId!),
+              where: (t) => t.id.equals(clientReceivedRequestId!),
             ),
             isNull,
           );
@@ -514,7 +514,7 @@ void main() {
   withServerpod(
     'Given an email authentication for a blocked `AuthUser`,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
 
@@ -555,7 +555,7 @@ void main() {
 
   withServerpod(
     'Given an auth user with a pending password reset,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'test@serverpod.dev';
 
       late UuidValue authUserId;
@@ -620,7 +620,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.expired,
               ),
@@ -635,7 +635,7 @@ void main() {
         () async {
           await EmailAccount.db.deleteWhere(
             sessionBuilder.build(),
-            where: (final t) => t.authUserId.equals(authUserId),
+            where: (t) => t.authUserId.equals(authUserId),
           );
 
           await expectLater(
@@ -646,7 +646,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -667,7 +667,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -691,7 +691,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -712,7 +712,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.policyViolation,
               ),
@@ -726,7 +726,7 @@ void main() {
 
   withServerpod(
     'Given an auth user with a verified password reset,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'test@serverpod.dev';
 
       late UuidValue authUserId;
@@ -798,7 +798,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.expired,
               ),
@@ -813,7 +813,7 @@ void main() {
         () async {
           await EmailAccount.db.deleteWhere(
             sessionBuilder.build(),
-            where: (final t) => t.authUserId.equals(authUserId),
+            where: (t) => t.authUserId.equals(authUserId),
           );
 
           await expectLater(
@@ -824,7 +824,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -845,7 +845,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -869,7 +869,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.expired,
               ),
@@ -890,7 +890,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final exception) => exception.reason,
+                (exception) => exception.reason,
                 'Reason',
                 EmailAccountPasswordResetExceptionReason.policyViolation,
               ),
@@ -905,7 +905,7 @@ void main() {
   withServerpod(
     'Given an invalid password reset request id,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       tearDown(() async {
         await _cleanUpDatabase(sessionBuilder.build());
       });
@@ -922,7 +922,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -943,7 +943,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -956,7 +956,7 @@ void main() {
 
   withServerpod(
     'Given an auth user with a changed password,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'test@serverpod.dev';
       const oldPassword = 'Foobar123!';
       const newPassword = 'BarFoo789?';
@@ -1002,7 +1002,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountLoginException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountLoginExceptionReason.invalidCredentials,
               ),
@@ -1049,9 +1049,9 @@ void main() {
 
 extension on TestEndpoints {
   Future<({String sessionKey, UuidValue authUserId})> _registerEmailAccount(
-    final TestSessionBuilder sessionBuilder, {
-    required final String email,
-    required final String password,
+    TestSessionBuilder sessionBuilder, {
+    required String email,
+    required String password,
   }) async {
     late UuidValue receivedAccountRequestId;
     late String receivedVerificationCode;
@@ -1063,11 +1063,11 @@ extension on TestEndpoints {
       ),
       sendRegistrationVerificationCode:
           (
-            final session, {
-            required final accountRequestId,
-            required final email,
-            required final transaction,
-            required final verificationCode,
+            session, {
+            required accountRequestId,
+            required email,
+            required transaction,
+            required verificationCode,
           }) {
             receivedAccountRequestId = accountRequestId;
             receivedVerificationCode = verificationCode;
@@ -1106,8 +1106,8 @@ extension on TestEndpoints {
 
   Future<({UuidValue passwordResetRequestId, String verificationCode})>
   _startPasswordReset(
-    final TestSessionBuilder sessionBuilder, {
-    required final String email,
+    TestSessionBuilder sessionBuilder, {
+    required String email,
   }) async {
     late UuidValue receivedPasswordResetRequestId;
     late String receivedVerificationCode;
@@ -1115,11 +1115,11 @@ extension on TestEndpoints {
       secretHashPepper: 'test',
       sendPasswordResetVerificationCode:
           (
-            final session, {
-            required final email,
-            required final passwordResetRequestId,
-            required final transaction,
-            required final verificationCode,
+            session, {
+            required email,
+            required passwordResetRequestId,
+            required transaction,
+            required verificationCode,
           }) {
             receivedPasswordResetRequestId = passwordResetRequestId;
             receivedVerificationCode = verificationCode;
@@ -1143,9 +1143,9 @@ extension on TestEndpoints {
 
   /// Returns the new session key after successful password change.
   Future<void> _changePassword(
-    final TestSessionBuilder sessionBuilder, {
-    required final String email,
-    required final String password,
+    TestSessionBuilder sessionBuilder, {
+    required String email,
+    required String password,
   }) async {
     final passwordReset = await _startPasswordReset(
       sessionBuilder,
@@ -1169,25 +1169,25 @@ extension on TestEndpoints {
 /// Strictly after [lifetime]. Expiry checks are exclusive, so advancing by
 /// exactly [lifetime] is still valid when the row shares a clock tick with
 /// [DateTime.now].
-Clock _clockAfter(final Duration lifetime) {
+Clock _clockAfter(Duration lifetime) {
   return Clock.fixed(
     DateTime.now().add(lifetime + const Duration(seconds: 1)),
   );
 }
 
-Future<void> _cleanUpDatabase(final Session session) async {
+Future<void> _cleanUpDatabase(Session session) async {
   await AuthUser.db.deleteWhere(
     session,
-    where: (final _) => Constant.bool(true),
+    where: (_) => Constant.bool(true),
   );
 
   await EmailAccountRequest.db.deleteWhere(
     session,
-    where: (final _) => Constant.bool(true),
+    where: (_) => Constant.bool(true),
   );
 
   await RateLimitedRequestAttempt.db.deleteWhere(
     session,
-    where: (final t) => t.domain.equals('email'),
+    where: (t) => t.domain.equals('email'),
   );
 }

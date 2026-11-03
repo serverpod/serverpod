@@ -8,9 +8,9 @@ class GoogleAccountBackwardsCompatibilityTestEndpoint
     extends GoogleIdpBaseEndpoint {
   @override
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String idToken,
-    required final String? accessToken,
+    Session session, {
+    required String idToken,
+    required String? accessToken,
   }) async {
     await AuthBackwardsCompatibility.importGoogleAccount(
       session,

@@ -23,8 +23,8 @@ abstract class FirebaseIdpBaseEndpoint extends IdpBaseEndpoint {
   /// If a new user is created an associated [UserProfile] is also created.
   /// {@endtemplate}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String idToken,
+    Session session, {
+    required String idToken,
   }) async {
     return firebaseIdp.login(
       session,
@@ -33,6 +33,6 @@ abstract class FirebaseIdpBaseEndpoint extends IdpBaseEndpoint {
   }
 
   @override
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await firebaseIdp.hasAccount(session);
 }

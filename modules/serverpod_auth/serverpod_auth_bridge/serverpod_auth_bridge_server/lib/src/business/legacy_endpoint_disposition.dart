@@ -55,8 +55,8 @@ final class PassThrough extends LegacyEndpointDisposition {
 
 /// Decides what happens to a request addressed to [endpoint].
 LegacyEndpointDisposition dispositionFor(
-  final String endpoint, {
-  required final bool blockUnbridgedAuthEndpoints,
+  String endpoint, {
+  required bool blockUnbridgedAuthEndpoints,
 }) {
   final forwarded = _legacyToBridgeEndpoint[endpoint];
   if (forwarded != null) return forwarded;

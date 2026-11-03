@@ -19,7 +19,7 @@ void main() {
     ),
   );
 
-  withServerpod('Given an auth user,', (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth user,', (sessionBuilder, endpoints) {
     late Session session;
     late UuidValue authUserId;
 
@@ -41,7 +41,7 @@ void main() {
 
         final refreshToken = await RefreshToken.db.findFirstRow(
           session,
-          where: (final t) => t.authUserId.equals(authUserId),
+          where: (t) => t.authUserId.equals(authUserId),
         );
         expect(
           refreshToken?.rotatingSecretHash,
@@ -53,7 +53,7 @@ void main() {
 
   withServerpod(
     'Given a refresh token whose rotating secret is stored at the default Argon2 cost,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late AuthSuccess authSuccess;
@@ -78,7 +78,7 @@ void main() {
 
         final refreshToken = await RefreshToken.db.findFirstRow(
           session,
-          where: (final t) => t.authUserId.equals(authUserId),
+          where: (t) => t.authUserId.equals(authUserId),
         );
         await RefreshToken.db.updateRow(
           session,
@@ -107,7 +107,7 @@ void main() {
           () async {
             final refreshToken = await RefreshToken.db.findFirstRow(
               session,
-              where: (final t) => t.authUserId.equals(authUserId),
+              where: (t) => t.authUserId.equals(authUserId),
             );
             expect(
               refreshToken?.rotatingSecretHash,
@@ -135,7 +135,7 @@ void main() {
 
   withServerpod(
     'Given a refresh token whose rotating secret is stored with a 4 byte salt,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late AuthSuccess authSuccess;
@@ -152,7 +152,7 @@ void main() {
 
         final refreshToken = await RefreshToken.db.findFirstRow(
           session,
-          where: (final t) => t.authUserId.equals(authUserId),
+          where: (t) => t.authUserId.equals(authUserId),
         );
         await RefreshToken.db.updateRow(
           session,
@@ -191,7 +191,7 @@ void main() {
 
           final refreshToken = await RefreshToken.db.findFirstRow(
             session,
-            where: (final t) => t.authUserId.equals(authUserId),
+            where: (t) => t.authUserId.equals(authUserId),
           );
           expect(refreshToken, isNull);
         },

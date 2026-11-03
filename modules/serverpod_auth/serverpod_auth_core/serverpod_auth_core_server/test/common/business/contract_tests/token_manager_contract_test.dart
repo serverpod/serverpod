@@ -11,30 +11,28 @@ import '../fakes/fake_token_storage.dart';
 
 @isTestGroup
 void testSuite<T extends TokenManager>(
-  final String description,
-  final T Function(AuthUsers authUsers) tokenManagerBuilder, {
-  required final AuthUsers authUsers,
-  required final String tokenIssuer,
-  required final bool isDatabaseBackedManager,
-  required final bool usesRefreshTokens,
-  final FutureOr<void> Function(T tokenManager)? teardownFunction,
+  String description,
+  T Function(AuthUsers authUsers) tokenManagerBuilder, {
+  required AuthUsers authUsers,
+  required String tokenIssuer,
+  required bool isDatabaseBackedManager,
+  required bool usesRefreshTokens,
+  FutureOr<void> Function(T tokenManager)? teardownFunction,
 }) {
-  Future<UuidValue> createAuthId(final Session session) async {
-    return await authUsers.create(session).then((final value) => value.id);
+  Future<UuidValue> createAuthId(Session session) async {
+    return await authUsers.create(session).then((value) => value.id);
   }
 
   withServerpod(
     'Given a TokenManager and an authId',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authId;
       late T tokenManager;
 
       setUp(() async {
         session = sessionBuilder.build();
-        authId = await authUsers
-            .create(session)
-            .then((final value) => value.id);
+        authId = await authUsers.create(session).then((value) => value.id);
         tokenManager = tokenManagerBuilder(authUsers);
       });
 
@@ -103,7 +101,7 @@ void testSuite<T extends TokenManager>(
         'then issuing the token completes',
         () async {
           final authSuccessFuture = session.db.transaction((
-            final transaction,
+            transaction,
           ) async {
             return await tokenManager.issueToken(
               session,
@@ -124,7 +122,7 @@ void testSuite<T extends TokenManager>(
         'when issuing a token with a transaction that rolls back '
         'then token does not exist',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             final savepoint = await transaction.createSavepoint();
             await tokenManager.issueToken(
               session,
@@ -149,7 +147,7 @@ void testSuite<T extends TokenManager>(
 
   withServerpod(
     'Given a TokenManager and an issued token for an authId',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authId;
       late T tokenManager;
@@ -227,7 +225,7 @@ void testSuite<T extends TokenManager>(
       test(
         'when revoking the token with a transaction that succeeds then token is removed',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await tokenManager.revokeToken(
               session,
               tokenId: tokenId,
@@ -241,7 +239,7 @@ void testSuite<T extends TokenManager>(
           );
 
           expect(
-            tokens.any((final t) => t.tokenId == tokenId),
+            tokens.any((t) => t.tokenId == tokenId),
             isFalse,
           );
         },
@@ -254,7 +252,7 @@ void testSuite<T extends TokenManager>(
         'when revoking the token with a transaction that rolls back '
         'then token still exists',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             final savepoint = await transaction.createSavepoint();
             await tokenManager.revokeToken(
               session,
@@ -270,7 +268,7 @@ void testSuite<T extends TokenManager>(
           );
 
           expect(
-            tokens.any((final t) => t.tokenId == tokenId),
+            tokens.any((t) => t.tokenId == tokenId),
             isTrue,
           );
         },
@@ -293,7 +291,7 @@ void testSuite<T extends TokenManager>(
 
           expect(tokens, hasLength(initialTokens.length));
           expect(
-            tokens.any((final t) => t.tokenId == tokenId),
+            tokens.any((t) => t.tokenId == tokenId),
             isTrue,
           );
         },
@@ -303,7 +301,7 @@ void testSuite<T extends TokenManager>(
 
   withServerpod(
     'Given a TokenManager and multiple issued tokens for the same authId',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authId;
       late T tokenManager;
@@ -413,7 +411,7 @@ void testSuite<T extends TokenManager>(
 
         test('then tokens should have the specified token issuer', () {
           expect(
-            tokens.every((final t) => t.tokenIssuer == tokenIssuer),
+            tokens.every((t) => t.tokenIssuer == tokenIssuer),
             isTrue,
           );
         });
@@ -477,7 +475,7 @@ void testSuite<T extends TokenManager>(
           );
           expect(
             afterRevocationTokens.any(
-              (final t) => t.tokenId == tokenIdToRevoke,
+              (t) => t.tokenId == tokenIdToRevoke,
             ),
             isFalse,
           );
@@ -488,7 +486,7 @@ void testSuite<T extends TokenManager>(
           () async {
             expect(revocationMessages, [
               isA<RevokedAuthenticationAuthId>().having(
-                (final m) => m.authId,
+                (m) => m.authId,
                 'authId',
                 tokenIdToRevoke,
               ),
@@ -525,7 +523,7 @@ void testSuite<T extends TokenManager>(
         test('then the token should be removed', () {
           expect(
             afterRevocationTokens.any(
-              (final t) => t.tokenId == tokenIdToRevoke,
+              (t) => t.tokenId == tokenIdToRevoke,
             ),
             isFalse,
           );
@@ -564,7 +562,7 @@ void testSuite<T extends TokenManager>(
           expect(afterRevocationTokens, hasLength(initialTokens.length));
           expect(
             afterRevocationTokens.any(
-              (final t) => t.tokenId == tokenIdToRevoke,
+              (t) => t.tokenId == tokenIdToRevoke,
             ),
             isTrue,
           );
@@ -575,7 +573,7 @@ void testSuite<T extends TokenManager>(
         'when revoking all tokens with a transaction that succeeds '
         'then tokens are removed',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await tokenManager.revokeAllTokens(
               session,
               authUserId: authId,
@@ -599,7 +597,7 @@ void testSuite<T extends TokenManager>(
         'when revoking all tokens with a transaction that rolls back '
         'then tokens still exist',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             final savepoint = await transaction.createSavepoint();
             await tokenManager.revokeAllTokens(
               session,
@@ -630,7 +628,7 @@ void testSuite<T extends TokenManager>(
 
   withServerpod(
     'Given a TokenManager with tokens issued using different methods for the same authId',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authId;
       late T tokenManager;
@@ -682,7 +680,7 @@ void testSuite<T extends TokenManager>(
 
           expect(tokens, hasLength(initialTokensMethod1.length));
           expect(
-            tokens.every((final t) => t.method == 'method1'),
+            tokens.every((t) => t.method == 'method1'),
             isTrue,
           );
         },
@@ -706,14 +704,14 @@ void testSuite<T extends TokenManager>(
 
         test('then all tokens with the specified method should be removed', () {
           expect(
-            tokensAfterRevocation.any((final t) => t.method == 'method1'),
+            tokensAfterRevocation.any((t) => t.method == 'method1'),
             isFalse,
           );
         });
 
         test('then tokens with other methods should remain', () {
           expect(
-            tokensAfterRevocation.any((final t) => t.method == 'method2'),
+            tokensAfterRevocation.any((t) => t.method == 'method2'),
             isTrue,
           );
         });
@@ -723,7 +721,7 @@ void testSuite<T extends TokenManager>(
 
   withServerpod(
     'Given a TokenManager with tokens for multiple authIds',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late T tokenManager;
       late UuidValue authId1;
@@ -788,7 +786,7 @@ void testSuite<T extends TokenManager>(
 
           expect(tokens, hasLength(initialTokensForAuthId1.length));
           expect(
-            tokens.every((final t) => t.userId == authId1.toString()),
+            tokens.every((t) => t.userId == authId1.toString()),
             isTrue,
           );
         },
@@ -817,7 +815,7 @@ void testSuite<T extends TokenManager>(
         test('then all tokens for the authId should be removed', () {
           expect(
             tokensAfterRevocation.any(
-              (final t) => t.userId == authId1.toString(),
+              (t) => t.userId == authId1.toString(),
             ),
             isFalse,
           );
@@ -826,7 +824,7 @@ void testSuite<T extends TokenManager>(
         test('then tokens for other authIds should remain', () {
           expect(
             tokensAfterRevocation.any(
-              (final t) => t.userId == authId2.toString(),
+              (t) => t.userId == authId2.toString(),
             ),
             isTrue,
           );
@@ -873,7 +871,7 @@ void testSuite<T extends TokenManager>(
 
   withServerpod(
     'Given a TokenManager with tokens for multiple authIds and methods',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late T tokenManager;
       late UuidValue authId1;
@@ -943,8 +941,7 @@ void testSuite<T extends TokenManager>(
           test('then only token matching all filters should be removed', () {
             expect(
               tokensAfterRevocation.any(
-                (final t) =>
-                    t.userId == authId1.toString() && t.method == 'method1',
+                (t) => t.userId == authId1.toString() && t.method == 'method1',
               ),
               isFalse,
             );
@@ -957,22 +954,19 @@ void testSuite<T extends TokenManager>(
             );
             expect(
               tokensAfterRevocation.any(
-                (final t) =>
-                    t.userId == authId1.toString() && t.method == 'method2',
+                (t) => t.userId == authId1.toString() && t.method == 'method2',
               ),
               isTrue,
             );
             expect(
               tokensAfterRevocation.any(
-                (final t) =>
-                    t.userId == authId2.toString() && t.method == 'method1',
+                (t) => t.userId == authId2.toString() && t.method == 'method1',
               ),
               isTrue,
             );
             expect(
               tokensAfterRevocation.any(
-                (final t) =>
-                    t.userId == authId2.toString() && t.method == 'method2',
+                (t) => t.userId == authId2.toString() && t.method == 'method2',
               ),
               isTrue,
             );
@@ -1006,10 +1000,10 @@ void main() {
   const authUsers = AuthUsers();
   testSuite(
     'FakeTokenManager',
-    (final authUsers) {
+    (authUsers) {
       return FakeTokenManager(fakeTokenStorage, authUsers: authUsers);
     },
-    teardownFunction: (final tokenManager) {
+    teardownFunction: (tokenManager) {
       fakeTokenStorage.clear();
     },
     tokenIssuer: 'fake',
@@ -1020,7 +1014,7 @@ void main() {
 
   testSuite(
     'ServerSideSessionsTokenManager',
-    (final authUsers) {
+    (authUsers) {
       return ServerSideSessionsTokenManager(
         config: ServerSideSessionsConfig(
           sessionKeyHashPepper: 'test-pepper',
@@ -1036,7 +1030,7 @@ void main() {
 
   testSuite(
     'JwtTokenManager',
-    (final authUsers) {
+    (authUsers) {
       return JwtTokenManager(
         config: JwtConfig(
           algorithm: HmacSha512JwtAlgorithmConfiguration(

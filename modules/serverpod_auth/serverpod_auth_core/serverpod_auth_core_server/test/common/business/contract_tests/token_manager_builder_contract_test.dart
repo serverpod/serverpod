@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import '../fakes/fakes.dart';
 
 void testSuite<T extends TokenManager>(
-  final TokenManagerBuilder<T> Function() createTokenManagerBuilder,
+  TokenManagerBuilder<T> Function() createTokenManagerBuilder,
 ) {
   group(
     'Given a token manager builder',

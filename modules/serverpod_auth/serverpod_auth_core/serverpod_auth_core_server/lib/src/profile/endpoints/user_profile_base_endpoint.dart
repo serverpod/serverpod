@@ -15,7 +15,7 @@ class UserProfileInfoEndpoint extends Endpoint {
   bool get requireLogin => true;
 
   /// Returns the user profile of the current user.
-  Future<UserProfileModel> get(final Session session) async {
+  Future<UserProfileModel> get(Session session) async {
     final authUserId = session.authenticated!.authUserId;
 
     final profile = await userProfiles.findUserProfileByUserId(
@@ -35,7 +35,7 @@ abstract class UserProfileEditBaseEndpoint extends UserProfileInfoEndpoint {
   /// Removes the user's uploaded image, setting it to null.
   ///
   /// The client should handle displaying a placeholder for users without images.
-  Future<UserProfileModel> removeUserImage(final Session session) async {
+  Future<UserProfileModel> removeUserImage(Session session) async {
     final userId = session.authenticated!.authUserId;
 
     return userProfiles.removeUserImage(session, userId);
@@ -43,8 +43,8 @@ abstract class UserProfileEditBaseEndpoint extends UserProfileInfoEndpoint {
 
   /// Sets a new user image for the signed in user.
   Future<UserProfileModel> setUserImage(
-    final Session session,
-    final ByteData image,
+    Session session,
+    ByteData image,
   ) async {
     final userId = session.authenticated!.authUserId;
 
@@ -57,8 +57,8 @@ abstract class UserProfileEditBaseEndpoint extends UserProfileInfoEndpoint {
 
   /// Changes the name of a user.
   Future<UserProfileModel> changeUserName(
-    final Session session,
-    final String? userName,
+    Session session,
+    String? userName,
   ) async {
     final userId = session.authenticated!.authUserId;
 
@@ -67,8 +67,8 @@ abstract class UserProfileEditBaseEndpoint extends UserProfileInfoEndpoint {
 
   /// Changes the full name of a user.
   Future<UserProfileModel> changeFullName(
-    final Session session,
-    final String? fullName,
+    Session session,
+    String? fullName,
   ) async {
     final userId = session.authenticated!.authUserId;
 
