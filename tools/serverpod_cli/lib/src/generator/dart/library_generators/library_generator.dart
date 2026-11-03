@@ -276,8 +276,8 @@ class LibraryGenerator {
         ),
     ]);
 
-    final allFieldsToGenerateSerialization = unsealedModels
-        .whereType<ModelClassDefinition>()
+    final allFieldsToGenerateSerialization = allModels
+        .whereType<ClassDefinition>()
         .expand((m) => m.fields)
         .where((f) => f.shouldIncludeField(serverCode))
         .distinct();
