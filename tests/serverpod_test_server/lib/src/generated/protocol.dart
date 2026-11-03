@@ -95,7 +95,9 @@ import 'empty_model/empty_model.dart' as _i9l9xrkt;
 import 'empty_model/empty_model_relation_item.dart' as _ikufh0vd;
 import 'empty_model/empty_model_with_table.dart' as _iw4y4x6s;
 import 'empty_model/relation_empy_model.dart' as _iy7bezig;
+import 'exception_detail.dart' as _i1vx2qjs;
 import 'exception_with_data.dart' as _is77lrdb;
+import 'exception_with_model_list.dart' as _ihvnwbvd;
 import 'explicit_column_name/inheritance/child_class_explicit_column.dart'
     as _ikh95zxc;
 import 'explicit_column_name/inheritance/non_table_parent_class.dart'
@@ -154,6 +156,8 @@ import 'inheritance/polymorphism/grandchild.dart' as _ipndfib1;
 import 'inheritance/polymorphism/other.dart' as _icfkf6u0;
 import 'inheritance/polymorphism/parent.dart' as _i5oq3fsk;
 import 'inheritance/polymorphism/unrelated.dart' as _ih2dgm3r;
+import 'inheritance/sealed_list_item.dart' as _i620t4p6;
+import 'inheritance/sealed_list_parent.dart' as _iot07lpq;
 import 'inheritance/sealed_parent.dart' as _ij7m744x;
 import 'inheritance/sealed_parent_nullable_field.dart' as _iwv9x21d;
 import 'long_identifiers/deep_includes/city_with_long_table_name.dart'
@@ -358,7 +362,9 @@ export 'empty_model/empty_model.dart';
 export 'empty_model/empty_model_relation_item.dart';
 export 'empty_model/empty_model_with_table.dart';
 export 'empty_model/relation_empy_model.dart';
+export 'exception_detail.dart';
 export 'exception_with_data.dart';
+export 'exception_with_model_list.dart';
 export 'explicit_column_name/inheritance/child_class_explicit_column.dart';
 export 'explicit_column_name/inheritance/non_table_parent_class.dart';
 export 'explicit_column_name/modified_column_name.dart';
@@ -404,6 +410,8 @@ export 'inheritance/polymorphism/container_module.dart';
 export 'inheritance/polymorphism/other.dart';
 export 'inheritance/polymorphism/parent.dart';
 export 'inheritance/polymorphism/unrelated.dart';
+export 'inheritance/sealed_list_item.dart';
+export 'inheritance/sealed_list_parent.dart';
 export 'inheritance/sealed_no_child.dart';
 export 'inheritance/sealed_parent.dart';
 export 'inheritance/sealed_parent_nullable_field.dart';
@@ -605,7 +613,9 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ikufh0vd.EmptyModelRelationItem>,
       _is.getType<_iw4y4x6s.EmptyModelWithTable>,
       _is.getType<_iy7bezig.RelationEmptyModel>,
+      _is.getType<_i1vx2qjs.ExceptionDetail>,
       _is.getType<_is77lrdb.ExceptionWithData>,
+      _is.getType<_ihvnwbvd.ExceptionWithModelList>,
       _is.getType<_ikh95zxc.ChildClassExplicitColumn>,
       _is.getType<_i1y2idkw.NonTableParentClass>,
       _is.getType<_i7hqkfn7.ModifiedColumnName>,
@@ -659,6 +669,8 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ij7m744x.SealedGrandChild>,
       _is.getType<_ij7m744x.SealedChild>,
       _is.getType<_iwv9x21d.SealedChildOnlyRequired>,
+      _is.getType<_iot07lpq.SealedListChild>,
+      _is.getType<_i620t4p6.SealedListItem>,
       _is.getType<_ij7m744x.SealedOtherChild>,
       _is.getType<_iycanyn2.CityWithLongTableName>,
       _is.getType<_ifbzwpkm.OrganizationWithLongTableName>,
@@ -844,7 +856,9 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ikufh0vd.EmptyModelRelationItem?>,
       _is.getType<_iw4y4x6s.EmptyModelWithTable?>,
       _is.getType<_iy7bezig.RelationEmptyModel?>,
+      _is.getType<_i1vx2qjs.ExceptionDetail?>,
       _is.getType<_is77lrdb.ExceptionWithData?>,
+      _is.getType<_ihvnwbvd.ExceptionWithModelList?>,
       _is.getType<_ikh95zxc.ChildClassExplicitColumn?>,
       _is.getType<_i1y2idkw.NonTableParentClass?>,
       _is.getType<_i7hqkfn7.ModifiedColumnName?>,
@@ -898,6 +912,8 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_ij7m744x.SealedGrandChild?>,
       _is.getType<_ij7m744x.SealedChild?>,
       _is.getType<_iwv9x21d.SealedChildOnlyRequired?>,
+      _is.getType<_iot07lpq.SealedListChild?>,
+      _is.getType<_i620t4p6.SealedListItem?>,
       _is.getType<_ij7m744x.SealedOtherChild?>,
       _is.getType<_iycanyn2.CityWithLongTableName?>,
       _is.getType<_ifbzwpkm.OrganizationWithLongTableName?>,
@@ -1027,9 +1043,10 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<List<_ixc9sah8.ChangedIdTypeSelf>?>,
       _is.getType<List<_ikufh0vd.EmptyModelRelationItem>>,
       _is.getType<List<_ikufh0vd.EmptyModelRelationItem>?>,
+      _is.getType<List<String>>,
+      _is.getType<List<_i1vx2qjs.ExceptionDetail>>,
       _is.getType<List<_ixlcmx78.Employee>>,
       _is.getType<List<_ixlcmx78.Employee>?>,
-      _is.getType<List<String>>,
       _is.getType<Map<String, String>>,
       _is.getType<(int, String)>,
       _is.getType<List<_i2aipqpt.ChildEntity>>,
@@ -1040,6 +1057,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<Map<String, _i11uofdz.PolymorphicChild?>>,
       _is.getType<List<_iom2gwyu.ModulePolymorphicChild>>,
       _is.getType<Map<String, _iom2gwyu.ModulePolymorphicChild>>,
+      _is.getType<List<_i620t4p6.SealedListItem>>,
       _is.getType<List<_iy2gklrg.PersonWithLongTableName>>,
       _is.getType<List<_iy2gklrg.PersonWithLongTableName>?>,
       _is.getType<List<_ifbzwpkm.OrganizationWithLongTableName>>,
@@ -1738,7 +1756,9 @@ class Protocol extends _is.DatabaseSerializationManager
       'EmptyModelRelationItem',
       'EmptyModelWithTable',
       'RelationEmptyModel',
+      'ExceptionDetail',
       'ExceptionWithData',
+      'ExceptionWithModelList',
       'ChildClassExplicitColumn',
       'NonTableParentClass',
       'ModifiedColumnName',
@@ -1792,6 +1812,8 @@ class Protocol extends _is.DatabaseSerializationManager
       'SealedGrandChild',
       'SealedChild',
       'SealedChildOnlyRequired',
+      'SealedListChild',
+      'SealedListItem',
       'SealedOtherChild',
       'CityWithLongTableName',
       'OrganizationWithLongTableName',
@@ -8815,8 +8837,14 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _iy7bezig.RelationEmptyModel) {
       return _iy7bezig.RelationEmptyModel.fromJson(data) as T;
     }
+    if (t == _i1vx2qjs.ExceptionDetail) {
+      return _i1vx2qjs.ExceptionDetail.fromJson(data) as T;
+    }
     if (t == _is77lrdb.ExceptionWithData) {
       return _is77lrdb.ExceptionWithData.fromJson(data) as T;
+    }
+    if (t == _ihvnwbvd.ExceptionWithModelList) {
+      return _ihvnwbvd.ExceptionWithModelList.fromJson(data) as T;
     }
     if (t == _ikh95zxc.ChildClassExplicitColumn) {
       return _ikh95zxc.ChildClassExplicitColumn.fromJson(data) as T;
@@ -8978,6 +9006,12 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (t == _iwv9x21d.SealedChildOnlyRequired) {
       return _iwv9x21d.SealedChildOnlyRequired.fromJson(data) as T;
+    }
+    if (t == _iot07lpq.SealedListChild) {
+      return _iot07lpq.SealedListChild.fromJson(data) as T;
+    }
+    if (t == _i620t4p6.SealedListItem) {
+      return _i620t4p6.SealedListItem.fromJson(data) as T;
     }
     if (t == _ij7m744x.SealedOtherChild) {
       return _ij7m744x.SealedOtherChild.fromJson(data) as T;
@@ -9613,8 +9647,18 @@ class Protocol extends _is.DatabaseSerializationManager
       return (data != null ? _iy7bezig.RelationEmptyModel.fromJson(data) : null)
           as T;
     }
+    if (t == _is.getType<_i1vx2qjs.ExceptionDetail?>()) {
+      return (data != null ? _i1vx2qjs.ExceptionDetail.fromJson(data) : null)
+          as T;
+    }
     if (t == _is.getType<_is77lrdb.ExceptionWithData?>()) {
       return (data != null ? _is77lrdb.ExceptionWithData.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_ihvnwbvd.ExceptionWithModelList?>()) {
+      return (data != null
+              ? _ihvnwbvd.ExceptionWithModelList.fromJson(data)
+              : null)
           as T;
     }
     if (t == _is.getType<_ikh95zxc.ChildClassExplicitColumn?>()) {
@@ -9889,6 +9933,14 @@ class Protocol extends _is.DatabaseSerializationManager
       return (data != null
               ? _iwv9x21d.SealedChildOnlyRequired.fromJson(data)
               : null)
+          as T;
+    }
+    if (t == _is.getType<_iot07lpq.SealedListChild?>()) {
+      return (data != null ? _iot07lpq.SealedListChild.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_i620t4p6.SealedListItem?>()) {
+      return (data != null ? _i620t4p6.SealedListItem.fromJson(data) : null)
           as T;
     }
     if (t == _is.getType<_ij7m744x.SealedOtherChild?>()) {
@@ -10481,6 +10533,15 @@ class Protocol extends _is.DatabaseSerializationManager
               : null)
           as T;
     }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<_i1vx2qjs.ExceptionDetail>) {
+      return (data as List)
+              .map((e) => deserialize<_i1vx2qjs.ExceptionDetail>(e))
+              .toList()
+          as T;
+    }
     if (t == List<_ixlcmx78.Employee>) {
       return (data as List)
               .map((e) => deserialize<_ixlcmx78.Employee>(e))
@@ -10494,9 +10555,6 @@ class Protocol extends _is.DatabaseSerializationManager
                     .toList()
               : null)
           as T;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     if (t == Map<String, String>) {
       return (data as Map).map(
@@ -10568,6 +10626,12 @@ class Protocol extends _is.DatabaseSerializationManager
               deserialize<_iom2gwyu.ModulePolymorphicChild>(v),
             ),
           )
+          as T;
+    }
+    if (t == List<_i620t4p6.SealedListItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i620t4p6.SealedListItem>(e))
+              .toList()
           as T;
     }
     if (t == List<_iy2gklrg.PersonWithLongTableName>) {
@@ -14777,7 +14841,9 @@ class Protocol extends _is.DatabaseSerializationManager
       _ikufh0vd.EmptyModelRelationItem => 'EmptyModelRelationItem',
       _iw4y4x6s.EmptyModelWithTable => 'EmptyModelWithTable',
       _iy7bezig.RelationEmptyModel => 'RelationEmptyModel',
+      _i1vx2qjs.ExceptionDetail => 'ExceptionDetail',
       _is77lrdb.ExceptionWithData => 'ExceptionWithData',
+      _ihvnwbvd.ExceptionWithModelList => 'ExceptionWithModelList',
       _ikh95zxc.ChildClassExplicitColumn => 'ChildClassExplicitColumn',
       _i1y2idkw.NonTableParentClass => 'NonTableParentClass',
       _i7hqkfn7.ModifiedColumnName => 'ModifiedColumnName',
@@ -14838,6 +14904,8 @@ class Protocol extends _is.DatabaseSerializationManager
       _ij7m744x.SealedGrandChild => 'SealedGrandChild',
       _ij7m744x.SealedChild => 'SealedChild',
       _iwv9x21d.SealedChildOnlyRequired => 'SealedChildOnlyRequired',
+      _iot07lpq.SealedListChild => 'SealedListChild',
+      _i620t4p6.SealedListItem => 'SealedListItem',
       _ij7m744x.SealedOtherChild => 'SealedOtherChild',
       _iycanyn2.CityWithLongTableName => 'CityWithLongTableName',
       _ifbzwpkm.OrganizationWithLongTableName =>
@@ -15131,8 +15199,12 @@ class Protocol extends _is.DatabaseSerializationManager
         return 'EmptyModelWithTable';
       case _iy7bezig.RelationEmptyModel():
         return 'RelationEmptyModel';
+      case _i1vx2qjs.ExceptionDetail():
+        return 'ExceptionDetail';
       case _is77lrdb.ExceptionWithData():
         return 'ExceptionWithData';
+      case _ihvnwbvd.ExceptionWithModelList():
+        return 'ExceptionWithModelList';
       case _ikh95zxc.ChildClassExplicitColumn():
         return 'ChildClassExplicitColumn';
       case _i1y2idkw.NonTableParentClass():
@@ -15239,6 +15311,10 @@ class Protocol extends _is.DatabaseSerializationManager
         return 'SealedChild';
       case _iwv9x21d.SealedChildOnlyRequired():
         return 'SealedChildOnlyRequired';
+      case _iot07lpq.SealedListChild():
+        return 'SealedListChild';
+      case _i620t4p6.SealedListItem():
+        return 'SealedListItem';
       case _ij7m744x.SealedOtherChild():
         return 'SealedOtherChild';
       case _iycanyn2.CityWithLongTableName():
@@ -15806,8 +15882,14 @@ class Protocol extends _is.DatabaseSerializationManager
     if (dataClassName == 'RelationEmptyModel') {
       return deserialize<_iy7bezig.RelationEmptyModel>(data['data']);
     }
+    if (dataClassName == 'ExceptionDetail') {
+      return deserialize<_i1vx2qjs.ExceptionDetail>(data['data']);
+    }
     if (dataClassName == 'ExceptionWithData') {
       return deserialize<_is77lrdb.ExceptionWithData>(data['data']);
+    }
+    if (dataClassName == 'ExceptionWithModelList') {
+      return deserialize<_ihvnwbvd.ExceptionWithModelList>(data['data']);
     }
     if (dataClassName == 'ChildClassExplicitColumn') {
       return deserialize<_ikh95zxc.ChildClassExplicitColumn>(data['data']);
@@ -15979,6 +16061,12 @@ class Protocol extends _is.DatabaseSerializationManager
     }
     if (dataClassName == 'SealedChildOnlyRequired') {
       return deserialize<_iwv9x21d.SealedChildOnlyRequired>(data['data']);
+    }
+    if (dataClassName == 'SealedListChild') {
+      return deserialize<_iot07lpq.SealedListChild>(data['data']);
+    }
+    if (dataClassName == 'SealedListItem') {
+      return deserialize<_i620t4p6.SealedListItem>(data['data']);
     }
     if (dataClassName == 'SealedOtherChild') {
       return deserialize<_ij7m744x.SealedOtherChild>(data['data']);
