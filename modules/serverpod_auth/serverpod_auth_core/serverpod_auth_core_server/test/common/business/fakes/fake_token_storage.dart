@@ -9,19 +9,19 @@ import 'package:uuid/uuid.dart';
 class FakeTokenStorage {
   final Map<String, TokenInfo> _tokens = {};
 
-  void storeToken(final TokenInfo token) {
+  void storeToken(TokenInfo token) {
     _tokens[token.tokenId] = token;
   }
 
-  void removeToken(final String tokenId) {
+  void removeToken(String tokenId) {
     _tokens.remove(tokenId);
   }
 
   void removeTokensWhere({
-    final String? userId,
-    final String? method,
+    String? userId,
+    String? method,
   }) {
-    final tokensToRemove = _tokens.values.where((final token) {
+    final tokensToRemove = _tokens.values.where((token) {
       if (userId != null && token.userId != userId) {
         return false;
       }
@@ -36,15 +36,15 @@ class FakeTokenStorage {
     }
   }
 
-  TokenInfo? getToken(final String tokenId) {
+  TokenInfo? getToken(String tokenId) {
     return _tokens[tokenId];
   }
 
   List<TokenInfo> getTokensWhere({
-    final String? userId,
-    final String? method,
+    String? userId,
+    String? method,
   }) {
-    return _tokens.values.where((final token) {
+    return _tokens.values.where((token) {
       if (userId != null && token.userId != userId) {
         return false;
       }

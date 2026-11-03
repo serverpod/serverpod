@@ -33,7 +33,7 @@ import 'package:serverpod_cli/src/mcp/runner_surface.dart';
 /// `serverpod_docs`) as the only argument. The script writes the auto-generated
 /// usage blocks to `_generated/` and the per-command pages to `commands/`,
 /// leaving the hand-maintained `_<command>.md` intros untouched.
-void main(final List<String> args) {
+void main(List<String> args) {
   if (args.length != 1) {
     throw StateError(
       'Expected the path to the docs directory as the only '
@@ -93,7 +93,7 @@ void main(final List<String> args) {
   // command's usage output, so they are appended to the generated page.
   commandsDocs.update(
     'mcp-server.md',
-    (final content) => '$content\n${_generateMcpToolReference()}\n',
+    (content) => '$content\n${_generateMcpToolReference()}\n',
   );
 
   for (final MapEntry(key: fileName, value: content) in commandsDocs.entries) {
@@ -109,7 +109,7 @@ void main(final List<String> args) {
   }
 
   final currentCommands = commandsDocs.keys
-      .map((final file) => file.split('.').first)
+      .map((file) => file.split('.').first)
       .toSet();
   _deleteRemovedCommandsFolders(currentCommands, commandsPath);
   _deleteRemovedCommandsFiles(currentCommands, generatedPath);
@@ -122,12 +122,12 @@ void main(final List<String> args) {
 }
 
 void _generateDocPage(
-  final String generatedPath,
-  final String docBasePath,
-  final String docDirName,
-  final String docLabel,
-  final String docFileName,
-  final String docContent,
+  String generatedPath,
+  String docBasePath,
+  String docDirName,
+  String docLabel,
+  String docFileName,
+  String docContent,
 ) {
   File(path.join(generatedPath, docFileName)).writeAsStringSync(docContent);
 
@@ -168,7 +168,7 @@ String _generateMcpToolReference() {
   );
 
   final tools = [...runnerStaticTools, tailRunnerLogsTool]
-    ..sort((final a, final b) => a.name.compareTo(b.name));
+    ..sort((a, b) => a.name.compareTo(b.name));
 
   for (final tool in tools) {
     markdown.writeln('### `${tool.name}`\n');
@@ -196,7 +196,7 @@ String _generateMcpToolReference() {
   }
 
   final resources = [...runnerStaticResources]
-    ..sort((final a, final b) => a.uri.compareTo(b.uri));
+    ..sort((a, b) => a.uri.compareTo(b.uri));
   if (resources.isNotEmpty) {
     markdown.writeln('## Resources\n');
     markdown.writeln('| Resource | Description |');
@@ -213,19 +213,19 @@ String _generateMcpToolReference() {
 /// Flattens a tool or parameter description into a single line that is safe to
 /// place inside a markdown table. Em dashes are replaced because the docs style
 /// guide does not allow them.
-String _toMarkdownText(final String description) {
+String _toMarkdownText(String description) {
   return description
       .replaceAll('\u2014', ',')
       .split(RegExp(r'\s+'))
-      .where((final word) => word.isNotEmpty)
+      .where((word) => word.isNotEmpty)
       .join(' ')
       .replaceAll(' ,', ',')
       .replaceAll('|', r'\|');
 }
 
 String buildCommandMdxFileContent(
-  final String fileName,
-  final String relativeGeneratedPath,
+  String fileName,
+  String relativeGeneratedPath,
 ) {
   final commandName = fileName.split('.').first;
   final importName = _toImportIdentifier(commandName);
@@ -247,19 +247,19 @@ import $importName from '$generatedImportPath';
 
 /// Turns a command name into a valid PascalCase JS import identifier, e.g.
 /// `create-migration` -> `CreateMigration`.
-String _toImportIdentifier(final String commandName) {
+String _toImportIdentifier(String commandName) {
   return commandName
       .split('-')
       .map(
-        (final part) =>
+        (part) =>
             part.isEmpty ? part : part[0].toUpperCase() + part.substring(1),
       )
       .join();
 }
 
 void _deleteRemovedCommandsFiles(
-  final Set<String> currentCommands,
-  final String generatedCommandsPath,
+  Set<String> currentCommands,
+  String generatedCommandsPath,
 ) {
   for (final entity in Directory(generatedCommandsPath).listSync()) {
     if (entity is File &&
@@ -274,8 +274,8 @@ void _deleteRemovedCommandsFiles(
 }
 
 void _deleteRemovedCommandsFolders(
-  final Set<String> currentCommands,
-  final String commandsPath,
+  Set<String> currentCommands,
+  String commandsPath,
 ) {
   for (final entity in Directory(commandsPath).listSync()) {
     if (entity is Directory) {
@@ -321,12 +321,12 @@ class _CommandDocumentationGenerator {
     return markdown;
   }
 
-  StringBuffer _generateCommandPage(final Command command) {
+  StringBuffer _generateCommandPage(Command command) {
     final StringBuffer markdown = StringBuffer();
 
     final hasOptions = command.argParser.options.isNotEmpty;
     final subcommands = command.subcommands.entries
-        .where((final e) => !_excludeCommand(e.value))
+        .where((e) => !_excludeCommand(e.value))
         .toList();
 
     // Commands that forward raw arguments (e.g. `cloud`) expose no options or
@@ -362,13 +362,13 @@ class _CommandDocumentationGenerator {
   /// Removes the shared "Global options:" block from a command's usage. Those
   /// options are documented on the dedicated global options page, so command
   /// pages keep only their own options plus the pointer line.
-  String _stripGlobalOptions(final String usage) {
+  String _stripGlobalOptions(String usage) {
     final index = usage.indexOf('\nGlobal options:');
     if (index == -1) return usage.trimRight();
     return usage.substring(0, index).trimRight();
   }
 
-  bool _excludeCommand(final Command command) {
+  bool _excludeCommand(Command command) {
     return command.hidden || command.name == 'help';
   }
 }

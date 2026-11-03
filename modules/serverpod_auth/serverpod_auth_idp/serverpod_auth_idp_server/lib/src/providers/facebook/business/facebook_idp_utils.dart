@@ -63,7 +63,7 @@ class FacebookIdpUtils {
   /// Creates a new instance of [FacebookIdpUtils].
   FacebookIdpUtils({
     required this.config,
-    required final AuthUsers authUsers,
+    required AuthUsers authUsers,
   }) : _authUsers = authUsers;
 
   /// Authenticates a user using a Facebook access token.
@@ -72,9 +72,9 @@ class FacebookIdpUtils {
   /// the user's profile information. If the Facebook user ID is not yet known
   /// in the system, a new `AuthUser` is created.
   Future<FacebookAuthSuccess> authenticate(
-    final Session session, {
-    required final String accessToken,
-    required final Transaction? transaction,
+    Session session, {
+    required String accessToken,
+    required Transaction? transaction,
   }) async {
     final accountDetails = await fetchAccountDetails(
       session,
@@ -83,7 +83,7 @@ class FacebookIdpUtils {
 
     var facebookAccount = await FacebookAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(
+      where: (t) => t.userIdentifier.equals(
         accountDetails.userIdentifier,
       ),
       transaction: transaction,
@@ -135,8 +135,8 @@ class FacebookIdpUtils {
   ///
   /// Throws [FacebookAccessTokenVerificationException] if the user info retrieval fails.
   Future<FacebookAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String accessToken,
+    Session session, {
+    required String accessToken,
   }) async {
     await _verifyAccessToken(session, accessToken: accessToken);
 
@@ -191,7 +191,7 @@ class FacebookIdpUtils {
     return details;
   }
 
-  FacebookAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
+  FacebookAccountDetails _parseAccountDetails(Map<String, dynamic> data) {
     final userIdentifier = data['id'] as String?;
     if (userIdentifier == null) {
       throw FacebookUserInfoMissingDataException();
@@ -217,8 +217,8 @@ class FacebookIdpUtils {
 
   /// Verifies a Facebook access token using the Debug Token API.
   Future<void> _verifyAccessToken(
-    final Session session, {
-    required final String accessToken,
+    Session session, {
+    required String accessToken,
   }) async {
     final appAccessToken = '${config.appId}|${config.appSecret}';
 
@@ -279,7 +279,7 @@ class FacebookIdpUtils {
   }
 
   /// Extracts the profile picture URL from Facebook user data.
-  Uri? _extractProfilePictureUrl(final Map<String, dynamic> data) {
+  Uri? _extractProfilePictureUrl(Map<String, dynamic> data) {
     final picture = data['picture'] as Map<String, dynamic>?;
     if (picture == null) return null;
 
@@ -296,10 +296,10 @@ class FacebookIdpUtils {
   ///
   /// This creates a new [FacebookAccount] entity in the database.
   Future<FacebookAccount> linkFacebookAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final FacebookAccountDetails accountDetails,
-    required final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required FacebookAccountDetails accountDetails,
+    required Transaction? transaction,
   }) async {
     final facebookAccount = FacebookAccount(
       authUserId: authUserId,
@@ -318,12 +318,12 @@ class FacebookIdpUtils {
   }
 
   /// Returns the possible [FacebookAccount] associated with a session.
-  Future<FacebookAccount?> getAccount(final Session session) {
+  Future<FacebookAccount?> getAccount(Session session) {
     return switch (session.authenticated) {
       null => Future.value(null),
       _ => FacebookAccount.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(
+        where: (t) => t.authUserId.equals(
           session.authenticated!.authUserId,
         ),
       ),
@@ -332,7 +332,7 @@ class FacebookIdpUtils {
 }
 
 extension on Session {
-  Never logAndThrow(final String message) {
+  Never logAndThrow(String message) {
     log(message, level: LogLevel.debug);
     throw FacebookAccessTokenVerificationException();
   }

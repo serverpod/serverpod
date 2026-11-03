@@ -14,14 +14,14 @@ import 'package:test/test.dart';
 /// never quietly served by the legacy module.
 void main() {
   group('Given unbridged legacy endpoints are blocked,', () {
-    LegacyEndpointDisposition disposition(final String endpoint) =>
+    LegacyEndpointDisposition disposition(String endpoint) =>
         dispositionFor(endpoint, blockUnbridgedAuthEndpoints: true);
 
     test('when the email endpoint is called, then it is forwarded.', () {
       expect(
         disposition('serverpod_auth.email'),
         isA<ForwardToBridge>().having(
-          (final d) => d.bridgeEndpoint,
+          (d) => d.bridgeEndpoint,
           'bridgeEndpoint',
           'serverpod_auth_bridge.legacyEmail',
         ),
@@ -80,7 +80,7 @@ void main() {
   });
 
   group('Given unbridged legacy endpoints are served,', () {
-    LegacyEndpointDisposition disposition(final String endpoint) =>
+    LegacyEndpointDisposition disposition(String endpoint) =>
         dispositionFor(endpoint, blockUnbridgedAuthEndpoints: false);
 
     test('when the apple endpoint is called, then it is served.', () {

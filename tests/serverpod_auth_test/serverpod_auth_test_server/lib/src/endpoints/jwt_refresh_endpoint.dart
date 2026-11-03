@@ -15,8 +15,8 @@ class JwtRefreshEndpoint extends RefreshJwtTokensEndpoint {
   @unauthenticatedClientCall
   @override
   Future<AuthSuccess> refreshAccessToken(
-    final Session session, {
-    final String? refreshToken,
+    Session session, {
+    String? refreshToken,
   }) async {
     refreshCallCount++;
     _activeRefreshes++;

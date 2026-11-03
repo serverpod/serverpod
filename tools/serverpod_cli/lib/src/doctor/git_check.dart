@@ -13,7 +13,7 @@ class GitCheck {
 
   /// [environment] stands in for the process environment in tests.
   static Future<DoctorCheckResult> probe({
-    final Map<String, String>? environment,
+    Map<String, String>? environment,
   }) async {
     // Without the developer tools, macOS's git stub opens an install dialog
     // instead of running, so check for them first.
@@ -39,9 +39,9 @@ class GitCheck {
   }
 
   static DoctorCheckResult evaluate({
-    required final String? executable,
-    required final String? output,
-    final bool macOsDeveloperToolsMissing = false,
+    required String? executable,
+    required String? output,
+    bool macOsDeveloperToolsMissing = false,
   }) {
     const title = 'Git';
 

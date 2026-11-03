@@ -36,9 +36,9 @@ class PasskeyIdp implements IdentityProvider {
 
   /// Creates a new instance of [PasskeyIdp].
   factory PasskeyIdp(
-    final PasskeyIdpConfig config, {
-    required final TokenIssuer tokenManager,
-    final AuthUsers authUsers = const AuthUsers(),
+    PasskeyIdpConfig config, {
+    required TokenIssuer tokenManager,
+    AuthUsers authUsers = const AuthUsers(),
   }) {
     final utils = PasskeyIdpUtils(
       challengeLifetime: config.challengeLifetime,
@@ -61,13 +61,13 @@ class PasskeyIdp implements IdentityProvider {
 
   /// Creates a new challenge to be used for a subsequent registration or login.
   Future<PasskeyChallengeResponse> createChallenge(
-    final Session session, {
-    final Transaction? transaction,
+    Session session, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final challenge = await utils.createChallenge(
           session,
           transaction: transaction,
@@ -80,13 +80,13 @@ class PasskeyIdp implements IdentityProvider {
 
   /// Links the given passkey to the given [authUserId].
   Future<void> register(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final PasskeyRegistrationRequest request,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required PasskeyRegistrationRequest request,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       await utils.registerPasskey(
         session,
@@ -101,12 +101,12 @@ class PasskeyIdp implements IdentityProvider {
   ///
   /// Returns the [AuthUser]'s ID upon successful login.
   Future<AuthSuccess> login(
-    final Session session, {
-    required final PasskeyLoginRequest request,
-    final Transaction? transaction,
+    Session session, {
+    required PasskeyLoginRequest request,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       final authUserId = await utils.authenticate(
         session,
@@ -135,21 +135,21 @@ class PasskeyIdp implements IdentityProvider {
   }
 
   /// Determines whether the current session has an associated Passkey account.
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await utils.getAccount(session) != null;
 
   /// Migrates [PasskeyAccount]s from [userToRemoveId] to [userToKeepId].
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     await PasskeyAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToRemoveId),
-      columnValues: (final t) => [
+      where: (t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (t) => [
         t.authUserId(userToKeepId),
       ],
       transaction: transaction,

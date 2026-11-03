@@ -50,9 +50,9 @@ class AppleIdpUtils {
   /// Creates a new instance of [AppleIdpUtils].
   AppleIdpUtils({
     this.config,
-    required final TokenManager tokenManager,
-    required final SignInWithApple signInWithApple,
-    required final AuthUsers authUsers,
+    required TokenManager tokenManager,
+    required SignInWithApple signInWithApple,
+    required AuthUsers authUsers,
   }) : _tokenManager = tokenManager,
        _signInWithApple = signInWithApple,
        _authUsers = authUsers;
@@ -62,17 +62,17 @@ class AppleIdpUtils {
   /// If the external user ID is not yet known in the system, a new `AuthUser`
   /// is created for it.
   Future<AppleAuthSuccess> authenticate(
-    final Session session, {
-    required final String identityToken,
-    required final String authorizationCode,
+    Session session, {
+    required String identityToken,
+    required String authorizationCode,
 
     /// Whether the sign-in was triggered from a native Apple platform app.
     ///
     /// Pass `false` for web sign-ins or 3rd party platforms like Android.
-    required final bool isNativeApplePlatformSignIn,
-    final String? firstName,
-    final String? lastName,
-    required final Transaction? transaction,
+    required bool isNativeApplePlatformSignIn,
+    String? firstName,
+    String? lastName,
+    required Transaction? transaction,
   }) async {
     final verifiedIdentityToken = await _signInWithApple.verifyIdentityToken(
       identityToken,
@@ -87,7 +87,7 @@ class AppleIdpUtils {
 
     var appleAccount = await AppleAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(
+      where: (t) => t.userIdentifier.equals(
         verifiedIdentityToken.userId,
       ),
       transaction: transaction,
@@ -156,12 +156,12 @@ class AppleIdpUtils {
   }
 
   /// Returns the possible [AppleAccount] associated with a session.
-  Future<AppleAccount?> getAccount(final Session session) {
+  Future<AppleAccount?> getAccount(Session session) {
     return switch (session.authenticated) {
       null => Future.value(null),
       _ => AppleAccount.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(
+        where: (t) => t.authUserId.equals(
           session.authenticated!.authUserId,
         ),
       ),
@@ -174,10 +174,9 @@ class AppleIdpUtils {
   /// If the token has been revoked, the [onExpiredUserAuthentication] callback
   /// is invoked with the associated auth user's ID.
   Future<void> refreshToken(
-    final Session session, {
-    required final AppleAccount appleAccount,
-    required final void Function(UuidValue authUserId)
-    onExpiredUserAuthentication,
+    Session session, {
+    required AppleAccount appleAccount,
+    required void Function(UuidValue authUserId) onExpiredUserAuthentication,
   }) async {
     await AppleAccount.db.updateRow(
       session,
@@ -212,8 +211,8 @@ class AppleIdpUtils {
   /// [AppleServerNotificationAccountDelete], all sessions based on the Apple
   /// authentication for that account will be revoked.
   Future<Result> serverNotificationHandler(
-    final Session session,
-    final Request req,
+    Session session,
+    Request req,
   ) async {
     final body = await utf8.decodeStream(req.body.read());
     final payload = (jsonDecode(body) as Map)['payload'] as String;
@@ -231,7 +230,7 @@ class AppleIdpUtils {
     if (userIdentifier != null) {
       final appleAccount = await AppleAccount.db.findFirstRow(
         session,
-        where: (final t) => t.userIdentifier.equals(userIdentifier),
+        where: (t) => t.userIdentifier.equals(userIdentifier),
       );
 
       if (appleAccount != null) {

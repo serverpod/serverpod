@@ -13,7 +13,7 @@ abstract class PasskeyIdpBaseEndpoint extends IdpBaseEndpoint {
 
   /// Returns a new challenge to be used for a login or registration request.
   Future<PasskeyChallengeResponse> createChallenge(
-    final Session session,
+    Session session,
   ) async {
     return await passkeyIdp.createChallenge(session);
   }
@@ -22,8 +22,8 @@ abstract class PasskeyIdpBaseEndpoint extends IdpBaseEndpoint {
   ///
   /// Throws if the user is not authenticated.
   Future<void> register(
-    final Session session, {
-    required final PasskeyRegistrationRequest registrationRequest,
+    Session session, {
+    required PasskeyRegistrationRequest registrationRequest,
   }) async {
     await passkeyIdp.register(
       session,
@@ -34,13 +34,13 @@ abstract class PasskeyIdpBaseEndpoint extends IdpBaseEndpoint {
 
   /// Authenticates the user related to the given Passkey.
   Future<AuthSuccess> login(
-    final Session session, {
-    required final PasskeyLoginRequest loginRequest,
+    Session session, {
+    required PasskeyLoginRequest loginRequest,
   }) async {
     return await passkeyIdp.login(session, request: loginRequest);
   }
 
   @override
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await passkeyIdp.hasAccount(session);
 }

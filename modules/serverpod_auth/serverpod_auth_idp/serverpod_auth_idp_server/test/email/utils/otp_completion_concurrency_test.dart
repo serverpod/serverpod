@@ -11,11 +11,11 @@ void main() {
   withServerpod(
     '[OTP login completion concurrency]',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
-      Future<String> startAndVerify(final String email) async {
+      Future<String> startAndVerify(String email) async {
         final otpLoginRequestId = await fixture.emailIdp.startOtpLogin(
           session,
           email: email,
@@ -28,7 +28,7 @@ void main() {
       }
 
       Future<List<Object>> runConcurrently(
-        final Future<Object> Function(Session session) complete,
+        Future<Object> Function(Session session) complete,
       ) {
         return Future.wait<Object>([
           for (final attemptSession in [
@@ -47,7 +47,7 @@ void main() {
 
       final isInvalidRequestException = isA<EmailAccountRequestException>()
           .having(
-            (final e) => e.reason,
+            (e) => e.reason,
             'reason',
             EmailAccountRequestExceptionReason.invalid,
           );
@@ -59,11 +59,11 @@ void main() {
             secretHashPepper: 'pepper',
             sendOtpLoginVerificationCode:
                 (
-                  final session, {
-                  required final email,
-                  required final otpLoginRequestId,
-                  required final verificationCode,
-                  required final transaction,
+                  session, {
+                  required email,
+                  required otpLoginRequestId,
+                  required verificationCode,
+                  required transaction,
                 }) {},
             otpLoginVerificationCodeGenerator: () => verificationCode,
           ),
@@ -89,7 +89,7 @@ void main() {
           final otpLoginToken = await startAndVerify(email);
 
           final results = await runConcurrently(
-            (final attemptSession) => fixture.emailIdp.finishOtpLogin(
+            (attemptSession) => fixture.emailIdp.finishOtpLogin(
               attemptSession,
               otpLoginToken: otpLoginToken,
             ),
@@ -116,7 +116,7 @@ void main() {
           final otpLoginToken = await startAndVerify(email);
 
           final results = await runConcurrently(
-            (final attemptSession) => fixture.emailIdp.finishOtpRegistration(
+            (attemptSession) => fixture.emailIdp.finishOtpRegistration(
               attemptSession,
               otpLoginToken: otpLoginToken,
             ),

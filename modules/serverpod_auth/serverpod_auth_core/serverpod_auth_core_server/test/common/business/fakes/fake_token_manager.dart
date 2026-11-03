@@ -13,20 +13,20 @@ class FakeTokenManager extends TokenManager {
 
   FakeTokenManager(
     this._storage, {
-    final AuthUsers authUsers = const AuthUsers(),
-    final String tokenIssuer = 'fake',
-    final bool usesRefreshTokens = true,
+    AuthUsers authUsers = const AuthUsers(),
+    String tokenIssuer = 'fake',
+    bool usesRefreshTokens = true,
   }) : _tokenIssuer = tokenIssuer,
        _usesRefreshTokens = usesRefreshTokens,
        _authUsers = authUsers;
 
   @override
   Future<AuthSuccess> createToken(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
     Set<Scope>? scopes,
-    final Transaction? transaction,
+    Transaction? transaction,
   }) async {
     {
       final authUser = await _authUsers.get(
@@ -48,8 +48,8 @@ class FakeTokenManager extends TokenManager {
         : null;
 
     final scopeSet = scopes
-        .where((final scope) => scope.name != null)
-        .map((final scope) => scope.name!)
+        .where((scope) => scope.name != null)
+        .map((scope) => scope.name!)
         .toSet();
 
     final tokenInfo = TokenInfo(
@@ -74,11 +74,11 @@ class FakeTokenManager extends TokenManager {
 
   @override
   Future<void> revokeAllTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
-    final String? tokenIssuer,
+    Session session, {
+    required UuidValue? authUserId,
+    Transaction? transaction,
+    String? method,
+    String? tokenIssuer,
   }) async {
     // If kind is specified and doesn't match this manager's kind, do nothing
     if (tokenIssuer != null && tokenIssuer != _tokenIssuer) return;
@@ -104,10 +104,10 @@ class FakeTokenManager extends TokenManager {
 
   @override
   Future<void> revokeToken(
-    final Session session, {
-    required final String tokenId,
-    final Transaction? transaction,
-    final String? tokenIssuer,
+    Session session, {
+    required String tokenId,
+    Transaction? transaction,
+    String? tokenIssuer,
   }) async {
     // If kind is specified and doesn't match this manager's kind, do nothing
     if (tokenIssuer != null && tokenIssuer != _tokenIssuer) return;
@@ -128,11 +128,11 @@ class FakeTokenManager extends TokenManager {
 
   @override
   Future<List<TokenInfo>> listTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final String? method,
-    final String? tokenIssuer,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue? authUserId,
+    String? method,
+    String? tokenIssuer,
+    Transaction? transaction,
   }) async {
     // If kind is specified and doesn't match this manager's kind, return empty list
     if (tokenIssuer != null && tokenIssuer != _tokenIssuer) return [];
@@ -145,9 +145,9 @@ class FakeTokenManager extends TokenManager {
 
   @override
   Future<AuthenticationInfo?> validateToken(
-    final Session session,
-    final String token, {
-    final String? tokenManager,
+    Session session,
+    String token, {
+    String? tokenManager,
   }) async {
     // If kind is specified and doesn't match this manager's kind, return null
     if (tokenManager != null && tokenManager != _tokenIssuer) return null;

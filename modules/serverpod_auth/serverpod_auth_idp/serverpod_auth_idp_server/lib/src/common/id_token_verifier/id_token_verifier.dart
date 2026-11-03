@@ -38,9 +38,9 @@ class IdTokenVerifier {
   /// Throws an exception created by the config in case of any validation
   /// failures.
   static Future<Map<String, dynamic>> verifyOAuth2Token(
-    final String idToken, {
-    required final IdTokenVerifierConfig config,
-    final String? audience,
+    String idToken, {
+    required IdTokenVerifierConfig config,
+    String? audience,
   }) async {
     final keys = await _getKeys(config);
 
@@ -73,7 +73,7 @@ class IdTokenVerifier {
   /// Certificates are cached for 1 hour to reduce network requests. If the
   /// request fails, the cache update is postponed for 10 minutes up to 5 times.
   static Future<Iterable<dart_jsonwebtoken.JWTKey>> _getKeys(
-    final IdTokenVerifierConfig config,
+    IdTokenVerifierConfig config,
   ) async {
     final configType = config.runtimeType;
     final cachedKeySet = _cacheRegistry[configType];
@@ -98,7 +98,7 @@ class IdTokenVerifier {
   }
 
   static Future<void> _updateCachedKeySet(
-    final IdTokenVerifierConfig config,
+    IdTokenVerifierConfig config,
   ) async {
     final configType = config.runtimeType;
     final response = await http.get(Uri.parse(config.certsUrl));
@@ -123,9 +123,9 @@ class IdTokenVerifier {
   }
 
   static void _validateClaims(
-    final Map<String, dynamic> claims, {
-    required final IdTokenVerifierConfig config,
-    required final String? audience,
+    Map<String, dynamic> claims, {
+    required IdTokenVerifierConfig config,
+    required String? audience,
   }) {
     final now = clock.now();
 
@@ -172,7 +172,7 @@ class _CachedKeySet {
 
   _CachedKeySet(this._keys) : expiry = _newExpiry();
 
-  static DateTime _newExpiry({final bool postpone = false}) {
+  static DateTime _newExpiry({bool postpone = false}) {
     final interval = postpone
         ? IdTokenVerifier._cacheUpdateFailedInterval
         : IdTokenVerifier._cacheExpirationInterval;

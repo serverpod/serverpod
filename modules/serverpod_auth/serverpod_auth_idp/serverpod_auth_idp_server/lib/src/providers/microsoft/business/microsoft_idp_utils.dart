@@ -62,7 +62,7 @@ class MicrosoftIdpUtils {
   /// Creates a new instance of [MicrosoftIdpUtils].
   MicrosoftIdpUtils({
     required this.config,
-    required final AuthUsers authUsers,
+    required AuthUsers authUsers,
   }) : _authUsers = authUsers {
     _oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
   }
@@ -87,11 +87,11 @@ class MicrosoftIdpUtils {
   ///
   /// Throws [MicrosoftAccessTokenVerificationException] if the token exchange fails.
   Future<String> exchangeCodeForToken(
-    final Session session, {
-    required final String code,
-    required final String codeVerifier,
-    required final String redirectUri,
-    required final bool isWebPlatform,
+    Session session, {
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+    required bool isWebPlatform,
   }) async {
     try {
       final tokenResponse = await _oauth2Util.exchangeCodeForToken(
@@ -115,9 +115,9 @@ class MicrosoftIdpUtils {
   /// The [transaction] parameter can be used to perform the database operations
   /// within an existing transaction.
   Future<MicrosoftAuthSuccess> authenticate(
-    final Session session, {
-    required final String accessToken,
-    required final Transaction? transaction,
+    Session session, {
+    required String accessToken,
+    required Transaction? transaction,
   }) async {
     final accountDetails = await fetchAccountDetails(
       session,
@@ -126,7 +126,7 @@ class MicrosoftIdpUtils {
 
     var microsoftAccount = await MicrosoftAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(
+      where: (t) => t.userIdentifier.equals(
         accountDetails.userIdentifier,
       ),
       transaction: transaction,
@@ -179,8 +179,8 @@ class MicrosoftIdpUtils {
   ///
   /// Throws [MicrosoftAccessTokenVerificationException] if the user info retrieval fails.
   Future<MicrosoftAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String accessToken,
+    Session session, {
+    required String accessToken,
   }) async {
     final response = await http.get(
       Uri.https('graph.microsoft.com', '/v1.0/me'),
@@ -250,8 +250,8 @@ class MicrosoftIdpUtils {
   }
 
   Future<Uint8List?> _fetchProfilePhoto(
-    final Session session, {
-    required final String accessToken,
+    Session session, {
+    required String accessToken,
   }) async {
     final response = await http.get(
       Uri.https('graph.microsoft.com', '/v1.0/me/photo/\$value'),
@@ -268,7 +268,7 @@ class MicrosoftIdpUtils {
   }
 
   MicrosoftAccountDetails _parseAccountDetails(
-    final Map<String, dynamic> data,
+    Map<String, dynamic> data,
   ) {
     final userId = data['id'];
     final email =
@@ -302,10 +302,10 @@ class MicrosoftIdpUtils {
   /// The [transaction] parameter can be used to perform the database operations
   /// within an existing transaction.
   Future<MicrosoftAccount> linkMicrosoftAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final MicrosoftAccountDetails accountDetails,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required MicrosoftAccountDetails accountDetails,
+    Transaction? transaction,
   }) async {
     return await MicrosoftAccount.db.insertRow(
       session,
@@ -319,12 +319,12 @@ class MicrosoftIdpUtils {
   }
 
   /// Returns the possible [MicrosoftAccount] associated with a session.
-  Future<MicrosoftAccount?> getAccount(final Session session) {
+  Future<MicrosoftAccount?> getAccount(Session session) {
     return switch (session.authenticated) {
       null => Future.value(null),
       _ => MicrosoftAccount.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(
+        where: (t) => t.authUserId.equals(
           session.authenticated!.authUserId,
         ),
       ),
@@ -333,7 +333,7 @@ class MicrosoftIdpUtils {
 }
 
 extension on Session {
-  Never logAndThrow(final String message) {
+  Never logAndThrow(String message) {
     log(message, level: LogLevel.debug);
     throw MicrosoftAccessTokenVerificationException();
   }

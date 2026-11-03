@@ -11,7 +11,7 @@ class _Undefined {}
 class CookieAuthSuccess implements AuthSuccess {
   /// Wraps [authSuccess], masking the fields that were delivered as cookies.
   CookieAuthSuccess(
-    final AuthSuccess authSuccess, {
+    AuthSuccess authSuccess, {
     this.maskToken = false,
     this.maskRefreshToken = false,
   }) : authStrategy = authSuccess.authStrategy,
@@ -49,12 +49,12 @@ class CookieAuthSuccess implements AuthSuccess {
   @useResult
   @override
   CookieAuthSuccess copyWith({
-    final String? authStrategy,
-    final String? token,
-    final DateTime? tokenExpiresAt = const $UndefinedDateTime(),
-    final Object? refreshToken = _Undefined,
-    final UuidValue? authUserId,
-    final Set<String>? scopeNames,
+    String? authStrategy,
+    String? token,
+    DateTime? tokenExpiresAt = const $UndefinedDateTime(),
+    Object? refreshToken = _Undefined,
+    UuidValue? authUserId,
+    Set<String>? scopeNames,
   }) {
     return CookieAuthSuccess(
       AuthSuccess(
@@ -69,7 +69,7 @@ class CookieAuthSuccess implements AuthSuccess {
             ? refreshToken
             : this.refreshToken,
         authUserId: authUserId ?? this.authUserId,
-        scopeNames: scopeNames ?? this.scopeNames.map((final e0) => e0).toSet(),
+        scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       ),
       maskToken: maskToken,
       maskRefreshToken: maskRefreshToken,

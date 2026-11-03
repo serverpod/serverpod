@@ -19,7 +19,7 @@ void main() {
 
   withServerpod(
     'Given no session,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
 
       setUp(() async {
@@ -59,8 +59,8 @@ void main() {
   );
 
   withServerpod('Given an auth session,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -143,8 +143,8 @@ void main() {
   });
 
   withServerpod('Given an auth session with custom scopes,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late String serverSideSessionToken;
@@ -182,7 +182,7 @@ void main() {
 
   withServerpod(
     'Given an auth session with an expiration date,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       final expiresAt = DateTime.now().add(const Duration(days: 1));
       late Session session;
       late UuidValue authUserId;
@@ -238,8 +238,8 @@ void main() {
   );
 
   withServerpod('Given an auth session which will expire when unused,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     const expireAfterUnusedFor = Duration(minutes: 10);
     late Session session;
@@ -337,7 +337,7 @@ void main() {
 
   withServerpod(
     'Given an auth session created with a previous pepper,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late String sessionKey;
@@ -438,7 +438,7 @@ void main() {
 
   withServerpod(
     'Given a new session created with the current pepper,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late String sessionKey;
@@ -492,8 +492,8 @@ void main() {
   );
 
   withServerpod('Given a session stored under the pre-fix saltless hash,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue sessionId;
@@ -502,7 +502,7 @@ void main() {
 
     // The secret the client presents. The pre-fix digest is
     // sha512(secret + pepper), with the stored salt never mixed in.
-    final secret = Uint8List.fromList(List.generate(32, (final i) => i + 7));
+    final secret = Uint8List.fromList(List.generate(32, (i) => i + 7));
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -512,7 +512,7 @@ void main() {
       )).id;
 
       originalSalt = ByteData.sublistView(
-        Uint8List.fromList(List.generate(16, (final i) => 255 - i)),
+        Uint8List.fromList(List.generate(16, (i) => 255 - i)),
       );
       final legacyHash = ByteData.sublistView(
         Uint8List.fromList(

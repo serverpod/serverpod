@@ -65,7 +65,7 @@ class ServerpodCloudEmailClient {
   ServerpodCloudEmailClient({
     this.baseUrl = defaultBaseUrl,
     this.timeout = defaultTimeout,
-    final http.Client? httpClient,
+    http.Client? httpClient,
   }) : _httpClient = httpClient ?? http.Client();
 
   /// Sends a transactional email through the Serverpod Cloud email service.
@@ -73,11 +73,11 @@ class ServerpodCloudEmailClient {
   /// Throws a [ServerpodCloudEmailException] if the service does not respond
   /// with a `200` status code.
   Future<void> sendEmail({
-    required final String token,
-    required final ServerpodCloudEmailType emailType,
-    required final String email,
-    required final String projectName,
-    required final String authCode,
+    required String token,
+    required ServerpodCloudEmailType emailType,
+    required String email,
+    required String projectName,
+    required String authCode,
   }) async {
     final response = await _httpClient
         .post(
@@ -106,7 +106,7 @@ class ServerpodCloudEmailClient {
   /// Closes the underlying HTTP client and frees its resources.
   void close() => _httpClient.close();
 
-  static String? _tryParseError(final String body) {
+  static String? _tryParseError(String body) {
     if (body.isEmpty) return null;
     try {
       final decoded = jsonDecode(body);

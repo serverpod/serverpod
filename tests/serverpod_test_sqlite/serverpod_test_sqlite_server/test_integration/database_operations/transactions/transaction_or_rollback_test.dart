@@ -9,7 +9,7 @@ import '../../test_tools/serverpod_test_tools.dart';
 void main() async {
   withServerpod(
     'Given `withServerpod` with rollback after each test,`',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
 
       setUp(() async {
@@ -26,7 +26,7 @@ void main() async {
           await DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             null,
-            (final transaction) async {
+            (transaction) async {
               await SimpleData.db.insertRow(
                 session,
                 SimpleData(num: 1),
@@ -59,7 +59,7 @@ void main() async {
             session.db,
             // ignore: invalid_use_of_visible_for_testing_member
             session.transaction!,
-            (final transaction) async {
+            (transaction) async {
               await SimpleData.db.insertRow(
                 session,
                 SimpleData(num: 1),
@@ -92,7 +92,7 @@ void main() async {
             await DatabaseUtil.runInTransactionOrSavepoint(
               session.db,
               null,
-              (final transaction) async {
+              (transaction) async {
                 await SimpleData.db.insertRow(
                   session,
                   SimpleData(num: 1),
@@ -125,7 +125,7 @@ void main() async {
               session.db,
               // ignore: invalid_use_of_visible_for_testing_member
               session.transaction!,
-              (final transaction) async {
+              (transaction) async {
                 await SimpleData.db.insertRow(
                   session,
                   SimpleData(num: 1),
@@ -158,7 +158,7 @@ void main() async {
               await DatabaseUtil.runInTransactionOrSavepoint(
                 session.db,
                 transaction,
-                (final transaction) async {
+                (transaction) async {
                   await SimpleData.db.insertRow(
                     session,
                     SimpleData(num: 1),
@@ -191,7 +191,7 @@ void main() async {
 
   withServerpod(
     'Given `withServerpod` with rollback disabled,`',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
 
       setUp(() async {
@@ -217,7 +217,7 @@ void main() async {
           final result = DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             null,
-            (final transaction) async {
+            (transaction) async {
               await SimpleData.db.insertRow(
                 session,
                 SimpleData(num: 1),
@@ -257,7 +257,7 @@ void main() async {
           final t1 = DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             null,
-            (final transaction1) async {
+            (transaction1) async {
               await SimpleData.db.insertRow(
                 session,
                 SimpleData(num: 2),
@@ -280,7 +280,7 @@ void main() async {
           final t2 = DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             null,
-            (final transaction2) async {
+            (transaction2) async {
               await SimpleData.db.insertRow(
                 session,
                 SimpleData(num: 1),
@@ -310,7 +310,7 @@ void main() async {
           await DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             null,
-            (final transaction1) async {
+            (transaction1) async {
               await SimpleData.db.insertRow(
                 session,
                 SimpleData(num: 1),
@@ -320,7 +320,7 @@ void main() async {
               await DatabaseUtil.runInTransactionOrSavepoint(
                 session.db,
                 transaction1,
-                (final transaction2) async {
+                (transaction2) async {
                   expect(identical(transaction1, transaction2), isTrue);
                 },
               );
@@ -336,7 +336,7 @@ void main() async {
           await DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             null,
-            (final transaction1) async {
+            (transaction1) async {
               await SimpleData.db.insertRow(
                 session,
                 SimpleData(num: 1),
@@ -346,7 +346,7 @@ void main() async {
               await DatabaseUtil.runInTransactionOrSavepoint(
                 session.db,
                 transaction1,
-                (final transaction2) async {
+                (transaction2) async {
                   await SimpleData.db.insertRow(
                     session,
                     SimpleData(num: 2),
@@ -391,7 +391,7 @@ void main() async {
           await DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             null,
-            (final transaction1) async {
+            (transaction1) async {
               await SimpleData.db.insertRow(
                 session,
                 SimpleData(num: 1),
@@ -402,7 +402,7 @@ void main() async {
                 await DatabaseUtil.runInTransactionOrSavepoint(
                   session.db,
                   transaction1,
-                  (final transaction2) async {
+                  (transaction2) async {
                     await SimpleData.db.insertRow(
                       session,
                       SimpleData(num: 2),
@@ -439,7 +439,7 @@ void main() async {
             await DatabaseUtil.runInTransactionOrSavepoint(
               session.db,
               null,
-              (final transaction) async {
+              (transaction) async {
                 await SimpleData.db.insertRow(
                   session,
                   SimpleData(num: 1),

@@ -20,8 +20,8 @@ abstract class AnonymousIdpBaseEndpoint extends Endpoint {
   /// which may prevent account creation if the endpoint is protected.
   /// {@endtemplate}
   Future<AuthSuccess> login(
-    final Session session, {
-    final String? token,
+    Session session, {
+    String? token,
   }) async {
     return anonymousIdp.login(session, token: token);
   }

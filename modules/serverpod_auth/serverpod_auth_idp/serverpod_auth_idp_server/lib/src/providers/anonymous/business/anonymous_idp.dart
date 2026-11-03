@@ -29,10 +29,10 @@ class AnonymousIdp implements IdentityProvider {
 
   /// Creates a new instance of [AnonymousIdp].
   factory AnonymousIdp(
-    final AnonymousIdpConfig config, {
-    required final TokenManager tokenManager,
-    final AuthUsers authUsers = const AuthUsers(),
-    final UserProfiles userProfiles = const UserProfiles(),
+    AnonymousIdpConfig config, {
+    required TokenManager tokenManager,
+    AuthUsers authUsers = const AuthUsers(),
+    UserProfiles userProfiles = const UserProfiles(),
   }) {
     final utils = AnonymousIdpUtils(config: config, authUsers: authUsers);
     return AnonymousIdp._(
@@ -45,14 +45,14 @@ class AnonymousIdp implements IdentityProvider {
 
   /// {@macro anonymous_account_base_endpoint.login}
   Future<AuthSuccess> login(
-    final Session session, {
-    final String? token,
-    final Transaction? transaction,
+    Session session, {
+    String? token,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         if (config.onBeforeAnonymousAccountCreated != null) {
           try {
             await config.onBeforeAnonymousAccountCreated!(
@@ -98,10 +98,10 @@ class AnonymousIdp implements IdentityProvider {
   /// merged. Their database records are removed with the discarded auth user.
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {}
 }
 

@@ -9,7 +9,7 @@ void main() {
   withServerpod(
     'Given no existing account or pending request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -22,7 +22,7 @@ void main() {
         fixture = EmailIdpTestFixture(
           config: EmailIdpConfig(
             secretHashPepper: 'pepper',
-            passwordValidationFunction: (final password) =>
+            passwordValidationFunction: (password) =>
                 password == allowedPassword,
             registrationVerificationCodeGenerator: () => verificationCode,
           ),
@@ -37,12 +37,11 @@ void main() {
         'when starting account creation with valid email and password then it returns account request id',
         () async {
           final accountRequestId = await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: email,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           );
 
           expect(accountRequestId, isA<UuidValue>());
@@ -53,16 +52,15 @@ void main() {
         'when starting account creation with uppercase email then account creation can be verified with lowercase email',
         () async {
           final accountRequestId = await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: email.toUpperCase(),
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: email.toUpperCase(),
+              transaction: transaction,
+            ),
           );
 
           final verificationResult = session.db.transaction(
-            (final transaction) => fixture.emailIdp.verifyRegistrationCode(
+            (transaction) => fixture.emailIdp.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,
@@ -78,16 +76,15 @@ void main() {
         'when starting account creation with email with spaces then account create can be verified with trimmed email',
         () async {
           final accountRequestId = await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: '  $email  ',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: '  $email  ',
+              transaction: transaction,
+            ),
           );
 
           final verificationResult = session.db.transaction(
-            (final transaction) => fixture.emailIdp.verifyRegistrationCode(
+            (transaction) => fixture.emailIdp.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,
@@ -103,12 +100,11 @@ void main() {
         'when starting account creation with invalid email format then it throws email invalid exception',
         () async {
           final startAccountCreationFuture = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: 'not-an-email',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: 'not-an-email',
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -123,7 +119,7 @@ void main() {
   withServerpod(
     'Given successful account creation request when capturing output from send verification code callback',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -143,11 +139,11 @@ void main() {
             registrationVerificationCodeGenerator: () => verificationCode,
             sendRegistrationVerificationCode:
                 (
-                  final session, {
-                  required final String email,
-                  required final UuidValue accountRequestId,
-                  required final String verificationCode,
-                  required final Transaction? transaction,
+                  session, {
+                  required String email,
+                  required UuidValue accountRequestId,
+                  required String verificationCode,
+                  required Transaction? transaction,
                 }) {
                   capturedEmail = email;
                   capturedAccountRequestId = accountRequestId;
@@ -157,7 +153,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -195,7 +191,7 @@ void main() {
   withServerpod(
     'Given existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -222,12 +218,11 @@ void main() {
         'when starting account creation with same email then it throws email already registered exception',
         () async {
           final startAccountCreationFuture = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: email,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -242,7 +237,7 @@ void main() {
   withServerpod(
     'Given pending account request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -255,7 +250,7 @@ void main() {
 
         // Create initial account request
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -271,12 +266,11 @@ void main() {
         late UuidValue newAccountRequestId;
         setUp(() async {
           newAccountRequestId = await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: email,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           );
         });
 

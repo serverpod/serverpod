@@ -19,7 +19,7 @@ void main() {
 
       withServerpod(
         'when creating a session without explicit expiresAt',
-        (final sessionBuilder, final endpoints) {
+        (sessionBuilder, endpoints) {
           late Session session;
           late UuidValue authUserId;
           late String sessionKey;
@@ -103,7 +103,7 @@ void main() {
 
       withServerpod(
         'when creating a session with explicit expiresAt',
-        (final sessionBuilder, final endpoints) {
+        (sessionBuilder, endpoints) {
           late Session session;
           late UuidValue authUserId;
           late String sessionKey;
@@ -180,7 +180,7 @@ void main() {
 
       withServerpod(
         'when creating a session without explicit expireAfterUnusedFor',
-        (final sessionBuilder, final endpoints) {
+        (sessionBuilder, endpoints) {
           late Session session;
           late UuidValue authUserId;
           late String sessionKey;
@@ -249,7 +249,7 @@ void main() {
 
       withServerpod(
         'when creating a session with explicit expireAfterUnusedFor',
-        (final sessionBuilder, final endpoints) {
+        (sessionBuilder, endpoints) {
           late Session session;
           late UuidValue authUserId;
           late String sessionKey;
@@ -295,7 +295,7 @@ void main() {
 
   withServerpod(
     'Given ServerSideSessions with onSessionCreated callback',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
 
@@ -320,10 +320,10 @@ void main() {
               sessionKeyHashPepper: 'test-pepper',
               onSessionCreated:
                   (
-                    final session, {
-                    required final authUserId,
-                    required final serverSideSessionId,
-                    required final transaction,
+                    session, {
+                    required authUserId,
+                    required serverSideSessionId,
+                    required transaction,
                   }) async {
                     capturedSession = session;
                     capturedAuthUserId = authUserId;
@@ -333,7 +333,7 @@ void main() {
             ),
           );
 
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             // ignore: unused_result
             await serverSideSessionsWithCallback.createSession(
               session,
@@ -370,7 +370,7 @@ void main() {
 
     withServerpod(
       'when creating a session',
-      (final sessionBuilder, final endpoints) {
+      (sessionBuilder, endpoints) {
         late Session session;
         late UuidValue authUserId;
         late String sessionKey;

@@ -19,10 +19,10 @@ extension LegacyClientSupport on Serverpod {
   /// legacy session keys the new stack knows nothing about, and `admin` acts
   /// on rows it no longer reads.
   void enableLegacyClientSupport({
-    final bool blockUnbridgedAuthEndpoints = false,
+    bool blockUnbridgedAuthEndpoints = false,
   }) {
-    server.addMiddleware((final next) {
-      return (final request) {
+    server.addMiddleware((next) {
+      return (request) {
         final pathSegments = request.url.pathSegments;
         if (pathSegments.isEmpty) {
           return next(request);

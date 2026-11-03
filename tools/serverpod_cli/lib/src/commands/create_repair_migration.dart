@@ -62,7 +62,7 @@ class CreateRepairMigrationCommand
 
   @override
   Future<void> runWithConfig(
-    final Configuration<CreateRepairMigrationOption> commandConfig,
+    Configuration<CreateRepairMigrationOption> commandConfig,
   ) async {
     bool force = commandConfig.value(CreateRepairMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateRepairMigrationOption.tag);

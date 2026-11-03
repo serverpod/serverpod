@@ -25,7 +25,7 @@ class GoogleIdTokenConfig implements IdTokenVerifierConfig {
   String get certsUrl => 'https://www.googleapis.com/oauth2/v3/certs';
 
   @override
-  Iterable<JWTKey> parseKeys(final String responseBody) {
+  Iterable<JWTKey> parseKeys(String responseBody) {
     final jwksJson = jsonDecode(responseBody) as Map<String, dynamic>;
     final jwksList = (jwksJson['keys'] as List<dynamic>)
         .cast<Map<String, dynamic>>();
@@ -44,7 +44,7 @@ class GoogleIdTokenConfig implements IdTokenVerifierConfig {
   }
 
   @override
-  void validateIssuer(final Map<String, dynamic> claims) {
+  void validateIssuer(Map<String, dynamic> claims) {
     final issuer = claims['iss'] as String?;
     if (issuer == null || !_googleIssuers.contains(issuer)) {
       throw GoogleIdTokenValidationServerException('Invalid issuer');
@@ -53,8 +53,8 @@ class GoogleIdTokenConfig implements IdTokenVerifierConfig {
 
   @override
   void validateAudience(
-    final Map<String, dynamic> claims,
-    final String? audience,
+    Map<String, dynamic> claims,
+    String? audience,
   ) {
     if (audience != null) {
       final aud = claims['aud'];
@@ -69,14 +69,14 @@ class GoogleIdTokenConfig implements IdTokenVerifierConfig {
 
   @override
   void validateExtraClaims(
-    final Map<String, dynamic> claims,
-    final DateTime now,
+    Map<String, dynamic> claims,
+    DateTime now,
   ) {
     // Google has no extra claims to validate
   }
 
   @override
-  Exception createException(final String message) {
+  Exception createException(String message) {
     return GoogleIdTokenValidationServerException(message);
   }
 }

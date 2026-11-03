@@ -15,7 +15,7 @@ void main() {
     publicPort: 0,
   );
 
-  Future<void> initServerpodWithPasswords(final String passwords) async {
+  Future<void> initServerpodWithPasswords(String passwords) async {
     await d.dir('config', [
       d.file('passwords.yaml', passwords),
     ]).create();
@@ -42,7 +42,7 @@ void main() {
           () => ServerpodCloudEmailIdpConfig(appDisplayName: 'My App'),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'emailSecretHashPepper',
             ),
@@ -75,9 +75,9 @@ void main() {
         'then the callback is stored on the config.',
         () {
           Future<void> onPasswordResetCompleted(
-            final Session session, {
-            required final UuidValue emailAccountId,
-            required final Transaction? transaction,
+            Session session, {
+            required UuidValue emailAccountId,
+            required Transaction? transaction,
           }) async {}
 
           final config = ServerpodCloudEmailIdpConfig(
@@ -97,11 +97,11 @@ void main() {
         'then the callback is stored on the config.',
         () {
           Future<void> onAfterAccountCreated(
-            final Session session, {
-            required final String email,
-            required final UuidValue authUserId,
-            required final UuidValue emailAccountId,
-            required final Transaction? transaction,
+            Session session, {
+            required String email,
+            required UuidValue authUserId,
+            required UuidValue emailAccountId,
+            required Transaction? transaction,
           }) async {}
 
           final config = ServerpodCloudEmailIdpConfig(
