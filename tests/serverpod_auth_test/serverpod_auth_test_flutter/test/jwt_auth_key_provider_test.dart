@@ -4,7 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
+import 'utils/test_server.dart';
+
 void main() {
+  withTestServer();
+
   late Client client;
   late JwtAuthKeyProvider provider;
   late AuthSuccess? storedAuthInfo;
@@ -15,7 +19,7 @@ void main() {
 
   setUp(() async {
     client = Client(
-      'http://localhost:8080/',
+      serverUrl,
       onFailedCall: (_, error, _) {
         clientReceivedException = error;
       },

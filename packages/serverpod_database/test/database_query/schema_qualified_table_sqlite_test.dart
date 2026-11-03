@@ -31,7 +31,7 @@ class _Citizen implements TableRow<int?> {
 }
 
 void main() {
-  ValueEncoder.set(const SqliteValueEncoder());
+  setUpAll(() => ValueEncoder.set(const SqliteValueEncoder()));
 
   group('Given a table with an unqualified name on SQLite', () {
     var citizenTable = Table<int?>(tableName: 'citizen');

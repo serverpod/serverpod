@@ -19,10 +19,7 @@ final _cliPath = p.join(
 );
 
 /// Path to the compiled serverpod executable.
-final compiledServerpodCliExe = buildServerpodCli(
-  buildRoot: p.join(sharedTestDir.path, 'serverpod_cli_build'),
-  serverpodHome: serverpodHome,
-);
+final compiledServerpodCliExe = buildServerpodCli(serverpodHome: serverpodHome);
 
 final _activatedServerpodCliExe = _activateServerpodCli();
 Future<String> _activateServerpodCli() async {

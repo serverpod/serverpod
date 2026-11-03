@@ -1,3 +1,4 @@
-# The tests compiles serverpod_cli once per run in order to have overall faster
-# runs. However this will slow down the first test in the run significantly.
+# The tests compile serverpod_cli once per version of its sources in order to
+# have overall faster runs. However this will slow down the first test after a
+# change to the CLI significantly.
 timeout: 3x

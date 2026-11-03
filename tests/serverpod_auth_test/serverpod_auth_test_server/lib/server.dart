@@ -12,12 +12,18 @@ import 'src/generated/protocol.dart';
 // only need to make additions to this file if you add future calls,  are
 // configuring Relic (Serverpod's web-server), or need custom setup work.
 
-void run(final List<String> args) async {
+Future<Serverpod> run(
+  final List<String> args, {
+  final Directory? serverDirectory,
+  final ServerpodConfig Function(ServerpodConfig)? configOverride,
+}) async {
   // Initialize Serverpod and connect it with your generated code.
   final pod = Serverpod(
     args,
     Protocol(),
     Endpoints(),
+    serverDirectory: serverDirectory,
+    configOverride: configOverride,
   );
 
   const universalHashPepper = 'test-pepper';
@@ -49,9 +55,10 @@ void run(final List<String> args) async {
   pod.webServer.addRoute(RootRoute(), '/');
   pod.webServer.addRoute(RootRoute(), '/index.html');
   // Serve all files in the web/static relative directory under /.
-  final root = Directory(Uri(path: 'web/static').toFilePath());
+  final root = Directory.fromUri(pod.serverDirectory.uri.resolve('web/static'));
   pod.webServer.addRoute(StaticRoute.directory(root));
 
   // Start the server.
   await pod.start();
+  return pod;
 }

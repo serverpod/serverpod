@@ -17,12 +17,16 @@ void main() {
   group(
     'Given a websocket connection whose stream closes asynchronously,',
     () {
-      late final streamManager = ClientMethodStreamManager(
-        connectionTimeout: const Duration(milliseconds: 10),
-        webSocketHost: Uri.parse('ws://localhost:0'),
-        serializationManager: TestSerializationManager(),
-        webSocketConnector: (_) => _DelayedCloseWebSocketChannel(),
-      );
+      late ClientMethodStreamManager streamManager;
+      setUp(() {
+        streamManager = ClientMethodStreamManager(
+          connectionTimeout: const Duration(milliseconds: 10),
+          webSocketHost: Uri.parse('ws://localhost:0'),
+          serializationManager: TestSerializationManager(),
+          webSocketConnector: (_) => _DelayedCloseWebSocketChannel(),
+        );
+      });
+      tearDown(() => streamManager.closeAllConnections());
 
       test(
         'when a second connection attempt starts before the first listener shuts down, '

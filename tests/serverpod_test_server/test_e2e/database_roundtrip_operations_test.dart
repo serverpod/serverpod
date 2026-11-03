@@ -8,7 +8,13 @@ Future<void> _setupTestData(Client client) async {
 }
 
 void main() {
-  var client = Client(serverUrl);
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   group('Given the database-roundtrip/echo server', () {
     test(

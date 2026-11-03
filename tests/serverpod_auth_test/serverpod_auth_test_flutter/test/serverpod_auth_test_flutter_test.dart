@@ -4,12 +4,18 @@ import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
 import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
+import 'utils/test_server.dart';
+
 void main() {
+  withTestServer();
+
   test(
-    'Given a session, when setting it on the `SessionManager`, then the server recognizes the user correctly.',
+    'Given a session, '
+    'when setting it on the `SessionManager`, '
+    'then the server recognizes the user correctly',
     () async {
       final client = Client(
-        'http://localhost:8080/',
+        serverUrl,
       )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       final testUser = await client.authTest.createTestUser();

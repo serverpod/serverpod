@@ -5,7 +5,7 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   group('Given nested relations when building shallow include sql query', () {
     test('then query only joins what is included.', () {
