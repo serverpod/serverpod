@@ -18,6 +18,10 @@ topics:
 environment:
   sdk: DART_VERSION
 
+# Test material.
+false_secrets:
+  - /test/server/test_helpers/test_certificate.dart
+
 resolution: workspace
 
 dependencies:
