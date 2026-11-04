@@ -80,6 +80,9 @@ class Server implements RouterInjectable {
   /// Security context if the server is running over https.
   final io.SecurityContext? _securityContext;
 
+  /// The PEM behind [_securityContext], when it was built from one.
+  final PemCertificate? _certificate;
+
   /// Responsible for dispatching calls to the correct [Endpoint] methods.
   final EndpointDispatch endpoints;
 
@@ -119,6 +122,7 @@ class Server implements RouterInjectable {
     String? name,
     required this.caches,
     io.SecurityContext? securityContext,
+    PemCertificate? certificate,
     this.whitelistedExternalCalls,
     required this.endpoints,
     required this.httpResponseHeaders,
@@ -126,6 +130,7 @@ class Server implements RouterInjectable {
   }) : name = name ?? 'Server $serverId',
        _databasePoolManager = databasePoolManager,
        _securityContext = securityContext,
+       _certificate = certificate,
        _port = port;
 
   late final _app = RelicApp()..inject(this);
@@ -186,6 +191,7 @@ class Server implements RouterInjectable {
         address: io.InternetAddress.anyIPv6,
         port: port,
         securityContext: _securityContext,
+        certificate: _certificate,
       );
       final server = await _app.run(() => adapter);
       _actualPort = server.port;
