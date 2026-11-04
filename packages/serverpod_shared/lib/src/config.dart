@@ -96,6 +96,11 @@ class ServerpodConfig {
   /// Defaults to true.
   final bool validateHeaders;
 
+  /// The HTTP server implementation the servers run on.
+  ///
+  /// Defaults to [ServerpodHttpAdapter.native].
+  final ServerpodHttpAdapter httpAdapter;
+
   /// The interval between websocket ping messages.
   /// Default is 30 seconds.
   final Duration websocketPingInterval;
@@ -149,6 +154,7 @@ class ServerpodConfig {
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
     this.validateHeaders = true,
+    this.httpAdapter = ServerpodHttpAdapter.native,
     this.websocketPingInterval = const Duration(seconds: 30),
     this.allowedOrigins,
     this.authCookie,
@@ -311,6 +317,8 @@ class ServerpodConfig {
 
     var validateHeaders = _readValidateHeaders(configMap, environment);
 
+    var httpAdapter = _readHttpAdapter(configMap, environment);
+
     var websocketPingInterval = _readWebsocketPingInterval(
       configMap,
       environment,
@@ -348,6 +356,7 @@ class ServerpodConfig {
       futureCall: futureCallConfig,
       futureCallExecutionEnabled: futureCallExecutionEnabled,
       validateHeaders: validateHeaders,
+      httpAdapter: httpAdapter,
       websocketPingInterval: websocketPingInterval,
       allowedOrigins: allowedOrigins,
       authCookie: authCookie,
@@ -411,6 +420,7 @@ class ServerpodConfig {
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
     bool? validateHeaders,
+    ServerpodHttpAdapter? httpAdapter,
     Duration? websocketPingInterval,
     List<String>? allowedOrigins,
     WebAuthCookieConfig? authCookie,
@@ -440,6 +450,7 @@ class ServerpodConfig {
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
       validateHeaders: validateHeaders ?? this.validateHeaders,
+      httpAdapter: httpAdapter ?? this.httpAdapter,
       websocketPingInterval:
           websocketPingInterval ?? this.websocketPingInterval,
       allowedOrigins: allowedOrigins ?? this.allowedOrigins,
@@ -1928,6 +1939,27 @@ bool _readValidateHeaders(
 
   validateHeaders ??= true;
   return validateHeaders;
+}
+
+ServerpodHttpAdapter _readHttpAdapter(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  final envVariable = ServerpodEnv.httpAdapter.envVariable;
+  final configKey = ServerpodEnv.httpAdapter.configKey;
+  final (value, source) = switch (environment[envVariable]) {
+    final String fromEnv => (fromEnv, 'environment variable $envVariable'),
+    null => (configMap[configKey], 'configuration key $configKey'),
+  };
+  if (value == null) return ServerpodHttpAdapter.native;
+
+  return ServerpodHttpAdapter.values.firstWhere(
+    (e) => e.name == value,
+    orElse: () => throw ArgumentError(
+      'Invalid $source: $value. Valid values are: '
+      '${ServerpodHttpAdapter.values.map((e) => e.name).join(', ')}',
+    ),
+  );
 }
 
 Duration _readWebsocketPingInterval(
