@@ -8,6 +8,7 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/server/dev_auto_refresh_script.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
+import 'package:serverpod/src/server/http_adapter.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 
@@ -149,11 +150,14 @@ class WebServer {
 
     try {
       // A restart keeps the port of the first start, ephemeral or not.
-      final server = await _app.serve(
+      final adapter = await bindHttpAdapter(
+        kind: serverpod.config.httpAdapter,
+        serverName: 'WebServer',
         address: InternetAddress.anyIPv6,
         port: _actualPort ?? _config.port,
         securityContext: _securityContext,
       );
+      final server = await _app.run(() => adapter);
       _actualPort = server.port;
       _running = true;
 

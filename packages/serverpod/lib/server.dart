@@ -27,4 +27,4 @@ export 'src/config/version.dart';
 export 'src/redis/controller.dart';
 
 export 'package:serverpod_shared/serverpod_shared.dart'
-    show ServerpodLoggingMode;
+    show ServerpodHttpAdapter, ServerpodLoggingMode;
