@@ -19,6 +19,10 @@ topics:
 environment:
   sdk: '^3.12.2'
 
+# Test material.
+false_secrets:
+  - /test/server/test_helpers/test_certificate.dart
+
 resolution: workspace
 
 dependencies:

@@ -42,12 +42,17 @@ class WebServer {
   /// Security context if the web server is running over https.
   final SecurityContext? _securityContext;
 
+  /// The PEM behind [_securityContext], when it was built from one.
+  final PemCertificate? _certificate;
+
   /// Creates a new webserver.
   WebServer({
     required this.serverpod,
     SecurityContext? securityContext,
+    PemCertificate? certificate,
   }) : serverId = serverpod.serverId,
-       _securityContext = securityContext {
+       _securityContext = securityContext,
+       _certificate = certificate {
     var config = serverpod.config.webServer;
 
     if (config == null) {
@@ -156,6 +161,7 @@ class WebServer {
         address: InternetAddress.anyIPv6,
         port: _actualPort ?? _config.port,
         securityContext: _securityContext,
+        certificate: _certificate,
       );
       final server = await _app.run(() => adapter);
       _actualPort = server.port;

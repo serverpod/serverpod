@@ -696,6 +696,7 @@ class Serverpod {
       httpResponseHeaders: httpResponseHeaders,
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
       securityContext: _securityContextConfig?.apiServer,
+      certificate: _securityContextConfig?.apiServerCertificate,
     );
 
     endpoints.initializeEndpoints(server);
@@ -744,6 +745,7 @@ class Serverpod {
       _webServer = WebServer(
         serverpod: this,
         securityContext: _securityContextConfig?.webServer,
+        certificate: _securityContextConfig?.webServerCertificate,
       );
     }
 
@@ -1170,6 +1172,7 @@ class Serverpod {
       httpResponseHeaders: httpResponseHeaders,
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
       securityContext: _securityContextConfig?.insightsServer,
+      certificate: _securityContextConfig?.insightsServerCertificate,
     );
     endpoints.initializeEndpoints(insightsServer);
 
