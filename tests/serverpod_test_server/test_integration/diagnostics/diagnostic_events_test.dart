@@ -29,13 +29,14 @@ void main() {
     late Serverpod pod;
     late DiagnosticEventRecord<ExceptionEvent> record;
 
+    // Fixed port distinct from other suites' (8080 is held by the
+    // startup/shutdown subprocess) so it is the web server that collides,
+    // deterministically, even when run concurrently.
+    const sharedPort = 8077;
+
     setUpAll(() async {
       exceptionHandler = TestExceptionHandler();
 
-      // Fixed port distinct from other suites' (8080 is held by the
-      // startup/shutdown subprocess) so it is the web server that collides,
-      // deterministically, even when run concurrently.
-      const sharedPort = 8077;
       final config = ServerpodConfig(
         apiServer: ServerConfig(
           port: sharedPort,
@@ -83,11 +84,8 @@ void main() {
       },
     );
 
-    test('then the diagnostic event exception message is correct', () async {
-      expect(
-        (record.event.exception as SocketException).message,
-        contains('Failed to create server socket'),
-      );
+    test('then the diagnostic event exception names the port', () async {
+      expect((record.event.exception as SocketException).port, sharedPort);
     });
 
     test('then the diagnostic event space is framework', () async {
