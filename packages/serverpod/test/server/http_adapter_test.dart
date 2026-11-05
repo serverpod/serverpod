@@ -15,6 +15,12 @@ final _certificate = PemCertificate(
   privateKey: utf8.encode(testPrivateKeyPem),
 );
 
+final _encryptedCertificate = PemCertificate(
+  certificateChain: utf8.encode(testCertificateChainPem),
+  privateKey: utf8.encode(testEncryptedPrivateKeyPem),
+  password: testPrivateKeyPassword,
+);
+
 HttpClient _trustingClient() =>
     HttpClient()
       ..badCertificateCallback = (certificate, _, _) =>
@@ -162,7 +168,10 @@ void main() {
   });
 
   group('Given a pod configured with SecurityContextConfig.pem,', () {
-    Future<Serverpod> startPod(ServerpodHttpAdapter kind) async {
+    Future<Serverpod> startPod(
+      ServerpodHttpAdapter kind, {
+      PemCertificate? certificate,
+    }) async {
       final pod = Serverpod(
         [],
         internal.Protocol(),
@@ -177,7 +186,7 @@ void main() {
           httpAdapter: kind,
         ),
         securityContextConfig: SecurityContextConfig.pem(
-          apiServer: _certificate,
+          apiServer: certificate ?? _certificate,
         ),
       );
       await pod.start();
@@ -191,6 +200,22 @@ void main() {
         'then the API server answers over HTTPS.',
         () async {
           final pod = await startPod(kind);
+
+          expect(
+            await _get(
+              Uri.https('localhost:${pod.server.port}', '/'),
+              client: _trustingClient(),
+            ),
+            isNot(0),
+          );
+        },
+      );
+
+      test(
+        'when it runs on the ${kind.name} HTTP adapter with an encrypted key, '
+        'then the API server answers over HTTPS.',
+        () async {
+          final pod = await startPod(kind, certificate: _encryptedCertificate);
 
           expect(
             await _get(
