@@ -1,0 +1,3 @@
+class: SealedListItem
+fields:
+  value: String

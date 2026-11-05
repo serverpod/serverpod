@@ -3,10 +3,12 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
 import '../../../../test_util/builders/endpoint_definition_builder.dart';
+import '../../../../test_util/builders/exception_class_definition_builder.dart';
 import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/builders/method_definition_builder.dart';
 import '../../../../test_util/builders/model_class_definition_builder.dart';
@@ -1022,6 +1024,70 @@ void main() {
         () {
           var protocolContent = codeMap[expectedFileName]!;
           expect(protocolContent, isNot(contains('Article')));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an exception with a List field of a model when generating protocol files',
+    () {
+      var detailModel = ModelClassDefinitionBuilder()
+          .withClassName('ErrorDetail')
+          .withFileName('error_detail')
+          .withSimpleField('message', 'String')
+          .build();
+
+      var exception = ExceptionClassDefinitionBuilder()
+          .withClassName('ValidationException')
+          .withFileName('validation_exception')
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('details')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withListOf(
+                        'ErrorDetail',
+                        url: defaultModuleAlias,
+                        modelInfo: detailModel,
+                      )
+                      .withNullable(true)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: [detailModel, exception],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      var detailPrefix = importPrefixFor('error_detail.dart');
+
+      test(
+        'then the protocol.dart contains a deserializer for the List type.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('List<$detailPrefix.ErrorDetail>'),
+          );
+        },
+      );
+
+      test(
+        'then the protocol.dart contains a deserializer for the nullable List type.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('List<$detailPrefix.ErrorDetail>?'),
+          );
         },
       );
     },
