@@ -40,3 +40,13 @@ enum CookieSameSite {
   /// secure.
   none,
 }
+
+/// The HTTP server implementation the API, Insights and web servers run on.
+enum ServerpodHttpAdapter {
+  /// The relic_native adapter. This is the default. A platform without a
+  /// relic_native library falls back to [io].
+  native,
+
+  /// The dart:io adapter.
+  io,
+}

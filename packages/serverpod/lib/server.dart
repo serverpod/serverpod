@@ -22,8 +22,9 @@ export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
 export 'src/server/session.dart' hide SessionInternalMethods;
 export 'src/server/auth_cookie.dart'
     show WebAuthCookieBuilder, WebAuthCookieSession;
-export 'src/config/security_context_config.dart' show SecurityContextConfig;
+export 'src/config/security_context_config.dart'
+    show PemCertificate, SecurityContextConfig;
 export 'src/redis/controller.dart';
 
 export 'package:serverpod_shared/serverpod_shared.dart'
-    show ServerpodLoggingMode;
+    show ServerpodHttpAdapter, ServerpodLoggingMode;

@@ -213,6 +213,9 @@ enum ServerpodEnv {
   /// required formatting (e.g., unwrapped tokens in Authorization header).
   validateHeaders,
 
+  /// The HTTP server implementation, `native` or `io`.
+  httpAdapter,
+
   /// The interval in seconds between websocket ping messages.
   websocketPingInterval,
 
@@ -296,6 +299,7 @@ enum ServerpodEnv {
       (ServerpodEnv.applyMigrations) => 'applyMigrations',
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
       (ServerpodEnv.validateHeaders) => 'validateHeaders',
+      (ServerpodEnv.httpAdapter) => 'httpAdapter',
       (ServerpodEnv.websocketPingInterval) => 'websocketPingInterval',
       (ServerpodEnv.allowedOrigins) => 'allowedOrigins',
       (ServerpodEnv.authCookieName) => 'name',
@@ -376,6 +380,7 @@ enum ServerpodEnv {
       (ServerpodEnv.applyMigrations) => 'SERVERPOD_APPLY_MIGRATIONS',
       (ServerpodEnv.applyRepairMigration) => 'SERVERPOD_APPLY_REPAIR_MIGRATION',
       (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
+      (ServerpodEnv.httpAdapter) => 'SERVERPOD_HTTP_ADAPTER',
       (ServerpodEnv.websocketPingInterval) =>
         'SERVERPOD_WEBSOCKET_PING_INTERVAL',
       (ServerpodEnv.allowedOrigins) => 'SERVERPOD_ALLOWED_ORIGINS',

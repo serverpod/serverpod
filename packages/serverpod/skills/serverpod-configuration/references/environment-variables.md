@@ -35,6 +35,7 @@ Reference for the [Serverpod Configuration](../SKILL.md) skill. Environment vari
 | Redis | `SERVERPOD_REDIS_HOST`, `_PORT`, `_USER`, `_ENABLED`, `_REQUIRE_SSL` | redis.* |
 | Other | `SERVERPOD_MAX_REQUEST_SIZE` | maxRequestSize / 524288 |
 | | `SERVERPOD_VALIDATE_HEADERS` | validateHeaders |
+| | `SERVERPOD_HTTP_ADAPTER` | httpAdapter (native\|io) / native |
 | | `SERVERPOD_WEBSOCKET_PING_INTERVAL` | websocketPingInterval / 30s |
 | | `SERVERPOD_FUTURE_CALL_ENABLED` | futureCall.enabled / true |
 | | `SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED` | futureCall.executionEnabled |
