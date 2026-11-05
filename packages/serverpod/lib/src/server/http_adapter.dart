@@ -38,6 +38,7 @@ Future<Adapter> bindHttpAdapter({
               : NativeTls(
                   certificateChain: certificate.certificateChain,
                   privateKey: certificate.privateKey,
+                  password: certificate.password,
                 ),
         );
       } on UnsupportedError catch (e) {

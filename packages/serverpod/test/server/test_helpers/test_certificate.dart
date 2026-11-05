@@ -23,3 +23,17 @@ MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgiMgRIQ3lDJxCX6Vm
 Kl+CJhdzt2lAPCl1dGKK+xJs37AwSy3SpEhZxqHdDz5m5uFWTcM5xoyj
 -----END PRIVATE KEY-----
 ''';
+
+// testPrivateKeyPem under PBES2 with AES-256-CBC, password
+// testPrivateKeyPassword.
+const testPrivateKeyPassword = 'serverpod';
+const testEncryptedPrivateKeyPem = '''
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIH0MF8GCSqGSIb3DQEFDTBSMDEGCSqGSIb3DQEFDDAkBBAaD5sHOimpGQ4WKqLK
+Vl+kAgIIADAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQBKgQQbiVOKeqi0HuQd7fd
+8otFwgSBkCey9zerPrFb3LuhQx7aItaiL+s/46+1gwFcCMVB10W3O8TIOvAk462H
+IknkYlxghtJ3zNm99BDk/vZfJotB3dBsU9xgmmtzQXRzL9wNej2rTmppjg99l3SS
+nQm73WMg9/QLKX5yqf1xEYwzHhRdSJ+HPgoDvKPas0cs1ZKdDOxIm1f3g+nPAwi8
+89vEZLWgJQ==
+-----END ENCRYPTED PRIVATE KEY-----
+''';
