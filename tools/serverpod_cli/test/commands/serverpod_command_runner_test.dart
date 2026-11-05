@@ -333,4 +333,42 @@ void main() {
       },
     );
   });
+
+  group('Given a Serverpod CLI ID,', () {
+    test(
+      'when the welcome page URL is built for the first run, '
+      'then it is the welcome page with the Serverpod CLI ID',
+      () {
+        final url = welcomePageUrl(runCount: 1, serverpodCliId: 'cli-id');
+
+        expect(
+          url,
+          Uri.parse('https://serverpod.dev/welcome?serverpod_cli_id=cli-id'),
+        );
+      },
+    );
+
+    test(
+      'when the welcome page URL is built for the 20th run, '
+      'then it is the check-in page with the Serverpod CLI ID',
+      () {
+        final url = welcomePageUrl(runCount: 20, serverpodCliId: 'cli-id');
+
+        expect(
+          url,
+          Uri.parse('https://serverpod.dev/checkin?serverpod_cli_id=cli-id'),
+        );
+      },
+    );
+
+    test(
+      'when the welcome page URL is built for any other run, '
+      'then there is no page to open',
+      () {
+        final url = welcomePageUrl(runCount: 2, serverpodCliId: 'cli-id');
+
+        expect(url, isNull);
+      },
+    );
+  });
 }
