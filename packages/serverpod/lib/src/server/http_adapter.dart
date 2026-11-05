@@ -9,6 +9,8 @@ import 'package:serverpod/src/config/security_context_config.dart';
 
 /// Binds the [Adapter] that [kind] names on [address] and [port].
 ///
+/// On an IPv6 [address] either adapter takes IPv4 clients too.
+///
 /// [ServerpodHttpAdapter.native] binds a [NativeAdapter], serving HTTPS when
 /// [certificate] is set. It binds an [IOAdapter] instead, with a warning
 /// naming [serverName], for a [securityContext] without a [certificate],
@@ -33,6 +35,7 @@ Future<Adapter> bindHttpAdapter({
         return await NativeAdapter.bind(
           address,
           port: port,
+          v6Only: false,
           tls: certificate == null
               ? null
               : NativeTls(
@@ -49,5 +52,10 @@ Future<Adapter> bindHttpAdapter({
       }
     }
   }
-  return IOAdapter.bind(address, port: port, context: securityContext);
+  return IOAdapter.bind(
+    address,
+    port: port,
+    v6Only: false,
+    context: securityContext,
+  );
 }

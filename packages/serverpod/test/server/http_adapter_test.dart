@@ -40,12 +40,13 @@ Future<int> _get(Uri uri, {HttpClient? client}) async {
 void main() {
   Future<Adapter> bind(
     ServerpodHttpAdapter kind, {
+    InternetAddress? address,
     SecurityContext? securityContext,
     PemCertificate? certificate,
   }) => bindHttpAdapter(
     kind: kind,
     serverName: 'Test',
-    address: InternetAddress.loopbackIPv4,
+    address: address ?? InternetAddress.loopbackIPv4,
     port: 0,
     securityContext: securityContext,
     certificate: certificate,
@@ -140,6 +141,21 @@ void main() {
       },
     );
   });
+
+  for (final kind in ServerpodHttpAdapter.values) {
+    group(
+      'Given the ${kind.name} HTTP adapter bound on the IPv6 any address,',
+      () {
+        test('when an IPv4 client connects, then it is served.', () async {
+          final adapter = await bind(kind, address: InternetAddress.anyIPv6);
+          await serve(adapter);
+          final port = adapter.listeners.single.port;
+
+          expect(await _get(Uri.http('127.0.0.1:$port')), 200);
+        });
+      },
+    );
+  }
 
   group('Given a SecurityContextConfig.pem for the API server,', () {
     test(
