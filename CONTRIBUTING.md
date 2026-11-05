@@ -151,6 +151,10 @@ Serverpod uses the Dart linter to enforce a consistent code style. The linter is
 
 We try to follow the [Effective Dart](https://dart.dev/guides/language/effective-dart) guidelines as much as possible. But above all, we care about code readability and maintainability. Therefore, we encourage you to write code that is easy to read and understand for future contributors.
 
+### Changelog
+
+Do not edit `CHANGELOG.md` directly. Instead, describe the user-facing changes of your pull request in a file in the [changelog.d](changelog.d/README.md) directory. Once the pull request is open, run `dart run melos run changelog_add` to create it. The entries are collected into `CHANGELOG.md` when the next version is released.
+
 ### Running the tests
 
 Serverpod has a comprehensive test suite that covers the core functionality of the project. The tests are run as part of the CI checks, but to speed up development it can be good to run the tests locally before submitting a pull request.

@@ -25,7 +25,8 @@ When working with pull requests in this repository, **ALWAYS**:
 
 - **Never update** CHANGELOG files unless explicitly instructed by the user
 - **Never update** README files unless explicitly instructed by the user
-- CHANGELOG files are manually updated during release process
+- CHANGELOG files are updated during the release process by collecting the entries from `changelog.d`
+- Add the changelog entries for a PR as a file in `changelog.d` instead, following `changelog.d/README.md` (e.g. `dart run util/changelog.dart add --pr <number> --author <login> --entry '<type>: <Description>'`)
 - Only make documentation changes when specifically requested
 
 ## Command Validation Status
