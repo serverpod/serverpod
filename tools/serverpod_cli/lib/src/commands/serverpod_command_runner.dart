@@ -52,6 +52,20 @@ Future<void> _preCommandEnvironmentChecks() async {
   }
 }
 
+/// Returns the page to open on the [runCount]th run: the welcome page on the
+/// first run, the check-in page on the 20th, and null otherwise.
+Uri? welcomePageUrl({required int runCount, required String serverpodCliId}) {
+  return switch (runCount) {
+    1 => Uri.parse(
+      'https://serverpod.dev/welcome?serverpod_cli_id=$serverpodCliId',
+    ),
+    20 => Uri.parse(
+      'https://serverpod.dev/checkin?serverpod_cli_id=$serverpodCliId',
+    ),
+    _ => null,
+  };
+}
+
 /// Pops the web browser on the first and 20th run.
 ///
 /// If the user ID is not available, the welcome and check-in pages are
@@ -62,15 +76,8 @@ Future<void> _preCommandWelcome() async {
   final uuid = resourceManager.uniqueUserId;
   if (uuid == null) return;
 
-  if (runCount == 1) {
-    await BrowserLauncher.openUrl(
-      Uri.parse('https://serverpod.dev/welcome?distinct_id=$uuid'),
-    );
-  } else if (runCount == 20) {
-    await BrowserLauncher.openUrl(
-      Uri.parse('https://serverpod.dev/checkin?distinct_id=$uuid'),
-    );
-  }
+  final url = welcomePageUrl(runCount: runCount, serverpodCliId: uuid);
+  if (url != null) await BrowserLauncher.openUrl(url);
 }
 
 /// How fvm users put `fvm flutter` behind a `flutter` on their PATH.
