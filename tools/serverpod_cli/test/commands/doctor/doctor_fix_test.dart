@@ -98,22 +98,31 @@ void main() {
     },
   );
 
-  test(
-    'Given zsh, bash, fish, and no login shell, '
-    'when picking the startup file, then only zsh and bash get one',
-    () {
-      expect(
-        startupFileFor(shell: '/bin/zsh', home: _home)?.path,
-        p.join(_home, '.zshrc'),
-      );
-      expect(
-        startupFileFor(shell: '/usr/bin/bash', home: _home)?.path,
-        p.join(_home, '.bashrc'),
-      );
-      expect(startupFileFor(shell: '/usr/bin/fish', home: _home), isNull);
-      expect(startupFileFor(shell: null, home: _home), isNull);
-    },
-  );
+  test('Given zsh as the login shell, when picking the startup file, '
+      'then it is .zshrc', () {
+    expect(
+      startupFileFor(shell: '/bin/zsh', home: _home)?.path,
+      p.join(_home, '.zshrc'),
+    );
+  });
+
+  test('Given bash as the login shell, when picking the startup file, '
+      'then it is .bashrc', () {
+    expect(
+      startupFileFor(shell: '/usr/bin/bash', home: _home)?.path,
+      p.join(_home, '.bashrc'),
+    );
+  });
+
+  test('Given fish as the login shell, when picking the startup file, '
+      'then there is none', () {
+    expect(startupFileFor(shell: '/usr/bin/fish', home: _home), isNull);
+  });
+
+  test('Given no login shell, when picking the startup file, '
+      'then there is none', () {
+    expect(startupFileFor(shell: null, home: _home), isNull);
+  });
 
   test(
     'Given two PATH entries, '
