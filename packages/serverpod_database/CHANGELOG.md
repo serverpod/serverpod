@@ -1,3 +1,8 @@
+## 4.1.1
+
+- fix: Generates deserializers for container types of exception and sealed parent fields.
+- fix: Circumvents a Dart bug preventing `serverpod_cli` from installing on Windows with Dart 3.13.7.
+
 ## 4.1.0
 
 Serverpod 4.1 brings more improvements to agentic development by introducing the `serverpod runner` command that allows agents to run multiple worktrees concurrently in a detached mode, each with its own server and database. To work in collaboration with the agent, just run `serverpod start` and it will attach to the runner to show the same outputs that the agent sees.
