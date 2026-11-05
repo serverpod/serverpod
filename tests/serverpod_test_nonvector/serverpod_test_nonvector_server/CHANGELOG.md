@@ -1,6 +1,6 @@
 ## 4.1.1
 
-- fix: Generates deserializers for container types of exception and sealed parent fields.
+- fix: Generates deserializers for container types of exception and sealed parent fields. ([@BiAksoy](https://github.com/BiAksoy))
 - fix: Circumvents a Dart bug preventing `serverpod_cli` from installing on Windows with Dart 3.13.7.
 
 ## 4.1.0
