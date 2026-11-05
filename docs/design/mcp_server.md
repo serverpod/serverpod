@@ -5,7 +5,7 @@ This document describes the MCP (Model Context Protocol) integration for `server
 The integration has two parts:
 
 - A small **per-runner MCP server** that lives inside each `serverpod start` process and exposes dev operations against that instance (`apply_migrations`, `create_migration`, `create_repair_migration`, `hot_reload`, `hot_restart`, `tail_server_logs`, `tail_flutter_logs`, `get_flutter_app_dtd`, and the `serverpod://vm-service` resource).
-- A long-lived **bridge MCP server** (`serverpod mcp-server`) that sits on stdio between the AI client and one runner. It is configured for a single server project, connects to that project's runner socket on demand, and forwards tool calls. It answers one tool itself, `tail_runner_logs`, from the runner's log file. The bridge survives runner restarts.
+- A long-lived **bridge MCP server** (`serverpod mcp-server`) that sits on stdio between the AI client and one runner. It is configured for a single server project, connects to that project's runner socket on demand, and forwards tool calls. It answers two tools itself: `tail_runner_logs`, from the runner's log file, and `report_serverpod_issue`, which sends bug reports and feedback to the Serverpod team. The bridge survives runner restarts.
 
 The per-runner server runs inside the CLI process, alongside the compiler, file watcher, and watch session. It is not part of the server subprocess (the Serverpod application). This keeps dev tooling concerns out of the framework itself - the `serverpod` package should not impose an MCP dependency or dev-time features on the application server. It also means the MCP server has access to the CLI's internal state (the incremental compiler, the server process handle, the restart lifecycle) which the server subprocess does not.
 
@@ -95,11 +95,12 @@ Forwarded resource:
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `serverpod://vm-service` | Dart VM service HTTP URI for the running server isolate. Stable across hot reloads; changes on restart (`hot_restart` or crash recovery). Subscribable. |
 
-Bridge-local tool:
+Bridge-local tools:
 
-| Tool               | Behavior                                                                                                                                              |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tail_runner_logs` | Return the last lines of `<serverDir>/.dart_tool/serverpod/runner.log`, which a detached runner writes everything it prints to. Works without a runner. |
+| Tool                     | Behavior                                                                                                                                                                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `tail_runner_logs`       | Return the last lines of `<serverDir>/.dart_tool/serverpod/runner.log`, which a detached runner writes everything it prints to. Works without a runner.                                                                                                |
+| `report_serverpod_issue` | Send a bug report or feedback about anything Serverpod provides to `https://agent-feedback.serverpod.space/feedback`, which files it in Linear. The bridge adds the environment (Serverpod, Dart and OS versions, MCP client). Works without a runner. |
 
 The runner's MCP socket binds only once its stack is up, after Docker, code generation and the first compile, and the in-memory log history dies with the runner. The log file is what remains while the runner is starting and after it stopped or crashed, so the bridge reads it directly rather than forwarding. The path comes from the server directory, not the socket path: on a long project path the socket is reached through a registry link, and the runner removes that link when it stops.
 
@@ -171,7 +172,7 @@ Any operation that the AI agent reaches for mid-session against a running dev en
 
 - Operations that need the CLI's in-memory state (compiler, server lifecycle) - `hot_reload`, `hot_restart` - must live here.
 - Operations that are conceptually per-instance but don't strictly need in-memory state - `apply_migrations`, `create_migration`, `create_repair_migration`, `tail_server_logs`, `tail_flutter_logs` - are exposed here too. The alternative (shelling out to a CLI command) forces a context switch, adds a failure mode where the agent runs in the wrong directory, and makes tool discovery dependent on a shipped skill file.
-- Reading state that outlives the runner - `tail_runner_logs` - lives on the bridge, since the runner cannot answer while it is starting or once it is gone, and those are the moments the agent needs it.
+- Reading state that outlives the runner - `tail_runner_logs` - lives on the bridge, since the runner cannot answer while it is starting or once it is gone, and those are the moments the agent needs it. `report_serverpod_issue` lives there for the same reason: a bug that keeps the server from starting must still be reportable.
 
 Commands that are project-setup / one-shot / infrastructure (`serverpod create`, `serverpod generate` outside watch mode, `serverpod mcp-server` itself) stay as CLI commands. They don't belong to a running instance and don't benefit from being forwarded through a socket.
 
