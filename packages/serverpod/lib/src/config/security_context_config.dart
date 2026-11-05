@@ -3,10 +3,13 @@ import 'dart:io';
 /// A certificate chain and its private key, both as PEM.
 ///
 /// The chain holds the server's certificate first, then any intermediates.
-/// The key is an unencrypted PKCS#8 or SEC 1 key, ECDSA, RSA or Ed25519.
+/// The key is a PKCS#8, SEC 1 or PKCS#1 key, ECDSA, RSA or Ed25519. An
+/// encrypted key takes its [password]: PKCS#8 under PBES2 with PBKDF2 and
+/// AES-128-CBC or AES-256-CBC, or a key behind OpenSSL's `DEK-Info`
+/// headers with the same ciphers.
 ///
-/// On the native HTTP adapter the server speaks TLS 1.3 only and offers no
-/// ALPN.
+/// On the native HTTP adapter the server speaks TLS 1.3 only and selects
+/// `http/1.1` through ALPN.
 final class PemCertificate {
   /// The certificate chain as PEM.
   final List<int> certificateChain;
@@ -14,20 +17,26 @@ final class PemCertificate {
   /// The private key as PEM.
   final List<int> privateKey;
 
+  /// The password of an encrypted [privateKey].
+  final String? password;
+
   /// Creates a [PemCertificate] from PEM bytes.
   const PemCertificate({
     required this.certificateChain,
     required this.privateKey,
+    this.password,
   });
 
   /// Reads a [PemCertificate] from the PEM files at [certificateChain] and
-  /// [privateKey].
+  /// [privateKey]. [password] is the password itself.
   PemCertificate.fromFiles({
     required String certificateChain,
     required String privateKey,
+    String? password,
   }) : this(
          certificateChain: File(certificateChain).readAsBytesSync(),
          privateKey: File(privateKey).readAsBytesSync(),
+         password: password,
        );
 }
 
@@ -90,5 +99,8 @@ SecurityContext? _securityContextOf(PemCertificate? certificate) {
   if (certificate == null) return null;
   return SecurityContext()
     ..useCertificateChainBytes(certificate.certificateChain)
-    ..usePrivateKeyBytes(certificate.privateKey);
+    ..usePrivateKeyBytes(
+      certificate.privateKey,
+      password: certificate.password,
+    );
 }
