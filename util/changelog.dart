@@ -62,20 +62,12 @@ const _versionFile = 'SERVERPOD_VERSION';
 /// Pull requests target upstream even when `gh` defaults to a fork.
 const _repository = 'serverpod/serverpod';
 
-/// Same types accepted for PR titles in `.github/workflows/title-validation.yaml`.
-const _entryTypes = [
-  'build',
-  'chore',
-  'ci',
-  'docs',
-  'feat',
-  'fix',
-  'perf',
-  'refactor',
-  'revert',
-  'style',
-  'test',
-];
+/// The PR title types (see `.github/workflows/title-validation.yaml`) that can
+/// describe a user-facing change.
+const _entryTypes = ['feat', 'fix', 'perf', 'refactor', 'docs', 'chore'];
+
+/// The PR title types that are always internal and never get an entry.
+const _internalTypes = ['build', 'ci', 'revert', 'style', 'test'];
 
 final _entryPattern = RegExp('^(${_entryTypes.join('|')}): [A-Z]');
 final _fileNamePattern = RegExp(
@@ -318,6 +310,13 @@ List<File> _entryFiles() => _entities().whereType<File>().toList();
 
 String? _validateEntry(String entry) {
   if (_entryPattern.hasMatch(entry)) return null;
+
+  final type = entry.split(':').first.trim();
+  if (_internalTypes.contains(type)) {
+    return '"$type" changes are internal and do not get a changelog entry '
+        '(see $_changelogDir/README.md).';
+  }
+
   return 'expected "<type>: <Description>", where <type> is one of '
       '${_entryTypes.join(', ')} and the description starts with an '
       'uppercase letter.';

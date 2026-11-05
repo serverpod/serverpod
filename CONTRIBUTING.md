@@ -153,7 +153,7 @@ We try to follow the [Effective Dart](https://dart.dev/guides/language/effective
 
 ### Changelog
 
-Do not edit `CHANGELOG.md` directly. Instead, describe the user-facing changes of your pull request in a file in the [changelog.d](changelog.d/README.md) directory. Once the pull request is open, run `dart run melos run changelog_add` to create it. The entries are collected into `CHANGELOG.md` when the next version is released.
+Do not edit `CHANGELOG.md` directly. Instead, describe the user-facing changes of your pull request, to the public API or to behavior, in a file in the [changelog.d](changelog.d/README.md) directory. Once the pull request is open, run `dart run melos run changelog_add` to create it. Internal changes, such as tests, CI or the repository's own tooling, do not need an entry. The entries are collected into `CHANGELOG.md` when the next version is released.
 
 ### Running the tests
 

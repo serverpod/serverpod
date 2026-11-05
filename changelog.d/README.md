@@ -44,12 +44,46 @@ Creating the file by hand is also fine, as long as it follows the rules below.
 ### Entry rules
 
 - One entry per line, as a list item: `- <type>: <Description>`.
-- `<type>` is one of the [PR title types](../.github/workflows/title-validation.yaml): `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style` or `test`.
-- The description starts with an uppercase letter and describes the change from the user's perspective, in the present tense (e.g. "Adds", "Fixes"). Prefix breaking changes with `BREAKING.`, e.g. `- feat: BREAKING. Removes ...`.
+- `<type>` is one of `feat`, `fix`, `perf`, `refactor`, `docs` or `chore`. The other [PR title types](../.github/workflows/title-validation.yaml) (`build`, `ci`, `revert`, `style` and `test`) are always internal and are rejected.
+- The description starts with an uppercase letter. Prefix breaking changes with `BREAKING.`, e.g. `- feat: BREAKING. Removes ...`.
 - Indented lines continue the previous entry.
-- Changes that are not visible to Serverpod users (e.g. tests, CI or internal refactors) usually do not need an entry.
 
 CI validates the files on every PR. To check them locally, run `dart run melos run changelog_check`.
+
+### Writing style
+
+Follow the style of the existing entries in [CHANGELOG.md](../CHANGELOG.md):
+
+- Be objective: state what changed and its effect for users, in a single sentence ending with a period. Avoid subjective or promotional wording (e.g. "great", "amazing", "much better") and implementation details that users do not see.
+- Start with a verb in the present tense, third person: "Adds", "Fixes", "Removes", "Allows", "Prevents", "Improves". Not "Add", "Added" or "Adding".
+- Describe one change per entry. Split unrelated changes into separate entries.
+- Wrap code identifiers, commands, files and packages in backticks, e.g. `Model.db.watch`, `serverpod start`, `SERVERPOD_VERSION`.
+
+For example:
+
+```markdown
+- feat: Adds `serverpod runner` command with `start`, `attach`, `status` and `stop` subcommands.
+- fix: Returns 400 instead of 500 for malformed endpoint argument values.
+- perf: Speeds up deserialization of shared and module models by ~x3.
+- refactor: BREAKING. Merges normal and `*withOptions` methods on the `CloudStorage` interface.
+```
+
+### User-facing and internal changes
+
+The changelog is for Serverpod users, so only user-facing changes get an entry. A change is user-facing when it changes either:
+
+- The public interface: the public API of the published packages, the generated code, the `serverpod` CLI commands and options, the project templates or the public API docs.
+- The behavior users observe, even if no interface changes: results, defaults, error handling and messages, logs, performance, database and migration output, or compatibility with Dart, Flutter and other dependencies.
+
+Everything else is internal. A PR with only internal changes does not add a file, and a PR that mixes both only lists the user-facing ones. Internal changes include:
+
+- Build, CI, test, formatting and revert changes (the `build`, `ci`, `test`, `style` and `revert` types).
+- Fixes and improvements to the repository's own tooling only, such as the `util` scripts, melos scripts, GitHub workflows and the test infrastructure.
+- Documentation of non-public interfaces or design documents only, such as doc comments on internal code or the files in [docs](../docs).
+- Refactors and dependency updates that change neither the public interface nor the behavior.
+- Fixes to changes that were not released yet. Update the original entry instead, if needed.
+
+When in doubt, anything a user could notice after upgrading is user-facing.
 
 ## Previewing the unreleased changelog
 
