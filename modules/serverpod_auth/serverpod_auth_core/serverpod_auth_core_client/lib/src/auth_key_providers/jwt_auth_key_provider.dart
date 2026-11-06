@@ -172,16 +172,22 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
     }
 
     return crossTabLock.synchronize(() async {
-      // Re-read auth info inside the lock: another tab may have already
-      // rotated the token while we were waiting for the lock.
       await invalidateCachedAuthInfo?.call();
       final freshAuthInfo = await getAuthInfo();
       final freshExpiresAt = freshAuthInfo?.tokenExpiresAt;
       final freshRefreshToken = freshAuthInfo?.refreshToken;
 
-      if ((!force &&
-              freshExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) ||
-          freshRefreshToken == null) {
+      if (freshRefreshToken == null) {
+        return RefreshAuthKeyResult.skipped;
+      }
+
+      // Another tab rotated while we waited for the lock; token is fresh.
+      if (freshRefreshToken != refreshToken) {
+        return RefreshAuthKeyResult.success;
+      }
+
+      if (!force &&
+          freshExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) {
         return RefreshAuthKeyResult.skipped;
       }
       return _refresh(refreshToken: freshRefreshToken);
