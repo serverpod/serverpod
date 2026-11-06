@@ -227,17 +227,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   Future<bool> _validateAuthentication() async {
     if (isAuthenticated) {
-      // Refresh only if the access token is actually expiring. A forced
-      // rotation on every page load is unnecessary and widens the race
-      // window for cross-tab token conflicts (#5880).
-      var refreshResult = await refreshAuthKey();
-      if (refreshResult == RefreshAuthKeyResult.skipped) {
-        // Token is still fresh; verify with the server without rotating.
-        if (!await caller.status.isSignedIn()) {
-          return await signOutDevice();
-        }
-        return true;
-      }
+      var refreshResult = await refreshAuthKey(force: true);
       if (refreshResult == RefreshAuthKeyResult.failedUnauthorized) {
         return await signOutDevice();
       }
