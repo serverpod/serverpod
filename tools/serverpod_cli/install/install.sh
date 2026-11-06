@@ -11,7 +11,6 @@
 #
 # Environment overrides, mainly for CI:
 #   SERVERPOD_INSTALL_YES=1          same as --yes
-#   SERVERPOD_INSTALL_DIR=<dir>      instead of ~/.serverpod
 #   SERVERPOD_BOOTSTRAP_BUNDLE=<tar> a local bootstrap bundle to use instead
 #                                    of downloading the released one
 
@@ -27,7 +26,8 @@ FLUTTER_SHA256_MACOS_ARM64="dd9da574c3168460550117eb0e8dd0313ae934fabf64a82a6d55
 BOOTSTRAP_RELEASE="https://github.com/serverpod/serverpod/releases/download/$BOOTSTRAP_TAG"
 FLUTTER_RELEASES="https://storage.googleapis.com/flutter_infra_release/releases/stable"
 
-INSTALL_DIR="${SERVERPOD_INSTALL_DIR:-$HOME/.serverpod}"
+# The CLI's own directory: doctor --fix looks for Flutter and writes env.sh here.
+INSTALL_DIR="$HOME/.serverpod"
 ASSUME_YES="${SERVERPOD_INSTALL_YES:-0}"
 
 info() { printf '%s\n' "$*" >&2; }
@@ -36,7 +36,7 @@ fail() { printf 'error: %s\n' "$*" >&2; exit 1; }
 for arg in "$@"; do
   case "$arg" in
     -y|--yes) ASSUME_YES=1 ;;
-    -h|--help) sed -n '3,17p' "$0" 2>/dev/null | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '3,16p' "$0" 2>/dev/null | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) fail "unknown option: $arg" ;;
   esac
 done
