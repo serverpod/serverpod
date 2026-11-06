@@ -2,6 +2,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_database/serverpod_database.dart' as db;
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 // Export underlying dialect implementations.
 export 'package:serverpod_database/src/extensions.dart';
@@ -103,6 +104,7 @@ extension DatabaseDiffComparisons on DatabaseMigration {
 
 extension TableDiffComparisons on TableMigration {
   bool get isEmpty =>
+      newSchema == null &&
       addColumns.isEmpty &&
       deleteColumns.isEmpty &&
       modifyColumns.isEmpty &&
@@ -112,8 +114,24 @@ extension TableDiffComparisons on TableMigration {
       deleteForeignKeys.isEmpty;
 }
 
+/// Whether [schema] is a dialect's default schema, where unqualified names live.
+bool isDefaultSchema(String schema) =>
+    DatabaseDialect.values.any((dialect) => dialect.defaultSchema == schema);
+
+/// The name that identifies a table across schemas. Tables in a default
+/// schema keep the bare name.
+String qualifiedTableName(String name, String schema) =>
+    isDefaultSchema(schema) ? name : '$schema.$name';
+
 extension TableDefinitionExtension on TableDefinition {
   bool get isManaged => managed != false;
+
+  String get qualifiedName => qualifiedTableName(name, schema);
+}
+
+extension ForeignKeyDefinitionExtension on ForeignKeyDefinition {
+  String get qualifiedReferenceTable =>
+      qualifiedTableName(referenceTable, referenceTableSchema);
 }
 
 /// Returns the last element of the list, or null if the list is empty.
