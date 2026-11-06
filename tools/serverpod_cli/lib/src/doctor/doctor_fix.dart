@@ -52,6 +52,12 @@ void writeEnvFile(final File envFile, final List<String> entries) {
 }
 
 /// What [writeEnvFile] writes for [entries].
+///
+/// An entry already on PATH is left where it is rather than moved to the
+/// front. That keeps sourcing idempotent, and it keeps the user's own PATH
+/// order: a managed directory never silently overrides a newer SDK or a
+/// version-manager shim the user placed ahead of it. [pathWith] applies the
+/// same rule in Dart.
 String envFileContent(final List<String> entries) {
   final buffer = StringBuffer()
     ..writeln('# Serverpod environment, written by `serverpod doctor --fix`.')
@@ -65,6 +71,18 @@ String envFileContent(final List<String> entries) {
       ..writeln('esac');
   }
   return buffer.toString();
+}
+
+/// The PATH a shell has after sourcing the env file for [entries] on top of
+/// [currentPath]: the same rule as [envFileContent], so a check run against
+/// it sees the executables a new shell will select.
+String pathWith(final List<String> entries, final String currentPath) {
+  var path = currentPath;
+  for (final entry in entries) {
+    final present = path.split(':').contains(entry);
+    if (!present) path = path.isEmpty ? entry : '$entry:$path';
+  }
+  return path;
 }
 
 /// The line that sources [envFile] from a startup file, relative to `$HOME`

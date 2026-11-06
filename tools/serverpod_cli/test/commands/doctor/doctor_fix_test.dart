@@ -148,6 +148,36 @@ void main() {
   });
 
   test(
+    'Given entries not yet on PATH, when building the PATH a sourced shell '
+    'has, then each is prepended in turn, as sourcing the env file does',
+    () {
+      expect(
+        pathWith(['/a/bin', '/b/bin'], '/usr/bin:/bin'),
+        '/b/bin:/a/bin:/usr/bin:/bin',
+      );
+    },
+  );
+
+  test(
+    'Given an entry already on PATH behind another directory, when building '
+    'the PATH a sourced shell has, then it stays where it is',
+    () {
+      expect(
+        pathWith(['/a/bin'], '/usr/bin:/a/bin:/bin'),
+        '/usr/bin:/a/bin:/bin',
+      );
+    },
+  );
+
+  test(
+    'Given an empty PATH, when building the PATH a sourced shell has, '
+    'then it is the entries alone',
+    () {
+      expect(pathWith(['/a/bin'], ''), '/a/bin');
+    },
+  );
+
+  test(
     'Given an env file with two entries, when writing it again with one, '
     'then the dropped entry is gone',
     () {

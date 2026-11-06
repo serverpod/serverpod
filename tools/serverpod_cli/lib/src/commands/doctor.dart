@@ -194,15 +194,12 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
     return _runChecks(environment: _environmentWith(entries));
   }
 
-  /// The process environment with [entries] first on PATH, as a new shell
-  /// will have after sourcing the env file.
-  Map<String, String> _environmentWith(final List<String> entries) {
-    final path = Platform.environment['PATH'] ?? '';
-    return {
-      ...Platform.environment,
-      'PATH': [...entries, if (path.isNotEmpty) path].join(':'),
-    };
-  }
+  /// The process environment with the PATH a new shell has after sourcing
+  /// the env file for [entries].
+  Map<String, String> _environmentWith(final List<String> entries) => {
+    ...Platform.environment,
+    'PATH': pathWith(entries, Platform.environment['PATH'] ?? ''),
+  };
 
   Future<bool> _confirm() async {
     if (!stdin.hasTerminal) {
