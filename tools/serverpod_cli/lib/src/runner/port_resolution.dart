@@ -53,18 +53,24 @@ Map<String, int> claimedPorts(
 /// Decides whether the stack for [serverDir] keeps [ports] or moves aside.
 ///
 /// [ports] and [suggested], the ports to try off the configured ones, are keyed
-/// by listener name (`api`, `insights`, `web`).
+/// by listener name (`api`, `insights`, `web`, `database`).
+///
+/// A listener in [joinable] moves aside with the others when a sibling runner
+/// claims its port, but a live listener on that port is not a conflict. The
+/// pod joins a database this worktree already runs there, and reports a
+/// foreign holder itself.
 Future<PortResolution> resolvePorts({
   required String serverDir,
   required Map<String, int> ports,
   Map<String, int> suggested = const {},
+  Set<String> joinable = const {},
   RunnerRegistry? registry,
   Duration probeTimeout = const Duration(milliseconds: 300),
 }) async {
   final occupied = <String, int>{};
   await Future.wait([
     for (final entry in ports.entries)
-      if (entry.value != 0)
+      if (entry.value != 0 && !joinable.contains(entry.key))
         _isListening(entry.value, probeTimeout).then((listening) {
           if (listening) occupied[entry.key] = entry.value;
         }),
@@ -181,6 +187,7 @@ Map<String, int> _listenerPorts(ServerpodAddresses? addresses) => {
     ('api', addresses?.api),
     ('insights', addresses?.insights),
     ('web', addresses?.web),
+    ('database', addresses?.database),
   ])
     if (url != null)
       if (Uri.tryParse(url)?.port case final port? when port != 0)
@@ -216,6 +223,7 @@ final portEnvironmentVariables = {
   'api': ServerpodEnv.apiPort.envVariable,
   'insights': ServerpodEnv.insightsPort.envVariable,
   'web': ServerpodEnv.webPort.envVariable,
+  'database': ServerpodEnv.databasePort.envVariable,
 };
 
 /// The environment variable that sets each listener's public port.

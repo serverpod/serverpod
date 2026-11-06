@@ -11,8 +11,8 @@ import 'package:serverpod_shared/log.dart';
 /// Closely mirrors the behavior of `modules/legacy/serverpod_auth/serverpod_auth_server/lib/src/business/authentication_handler.dart`
 @internal
 Future<LegacySession?> resolveLegacySession(
-  final Session session,
-  final String key,
+  Session session,
+  String key,
 ) async {
   try {
     // Get the secret and user id
@@ -49,6 +49,6 @@ Future<LegacySession?> resolveLegacySession(
 const _defaultAuthKeySalt = 'salty';
 
 /// Uses SHA256 to create a hash for a string using the specified secret.
-String _hashString(final String secret, final String string) {
+String _hashString(String secret, String string) {
   return sha256.convert(utf8.encode(secret + string)).toString();
 }

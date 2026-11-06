@@ -9,7 +9,7 @@ const envFileMarker = '# Added by `serverpod doctor --fix`.';
 
 /// Where the installer puts the Flutter SDK it manages, under
 /// [serverpodDirectory].
-String managedFlutterRootIn(final String serverpodDirectory) =>
+String managedFlutterRootIn(String serverpodDirectory) =>
     p.join(serverpodDirectory, 'flutter');
 
 /// The directories `doctor --fix` puts first on PATH, in order.
@@ -21,9 +21,9 @@ String managedFlutterRootIn(final String serverpodDirectory) =>
 /// Decided from what is on disk, not from the current PATH: a rerun from a
 /// shell that has not sourced the env file must produce the same entries.
 List<String> pathEntriesToAdd({
-  required final CliInstallation installation,
-  required final bool managedExecutableExists,
-  required final String serverpodDirectory,
+  required CliInstallation installation,
+  required bool managedExecutableExists,
+  required String serverpodDirectory,
 }) {
   final flutterRoot = managedFlutterRootIn(serverpodDirectory);
   return [
@@ -42,10 +42,10 @@ List<String> pathEntriesToAdd({
 /// `.profile` that exists. Shells that are neither still need to source the
 /// env file themselves.
 List<File> startupFilesFor({
-  required final String? shell,
-  required final String home,
+  required String? shell,
+  required String home,
 }) {
-  File inHome(final String name) => File(p.join(home, name));
+  File inHome(String name) => File(p.join(home, name));
 
   switch (shell == null ? null : p.basename(shell)) {
     case 'zsh':
@@ -66,7 +66,7 @@ List<File> startupFilesFor({
 
 /// Writes [envFile] so that sourcing it puts [entries] first on PATH, each
 /// once no matter how many times it is sourced.
-void writeEnvFile(final File envFile, final List<String> entries) {
+void writeEnvFile(File envFile, List<String> entries) {
   envFile
     ..createSync(recursive: true)
     ..writeAsStringSync(envFileContent(entries));
@@ -79,7 +79,7 @@ void writeEnvFile(final File envFile, final List<String> entries) {
 /// order: a managed directory never silently overrides a newer SDK or a
 /// version-manager shim the user placed ahead of it. [pathWith] applies the
 /// same rule in Dart.
-String envFileContent(final List<String> entries) {
+String envFileContent(List<String> entries) {
   final buffer = StringBuffer()
     ..writeln('# Serverpod environment, written by `serverpod doctor --fix`.')
     ..writeln('# Safe to source more than once.');
@@ -97,7 +97,7 @@ String envFileContent(final List<String> entries) {
 /// The PATH a shell has after sourcing the env file for [entries] on top of
 /// [currentPath]: the same rule as [envFileContent], so a check run against
 /// it sees the executables a new shell will select.
-String pathWith(final List<String> entries, final String currentPath) {
+String pathWith(List<String> entries, String currentPath) {
   var path = currentPath;
   for (final entry in entries) {
     final present = path.split(':').contains(entry);
@@ -108,7 +108,7 @@ String pathWith(final List<String> entries, final String currentPath) {
 
 /// The line that sources [envFile] from a startup file, relative to `$HOME`
 /// when it is under [home] so the file survives a moved home directory.
-String sourceLineFor(final File envFile, {required final String home}) {
+String sourceLineFor(File envFile, {required String home}) {
   final path = p.isWithin(home, envFile.path)
       ? '\$HOME/${p.relative(envFile.path, from: home)}'
       : envFile.path;
@@ -117,9 +117,9 @@ String sourceLineFor(final File envFile, {required final String home}) {
 
 /// Whether [startupFile] already sources [envFile].
 bool startupFileSources(
-  final File startupFile,
-  final File envFile, {
-  required final String home,
+  File startupFile,
+  File envFile, {
+  required String home,
 }) =>
     startupFile.existsSync() &&
     startupFile.readAsStringSync().contains(sourceLineFor(envFile, home: home));
@@ -127,9 +127,9 @@ bool startupFileSources(
 /// Appends the line that sources [envFile] to [startupFile], unless it is
 /// already there. Returns whether the file changed.
 bool ensureSourced(
-  final File startupFile,
-  final File envFile, {
-  required final String home,
+  File startupFile,
+  File envFile, {
+  required String home,
 }) {
   if (startupFileSources(startupFile, envFile, home: home)) return false;
   final line = sourceLineFor(envFile, home: home);
@@ -140,5 +140,5 @@ bool ensureSourced(
   return true;
 }
 
-String _doubleQuote(final String value) =>
+String _doubleQuote(String value) =>
     '"${value.replaceAllMapped(RegExp(r'[\\"$`]'), (m) => '\\${m[0]}')}"';

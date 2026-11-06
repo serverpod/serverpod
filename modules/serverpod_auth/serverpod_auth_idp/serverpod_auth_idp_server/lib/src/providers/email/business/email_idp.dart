@@ -47,10 +47,10 @@ class EmailIdp implements IdentityProvider {
 
   /// Creates a new instance of [EmailIdp].
   factory EmailIdp(
-    final EmailIdpConfig config, {
-    required final TokenManager tokenManager,
-    final AuthUsers authUsers = const AuthUsers(),
-    final UserProfiles userProfiles = const UserProfiles(),
+    EmailIdpConfig config, {
+    required TokenManager tokenManager,
+    AuthUsers authUsers = const AuthUsers(),
+    UserProfiles userProfiles = const UserProfiles(),
   }) {
     final utils = EmailIdpUtils(config: config, authUsers: authUsers);
     final admin = EmailIdpAdmin(utils: utils);
@@ -66,120 +66,117 @@ class EmailIdp implements IdentityProvider {
 
   /// {@macro email_account_base_endpoint.finish_password_reset}
   Future<UuidValue> finishPasswordReset(
-    final Session session, {
-    required final String finishPasswordResetToken,
-    required final String newPassword,
-    final Transaction? transaction,
+    Session session, {
+    required String finishPasswordResetToken,
+    required String newPassword,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          EmailIdpUtils.withReplacedServerEmailException(() async {
-            final authUserId = await utils.passwordReset.completePasswordReset(
-              session,
-              completePasswordResetToken: finishPasswordResetToken,
-              newPassword: newPassword,
-              transaction: transaction,
-            );
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(() async {
+        final authUserId = await utils.passwordReset.completePasswordReset(
+          session,
+          completePasswordResetToken: finishPasswordResetToken,
+          newPassword: newPassword,
+          transaction: transaction,
+        );
 
-            await _tokenManager.revokeAllTokens(
-              session,
-              authUserId: authUserId,
-              method: method,
-              transaction: transaction,
-            );
+        await _tokenManager.revokeAllTokens(
+          session,
+          authUserId: authUserId,
+          method: method,
+          transaction: transaction,
+        );
 
-            return authUserId;
-          }),
+        return authUserId;
+      }),
     );
   }
 
   /// {@macro email_account_base_endpoint.finish_registration}
   Future<AuthSuccess> finishRegistration(
-    final Session session, {
-    required final String registrationToken,
-    required final String password,
-    final Transaction? transaction,
+    Session session, {
+    required String registrationToken,
+    required String password,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          EmailIdpUtils.withReplacedServerEmailException(() async {
-            final result = await utils.accountCreation.completeAccountCreation(
-              session,
-              completeAccountCreationToken: registrationToken,
-              password: password,
-              transaction: transaction,
-            );
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(() async {
+        final result = await utils.accountCreation.completeAccountCreation(
+          session,
+          completeAccountCreationToken: registrationToken,
+          password: password,
+          transaction: transaction,
+        );
 
-            await _userProfiles.createUserProfile(
-              session,
-              result.authUserId,
-              UserProfileData(
-                email: result.email,
-              ),
-              transaction: transaction,
-            );
+        await _userProfiles.createUserProfile(
+          session,
+          result.authUserId,
+          UserProfileData(
+            email: result.email,
+          ),
+          transaction: transaction,
+        );
 
-            return _tokenManager.issueToken(
-              session,
-              authUserId: result.authUserId,
-              method: method,
-              scopes: result.scopes,
-              transaction: transaction,
-            );
-          }),
+        return _tokenManager.issueToken(
+          session,
+          authUserId: result.authUserId,
+          method: method,
+          scopes: result.scopes,
+          transaction: transaction,
+        );
+      }),
     );
   }
 
   /// {@macro email_account_base_endpoint.login}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String email,
-    required final String password,
-    final Transaction? transaction,
+    Session session, {
+    required String email,
+    required String password,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          EmailIdpUtils.withReplacedServerEmailException(() async {
-            final authUserId = await utils.authentication.authenticate(
-              session,
-              email: email,
-              password: password,
-              transaction: transaction,
-            );
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(() async {
+        final authUserId = await utils.authentication.authenticate(
+          session,
+          email: email,
+          password: password,
+          transaction: transaction,
+        );
 
-            final authUser = await _authUsers.get(
-              session,
-              authUserId: authUserId,
-              transaction: transaction,
-            );
+        final authUser = await _authUsers.get(
+          session,
+          authUserId: authUserId,
+          transaction: transaction,
+        );
 
-            return _tokenManager.issueToken(
-              session,
-              authUserId: authUserId,
-              method: method,
-              scopes: authUser.scopes,
-              transaction: transaction,
-            );
-          }),
+        return _tokenManager.issueToken(
+          session,
+          authUserId: authUserId,
+          method: method,
+          scopes: authUser.scopes,
+          transaction: transaction,
+        );
+      }),
     );
   }
 
   /// {@macro email_account_base_endpoint.start_password_reset}
   Future<UuidValue> startPasswordReset(
-    final Session session, {
-    required final String email,
-    final Transaction? transaction,
+    Session session, {
+    required String email,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(
         () async {
           try {
             return await utils.passwordReset.startPasswordReset(
@@ -208,14 +205,14 @@ class EmailIdp implements IdentityProvider {
 
   /// {@macro email_account_base_endpoint.start_registration}
   Future<UuidValue> startRegistration(
-    final Session session, {
-    required final String email,
-    final Transaction? transaction,
+    Session session, {
+    required String email,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(
         () async {
           try {
             return await utils.accountCreation.startRegistration(
@@ -251,15 +248,15 @@ class EmailIdp implements IdentityProvider {
 
   /// {@macro email_account_base_endpoint.verify_registration_code}
   Future<String> verifyRegistrationCode(
-    final Session session, {
-    required final UuidValue accountRequestId,
-    required final String verificationCode,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue accountRequestId,
+    required String verificationCode,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(
         () async {
           return await utils.accountCreation.verifyRegistrationCode(
             session,
@@ -274,15 +271,15 @@ class EmailIdp implements IdentityProvider {
 
   /// {@macro email_account_base_endpoint.verify_password_reset_code}
   Future<String> verifyPasswordResetCode(
-    final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue passwordResetRequestId,
+    required String verificationCode,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(
         () async {
           return await utils.passwordReset.verifyPasswordResetCode(
             session,
@@ -295,22 +292,133 @@ class EmailIdp implements IdentityProvider {
     );
   }
 
+  /// {@macro email_account_base_endpoint.start_otp_login}
+  Future<UuidValue> startOtpLogin(
+    Session session, {
+    required String email,
+    Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(
+        () => utils.otpLogin.startOtpLogin(
+          session,
+          email: email,
+          transaction: transaction,
+        ),
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.verify_otp_login_code}
+  Future<EmailAccountOtpVerificationResult> verifyOtpLoginCode(
+    Session session, {
+    required UuidValue otpLoginRequestId,
+    required String verificationCode,
+    Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(
+        () => utils.otpLogin.verifyOtpLoginCode(
+          session,
+          otpLoginRequestId: otpLoginRequestId,
+          verificationCode: verificationCode,
+          transaction: transaction,
+        ),
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.finish_otp_login}
+  Future<AuthSuccess> finishOtpLogin(
+    Session session, {
+    required String otpLoginToken,
+    Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(() async {
+        final authUserId = await utils.otpLogin.completeOtpLogin(
+          session,
+          otpLoginToken: otpLoginToken,
+          transaction: transaction,
+        );
+
+        final authUser = await _authUsers.get(
+          session,
+          authUserId: authUserId,
+          transaction: transaction,
+        );
+
+        return _tokenManager.issueToken(
+          session,
+          authUserId: authUserId,
+          method: method,
+          scopes: authUser.scopes,
+          transaction: transaction,
+        );
+      }),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.finish_otp_registration}
+  Future<AuthSuccess> finishOtpRegistration(
+    Session session, {
+    required String otpLoginToken,
+    String? password,
+    Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (transaction) => EmailIdpUtils.withReplacedServerEmailException(() async {
+        final result = await utils.otpLogin.completeOtpRegistration(
+          session,
+          otpLoginToken: otpLoginToken,
+          password: password,
+          transaction: transaction,
+        );
+
+        await _userProfiles.createUserProfile(
+          session,
+          result.authUserId,
+          UserProfileData(
+            email: result.email,
+          ),
+          transaction: transaction,
+        );
+
+        return _tokenManager.issueToken(
+          session,
+          authUserId: result.authUserId,
+          method: method,
+          scopes: result.scopes,
+          transaction: transaction,
+        );
+      }),
+    );
+  }
+
   /// Determines whether the current session has an associated email account.
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await utils.getAccount(session) != null;
 
   /// Migrates all [EmailAccount]s from [userToRemoveId] to [userToKeepId].
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     await EmailAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToRemoveId),
-      columnValues: (final t) => [
+      where: (t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (t) => [
         t.authUserId(userToKeepId),
       ],
       transaction: transaction,

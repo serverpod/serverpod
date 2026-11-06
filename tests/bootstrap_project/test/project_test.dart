@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/util/copy_directory.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
@@ -29,7 +30,7 @@ void main() async {
     } catch (e) {}
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
@@ -39,7 +40,8 @@ void main() async {
     });
 
     test(
-      'when creating a new project then the project is created successfully and can be booted',
+      'when creating a new project, '
+      'then it is created, boots and frees the database port on exit',
       () async {
         createProcess = await startServerpodCli(
           [
@@ -63,19 +65,31 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
+        var databasePort = await freeLoopbackPort();
         var startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
           workingDirectory: commandRoot,
+          environment: {
+            ServerpodEnv.databasePort.envVariable: '$databasePort',
+          },
         );
 
         var startProjectExitCode = await startProjectProcess.exitCode;
         expect(startProjectExitCode, 0);
+
+        await expectLater(
+          ServerSocket.bind(
+            InternetAddress.loopbackIPv4,
+            databasePort,
+          ).then((socket) => socket.close()),
+          completes,
+        );
       },
     );
   });
 
-  group('Given a clean state', () {
+  group('Given a clean state,', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
@@ -87,7 +101,8 @@ void main() async {
     });
 
     test(
-      'when creating a new project then the project can be booted without applying migrations',
+      'when creating a new project, '
+      'then the project can be booted without applying migrations',
       () async {
         createProcess = await startServerpodCli(
           [
@@ -115,6 +130,10 @@ void main() async {
           'dart',
           ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
+          environment: {
+            ServerpodEnv.databasePort.envVariable:
+                '${await freeLoopbackPort()}',
+          },
         );
 
         var serverStarted = false;
@@ -468,6 +487,17 @@ void main() async {
       });
 
       group('then the flutter project', () {
+        test('has the project name as its package name', () {
+          final pubspec = File(
+            path.join(tempPath, flutterDir, 'pubspec.yaml'),
+          );
+
+          expect(
+            parsePubspec(pubspec).name,
+            projectName,
+          );
+        });
+
         test('folder is created', () {
           expect(
             Directory(path.join(tempPath, flutterDir)).existsSync(),
@@ -615,6 +645,42 @@ void main() async {
             ).existsSync(),
             isTrue,
             reason: 'Flutter main file does not exist.',
+          );
+        });
+
+        test('has an Android application ID derived from the project name', () {
+          final gradleFile = ['build.gradle.kts', 'build.gradle']
+              .map(
+                (name) => File(
+                  path.join(tempPath, flutterDir, 'android', 'app', name),
+                ),
+              )
+              .firstWhere((file) => file.existsSync());
+
+          expect(
+            gradleFile.readAsStringSync(),
+            contains(
+              'space.serverpod.$projectName',
+            ),
+          );
+        });
+
+        test('has an iOS bundle ID derived from the project name', () {
+          final pbxproj = File(
+            path.join(
+              tempPath,
+              flutterDir,
+              'ios',
+              'Runner.xcodeproj',
+              'project.pbxproj',
+            ),
+          );
+
+          expect(
+            pbxproj.readAsStringSync(),
+            contains(
+              'space.serverpod.$projectName',
+            ),
           );
         });
       });
@@ -1162,7 +1228,7 @@ void main() async {
     );
   });
 
-  group('Given a created project', () {
+  group('Given a created project,', () {
     late String projectName;
     late String commandRoot;
 
@@ -1226,7 +1292,7 @@ void main() async {
     );
 
     test(
-      'when running tests then example unit and integration tests passes',
+      'when running tests, then example unit and integration tests passes',
       () async {
         var testProcess = await startProcess(
           'dart',
@@ -1296,7 +1362,7 @@ void main() async {
   });
 
   group(
-    'Given a created project and a running pod',
+    'Given a created project and a running pod,',
     () {
       final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
@@ -1324,6 +1390,10 @@ void main() async {
           'dart',
           ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
+          environment: {
+            ServerpodEnv.databasePort.envVariable:
+                '${await freeLoopbackPort()}',
+          },
           keywords: ['Webserver listening on'],
         );
       });

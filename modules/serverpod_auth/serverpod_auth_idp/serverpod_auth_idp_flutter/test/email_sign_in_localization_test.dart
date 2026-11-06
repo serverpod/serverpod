@@ -5,6 +5,92 @@ import 'package:serverpod_auth_idp_flutter/widgets.dart';
 
 void main() {
   testWidgets(
+    'Given shared verification code texts in the password-based flow, '
+    'when the registration verification screen is displayed, '
+    'then it uses the shared resend text and existing email texts.',
+    (tester) async {
+      final controller = EmailAuthController(client: _TestClient());
+      addTearDown(controller.dispose);
+      controller.navigateTo(EmailFlowScreen.verifyRegistration);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SignInLocalizationProvider(
+              email: EmailSignInTexts.defaults.copyWith(
+                verifyAccountTitle: 'Registration code',
+                verificationMessage: 'Enter code',
+                verify: 'Verify account',
+              ),
+              verificationCodeTexts: const VerificationCodeTexts(
+                resendCode: 'Resend registration',
+              ),
+              child: SizedBox(
+                width: 600,
+                child: EmailSignInWidget(
+                  controller: controller,
+                  verificationCodeConfig: const VerificationCodeConfig(
+                    resendCountdownDuration: Duration.zero,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Resend registration'), findsOneWidget);
+      expect(find.text('Registration code'), findsOneWidget);
+      expect(find.text('Enter code'), findsOneWidget);
+      expect(find.text('Verify account'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Given shared verification code texts in the password-based flow, '
+    'when the password reset verification screen is displayed, '
+    'then it uses the shared resend text and existing email texts.',
+    (tester) async {
+      final controller = EmailAuthController(client: _TestClient());
+      addTearDown(controller.dispose);
+      controller.navigateTo(EmailFlowScreen.verifyPasswordReset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SignInLocalizationProvider(
+              email: EmailSignInTexts.defaults.copyWith(
+                verifyResetCodeTitle: 'Reset code',
+                verificationMessage: 'Enter code',
+                verify: 'Verify reset',
+              ),
+              verificationCodeTexts: const VerificationCodeTexts(
+                resendCode: 'Resend reset',
+              ),
+              child: SizedBox(
+                width: 600,
+                child: EmailSignInWidget(
+                  controller: controller,
+                  verificationCodeConfig: const VerificationCodeConfig(
+                    resendCountdownDuration: Duration.zero,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Resend reset'), findsOneWidget);
+      expect(find.text('Reset code'), findsOneWidget);
+      expect(find.text('Enter code'), findsOneWidget);
+      expect(find.text('Verify reset'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
     'Given SignInLocalizationProvider with custom email texts, '
     'when building LoginForm, '
     'then localized labels from email texts are shown.',

@@ -30,13 +30,13 @@ sealed class _SignInWithAppleRoute extends Route {
 /// {@endtemplate}
 final class AppleRevokedNotificationRoute extends _SignInWithAppleRoute {
   /// Creates a new route to handle Apple Idp revoked notifications.
-  AppleRevokedNotificationRoute({required final AppleIdpUtils utils})
+  AppleRevokedNotificationRoute({required AppleIdpUtils utils})
     : super(utils, methods: {Method.post});
 
   @override
   Future<Result> handleCall(
-    final Session session,
-    final Request req,
+    Session session,
+    Request req,
   ) => _utils.serverNotificationHandler(session, req);
 }
 
@@ -76,24 +76,24 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
   /// Apple's web callback, required for Apple Sign In to work on web when
   /// this server route is used as Apple's callback endpoint.
   AppleWebAuthenticationCallbackRoute({
-    required final AppleIdpUtils utils,
-    final String? androidPackageIdentifier,
-    final String? webRedirectUri,
+    required AppleIdpUtils utils,
+    String? androidPackageIdentifier,
+    String? webRedirectUri,
   }) : _androidPackageIdentifier = androidPackageIdentifier,
        _webRedirectUri = webRedirectUri,
        super(utils, methods: {Method.post});
 
   @override
   Future<Result> handleCall(
-    final Session session,
-    final Request request,
+    Session session,
+    Request request,
   ) async {
     return _isUserAgentAndroid(request.headers)
         ? _handleAndroidRedirection(request)
         : _handleWebRedirection(request);
   }
 
-  Future<Result> _handleAndroidRedirection(final Request request) async {
+  Future<Result> _handleAndroidRedirection(Request request) async {
     if (_androidPackageIdentifier == null) {
       return Response.internalServerError(
         body: Body.fromString(
@@ -109,7 +109,7 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
         'intent://callback$queryString#Intent;'
         'package=$_androidPackageIdentifier;scheme=signinwithapple;end';
 
-    final headers = Headers.build((final h) {
+    final headers = Headers.build((h) {
       h['Location'] = [intentUri];
     });
 
@@ -124,7 +124,7 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
     );
   }
 
-  Future<Result> _handleWebRedirection(final Request request) async {
+  Future<Result> _handleWebRedirection(Request request) async {
     if (_webRedirectUri == null) {
       return Response.internalServerError(
         body: Body.fromString(
@@ -136,7 +136,7 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
 
     final queryString = await _convertRequestBodyToQueryString(request);
 
-    final headers = Headers.build((final h) {
+    final headers = Headers.build((h) {
       h['Location'] = ['$_webRedirectUri$queryString'];
     });
 
@@ -151,19 +151,19 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
     );
   }
 
-  bool _isUserAgentAndroid(final Headers headers) {
+  bool _isUserAgentAndroid(Headers headers) {
     final userAgent = headers.userAgent ?? '';
     return userAgent.toLowerCase().contains('android');
   }
 
-  Future<String> _convertRequestBodyToQueryString(final Request request) async {
+  Future<String> _convertRequestBodyToQueryString(Request request) async {
     final body = await request.readAsString();
     if (body.isEmpty) return '';
 
     final params = Uri.splitQueryString(body);
     final query = params.entries
         .map(
-          (final e) =>
+          (e) =>
               '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
         )
         .join('&');

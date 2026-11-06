@@ -22,16 +22,16 @@ abstract class RateLimiter {
   /// are not recorded and invoke [RateLimiterConfig.onRateLimitExceeded].
   /// Admitted attempts survive a rollback of the caller's transaction.
   Future<bool> tryRecordAttempt(
-    final Session session, {
-    required final String key,
-    final Map<String, String>? extraData,
+    Session session, {
+    required String key,
+    Map<String, String>? extraData,
   });
 
   /// Counts attempts for [key] within the configured window, or all time.
   Future<int> countAttempts(
-    final Session session, {
-    required final String key,
-    final Transaction? transaction,
+    Session session, {
+    required String key,
+    Transaction? transaction,
   });
 
   /// Deletes attempts within this limiter's domain and source.
@@ -42,10 +42,10 @@ abstract class RateLimiter {
   /// attempts, regardless of the configured window.
   /// Returns the number of deleted attempts.
   Future<int> deleteAttempts(
-    final Session session, {
-    final String? key,
-    final Duration? olderThan,
-    final Transaction? transaction,
+    Session session, {
+    String? key,
+    Duration? olderThan,
+    Transaction? transaction,
   });
 }
 
@@ -59,14 +59,14 @@ class DatabaseRateLimiter extends RateLimiter {
 
   @override
   Future<bool> tryRecordAttempt(
-    final Session session, {
-    required final String key,
-    final Map<String, String>? extraData,
+    Session session, {
+    required String key,
+    Map<String, String>? extraData,
   }) async {
     // NOTE: The attempt counting runs in a separate transaction, so that it is
     // never rolled back with the parent transaction.
     final rateLimitExceeded = await session.db.transaction((
-      final transaction,
+      transaction,
     ) async {
       // Taken before the savepoint, so that rolling the savepoint back on a
       // rate limited attempt does not release it early.
@@ -120,9 +120,9 @@ class DatabaseRateLimiter extends RateLimiter {
   /// therefore already serialises these checks - the same reasoning that makes
   /// `lockRows` a no-op on that adapter.
   Future<void> _lockAttemptKey(
-    final Session session, {
-    required final String key,
-    required final Transaction transaction,
+    Session session, {
+    required String key,
+    required Transaction transaction,
   }) async {
     if (session.db.dialect != DatabaseDialect.postgres) return;
 
@@ -138,7 +138,7 @@ class DatabaseRateLimiter extends RateLimiter {
   /// FNV-1a. A collision would only make two unrelated keys wait on each
   /// other, never let an attempt through, so the hash carries no security
   /// weight.
-  int _lockKey(final String key) {
+  int _lockKey(String key) {
     const offsetBasis = 0xcbf29ce484222325;
     const prime = 0x100000001b3;
 
@@ -153,10 +153,10 @@ class DatabaseRateLimiter extends RateLimiter {
   }
 
   Future<void> _recordAttempt(
-    final Session session, {
-    required final String key,
-    final Map<String, String>? extraData,
-    final Transaction? transaction,
+    Session session, {
+    required String key,
+    Map<String, String>? extraData,
+    Transaction? transaction,
   }) async {
     final combinedExtraData = {...?config.defaultExtraData, ...?extraData};
 
@@ -178,13 +178,13 @@ class DatabaseRateLimiter extends RateLimiter {
 
   @override
   Future<int> countAttempts(
-    final Session session, {
-    required final String key,
-    final Transaction? transaction,
+    Session session, {
+    required String key,
+    Transaction? transaction,
   }) async {
     return await RateLimitedRequestAttempt.db.count(
       session,
-      where: (final t) {
+      where: (t) {
         var expression =
             t.domain.equals(config.domain) &
             t.source.equals(config.source) &
@@ -205,10 +205,10 @@ class DatabaseRateLimiter extends RateLimiter {
 
   @override
   Future<int> deleteAttempts(
-    final Session session, {
-    final String? key,
-    final Duration? olderThan,
-    final Transaction? transaction,
+    Session session, {
+    String? key,
+    Duration? olderThan,
+    Transaction? transaction,
   }) async {
     final removeBefore = olderThan == null
         ? null
@@ -216,7 +216,7 @@ class DatabaseRateLimiter extends RateLimiter {
 
     final deletedAttempts = await RateLimitedRequestAttempt.db.deleteWhere(
       session,
-      where: (final t) {
+      where: (t) {
         var expression =
             t.domain.equals(config.domain) & t.source.equals(config.source);
         if (removeBefore != null) {

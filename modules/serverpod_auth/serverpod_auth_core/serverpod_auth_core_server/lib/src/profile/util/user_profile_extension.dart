@@ -30,7 +30,7 @@ extension UserProfileToUserProfileData on UserProfile {
 /// Extensions method on the AuthenticationInfo to get the user profile.
 extension AuthenticationInfoUserProfile on AuthenticationInfo {
   /// Returns the user profile of the authenticated user.
-  Future<UserProfileModel?> userProfile(final Session session) async {
+  Future<UserProfileModel?> userProfile(Session session) async {
     return await AuthServices.instance.userProfiles.findUserProfileByUserId(
       session,
       authUserId,

@@ -6,6 +6,7 @@ import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
 import 'utils/email_idp_account_utils.dart';
 import 'utils/email_idp_authentication_util.dart';
+import 'utils/email_idp_otp_login_util.dart';
 import 'utils/email_idp_password_reset_util.dart';
 
 /// Email account management functions.
@@ -18,6 +19,7 @@ import 'utils/email_idp_password_reset_util.dart';
 /// - [authentication] - Utilities for authenticating users
 /// - [accountCreation] - Utilities for creating and verifying email accounts
 /// - [passwordReset] - Utilities for resetting passwords
+/// - [otpLogin] - Utilities for passwordless logins with one-time passwords
 ///
 /// For most standard use cases, the methods exposed by [EmailIdp] and
 /// [EmailIdpAdmin] should be sufficient.
@@ -36,13 +38,16 @@ class EmailIdpUtils {
   /// {@macro email_idp_authentication_utils}
   late final EmailIdpAuthenticationUtil authentication;
 
+  /// {@macro email_idp_otp_login_util}
+  late final EmailIdpOtpLoginUtil otpLogin;
+
   /// {@macro email_idp_account_utils}
   final EmailIdpAccountUtils account;
 
   /// Creates a new instance of [EmailIdpUtils].
   EmailIdpUtils({
-    required final EmailIdpConfig config,
-    final AuthUsers authUsers = const AuthUsers(),
+    required EmailIdpConfig config,
+    AuthUsers authUsers = const AuthUsers(),
   }) : hashUtil = Argon2HashUtil(
          hashPepper: config.secretHashPepper,
          fallbackHashPeppers: config.fallbackSecretHashPeppers,
@@ -84,15 +89,22 @@ class EmailIdpUtils {
       hashUtil: hashUtil,
       failedLoginRateLimit: config.failedLoginRateLimit,
     );
+    otpLogin = EmailIdpOtpLoginUtil(
+      config: EmailIdpOtpLoginUtilsConfig.fromEmailIdpConfig(config),
+      passwordHashUtils: hashUtil,
+      authUsers: authUsers,
+      verificationCodeHash: verificationCodeHash,
+      completionTokenHash: completionTokenHash,
+    );
   }
 
   /// Returns the possible [EmailAccount] associated with a session.
-  Future<EmailAccount?> getAccount(final Session session) {
+  Future<EmailAccount?> getAccount(Session session) {
     return switch (session.authenticated) {
       null => Future.value(null),
       _ => EmailAccount.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(
+        where: (t) => t.authUserId.equals(
           session.authenticated!.authUserId,
         ),
       ),
@@ -102,7 +114,7 @@ class EmailIdpUtils {
   /// Replaces server-side exceptions by client-side exceptions, hiding details
   /// that could leak account information.
   static Future<T> withReplacedServerEmailException<T>(
-    final Future<T> Function() fn,
+    Future<T> Function() fn,
   ) async {
     try {
       return await fn();

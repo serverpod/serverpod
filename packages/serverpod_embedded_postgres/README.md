@@ -47,23 +47,35 @@ not a silent multi-minute source build. Set `SERVERPOD_PG_SOURCE=build`
 requires the native toolchain and is intended for development and CI,
 not end users.
 
-## Two transports
+## Three transports
 
 **Unix Domain Socket (default when supported).** Trust authentication; the
 project directory already gates filesystem access to the socket. PG `chdir`s
 to `PGDATA` before binding so `unix_socket_directories = '../run'` lands a
 ~20-byte path in `sockaddr_un.sun_path`, well under the 104-byte macOS cap
-regardless of how deep your project lives. Fresh clusters still receive an
-initial superuser password (configured or generated) so the same cluster can
-later be reopened over TCP without reinitialization.
+regardless of how deep your project lives. No password is involved.
 
 **TCP loopback (`TcpTransport`).** scram-sha-256 against `127.0.0.1`,
-password via [TcpTransport.password] (Serverpod passes `config/passwords.yaml`
-`database` here) or a random dev credential when omitted. Persisted to
-`<.serverpod>/postgres.password` for warm-restart consistency. The default
-`TcpTransport(port: 0)` gets an ephemeral port; explicit ports are honored.
-Port-race collision is retried up to 3 times before bubbling up.
-Platforms without Unix domain socket support select this transport by default.
+password via [TcpTransport.password] or a random credential for this launch
+when omitted. The default `TcpTransport(port: 0)` gets an ephemeral port;
+explicit ports are honored. Port-race collision is retried once before bubbling
+up. Platforms without Unix domain socket support select this transport by default.
+
+**Both (`DualTransport`).** One postmaster serving the trusted socket and
+scram-sha-256 loopback TCP at the same time. `endpoint` is the socket;
+`tcpEndpoint` and `tcpConnectionUri` carry the loopback coordinates for
+external tools. Automatic Serverpod server and test startup uses only the Unix
+socket, even when a database password is configured. `serverpod database start`
+uses this dual transport when launching a database with a configured password.
+For any transport, a pinned port that another process holds fails
+the start with `PortInUseException`; only an ephemeral request is re-allocated.
+
+**The password lives in your configuration, not on disk.** Every start of an
+existing cluster that binds TCP sets the superuser's password to the value it
+was given, via `postgres --single` before the postmaster is spawned. Rotating
+the password is a restart; a cluster initialised without one heals itself.
+A process that attaches to a running postmaster passes the same password to
+`EmbeddedPostgres.attach` to use `tcpEndpoint`; the socket needs none.
 
 ```dart
 // TCP variant:
@@ -88,12 +100,21 @@ serverpod database start
 ```
 
 The command reads `config/development.yaml` and `config/passwords.yaml`, starts
-the embedded database on the configured TCP port, and prints a connection URI
-for tools such as `psql`, DBeaver, and DataGrip. It keeps the database running
-until interrupted. If this command starts the postmaster before the Serverpod
-server, the server attaches to that existing postmaster rather than launching
-a competing one. Use `--mode` to select a different configuration or
-`--server-dir` to select a server project explicitly.
+the embedded database (or joins one already running), and prints connection
+URIs for tools such as `psql`, DBeaver, and DataGrip. When it launches the
+database with a password configured, the postmaster serves both the Unix socket
+and loopback TCP on `database.port`; without a password it serves only the Unix
+socket. Use `--port` to override the TCP port, `--mode` to select a different
+configuration, or `--server-dir` to select a server project explicitly.
+
+Start order matters: automatic server and test startup uses only the Unix
+socket, and attaching to a running database preserves its listeners. To enable
+TCP, configure the run mode's database password, stop the running embedded
+database and its owning process, then run `serverpod database start` for that
+mode before starting the server again in another terminal. Keep the database
+command running while using its database; interrupting the command that
+launched it stops the database. The server can join this TCP-enabled database
+through its Unix socket.
 
 ## Detach + attach for cross-VM dev DBs
 
@@ -120,7 +141,8 @@ final conn = await Connection.open(pg.endpoint);
 the original `start()`, verifies the recorded PID is still our
 postmaster (cmdline + cwd, NOT just PID - the OS recycles those), and
 hands back a fully usable handle. Stale pidfiles (process gone) are
-cleaned up; PID-recycled foreign processes are left strictly alone.
+cleaned up; PID-recycled foreign processes are left strictly alone. Pass
+`password:` when the postmaster binds TCP and you need `tcpEndpoint`.
 
 ## Prefetch for CI
 
@@ -146,7 +168,10 @@ abstract class EmbeddedPostgres {
   static Future<EmbeddedStartResult> startOrAttach(
     EmbeddedPostgresOptions opts,
   );
-  static Future<EmbeddedPostgres> attach(Directory dataDir);
+  static Future<EmbeddedPostgres> attach(
+    Directory dataDir, {
+    String? password,
+  });
 
   // Cache utilities.
   static Future<void> prefetch(
@@ -160,6 +185,8 @@ abstract class EmbeddedPostgres {
   pg.Endpoint get endpoint;        // package:postgres consumers
   String get connectionString;     // libpq URI for psql, pg_dump, etc.
   Uri get connectionUri;
+  pg.Endpoint? get tcpEndpoint;    // loopback, null when socket-only
+  Uri? get tcpConnectionUri;
 
   // Lifecycle.
   Version get version;
@@ -170,18 +197,22 @@ abstract class EmbeddedPostgres {
 }
 ```
 
-The `Transport` sealed class has two variants:
+The `Transport` sealed class has three variants:
 
 ```dart
 sealed class Transport { const Transport(); }
 final class UnixTransport extends Transport {
-  final String? initialPassword;
-  const UnixTransport({this.initialPassword});
+  const UnixTransport();
 }
 final class TcpTransport extends Transport {
   final int port;          // 0 = ephemeral
-  final String? password;  // null = generate random
+  final String? password;  // null = generate random for this launch
   const TcpTransport({this.port = 0, this.password});
+}
+final class DualTransport extends Transport {
+  final int port;          // 0 = ephemeral
+  final String? password;  // null = generate random for this launch
+  const DualTransport({this.port = 0, this.password});
 }
 ```
 

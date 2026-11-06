@@ -204,7 +204,7 @@ void main() {
           () {
             final tokenData = jwtUtil.verifyJwt(jwt);
             expect(
-              tokenData.scopes.map((final s) => s.name),
+              tokenData.scopes.map((s) => s.name),
               containsAllInOrder({'a', 'b', 'c'}),
             );
           },
@@ -456,7 +456,7 @@ void main() {
           () {
             final tokenData = jwtUtil.verifyJwt(jwt);
             expect(
-              tokenData.scopes.map((final s) => s.name),
+              tokenData.scopes.map((s) => s.name),
               containsAllInOrder({'a', 'b', 'c'}),
             );
           },

@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../common/widgets/buttons/action_button.dart';
 import '../../common/widgets/buttons/text_button.dart';
-import '../../common/widgets/gaps.dart';
 import '../../localization/sign_in_localization_provider.dart';
 import '../email_auth_controller.dart';
-import 'widgets/email_text_field.dart';
-import 'widgets/back_to_sign_in_button.dart';
-import 'widgets/form_standard_layout.dart';
+import 'shared/shared_password_reset_forms.dart';
 
 /// Password reset request form widget.
 ///
@@ -23,31 +19,9 @@ class RequestPasswordResetForm extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.emailSignInTexts;
 
-    return FormStandardLayout(
-      title: texts.resetPasswordTitle,
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            texts.resetPasswordDescription,
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.left,
-          ),
-          smallGap,
-          EmailTextField(controller: controller),
-          tinyGap,
-          BackToSignInButton(controller: controller),
-        ],
-      ),
-      actionButton: ActionButton(
-        onPressed:
-            controller.emailController.text.isNotEmpty &&
-                controller.state == EmailAuthState.idle
-            ? controller.startPasswordReset
-            : null,
-        label: texts.requestPasswordReset,
-        isLoading: controller.isLoading,
-      ),
+    return SharedRequestPasswordResetForm(
+      controller: controller,
+      onBackToSignIn: () => controller.navigateTo(EmailFlowScreen.login),
       bottomText: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

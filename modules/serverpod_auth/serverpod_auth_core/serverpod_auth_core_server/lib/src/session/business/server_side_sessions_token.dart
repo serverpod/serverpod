@@ -16,8 +16,8 @@ final _sessionKeyPrefixBase64 = base64Url.encode(_sessionKeyPrefix);
 /// Creates the String representation to map to a `ServerSideSession`.
 @internal
 String buildServerSideSessionToken({
-  required final UuidValue serverSideSessionId,
-  required final Uint8List secret,
+  required UuidValue serverSideSessionId,
+  required Uint8List secret,
 }) {
   return base64Url.encode([
     ..._sessionKeyPrefix,
@@ -35,8 +35,8 @@ String buildServerSideSessionToken({
 /// Otherwise, the error is ignored.
 @internal
 SessionKeyData? tryParseServerSideSessionToken(
-  final Session? session,
-  final String key,
+  Session? session,
+  String key,
 ) {
   try {
     if (!key.startsWith(_sessionKeyPrefixBase64)) {

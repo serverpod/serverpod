@@ -14,9 +14,9 @@ class LegacyEmailEndpoint extends Endpoint {
   /// Authenticates a user with email and password, returning a legacy-format
   /// response with session key and user info.
   Future<LegacyAuthenticationResponse> authenticate(
-    final Session session,
-    final String email,
-    final String password,
+    Session session,
+    String email,
+    String password,
   ) async {
     final UuidValue authUserId;
     try {
@@ -115,9 +115,9 @@ class LegacyEmailEndpoint extends Endpoint {
   /// the limit bounded how often the caller learned the outcome rather than
   /// how many guesses they got to make.
   Future<UuidValue> _authenticateWithLegacyFallback(
-    final Session session, {
-    required final String email,
-    required final String password,
+    Session session, {
+    required String email,
+    required String password,
   }) async {
     final authentication = AuthServices.instance.emailIdp.utils.authentication;
 
@@ -146,45 +146,45 @@ class LegacyEmailEndpoint extends Endpoint {
 
   /// Stub - registration is not supported via legacy endpoints.
   Future<bool> createAccountRequest(
-    final Session session,
-    final String userName,
-    final String email,
-    final String password,
+    Session session,
+    String userName,
+    String email,
+    String password,
   ) async {
     return false;
   }
 
   /// Stub - account creation is not supported via legacy endpoints.
   Future<LegacyUserInfo?> createAccount(
-    final Session session,
-    final String email,
-    final String verificationCode,
+    Session session,
+    String email,
+    String verificationCode,
   ) async {
     return null;
   }
 
   /// Stub - password change is not supported via legacy endpoints.
   Future<bool> changePassword(
-    final Session session,
-    final String oldPassword,
-    final String newPassword,
+    Session session,
+    String oldPassword,
+    String newPassword,
   ) async {
     return false;
   }
 
   /// Stub - password reset initiation is not supported via legacy endpoints.
   Future<bool> initiatePasswordReset(
-    final Session session,
-    final String email,
+    Session session,
+    String email,
   ) async {
     return false;
   }
 
   /// Stub - password reset is not supported via legacy endpoints.
   Future<bool> resetPassword(
-    final Session session,
-    final String verificationCode,
-    final String password,
+    Session session,
+    String verificationCode,
+    String password,
   ) async {
     return false;
   }

@@ -17,8 +17,8 @@ void main() {
   );
 
   withServerpod('Given an existing `AuthUser`,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -123,8 +123,8 @@ void main() {
     'Given a valid `TokenPair` for a refresh token with scopes and extra claims,',
     rollbackDatabase: RollbackDatabase.disabled,
     (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const String scopeName = 'test scope';
       late Session session;
@@ -152,11 +152,11 @@ void main() {
         try {
           await RefreshToken.db.deleteWhere(
             session,
-            where: (final t) => t.authUserId.equals(authUserId),
+            where: (t) => t.authUserId.equals(authUserId),
           );
           await AuthUser.db.deleteWhere(
             session,
-            where: (final t) => t.id.equals(authUserId),
+            where: (t) => t.id.equals(authUserId),
           );
         } catch (_) {
           // Ignore errors during cleanup
@@ -208,7 +208,7 @@ void main() {
         () async {
           final newAuthSuccesses = await List.generate(
             3,
-            (final _) async => jwt.createTokens(
+            (_) async => jwt.createTokens(
               session,
               authUserId: authUserId,
               method: 'test',
@@ -258,7 +258,7 @@ void main() {
           expect(deleted, isTrue);
           expect(revocationMessages, [
             isA<RevokedAuthenticationAuthId>().having(
-              (final m) => m.authId,
+              (m) => m.authId,
               'authId',
               refreshTokenId.toString(),
             ),
@@ -299,8 +299,8 @@ void main() {
   );
 
   withServerpod('Given an auth user with a JWT token,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -381,8 +381,8 @@ void main() {
   });
 
   withServerpod('Given two auth users with a JWT token each,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId1;
@@ -428,7 +428,7 @@ void main() {
   withServerpod(
     'Given two auth users with 100 JWT tokens each,',
     rollbackDatabase: RollbackDatabase.afterAll,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId1;
       late UuidValue authUserId2;
@@ -466,7 +466,7 @@ void main() {
 
           expect(tokens, hasLength(100));
           expect(
-            tokens.map((final t) => t.id),
+            tokens.map((t) => t.id),
             refreshTokenIdsInOrderOfCreation.take(100),
           );
         },
@@ -482,7 +482,7 @@ void main() {
 
           expect(tokens, hasLength(100));
           expect(
-            tokens.map((final t) => t.id),
+            tokens.map((t) => t.id),
             refreshTokenIdsInOrderOfCreation.skip(50).take(100),
           );
         },
@@ -499,7 +499,7 @@ void main() {
 
           expect(tokens, hasLength(2));
           expect(
-            tokens.map((final t) => t.id),
+            tokens.map((t) => t.id),
             [
               refreshTokenIdsInOrderOfCreation[0],
               refreshTokenIdsInOrderOfCreation[2],
@@ -553,8 +553,8 @@ void main() {
   );
 
   withServerpod('Given a user with scopes,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -605,8 +605,8 @@ void main() {
   });
 
   withServerpod('Given a user that is blocked,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -661,8 +661,8 @@ void main() {
   // user keeps full scoped access for as long as they refresh, by calling an
   // endpoint that requires no authentication of its own.
   withServerpod('Given a user that is blocked after having signed in,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -741,8 +741,8 @@ void main() {
   });
 
   withServerpod('Given a JwtConfig with extraClaimsProvider,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -764,7 +764,7 @@ void main() {
               key: SecretKey('test-private-key-for-HS512'),
             ),
             refreshTokenHashPepper: 'test-pepper',
-            extraClaimsProvider: (final session, final context) async {
+            extraClaimsProvider: (session, context) async {
               return {'hookClaim': 'hookValue', 'userRole': 'admin'};
             },
           ),
@@ -794,7 +794,7 @@ void main() {
               key: SecretKey('test-private-key-for-HS512'),
             ),
             refreshTokenHashPepper: 'test-pepper',
-            extraClaimsProvider: (final session, final context) async {
+            extraClaimsProvider: (session, context) async {
               // Provider can decide how to merge extraClaims
               return {
                 ...?context.extraClaims,
@@ -831,7 +831,7 @@ void main() {
               key: SecretKey('test-private-key-for-HS512'),
             ),
             refreshTokenHashPepper: 'test-pepper',
-            extraClaimsProvider: (final session, final context) async {
+            extraClaimsProvider: (session, context) async {
               return null;
             },
           ),
@@ -862,7 +862,7 @@ void main() {
               key: SecretKey('test-private-key-for-HS512'),
             ),
             refreshTokenHashPepper: 'test-pepper',
-            extraClaimsProvider: (final session, final context) async {
+            extraClaimsProvider: (session, context) async {
               // Provider can fetch additional data from database using session
               final authUser = await authUsers.get(
                 session,
@@ -900,13 +900,13 @@ void main() {
               key: SecretKey('test-private-key-for-HS512'),
             ),
             refreshTokenHashPepper: 'test-pepper',
-            extraClaimsProvider: (final session, final context) async {
+            extraClaimsProvider: (session, context) async {
               // Provider can use method and scopes to customize claims
               return {
                 'authMethod': context.method,
                 'scopeCount': context.scopes.length,
                 'hasAdminScope': context.scopes.any(
-                  (final s) => s.name == 'admin',
+                  (s) => s.name == 'admin',
                 ),
               };
             },
@@ -932,7 +932,7 @@ void main() {
 
   withServerpod(
     'Given a JwtConfig with onRefreshTokenCreated callback',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
 
@@ -952,7 +952,7 @@ void main() {
           UuidValue? capturedRefreshTokenId;
           Transaction? capturedTransaction;
 
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             final jwtWithCallback = Jwt(
               config: JwtConfig(
                 algorithm: HmacSha512JwtAlgorithmConfiguration(
@@ -961,10 +961,10 @@ void main() {
                 refreshTokenHashPepper: 'test-pepper',
                 onRefreshTokenCreated:
                     (
-                      final session, {
-                      required final authUserId,
-                      required final refreshTokenId,
-                      required final transaction,
+                      session, {
+                      required authUserId,
+                      required refreshTokenId,
+                      required transaction,
                     }) async {
                       capturedSession = session;
                       capturedAuthUserId = authUserId;
@@ -1001,8 +1001,8 @@ void main() {
   );
 
   withServerpod('Given an auth user with an expired refresh token,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -1064,7 +1064,7 @@ void main() {
 
         expect(revocationMessages, [
           isA<RevokedAuthenticationAuthId>().having(
-            (final m) => m.authId,
+            (m) => m.authId,
             'authId',
             tokenId.toString(),
           ),
@@ -1076,7 +1076,7 @@ void main() {
   withServerpod(
     'Given an auth user with a valid refresh token,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late AuthSuccess authSuccess;
@@ -1104,11 +1104,11 @@ void main() {
         try {
           await RefreshToken.db.deleteWhere(
             session,
-            where: (final t) => t.authUserId.equals(authUserId),
+            where: (t) => t.authUserId.equals(authUserId),
           );
           await AuthUser.db.deleteWhere(
             session,
-            where: (final t) => t.id.equals(authUserId),
+            where: (t) => t.id.equals(authUserId),
           );
         } catch (_) {
           // Ignore errors during cleanup
@@ -1147,7 +1147,7 @@ void main() {
 
           expect(revocationMessages, [
             isA<RevokedAuthenticationAuthId>().having(
-              (final m) => m.authId,
+              (m) => m.authId,
               'authId',
               refreshTokenId.toString(),
             ),
@@ -1158,7 +1158,7 @@ void main() {
   );
 }
 
-UuidValue _extractRefreshTokenId(final String accessToken) {
+UuidValue _extractRefreshTokenId(String accessToken) {
   final jwt = dart_jsonwebtoken.JWT.decode(accessToken);
   const claimName = 'dev.serverpod.refreshTokenId';
   final refreshTokenIdClaim = (jwt.payload as Map)[claimName] as String;

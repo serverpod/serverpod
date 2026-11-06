@@ -15,7 +15,7 @@ class ServerpodCliCheck {
   );
 
   /// [environment] stands in for the process environment in tests.
-  static DoctorCheckResult probe({final Map<String, String>? environment}) {
+  static DoctorCheckResult probe({Map<String, String>? environment}) {
     final installation = CliInstallation.resolve(environment: environment);
     final managedExists = File(installation.managedExecutable).existsSync();
     return evaluate(
@@ -33,7 +33,7 @@ class ServerpodCliCheck {
   /// Running the executable instead would bump its run counter and, on a
   /// fresh profile, open the welcome page, so the version is read from disk.
   /// The bin entry is a symbolic link on Unix and a batch wrapper on Windows.
-  static String? installedVersion(final String managedExecutable) {
+  static String? installedVersion(String managedExecutable) {
     final String target;
     try {
       target = Platform.isWindows
@@ -49,9 +49,9 @@ class ServerpodCliCheck {
   /// [managedExecutableExists] tells a managed install apart from none even
   /// when the CLI running this check is not the managed one.
   static DoctorCheckResult evaluate(
-    final CliInstallation installation, {
-    final String? version,
-    final bool managedExecutableExists = false,
+    CliInstallation installation, {
+    String? version,
+    bool managedExecutableExists = false,
   }) {
     const title = 'Serverpod CLI';
     final onPath = installation.executableOnPath;

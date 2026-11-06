@@ -1,0 +1,4 @@
+class: ExceptionDetail
+fields:
+  field: String
+  message: String

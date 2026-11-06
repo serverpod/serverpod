@@ -16,8 +16,8 @@ class FacebookIdpAdmin {
   /// This method verifies the token and fetches the user's profile information
   /// from Facebook's Graph API.
   Future<FacebookAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String accessToken,
+    Session session, {
+    required String accessToken,
   }) async {
     return utils.fetchAccountDetails(
       session,
@@ -29,10 +29,10 @@ class FacebookIdpAdmin {
   ///
   /// Returns the newly created Facebook account.
   Future<FacebookAccount> linkFacebookAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final FacebookAccountDetails accountDetails,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required FacebookAccountDetails accountDetails,
+    Transaction? transaction,
   }) async {
     return utils.linkFacebookAuthentication(
       session,
@@ -44,13 +44,13 @@ class FacebookIdpAdmin {
 
   /// Return the `AuthUser` id for the Facebook user id, if any.
   static Future<UuidValue?> findUserByFacebookUserId(
-    final Session session, {
-    required final String userIdentifier,
-    final Transaction? transaction,
+    Session session, {
+    required String userIdentifier,
+    Transaction? transaction,
   }) async {
     final account = await FacebookAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(userIdentifier),
+      where: (t) => t.userIdentifier.equals(userIdentifier),
       transaction: transaction,
     );
 

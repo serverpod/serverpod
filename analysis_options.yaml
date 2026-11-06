@@ -5,6 +5,7 @@ analyzer:
 linter:
   rules:
     prefer_initializing_formals: false
+    avoid_final_parameters: true
 
 formatter:
   trailing_commas: preserve

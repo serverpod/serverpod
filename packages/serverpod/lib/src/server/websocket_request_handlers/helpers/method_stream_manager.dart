@@ -375,6 +375,10 @@ class MethodStreamManager {
     late StreamSubscription subscription;
     subscription = outputController.stream.listen(
       (value) async {
+        // The subscription outlives the close callback while the close
+        // cleanup is awaited, so drop anything that arrives after it.
+        if (!_outputStreamContexts.containsKey(streamKey)) return;
+
         _onOutputStreamValue?.call(
           methodStreamId,
           value,

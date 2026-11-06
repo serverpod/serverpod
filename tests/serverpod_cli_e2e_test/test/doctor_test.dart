@@ -9,7 +9,7 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 
 /// The parent environment with PATH replaced by [path], so the CLI finds no
 /// tools at all. The key is matched case-insensitively for Windows.
-Map<String, String> _environmentWithPath(final String path) => {
+Map<String, String> _environmentWithPath(String path) => {
   for (final entry in Platform.environment.entries)
     if (entry.key.toUpperCase() != 'PATH') entry.key: entry.value,
   'PATH': path,
@@ -71,30 +71,29 @@ class _ManagedHome {
   }
 
   /// Runs `doctor --fix --yes` as a zsh user whose PATH holds [path] only.
-  Future<ProcessResult> fix({required final List<String> path}) async =>
-      Process.run(
-        await compiledServerpodCliExe,
-        ['doctor', '--fix', '--yes', '--no-analytics'],
-        workingDirectory: _home.path,
-        environment: {
-          for (final entry in Platform.environment.entries)
-            if (!const {
-              'HOME',
-              'USERPROFILE',
-              'PATH',
-              'SHELL',
-              'DART_DATA_HOME',
-            }.contains(entry.key.toUpperCase()))
-              entry.key: entry.value,
-          'HOME': _home.path,
-          'USERPROFILE': _home.path,
-          'PATH': path.join(':'),
-          'SHELL': '/bin/zsh',
-          'DART_DATA_HOME': dartDataHome,
-          'SERVERPOD_HOME': serverpodHome,
-        },
-        includeParentEnvironment: false,
-      );
+  Future<ProcessResult> fix({required List<String> path}) async => Process.run(
+    await compiledServerpodCliExe,
+    ['doctor', '--fix', '--yes', '--no-analytics'],
+    workingDirectory: _home.path,
+    environment: {
+      for (final entry in Platform.environment.entries)
+        if (!const {
+          'HOME',
+          'USERPROFILE',
+          'PATH',
+          'SHELL',
+          'DART_DATA_HOME',
+        }.contains(entry.key.toUpperCase()))
+          entry.key: entry.value,
+      'HOME': _home.path,
+      'USERPROFILE': _home.path,
+      'PATH': path.join(':'),
+      'SHELL': '/bin/zsh',
+      'DART_DATA_HOME': dartDataHome,
+      'SERVERPOD_HOME': serverpodHome,
+    },
+    includeParentEnvironment: false,
+  );
 
   void delete() => _home.deleteSync(recursive: true);
 }

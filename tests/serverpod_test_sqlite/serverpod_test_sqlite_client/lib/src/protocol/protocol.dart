@@ -731,6 +731,152 @@ class Protocol extends _isd.DatabaseSerializationManager
       _iqfgygbv.Protocol.new,
       _issc.Protocol.new,
     ],
+    classNames: const [
+      'CourseUuid',
+      'EnrollmentInt',
+      'StudentUuid',
+      'ArenaUuid',
+      'PlayerUuid',
+      'TeamInt',
+      'CommentInt',
+      'CustomerInt',
+      'OrderUuid',
+      'AddressUuid',
+      'CitizenInt',
+      'CompanyUuid',
+      'TownInt',
+      'ChangedIdTypeSelf',
+      'BigIntDefault',
+      'BigIntDefaultMix',
+      'BigIntDefaultModel',
+      'BigIntDefaultPersist',
+      'BoolDefault',
+      'BoolDefaultMix',
+      'BoolDefaultModel',
+      'BoolDefaultPersist',
+      'DateTimeDefault',
+      'DateTimeDefaultMix',
+      'DateTimeDefaultModel',
+      'DateTimeDefaultPersist',
+      'DoubleDefault',
+      'DoubleDefaultMix',
+      'DoubleDefaultModel',
+      'DoubleDefaultPersist',
+      'DurationDefault',
+      'DurationDefaultMix',
+      'DurationDefaultModel',
+      'DurationDefaultPersist',
+      'EnumDefault',
+      'EnumDefaultMix',
+      'EnumDefaultModel',
+      'EnumDefaultPersist',
+      'ByIndexEnum',
+      'ByNameEnum',
+      'DefaultValueEnum',
+      'DefaultException',
+      'IntDefault',
+      'IntDefaultMix',
+      'IntDefaultModel',
+      'IntDefaultPersist',
+      'StringDefault',
+      'StringDefaultMix',
+      'StringDefaultModel',
+      'StringDefaultPersist',
+      'UriDefault',
+      'UriDefaultMix',
+      'UriDefaultModel',
+      'UriDefaultPersist',
+      'UuidDefault',
+      'UuidDefaultMix',
+      'UuidDefaultModel',
+      'UuidDefaultPersist',
+      'DeferrableRelationInitiallyDeferred',
+      'DeferrableRelationInitiallyImmediate',
+      'DeferrableRelationParent',
+      'EmptyModel',
+      'EmptyModelRelationItem',
+      'EmptyModelWithTable',
+      'RelationEmptyModel',
+      'ChildClassExplicitColumn',
+      'NonTableParentClass',
+      'ModifiedColumnName',
+      'Department',
+      'Employee',
+      'Contractor',
+      'Service',
+      'TableWithExplicitColumnName',
+      'SealedGrandChild',
+      'SealedChild',
+      'SealedOtherChild',
+      'CityWithLongTableName',
+      'OrganizationWithLongTableName',
+      'PersonWithLongTableName',
+      'MaxFieldName',
+      'LongImplicitIdField',
+      'LongImplicitIdFieldCollection',
+      'RelationToMultipleMaxFieldName',
+      'UserNote',
+      'UserNoteCollection',
+      'UserNoteCollectionWithALongName',
+      'UserNoteWithALongName',
+      'MultipleMaxFieldName',
+      'City',
+      'Organization',
+      'Person',
+      'Course',
+      'Enrollment',
+      'Student',
+      'Arena',
+      'Player',
+      'Team',
+      'Comment',
+      'Customer',
+      'Book',
+      'Chapter',
+      'Order',
+      'Address',
+      'Citizen',
+      'Company',
+      'Town',
+      'Blocking',
+      'Member',
+      'Cat',
+      'Post',
+      'NullsDistinctData',
+      'ObjectFieldPersist',
+      'ObjectFieldScopes',
+      'ObjectWithBit',
+      'ObjectWithByteData',
+      'ObjectWithDuration',
+      'ObjectWithDynamic',
+      'ObjectWithEnum',
+      'ObjectWithEnumEnhanced',
+      'ObjectWithHalfVector',
+      'ObjectWithIndex',
+      'ObjectWithJsonb',
+      'ObjectWithJsonbClassLevel',
+      'ObjectWithMaps',
+      'ObjectWithObject',
+      'ObjectWithParent',
+      'ObjectWithSealedClass',
+      'ObjectWithSelfParent',
+      'ObjectWithSparseVector',
+      'ObjectWithUuid',
+      'ObjectWithVector',
+      'RelatedUniqueData',
+      'ModelWithRequiredField',
+      'SimpleData',
+      'SimpleDateTime',
+      'TestEnum',
+      'TestEnumDefaultSerialization',
+      'TestEnumEnhanced',
+      'TestEnumEnhancedByName',
+      'TestEnumStringified',
+      'Types',
+      'UniqueData',
+      'UniqueDataWithNonPersist',
+      'UpsertTestModel',
+    ],
   );
 
   static List<_isd.TableDefinition> get targetTableDefinitions => [
@@ -2204,11 +2350,8 @@ class Protocol extends _isd.DatabaseSerializationManager
         : [],
   ];
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -2216,8 +2359,8 @@ class Protocol extends _isd.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -3939,9 +4082,10 @@ class Protocol extends _isd.DatabaseSerializationManager
                 )
                 as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -4883,20 +5027,28 @@ class Protocol extends _isd.DatabaseSerializationManager
       return deserialize<_iwbeyn4p.UpsertTestModel>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
-      data['className'] = dataClassName.substring(20);
-      return _iacc.Protocol().deserializeByClassName(data);
+      return _iacc.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(20),
+      });
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
-      data['className'] = dataClassName.substring(19);
-      return _iaic.Protocol().deserializeByClassName(data);
+      return _iaic.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(19),
+      });
     }
     if (dataClassName.startsWith('serverpod_test_shared_module.')) {
-      data['className'] = dataClassName.substring(29);
-      return _iyerxm0e.Protocol().deserializeByClassName(data);
+      return _iyerxm0e.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(29),
+      });
     }
     if (dataClassName.startsWith('serverpod_test_sqlite_shared.')) {
-      data['className'] = dataClassName.substring(29);
-      return _iqfgygbv.Protocol().deserializeByClassName(data);
+      return _iqfgygbv.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(29),
+      });
     }
     return super.deserializeByClassName(data);
   }

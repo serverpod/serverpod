@@ -16,9 +16,9 @@ final _managed = p.join(
 final _binstub = p.join(p.separator, 'pub-cache', 'bin', 'serverpod');
 
 CliInstallation _installation({
-  required final CliInstallationKind kind,
-  required final String? onPath,
-  required final bool pathResolvesToManaged,
+  required CliInstallationKind kind,
+  required String? onPath,
+  required bool pathResolvesToManaged,
 }) => CliInstallation(
   kind: kind,
   runningExecutable: _managed,
@@ -29,7 +29,7 @@ CliInstallation _installation({
 
 /// Lays out what `dart install serverpod_cli@[version]` leaves behind in a
 /// temp directory, and returns the bin entry it writes.
-String _createManagedInstall(final String version) {
+String _createManagedInstall(String version) {
   final root = Directory.systemTemp.createTempSync('serverpod_install');
   addTearDown(() => root.deleteSync(recursive: true));
 

@@ -23,8 +23,8 @@ class JwtTokenManager extends TokenManager {
 
   /// Creates a new [JwtTokenManager] instance.
   JwtTokenManager({
-    required final JwtConfig config,
-    final AuthUsers authUsers = const AuthUsers(),
+    required JwtConfig config,
+    AuthUsers authUsers = const AuthUsers(),
   }) : jwt = Jwt(
          config: config,
          authUsers: authUsers,
@@ -32,11 +32,11 @@ class JwtTokenManager extends TokenManager {
 
   @override
   Future<AuthSuccess> createToken(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
-    final Set<Scope>? scopes,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
+    Set<Scope>? scopes,
+    Transaction? transaction,
   }) {
     return jwt.createTokens(
       session,
@@ -57,16 +57,15 @@ class JwtTokenManager extends TokenManager {
   }
 
   @override
-  String? refreshCookiePath(final Session session) =>
-      jwtRefreshCookiePath(session);
+  String? refreshCookiePath(Session session) => jwtRefreshCookiePath(session);
 
   @override
   Future<List<TokenInfo>> listTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final String? method,
-    final String? tokenIssuer,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue? authUserId,
+    String? method,
+    String? tokenIssuer,
+    Transaction? transaction,
   }) async {
     if (_isNotTargetedTokenIssuer(tokenIssuer)) {
       return [];
@@ -79,7 +78,7 @@ class JwtTokenManager extends TokenManager {
           transaction: transaction,
         ))
         .map(
-          (final element) => TokenInfo(
+          (element) => TokenInfo(
             userId: element.authUserId.toString(),
             tokenId: element.id.toString(),
             tokenIssuer: tokenIssuerName,
@@ -92,11 +91,11 @@ class JwtTokenManager extends TokenManager {
 
   @override
   Future<void> revokeAllTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
-    final String? tokenIssuer,
+    Session session, {
+    required UuidValue? authUserId,
+    Transaction? transaction,
+    String? method,
+    String? tokenIssuer,
   }) async {
     if (_isNotTargetedTokenIssuer(tokenIssuer)) {
       return;
@@ -119,10 +118,10 @@ class JwtTokenManager extends TokenManager {
 
   @override
   Future<void> revokeToken(
-    final Session session, {
-    required final String tokenId,
-    final Transaction? transaction,
-    final String? tokenIssuer,
+    Session session, {
+    required String tokenId,
+    Transaction? transaction,
+    String? tokenIssuer,
   }) async {
     if (_isNotTargetedTokenIssuer(tokenIssuer)) {
       return;
@@ -161,13 +160,13 @@ class JwtTokenManager extends TokenManager {
 
   @override
   Future<AuthenticationInfo?> validateToken(
-    final Session session,
-    final String token,
+    Session session,
+    String token,
   ) async {
     return jwt.authenticationHandler(session, token);
   }
 
-  bool _isNotTargetedTokenIssuer(final String? tokenIssuer) {
+  bool _isNotTargetedTokenIssuer(String? tokenIssuer) {
     return tokenIssuer != null && tokenIssuer != tokenIssuerName;
   }
 }

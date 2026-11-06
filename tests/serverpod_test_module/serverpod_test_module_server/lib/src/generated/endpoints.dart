@@ -11,6 +11,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_module_server/src/generated/future_calls.dart'
+    as _ipo399sr;
 import 'package:serverpod_test_module_server/src/generated/module_class.dart'
     as _i6f0lekx;
 import 'package:serverpod_test_module_server/src/generated/module_streaming_class.dart'
@@ -21,6 +23,7 @@ import '../endpoints/record_streaming.dart' as _i157ib2o;
 import '../endpoints/streaming.dart' as _i8rqmf36;
 import '../endpoints/unauthenticated.dart' as _ius7wovq;
 import '../module_feature/endpoints/my_feature_endpoint.dart' as _iv1xl3uy;
+export 'future_calls.dart' show ServerpodTestModuleFutureCallsGetter;
 
 class Endpoints extends _is.EndpointDispatch {
   @override
@@ -356,5 +359,10 @@ class Endpoints extends _is.EndpointDispatch {
         ),
       },
     );
+  }
+
+  @override
+  _is.FutureCallDispatch? get futureCalls {
+    return _ipo399sr.FutureCalls();
   }
 }

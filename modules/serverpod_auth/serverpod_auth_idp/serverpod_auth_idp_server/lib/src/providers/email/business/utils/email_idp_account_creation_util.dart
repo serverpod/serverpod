@@ -6,6 +6,7 @@ import '../../../../../core.dart';
 import '../../util/email_string_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
+import 'secret_challenge_exception_mapping.dart';
 
 /// {@template email_idp_account_creation_util}
 /// This class contains utility functions for the email identity provider
@@ -26,11 +27,11 @@ class EmailIdpAccountCreationUtil {
 
   /// Creates a new [EmailIdpAccountCreationUtil] instance.
   EmailIdpAccountCreationUtil({
-    required final EmailIdpAccountCreationUtilsConfig config,
-    required final Argon2HashUtil passwordHashUtils,
-    required final AuthUsers authUsers,
-    final Argon2HashUtil? verificationCodeHash,
-    final Argon2HashUtil? completionTokenHash,
+    required EmailIdpAccountCreationUtilsConfig config,
+    required Argon2HashUtil passwordHashUtils,
+    required AuthUsers authUsers,
+    Argon2HashUtil? verificationCodeHash,
+    Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _authUsers = authUsers,
        _hashUtils = passwordHashUtils {
@@ -64,9 +65,9 @@ class EmailIdpAccountCreationUtil {
   /// account once it has been completed.
   /// {@endtemplate}
   Future<UuidValue> startRegistration(
-    final Session session, {
+    Session session, {
     required String email,
-    required final Transaction transaction,
+    required Transaction transaction,
   }) async {
     email = email.normalizedEmail;
 
@@ -76,7 +77,7 @@ class EmailIdpAccountCreationUtil {
 
     final existingAccountCount = await EmailAccount.db.count(
       session,
-      where: (final t) => t.email.equals(email),
+      where: (t) => t.email.equals(email),
       transaction: transaction,
     );
     if (existingAccountCount > 0) {
@@ -87,7 +88,7 @@ class EmailIdpAccountCreationUtil {
 
     final pendingAccountRequest = await EmailAccountRequest.db.findFirstRow(
       session,
-      where: (final t) => t.email.equals(email),
+      where: (t) => t.email.equals(email),
       transaction: transaction,
     );
     if (pendingAccountRequest != null) {
@@ -148,10 +149,10 @@ class EmailIdpAccountCreationUtil {
   /// can be used to complete the account creation process via
   /// [completeAccountCreation].
   Future<String> verifyRegistrationCode(
-    final Session session, {
-    required final UuidValue accountRequestId,
-    required final String verificationCode,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue accountRequestId,
+    required String verificationCode,
+    required Transaction transaction,
   }) async {
     return await withReplacedSecretChallengeException(
       () => _challengeUtil.verifyChallenge(
@@ -190,10 +191,10 @@ class EmailIdpAccountCreationUtil {
   /// logged to the database outside of the [transaction] and can not be rolled
   /// back.
   Future<EmailIdpCompleteAccountCreationResult> completeAccountCreation(
-    final Session session, {
-    required final String completeAccountCreationToken,
-    required final String password,
-    required final Transaction transaction,
+    Session session, {
+    required String completeAccountCreationToken,
+    required String password,
+    required Transaction transaction,
   }) async {
     if (!_config.passwordValidationFunction(password)) {
       throw EmailPasswordPolicyViolationException();
@@ -263,11 +264,11 @@ class EmailIdpAccountCreationUtil {
   /// Returns the email account ID for the newly created authentication method.
   /// {@endtemplate}
   Future<UuidValue> createEmailAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String email,
-    required final String? password,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String email,
+    required String? password,
+    required Transaction transaction,
   }) async {
     final passwordHash = switch (password) {
       final String password => await _hashUtils.createHashFromString(
@@ -293,13 +294,13 @@ class EmailIdpAccountCreationUtil {
   /// Deletes an account request by its ID.
   /// {@endtemplate}
   Future<void> deleteEmailAccountRequestById(
-    final Session session,
-    final UuidValue accountRequestId, {
-    required final Transaction transaction,
+    Session session,
+    UuidValue accountRequestId, {
+    required Transaction transaction,
   }) async {
     await EmailAccountRequest.db.deleteWhere(
       session,
-      where: (final t) => t.id.equals(accountRequestId),
+      where: (t) => t.id.equals(accountRequestId),
       transaction: transaction,
     );
   }
@@ -308,8 +309,8 @@ class EmailIdpAccountCreationUtil {
   /// Deletes expired account creation requests.
   /// {@endtemplate}
   Future<void> deleteExpiredAccountRequests(
-    final Session session, {
-    required final Transaction transaction,
+    Session session, {
+    required Transaction transaction,
   }) async {
     final lastValidDateTime = clock.now().subtract(
       _config.registrationVerificationCodeLifetime,
@@ -317,7 +318,7 @@ class EmailIdpAccountCreationUtil {
 
     await EmailAccountRequest.db.deleteWhere(
       session,
-      where: (final t) => t.createdAt < lastValidDateTime,
+      where: (t) => t.createdAt < lastValidDateTime,
       transaction: transaction,
     );
   }
@@ -329,9 +330,9 @@ class EmailIdpAccountCreationUtil {
   /// In case the registration is expired this returns `null`.
   /// {@endtemplate}
   Future<EmailAccountRequest?> findActiveEmailAccountRequest(
-    final Session session, {
-    required final UuidValue accountRequestId,
-    required final Transaction? transaction,
+    Session session, {
+    required UuidValue accountRequestId,
+    required Transaction? transaction,
   }) async {
     final request = await EmailAccountRequest.db.findById(
       session,
@@ -354,13 +355,13 @@ class EmailIdpAccountCreationUtil {
           domain: 'email',
           source: 'account_creation_verification',
           maxAttempts: _config.registrationVerificationCodeAllowedAttempts,
-          onRateLimitExceeded: (final session, final key) =>
+          onRateLimitExceeded: (session, key) =>
               _onRateLimitExceeded(session, UuidValue.withValidation(key)),
         ),
       ),
       getRequest: _getAccountRequest,
-      isAlreadyUsed: (final request) => request.isRequestVerified,
-      getChallenge: (final request) => request.getChallenge,
+      isAlreadyUsed: (request) => request.isRequestVerified,
+      getChallenge: (request) => request.getChallenge,
       isExpired: _isRequestExpired,
       onExpired: EmailAccountRequest.db.deleteRow,
       linkCompletionToken: _linkCreateAccountChallenge,
@@ -370,31 +371,31 @@ class EmailIdpAccountCreationUtil {
   SecretChallengeCompletionConfig<EmailAccountRequest> _getCompletionConfig() {
     return SecretChallengeCompletionConfig(
       getRequest: _getAccountRequest,
-      getCompletionChallenge: (final request) => request.createAccountChallenge,
+      getCompletionChallenge: (request) => request.createAccountChallenge,
       isExpired: _isRequestExpired,
       onExpired: EmailAccountRequest.db.deleteRow,
     );
   }
 
   Future<void> _onRateLimitExceeded(
-    final Session session,
-    final UuidValue requestId,
+    Session session,
+    UuidValue requestId,
   ) async {
     await EmailAccountRequest.db.deleteWhere(
       session,
       // Only delete requests that have not been verified yet.
       // This ensures we don't delete requests if verifyAccountRequestCode is
       // accidentally called again.
-      where: (final t) =>
+      where: (t) =>
           t.id.equals(requestId) & t.createAccountChallengeId.equals(null),
       // passing no transaction, so this will not be rolled back
     );
   }
 
   Future<EmailAccountRequest?> _getAccountRequest(
-    final Session session,
-    final UuidValue accountRequestId, {
-    required final Transaction? transaction,
+    Session session,
+    UuidValue accountRequestId, {
+    required Transaction? transaction,
   }) async {
     return await EmailAccountRequest.db.findById(
       session,
@@ -407,7 +408,7 @@ class EmailIdpAccountCreationUtil {
     );
   }
 
-  bool _isRequestExpired(final EmailAccountRequest request) {
+  bool _isRequestExpired(EmailAccountRequest request) {
     final requestExpiresAt = request.createdAt.add(
       _config.registrationVerificationCodeLifetime,
     );
@@ -419,17 +420,17 @@ class EmailIdpAccountCreationUtil {
   /// Will throw [EmailAccountRequestVerificationCodeAlreadyUsedException]
   /// if the challenge has already been linked.
   Future<void> _linkCreateAccountChallenge(
-    final Session session,
-    final EmailAccountRequest request,
-    final SecretChallenge createAccountChallenge, {
-    required final Transaction? transaction,
+    Session session,
+    EmailAccountRequest request,
+    SecretChallenge createAccountChallenge, {
+    required Transaction? transaction,
   }) async {
     final updated = await EmailAccountRequest.db.updateWhere(
       session,
-      columnValues: (final t) => [
+      columnValues: (t) => [
         t.createAccountChallengeId(createAccountChallenge.id!),
       ],
-      where: (final t) =>
+      where: (t) =>
           t.id.equals(request.id!) & t.createAccountChallengeId.equals(null),
       transaction: transaction,
     );
@@ -441,29 +442,8 @@ class EmailIdpAccountCreationUtil {
 
   /// Replaces challenge-related exceptions by email-specific exceptions.
   Future<T> withReplacedSecretChallengeException<T>(
-    final Future<T> Function() fn,
-  ) async {
-    try {
-      return await fn();
-    } on SecretChallengeException catch (e) {
-      throw switch (e) {
-        ChallengeRequestNotFoundException() =>
-          EmailAccountRequestNotFoundException(),
-        ChallengeAlreadyUsedException() =>
-          EmailAccountRequestVerificationCodeAlreadyUsedException(),
-        ChallengeInvalidVerificationCodeException() =>
-          EmailAccountRequestInvalidVerificationCodeException(),
-        ChallengeExpiredException() =>
-          EmailAccountRequestVerificationExpiredException(),
-        ChallengeNotVerifiedException() =>
-          EmailAccountRequestNotVerifiedException(),
-        ChallengeInvalidCompletionTokenException() =>
-          EmailAccountRequestInvalidVerificationCodeException(),
-        ChallengeRateLimitExceededException() =>
-          EmailAccountRequestVerificationTooManyAttemptsException(),
-      };
-    }
-  }
+    Future<T> Function() fn,
+  ) => withEmailAccountRequestExceptions(fn);
 }
 
 /// Configuration for the [EmailIdpAccountCreationUtil] class.
@@ -500,7 +480,7 @@ class EmailIdpAccountCreationUtilsConfig {
   /// Creates a new [EmailIdpAccountCreationUtilsConfig] instance from an
   /// [EmailIdpConfig] instance.
   factory EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(
-    final EmailIdpConfig config,
+    EmailIdpConfig config,
   ) {
     return EmailIdpAccountCreationUtilsConfig(
       passwordValidationFunction: config.passwordValidationFunction,

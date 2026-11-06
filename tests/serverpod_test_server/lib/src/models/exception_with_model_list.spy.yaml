@@ -1,0 +1,4 @@
+exception: ExceptionWithModelList
+fields:
+  message: String
+  details: List<ExceptionDetail>

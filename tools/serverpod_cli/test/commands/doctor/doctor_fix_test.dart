@@ -11,7 +11,7 @@ final _home = p.join(p.separator, 'home', 'dev');
 final _managedBin = p.join(_home, '.local', 'state', 'Dart', 'install', 'bin');
 final _managedExecutable = p.join(_managedBin, 'serverpod');
 
-CliInstallation _installation({required final bool onPath}) => CliInstallation(
+CliInstallation _installation({required bool onPath}) => CliInstallation(
   kind: CliInstallationKind.managed,
   runningExecutable: _managedExecutable,
   managedExecutable: _managedExecutable,
@@ -27,7 +27,7 @@ Directory _createTempDirectory() {
 
 /// A `~/.serverpod` directory, holding a Flutter SDK the installer put there
 /// when [withFlutter].
-String _createServerpodDirectory({required final bool withFlutter}) {
+String _createServerpodDirectory({required bool withFlutter}) {
   final directory = _createTempDirectory().path;
   if (withFlutter) {
     File(flutterExecutableIn(managedFlutterRootIn(directory)))

@@ -1,7 +1,8 @@
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
 import '../common/exceptions.dart';
-import 'email_auth_controller.dart';
+import 'email_flow_controller.dart';
+import 'email_otp_auth_controller.dart';
 
 /// Converts server exceptions to user-friendly error messages.
 ///
@@ -11,6 +12,13 @@ import 'email_auth_controller.dart';
 Exception? convertToUserFacingException(Object error) {
   if (error is UserFacingException) return error;
   if (error is InvalidEmailException) return error;
+
+  if (error is OtpLoginRejectedException) {
+    return UserFacingException(
+      'This code can no longer be used to sign in. Please request a new code.',
+      originalException: error,
+    );
+  }
 
   if (error is EmailAccountLoginException) {
     return switch (error.reason) {
@@ -34,7 +42,7 @@ Exception? convertToUserFacingException(Object error) {
   if (error is EmailAccountRequestException) {
     return switch (error.reason) {
       EmailAccountRequestExceptionReason.tooManyAttempts => UserFacingException(
-        'Too many failed registration attempts. Please try again later.',
+        'Too many failed attempts. Please try again later.',
         originalException: error,
       ),
       EmailAccountRequestExceptionReason.expired => UserFacingException(
@@ -51,7 +59,7 @@ Exception? convertToUserFacingException(Object error) {
         originalException: error,
       ),
       EmailAccountRequestExceptionReason.unknown => UserFacingException(
-        'An error occurred during registration. Please try again later. '
+        'An error occurred. Please try again later. '
         'If the problem persists, please contact support.',
         originalException: error,
       ),

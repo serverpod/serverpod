@@ -92,7 +92,9 @@ import 'empty_model/empty_model.dart' as _i9l9xrkt;
 import 'empty_model/empty_model_relation_item.dart' as _ikufh0vd;
 import 'empty_model/empty_model_with_table.dart' as _iw4y4x6s;
 import 'empty_model/relation_empy_model.dart' as _iy7bezig;
+import 'exception_detail.dart' as _i1vx2qjs;
 import 'exception_with_data.dart' as _is77lrdb;
+import 'exception_with_model_list.dart' as _ihvnwbvd;
 import 'explicit_column_name/inheritance/child_class_explicit_column.dart'
     as _ikh95zxc;
 import 'explicit_column_name/inheritance/non_table_parent_class.dart'
@@ -139,6 +141,8 @@ import 'inheritance/polymorphism/grandchild.dart' as _ipndfib1;
 import 'inheritance/polymorphism/other.dart' as _icfkf6u0;
 import 'inheritance/polymorphism/parent.dart' as _i5oq3fsk;
 import 'inheritance/polymorphism/unrelated.dart' as _ih2dgm3r;
+import 'inheritance/sealed_list_item.dart' as _i620t4p6;
+import 'inheritance/sealed_list_parent.dart' as _iot07lpq;
 import 'inheritance/sealed_parent.dart' as _ij7m744x;
 import 'inheritance/sealed_parent_nullable_field.dart' as _iwv9x21d;
 import 'long_identifiers/deep_includes/city_with_long_table_name.dart'
@@ -338,7 +342,9 @@ export 'empty_model/empty_model.dart';
 export 'empty_model/empty_model_relation_item.dart';
 export 'empty_model/empty_model_with_table.dart';
 export 'empty_model/relation_empy_model.dart';
+export 'exception_detail.dart';
 export 'exception_with_data.dart';
+export 'exception_with_model_list.dart';
 export 'explicit_column_name/inheritance/child_class_explicit_column.dart';
 export 'explicit_column_name/inheritance/non_table_parent_class.dart';
 export 'explicit_column_name/modified_column_name.dart';
@@ -380,6 +386,8 @@ export 'inheritance/polymorphism/container_module.dart';
 export 'inheritance/polymorphism/other.dart';
 export 'inheritance/polymorphism/parent.dart';
 export 'inheritance/polymorphism/unrelated.dart';
+export 'inheritance/sealed_list_item.dart';
+export 'inheritance/sealed_list_parent.dart';
 export 'inheritance/sealed_no_child.dart';
 export 'inheritance/sealed_parent.dart';
 export 'inheritance/sealed_parent_nullable_field.dart';
@@ -577,7 +585,9 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<_ikufh0vd.EmptyModelRelationItem>,
       _isc.getType<_iw4y4x6s.EmptyModelWithTable>,
       _isc.getType<_iy7bezig.RelationEmptyModel>,
+      _isc.getType<_i1vx2qjs.ExceptionDetail>,
       _isc.getType<_is77lrdb.ExceptionWithData>,
+      _isc.getType<_ihvnwbvd.ExceptionWithModelList>,
       _isc.getType<_ikh95zxc.ChildClassExplicitColumn>,
       _isc.getType<_i1y2idkw.NonTableParentClass>,
       _isc.getType<_i7hqkfn7.ModifiedColumnName>,
@@ -623,6 +633,8 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<_ij7m744x.SealedGrandChild>,
       _isc.getType<_ij7m744x.SealedChild>,
       _isc.getType<_iwv9x21d.SealedChildOnlyRequired>,
+      _isc.getType<_iot07lpq.SealedListChild>,
+      _isc.getType<_i620t4p6.SealedListItem>,
       _isc.getType<_ij7m744x.SealedOtherChild>,
       _isc.getType<_iycanyn2.CityWithLongTableName>,
       _isc.getType<_ifbzwpkm.OrganizationWithLongTableName>,
@@ -803,7 +815,9 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<_ikufh0vd.EmptyModelRelationItem?>,
       _isc.getType<_iw4y4x6s.EmptyModelWithTable?>,
       _isc.getType<_iy7bezig.RelationEmptyModel?>,
+      _isc.getType<_i1vx2qjs.ExceptionDetail?>,
       _isc.getType<_is77lrdb.ExceptionWithData?>,
+      _isc.getType<_ihvnwbvd.ExceptionWithModelList?>,
       _isc.getType<_ikh95zxc.ChildClassExplicitColumn?>,
       _isc.getType<_i1y2idkw.NonTableParentClass?>,
       _isc.getType<_i7hqkfn7.ModifiedColumnName?>,
@@ -849,6 +863,8 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<_ij7m744x.SealedGrandChild?>,
       _isc.getType<_ij7m744x.SealedChild?>,
       _isc.getType<_iwv9x21d.SealedChildOnlyRequired?>,
+      _isc.getType<_iot07lpq.SealedListChild?>,
+      _isc.getType<_i620t4p6.SealedListItem?>,
       _isc.getType<_ij7m744x.SealedOtherChild?>,
       _isc.getType<_iycanyn2.CityWithLongTableName?>,
       _isc.getType<_ifbzwpkm.OrganizationWithLongTableName?>,
@@ -974,9 +990,10 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<List<_ixc9sah8.ChangedIdTypeSelf>?>,
       _isc.getType<List<_ikufh0vd.EmptyModelRelationItem>>,
       _isc.getType<List<_ikufh0vd.EmptyModelRelationItem>?>,
+      _isc.getType<List<String>>,
+      _isc.getType<List<_i1vx2qjs.ExceptionDetail>>,
       _isc.getType<List<_ixlcmx78.Employee>>,
       _isc.getType<List<_ixlcmx78.Employee>?>,
-      _isc.getType<List<String>>,
       _isc.getType<Map<String, String>>,
       _isc.getType<(int, String)>,
       _isc.getType<List<_i2aipqpt.ChildEntity>>,
@@ -987,6 +1004,7 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<Map<String, _i11uofdz.PolymorphicChild?>>,
       _isc.getType<List<_i89s5423.ModulePolymorphicChild>>,
       _isc.getType<Map<String, _i89s5423.ModulePolymorphicChild>>,
+      _isc.getType<List<_i620t4p6.SealedListItem>>,
       _isc.getType<List<_iy2gklrg.PersonWithLongTableName>>,
       _isc.getType<List<_iy2gklrg.PersonWithLongTableName>?>,
       _isc.getType<List<_ifbzwpkm.OrganizationWithLongTableName>>,
@@ -1319,6 +1337,9 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<Map<String, _idt.ByteData>>,
       _isc.getType<Map<String, _idt.ByteData?>>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData>>,
+      _isc.getType<Map<int, _i68e2f8e.SimpleData>>,
+      _isc.getType<Map<int, _i68e2f8e.SimpleData?>>,
+      _isc.getType<Map<int, _i68e2f8e.SimpleData?>?>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData?>>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData>?>,
       _isc.getType<Map<String, _i68e2f8e.SimpleData?>?>,
@@ -1348,6 +1369,7 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<(int, String)?>,
       _isc.getType<(int, _i68e2f8e.SimpleData)>,
       _isc.getType<(int, _i68e2f8e.SimpleData)?>,
+      _isc.getType<(List<_i68e2f8e.SimpleData>, int)>,
       _isc.getType<(Map<String, int>,)>,
       _isc.getType<(Set<(int,)>,)>,
       _isc.getType<Set<(int,)>>,
@@ -1357,6 +1379,7 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<({_i68e2f8e.SimpleData data, int number})>,
       _isc.getType<({_i68e2f8e.SimpleData data, int number})?>,
       _isc.getType<({_i68e2f8e.SimpleData? data, int? number})>,
+      _isc.getType<({int count, List<_i68e2f8e.SimpleData>? rows})?>,
       _isc.getType<({Map<int, int> intIntMap})>,
       _isc.getType<({Set<(bool,)> boolSet})>,
       _isc.getType<Set<(bool,)>>,
@@ -1369,6 +1392,11 @@ class Protocol extends _isc.SerializationManager
       _isc.getType<(int, _i68e2f8e.SimpleData)>,
       _isc.getType<List<(int, _i68e2f8e.SimpleData)?>>,
       _isc.getType<(int, _i68e2f8e.SimpleData)?>,
+      _isc.getType<List<(List<_i68e2f8e.SimpleData>, int)?>>,
+      _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>,
+      _isc.getType<List<(List<_i68e2f8e.SimpleData>, int)?>?>,
+      _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>,
+      _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>,
       _isc.getType<Set<(int, _i68e2f8e.SimpleData)>>,
       _isc.getType<(int, _i68e2f8e.SimpleData)>,
       _isc.getType<Set<(int, _i68e2f8e.SimpleData)?>>,
@@ -1592,13 +1620,266 @@ class Protocol extends _isc.SerializationManager
       _iyerxm0e.Protocol.new,
       _ilwf0zl1.Protocol.new,
     ],
+    classNames: const [
+      'CustomClass',
+      'CustomClass2',
+      'CustomClassWithoutProtocolSerialization',
+      'CustomClassWithProtocolSerialization',
+      'CustomClassWithProtocolSerializationMethod',
+      'ProtocolCustomClass',
+      'ExternalCustomClass',
+      'FreezedCustomClass',
+      'ByIndexEnumWithNameValue',
+      'ByNameEnumWithNameValue',
+      'CourseUuid',
+      'EnrollmentInt',
+      'StudentUuid',
+      'ArenaUuid',
+      'PlayerUuid',
+      'TeamInt',
+      'CommentInt',
+      'CustomerInt',
+      'OrderUuid',
+      'AddressUuid',
+      'CitizenInt',
+      'CompanyUuid',
+      'TownInt',
+      'ChangedIdTypeSelf',
+      'BigIntDefault',
+      'BigIntDefaultMix',
+      'BigIntDefaultModel',
+      'BigIntDefaultPersist',
+      'BoolDefault',
+      'BoolDefaultMix',
+      'BoolDefaultModel',
+      'BoolDefaultPersist',
+      'DateTimeDefault',
+      'DateTimeDefaultMix',
+      'DateTimeDefaultModel',
+      'DateTimeDefaultPersist',
+      'DoubleDefault',
+      'DoubleDefaultMix',
+      'DoubleDefaultModel',
+      'DoubleDefaultPersist',
+      'DurationDefault',
+      'DurationDefaultMix',
+      'DurationDefaultModel',
+      'DurationDefaultPersist',
+      'EnumDefault',
+      'EnumDefaultMix',
+      'EnumDefaultModel',
+      'EnumDefaultPersist',
+      'ByIndexEnum',
+      'ByNameEnum',
+      'DefaultValueEnum',
+      'DefaultException',
+      'IntDefault',
+      'IntDefaultMix',
+      'IntDefaultModel',
+      'IntDefaultPersist',
+      'StringDefault',
+      'StringDefaultMix',
+      'StringDefaultModel',
+      'StringDefaultPersist',
+      'UriDefault',
+      'UriDefaultMix',
+      'UriDefaultModel',
+      'UriDefaultPersist',
+      'UuidDefault',
+      'UuidDefaultMix',
+      'UuidDefaultModel',
+      'UuidDefaultPersist',
+      'DeferrableRelationInitiallyDeferred',
+      'DeferrableRelationInitiallyImmediate',
+      'DeferrableRelationParent',
+      'EmptyModel',
+      'EmptyModelRelationItem',
+      'EmptyModelWithTable',
+      'RelationEmptyModel',
+      'ExceptionDetail',
+      'ExceptionWithData',
+      'ExceptionWithModelList',
+      'ChildClassExplicitColumn',
+      'NonTableParentClass',
+      'ModifiedColumnName',
+      'Department',
+      'Employee',
+      'Contractor',
+      'Service',
+      'TableWithExplicitColumnName',
+      'ImmutableChildObject',
+      'ImmutableChildObjectWithNoAdditionalFields',
+      'ImmutableObject',
+      'ImmutableObjectWithImmutableObject',
+      'ImmutableObjectWithList',
+      'ImmutableObjectWithMap',
+      'ImmutableObjectWithMultipleFields',
+      'ImmutableObjectWithNoFields',
+      'ImmutableObjectWithRecord',
+      'ImmutableObjectWithTable',
+      'ImmutableObjectWithTwentyFields',
+      'ChildClass',
+      'ChildWithDefault',
+      'ChildClassWithoutId',
+      'ExtendedAppException',
+      'BaseAppException',
+      'NotFoundException',
+      'ValidationException',
+      'ParentClass',
+      'GrandparentClass',
+      'ParentClassWithoutId',
+      'GrandparentClassWithId',
+      'ChildEntity',
+      'BaseEntity',
+      'ParentEntity',
+      'NonServerOnlyParentClass',
+      'ParentWithDefault',
+      'PolymorphicGrandChild',
+      'PolymorphicChild',
+      'PolymorphicChildContainer',
+      'ModulePolymorphicChildContainer',
+      'SimilarButNotParent',
+      'PolymorphicParent',
+      'UnrelatedToPolymorphism',
+      'SealedGrandChild',
+      'SealedChild',
+      'SealedChildOnlyRequired',
+      'SealedListChild',
+      'SealedListItem',
+      'SealedOtherChild',
+      'CityWithLongTableName',
+      'OrganizationWithLongTableName',
+      'PersonWithLongTableName',
+      'MaxFieldName',
+      'LongImplicitIdField',
+      'LongImplicitIdFieldCollection',
+      'RelationToMultipleMaxFieldName',
+      'UserNote',
+      'UserNoteCollection',
+      'UserNoteCollectionWithALongName',
+      'UserNoteWithALongName',
+      'MultipleMaxFieldName',
+      'City',
+      'Organization',
+      'Person',
+      'BleedChild',
+      'BleedRoot',
+      'FkRelationCompany',
+      'FkRelationEmployee',
+      'FkRelationOffice',
+      'GeneratedRelationCompany',
+      'GeneratedRelationEmployee',
+      'GeneratedRelationOffice',
+      'Course',
+      'Enrollment',
+      'Student',
+      'ObjectUser',
+      'ParentUser',
+      'Arena',
+      'Player',
+      'Team',
+      'Comment',
+      'Customer',
+      'Book',
+      'Chapter',
+      'Order',
+      'Address',
+      'Citizen',
+      'Company',
+      'Town',
+      'Blocking',
+      'Member',
+      'Cat',
+      'Post',
+      'ModuleDatatype',
+      'MyFeatureModel',
+      'MyTriggerType',
+      'Nullability',
+      'NullsDistinctData',
+      'ObjectFieldPersist',
+      'ObjectFieldScopes',
+      'ObjectWithBit',
+      'ObjectWithByteData',
+      'ObjectWithCustomClass',
+      'ObjectWithDuration',
+      'ObjectWithDynamic',
+      'ObjectWithEnum',
+      'ObjectWithEnumEnhanced',
+      'ObjectWithGeographyGeometryCollection',
+      'ObjectWithGeographyLineString',
+      'ObjectWithGeographyPoint',
+      'ObjectWithGeographyPolygon',
+      'ObjectWithHalfVector',
+      'ObjectWithIndex',
+      'ObjectWithJsonb',
+      'ObjectWithJsonbClassLevel',
+      'ObjectWithMaps',
+      'ObjectWithNullableCustomClass',
+      'ObjectWithObject',
+      'ObjectWithParent',
+      'ObjectWithSealedClass',
+      'ObjectWithSealedException',
+      'ObjectWithSelfParent',
+      'ObjectWithSparseVector',
+      'ObjectWithUuid',
+      'ObjectWithVector',
+      'Record',
+      'RelatedUniqueData',
+      'ExceptionWithRequiredField',
+      'ModelWithRequiredField',
+      'ScopeNoneFields',
+      'ScopeServerOnlyFieldChild',
+      'ScopeServerOnlyField',
+      'DefaultServerOnlyClass',
+      'DefaultServerOnlyEnum',
+      'NotServerOnlyClass',
+      'NotServerOnlyEnum',
+      'ServerOnlyClassField',
+      'ServerOnlyDefault',
+      'SessionAuthInfo',
+      'SharedModelContainer',
+      'SharedModelSubclass',
+      'SimpleData',
+      'SimpleDataList',
+      'SimpleDataMap',
+      'SimpleDataObject',
+      'SimpleDateTime',
+      'ModelInSubfolder',
+      'TestEnum',
+      'TestEnumDefaultSerialization',
+      'TestEnumEnhanced',
+      'TestEnumEnhancedByName',
+      'TestEnumStringified',
+      'Types',
+      'TypesList',
+      'TypesMap',
+      'TypesRecord',
+      'TypesSet',
+      'TypesSetRequired',
+      'UniqueData',
+      'UniqueDataWithNonPersist',
+      'UpsertTestModel',
+      'List<int>',
+      'List<SimpleData>',
+      'List<serverpod_auth.UserInfo>',
+      'List<SimpleData>?',
+      'List<SimpleData?>',
+      'Set<int>',
+      'Set<SimpleData>',
+      'List<Set<SimpleData>>',
+      '(String,PolymorphicParent)',
+      '(int?,)?',
+      'List<((int,String),{(SimpleData,double) namedSubRecord})?>?',
+      '(int?,serverpod_test_module.ProjectStreamingClass?)',
+      '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))',
+      'List<(String,int)>',
+      '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))?',
+      'List<(String,int)>?',
+    ],
   );
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -1606,8 +1887,8 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -1822,8 +2103,14 @@ class Protocol extends _isc.SerializationManager
     if (t == _iy7bezig.RelationEmptyModel) {
       return _iy7bezig.RelationEmptyModel.fromJson(data) as T;
     }
+    if (t == _i1vx2qjs.ExceptionDetail) {
+      return _i1vx2qjs.ExceptionDetail.fromJson(data) as T;
+    }
     if (t == _is77lrdb.ExceptionWithData) {
       return _is77lrdb.ExceptionWithData.fromJson(data) as T;
+    }
+    if (t == _ihvnwbvd.ExceptionWithModelList) {
+      return _ihvnwbvd.ExceptionWithModelList.fromJson(data) as T;
     }
     if (t == _ikh95zxc.ChildClassExplicitColumn) {
       return _ikh95zxc.ChildClassExplicitColumn.fromJson(data) as T;
@@ -1960,6 +2247,12 @@ class Protocol extends _isc.SerializationManager
     }
     if (t == _iwv9x21d.SealedChildOnlyRequired) {
       return _iwv9x21d.SealedChildOnlyRequired.fromJson(data) as T;
+    }
+    if (t == _iot07lpq.SealedListChild) {
+      return _iot07lpq.SealedListChild.fromJson(data) as T;
+    }
+    if (t == _i620t4p6.SealedListItem) {
+      return _i620t4p6.SealedListItem.fromJson(data) as T;
     }
     if (t == _ij7m744x.SealedOtherChild) {
       return _ij7m744x.SealedOtherChild.fromJson(data) as T;
@@ -2577,8 +2870,18 @@ class Protocol extends _isc.SerializationManager
       return (data != null ? _iy7bezig.RelationEmptyModel.fromJson(data) : null)
           as T;
     }
+    if (t == _isc.getType<_i1vx2qjs.ExceptionDetail?>()) {
+      return (data != null ? _i1vx2qjs.ExceptionDetail.fromJson(data) : null)
+          as T;
+    }
     if (t == _isc.getType<_is77lrdb.ExceptionWithData?>()) {
       return (data != null ? _is77lrdb.ExceptionWithData.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ihvnwbvd.ExceptionWithModelList?>()) {
+      return (data != null
+              ? _ihvnwbvd.ExceptionWithModelList.fromJson(data)
+              : null)
           as T;
     }
     if (t == _isc.getType<_ikh95zxc.ChildClassExplicitColumn?>()) {
@@ -2802,6 +3105,14 @@ class Protocol extends _isc.SerializationManager
       return (data != null
               ? _iwv9x21d.SealedChildOnlyRequired.fromJson(data)
               : null)
+          as T;
+    }
+    if (t == _isc.getType<_iot07lpq.SealedListChild?>()) {
+      return (data != null ? _iot07lpq.SealedListChild.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i620t4p6.SealedListItem?>()) {
+      return (data != null ? _i620t4p6.SealedListItem.fromJson(data) : null)
           as T;
     }
     if (t == _isc.getType<_ij7m744x.SealedOtherChild?>()) {
@@ -3380,6 +3691,15 @@ class Protocol extends _isc.SerializationManager
               : null)
           as T;
     }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<_i1vx2qjs.ExceptionDetail>) {
+      return (data as List)
+              .map((e) => deserialize<_i1vx2qjs.ExceptionDetail>(e))
+              .toList()
+          as T;
+    }
     if (t == List<_ixlcmx78.Employee>) {
       return (data as List)
               .map((e) => deserialize<_ixlcmx78.Employee>(e))
@@ -3393,9 +3713,6 @@ class Protocol extends _isc.SerializationManager
                     .toList()
               : null)
           as T;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     if (t == Map<String, String>) {
       return (data as Map).map(
@@ -3467,6 +3784,12 @@ class Protocol extends _isc.SerializationManager
               deserialize<_i89s5423.ModulePolymorphicChild>(v),
             ),
           )
+          as T;
+    }
+    if (t == List<_i620t4p6.SealedListItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i620t4p6.SealedListItem>(e))
+              .toList()
           as T;
     }
     if (t == List<_iy2gklrg.PersonWithLongTableName>) {
@@ -5816,6 +6139,41 @@ class Protocol extends _isc.SerializationManager
           )
           as T;
     }
+    if (t == Map<int, _i68e2f8e.SimpleData>) {
+      return Map.fromEntries(
+            (data as List).map(
+              (e) => MapEntry(
+                deserialize<int>(e['k']),
+                deserialize<_i68e2f8e.SimpleData>(e['v']),
+              ),
+            ),
+          )
+          as T;
+    }
+    if (t == Map<int, _i68e2f8e.SimpleData?>) {
+      return Map.fromEntries(
+            (data as List).map(
+              (e) => MapEntry(
+                deserialize<int>(e['k']),
+                deserialize<_i68e2f8e.SimpleData?>(e['v']),
+              ),
+            ),
+          )
+          as T;
+    }
+    if (t == _isc.getType<Map<int, _i68e2f8e.SimpleData?>?>()) {
+      return (data != null
+              ? Map.fromEntries(
+                  (data as List).map(
+                    (e) => MapEntry(
+                      deserialize<int>(e['k']),
+                      deserialize<_i68e2f8e.SimpleData?>(e['v']),
+                    ),
+                  ),
+                )
+              : null)
+          as T;
+    }
     if (t == Map<String, _i68e2f8e.SimpleData?>) {
       return (data as Map).map(
             (k, v) => MapEntry(
@@ -6044,6 +6402,15 @@ class Protocol extends _isc.SerializationManager
                 )
                 as T;
     }
+    if (t == _isc.getType<(List<_i68e2f8e.SimpleData>, int)>()) {
+      return (
+            deserialize<List<_i68e2f8e.SimpleData>>(
+              ((data as Map)['p'] as List)[0],
+            ),
+            deserialize<int>(data['p'][1]),
+          )
+          as T;
+    }
     if (t == _isc.getType<(Map<String, int>,)>()) {
       return (deserialize<Map<String, int>>(((data as Map)['p'] as List)[0]),)
           as T;
@@ -6105,6 +6472,19 @@ class Protocol extends _isc.SerializationManager
                 : deserialize<int>(data['n']['number']),
           )
           as T;
+    }
+    if (t == _isc.getType<({int count, List<_i68e2f8e.SimpleData>? rows})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  count: deserialize<int>(((data as Map)['n'] as Map)['count']),
+                  rows: ((data)['n'] as Map)['rows'] == null
+                      ? null
+                      : deserialize<List<_i68e2f8e.SimpleData>>(
+                          data['n']['rows'],
+                        ),
+                )
+                as T;
     }
     if (t == _isc.getType<({Map<int, int> intIntMap})>()) {
       return (
@@ -6180,6 +6560,55 @@ class Protocol extends _isc.SerializationManager
           : (
                   deserialize<int>(((data as Map)['p'] as List)[0]),
                   deserialize<_i68e2f8e.SimpleData>(data['p'][1]),
+                )
+                as T;
+    }
+    if (t == List<(List<_i68e2f8e.SimpleData>, int)?>) {
+      return (data as List)
+              .map((e) => deserialize<(List<_i68e2f8e.SimpleData>, int)?>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  deserialize<List<_i68e2f8e.SimpleData>>(
+                    ((data as Map)['p'] as List)[0],
+                  ),
+                  deserialize<int>(data['p'][1]),
+                )
+                as T;
+    }
+    if (t == _isc.getType<List<(List<_i68e2f8e.SimpleData>, int)?>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map(
+                      (e) => deserialize<(List<_i68e2f8e.SimpleData>, int)?>(e),
+                    )
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  deserialize<List<_i68e2f8e.SimpleData>>(
+                    ((data as Map)['p'] as List)[0],
+                  ),
+                  deserialize<int>(data['p'][1]),
+                )
+                as T;
+    }
+    if (t == _isc.getType<(List<_i68e2f8e.SimpleData>, int)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+                  deserialize<List<_i68e2f8e.SimpleData>>(
+                    ((data as Map)['p'] as List)[0],
+                  ),
+                  deserialize<int>(data['p'][1]),
                 )
                 as T;
     }
@@ -7440,9 +7869,10 @@ class Protocol extends _isc.SerializationManager
           )
           as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -7534,7 +7964,9 @@ class Protocol extends _isc.SerializationManager
       _ikufh0vd.EmptyModelRelationItem => 'EmptyModelRelationItem',
       _iw4y4x6s.EmptyModelWithTable => 'EmptyModelWithTable',
       _iy7bezig.RelationEmptyModel => 'RelationEmptyModel',
+      _i1vx2qjs.ExceptionDetail => 'ExceptionDetail',
       _is77lrdb.ExceptionWithData => 'ExceptionWithData',
+      _ihvnwbvd.ExceptionWithModelList => 'ExceptionWithModelList',
       _ikh95zxc.ChildClassExplicitColumn => 'ChildClassExplicitColumn',
       _i1y2idkw.NonTableParentClass => 'NonTableParentClass',
       _i7hqkfn7.ModifiedColumnName => 'ModifiedColumnName',
@@ -7585,6 +8017,8 @@ class Protocol extends _isc.SerializationManager
       _ij7m744x.SealedGrandChild => 'SealedGrandChild',
       _ij7m744x.SealedChild => 'SealedChild',
       _iwv9x21d.SealedChildOnlyRequired => 'SealedChildOnlyRequired',
+      _iot07lpq.SealedListChild => 'SealedListChild',
+      _i620t4p6.SealedListItem => 'SealedListItem',
       _ij7m744x.SealedOtherChild => 'SealedOtherChild',
       _iycanyn2.CityWithLongTableName => 'CityWithLongTableName',
       _ifbzwpkm.OrganizationWithLongTableName =>
@@ -7872,8 +8306,12 @@ class Protocol extends _isc.SerializationManager
         return 'EmptyModelWithTable';
       case _iy7bezig.RelationEmptyModel():
         return 'RelationEmptyModel';
+      case _i1vx2qjs.ExceptionDetail():
+        return 'ExceptionDetail';
       case _is77lrdb.ExceptionWithData():
         return 'ExceptionWithData';
+      case _ihvnwbvd.ExceptionWithModelList():
+        return 'ExceptionWithModelList';
       case _ikh95zxc.ChildClassExplicitColumn():
         return 'ChildClassExplicitColumn';
       case _i1y2idkw.NonTableParentClass():
@@ -7964,6 +8402,10 @@ class Protocol extends _isc.SerializationManager
         return 'SealedChild';
       case _iwv9x21d.SealedChildOnlyRequired():
         return 'SealedChildOnlyRequired';
+      case _iot07lpq.SealedListChild():
+        return 'SealedListChild';
+      case _i620t4p6.SealedListItem():
+        return 'SealedListItem';
       case _ij7m744x.SealedOtherChild():
         return 'SealedOtherChild';
       case _iycanyn2.CityWithLongTableName():
@@ -8516,8 +8958,14 @@ class Protocol extends _isc.SerializationManager
     if (dataClassName == 'RelationEmptyModel') {
       return deserialize<_iy7bezig.RelationEmptyModel>(data['data']);
     }
+    if (dataClassName == 'ExceptionDetail') {
+      return deserialize<_i1vx2qjs.ExceptionDetail>(data['data']);
+    }
     if (dataClassName == 'ExceptionWithData') {
       return deserialize<_is77lrdb.ExceptionWithData>(data['data']);
+    }
+    if (dataClassName == 'ExceptionWithModelList') {
+      return deserialize<_ihvnwbvd.ExceptionWithModelList>(data['data']);
     }
     if (dataClassName == 'ChildClassExplicitColumn') {
       return deserialize<_ikh95zxc.ChildClassExplicitColumn>(data['data']);
@@ -8663,6 +9111,12 @@ class Protocol extends _isc.SerializationManager
     }
     if (dataClassName == 'SealedChildOnlyRequired') {
       return deserialize<_iwv9x21d.SealedChildOnlyRequired>(data['data']);
+    }
+    if (dataClassName == 'SealedListChild') {
+      return deserialize<_iot07lpq.SealedListChild>(data['data']);
+    }
+    if (dataClassName == 'SealedListItem') {
+      return deserialize<_i620t4p6.SealedListItem>(data['data']);
     }
     if (dataClassName == 'SealedOtherChild') {
       return deserialize<_ij7m744x.SealedOtherChild>(data['data']);
@@ -9010,20 +9464,28 @@ class Protocol extends _isc.SerializationManager
       return deserialize<_iwbeyn4p.UpsertTestModel>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
-      data['className'] = dataClassName.substring(15);
-      return _i312scxx.Protocol().deserializeByClassName(data);
+      return _i312scxx.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(15),
+      });
     }
     if (dataClassName.startsWith('serverpod_test_module.')) {
-      data['className'] = dataClassName.substring(22);
-      return _i89s5423.Protocol().deserializeByClassName(data);
+      return _i89s5423.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(22),
+      });
     }
     if (dataClassName.startsWith('serverpod_test_shared_module.')) {
-      data['className'] = dataClassName.substring(29);
-      return _iyerxm0e.Protocol().deserializeByClassName(data);
+      return _iyerxm0e.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(29),
+      });
     }
     if (dataClassName.startsWith('serverpod_test_shared.')) {
-      data['className'] = dataClassName.substring(22);
-      return _ilwf0zl1.Protocol().deserializeByClassName(data);
+      return _ilwf0zl1.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(22),
+      });
     }
     if (dataClassName == 'List<int>') {
       return deserialize<List<int>>(data['data']);
@@ -9196,6 +9658,14 @@ class Protocol extends _isc.SerializationManager
         ],
       };
     }
+    if (record is (List<_i68e2f8e.SimpleData>, int)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+          record.$2,
+        ],
+      };
+    }
     if (record is (Map<String, int>,)) {
       return {
         "p": [
@@ -9231,6 +9701,14 @@ class Protocol extends _isc.SerializationManager
         "n": {
           "data": record.data?.toJson(),
           "number": record.number,
+        },
+      };
+    }
+    if (record is ({int count, List<_i68e2f8e.SimpleData>? rows})) {
+      return {
+        "n": {
+          "count": record.count,
+          "rows": record.rows?.toJson(),
         },
       };
     }

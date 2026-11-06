@@ -4,6 +4,10 @@ appleIdp:
   - login:
   - hasAccount:
 emailIdp:
+  - startOtpLogin:
+  - verifyOtpLoginCode:
+  - finishOtpLogin:
+  - finishOtpRegistration:
   - login:
   - startRegistration:
   - verifyRegistrationCode:

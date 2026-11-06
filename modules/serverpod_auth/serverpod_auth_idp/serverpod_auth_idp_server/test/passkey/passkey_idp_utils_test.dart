@@ -14,7 +14,7 @@ void main() {
 
   withServerpod(
     'Given an unauthenticated session',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       setUp(() {
         utils = _createUtils();
         session = sessionBuilder.build();
@@ -31,8 +31,8 @@ void main() {
   );
 
   withServerpod('Given an authenticated session but no passkey account', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     setUp(() {
       utils = _createUtils();
@@ -56,8 +56,8 @@ void main() {
   });
 
   withServerpod('Given an authenticated session with a passkey account', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late PasskeyAccount passkeyAccount;
     late AuthUserModel authUser;

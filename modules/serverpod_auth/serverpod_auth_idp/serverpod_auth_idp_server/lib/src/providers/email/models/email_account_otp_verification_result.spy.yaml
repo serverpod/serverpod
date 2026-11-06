@@ -1,0 +1,20 @@
+### The result of verifying a one-time password (OTP) for an email login.
+###
+### Only returned after the one-time password has been verified, so it does not
+### leak the existence of accounts to anyone not in control of the email.
+class: EmailAccountOtpVerificationResult
+fields:
+  ### Token to complete the flow.
+  ###
+  ### If [accountExists] is `true`, pass it to `finishOtpLogin` to sign in.
+  ### Otherwise pass it to `finishOtpRegistration` to create the account, after
+  ### the user has accepted the terms.
+  token: String
+
+  ### Whether an account is already registered for the email.
+  accountExists: bool
+
+  ### Whether the user may set a password when creating the account.
+  ###
+  ### Only relevant when [accountExists] is `false`.
+  allowPassword: bool

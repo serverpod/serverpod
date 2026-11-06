@@ -397,10 +397,15 @@ class PostgresDatabaseConnection
         })
         .join(', ');
 
+    var returning = buildReturningClause(
+      table,
+      tableAlias: table.unqualifiedTableName,
+    );
+
     var query =
         'UPDATE ${table.quotedTableName} SET $setClause '
         'WHERE "${table.id.columnName}" = ${poolManager.encoder.convert(id)} '
-        'RETURNING *';
+        'RETURNING $returning';
 
     var result = await _mappedResultsQuery(
       session,
@@ -472,26 +477,38 @@ class PostgresDatabaseConnection
             'UPDATE ${table.quotedTableName} SET $setClause '
             'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update)';
       } else {
+        const updatedAlias = 'updated';
+
+        // Qualify the order columns with the CTE alias so they resolve to the
+        // database columns rather than the field-name aliases selected below.
         var orderByClause = switch (orders) {
           != null when orders.isNotEmpty =>
             ' ORDER BY '
-                '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
+                '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '"$updatedAlias".')).join(', ')}',
           _ => '',
         };
 
+        var returning = buildReturningClause(table, tableAlias: updatedAlias);
+
         updateQuery =
             'WITH rows_to_update AS ($subquery), '
-            'updated AS ('
+            '$updatedAlias AS ('
             'UPDATE ${table.quotedTableName} SET $setClause '
             'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
             'RETURNING *'
             ') '
-            'SELECT * FROM updated$orderByClause';
+            'SELECT $returning FROM $updatedAlias$orderByClause';
       }
     } else {
       updateQuery =
           'UPDATE ${table.quotedTableName} SET $setClause WHERE $where';
-      if (!noReturn) updateQuery += ' RETURNING *';
+      if (!noReturn) {
+        var returning = buildReturningClause(
+          table,
+          tableAlias: table.unqualifiedTableName,
+        );
+        updateQuery += ' RETURNING $returning';
+      }
     }
 
     var result = await _mappedResultsQuery(

@@ -11,7 +11,7 @@ final _extraClaims = Expando<Map<String, dynamic>>(
 extension AuthenticationInfoFromJwt on AuthenticationInfo {
   @internal
   static AuthenticationInfo fromJwtVerificationResult(
-    final VerifiedJwtData result,
+    VerifiedJwtData result,
   ) {
     final authInfo = AuthenticationInfo(
       result.authUserId.uuid,

@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../common/widgets/buttons/action_button.dart';
-import '../../../common/widgets/gaps.dart';
-import '../../../common/widgets/password_field.dart';
-import '../../../common/widgets/password_requirements/requirements.dart';
-import '../../../common/widgets/password_requirements/widget.dart';
 import '../../email_auth_controller.dart';
-import 'form_standard_layout.dart';
+import '../shared/shared_set_password_form.dart';
 
 /// Set new password form widget.
 ///
@@ -48,52 +43,12 @@ class SetPasswordForm extends StatefulWidget {
 
 class _SetPasswordFormState extends State<SetPasswordForm> {
   @override
-  void initState() {
-    super.initState();
-    widget.controller.passwordController.addListener(_onPasswordChanged);
-  }
-
-  @override
-  void dispose() {
-    widget.controller.passwordController.removeListener(_onPasswordChanged);
-    super.dispose();
-  }
-
-  void _onPasswordChanged() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final passwordRequirements = widget.controller.passwordRequirements;
-    final password = widget.controller.passwordController.text;
-    final isValidPassword = passwordRequirements.isValid(password);
-
-    return FormStandardLayout(
-      title: widget.title,
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          PasswordField(
-            labelText: widget.passwordLabelText,
-            controller: widget.controller.passwordController,
-            isLoading: widget.controller.isLoading,
-          ),
-          if (passwordRequirements.isNotEmpty) ...[
-            tinyGap,
-            PasswordRequirements(
-              password: password,
-              requirements: passwordRequirements,
-            ),
-          ],
-        ],
-      ),
-      actionButton: ActionButton(
-        onPressed: isValidPassword ? widget.onActionPressed : null,
-        label: widget.actionButtonLabel,
-        isLoading: widget.controller.isLoading,
-      ),
-      bottomText: widget.bottomText,
-    );
-  }
+  Widget build(BuildContext context) => SharedSetPasswordForm(
+    controller: widget.controller,
+    title: widget.title,
+    passwordLabelText: widget.passwordLabelText,
+    actionButtonLabel: widget.actionButtonLabel,
+    onActionPressed: widget.onActionPressed,
+    bottomText: widget.bottomText,
+  );
 }

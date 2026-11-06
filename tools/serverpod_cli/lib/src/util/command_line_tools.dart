@@ -74,6 +74,11 @@ class CommandLineTools {
     return true;
   }
 
+  /// Organization prefix for the application IDs of generated Flutter apps.
+  /// `flutter create` appends the project name, so each project gets its own
+  /// ID, e.g. `space.serverpod.my_project`.
+  static const _flutterAppOrg = 'space.serverpod';
+
   static Future<bool> flutterCreate(Directory dir) async {
     log.debug('Running `flutter create .` in ${dir.path}', newParagraph: true);
 
@@ -82,7 +87,7 @@ class CommandLineTools {
 
     var exitCode = await _runProcessWithDefaultLogger(
       executable: executable,
-      arguments: ['create', '.'],
+      arguments: ['create', '--org', _flutterAppOrg, '.'],
       workingDirectory: dir.path,
     );
 

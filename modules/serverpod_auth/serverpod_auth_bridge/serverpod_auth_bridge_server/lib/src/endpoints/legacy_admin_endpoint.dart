@@ -13,8 +13,8 @@ class LegacyAdminEndpoint extends Endpoint {
 
   /// Finds a user by legacy user id.
   Future<LegacyUserInfo?> getUserInfo(
-    final Session session,
-    final int userId,
+    Session session,
+    int userId,
   ) async {
     final authUserId = await _findAuthUserIdByLegacyUserId(session, userId);
     if (authUserId == null) return null;
@@ -39,7 +39,7 @@ class LegacyAdminEndpoint extends Endpoint {
   }
 
   /// Marks a user as blocked and revokes all tokens.
-  Future<void> blockUser(final Session session, final int userId) async {
+  Future<void> blockUser(Session session, int userId) async {
     final authUser = await _findAuthUserByLegacyUserId(session, userId);
     if (authUser == null) {
       throw InvalidParametersException('userId $userId not found');
@@ -60,7 +60,7 @@ class LegacyAdminEndpoint extends Endpoint {
   }
 
   /// Unblocks a user so that they can log in again.
-  Future<void> unblockUser(final Session session, final int userId) async {
+  Future<void> unblockUser(Session session, int userId) async {
     final authUser = await _findAuthUserByLegacyUserId(session, userId);
     if (authUser == null) {
       throw InvalidParametersException('userId $userId not found');
@@ -77,8 +77,8 @@ class LegacyAdminEndpoint extends Endpoint {
   }
 
   Future<AuthUser?> _findAuthUserByLegacyUserId(
-    final Session session,
-    final int userId,
+    Session session,
+    int userId,
   ) async {
     final authUserId = await _findAuthUserIdByLegacyUserId(session, userId);
     if (authUserId == null) return null;
@@ -86,8 +86,8 @@ class LegacyAdminEndpoint extends Endpoint {
   }
 
   Future<UuidValue?> _findAuthUserIdByLegacyUserId(
-    final Session session,
-    final int userId,
+    Session session,
+    int userId,
   ) async {
     final legacyRows = await session.db.unsafeQuery(
       'SELECT "userIdentifier" FROM serverpod_user_info WHERE id = \$1 LIMIT 1',

@@ -10,6 +10,7 @@ import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
+import '../test_utils/coarse_clock.dart';
 
 void main() {
   const authUsers = AuthUsers();
@@ -29,7 +30,7 @@ void main() {
 
   withServerpod(
     'Given a session for an existing `AuthUser` without authentication,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late AuthUserModel user;
       late Session session;
 
@@ -81,9 +82,7 @@ void main() {
         () async {
           await expectLater(
             withClock(
-              Clock.fixed(
-                DateTime.now().add(passKeyIdp.config.challengeLifetime),
-              ),
+              passKeyIdp.config.challengeLifetime.clockPastLifetime(),
               () => passKeyIdp.register(
                 session,
                 authUserId: user.id,
@@ -109,7 +108,7 @@ void main() {
 
   withServerpod(
     'Given an `AuthUser` with a registered passkey,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late AuthUserModel user;
       late Session session;
 
@@ -232,7 +231,7 @@ void main() {
             ),
             throwsA(
               isA<Exception>().having(
-                (final e) => e.toString(),
+                (e) => e.toString(),
                 'message',
                 contains('Invalid signature'),
               ),
@@ -264,7 +263,7 @@ void main() {
             ),
             throwsA(
               isA<Exception>().having(
-                (final e) => e.toString(),
+                (e) => e.toString(),
                 'message',
                 contains('wrong challenge'),
               ),
@@ -292,7 +291,7 @@ void main() {
             ),
             throwsA(
               isA<Exception>().having(
-                (final e) => e.toString(),
+                (e) => e.toString(),
                 'message',
                 contains('Invalid signature'),
               ),

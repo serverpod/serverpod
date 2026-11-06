@@ -70,6 +70,13 @@ class RecordParametersEndpoint extends Endpoint {
     return record;
   }
 
+  Future<(List<SimpleData>, int)> returnRecordOfSimpleDataList(
+    Session session,
+    List<SimpleData> rows,
+  ) async {
+    return (rows, rows.length);
+  }
+
   Future<(Map<String, int>,)> returnStringKeyedMapRecord(
     Session session,
     (Map<String, int>,) record,
@@ -130,6 +137,14 @@ class RecordParametersEndpoint extends Endpoint {
     return record;
   }
 
+  Future<({List<SimpleData>? rows, int count})?>
+  returnNullableNamedRecordOfSimpleDataList(
+    Session session,
+    ({List<SimpleData>? rows, int count})? record,
+  ) async {
+    return record;
+  }
+
   Future<({Map<int, int> intIntMap})> returnNamedNonStringKeyedMapRecord(
     Session session,
     ({Map<int, int> intIntMap}) record,
@@ -182,6 +197,14 @@ class RecordParametersEndpoint extends Endpoint {
     List<(int, SimpleData)?> record,
   ) async {
     return record;
+  }
+
+  Future<List<(List<SimpleData>, int)?>?>
+  returnNullableListOfRecordOfSimpleDataList(
+    Session session,
+    List<(List<SimpleData>, int)?>? records,
+  ) async {
+    return records;
   }
   // #endregion
 

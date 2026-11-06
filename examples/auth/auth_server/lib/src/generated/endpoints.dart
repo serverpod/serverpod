@@ -189,6 +189,94 @@ class Endpoints extends _is.EndpointDispatch {
       name: 'emailIdp',
       endpoint: endpoints['emailIdp']!,
       methodConnectors: {
+        'startOtpLogin': _is.MethodConnector(
+          name: 'startOtpLogin',
+          params: {
+            'email': _is.ParameterDescription(
+              name: 'email',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['emailIdp'] as _ilutrrxn.EmailIdpEndpoint)
+                  .startOtpLogin(
+                    session,
+                    email: params['email'],
+                  ),
+        ),
+        'verifyOtpLoginCode': _is.MethodConnector(
+          name: 'verifyOtpLoginCode',
+          params: {
+            'otpLoginRequestId': _is.ParameterDescription(
+              name: 'otpLoginRequestId',
+              type: _is.getType<_is.UuidValue>(),
+              nullable: false,
+            ),
+            'verificationCode': _is.ParameterDescription(
+              name: 'verificationCode',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['emailIdp'] as _ilutrrxn.EmailIdpEndpoint)
+                  .verifyOtpLoginCode(
+                    session,
+                    otpLoginRequestId: params['otpLoginRequestId'],
+                    verificationCode: params['verificationCode'],
+                  ),
+        ),
+        'finishOtpLogin': _is.MethodConnector(
+          name: 'finishOtpLogin',
+          params: {
+            'otpLoginToken': _is.ParameterDescription(
+              name: 'otpLoginToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['emailIdp'] as _ilutrrxn.EmailIdpEndpoint)
+                  .finishOtpLogin(
+                    session,
+                    otpLoginToken: params['otpLoginToken'],
+                  ),
+        ),
+        'finishOtpRegistration': _is.MethodConnector(
+          name: 'finishOtpRegistration',
+          params: {
+            'otpLoginToken': _is.ParameterDescription(
+              name: 'otpLoginToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'password': _is.ParameterDescription(
+              name: 'password',
+              type: _is.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['emailIdp'] as _ilutrrxn.EmailIdpEndpoint)
+                  .finishOtpRegistration(
+                    session,
+                    otpLoginToken: params['otpLoginToken'],
+                    password: params['password'],
+                  ),
+        ),
         'login': _is.MethodConnector(
           name: 'login',
           params: {

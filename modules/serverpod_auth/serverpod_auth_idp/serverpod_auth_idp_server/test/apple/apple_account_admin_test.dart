@@ -16,7 +16,7 @@ void main() {
 
   withServerpod(
     'Given 1 active and 1 expired Apple-backed auth user,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late Session session;
       late UuidValue activeUser;
       late UuidValue inactiveUser;
@@ -65,7 +65,7 @@ void main() {
 
           await admin.checkAccountStatus(
             session,
-            onExpiredUserAuthentication: (final _) {},
+            onExpiredUserAuthentication: (_) {},
           );
 
           for (final appleAccount in await AppleAccount.db.find(session)) {
@@ -85,8 +85,8 @@ void main() {
 /// The account's refresh token is marked as not having been checked in the last 24 hours,
 /// so that it will get picked up by the next `checkAccountStatus` run.
 Future<UuidValue> _createAppleBackedUser(
-  final Session session,
-  final AuthUsers authUsers,
+  Session session,
+  AuthUsers authUsers,
 ) async {
   final authUser = await authUsers.create(session);
 
@@ -118,8 +118,8 @@ class _SignInWithAppleFake extends Fake implements SignInWithApple {
 
   @override
   Future<RefreshTokenValidationResponse> validateRefreshToken(
-    final String refreshToken, {
-    required final bool useBundleIdentifier,
+    String refreshToken, {
+    required bool useBundleIdentifier,
   }) async {
     if (knownRefreshTokens.contains(refreshToken)) {
       return RefreshTokenValidationResponse(

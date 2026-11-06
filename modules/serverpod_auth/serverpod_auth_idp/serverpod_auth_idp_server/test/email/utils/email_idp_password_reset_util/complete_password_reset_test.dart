@@ -12,7 +12,7 @@ void main() {
   withServerpod(
     'Given password reset request exists',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late EmailIdpTestFixture fixture;
@@ -30,7 +30,7 @@ void main() {
           config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
-            passwordValidationFunction: (final password) =>
+            passwordValidationFunction: (password) =>
                 password == allowedNewPassword,
             passwordResetVerificationCodeLifetime:
                 passwordResetVerificationCodeLifetime,
@@ -48,7 +48,7 @@ void main() {
         );
 
         final passwordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+          (transaction) => fixture.passwordResetUtil.startPasswordReset(
             session,
             email: email,
             transaction: transaction,
@@ -57,13 +57,12 @@ void main() {
 
         // First verify the password reset code to get the set password token
         completePasswordResetToken = await session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.verifyPasswordResetCode(
-                session,
-                passwordResetRequestId: passwordResetRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
-              ),
+          (transaction) => fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
         );
       });
 
@@ -78,13 +77,12 @@ void main() {
 
           setUp(() async {
             completePasswordResetResult = session.db.transaction(
-              (final transaction) =>
-                  fixture.passwordResetUtil.completePasswordReset(
-                    session,
-                    completePasswordResetToken: completePasswordResetToken,
-                    newPassword: allowedNewPassword,
-                    transaction: transaction,
-                  ),
+              (transaction) => fixture.passwordResetUtil.completePasswordReset(
+                session,
+                completePasswordResetToken: completePasswordResetToken,
+                newPassword: allowedNewPassword,
+                transaction: transaction,
+              ),
             );
           });
 
@@ -99,7 +97,7 @@ void main() {
             await completePasswordResetResult;
 
             final authResult = await session.db.transaction(
-              (final transaction) => fixture.authenticationUtil.authenticate(
+              (transaction) => fixture.authenticationUtil.authenticate(
                 session,
                 email: email,
                 password: allowedNewPassword,
@@ -116,13 +114,12 @@ void main() {
         'when called with password incompatible with password policy then throws password policy violation exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.passwordResetUtil.completePasswordReset(
-                  session,
-                  completePasswordResetToken: completePasswordResetToken,
-                  newPassword: '$allowedNewPassword-invalid-addition',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.passwordResetUtil.completePasswordReset(
+              session,
+              completePasswordResetToken: completePasswordResetToken,
+              newPassword: '$allowedNewPassword-invalid-addition',
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -136,14 +133,13 @@ void main() {
         'when called with invalid complete password reset token then throws invalid complete password reset token exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.passwordResetUtil.completePasswordReset(
-                  session,
-                  completePasswordResetToken:
-                      '$completePasswordResetToken-invalid-addition',
-                  newPassword: allowedNewPassword,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.passwordResetUtil.completePasswordReset(
+              session,
+              completePasswordResetToken:
+                  '$completePasswordResetToken-invalid-addition',
+              newPassword: allowedNewPassword,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -165,7 +161,7 @@ void main() {
             ),
             () async {
               final result = session.db.transaction(
-                (final transaction) =>
+                (transaction) =>
                     fixture.passwordResetUtil.completePasswordReset(
                       session,
                       completePasswordResetToken: completePasswordResetToken,
@@ -188,7 +184,7 @@ void main() {
   withServerpod(
     'Given password reset request exists that has not been verified by calling verifyPasswordResetCode',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -204,7 +200,7 @@ void main() {
           config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
-            passwordValidationFunction: (final password) =>
+            passwordValidationFunction: (password) =>
                 password == allowedNewPassword,
           ),
         );
@@ -219,7 +215,7 @@ void main() {
         );
 
         await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+          (transaction) => fixture.passwordResetUtil.startPasswordReset(
             session,
             email: email,
             transaction: transaction,
@@ -235,13 +231,12 @@ void main() {
         'when complete password reset is called with invalid complete password reset token then throws set password token not found exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.passwordResetUtil.completePasswordReset(
-                  session,
-                  completePasswordResetToken: const Uuid().v4(),
-                  newPassword: allowedNewPassword,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.passwordResetUtil.completePasswordReset(
+              session,
+              completePasswordResetToken: const Uuid().v4(),
+              newPassword: allowedNewPassword,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -256,7 +251,7 @@ void main() {
   withServerpod(
     'Given successful password complete request when capturing output from onPasswordResetCompleted callback',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue emailAccountId;
       late EmailIdpTestFixture fixture;
@@ -272,9 +267,9 @@ void main() {
             passwordResetVerificationCodeGenerator: () => verificationCode,
             onPasswordResetCompleted:
                 (
-                  final session, {
-                  required final UuidValue emailAccountId,
-                  required final Transaction? transaction,
+                  session, {
+                  required UuidValue emailAccountId,
+                  required Transaction? transaction,
                 }) {
                   onPasswordResetCompletedEmailAccountId = emailAccountId;
                 },
@@ -294,7 +289,7 @@ void main() {
         emailAccountId = emailAccount.id!;
 
         final passwordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+          (transaction) => fixture.passwordResetUtil.startPasswordReset(
             session,
             email: email,
             transaction: transaction,
@@ -303,23 +298,21 @@ void main() {
 
         // First verify the password reset code to get the set password token
         final completePasswordResetToken = await session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.verifyPasswordResetCode(
-                session,
-                passwordResetRequestId: passwordResetRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
-              ),
+          (transaction) => fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
         );
 
         await session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
-                session,
-                completePasswordResetToken: completePasswordResetToken,
-                newPassword: 'NewPassword123!',
-                transaction: transaction,
-              ),
+          (transaction) => fixture.passwordResetUtil.completePasswordReset(
+            session,
+            completePasswordResetToken: completePasswordResetToken,
+            newPassword: 'NewPassword123!',
+            transaction: transaction,
+          ),
         );
       });
 
@@ -342,7 +335,7 @@ void main() {
   withServerpod(
     'Given already completed password reset request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late String completePasswordResetToken;
@@ -369,7 +362,7 @@ void main() {
         );
 
         final passwordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+          (transaction) => fixture.passwordResetUtil.startPasswordReset(
             session,
             email: email,
             transaction: transaction,
@@ -378,24 +371,22 @@ void main() {
 
         // First verify the password reset code to get the set password token
         completePasswordResetToken = await session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.verifyPasswordResetCode(
-                session,
-                passwordResetRequestId: passwordResetRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
-              ),
+          (transaction) => fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
         );
 
         // Complete the password reset
         await session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
-                session,
-                completePasswordResetToken: completePasswordResetToken,
-                newPassword: 'NewPassword123!',
-                transaction: transaction,
-              ),
+          (transaction) => fixture.passwordResetUtil.completePasswordReset(
+            session,
+            completePasswordResetToken: completePasswordResetToken,
+            newPassword: 'NewPassword123!',
+            transaction: transaction,
+          ),
         );
       });
 
@@ -407,13 +398,12 @@ void main() {
         'when complete password reset is called with valid verification code and password then it throws request not found exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.passwordResetUtil.completePasswordReset(
-                  session,
-                  completePasswordResetToken: completePasswordResetToken,
-                  newPassword: 'AnotherPassword123!',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.passwordResetUtil.completePasswordReset(
+              session,
+              completePasswordResetToken: completePasswordResetToken,
+              newPassword: 'AnotherPassword123!',
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -428,7 +418,7 @@ void main() {
   withServerpod(
     'Given password reset request was validated with expired credentials',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late String completePasswordResetToken;
@@ -459,7 +449,7 @@ void main() {
         );
 
         final passwordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+          (transaction) => fixture.passwordResetUtil.startPasswordReset(
             session,
             email: email,
             transaction: transaction,
@@ -468,13 +458,12 @@ void main() {
 
         // First verify the password reset code to get the set password token
         completePasswordResetToken = await session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.verifyPasswordResetCode(
-                session,
-                passwordResetRequestId: passwordResetRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
-              ),
+          (transaction) => fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
         );
 
         // Try to complete after expiration
@@ -487,7 +476,7 @@ void main() {
           () async {
             try {
               await session.db.transaction(
-                (final transaction) =>
+                (transaction) =>
                     fixture.passwordResetUtil.completePasswordReset(
                       session,
                       completePasswordResetToken: completePasswordResetToken,
@@ -510,13 +499,12 @@ void main() {
         'when complete password reset is called with valid credentials then it throws request not found exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.passwordResetUtil.completePasswordReset(
-                  session,
-                  completePasswordResetToken: completePasswordResetToken,
-                  newPassword: 'NewPassword123!',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.passwordResetUtil.completePasswordReset(
+              session,
+              completePasswordResetToken: completePasswordResetToken,
+              newPassword: 'NewPassword123!',
+              transaction: transaction,
+            ),
           );
 
           await expectLater(

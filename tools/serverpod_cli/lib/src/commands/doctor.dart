@@ -79,13 +79,13 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
       'Exits with an error when any check does not pass.';
 
   /// [runChecks] stands in for the real probes in tests.
-  DoctorCommand({final DoctorChecksRunner runChecks = runDoctorChecks})
+  DoctorCommand({DoctorChecksRunner runChecks = runDoctorChecks})
     : _runChecks = runChecks,
       super(options: DoctorOption.values);
 
   @override
   Future<void> runWithConfig(
-    final Configuration<DoctorOption> commandConfig,
+    Configuration<DoctorOption> commandConfig,
   ) async {
     final asJson = commandConfig.value(DoctorOption.json);
     final fix = commandConfig.value(DoctorOption.fix);
@@ -117,9 +117,9 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
   ///
   /// [quiet] keeps stdout clean for `--json`, which then requires [yes].
   Future<List<DoctorCheckResult>> _applyFix(
-    final List<DoctorCheckResult> results, {
-    required final bool yes,
-    required final bool quiet,
+    List<DoctorCheckResult> results, {
+    required bool yes,
+    required bool quiet,
   }) async {
     if (Platform.isWindows) {
       log.error('--fix is not supported on Windows yet.');
@@ -199,7 +199,7 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
 
   /// The process environment with the PATH a new shell has after sourcing
   /// the env file for [entries].
-  Map<String, String> _environmentWith(final List<String> entries) => {
+  Map<String, String> _environmentWith(List<String> entries) => {
     ...Platform.environment,
     'PATH': pathWith(entries, Platform.environment['PATH'] ?? ''),
   };
@@ -221,7 +221,7 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
 /// Runs every check in order. Flutter goes first so the Dart check can tell
 /// whether PATH selects the SDK bundled with it.
 Future<List<DoctorCheckResult>> runDoctorChecks({
-  final Map<String, String>? environment,
+  Map<String, String>? environment,
 }) async {
   final flutter = await FlutterCheck.probe(
     managedRoot: managedFlutterRootIn(
@@ -241,7 +241,7 @@ Future<List<DoctorCheckResult>> runDoctorChecks({
   ];
 }
 
-void _printReport(final List<DoctorCheckResult> results) {
+void _printReport(List<DoctorCheckResult> results) {
   for (final result in results) {
     final lines = [
       '[${result.status.marker}] ${result.title}: ${result.message}',

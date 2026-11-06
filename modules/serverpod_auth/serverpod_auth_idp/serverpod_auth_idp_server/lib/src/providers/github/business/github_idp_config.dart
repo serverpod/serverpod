@@ -106,7 +106,7 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   /// fields (email, name) are intentionally optional for user privacy.
   /// Override this if you need to enforce specific requirements.
   static void validateGitHubAccountDetails(
-    final GitHubAccountDetails accountDetails,
+    GitHubAccountDetails accountDetails,
   ) {
     if (accountDetails.userIdentifier.isEmpty) {
       throw GitHubUserInfoMissingDataException();
@@ -115,7 +115,7 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
 
   /// Default GitHub token response parser for OAuth2PkceServerConfig.
   static OAuth2PkceTokenResponse parseTokenResponse(
-    final Map<String, dynamic> responseBody,
+    Map<String, dynamic> responseBody,
   ) {
     final error = responseBody['error'] as String?;
     if (error != null) {
@@ -138,9 +138,9 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
 
   @override
   GitHubIdp build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   }) {
     return GitHubIdp(
       this,

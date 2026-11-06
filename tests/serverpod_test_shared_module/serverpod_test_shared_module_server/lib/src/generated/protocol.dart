@@ -15,6 +15,8 @@ import 'package:serverpod/protocol.dart' as _isp;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
     as _ivdm85cg;
+import 'future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _ifspsmem;
 export 'package:serverpod_test_shared_module_shared/serverpod_test_shared_module_shared.dart'
     hide Protocol;
 
@@ -32,11 +34,16 @@ class Protocol extends _is.DatabaseSerializationManager
   _is.ProtocolDeserialization get deserializationMetadata =>
       _is.ProtocolDeserialization.cached(
         this,
-        types: const [],
+        types: const [
+          _is.getType<_ifspsmem.TestGeneratedCallHelloModel>,
+          _is.getType<_ifspsmem.TestGeneratedCallHelloModel?>,
+        ],
         modules: const [
           _ivdm85cg.Protocol.new,
           _isp.Protocol.new,
         ],
+        classNames: const ['TestGeneratedCallHelloModel'],
+        classNamePrefix: 'serverpod_test_shared_module.',
       );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
@@ -54,14 +61,11 @@ class Protocol extends _is.DatabaseSerializationManager
     _ivdm85cg.Protocol().registerHostProtocol(projectName, protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_test_shared_module.'))
-      return className;
-    return className.substring(29);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_test_shared_module.',
+      );
 
   @override
   T deserialize<T>(
@@ -69,8 +73,11 @@ class Protocol extends _is.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_test_shared_module.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -84,9 +91,19 @@ class Protocol extends _is.DatabaseSerializationManager
       }
     }
 
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    if (t == _ifspsmem.TestGeneratedCallHelloModel) {
+      return _ifspsmem.TestGeneratedCallHelloModel.fromJson(data) as T;
+    }
+    if (t == _is.getType<_ifspsmem.TestGeneratedCallHelloModel?>()) {
+      return (data != null
+              ? _ifspsmem.TestGeneratedCallHelloModel.fromJson(data)
+              : null)
+          as T;
+    }
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -98,6 +115,7 @@ class Protocol extends _is.DatabaseSerializationManager
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
+      _ifspsmem.TestGeneratedCallHelloModel => 'TestGeneratedCallHelloModel',
       _ => null,
     };
   }
@@ -114,6 +132,10 @@ class Protocol extends _is.DatabaseSerializationManager
       );
     }
 
+    switch (data) {
+      case _ifspsmem.TestGeneratedCallHelloModel():
+        return 'TestGeneratedCallHelloModel';
+    }
     className = _ivdm85cg.Protocol().getClassNameForObject(data);
     if (className != null) return className;
     className = _isp.Protocol().getClassNameForObject(data);
@@ -129,12 +151,17 @@ class Protocol extends _is.DatabaseSerializationManager
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'TestGeneratedCallHelloModel') {
+      return deserialize<_ifspsmem.TestGeneratedCallHelloModel>(data['data']);
+    }
     try {
       return _ivdm85cg.Protocol().deserializeByClassName(data);
     } on _is.DeserializationClassNameNotFoundException catch (_) {}
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     return super.deserializeByClassName(data);
   }

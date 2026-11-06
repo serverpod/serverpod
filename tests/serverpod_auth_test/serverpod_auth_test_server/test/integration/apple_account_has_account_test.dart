@@ -35,7 +35,7 @@ void main() {
 
   withServerpod(
     'Given an unauthenticated session',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       test(
         'when calling hasAccount then it returns false',
         () async {
@@ -49,8 +49,8 @@ void main() {
   );
 
   withServerpod('Given an authenticated session but no Apple account', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late TestSessionBuilder session;
 
@@ -73,8 +73,8 @@ void main() {
   });
 
   withServerpod('Given an authenticated session with an Apple account', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late AuthUserModel authUser;
     late TestSessionBuilder session;

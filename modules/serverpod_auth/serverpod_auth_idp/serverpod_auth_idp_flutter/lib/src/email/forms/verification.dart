@@ -1,23 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../common/text_formatters.dart';
-import '../../common/widgets/buttons/action_button.dart';
-import '../../common/widgets/gaps.dart';
-import '../../common/widgets/verification_code.dart';
-import '../../localization/sign_in_localization_provider.dart';
 import '../email_auth_controller.dart';
-import 'widgets/back_to_sign_in_button.dart';
-import 'widgets/form_standard_layout.dart';
-import '../../common/widgets/buttons/resend_code_button.dart';
+import 'shared/shared_verification_form.dart';
 
 // Export types used in the [VerificationCodeConfig] class.
 export 'package:flutter/services.dart' show TextInputType;
 export '../../common/text_formatters.dart' show LetterCase;
-
-/// Pattern with the default server-side characters in the verification code.
-///
-/// The default is to generate codes with digits from [1-9].
-final _defaultAllowedCharacters = RegExp(r'[1-9]');
 
 /// Email verification form widget.
 ///
@@ -63,75 +52,16 @@ class VerificationForm extends StatefulWidget {
 }
 
 class _VerificationFormState extends State<VerificationForm> {
-  late final FocusNode focusNode;
-
-  EmailAuthController get controller => widget.controller;
-
   @override
-  void initState() {
-    super.initState();
-    focusNode = FocusNode();
-
-    controller.addListener(_onControllerStateChanged);
-  }
-
-  /// Automatically focus the verification code input when an error occurs for
-  /// the user to correct it.
-  void _onControllerStateChanged() {
-    if (!mounted) return;
-    if (controller.state == EmailAuthState.error) {
-      focusNode.requestFocus();
-    }
-  }
-
-  @override
-  void dispose() {
-    controller.removeListener(_onControllerStateChanged);
-    focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final texts = context.emailSignInTexts;
-    final config = widget.verificationCodeConfig;
-
-    return FormStandardLayout(
-      title: widget.title,
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            widget.messageText ?? texts.verificationMessage,
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.left,
-          ),
-          smallGap,
-          VerificationCodeInput(
-            focusNode: focusNode,
-            verificationCodeController: controller.verificationCodeController,
-            onCompleted: widget.onCompleted,
-            isLoading: controller.isLoading,
-            length: config.length,
-            keyboardType: config.keyboardType,
-            allowedLetterCase: config.allowedLetterCase,
-            allowedCharactersPattern:
-                config.allowedCharactersPattern ?? _defaultAllowedCharacters,
-          ),
-          ResendCodeButton(
-            onResendPressed: controller.resendVerificationCode,
-            countdownDuration: config.resendCountdownDuration,
-          ),
-        ],
-      ),
-      actionButton: ActionButton(
-        onPressed: widget.onCompleted,
-        label: widget.verifyButtonLabel ?? texts.verify,
-        isLoading: controller.isLoading,
-      ),
-      bottomText: BackToSignInButton(controller: controller),
-    );
-  }
+  Widget build(BuildContext context) => SharedVerificationForm(
+    controller: widget.controller,
+    onBackToSignIn: () => widget.controller.navigateTo(EmailFlowScreen.login),
+    title: widget.title,
+    messageText: widget.messageText,
+    onCompleted: widget.onCompleted,
+    verifyButtonLabel: widget.verifyButtonLabel,
+    verificationCodeConfig: widget.verificationCodeConfig,
+  );
 }
 
 /// Configuration for verification code input.

@@ -34,9 +34,9 @@ abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   /// {@endtemplate}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String email,
-    required final String password,
+    Session session, {
+    required String email,
+    required String password,
   }) async {
     return emailIdp.login(
       session,
@@ -58,8 +58,8 @@ abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
   /// be valid.
   /// {@endtemplate}
   Future<UuidValue> startRegistration(
-    final Session session, {
-    required final String email,
+    Session session, {
+    required String email,
   }) async {
     return emailIdp.startRegistration(
       session,
@@ -80,9 +80,9 @@ abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
   ///   for the given [accountRequestId] or [verificationCode] is invalid.
   /// {@endtemplate}
   Future<String> verifyRegistrationCode(
-    final Session session, {
-    required final UuidValue accountRequestId,
-    required final String verificationCode,
+    Session session, {
+    required UuidValue accountRequestId,
+    required String verificationCode,
   }) async {
     return emailIdp.verifyRegistrationCode(
       session,
@@ -108,9 +108,9 @@ abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Returns a session for the newly created user.
   /// {@endtemplate}
   Future<AuthSuccess> finishRegistration(
-    final Session session, {
-    required final String registrationToken,
-    required final String password,
+    Session session, {
+    required String registrationToken,
+    required String password,
   }) async {
     return emailIdp.finishRegistration(
       session,
@@ -135,8 +135,8 @@ abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
   ///
   /// {@endtemplate}
   Future<UuidValue> startPasswordReset(
-    final Session session, {
-    required final String email,
+    Session session, {
+    required String email,
   }) async {
     return emailIdp.startPasswordReset(session, email: email);
   }
@@ -158,9 +158,9 @@ abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
   /// of the credentials for setting the password.
   /// {@endtemplate}
   Future<String> verifyPasswordResetCode(
-    final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
+    Session session, {
+    required UuidValue passwordResetRequestId,
+    required String verificationCode,
   }) async {
     return emailIdp.verifyPasswordResetCode(
       session,
@@ -186,9 +186,9 @@ abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   /// {@endtemplate}
   Future<void> finishPasswordReset(
-    final Session session, {
-    required final String finishPasswordResetToken,
-    required final String newPassword,
+    Session session, {
+    required String finishPasswordResetToken,
+    required String newPassword,
   }) async {
     await emailIdp.finishPasswordReset(
       session,
@@ -198,6 +198,6 @@ abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
   }
 
   @override
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await emailIdp.hasAccount(session);
 }

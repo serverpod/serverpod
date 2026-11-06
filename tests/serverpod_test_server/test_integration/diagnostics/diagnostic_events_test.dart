@@ -262,17 +262,19 @@ void main() {
       expect(record.context, isA<StreamOpContext>());
     });
 
-    test('when a client calls method url with malformed json '
-        'then the diagnostic event handler gets called', () async {
-      var response = http.post(
+    test('when a client calls method url with a wrongly typed argument '
+        'then a bad request is returned and the diagnostic event handler '
+        'is not called', () async {
+      var response = await http.post(
         Uri.parse('${pod.apiUrl}simple/hello'),
         body: '{"name": [42]}',
       );
-      await response;
 
-      final record = await exceptionHandler.events.first.timeout(timeout);
-      expect(record.space, equals(OriginSpace.application));
-      expect(record.context, isA<MethodCallOpContext>());
+      expect(response.statusCode, HttpStatus.badRequest);
+      await expectLater(
+        exceptionHandler.events.first.timeout(timeout),
+        throwsA(isA<TimeoutException>()),
+      );
     });
   });
 

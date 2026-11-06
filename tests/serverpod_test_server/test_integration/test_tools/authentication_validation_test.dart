@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_server/src/endpoints/test_tools.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -349,6 +350,55 @@ void main() {
               completes,
             );
             exception = await streamClosedCompleter2.future;
+            expect(exception, isA<ConnectionClosedException>());
+          },
+        );
+      });
+
+      group('when connected to an authenticated broadcast streaming method', () {
+        late Completer<dynamic> streamClosedCompleter;
+
+        var authenticatedUserId = '1';
+        var authenticatedSessionBuilder = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(
+            authenticatedUserId,
+            {Scope('user')},
+          ),
+        );
+
+        late Session session;
+
+        setUp(() async {
+          session = authenticatedSessionBuilder.build();
+          streamClosedCompleter = Completer<dynamic>();
+          endpoints.authenticatedTestTools
+              .broadcastStream(authenticatedSessionBuilder)
+              .listen(
+                (_) {},
+                onError: (e) => streamClosedCompleter.complete(e),
+              );
+          await flushEventQueue();
+        });
+
+        tearDown(() async {
+          await session.close();
+        });
+
+        test(
+          'and the authenticated user is revoked while the endpoint emits a value then the stream is closed with ConnectionClosedException.',
+          () async {
+            unawaited(
+              session.messages.authenticationRevoked(
+                authenticatedUserId,
+                RevokedAuthenticationUser(),
+              ),
+            );
+            AuthenticatedTestToolsEndpoint.broadcastController.add(1);
+            await flushEventQueue();
+
+            var exception = await streamClosedCompleter.future.timeout(
+              Duration(seconds: 5),
+            );
             expect(exception, isA<ConnectionClosedException>());
           },
         );

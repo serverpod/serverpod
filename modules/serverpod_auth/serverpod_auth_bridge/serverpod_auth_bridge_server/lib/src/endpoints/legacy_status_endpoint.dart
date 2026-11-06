@@ -6,35 +6,35 @@ import 'package:serverpod_auth_idp_server/core.dart';
 /// sign-out, user info retrieval).
 class LegacyStatusEndpoint extends Endpoint {
   /// Returns whether the current session is authenticated.
-  Future<bool> isSignedIn(final Session session) async {
+  Future<bool> isSignedIn(Session session) async {
     return session.isUserSignedIn;
   }
 
   /// Signs out the current device by deleting the legacy session.
-  Future<void> signOutDevice(final Session session) async {
+  Future<void> signOutDevice(Session session) async {
     final authId = int.tryParse(session.authenticated?.authId ?? '');
     if (authId != null) {
       await LegacySession.db.deleteWhere(
         session,
-        where: (final t) => t.id.equals(authId),
+        where: (t) => t.id.equals(authId),
       );
     }
   }
 
   /// Signs out all devices by deleting all legacy sessions for the user.
-  Future<void> signOutAllDevices(final Session session) async {
+  Future<void> signOutAllDevices(Session session) async {
     final userIdentifier = session.authenticated?.userIdentifier;
     if (userIdentifier != null) {
       final uuid = UuidValue.withValidation(userIdentifier);
       await LegacySession.db.deleteWhere(
         session,
-        where: (final t) => t.authUserId.equals(uuid),
+        where: (t) => t.authUserId.equals(uuid),
       );
     }
   }
 
   /// Returns legacy-format user info for the authenticated user.
-  Future<LegacyUserInfo?> getUserInfo(final Session session) async {
+  Future<LegacyUserInfo?> getUserInfo(Session session) async {
     final userIdentifier = session.authenticated?.userIdentifier;
     if (userIdentifier == null) return null;
     final uuid = UuidValue.withValidation(userIdentifier);
@@ -73,7 +73,7 @@ class LegacyStatusEndpoint extends Endpoint {
   /// This mirrors the capabilities supported by the bridge's legacy endpoints,
   /// so clients can show settings that are actually available.
   Future<LegacyUserSettingsConfig> getUserSettingsConfig(
-    final Session session,
+    Session session,
   ) async {
     return LegacyUserSettingsConfig(
       canSeeUserName: true,

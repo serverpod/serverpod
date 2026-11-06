@@ -411,15 +411,30 @@ conflicting commands, such as overlapping `applyMigrations` calls.
 
 ### Address publication
 
-The pod's listeners stay on TCP. Browsers cannot connect to a Unix socket, and
-the auto-refresh script from [`hot_reload.md`](hot_reload.md) polls
-`GET /__dev/version` over an ordinary HTTP origin.
+The pod's API, Insights and web listeners stay on TCP. Browsers cannot connect
+to a Unix socket, and the auto-refresh script from [`hot_reload.md`](hot_reload.md)
+polls `GET /__dev/version` over an ordinary HTTP origin.
 
 The runner binds the ports from `config/development.yaml`, falls back to
 ephemeral ports when they are taken, and publishes the resolved addresses in the
 manifest. Unconditional ephemeral ports would also avoid collisions, at the cost
 of an address that changes on every restart. The three listeners fall back as a
 block rather than independently.
+
+Automatic embedded-database startup uses only the Unix socket, even when the
+config has a database password. The runner therefore does not claim or move a
+database TCP port with the three HTTP listeners, and the pod reports no
+`servers.database` address for a Unix-only database.
+
+`serverpod database start` explicitly enables loopback TCP when launching a
+database with a configured password, using `database.port` or its `--port`
+override. To enable TCP for an existing Unix-only database, stop the database
+and its owning process, run that command for the appropriate mode, then start
+the server again. A pod that joins this database uses its Unix socket and
+reports its TCP address in `servers.database`. Attaching to a running database
+keeps its listeners unchanged; starting the command after the pod does not add
+a TCP listener. The runner does not move this explicitly started database's
+TCP port when another checkout claims an HTTP port.
 
 Fallback applies when another Serverpod runner holds or has claimed the port.
 A runner claims its ports in its manifest as soon as it has resolved them,

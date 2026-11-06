@@ -12,7 +12,7 @@ void main() {
   withServerpod(
     'Given account request exists',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -80,7 +80,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -98,7 +98,7 @@ void main() {
           setUp(() async {
             attempts = List.generate(
               numberOfAttempts,
-              (final _) => fixture.emailIdp.verifyRegistrationCode(
+              (_) => fixture.emailIdp.verifyRegistrationCode(
                 session,
                 accountRequestId: accountRequestId,
                 verificationCode: verificationCode,
@@ -114,19 +114,18 @@ void main() {
                 throwsA(
                   isA<ParallelWaitError>()
                       .having(
-                        (final e) => (e.errors as List<AsyncError?>).nonNulls,
+                        (e) => (e.errors as List<AsyncError?>).nonNulls,
                         'errors',
                         hasLength(numberOfAttempts - 1),
                       )
                       .having(
-                        (final e) =>
-                            (e.errors as List<AsyncError?>).nonNulls.map(
-                              (final e) => e.error,
-                            ),
+                        (e) => (e.errors as List<AsyncError?>).nonNulls.map(
+                          (e) => e.error,
+                        ),
                         'errors',
                         everyElement(
                           isA<EmailAccountRequestException>().having(
-                            (final e) => e.reason,
+                            (e) => e.reason,
                             'reason',
                             equals(EmailAccountRequestExceptionReason.invalid),
                           ),
@@ -142,7 +141,7 @@ void main() {
               attempts,
               throwsA(
                 isA<ParallelWaitError>().having(
-                  (final e) => (e.values as List<String?>).nonNulls,
+                  (e) => (e.values as List<String?>).nonNulls,
                   'values',
                   hasLength(1),
                 ),
@@ -172,7 +171,7 @@ void main() {
                 result,
                 throwsA(
                   isA<EmailAccountRequestException>().having(
-                    (final e) => e.reason,
+                    (e) => e.reason,
                     'reason',
                     EmailAccountRequestExceptionReason.expired,
                   ),
@@ -203,7 +202,7 @@ void main() {
                 result,
                 throwsA(
                   isA<EmailAccountRequestException>().having(
-                    (final e) => e.reason,
+                    (e) => e.reason,
                     'reason',
                     EmailAccountRequestExceptionReason.invalid,
                   ),
@@ -219,7 +218,7 @@ void main() {
   withServerpod(
     'Given account request that has been verified',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -270,7 +269,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -299,7 +298,7 @@ void main() {
                 result,
                 throwsA(
                   isA<EmailAccountRequestException>().having(
-                    (final e) => e.reason,
+                    (e) => e.reason,
                     'reason',
                     EmailAccountRequestExceptionReason.invalid,
                   ),
@@ -315,7 +314,7 @@ void main() {
   withServerpod(
     'Given account request that has been validated with invalid credentials and config allows multiple attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -372,7 +371,7 @@ void main() {
   withServerpod(
     'Given account request was validated with expired credentials',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -435,7 +434,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -449,7 +448,7 @@ void main() {
   withServerpod(
     'Given account request that has failed verification matching the rate limit',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -502,7 +501,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.tooManyAttempts,
               ),
@@ -516,7 +515,7 @@ void main() {
   withServerpod(
     'Given existing account request that has failed to verify past the maximum number of allowed verification attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -579,7 +578,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.tooManyAttempts,
               ),
@@ -593,7 +592,7 @@ void main() {
   withServerpod(
     'Given account request that has been completed',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -609,8 +608,7 @@ void main() {
           config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
-            passwordValidationFunction: (final password) =>
-                password == 'Foobar123!',
+            passwordValidationFunction: (password) => password == 'Foobar123!',
           ),
         );
 
@@ -650,7 +648,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -664,7 +662,7 @@ void main() {
   withServerpod(
     'Given no account request created',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -696,7 +694,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -730,7 +728,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.tooManyAttempts,
               ),

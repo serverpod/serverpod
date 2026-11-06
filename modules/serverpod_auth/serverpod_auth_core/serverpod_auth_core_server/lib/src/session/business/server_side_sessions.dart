@@ -25,7 +25,7 @@ class ServerSideSessions {
 
   /// Creates a new [ServerSideSessions] instance.
   ServerSideSessions({
-    required final ServerSideSessionsConfig config,
+    required ServerSideSessionsConfig config,
     this.authUsers = const AuthUsers(),
   }) : _config = config,
        _sessionKeyHash = ServerSideSessionKeyHash.fromConfig(config);
@@ -42,8 +42,8 @@ class ServerSideSessions {
   /// does not resolve to a valid authentication info (anymore), this will
   /// return `null`, and log details of the reason for rejection.
   Future<AuthenticationInfo?> authenticationHandler(
-    final Session session,
-    final String key,
+    Session session,
+    String key,
   ) async {
     final sessionKeyParts = tryParseServerSideSessionToken(session, key);
     if (sessionKeyParts == null) {
@@ -139,9 +139,9 @@ class ServerSideSessions {
   /// In most situations this should not be called directly, but rather through an authentication provider.
   @useResult
   Future<AuthSuccess> createSession(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
 
     /// The scopes to apply to the session.
     ///
@@ -152,20 +152,20 @@ class ServerSideSessions {
     /// If `null`, uses [ServerSideSessionsConfig.defaultSessionLifetime] to compute expiration time.
     /// If both are `null`, the session will work until it's deleted or when it's been
     /// inactive for [expireAfterUnusedFor].
-    final DateTime? expiresAt,
+    DateTime? expiresAt,
 
     /// Length of inactivity after which the session is no longer usable.
     /// If `null`, uses [ServerSideSessionsConfig.defaultSessionInactivityTimeout].
     /// If both are `null`, the session is valid until [expiresAt].
-    final Duration? expireAfterUnusedFor,
+    Duration? expireAfterUnusedFor,
 
     /// Whether to skip the check if the user is blocked (in which case a
     /// [AuthUserBlockedException] would be thrown).
     ///
     /// Should only to be used if the caller is sure that the user is not
     /// blocked.
-    final bool skipUserBlockedChecked = false,
-    final Transaction? transaction,
+    bool skipUserBlockedChecked = false,
+    Transaction? transaction,
   }) async {
     if (!skipUserBlockedChecked || scopes == null) {
       final authUser = await authUsers.get(
@@ -251,16 +251,16 @@ class ServerSideSessions {
   /// If [limit] is provided, the results will be sorted by session ID to ensure
   /// deterministic ordering.
   Future<List<ServerSideSessionInfo>> listSessions(
-    final Session session, {
-    final UuidValue? authUserId,
-    final String? method,
-    final bool? expired,
-    final int? limit,
-    final Transaction? transaction,
+    Session session, {
+    UuidValue? authUserId,
+    String? method,
+    bool? expired,
+    int? limit,
+    Transaction? transaction,
   }) async {
     final serverSideSessions = await ServerSideSession.db.find(
       session,
-      where: (final t) {
+      where: (t) {
         Expression<dynamic> expression = Constant.bool(true);
 
         if (authUserId != null) {
@@ -274,7 +274,7 @@ class ServerSideSessions {
         return expression;
       },
       limit: limit,
-      orderBy: limit != null ? (final t) => t.id : null,
+      orderBy: limit != null ? (t) => t.id : null,
       transaction: transaction,
     );
 
@@ -298,8 +298,8 @@ class ServerSideSessions {
 
   /// Helper method to determine if a session should be included based on expiration filter.
   bool _shouldIncludeSession(
-    final ServerSideSession serverSideSession,
-    final bool? expiredFilter,
+    ServerSideSession serverSideSession,
+    bool? expiredFilter,
   ) {
     // If no filter is specified, include all sessions
     if (expiredFilter == null) {
@@ -313,7 +313,7 @@ class ServerSideSessions {
   }
 
   /// Checks if a session is expired based on the same logic used in authenticationHandler.
-  bool _isSessionExpired(final ServerSideSession serverSideSession) {
+  bool _isSessionExpired(ServerSideSession serverSideSession) {
     // Check if session has a fixed expiration date that has passed
     final expiresAt = serverSideSession.expiresAt;
     if (expiresAt != null && clock.now().isAfter(expiresAt)) {
@@ -344,15 +344,15 @@ class ServerSideSessions {
   /// `session.messages.authenticationRevoked` when sessions are deleted. If this
   /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
   Future<List<UuidValue>> revokeAllSessions(
-    final Session session, {
-    required final UuidValue authUserId,
-    final String? method,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    String? method,
+    Transaction? transaction,
   }) async {
     // Delete all sessions for the user
     final auths = await ServerSideSession.db.deleteWhere(
       session,
-      where: (final row) => row.authUserId.equals(authUserId),
+      where: (row) => row.authUserId.equals(authUserId),
       transaction: transaction,
     );
 
@@ -380,14 +380,14 @@ class ServerSideSessions {
   /// `session.messages.authenticationRevoked` when the session is deleted. If this
   /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
   Future<bool> revokeSession(
-    final Session session, {
-    required final UuidValue serverSideSessionId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue serverSideSessionId,
+    Transaction? transaction,
   }) async {
     // Delete the user session for the current device
     final serverSideSession = (await ServerSideSession.db.deleteWhere(
       session,
-      where: (final row) => row.id.equals(serverSideSessionId),
+      where: (row) => row.id.equals(serverSideSessionId),
       transaction: transaction,
     )).firstOrNull;
 

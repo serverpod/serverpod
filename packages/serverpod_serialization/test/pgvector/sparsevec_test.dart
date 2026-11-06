@@ -185,4 +185,15 @@ void main() {
       expect(SparseVector([1.0, 0.0, 2.0]).every((v) => v >= 0), isTrue);
     },
   );
+
+  test(
+    'Given two equal SparseVectors backed by different lists when getting their hashCodes then they match.',
+    () {
+      final a = SparseVector([1.0, 0.0, 2.0]);
+      final b = SparseVector.fromBinary(a.toBinary());
+
+      expect(a, equals(b));
+      expect(a.hashCode, equals(b.hashCode));
+    },
+  );
 }

@@ -15,8 +15,8 @@ class _FakeScloud {
   _FakeScloud(this.exitCodes);
 
   Future<int> start(
-    final List<String> args, {
-    required final Map<String, String> environment,
+    List<String> args, {
+    required Map<String, String> environment,
   }) async {
     launches.add((args: args, environment: environment));
     return exitCodes[launches.length - 1];

@@ -97,7 +97,7 @@ class FacebookIdpConfig extends IdentityProviderBuilder<FacebookIdp> {
   /// This default implementation performs minimal validation.
   /// Override this to add custom validation logic.
   static void validateFacebookAccountDetails(
-    final FacebookAccountDetails accountDetails,
+    FacebookAccountDetails accountDetails,
   ) {
     // Default validation - can be customized by users
     if (accountDetails.userIdentifier.isEmpty) {
@@ -107,9 +107,9 @@ class FacebookIdpConfig extends IdentityProviderBuilder<FacebookIdp> {
 
   @override
   FacebookIdp build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   }) {
     return FacebookIdp(
       this,

@@ -2,7 +2,12 @@ include: package:flutter_lints/flutter.yaml
 
 linter:
   rules:
+     avoid_final_parameters: true
      prefer_const_constructors: true
 
 formatter:
   trailing_commas: preserve
+analyzer:
+  exclude:
+    - build/**
+    - web/**

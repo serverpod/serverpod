@@ -19,6 +19,8 @@ import 'providers/anonymous/models/exceptions/anonymous_account_blocked_exceptio
     as _ite257iv;
 import 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart'
     as _ig3ph7nw;
+import 'providers/email/models/email_account_otp_verification_result.dart'
+    as _i1jfpoxd;
 import 'providers/email/models/exceptions/email_account_login_exception.dart'
     as _ij1yj4f1;
 import 'providers/email/models/exceptions/email_account_login_exception_reason.dart'
@@ -54,6 +56,7 @@ import 'providers/passkey/models/passkey_registration_request.dart'
     as _izjoggd8;
 export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception.dart';
 export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart';
+export 'providers/email/models/email_account_otp_verification_result.dart';
 export 'providers/email/models/exceptions/email_account_login_exception.dart';
 export 'providers/email/models/exceptions/email_account_login_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_password_reset_exception.dart';
@@ -90,6 +93,7 @@ class Protocol extends _isc.SerializationManager
         types: const [
           _isc.getType<_ite257iv.AnonymousAccountBlockedException>,
           _isc.getType<_ig3ph7nw.AnonymousAccountBlockedExceptionReason>,
+          _isc.getType<_i1jfpoxd.EmailAccountOtpVerificationResult>,
           _isc.getType<_ij1yj4f1.EmailAccountLoginException>,
           _isc.getType<_ihd5znj2.EmailAccountLoginExceptionReason>,
           _isc.getType<_i7yyr103.EmailAccountPasswordResetException>,
@@ -109,6 +113,7 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<_izjoggd8.PasskeyRegistrationRequest>,
           _isc.getType<_ite257iv.AnonymousAccountBlockedException?>,
           _isc.getType<_ig3ph7nw.AnonymousAccountBlockedExceptionReason?>,
+          _isc.getType<_i1jfpoxd.EmailAccountOtpVerificationResult?>,
           _isc.getType<_ij1yj4f1.EmailAccountLoginException?>,
           _isc.getType<_ihd5znj2.EmailAccountLoginExceptionReason?>,
           _isc.getType<_i7yyr103.EmailAccountPasswordResetException?>,
@@ -129,6 +134,29 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<({_idt.ByteData challenge, _isc.UuidValue id})>,
         ],
         modules: const [_iacc.Protocol.new],
+        classNames: const [
+          'AnonymousAccountBlockedException',
+          'AnonymousAccountBlockedExceptionReason',
+          'EmailAccountOtpVerificationResult',
+          'EmailAccountLoginException',
+          'EmailAccountLoginExceptionReason',
+          'EmailAccountPasswordResetException',
+          'EmailAccountPasswordResetExceptionReason',
+          'EmailAccountRequestException',
+          'EmailAccountRequestExceptionReason',
+          'FacebookAccessTokenVerificationException',
+          'FirebaseEmailNotVerifiedException',
+          'FirebaseIdTokenVerificationException',
+          'GitHubAccessTokenVerificationException',
+          'GoogleIdTokenVerificationException',
+          'MicrosoftAccessTokenVerificationException',
+          'PasskeyChallengeExpiredException',
+          'PasskeyChallengeNotFoundException',
+          'PasskeyLoginRequest',
+          'PasskeyPublicKeyNotFoundException',
+          'PasskeyRegistrationRequest',
+        ],
+        classNamePrefix: 'serverpod_auth_idp.',
       );
 
   void registerHostProtocol(
@@ -138,13 +166,11 @@ class Protocol extends _isc.SerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth_idp.')) return className;
-    return className.substring(19);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth_idp.',
+      );
 
   @override
   T deserialize<T>(
@@ -152,8 +178,11 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth_idp.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -173,6 +202,9 @@ class Protocol extends _isc.SerializationManager
     if (t == _ig3ph7nw.AnonymousAccountBlockedExceptionReason) {
       return _ig3ph7nw.AnonymousAccountBlockedExceptionReason.fromJson(data)
           as T;
+    }
+    if (t == _i1jfpoxd.EmailAccountOtpVerificationResult) {
+      return _i1jfpoxd.EmailAccountOtpVerificationResult.fromJson(data) as T;
     }
     if (t == _ij1yj4f1.EmailAccountLoginException) {
       return _ij1yj4f1.EmailAccountLoginException.fromJson(data) as T;
@@ -239,6 +271,12 @@ class Protocol extends _isc.SerializationManager
         _isc.getType<_ig3ph7nw.AnonymousAccountBlockedExceptionReason?>()) {
       return (data != null
               ? _ig3ph7nw.AnonymousAccountBlockedExceptionReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i1jfpoxd.EmailAccountOtpVerificationResult?>()) {
+      return (data != null
+              ? _i1jfpoxd.EmailAccountOtpVerificationResult.fromJson(data)
               : null)
           as T;
     }
@@ -363,9 +401,10 @@ class Protocol extends _isc.SerializationManager
           )
           as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -381,6 +420,8 @@ class Protocol extends _isc.SerializationManager
         'AnonymousAccountBlockedException',
       _ig3ph7nw.AnonymousAccountBlockedExceptionReason =>
         'AnonymousAccountBlockedExceptionReason',
+      _i1jfpoxd.EmailAccountOtpVerificationResult =>
+        'EmailAccountOtpVerificationResult',
       _ij1yj4f1.EmailAccountLoginException => 'EmailAccountLoginException',
       _ihd5znj2.EmailAccountLoginExceptionReason =>
         'EmailAccountLoginExceptionReason',
@@ -432,6 +473,8 @@ class Protocol extends _isc.SerializationManager
         return 'AnonymousAccountBlockedException';
       case _ig3ph7nw.AnonymousAccountBlockedExceptionReason():
         return 'AnonymousAccountBlockedExceptionReason';
+      case _i1jfpoxd.EmailAccountOtpVerificationResult():
+        return 'EmailAccountOtpVerificationResult';
       case _ij1yj4f1.EmailAccountLoginException():
         return 'EmailAccountLoginException';
       case _ihd5znj2.EmailAccountLoginExceptionReason():
@@ -483,6 +526,11 @@ class Protocol extends _isc.SerializationManager
     }
     if (dataClassName == 'AnonymousAccountBlockedExceptionReason') {
       return deserialize<_ig3ph7nw.AnonymousAccountBlockedExceptionReason>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'EmailAccountOtpVerificationResult') {
+      return deserialize<_i1jfpoxd.EmailAccountOtpVerificationResult>(
         data['data'],
       );
     }
@@ -562,6 +610,12 @@ class Protocol extends _isc.SerializationManager
     }
     if (dataClassName == 'PasskeyRegistrationRequest') {
       return deserialize<_izjoggd8.PasskeyRegistrationRequest>(data['data']);
+    }
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
+      return _iacc.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(20),
+      });
     }
     return super.deserializeByClassName(data);
   }

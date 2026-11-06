@@ -37,7 +37,7 @@ void main() {
         ],
       );
 
-      var setCookie = result.headers[Headers.setCookieHeader]!;
+      var setCookie = result.headers[HeaderName.setCookie]!;
       expect(setCookie, hasLength(1));
       expect(setCookie.single, contains('session=abc123'));
       expect(setCookie.single, contains('HttpOnly'));
@@ -60,7 +60,7 @@ void main() {
         ],
       );
 
-      var setCookie = result.headers[Headers.setCookieHeader]!.toList();
+      var setCookie = result.headers[HeaderName.setCookie]!.toList();
       expect(setCookie, hasLength(2));
       expect(setCookie[0], contains('a=1'));
       expect(setCookie[1], contains('b=2'));

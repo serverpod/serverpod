@@ -48,7 +48,7 @@ class AnalyzePubspecsCommand extends ServerpodCommand<AnalyzePubspecsOption> {
 
   @override
   Future<void> runWithConfig(
-    final Configuration<AnalyzePubspecsOption> commandConfig,
+    Configuration<AnalyzePubspecsOption> commandConfig,
   ) async {
     final checkLatestVersion = commandConfig.value(
       AnalyzePubspecsOption.checkLatest,

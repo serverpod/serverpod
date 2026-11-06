@@ -15,6 +15,10 @@ import 'dart:async' as _ida;
 import 'dart:io' as _idi;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test/serverpod_test.dart' as _ist;
+import 'package:serverpod_test_module_server/src/generated/future_calls.dart'
+    as _ipo399sr;
+import 'package:serverpod_test_module_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _im9z7j8o;
 import 'package:serverpod_test_module_server/src/generated/module_class.dart'
     as _i6f0lekx;
 import 'package:serverpod_test_module_server/src/generated/module_feature/models/my_feature_model.dart'
@@ -154,6 +158,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final futureCalls = _FutureCalls();
+
   late final _ConcreteBaseEndpoint concreteBase;
 
   late final _ModuleEndpoint module;
@@ -205,6 +211,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
   }
+}
+
+class _FutureCalls {
+  late final testGeneratedCall = _TestGeneratedCallFutureCall();
 }
 
 class _ConcreteBaseEndpoint {
@@ -772,5 +782,24 @@ class _MyModuleFeatureEndpoint {
         await _localUniqueSession.close();
       }
     });
+  }
+}
+
+class _TestGeneratedCallFutureCall {
+  Future<void> hello(
+    _ist.TestSessionBuilder sessionBuilder,
+    String name,
+  ) async {
+    var object = _im9z7j8o.TestGeneratedCallHelloModel(name: name);
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
+    try {
+      await _ipo399sr.TestGeneratedCallHelloFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
   }
 }
