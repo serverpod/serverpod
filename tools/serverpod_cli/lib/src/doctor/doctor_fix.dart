@@ -32,16 +32,37 @@ List<String> pathEntriesToAdd({
   ];
 }
 
-/// The startup file for the login [shell], or `null` for shells doctor does
-/// not know how to edit.
-File? startupFileFor({
+/// The startup files to source the env file from for the login [shell], or
+/// an empty list for shells doctor does not know how to edit.
+///
+/// Interactive shells read the rc file. Login shells, such as SSH sessions
+/// and `bash -lc`, read a profile instead, and Ubuntu's stock `.bashrc`
+/// returns early when not interactive, so the profile gets its own line.
+/// bash reads only the first of `.bash_profile`, `.bash_login`, and
+/// `.profile` that exists. Shells that are neither still need to source the
+/// env file themselves.
+List<File> startupFilesFor({
   required final String? shell,
   required final String home,
-}) => switch (shell == null ? null : p.basename(shell)) {
-  'zsh' => File(p.join(home, '.zshrc')),
-  'bash' => File(p.join(home, '.bashrc')),
-  _ => null,
-};
+}) {
+  File inHome(final String name) => File(p.join(home, name));
+
+  switch (shell == null ? null : p.basename(shell)) {
+    case 'zsh':
+      return [inHome('.zshrc'), inHome('.zprofile')];
+    case 'bash':
+      final profiles = ['.bash_profile', '.bash_login', '.profile'].map(inHome);
+      return [
+        inHome('.bashrc'),
+        profiles.firstWhere(
+          (f) => f.existsSync(),
+          orElse: () => inHome('.profile'),
+        ),
+      ];
+    default:
+      return const [];
+  }
+}
 
 /// Writes [envFile] so that sourcing it puts [entries] first on PATH, each
 /// once no matter how many times it is sourced.

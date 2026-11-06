@@ -19,5 +19,5 @@ su dev -c '
   export SERVERPOD_BOOTSTRAP_BUNDLE=/bundle/serverpod-bootstrap-linux-x64.tar.gz
   cd "$HOME"
   sh /install/install.sh --yes
-  sh /install/test/verify_install.sh /install/install.sh "$HOME/.bashrc"
+  sh /install/test/verify_install.sh /install/install.sh "$HOME/.bashrc" "$HOME/.profile"
 '

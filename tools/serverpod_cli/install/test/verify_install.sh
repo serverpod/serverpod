@@ -4,15 +4,17 @@
 # changes nothing. Run as the user who ran the installer, with the same
 # SERVERPOD_BOOTSTRAP_BUNDLE override.
 #
-#   tools/serverpod_cli/install/test/verify_install.sh <install.sh> <startup-file>
+#   tools/serverpod_cli/install/test/verify_install.sh <install.sh> <startup-file>...
 
 set -eu
 
 script="${1:?path to install.sh}"
-startup="${2:?shell startup file the installer should have edited}"
+shift
 env_file="$HOME/.serverpod/env.sh"
 
 fail() { printf 'verify: %s\n' "$*" >&2; exit 1; }
+
+[ $# -gt 0 ] || fail "pass the startup files the installer should have edited"
 
 [ -f "$env_file" ] || fail "$env_file was not written"
 # shellcheck source=/dev/null
@@ -36,12 +38,14 @@ project_dir="$(mktemp -d)"
 
 echo "verify: a rerun changes nothing"
 env_before="$(cat "$env_file")"
-startup_before="$(cat "$startup")"
+startup_before="$(cat "$@")"
 sh "$script" --yes
 [ "$env_before" = "$(cat "$env_file")" ] || fail "the rerun rewrote $env_file differently"
-[ "$startup_before" = "$(cat "$startup")" ] || fail "the rerun changed $startup"
-# shellcheck disable=SC2016 # the literal $HOME is what the installer writes
-lines="$(grep -c '\. "\$HOME/.serverpod/env.sh"' "$startup" || true)"
-[ "$lines" = "1" ] || fail "expected one source line in $startup, found $lines"
+[ "$startup_before" = "$(cat "$@")" ] || fail "the rerun changed a startup file: $*"
+for startup in "$@"; do
+  # shellcheck disable=SC2016 # the literal $HOME is what the installer writes
+  lines="$(grep -c '\. "\$HOME/.serverpod/env.sh"' "$startup" || true)"
+  [ "$lines" = "1" ] || fail "expected one source line in $startup, found $lines"
+done
 
 echo "verify: ok"

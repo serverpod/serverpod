@@ -101,30 +101,51 @@ void main() {
     },
   );
 
-  test('Given zsh as the login shell, when picking the startup file, '
-      'then it is .zshrc', () {
-    expect(
-      startupFileFor(shell: '/bin/zsh', home: _home)?.path,
+  test('Given zsh as the login shell, when picking the startup files, '
+      'then they are .zshrc and .zprofile', () {
+    final files = startupFilesFor(shell: '/bin/zsh', home: _home);
+
+    expect(files.map((f) => f.path), [
       p.join(_home, '.zshrc'),
-    );
+      p.join(_home, '.zprofile'),
+    ]);
   });
 
-  test('Given bash as the login shell, when picking the startup file, '
-      'then it is .bashrc', () {
-    expect(
-      startupFileFor(shell: '/usr/bin/bash', home: _home)?.path,
-      p.join(_home, '.bashrc'),
-    );
+  test('Given bash as the login shell and no profile yet, '
+      'when picking the startup files, then they are .bashrc and .profile', () {
+    final home = _createTempDirectory().path;
+
+    final files = startupFilesFor(shell: '/usr/bin/bash', home: home);
+
+    expect(files.map((f) => f.path), [
+      p.join(home, '.bashrc'),
+      p.join(home, '.profile'),
+    ]);
   });
 
-  test('Given fish as the login shell, when picking the startup file, '
-      'then there is none', () {
-    expect(startupFileFor(shell: '/usr/bin/fish', home: _home), isNull);
+  test('Given bash as the login shell and an existing .bash_profile, '
+      'when picking the startup files, then .bash_profile stands in for '
+      '.profile, since bash reads only the first one it finds', () {
+    final home = _createTempDirectory().path;
+    File(p.join(home, '.bash_profile')).writeAsStringSync('');
+    File(p.join(home, '.profile')).writeAsStringSync('');
+
+    final files = startupFilesFor(shell: '/usr/bin/bash', home: home);
+
+    expect(files.map((f) => f.path), [
+      p.join(home, '.bashrc'),
+      p.join(home, '.bash_profile'),
+    ]);
   });
 
-  test('Given no login shell, when picking the startup file, '
-      'then there is none', () {
-    expect(startupFileFor(shell: null, home: _home), isNull);
+  test('Given fish as the login shell, when picking the startup files, '
+      'then there are none', () {
+    expect(startupFilesFor(shell: '/usr/bin/fish', home: _home), isEmpty);
+  });
+
+  test('Given no login shell, when picking the startup files, '
+      'then there are none', () {
+    expect(startupFilesFor(shell: null, home: _home), isEmpty);
   });
 
   group('Given two PATH entries, when writing the env file,', () {

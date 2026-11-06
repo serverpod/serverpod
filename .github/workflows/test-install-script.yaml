@@ -97,4 +97,4 @@ jobs:
         run: |
           sh tools/serverpod_cli/install/install.sh --yes
           sh tools/serverpod_cli/install/test/verify_install.sh \
-            tools/serverpod_cli/install/install.sh "$HOME/.zshrc"
+            tools/serverpod_cli/install/install.sh "$HOME/.zshrc" "$HOME/.zprofile"

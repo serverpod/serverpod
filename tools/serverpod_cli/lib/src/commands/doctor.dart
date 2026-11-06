@@ -42,7 +42,7 @@ enum DoctorOption<V> implements OptionDefinition<V> {
       negatable: false,
       helpText:
           'Write ~/.serverpod/env.sh with the PATH entries Serverpod needs '
-          'and source it from your shell startup file. Asks before changing '
+          'and source it from your shell startup files. Asks before changing '
           'anything unless --yes is given.',
     ),
   ),
@@ -146,18 +146,17 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
     }
 
     final envFile = File(p.join(serverpodDirectory, 'env.sh'));
-    final startupFile = startupFileFor(
+    final startupFiles = startupFilesFor(
       shell: Platform.environment['SHELL'],
       home: home,
     );
     final sourceLine = sourceLineFor(envFile, home: home);
 
-    // A rerun with nothing new leaves both files alone.
+    // A rerun with nothing new leaves every file alone.
     final upToDate =
         envFile.existsSync() &&
         envFile.readAsStringSync() == envFileContent(entries) &&
-        (startupFile == null ||
-            startupFileSources(startupFile, envFile, home: home));
+        startupFiles.every((f) => startupFileSources(f, envFile, home: home));
     if (upToDate) {
       if (!quiet) log.info('Nothing for --fix to change.');
       return _runChecks(environment: _environmentWith(entries));
@@ -168,8 +167,9 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
         [
           'Doctor will write ${envFile.path} to put these first on PATH:',
           for (final entry in entries) '  $entry',
-          if (startupFile != null)
-            'and add `$sourceLine` to ${startupFile.path}.'
+          if (startupFiles.isNotEmpty)
+            'and add `$sourceLine` to '
+                '${startupFiles.map((f) => f.path).join(' and ')}.'
           else
             'Your shell is not zsh or bash, so add `$sourceLine` to its '
                 'startup file yourself.',
@@ -184,11 +184,14 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
     }
 
     writeEnvFile(envFile, entries);
-    if (startupFile != null) {
+    for (final startupFile in startupFiles) {
       ensureSourced(startupFile, envFile, home: home);
     }
     if (!quiet) {
-      log.info('Open a new terminal for the PATH change to take effect.');
+      log.info(
+        'Open a new terminal for the PATH change to take effect. Scripts that '
+        'run serverpod should run `$sourceLine` first.',
+      );
     }
 
     return _runChecks(environment: _environmentWith(entries));

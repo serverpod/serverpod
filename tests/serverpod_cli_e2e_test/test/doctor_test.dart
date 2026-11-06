@@ -37,6 +37,7 @@ class _ManagedHome {
   String get flutterBin => p.join(flutterRoot, 'bin');
   File get envFile => File(p.join(_home.path, '.serverpod', 'env.sh'));
   File get zshrc => File(p.join(_home.path, '.zshrc'));
+  File get zprofile => File(p.join(_home.path, '.zprofile'));
 
   static Future<_ManagedHome> create() async {
     final home = Directory.systemTemp.createTempSync('serverpod_doctor_home');
@@ -214,6 +215,17 @@ void main() {
         final rc = home.zshrc.readAsStringSync();
         expect(rc, startsWith('export EDITOR=vim\n'));
         expect('. "\$HOME/.serverpod/env.sh"'.allMatches(rc), hasLength(1));
+      });
+
+      test('then .zprofile is created and sources the env file once, so '
+          'login shells get the PATH too', () {
+        expect(home.zprofile.existsSync(), isTrue);
+        expect(
+          '. "\$HOME/.serverpod/env.sh"'.allMatches(
+            home.zprofile.readAsStringSync(),
+          ),
+          hasLength(1),
+        );
       });
 
       test('then the first run re-checks with the new PATH and finds the '
