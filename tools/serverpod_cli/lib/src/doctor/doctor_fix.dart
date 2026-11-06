@@ -2,34 +2,32 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/upgrade/cli_installation.dart';
-import 'package:serverpod_cli/src/doctor/doctor_check.dart';
-import 'package:serverpod_cli/src/doctor/flutter_check.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 
 /// The comment `doctor --fix` leaves above its line in a shell startup file.
 const envFileMarker = '# Added by `serverpod doctor --fix`.';
 
+/// Where the installer puts the Flutter SDK it manages, under
+/// [serverpodDirectory].
+String managedFlutterRootIn(final String serverpodDirectory) =>
+    p.join(serverpodDirectory, 'flutter');
+
 /// The directories `doctor --fix` puts first on PATH, in order.
 ///
-/// Only Serverpod-managed locations qualify: a Flutter SDK the installer put
-/// under [serverpodDirectory], and the `dart install` bin directory once a
-/// managed CLI exists. A Flutter the user manages is theirs to put on PATH.
+/// Only Serverpod-managed locations qualify: the Flutter SDK the installer
+/// put under [serverpodDirectory], and the `dart install` bin directory once
+/// a managed CLI exists. A Flutter the user manages is theirs to put on PATH.
 ///
-/// Decided from what is installed, not from the current PATH: a rerun from a
-/// shell that already sourced the env file must produce the same entries.
+/// Decided from what is on disk, not from the current PATH: a rerun from a
+/// shell that has not sourced the env file must produce the same entries.
 List<String> pathEntriesToAdd({
-  required final List<DoctorCheckResult> results,
   required final CliInstallation installation,
   required final bool managedExecutableExists,
   required final String serverpodDirectory,
 }) {
-  final flutterRoot = results
-      .where((r) => r.id == FlutterCheck.id && r.isReady)
-      .map((r) => r.path)
-      .firstOrNull;
-
+  final flutterRoot = managedFlutterRootIn(serverpodDirectory);
   return [
-    if (flutterRoot != null && p.isWithin(serverpodDirectory, flutterRoot))
-      p.join(flutterRoot, 'bin'),
+    if (isFlutterSdk(flutterRoot)) p.join(flutterRoot, 'bin'),
     if (managedExecutableExists) installation.managedBinDirectory,
   ];
 }

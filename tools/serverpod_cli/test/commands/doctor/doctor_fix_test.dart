@@ -2,24 +2,14 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/upgrade/cli_installation.dart';
-import 'package:serverpod_cli/src/doctor/doctor_check.dart';
 import 'package:serverpod_cli/src/doctor/doctor_fix.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart'
+    show flutterExecutableIn;
 import 'package:test/test.dart';
 
 final _home = p.join(p.separator, 'home', 'dev');
-final _serverpodDirectory = p.join(_home, '.serverpod');
-final _managedFlutter = p.join(_serverpodDirectory, 'flutter');
-final _userFlutter = p.join(p.separator, 'opt', 'flutter');
 final _managedBin = p.join(_home, '.local', 'state', 'Dart', 'install', 'bin');
 final _managedExecutable = p.join(_managedBin, 'serverpod');
-
-DoctorCheckResult _flutter(final String root) => DoctorCheckResult(
-  id: 'flutter',
-  title: 'Flutter',
-  status: DoctorStatus.ready,
-  path: root,
-  message: 'ready',
-);
 
 CliInstallation _installation({required final bool onPath}) => CliInstallation(
   kind: CliInstallationKind.managed,
@@ -35,32 +25,47 @@ Directory _createTempDirectory() {
   return directory;
 }
 
+/// A `~/.serverpod` directory, holding a Flutter SDK the installer put there
+/// when [withFlutter].
+String _createServerpodDirectory({required final bool withFlutter}) {
+  final directory = _createTempDirectory().path;
+  if (withFlutter) {
+    File(flutterExecutableIn(managedFlutterRootIn(directory)))
+      ..createSync(recursive: true)
+      ..writeAsStringSync('');
+  }
+  return directory;
+}
+
 void main() {
   test(
-    'Given a Flutter the installer put under ~/.serverpod and a managed CLI '
-    'not on PATH, when choosing PATH entries, then both bin directories are '
-    'added, Flutter first',
+    'Given a Flutter the installer put under ~/.serverpod and a managed CLI, '
+    'when choosing PATH entries, then both bin directories are added, '
+    'Flutter first',
     () {
+      final serverpodDirectory = _createServerpodDirectory(withFlutter: true);
+
       final entries = pathEntriesToAdd(
-        results: [_flutter(_managedFlutter)],
         installation: _installation(onPath: false),
         managedExecutableExists: true,
-        serverpodDirectory: _serverpodDirectory,
+        serverpodDirectory: serverpodDirectory,
       );
 
-      expect(entries, [p.join(_managedFlutter, 'bin'), _managedBin]);
+      expect(entries, [
+        p.join(managedFlutterRootIn(serverpodDirectory), 'bin'),
+        _managedBin,
+      ]);
     },
   );
 
   test(
-    'Given a Flutter the user manages elsewhere, '
-    'when choosing PATH entries, then it is left alone',
+    'Given no Flutter under ~/.serverpod, '
+    'when choosing PATH entries, then only the managed CLI is added',
     () {
       final entries = pathEntriesToAdd(
-        results: [_flutter(_userFlutter)],
         installation: _installation(onPath: false),
         managedExecutableExists: true,
-        serverpodDirectory: _serverpodDirectory,
+        serverpodDirectory: _createServerpodDirectory(withFlutter: false),
       );
 
       expect(entries, [_managedBin]);
@@ -73,10 +78,9 @@ void main() {
     'rerun from a shell that sourced the env file produces the same file',
     () {
       final entries = pathEntriesToAdd(
-        results: [_flutter(_userFlutter)],
         installation: _installation(onPath: true),
         managedExecutableExists: true,
-        serverpodDirectory: _serverpodDirectory,
+        serverpodDirectory: _createServerpodDirectory(withFlutter: false),
       );
 
       expect(entries, [_managedBin]);
@@ -88,10 +92,9 @@ void main() {
     'when choosing PATH entries, then its bin directory is not added',
     () {
       final entries = pathEntriesToAdd(
-        results: const [],
         installation: _installation(onPath: false),
         managedExecutableExists: false,
-        serverpodDirectory: _serverpodDirectory,
+        serverpodDirectory: _createServerpodDirectory(withFlutter: false),
       );
 
       expect(entries, isEmpty);

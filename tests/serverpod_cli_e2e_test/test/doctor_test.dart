@@ -16,6 +16,88 @@ Map<String, String> _environmentWithPath(final String path) => {
   'SERVERPOD_HOME': serverpodHome,
 };
 
+/// A fresh home with a fake Flutter under `~/.serverpod` that reports its own
+/// root, and a managed CLI as `dart install` leaves it, with `.zshrc` as the
+/// startup file.
+class _ManagedHome {
+  final Directory _home;
+  final String flutterRoot;
+  final String dartDataHome;
+
+  /// An empty directory, so PATH can hold something other than Flutter.
+  final String emptyBin;
+
+  _ManagedHome._(
+    this._home, {
+    required this.flutterRoot,
+    required this.dartDataHome,
+    required this.emptyBin,
+  });
+
+  String get flutterBin => p.join(flutterRoot, 'bin');
+  File get envFile => File(p.join(_home.path, '.serverpod', 'env.sh'));
+  File get zshrc => File(p.join(_home.path, '.zshrc'));
+
+  static Future<_ManagedHome> create() async {
+    final home = Directory.systemTemp.createTempSync('serverpod_doctor_home');
+    File(p.join(home.path, '.zshrc')).writeAsStringSync('export EDITOR=vim\n');
+
+    final flutterRoot = p.join(home.path, '.serverpod', 'flutter');
+    final machineJson = jsonEncode({
+      'frameworkVersion': '3.47.7',
+      'channel': 'stable',
+      'flutterRoot': flutterRoot,
+    });
+    // printf is a shell builtin: the CLI's PATH in these tests has no /usr/bin.
+    final flutter = File(p.join(flutterRoot, 'bin', 'flutter'))
+      ..createSync(recursive: true)
+      ..writeAsStringSync("#!/bin/sh\nprintf '%s\\n' '$machineJson'\n");
+    await Process.run('chmod', ['755', flutter.path]);
+
+    final dartDataHome = p.join(home.path, 'dart-data');
+    File(p.join(dartDataHome, 'install', 'bin', 'serverpod'))
+      ..createSync(recursive: true)
+      ..writeAsStringSync('');
+
+    final emptyBin = Directory(p.join(home.path, 'empty-bin'))..createSync();
+
+    return _ManagedHome._(
+      home,
+      flutterRoot: flutterRoot,
+      dartDataHome: dartDataHome,
+      emptyBin: emptyBin.path,
+    );
+  }
+
+  /// Runs `doctor --fix --yes` as a zsh user whose PATH holds [path] only.
+  Future<ProcessResult> fix({required final List<String> path}) async =>
+      Process.run(
+        await compiledServerpodCliExe,
+        ['doctor', '--fix', '--yes', '--no-analytics'],
+        workingDirectory: _home.path,
+        environment: {
+          for (final entry in Platform.environment.entries)
+            if (!const {
+              'HOME',
+              'USERPROFILE',
+              'PATH',
+              'SHELL',
+              'DART_DATA_HOME',
+            }.contains(entry.key.toUpperCase()))
+              entry.key: entry.value,
+          'HOME': _home.path,
+          'USERPROFILE': _home.path,
+          'PATH': path.join(':'),
+          'SHELL': '/bin/zsh',
+          'DART_DATA_HOME': dartDataHome,
+          'SERVERPOD_HOME': serverpodHome,
+        },
+        includeParentEnvironment: false,
+      );
+
+  void delete() => _home.deleteSync(recursive: true);
+}
+
 void main() {
   group('Given the compiled CLI with no tools on PATH,', () {
     late ProcessResult result;
@@ -100,93 +182,36 @@ void main() {
     'Given a fresh home with a Serverpod-managed Flutter and a managed CLI '
     'that is not on PATH, when running doctor --fix --yes twice as a zsh user,',
     () {
-      late Directory home;
-      late File envFile;
-      late File zshrc;
+      late _ManagedHome home;
       late ProcessResult first;
       late ProcessResult second;
 
       setUpAll(() async {
-        home = Directory.systemTemp.createTempSync('serverpod_doctor_home');
-        envFile = File(p.join(home.path, '.serverpod', 'env.sh'));
-        zshrc = File(p.join(home.path, '.zshrc'))
-          ..writeAsStringSync('export EDITOR=vim\n');
-
-        // A fake Flutter under ~/.serverpod that reports its own root.
-        final flutterRoot = p.join(home.path, '.serverpod', 'flutter');
-        final flutterBin = Directory(p.join(flutterRoot, 'bin'))
-          ..createSync(recursive: true);
-        final machineJson = jsonEncode({
-          'frameworkVersion': '3.47.7',
-          'channel': 'stable',
-          'flutterRoot': flutterRoot,
-        });
-        // printf is a shell builtin: the CLI's PATH below has no /usr/bin.
-        final flutter = File(p.join(flutterBin.path, 'flutter'))
-          ..writeAsStringSync("#!/bin/sh\nprintf '%s\n' '$machineJson'\n");
-        await Process.run('chmod', ['755', flutter.path]);
-
-        // A managed CLI, as `dart install` would leave it, off PATH.
-        final dartDataHome = p.join(home.path, 'dart-data');
-        final managedBin = Directory(p.join(dartDataHome, 'install', 'bin'))
-          ..createSync(recursive: true);
-        File(p.join(managedBin.path, 'serverpod')).writeAsStringSync('');
-
-        // PATH holds only the managed Flutter and an empty directory.
-        final emptyBin = Directory(p.join(home.path, 'empty-bin'))
-          ..createSync();
-        final environment = {
-          for (final entry in Platform.environment.entries)
-            if (!const {
-              'HOME',
-              'USERPROFILE',
-              'PATH',
-              'SHELL',
-              'DART_DATA_HOME',
-            }.contains(entry.key.toUpperCase()))
-              entry.key: entry.value,
-          'HOME': home.path,
-          'USERPROFILE': home.path,
-          'PATH': [flutterBin.path, emptyBin.path].join(':'),
-          'SHELL': '/bin/zsh',
-          'DART_DATA_HOME': dartDataHome,
-          'SERVERPOD_HOME': serverpodHome,
-        };
-
-        Future<ProcessResult> fix() async => Process.run(
-          await compiledServerpodCliExe,
-          ['doctor', '--fix', '--yes', '--no-analytics'],
-          workingDirectory: home.path,
-          environment: environment,
-          includeParentEnvironment: false,
-        );
-        first = await fix();
-        second = await fix();
+        home = await _ManagedHome.create();
+        first = await home.fix(path: [home.flutterBin, home.emptyBin]);
+        second = await home.fix(path: [home.flutterBin, home.emptyBin]);
       });
 
-      tearDownAll(() => home.deleteSync(recursive: true));
+      tearDownAll(() => home.delete());
 
       test('then the env file puts the managed Flutter on PATH', () {
         expect(
-          envFile.existsSync(),
+          home.envFile.existsSync(),
           isTrue,
           reason: '${first.stdout}${first.stderr}',
         );
-        expect(
-          envFile.readAsStringSync(),
-          contains(p.join(home.path, '.serverpod', 'flutter')),
-        );
+        expect(home.envFile.readAsStringSync(), contains(home.flutterRoot));
       });
 
       test('then the env file puts the managed CLI on PATH', () {
         expect(
-          envFile.readAsStringSync(),
-          contains(p.join(home.path, 'dart-data', 'install')),
+          home.envFile.readAsStringSync(),
+          contains(p.join(home.dartDataHome, 'install')),
         );
       });
 
       test('then .zshrc keeps its content and sources the env file once', () {
-        final rc = zshrc.readAsStringSync();
+        final rc = home.zshrc.readAsStringSync();
         expect(rc, startsWith('export EDITOR=vim\n'));
         expect('. "\$HOME/.serverpod/env.sh"'.allMatches(rc), hasLength(1));
       });
@@ -198,6 +223,40 @@ void main() {
 
       test('then the second run proposes no changes', () {
         expect(second.stdout, isNot(contains('Doctor will write')));
+      });
+    },
+    skip: Platform.isWindows ? '--fix is not supported on Windows.' : null,
+  );
+
+  group(
+    'Given a home where doctor --fix already wrote the env file, '
+    'when running doctor --fix --yes again from a shell whose PATH has no '
+    'Flutter,',
+    () {
+      late _ManagedHome home;
+      late String envBefore;
+      late ProcessResult rerun;
+
+      setUpAll(() async {
+        home = await _ManagedHome.create();
+        await home.fix(path: [home.flutterBin, home.emptyBin]);
+        envBefore = home.envFile.readAsStringSync();
+        rerun = await home.fix(path: [home.emptyBin]);
+      });
+
+      tearDownAll(() => home.delete());
+
+      test('then the env file still puts the managed Flutter on PATH', () {
+        expect(envBefore, contains(home.flutterRoot));
+        expect(
+          home.envFile.readAsStringSync(),
+          envBefore,
+          reason: '${rerun.stdout}${rerun.stderr}',
+        );
+      });
+
+      test('then doctor reports nothing to change', () {
+        expect(rerun.stdout, contains('Nothing for --fix to change.'));
       });
     },
     skip: Platform.isWindows ? '--fix is not supported on Windows.' : null,

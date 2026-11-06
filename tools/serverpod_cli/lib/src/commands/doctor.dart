@@ -134,7 +134,6 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
     final serverpodDirectory = resourceManager.localStorageDirectory.path;
     final installation = CliInstallation.resolve();
     final entries = pathEntriesToAdd(
-      results: results,
       installation: installation,
       managedExecutableExists: File(
         installation.managedExecutable,
@@ -224,7 +223,12 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
 Future<List<DoctorCheckResult>> runDoctorChecks({
   final Map<String, String>? environment,
 }) async {
-  final flutter = await FlutterCheck.probe(environment: environment);
+  final flutter = await FlutterCheck.probe(
+    managedRoot: managedFlutterRootIn(
+      resourceManager.localStorageDirectory.path,
+    ),
+    environment: environment,
+  );
   return [
     flutter,
     await DartSdkCheck.probe(
