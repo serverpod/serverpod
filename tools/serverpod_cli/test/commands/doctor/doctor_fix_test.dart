@@ -124,22 +124,36 @@ void main() {
     expect(startupFileFor(shell: null, home: _home), isNull);
   });
 
+  group('Given two PATH entries, when writing the env file,', () {
+    late String content;
+
+    setUp(() {
+      final envFile = File(p.join(_createTempDirectory().path, 'env.sh'));
+      writeEnvFile(envFile, ['/a/bin', '/b c/bin']);
+      content = envFile.readAsStringSync();
+    });
+
+    test('then each entry is guarded against being on PATH already', () {
+      expect(content, contains('*:"/a/bin":*) ;;'));
+      expect(content, contains('*:"/b c/bin":*) ;;'));
+    });
+
+    test('then each entry is exported first on PATH', () {
+      expect(content, contains('export PATH="/a/bin":"\${PATH}"'));
+      expect(content, contains('export PATH="/b c/bin":"\${PATH}"'));
+    });
+  });
+
   test(
-    'Given two PATH entries, '
-    'when writing the env file, then each is exported once, guarded against '
-    'being on PATH already, and a rewrite replaces the content',
+    'Given an env file with two entries, when writing it again with one, '
+    'then the dropped entry is gone',
     () {
       final envFile = File(p.join(_createTempDirectory().path, 'env.sh'));
-
       writeEnvFile(envFile, ['/a/bin', '/b c/bin']);
-      final first = envFile.readAsStringSync();
-      writeEnvFile(envFile, ['/a/bin']);
-      final second = envFile.readAsStringSync();
 
-      expect(first, contains('*:"/a/bin":*) ;;'));
-      expect(first, contains('export PATH="/a/bin":"\${PATH}"'));
-      expect(first, contains('export PATH="/b c/bin":"\${PATH}"'));
-      expect(second, isNot(contains('/b c/bin')));
+      writeEnvFile(envFile, ['/a/bin']);
+
+      expect(envFile.readAsStringSync(), isNot(contains('/b c/bin')));
     },
   );
 
@@ -156,39 +170,53 @@ void main() {
     },
   );
 
-  test(
-    'Given a startup file, '
-    'when sourcing the env file twice, then the line is appended once with '
-    'its marker and existing content is kept',
-    () {
-      final home = _createTempDirectory();
-      final startupFile = File(p.join(home.path, '.zshrc'))
+  group('Given a startup file that does not source the env file,', () {
+    late String home;
+    late File startupFile;
+    late File envFile;
+
+    setUp(() {
+      home = _createTempDirectory().path;
+      startupFile = File(p.join(home, '.zshrc'))
         ..writeAsStringSync('export EDITOR=vim\n');
-      final envFile = File(p.join(home.path, '.serverpod', 'env.sh'));
+      envFile = File(p.join(home, '.serverpod', 'env.sh'));
+    });
 
-      final sourcedBefore = startupFileSources(
-        startupFile,
-        envFile,
-        home: home.path,
-      );
-      final changedFirst = ensureSourced(startupFile, envFile, home: home.path);
-      final changedSecond = ensureSourced(
-        startupFile,
-        envFile,
-        home: home.path,
-      );
-      final content = startupFile.readAsStringSync();
+    test('when checking whether it sources the env file, then it does not', () {
+      expect(startupFileSources(startupFile, envFile, home: home), isFalse);
+    });
 
-      expect(sourcedBefore, isFalse);
-      expect(changedFirst, isTrue);
-      expect(changedSecond, isFalse);
-      expect(startupFileSources(startupFile, envFile, home: home.path), isTrue);
-      expect(content, startsWith('export EDITOR=vim\n'));
-      expect(envFileMarker.allMatches(content), hasLength(1));
-      expect(
-        sourceLineFor(envFile, home: home.path).allMatches(content),
-        hasLength(1),
-      );
-    },
-  );
+    group('when sourcing the env file twice,', () {
+      late bool changedFirst;
+      late bool changedSecond;
+      late String content;
+
+      setUp(() {
+        changedFirst = ensureSourced(startupFile, envFile, home: home);
+        changedSecond = ensureSourced(startupFile, envFile, home: home);
+        content = startupFile.readAsStringSync();
+      });
+
+      test('then only the first time changes the file', () {
+        expect(changedFirst, isTrue);
+        expect(changedSecond, isFalse);
+      });
+
+      test('then the file sources the env file', () {
+        expect(startupFileSources(startupFile, envFile, home: home), isTrue);
+      });
+
+      test('then the existing content is kept', () {
+        expect(content, startsWith('export EDITOR=vim\n'));
+      });
+
+      test('then the marker and the source line appear once', () {
+        expect(envFileMarker.allMatches(content), hasLength(1));
+        expect(
+          sourceLineFor(envFile, home: home).allMatches(content),
+          hasLength(1),
+        );
+      });
+    });
+  });
 }
