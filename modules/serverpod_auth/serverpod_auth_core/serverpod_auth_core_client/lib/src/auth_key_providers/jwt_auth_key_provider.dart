@@ -43,6 +43,7 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
              refreshEndpoint: refreshEndpoint,
              refreshJwtTokenBefore: refreshJwtTokenBefore,
              invalidateCachedAuthInfo: invalidateCachedAuthInfo,
+             getCrossTabRefreshLock: getCrossTabRefreshLock ?? () => null,
            ),
            cookieDelegate: _CookieJwtRefreshDelegate(
              getAuthInfo: getAuthInfo,
@@ -123,6 +124,22 @@ abstract class _JwtRefreshDelegate implements RefresherClientAuthKeyProvider {
 
 class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
   final Future<void> Function()? invalidateCachedAuthInfo;
+  final CrossTabLock? Function() getCrossTabRefreshLock;
+
+  bool _warnedMissingCrossTabLock = false;
+
+  void _warnMissingCrossTabLock() {
+    if (_warnedMissingCrossTabLock) return;
+    _warnedMissingCrossTabLock = true;
+    developer.log(
+      'Header-based JWT refresh is running without cross-tab coordination: '
+      'the Web Locks API is unavailable (typically an insecure http:// '
+      'origin). Concurrent refreshes from multiple tabs may race and sign '
+      'the user out.',
+      name: 'serverpod_auth',
+      level: 900,
+    );
+  }
 
   _HeaderJwtRefreshDelegate({
     required super.getAuthInfo,
@@ -130,6 +147,7 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
     required super.refreshEndpoint,
     required super.refreshJwtTokenBefore,
     required this.invalidateCachedAuthInfo,
+    required this.getCrossTabRefreshLock,
   });
 
   /// Only performs a refresh if the token has a valid expiration time and is
@@ -146,7 +164,33 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
         refreshToken == null) {
       return RefreshAuthKeyResult.skipped;
     }
-    return _refresh(refreshToken: refreshToken);
+
+    final crossTabLock = getCrossTabRefreshLock();
+    if (crossTabLock == null) {
+      _warnMissingCrossTabLock();
+      return _refresh(refreshToken: refreshToken);
+    }
+
+    return crossTabLock.synchronize(() async {
+      await invalidateCachedAuthInfo?.call();
+      final freshAuthInfo = await getAuthInfo();
+      final freshExpiresAt = freshAuthInfo?.tokenExpiresAt;
+      final freshRefreshToken = freshAuthInfo?.refreshToken;
+
+      if (freshRefreshToken == null) {
+        return RefreshAuthKeyResult.skipped;
+      }
+
+      // Another tab rotated while we waited for the lock; token is fresh.
+      if (freshRefreshToken != refreshToken) {
+        return RefreshAuthKeyResult.success;
+      }
+
+      if (!force && freshExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) {
+        return RefreshAuthKeyResult.skipped;
+      }
+      return _refresh(refreshToken: freshRefreshToken);
+    });
   }
 }
 
