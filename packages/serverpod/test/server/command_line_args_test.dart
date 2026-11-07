@@ -1,5 +1,6 @@
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/run_mode.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
@@ -374,5 +375,159 @@ void main() {
       final args3 = CommandLineArgs(['--role', 'maintenance']);
       expect(args3.role, equals(ServerpodRole.maintenance));
     });
+  });
+
+  group('Given an unknown custom flag alongside a known flag', () {
+    test(
+      'when provided in --key=value form then the known flag is still parsed',
+      () {
+        // The exact scenario from issue #2396.
+        final args = CommandLineArgs(['--mode=production', '--myCustomFlag']);
+        expect(args.runMode, equals(ServerpodRunMode.production));
+        expect(args.serverId, equals('default'));
+        expect(args.role, equals(ServerpodRole.monolith));
+        expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
+      },
+    );
+
+    test(
+      'when provided in --key value form then the known flag is still parsed',
+      () {
+        final args = CommandLineArgs([
+          '--mode',
+          'production',
+          '--myCustomFlag',
+        ]);
+        expect(args.runMode, equals(ServerpodRunMode.production));
+      },
+    );
+
+    test('when the unknown flag comes first then the known flag is parsed', () {
+      final args = CommandLineArgs(['--myCustomFlag', '--mode', 'production']);
+      expect(args.runMode, equals(ServerpodRunMode.production));
+    });
+
+    test('when interleaved with multiple known flags then all are parsed', () {
+      final args = CommandLineArgs([
+        '--mode',
+        'production',
+        '--customA',
+        '--server-id',
+        'srv-1',
+        '--customB',
+      ]);
+      expect(args.runMode, equals(ServerpodRunMode.production));
+      expect(args.serverId, equals('srv-1'));
+    });
+
+    test(
+      'when the unknown option uses --key=value form then it is ignored',
+      () {
+        final args = CommandLineArgs([
+          '--customOpt=foo',
+          '--mode',
+          'production',
+        ]);
+        expect(args.runMode, equals(ServerpodRunMode.production));
+      },
+    );
+
+    test('when the unknown option is an abbreviation then it is ignored', () {
+      final args = CommandLineArgs(['-x', '--mode', 'staging']);
+      expect(args.runMode, equals(ServerpodRunMode.staging));
+    });
+
+    test('when a known abbreviation accompanies an unknown one then it is '
+        'parsed', () {
+      final args = CommandLineArgs(['-m', 'staging', '-x']);
+      expect(args.runMode, equals(ServerpodRunMode.staging));
+    });
+
+    test('when a negatable known flag accompanies an unknown flag then it is '
+        'parsed', () {
+      final args = CommandLineArgs([
+        '--mode',
+        'production',
+        '--no-apply-migrations',
+        '--myCustomFlag',
+      ]);
+      expect(args.runMode, equals(ServerpodRunMode.production));
+      // wasParsed -> getRaw is non-null false, proving the flag was kept, not
+      // dropped as unknown (a dropped flag would yield null).
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isFalse);
+      expect(args.applyMigrations, isFalse);
+    });
+
+    test(
+      'when stopping at the -- terminator then later tokens are ignored',
+      () {
+        final args = CommandLineArgs([
+          '--mode',
+          'production',
+          '--',
+          '--anything',
+          'here',
+        ]);
+        expect(args.runMode, equals(ServerpodRunMode.production));
+      },
+    );
+
+    test('when the same known flag is repeated then the last value wins', () {
+      final args = CommandLineArgs([
+        '--mode',
+        'staging',
+        '--customX',
+        '--mode',
+        'production',
+      ]);
+      expect(args.runMode, equals(ServerpodRunMode.production));
+    });
+  });
+
+  group('Given a known value option whose value looks like a flag', () {
+    test('when the value follows the option then it is never stripped', () {
+      // Mirrors ArgParser semantics: the token after a value option is its
+      // value, even when it looks like an unknown flag.
+      final args = CommandLineArgs(['--server-id', '--myCustomFlag']);
+      expect(args.serverId, equals('--myCustomFlag'));
+      expect(args.runMode, equals(ServerpodRunMode.development));
+    });
+  });
+
+  group('Given a known value option immediately followed by a custom flag '
+      '(known limitation)', () {
+    test('when no value is provided then all values fall back to defaults', () {
+      // --myCustomFlag is consumed as --mode's value, which is not allowed, so
+      // parsing fails and falls back. argv carries no arity info to recover the
+      // intent; this matches ArgParser semantics and is an accepted limitation.
+      final args = CommandLineArgs(['--mode', '--myCustomFlag']);
+      expect(args.runMode, equals(ServerpodRunMode.development));
+    });
+  });
+
+  group('Given an unknown flag that is ignored', () {
+    test(
+      'when parsing then a warning is logged for the ignored flag',
+      () async {
+        await log
+            .flush(); // Drain any warnings still in flight from prior tests.
+        final testWriter = TestLogWriter();
+        logWriter.add(testWriter);
+        try {
+          CommandLineArgs(['--mode', 'production', '--myCustomFlag']);
+          await log.flush();
+          expect(
+            testWriter.entries.any(
+              (e) =>
+                  e.level == LogLevel.warning &&
+                  e.message.contains('--myCustomFlag'),
+            ),
+            isTrue,
+          );
+        } finally {
+          logWriter.remove(testWriter);
+        }
+      },
+    );
   });
 }
