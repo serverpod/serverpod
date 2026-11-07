@@ -227,12 +227,10 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   Future<bool> _validateAuthentication() async {
     if (isAuthenticated) {
-      var refreshResult = await refreshAuthKey(force: true);
-      if (refreshResult == RefreshAuthKeyResult.failedUnauthorized) {
+      final refreshResult = await refreshAuthKey(force: true);
+      if (refreshResult == RefreshAuthKeyResult.failedUnauthorized ||
+          !await caller.status.isSignedIn()) {
         return await signOutDevice();
-      }
-      if (refreshResult == RefreshAuthKeyResult.failedOther) {
-        return false;
       }
     }
     return true;

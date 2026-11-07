@@ -186,8 +186,7 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
         return RefreshAuthKeyResult.success;
       }
 
-      if (!force &&
-          freshExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) {
+      if (!force && freshExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) {
         return RefreshAuthKeyResult.skipped;
       }
       return _refresh(refreshToken: freshRefreshToken);
