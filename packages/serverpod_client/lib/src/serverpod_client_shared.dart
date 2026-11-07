@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'serverpod_client_shared_private.dart';
 
@@ -55,6 +56,12 @@ abstract class ServerpodClientRequestDelegate {
     bool authenticated = true,
   });
 
+  /// Opens a WebSocket connection to [uri].
+  ///
+  /// The default implementation uses the platform's default WebSocket
+  /// transport and TLS configuration.
+  WebSocketChannel connectWebSocket(Uri uri) => WebSocketChannel.connect(uri);
+
   /// Closes the connection to the server.
   /// This delegate should not be used after calling this.
   void close();
@@ -76,6 +83,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         connectionTimeout: streamingConnectionTimeout,
         webSocketHost: _webSocketHost.replace(path: '/v1/websocket'),
         serializationManager: serializationManager,
+        webSocketConnector: _requestDelegate.connectWebSocket,
       );
       _clientMethodStreamManager = methodStreamManager;
     }
