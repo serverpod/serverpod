@@ -28,6 +28,24 @@ Serverpod is designed for building apps with an AI coding agent. When you create
 - **The MCP server connects your agent to your running app:** Through [`serverpod mcp-server`](https://docs.serverpod.dev/concepts/cli/commands/mcp-server), your agent can read server and Flutter app logs, hot reload the server and the app, and create and apply database migrations. It makes a change, sees it running, and reads the logs when something breaks, without you copying output back and forth.
 - **Several agents can work at once:** With [`serverpod runner`](https://docs.serverpod.dev/concepts/cli/commands/runner), each agent runs its own server and database in its own Git worktree, so agents don't get in each other's way. Run `serverpod start` in any worktree to see what its agent sees.
 
+## Getting started
+
+You need [Flutter](https://docs.flutter.dev/get-started/install) 3.44.4 or later.
+
+```bash
+dart install serverpod_cli       # Install the Serverpod CLI
+serverpod quickstart my_project  # Create a server, client, and Flutter app
+cd my_project
+serverpod start                  # Run the full stack with hot reload
+```
+
+The `serverpod start` command starts the database, runs your server, and opens your Flutter app.
+
+Follow the [quickstart guide](https://docs.serverpod.dev/quickstart) for a full walkthrough.
+
+> [!NOTE]
+> Upgrading a Serverpod 3 project? Start with the [upgrade guide](https://docs.serverpod.dev/upgrading/upgrade-to-four).
+
 ## Build with Dart everywhere
 
 ### Define a model
@@ -41,6 +59,8 @@ table: note
 fields:
   text: String
 ```
+
+Then press `M` in the `serverpod start` terminal to create the table.
 
 ### Write an endpoint
 
@@ -79,25 +99,9 @@ withServerpod('Given Notes endpoint', (sessionBuilder, endpoints) {
 });
 ```
 
-## Getting started
+Run your tests with `dart test` from the `my_project_server` folder.
 
-You need [Flutter](https://docs.flutter.dev/get-started/install) 3.44.4 or later.
-
-```bash
-dart install serverpod_cli       # Install the Serverpod CLI
-serverpod quickstart my_project  # Create a server, client, and Flutter app
-cd my_project
-serverpod start                  # Run the full stack with hot reload
-```
-
-The `serverpod start` command starts the database, runs your server, and opens your Flutter app. Press `M` in the terminal to create and apply a database migration after changing a model. Run your tests with `dart test` from the `my_project_server` folder.
-
-Follow the [quickstart guide](https://docs.serverpod.dev/quickstart) for a full walkthrough.
-
-> [!NOTE]
-> Upgrading a Serverpod 3 project? Start with the [upgrade guide](https://docs.serverpod.dev/upgrading/upgrade-to-four).
-
-### Publish your app
+## Publish your app
 
 ```bash
 serverpod cloud launch
