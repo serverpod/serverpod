@@ -28,7 +28,7 @@ Serverpod is designed for building apps with an AI coding agent. When you create
 - **The MCP server connects your agent to your running app:** Through [`serverpod mcp-server`](https://docs.serverpod.dev/concepts/cli/commands/mcp-server), your agent can read server and Flutter app logs, hot reload the server and the app, and create and apply database migrations. It makes a change, sees it running, and reads the logs when something breaks, without you copying output back and forth.
 - **Several agents can work at once:** With [`serverpod runner`](https://docs.serverpod.dev/concepts/cli/commands/runner), each agent runs its own server and database in its own Git worktree, so agents don't get in each other's way. Run `serverpod start` in any worktree to see what its agent sees.
 
-## What it looks like
+## Build with Dart everywhere
 
 Define a model. Adding a `table` key makes it a database table.
 
