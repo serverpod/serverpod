@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
-import 'package:serverpod_cli/src/util/copy_directory.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
@@ -360,14 +358,6 @@ void main() async {
             );
           },
         );
-
-        test('has a Dockerfile', () {
-          expect(
-            File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync(),
-            isTrue,
-            reason: 'Server Dockerfile does not exist.',
-          );
-        });
 
         test('has an example_endpoint file', () {
           expect(
@@ -1257,41 +1247,6 @@ void main() async {
     });
 
     test(
-      'when building the server Dockerfile then the image is built successfully',
-      () async {
-        _addLocalPackageOverrides(
-          projectRoot: path.join(tempPath, projectName),
-          serverPackage: '${projectName}_server',
-          repositoryRoot: rootPath,
-        );
-
-        final dockerBuildProcess = await startProcess(
-          'docker',
-          [
-            'build',
-            '-f',
-            path.join('${projectName}_server', 'Dockerfile'),
-            '.',
-          ],
-          workingDirectory: path.join(tempPath, projectName),
-        );
-
-        addTearDown(() async {
-          await dockerBuildProcess.kill();
-        });
-
-        expect(
-          await dockerBuildProcess.exitCode,
-          0,
-          reason: 'Failed to build the generated server Docker image.',
-        );
-      },
-      skip: Platform.isWindows
-          ? 'Windows does not support Docker builds in GitHub Actions.'
-          : null,
-    );
-
-    test(
       'when running tests, then example unit and integration tests passes',
       () async {
         var testProcess = await startProcess(
@@ -1468,63 +1423,5 @@ void main() async {
     skip: Platform.isWindows
         ? 'Windows does not support postgres in github actions'
         : null,
-  );
-}
-
-void _addLocalPackageOverrides({
-  required String projectRoot,
-  required String serverPackage,
-  required String repositoryRoot,
-}) {
-  final server = parsePubspec(
-    File(path.join(projectRoot, serverPackage, 'pubspec.yaml')),
-  );
-  final localPackageRoots = {
-    for (final name in [server.name, ...server.devDependencies.keys])
-      ...PackageDependencyTracker(
-        dartToolDir: path.join(projectRoot, '.dart_tool'),
-        packageName: name,
-      ).localPackageLibDirs().map(path.dirname),
-  };
-
-  final overrides = <DependencyUpdate>[];
-  final repository = path.normalize(path.absolute(repositoryRoot));
-  for (final packageRoot in localPackageRoots.toList()..sort()) {
-    if (!path.isWithin(repository, packageRoot)) continue;
-
-    final package = parsePubspec(File(path.join(packageRoot, 'pubspec.yaml')));
-    final destination = path.join('local_packages', package.name);
-    copyDirectory(
-      Directory(packageRoot),
-      Directory(path.join(projectRoot, destination)),
-      ignoreFileNames: const {
-        '.dart_tool',
-        '.git',
-        '.serverpod',
-        'build',
-        'pubspec_overrides.yaml',
-      },
-    );
-    overrides.add((
-      name: package.name,
-      source: DependencySource.path(destination),
-      type: DependencyType.override,
-    ));
-  }
-
-  File(path.join(projectRoot, 'pubspec_overrides.yaml')).writeAsStringSync(
-    addDependencyToPubspec('{}\n', additions: overrides),
-  );
-
-  // Keep the generated Dockerfile, but include this checkout's dependencies
-  // before its pub get so the build uses the same APIs as the generator.
-  final dockerfile = File(path.join(projectRoot, serverPackage, 'Dockerfile'));
-  dockerfile.writeAsStringSync(
-    dockerfile.readAsStringSync().replaceFirst(
-      'RUN dart pub get',
-      'COPY local_packages local_packages\n'
-          'COPY pubspec_overrides.yaml .\n'
-          'RUN dart pub get',
-    ),
   );
 }

@@ -99,7 +99,7 @@ Below is a list of tools required to contribute to Serverpod.
 
 - **Dart**: Serverpod is written in Dart, so you need to have Dart installed on your machine. You can download Dart from the [Dart website](https://dart.dev/get-dart).
 - **Flutter**: Some parts of the project require Flutter to be installed on your machine. You can download Flutter from the [Flutter website](https://flutter.dev/docs/get-started/install).
-- **Docker** (optional for most work): The PostgreSQL-backed test suites provision an embedded database on demand, so they do not need Docker. Docker is still required for the generated-project Dockerfile and Compose checks in the bootstrap suite and for the Dockerized Flutter integration suite. You can download Docker from the [Docker website](https://www.docker.com/get-started).
+- **Docker** (optional for most work): The PostgreSQL-backed test suites provision an embedded database on demand, so they do not need Docker. Docker is still required for the generated-project Compose checks in the bootstrap suite and for the Dockerized Flutter integration suite. You can download Docker from the [Docker website](https://www.docker.com/get-started).
 - **Git**: Serverpod is hosted on GitHub, so you need to have Git installed on your machine. You can download Git from the [Git website](https://git-scm.com/downloads).
 - **Melos**: Serverpod uses Melos to manage the monorepo. Melos is a dev dependency of the workspace, so `dart run melos ...` works without installing anything.
 - **bash**: Some scripts require bash to be installed on your machine. If you are on Windows, you can install Git Bash from the [Git website](https://git-scm.com/downloads).
@@ -178,7 +178,7 @@ scope of a direct test run:
 `dart run melos run test` runs the primary host workflow—unit, bootstrap, and
 integration tests—and is the quickest way to validate a change across
 packages. On non-Windows hosts, its bootstrap group includes generated-project
-Dockerfile and Compose checks, so the complete workflow requires Docker. It
+Compose checks, so the complete workflow requires Docker. It
 also requires Redis at `redis:6379` with password `password`. See the `melos:`
 section in `pubspec.yaml` for the individual `test_*` scripts.
 

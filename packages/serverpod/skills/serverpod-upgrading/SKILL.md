@@ -16,7 +16,7 @@ Use the same pinned Serverpod version across all packages. Use the CLI to do the
 5. Run `serverpod generate`.
 6. Run `serverpod create-migration`.
 7. Run `dart analyze` in the root of the project and address any issues.
-8. Ensure that the Dockerfile uses at least `FROM dart:3.12.2 AS build`.
+8. If the project has a Dockerfile, ensure that it uses at least `FROM dart:3.12.2 AS build`.
 9. Restart the runner with `serverpod runner stop` and `serverpod runner start` in the server package, and inform the user that the upgrade is complete.
 
 ## Major upgrade: Serverpod 3.x to 4.0

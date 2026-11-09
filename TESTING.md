@@ -13,8 +13,8 @@ the workspace only and leaves the packages that are not workspace members
 unresolved (see `util/non_workspace_packages`).
 
 `dart run melos run test` runs the primary host workflow: unit, bootstrap, and
-integration tests. The bootstrap group includes generated-project Dockerfile
-and Compose checks on non-Windows hosts, while the e2e and Dockerized Flutter
+integration tests. The bootstrap group includes generated-project Compose
+checks on non-Windows hosts, while the e2e and Dockerized Flutter
 suites are excluded. The complete workflow also requires Redis at `redis:6379`
 with password `password`; redis-tagged tests fail when it is unavailable. Each
 group also has its own script - `dart run melos run test_unit`,
@@ -104,7 +104,7 @@ builds the server bundle itself.
 - **tests/bootstrap_project** - `dart test` from the package directory. Runs
   suites serially, compiles the in-repo CLI once per run (lock-elected within
   a run, serialized per checkout across runs). Needs Docker for the
-  Dockerfile/compose tests.
+  compose tests.
 - **tests/serverpod_cli_e2e_test, tools/serverpod_cli, packages/*** - generally
   plain `dart test`. `serverpod_embedded_postgres`'s integration tests spawn
   real postmasters and download the pinned bundle on the first run;

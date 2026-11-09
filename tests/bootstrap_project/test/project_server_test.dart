@@ -464,14 +464,6 @@ void main() async {
             },
           );
 
-          test('then the server project has a Dockerfile', () {
-            expect(
-              File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync(),
-              isTrue,
-              reason: 'Server Dockerfile does not exist.',
-            );
-          });
-
           test('then the server project has an example_endpoint file', () {
             expect(
               File(
