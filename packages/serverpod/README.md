@@ -1,52 +1,121 @@
 ![Serverpod banner](https://github.com/serverpod/serverpod/raw/main/misc/images/github-header.webp)
 
 # Serverpod
-[Serverpod](https://serverpod.dev) is a next-generation app and web server, built for the Flutter community. It allows you to write your server-side code in Dart, automatically generate your APIs, and hook up your database with minimal effort. Serverpod is open-source, and you can host your server anywhere.
 
-__[Get Started](https://docs.serverpod.dev)__ - __[Join the Mailing List](https://serverpod.news)__
+[![Pub version](https://img.shields.io/pub/v/serverpod)](https://pub.dev/packages/serverpod)
+[![Discord](https://img.shields.io/discord/1155780586871468093?label=discord)](https://serverpod.dev/discord)
 
-## Capabilities
+Serverpod is an open-source backend framework for Flutter, written in Dart. You write your server in the same language as your app, and Serverpod generates the type-safe client, the database schema, and the migrations. One command runs your whole stack locally with hot reload, and one more publishes it to the cloud.
 
-Serverpod is a complete, competent backend for Flutter. For the glossy sales pitch, head to our main page at [Serverpod.dev](https://serverpod.dev).
+**[Get started](https://docs.serverpod.dev/quickstart)** · **[Documentation](https://docs.serverpod.dev)** · **[Serverpod Cloud](https://serverpod.dev/cloud)** · **[Discord](https://serverpod.dev/discord)**
 
-Every design decision in Serverpod aims to minimize the amount of code you need to write and make it as readable as possible. Apart from being just a server, Serverpod incorporates many common tasks that are otherwise cumbersome to implement or require external services.
+## Why Serverpod
 
-### Code generation
-Serverpod automatically generates your model and client-side code by analyzing your server. Calling a remote endpoint is as easy as making a local method call.
+**Full-stack type safety.** Define a model once and use it everywhere: in your endpoints, in your database queries, and in your Flutter app. Calling the server is a regular Dart method call, checked by the compiler.
 
-### World-class logging
-Stop struggling. You no longer need to search through endless server logs. Pinpoint exceptions and slow database queries in an easy-to-use user interface with a single click.
+**Hot reload for your entire stack.** `serverpod start` runs the server, the database, and your Flutter app, and watches all of it. Change an endpoint or a model and the code is regenerated, the database is updated, and both server and app reload.
 
-### Built-in caching
-Cut down on your database costs. Don't save all your data permanently when you don't have to. Serverpod comes with a high-performance distributed cache built right in. Any serializable objects can be cached locally on your server or using Redis if you need to use the same cache across a cluster of servers.
+**No setup for the database.** New projects run on an embedded Postgres that Serverpod downloads and manages for you. You don't need Docker to get started.
 
-### Easy to use ORM
-Save time. Talking with your database can be a hassle. With Serverpod's ORM, your queries use native Dart types and null-safety. There is a straight path from your statically checked code to the database.
+**Tests against a real server.** The built-in test framework boots your Serverpod and a real, isolated database inside `dart test`. You call your endpoints directly, with no HTTP mocking.
 
-### Database migrations
-Easily keep your database in sync as the requirements of your project evolve. Serverpod comes with a complete database migration system that helps you apply and version changes to the database. 
+**Zero-configuration deployments.** Publish your backend, database, and Flutter web app to [Serverpod Cloud](https://serverpod.dev/cloud) with a single command. No pipelines, no Terraform, no DevOps. Plans start at $5 per month.
 
-### File uploads
-Upload files straight to Google Cloud Storage, S3, or store them in your database.
+**Open source, no lock-in.** Serverpod runs anywhere you can run Dart. Serverpod Cloud is a convenience, not a requirement.
 
-### Authentication
-Sign in through social logins or wing your own. Currently supported are Google, Apple, Firebase, and email.
+**Built for agentic coding.** Projects ship with agent skills and an [MCP server](https://pub.dev/packages/serverpod_mcp) so your AI coding agent knows how Serverpod works and can read your server and app logs.
 
-### Data streaming
-Pass serialized objects through authenticated sockets. Push messages from your server for real-time communication. Sending messages across a cluster of servers is supported. Perfect for building games or chatting applications, or anything you can imagine.
+More than a thousand new Serverpod projects are created every month, and it's used in production by startups, app agencies, banks, and medical companies.
 
-### Task scheduling
-Serverpod's future calls replace complicated cron jobs. Call a method anytime in the future or after a specified delay. The calls persist even if the server is restarted.
+## What it looks like
 
-### Health checks
-Monitor the database and external services that you are using. Write custom health checks and get notified when something goes wrong.
+Define a model. Adding a `table` key makes it a database table.
 
-### Easy deployment
-Serverpod comes with Terraform scripts for Google Cloud Platform and AWS, making deploying your server very quick. We are still working on scripts for other platforms. Please get in touch with us if you want to [contribute](https://docs.serverpod.dev/contribute).
+```yaml
+# my_project_server/lib/src/notes/note.spy.yaml
+class: Note
+table: note
+fields:
+  text: String
+```
 
-### Built-in web server
-Serverpod comes with a built-in web server. This makes it very easy to share data for applications that need both an app and traditional web pages. You can also use the webserver to create webhooks or generate custom REST APIs to communicate with 3rd party services. _The web server is still experimental, and we are actively working on it_.
+Write an endpoint. The `Note` class and its type-safe `db` API are generated for you.
 
+```dart
+// my_project_server/lib/src/notes/notes_endpoint.dart
+class NotesEndpoint extends Endpoint {
+  Future<Note> add(Session session, Note note) =>
+      Note.db.insertRow(session, note);
+
+  Future<List<Note>> list(Session session) =>
+      Note.db.find(session, orderBy: (t) => t.id);
+}
+```
+
+Call it from your Flutter app. The client is generated, so there's no REST layer to write or keep in sync.
+
+```dart
+final notes = await client.notes.list();
+```
+
+Test it against a real database.
+
+```dart
+withServerpod('Given Notes endpoint', (sessionBuilder, endpoints) {
+  test('when adding a note then it is listed', () async {
+    await endpoints.notes.add(sessionBuilder, Note(text: 'Hello'));
+    final notes = await endpoints.notes.list(sessionBuilder);
+    expect(notes.single.text, 'Hello');
+  });
+});
+```
+
+## Getting started
+
+You need [Flutter](https://docs.flutter.dev/get-started/install) 3.44.4 or later.
+
+```bash
+dart install serverpod_cli       # Install the Serverpod CLI
+serverpod quickstart my_project  # Create a server, client, and Flutter app
+cd my_project
+serverpod start                  # Run the full stack with hot reload
+```
+
+`serverpod start` starts the database, runs your server, and opens your Flutter app. Press `M` in the terminal to create and apply a database migration after changing a model. Run your tests with `dart test` from the `my_project_server` folder.
+
+Follow the [quickstart guide](https://docs.serverpod.dev/quickstart) for a full walkthrough.
+
+### Publish to Serverpod Cloud
+
+```bash
+serverpod cloud launch
+```
+
+This signs you in, creates your project, and publishes it. Your first project includes a one-month free trial, no credit card required. After that, `serverpod cloud deploy` publishes new versions. See [Deploy to Serverpod Cloud](https://docs.serverpod.dev/deployments/deploy-to-serverpod-cloud).
+
+Prefer to host it yourself? Serverpod runs anywhere Dart runs. Every new project includes a `Dockerfile`, and the docs cover [other deployment options](https://docs.serverpod.dev/deployments/deployment-strategy).
+
+## Everything else that's included
+
+- [ORM and migrations](https://docs.serverpod.dev/concepts/data-and-the-database/database/crud) for Postgres, with relations, transactions, pgvector, and PostGIS
+- [Authentication](https://docs.serverpod.dev/concepts/authentication/setup) with email, Google, Apple, Facebook, GitHub, Microsoft, Firebase, and custom providers
+- [Streaming endpoints](https://docs.serverpod.dev/concepts/streams) for real-time communication using native Dart streams
+- [Future calls](https://docs.serverpod.dev/concepts/scheduling) that replace cron jobs and survive server restarts
+- [File uploads](https://docs.serverpod.dev/concepts/file-uploads) to S3, Google Cloud Storage, Cloudflare R2, or your database
+- [Caching](https://docs.serverpod.dev/concepts/caching) locally or across a cluster with Redis
+- [Logging](https://docs.serverpod.dev/concepts/logging) and [Serverpod Insights](https://docs.serverpod.dev/tools/insights), a companion app for monitoring your server in real time
+- [A web server](https://docs.serverpod.dev/concepts/web-server/overview) for web pages, webhooks, and REST APIs, built on [Relic](https://github.com/serverpod/relic)
+- [Health checks](https://docs.serverpod.dev/concepts/health-checks) for your database and external services
+- A [client-side SQLite database](https://docs.serverpod.dev/concepts/data-and-the-database/database/client-side-database) with the same ORM
+
+## Community
+
+- [Discord](https://serverpod.dev/discord) for questions and discussion
+- [GitHub Discussions](https://github.com/serverpod/serverpod/discussions) for ideas and longer threads
+- [Newsletter](https://serverpod.news) for release news, roughly once a month
+
+Want to contribute? Read the [contribution guide](https://docs.serverpod.dev/contribute). More than a hundred developers have contributed code to Serverpod so far.
 
 ## License
-All Serverpod packages are licensed under BSD-3, except for the main `serverpod` package, which uses the SSPL license. In short, this means that you can, without limitation, use any of the client packages in your app. You can also host your Serverpod server without limitation as long as you do not offer Severpod as a cloud service to 3rd parties (this is typically only relevant for cloud service providers).
+
+All Serverpod packages are licensed under BSD-3, except for the main `serverpod` package, which uses the SSPL license. In short, you can use any of the client packages in your app without limitation. You can also host your Serverpod server without limitation, as long as you don't offer Serverpod as a cloud service to third parties (this is typically only relevant for cloud service providers).
