@@ -24,7 +24,7 @@ More than 400 developers start a new project with Serverpod every month, and it'
 
 Serverpod is designed to be built with an AI coding agent. When you create a project, pick your agent and Serverpod sets it up for you. Claude Code, Cursor, VS Code, Codex, Antigravity, and OpenCode are supported out of the box.
 
-**Agent skills turn your agent into a Serverpod expert.** Serverpod ships skills covering endpoints, models, the database, migrations, authentication, testing, deployment, and more. They come with the `serverpod` package, so they always match the version you're using and your agent doesn't have to guess from older APIs.
+**Agent skills turn your agent into a Serverpod expert.** Serverpod ships skills covering endpoints, models, the database, migrations, authentication, testing, deployment, and more. They ship inside the `serverpod` package, so each release comes with skills written for that release. Your agent doesn't have to guess from older APIs.
 
 **The MCP server connects your agent to your running app.** Through [`serverpod mcp-server`](https://docs.serverpod.dev/concepts/cli/commands/mcp-server), your agent can read server and Flutter app logs, hot reload the server and the app, and create and apply database migrations. It makes a change, sees it running, and reads the logs when something breaks, without you copying output back and forth.
 
