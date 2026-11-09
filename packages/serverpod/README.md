@@ -22,13 +22,11 @@ More than 400 developers start a new project with Serverpod every month, and it'
 
 ## Built for coding agents
 
-Serverpod is designed to be built with an AI coding agent. When you create a project, pick your agent and Serverpod sets it up for you. Claude Code, Cursor, VS Code, Codex, Antigravity, and OpenCode are supported out of the box.
+Serverpod is designed for building apps with an AI coding agent. When you create a project, pick your agent and Serverpod sets it up for you. Claude Code, Cursor, VS Code, Codex, Antigravity, and OpenCode are supported out of the box.
 
-**Agent skills turn your agent into a Serverpod expert.** Serverpod ships skills covering endpoints, models, the database, migrations, authentication, testing, deployment, and more. They ship inside the `serverpod` package, so each release comes with skills written for that release. Your agent doesn't have to guess from older APIs.
-
-**The MCP server connects your agent to your running app.** Through [`serverpod mcp-server`](https://docs.serverpod.dev/concepts/cli/commands/mcp-server), your agent can read server and Flutter app logs, hot reload the server and the app, and create and apply database migrations. It makes a change, sees it running, and reads the logs when something breaks, without you copying output back and forth.
-
-**Several agents can work at once.** With [`serverpod runner`](https://docs.serverpod.dev/concepts/cli/commands/runner), each agent runs its own server and database in its own Git worktree, so agents don't get in each other's way. Run `serverpod start` in any worktree to see what its agent sees.
+- **Agent skills turn your agent into a Serverpod expert:** Serverpod ships skills covering endpoints, models, the database, migrations, authentication, testing, deployment, and more. They ship inside the `serverpod` package, so each release comes with skills written for that release. Your agent doesn't have to guess from older APIs.
+- **The MCP server connects your agent to your running app:** Through [`serverpod mcp-server`](https://docs.serverpod.dev/concepts/cli/commands/mcp-server), your agent can read server and Flutter app logs, hot reload the server and the app, and create and apply database migrations. It makes a change, sees it running, and reads the logs when something breaks, without you copying output back and forth.
+- **Several agents can work at once:** With [`serverpod runner`](https://docs.serverpod.dev/concepts/cli/commands/runner), each agent runs its own server and database in its own Git worktree, so agents don't get in each other's way. Run `serverpod start` in any worktree to see what its agent sees.
 
 ## What it looks like
 
@@ -91,13 +89,13 @@ Follow the [quickstart guide](https://docs.serverpod.dev/quickstart) for a full 
 > [!NOTE]
 > Upgrading a Serverpod 3 project? Start with the [upgrade guide](https://docs.serverpod.dev/upgrading/upgrade-to-four).
 
-### Publish to Serverpod Cloud
+### Publish your app
 
 ```bash
 serverpod cloud launch
 ```
 
-This signs you in, creates your project, and publishes it. Your first project includes a one-month free trial, no credit card required. After that, `serverpod cloud deploy` publishes new versions. See [Deploy to Serverpod Cloud](https://docs.serverpod.dev/deployments/deploy-to-serverpod-cloud).
+This signs you in, creates your project on Serverpod Cloud, and publishes it. After that, `serverpod cloud deploy` publishes new versions. Your first project includes a one-month free trial, no credit card required. See [Deploy to Serverpod Cloud](https://docs.serverpod.dev/deployments/deploy-to-serverpod-cloud).
 
 Prefer to host it yourself? Serverpod runs anywhere Dart runs. Every new project includes a `Dockerfile`, and the docs cover [other deployment options](https://docs.serverpod.dev/deployments/custom-hosting/choosing-a-strategy).
 
