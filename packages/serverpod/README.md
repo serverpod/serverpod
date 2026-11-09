@@ -30,7 +30,9 @@ Serverpod is designed for building apps with an AI coding agent. When you create
 
 ## Build with Dart everywhere
 
-Define a model. Adding a `table` key makes it a database table.
+### Define a model
+
+Adding a `table` key makes it a database table.
 
 ```yaml
 # my_project_server/lib/src/notes/note.spy.yaml
@@ -40,7 +42,9 @@ fields:
   text: String
 ```
 
-Write an endpoint. The `Note` class and its type-safe `db` API are generated for you.
+### Write an endpoint
+
+The `Note` class and its type-safe `db` API are generated for you.
 
 ```dart
 // my_project_server/lib/src/notes/notes_endpoint.dart
@@ -53,13 +57,15 @@ class NotesEndpoint extends Endpoint {
 }
 ```
 
-Call it from your Flutter app. The client is generated, so there's no REST layer to write or keep in sync.
+### Call the endpoint from your Flutter app
+
+The client is generated, so there's no REST layer to write or keep in sync.
 
 ```dart
 final notes = await client.notes.list();
 ```
 
-Test it against a real database.
+### Test the endpoint against a real database
 
 ```dart
 withServerpod('Given Notes endpoint', (sessionBuilder, endpoints) {
