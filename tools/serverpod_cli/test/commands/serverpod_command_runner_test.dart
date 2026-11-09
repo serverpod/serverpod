@@ -334,12 +334,53 @@ void main() {
     );
   });
 
-  group('Given a Serverpod CLI ID,', () {
+  group('Given the command runner with a before-run hook,', () {
+    late bool? analyticsEnabledInHook;
+    late ServerpodCommandRunner runner;
+
+    setUp(() {
+      analyticsEnabledInHook = null;
+      runner = ServerpodCommandRunner.createCommandRunner(
+        MockAnalytics(),
+        false,
+        version,
+        onBeforeRunCommand: (runner) async {
+          analyticsEnabledInHook = runner.analyticsEnabled();
+        },
+      )..addCommand(MockCommand());
+    });
+
+    test(
+      'when run without --no-analytics, '
+      'then the hook sees analytics as enabled',
+      () async {
+        await runner.run([MockCommand.commandName]);
+
+        expect(analyticsEnabledInHook, isTrue);
+      },
+    );
+
+    test(
+      'when run with --no-analytics, '
+      'then the hook sees analytics as disabled',
+      () async {
+        await runner.run(['--no-analytics', MockCommand.commandName]);
+
+        expect(analyticsEnabledInHook, isFalse);
+      },
+    );
+  });
+
+  group('Given analytics is enabled,', () {
     test(
       'when the welcome page URL is built for the first run, '
       'then it is the welcome page with the Serverpod CLI ID',
       () {
-        final url = welcomePageUrl(runCount: 1, serverpodCliId: 'cli-id');
+        final url = welcomePageUrl(
+          runCount: 1,
+          serverpodCliId: 'cli-id',
+          analyticsEnabled: true,
+        );
 
         expect(
           url,
@@ -352,7 +393,11 @@ void main() {
       'when the welcome page URL is built for the 20th run, '
       'then it is the check-in page with the Serverpod CLI ID',
       () {
-        final url = welcomePageUrl(runCount: 20, serverpodCliId: 'cli-id');
+        final url = welcomePageUrl(
+          runCount: 20,
+          serverpodCliId: 'cli-id',
+          analyticsEnabled: true,
+        );
 
         expect(
           url,
@@ -365,9 +410,43 @@ void main() {
       'when the welcome page URL is built for any other run, '
       'then there is no page to open',
       () {
-        final url = welcomePageUrl(runCount: 2, serverpodCliId: 'cli-id');
+        final url = welcomePageUrl(
+          runCount: 2,
+          serverpodCliId: 'cli-id',
+          analyticsEnabled: true,
+        );
 
         expect(url, isNull);
+      },
+    );
+  });
+
+  group('Given analytics is disabled,', () {
+    test(
+      'when the welcome page URL is built for the first run, '
+      'then it is the welcome page without any ID',
+      () {
+        final url = welcomePageUrl(
+          runCount: 1,
+          serverpodCliId: 'cli-id',
+          analyticsEnabled: false,
+        );
+
+        expect(url, Uri.parse('https://serverpod.dev/welcome'));
+      },
+    );
+
+    test(
+      'when the welcome page URL is built for the 20th run, '
+      'then it is the check-in page without any ID',
+      () {
+        final url = welcomePageUrl(
+          runCount: 20,
+          serverpodCliId: 'cli-id',
+          analyticsEnabled: false,
+        );
+
+        expect(url, Uri.parse('https://serverpod.dev/checkin'));
       },
     );
   });

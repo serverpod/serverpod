@@ -54,14 +54,17 @@ Future<void> _preCommandEnvironmentChecks() async {
 
 /// Returns the page to open on the [runCount]th run: the welcome page on the
 /// first run, the check-in page on the 20th, and null otherwise.
-Uri? welcomePageUrl({required int runCount, required String serverpodCliId}) {
+///
+/// The Serverpod CLI ID is only added when [analyticsEnabled] is true.
+Uri? welcomePageUrl({
+  required int runCount,
+  required String serverpodCliId,
+  required bool analyticsEnabled,
+}) {
+  final query = analyticsEnabled ? '?serverpod_cli_id=$serverpodCliId' : '';
   return switch (runCount) {
-    1 => Uri.parse(
-      'https://serverpod.dev/welcome?serverpod_cli_id=$serverpodCliId',
-    ),
-    20 => Uri.parse(
-      'https://serverpod.dev/checkin?serverpod_cli_id=$serverpodCliId',
-    ),
+    1 => Uri.parse('https://serverpod.dev/welcome$query'),
+    20 => Uri.parse('https://serverpod.dev/checkin$query'),
     _ => null,
   };
 }
@@ -71,12 +74,16 @@ Uri? welcomePageUrl({required int runCount, required String serverpodCliId}) {
 /// If the user ID is not available, the welcome and check-in pages are
 /// skipped, to avoid invoking the webpage every time the CLI is run if any
 /// configuration prevents the CLI from writing to the user home directory.
-Future<void> _preCommandWelcome() async {
+Future<void> _preCommandWelcome({required bool analyticsEnabled}) async {
   final runCount = resourceManager.runCount;
   final uuid = resourceManager.uniqueUserId;
   if (uuid == null) return;
 
-  final url = welcomePageUrl(runCount: runCount, serverpodCliId: uuid);
+  final url = welcomePageUrl(
+    runCount: runCount,
+    serverpodCliId: uuid,
+    analyticsEnabled: analyticsEnabled,
+  );
   if (url != null) await BrowserLauncher.openUrl(url);
 }
 
@@ -146,7 +153,9 @@ Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
   if (runner._invokedCommandName == DoctorCommand.commandName) return;
 
   await _preCommandEnvironmentChecks();
-  await _preCommandWelcome();
+  // `BetterCommandRunner.run` resolves `--no-analytics` before it invokes this
+  // hook, so the state read here is final.
+  await _preCommandWelcome(analyticsEnabled: runner.analyticsEnabled());
   await _preCommandPrints(runner);
 }
 
