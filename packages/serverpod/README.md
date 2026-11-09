@@ -11,17 +11,12 @@ Serverpod is the ultimate app-stack for agentic coding. It is a complete, open-s
 
 ## Why Serverpod
 
-**Full-stack type safety.** Define a model once and use it everywhere: in your endpoints, in your database queries, and in your Flutter app. Calling the server is a regular Dart method call, checked by the compiler.
-
-**Hot reload for your entire stack.** One command, `serverpod start`, runs the server, the database, and your Flutter app, and watches all of it. Change an endpoint or a model, and Serverpod regenerates the code and reloads both server and app.
-
-**No setup for the database.** New projects run on an embedded Postgres that Serverpod downloads and manages for you. You don't need Docker to get started.
-
-**Tests against a real server.** The built-in test framework boots your Serverpod and a real, isolated database inside `dart test`. You call your endpoints directly, with no HTTP mocking.
-
-**Zero-configuration deployments.** Publish your backend, database, and Flutter web app to [Serverpod Cloud](https://serverpod.dev/cloud) with a single command. No pipelines, no Terraform, no DevOps. Plans start at $5 per month.
-
-**Open source, no lock-in.** Serverpod runs anywhere you can run Dart. Serverpod Cloud is a convenience, not a requirement.
+- **Full-stack type safety:** Define a model once and use it in your endpoints, your database queries, and your Flutter app. Calling the server is a regular Dart method call, checked by the compiler.
+- **Hot reload for your entire stack:** One command, `serverpod start`, runs the server, the database, and your Flutter app, and watches all of it. Change an endpoint or a model, and Serverpod regenerates the code and reloads both server and app.
+- **No setup for the database:** New projects run on an embedded Postgres that Serverpod downloads and manages for you. You don't need Docker to get started.
+- **Tests against a real server:** The built-in test framework boots your Serverpod and a real, isolated database inside `dart test`. You call your endpoints directly, with no HTTP mocking.
+- **Zero-configuration deployments:** Publish your backend, database, and Flutter web app to [Serverpod Cloud](https://serverpod.dev/cloud) with a single command. No pipelines, no Terraform, no DevOps. Plans start at $5 per month.
+- **Open source, no lock-in:** Serverpod runs anywhere you can run Dart. Serverpod Cloud is a convenience, not a requirement.
 
 More than 400 developers start a new project with Serverpod every month, and it's used in production by startups, app agencies, banks, and medical companies.
 
