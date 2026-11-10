@@ -8,18 +8,16 @@ import 'package:pinput/pinput.dart';
 
 import '../../theme.dart';
 import '../text_formatters.dart';
-import 'verification_code_texts.dart';
 
 /// A widget for entering one-time verification codes (OTP).
 ///
 /// Displays a row of pin inputs and a paste-from-clipboard button. The callback
 /// [onCompleted] is invoked when the input reaches the configured [length].
 ///
-/// On the web, the browser context menu is disabled while this widget is
-/// mounted, so a long press or right click on the input shows Flutter's text
-/// selection toolbar, which has a paste action. The browser context menu is
-/// restored when the last [VerificationCodeInput] is disposed, unless the app
-/// had already disabled it.
+/// On the web, the browser context menu is disabled while the input has focus,
+/// so a long press or right click on it shows Flutter's text selection
+/// toolbar, which has a paste action. The browser context menu is restored
+/// when the input loses focus, unless the app had disabled it itself.
 class VerificationCodeInput extends StatefulWidget {
   /// Controller that holds the entered verification code.
   final TextEditingController verificationCodeController;
@@ -73,9 +71,26 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
   static final _completedCodes = <String>{};
 
   FocusNode? _ownedFocusNode;
+  late FocusNode _focusNode;
 
-  FocusNode get _focusNode =>
-      widget.focusNode ?? (_ownedFocusNode ??= FocusNode());
+  /// Whether this input holds the browser context menu disabled.
+  bool _holdsBrowserContextMenu = false;
+
+  /// The context menu of the input, same as Pinput's default.
+  ///
+  /// [EditableText] decides whether to show Flutter's menu or leave it to the
+  /// browser when it creates its selection overlay, which can happen before the
+  /// browser menu is disabled. A new builder makes it create the overlay again.
+  EditableTextContextMenuBuilder _contextMenuBuilder = _buildContextMenu;
+
+  static Widget _buildContextMenu(
+    BuildContext context,
+    EditableTextState editableTextState,
+  ) {
+    return AdaptiveTextSelectionToolbar.editableText(
+      editableTextState: editableTextState,
+    );
+  }
 
   List<TextInputFormatter> get _inputFormatters {
     final allowedCharactersPattern = widget.allowedCharactersPattern;
@@ -89,14 +104,48 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
   @override
   void initState() {
     super.initState();
-    _BrowserContextMenuGuard.acquire();
+    _focusNode = widget.focusNode ?? (_ownedFocusNode = FocusNode());
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(VerificationCodeInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.focusNode != oldWidget.focusNode) {
+      _focusNode.removeListener(_handleFocusChange);
+      _focusNode = widget.focusNode ?? (_ownedFocusNode ??= FocusNode());
+      _focusNode.addListener(_handleFocusChange);
+      _handleFocusChange();
+    }
   }
 
   @override
   void dispose() {
-    _BrowserContextMenuGuard.release();
+    _focusNode.removeListener(_handleFocusChange);
+    _setHoldsBrowserContextMenu(false);
     _ownedFocusNode?.dispose();
     super.dispose();
+  }
+
+  void _handleFocusChange() => _setHoldsBrowserContextMenu(_focusNode.hasFocus);
+
+  void _setHoldsBrowserContextMenu(bool holds) {
+    if (!kIsWeb || holds == _holdsBrowserContextMenu) return;
+    _holdsBrowserContextMenu = holds;
+    if (!holds) {
+      _BrowserContextMenuGuard.release();
+      return;
+    }
+
+    unawaited(
+      _BrowserContextMenuGuard.acquire().then((_) {
+        if (!mounted || !_holdsBrowserContextMenu) return;
+        setState(() {
+          _contextMenuBuilder = (context, editableTextState) =>
+              _buildContextMenu(context, editableTextState);
+        });
+      }),
+    );
   }
 
   /// Replaces the current code with the clipboard text.
@@ -171,6 +220,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
             isCursorAnimationEnabled: false,
             cursor: _PinCursor(color: cursorColor, height: fontSize * 1.4),
             enableInteractiveSelection: true,
+            contextMenuBuilder: _contextMenuBuilder,
             keyboardType: widget.keyboardType,
             textCapitalization: widget.allowedLetterCase == LetterCase.uppercase
                 ? TextCapitalization.characters
@@ -221,9 +271,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
         TextFieldTapRegion(
           child: IconButton(
             onPressed: widget.isLoading ? null : _pasteFromClipboard,
-            tooltip:
-                context.verificationCodeTexts.pasteCode ??
-                MaterialLocalizations.of(context).pasteButtonLabel,
+            tooltip: MaterialLocalizations.of(context).pasteButtonLabel,
             icon: const Icon(Icons.content_paste),
           ),
         ),
@@ -282,30 +330,46 @@ class _PinCursorState extends State<_PinCursor> {
 }
 
 /// Disables the browser context menu on the web while at least one
-/// [VerificationCodeInput] is mounted.
+/// [VerificationCodeInput] holds it.
 ///
 /// Flutter only shows its own text selection toolbar, which has the paste
 /// action, when the browser context menu is disabled. In iOS Safari the
 /// browser menu never opens on the input either, so without this a long press
 /// offers no way to paste.
+///
+/// The menu is only enabled again if this guard disabled it. Changing the menu
+/// is asynchronous, and [BrowserContextMenu.enabled] only changes when a change
+/// completes, so an enable of the guard that is still running does not count
+/// as the app having disabled the menu.
 abstract final class _BrowserContextMenuGuard {
   static int _holders = 0;
   static bool _disabledByGuard = false;
+  static Future<void> _disabling = Future<void>.value();
+  static Future<void>? _enabling;
 
-  static void acquire() {
-    if (!kIsWeb) return;
-    if (_holders++ == 0 && BrowserContextMenu.enabled) {
-      _disabledByGuard = true;
-      unawaited(BrowserContextMenu.disableContextMenu());
+  /// Adds a holder and completes when the browser menu is disabled.
+  static Future<void> acquire() {
+    _holders++;
+    if (_disabledByGuard) return _disabling;
+    if (_enabling == null && !BrowserContextMenu.enabled) {
+      // The app disabled the menu itself.
+      return Future<void>.value();
     }
+    _disabledByGuard = true;
+    return _disabling = BrowserContextMenu.disableContextMenu();
   }
 
+  /// Removes a holder and enables the browser menu again after the last one.
   static void release() {
-    if (!kIsWeb) return;
-    if (--_holders == 0 && _disabledByGuard) {
-      _disabledByGuard = false;
-      unawaited(BrowserContextMenu.enableContextMenu());
-    }
+    _holders--;
+    if (_holders > 0 || !_disabledByGuard) return;
+    _disabledByGuard = false;
+    final enabling = _enabling = BrowserContextMenu.enableContextMenu();
+    unawaited(
+      enabling.whenComplete(() {
+        if (identical(_enabling, enabling)) _enabling = null;
+      }),
+    );
   }
 }
 

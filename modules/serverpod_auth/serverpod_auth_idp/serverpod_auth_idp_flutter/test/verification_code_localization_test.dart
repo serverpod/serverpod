@@ -122,31 +122,6 @@ void main() {
       expect(find.byTooltip('Paste'), findsOneWidget);
     },
   );
-
-  testWidgets(
-    'Given shared verification code texts with a paste label, '
-    'when a verification code input is displayed, '
-    'then the paste button uses that label.',
-    (tester) async {
-      await tester.pumpWidget(
-        _app(
-          SignInLocalizationProvider(
-            verificationCodeTexts: VerificationCodeTexts.defaults.copyWith(
-              pasteCode: 'Colar código',
-            ),
-            child: VerificationCodeInput(
-              verificationCodeController: TextEditingController(),
-              onCompleted: () {},
-              isLoading: false,
-            ),
-          ),
-        ),
-      );
-
-      expect(find.byTooltip('Colar código'), findsOneWidget);
-      expect(find.byTooltip('Paste'), findsNothing);
-    },
-  );
 }
 
 Widget _app(Widget child) => MaterialApp(home: Scaffold(body: child));
