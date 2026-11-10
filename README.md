@@ -24,7 +24,7 @@ More than a thousand new projects are created with Serverpod every month, and it
 
 Serverpod is designed for building apps with an AI coding agent. When you create a project, pick your agent and Serverpod sets it up for you. Claude Code, Cursor, VS Code, Codex, Antigravity, and OpenCode are supported out of the box.
 
-- **Agent skills turn your agent into a Serverpod expert:** Serverpod ships skills covering endpoints, models, the database, migrations, authentication, testing, deployment, and more. They ship inside the `serverpod` package, so each release comes with skills written for that release. Your agent doesn't have to guess from older APIs.
+- **Agent skills turn your agent into a Serverpod expert:** When you create a project, Serverpod adds skills that cover endpoints, models, the database, migrations, authentication, testing, deployment, and more. They're written for the Serverpod version you create the project with, not the older APIs your agent may have learned.
 - **The MCP server connects your agent to your running app:** Through [`serverpod mcp-server`](https://docs.serverpod.dev/concepts/cli/commands/mcp-server), your agent can read server and Flutter app logs, hot reload the server and the app, and create and apply database migrations. It makes a change, sees it running, and reads the logs when something breaks, without you copying output back and forth.
 - **Several agents can work at once:** With [`serverpod runner`](https://docs.serverpod.dev/concepts/cli/commands/runner), each agent runs its own server and database in its own Git worktree, so agents don't get in each other's way. Run `serverpod start` in any worktree to see what its agent sees.
 
@@ -44,10 +44,15 @@ Create a project with a server, a client, and a Flutter app. The command asks wh
 serverpod quickstart my_project
 ```
 
-Start the full stack with hot reload:
+Move into the project folder:
 
 ```bash
 cd my_project
+```
+
+Start the full stack with hot reload:
+
+```bash
 serverpod start
 ```
 
