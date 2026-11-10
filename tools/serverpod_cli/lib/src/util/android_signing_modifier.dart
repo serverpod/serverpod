@@ -57,7 +57,10 @@ class AndroidSigningModifier {
         return false;
       }
 
-      var contents = await file.readAsString();
+      var original = await file.readAsString();
+      // Files generated on Windows use CRLF line endings.
+      var usesCrlf = original.contains('\r\n');
+      var contents = original.replaceAll('\r\n', '\n');
 
       if (!contents.contains(_originalSigningConfig) ||
           !contents.contains('\nandroid {\n')) {
@@ -75,6 +78,8 @@ class AndroidSigningModifier {
                 'android {\n'
                 '$_signingConfigsBlock',
           );
+
+      if (usesCrlf) contents = contents.replaceAll('\n', '\r\n');
 
       await file.writeAsString(contents);
       log.debug('Added release signing config to $filePath');
