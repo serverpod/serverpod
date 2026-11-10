@@ -665,6 +665,49 @@ void main() async {
           );
         });
 
+        test(
+          'has an Android release signing config for Serverpod Cloud builds',
+          () {
+            final contents = File(
+              path.join(
+                tempPath,
+                flutterDir,
+                'android',
+                'app',
+                'build.gradle.kts',
+              ),
+            ).readAsStringSync();
+
+            expect(
+              contents,
+              contains('System.getenv("SERVERPOD_APP_BUILD")'),
+              reason: 'Signing is not conditional on a Serverpod Cloud build.',
+            );
+            for (final variable in [
+              'ANDROID_KEYSTORE_PATH',
+              'ANDROID_KEYSTORE_PASSWORD',
+              'ANDROID_KEY_ALIAS',
+              'ANDROID_KEY_PASSWORD',
+            ]) {
+              expect(
+                contents,
+                contains('System.getenv("$variable")'),
+                reason: 'Signing config does not read $variable.',
+              );
+            }
+            expect(
+              contents,
+              contains('signingConfigs.getByName("release")'),
+              reason: 'Release build type does not use the release config.',
+            );
+            expect(
+              contents,
+              contains('signingConfigs.getByName("debug")'),
+              reason: 'Release build type does not fall back to debug keys.',
+            );
+          },
+        );
+
         test('has an iOS bundle ID derived from the project name', () {
           final pbxproj = File(
             path.join(
