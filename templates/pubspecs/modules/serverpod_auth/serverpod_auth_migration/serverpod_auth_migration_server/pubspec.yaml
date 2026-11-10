@@ -1,7 +1,7 @@
 # TEMPLATE
 
 name: serverpod_auth_migration_server
-description: Serverpod authentication migration server module.
+description: Serverpod legacy authentication migration server module.
 version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 
