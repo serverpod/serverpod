@@ -20,7 +20,7 @@ Serverpod is the ultimate app-stack for agentic coding. It is a complete, open-s
 
 More than 400 developers start a new project with Serverpod every month, and it's used in production by startups, app agencies, banks, and medical companies.
 
-## Built for coding agents
+## Build with an AI agent
 
 Serverpod is designed for building apps with an AI coding agent. When you create a project, pick your agent and Serverpod sets it up for you. Claude Code, Cursor, VS Code, Codex, Antigravity, and OpenCode are supported out of the box.
 
@@ -32,11 +32,23 @@ Serverpod is designed for building apps with an AI coding agent. When you create
 
 You need [Flutter](https://docs.flutter.dev/get-started/install) 3.44.4 or later.
 
+Install the Serverpod CLI:
+
 ```bash
-dart install serverpod_cli       # Install the Serverpod CLI
-serverpod quickstart my_project  # Create a server, client, and Flutter app
+dart install serverpod_cli
+```
+
+Create a project with a server, a client, and a Flutter app. The command asks which editor or agent you use:
+
+```bash
+serverpod quickstart my_project
+```
+
+Start the full stack with hot reload:
+
+```bash
 cd my_project
-serverpod start                  # Run the full stack with hot reload
+serverpod start
 ```
 
 The `serverpod start` command starts the database, runs your server, and opens your Flutter app.
@@ -44,7 +56,7 @@ The `serverpod start` command starts the database, runs your server, and opens y
 Follow the [quickstart guide](https://docs.serverpod.dev/quickstart) for a full walkthrough.
 
 > [!NOTE]
-> Upgrading a Serverpod 3 project? Start with the [upgrade guide](https://docs.serverpod.dev/upgrading/upgrade-to-four).
+> Upgrading an existing project? Start with the [upgrade guides](https://docs.serverpod.dev/upgrading).
 
 ## Build with Dart everywhere
 
@@ -107,9 +119,12 @@ Run your tests with `dart test` from the `my_project_server` folder.
 serverpod cloud launch
 ```
 
-This signs you in, creates your project on Serverpod Cloud, and publishes it. After that, `serverpod cloud deploy` publishes new versions. Your first project includes a one-month free trial, no credit card required. See [Deploy to Serverpod Cloud](https://docs.serverpod.dev/deployments/deploy-to-serverpod-cloud).
+This signs you in, creates your project on Serverpod Cloud, and publishes it. After that, `serverpod cloud deploy` publishes new versions. See [Deploy to Serverpod Cloud](https://docs.serverpod.dev/deployments/deploy-to-serverpod-cloud).
 
-Prefer to host it yourself? Serverpod runs anywhere Dart runs. Every new project includes a `Dockerfile`, and the docs cover [other deployment options](https://docs.serverpod.dev/deployments/custom-hosting/choosing-a-strategy).
+> [!NOTE]
+> Your first project includes a one-month free trial, with no credit card required.
+
+Prefer to host it yourself? Serverpod runs anywhere Dart runs, and the docs cover [other deployment options](https://docs.serverpod.dev/deployments/custom-hosting/choosing-a-strategy).
 
 ## Everything else that's included
 
