@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_auth_server
-description: Serverpod authentication server module.
+description: Serverpod legacy authentication server module, kept for existing apps.
 version: 4.1.1
 repository: https://github.com/serverpod/serverpod
 

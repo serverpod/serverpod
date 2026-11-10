@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_auth_migration_client
-description: Serverpod authentication migration client module.
+description: Serverpod legacy authentication migration client module.
 version: 4.1.1
 repository: https://github.com/serverpod/serverpod
 

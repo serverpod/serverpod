@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_auth_apple_flutter
-description: Sign in with Apple for the Serverpod auth module.
+description: Sign in with Apple for the Serverpod legacy auth module.
 version: 4.1.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
