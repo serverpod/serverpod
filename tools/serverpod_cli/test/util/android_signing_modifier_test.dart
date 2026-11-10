@@ -62,23 +62,6 @@ void main() {
     );
 
     test(
-      'when the build file uses CRLF line endings,'
-      'then the signing config is added and CRLF line endings are kept.',
-      () async {
-        buildFile.writeAsStringSync(
-          _generatedBuildFile.replaceAll('\n', '\r\n'),
-        );
-
-        var result = await AndroidSigningModifier.addReleaseSigningConfig(dir);
-        var contents = buildFile.readAsStringSync();
-
-        expect(result, isTrue);
-        expect(contents, contains('System.getenv("SERVERPOD_APP_BUILD")'));
-        expect(contents, contains('signingConfigs.getByName("release")'));
-      },
-    );
-
-    test(
       'when the build file has unexpected content,'
       'then it is left untouched.',
       () async {

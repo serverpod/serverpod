@@ -71,12 +71,20 @@ class AndroidSigningModifier {
         return false;
       }
 
+      // Inserted text follows the line endings of the generated file.
+      var lineEnding = contents.contains('\r\n') ? '\r\n' : '\n';
+      String withLineEnding(String text) => text.replaceAll('\n', lineEnding);
+
       contents = contents
-          .replaceFirst(_originalSigningConfig, _modifiedSigningConfig)
+          .replaceFirst(
+            _originalSigningConfig,
+            withLineEnding(_modifiedSigningConfig),
+          )
           .replaceFirstMapped(
             _androidBlockStart,
             (match) =>
-                '$_isCloudBuildDeclaration${match[0]}\n$_signingConfigsBlock',
+                '${withLineEnding(_isCloudBuildDeclaration)}${match[0]}'
+                '$lineEnding${withLineEnding(_signingConfigsBlock)}',
           );
 
       await file.writeAsString(contents);
