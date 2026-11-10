@@ -3,10 +3,14 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-const String _originalSigningConfig = '''
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")''';
+// Whitespace is matched with `\s` so that both LF and CRLF line endings work.
+final RegExp _originalSigningConfig = RegExp(
+  r'[ \t]*// TODO: Add your own signing config for the release build\.\s*'
+  r'// Signing with the debug keys for now, so `flutter run --release` works\.\s*'
+  r'signingConfig\s*=\s*signingConfigs\.getByName\("debug"\)',
+);
+
+final RegExp _androidBlockStart = RegExp(r'^android\s*\{', multiLine: true);
 
 const String _modifiedSigningConfig = '''
             // Release builds on Serverpod Cloud are signed with the release
@@ -57,13 +61,10 @@ class AndroidSigningModifier {
         return false;
       }
 
-      var original = await file.readAsString();
-      // Files generated on Windows use CRLF line endings.
-      var usesCrlf = original.contains('\r\n');
-      var contents = original.replaceAll('\r\n', '\n');
+      var contents = await file.readAsString();
 
-      if (!contents.contains(_originalSigningConfig) ||
-          !contents.contains('\nandroid {\n')) {
+      if (!_originalSigningConfig.hasMatch(contents) ||
+          !_androidBlockStart.hasMatch(contents)) {
         log.debug(
           'Gradle build file content does not match expected content, adding release signing config skipped for $filePath.',
         );
@@ -72,14 +73,11 @@ class AndroidSigningModifier {
 
       contents = contents
           .replaceFirst(_originalSigningConfig, _modifiedSigningConfig)
-          .replaceFirst(
-            '\nandroid {\n',
-            '\n$_isCloudBuildDeclaration'
-                'android {\n'
-                '$_signingConfigsBlock',
+          .replaceFirstMapped(
+            _androidBlockStart,
+            (match) =>
+                '$_isCloudBuildDeclaration${match[0]}\n$_signingConfigsBlock',
           );
-
-      if (usesCrlf) contents = contents.replaceAll('\n', '\r\n');
 
       await file.writeAsString(contents);
       log.debug('Added release signing config to $filePath');

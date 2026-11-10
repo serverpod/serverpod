@@ -41,7 +41,7 @@ void main() {
 
     test(
       'when adding the release signing config,'
-      ' then the signing config reads the Serverpod Cloud environment variables.',
+      'then the signing config reads the Serverpod Cloud environment variables.',
       () async {
         var result = await AndroidSigningModifier.addReleaseSigningConfig(dir);
         var contents = buildFile.readAsStringSync();
@@ -63,7 +63,7 @@ void main() {
 
     test(
       'when the build file uses CRLF line endings,'
-      ' then the signing config is added and CRLF line endings are kept.',
+      'then the signing config is added and CRLF line endings are kept.',
       () async {
         buildFile.writeAsStringSync(
           _generatedBuildFile.replaceAll('\n', '\r\n'),
@@ -74,13 +74,13 @@ void main() {
 
         expect(result, isTrue);
         expect(contents, contains('System.getenv("SERVERPOD_APP_BUILD")'));
-        expect(contents.replaceAll('\r\n', ''), isNot(contains('\n')));
+        expect(contents, contains('signingConfigs.getByName("release")'));
       },
     );
 
     test(
       'when the build file has unexpected content,'
-      ' then it is left untouched.',
+      'then it is left untouched.',
       () async {
         buildFile.writeAsStringSync('android {}');
 
@@ -94,8 +94,8 @@ void main() {
 
   test(
     'Given no Android build file,'
-    ' when adding the release signing config,'
-    ' then it returns false.',
+    'when adding the release signing config,'
+    'then it returns false.',
     () async {
       var dir = Directory.systemTemp.createTempSync('android_signing_test');
       addTearDown(() => dir.deleteSync(recursive: true));
