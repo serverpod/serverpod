@@ -18,7 +18,7 @@ Serverpod is the ultimate app-stack for agentic coding. It is a complete, open-s
 - **Zero-configuration deployments:** Publish your backend, database, and Flutter web app to [Serverpod Cloud](https://serverpod.dev/cloud) with a single command. No pipelines, no Terraform, no DevOps. Plans start at $5 per month.
 - **Open source, no lock-in:** Serverpod runs anywhere you can run Dart. Serverpod Cloud is a convenience, not a requirement.
 
-More than 400 developers start a new project with Serverpod every month, and it's used in production by startups, app agencies, banks, and medical companies.
+More than a thousand new projects are created with Serverpod every month, and it's used in production by startups, app agencies, banks, and medical companies.
 
 ## Build with an AI agent
 
