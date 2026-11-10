@@ -6,7 +6,7 @@ import '../../localization/sign_in_localization_provider_widget.dart';
 @immutable
 class VerificationCodeTexts {
   /// Creates [VerificationCodeTexts].
-  const VerificationCodeTexts({required this.resendCode});
+  const VerificationCodeTexts({required this.resendCode, this.pasteCode});
 
   /// Default English strings.
   static const defaults = VerificationCodeTexts(
@@ -16,19 +16,30 @@ class VerificationCodeTexts {
   /// Text for requesting a new code, followed by the remaining countdown.
   final String resendCode;
 
+  /// Label of the button that pastes the code from the clipboard.
+  ///
+  /// If null, uses the paste label of Flutter's `MaterialLocalizations`, which
+  /// is translated to the locale of the app.
+  final String? pasteCode;
+
   /// Creates a copy with the given fields replaced.
-  VerificationCodeTexts copyWith({String? resendCode}) {
-    return VerificationCodeTexts(resendCode: resendCode ?? this.resendCode);
+  VerificationCodeTexts copyWith({String? resendCode, String? pasteCode}) {
+    return VerificationCodeTexts(
+      resendCode: resendCode ?? this.resendCode,
+      pasteCode: pasteCode ?? this.pasteCode,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is VerificationCodeTexts && other.resendCode == resendCode;
+    return other is VerificationCodeTexts &&
+        other.resendCode == resendCode &&
+        other.pasteCode == pasteCode;
   }
 
   @override
-  int get hashCode => resendCode.hashCode;
+  int get hashCode => Object.hash(resendCode, pasteCode);
 }
 
 /// Convenience getter for [VerificationCodeTexts] on [BuildContext].

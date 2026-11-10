@@ -31,39 +31,64 @@ class AuthIdpTheme extends ThemeExtension<AuthIdpTheme> {
 
   /// Creates a default [AuthIdpTheme] with optional overrides.
   ///
+  /// When [colorScheme] is provided, the pin colors are derived from it, so
+  /// the fields follow the app's light or dark theme. The [IdpTheme.idpTheme]
+  /// accessor passes the color scheme of the current [ThemeData].
+  ///
+  /// The focused pin uses [borderColor] for its border, falling back to the
+  /// primary color of [colorScheme].
+  ///
   /// If individual [PinTheme] values are not provided, sensible
   /// defaults will be used.
   factory AuthIdpTheme.defaultTheme({
+    ColorScheme? colorScheme,
     Color? borderColor,
     PinTheme? defaultPinTheme,
     PinTheme? focusedPinTheme,
     PinTheme? errorPinTheme,
     Widget? separator,
   }) {
+    // All states use the same border width, so the pin content does not shift
+    // when the state changes.
+    const borderWidth = 2.0;
+    final borderRadius = BorderRadius.circular(8);
+
     defaultPinTheme =
         defaultPinTheme ??
         PinTheme(
           decoration: BoxDecoration(
-            color: const Color.fromRGBO(222, 231, 240, .57),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.transparent),
+            color:
+                colorScheme?.surfaceContainerHighest ??
+                const Color.fromRGBO(222, 231, 240, .57),
+            borderRadius: borderRadius,
+            border: Border.all(color: Colors.transparent, width: borderWidth),
           ),
         );
 
     focusedPinTheme =
         focusedPinTheme ??
         defaultPinTheme.copyWith(
-          decoration: defaultPinTheme.decoration!.copyWith(
-            border: Border.all(color: borderColor ?? Colors.black, width: 1),
-          ),
+          decoration: (defaultPinTheme.decoration ?? const BoxDecoration())
+              .copyWith(
+                border: Border.all(
+                  color: borderColor ?? colorScheme?.primary ?? Colors.black,
+                  width: borderWidth,
+                ),
+              ),
         );
 
     errorPinTheme =
         errorPinTheme ??
         defaultPinTheme.copyWith(
           decoration: BoxDecoration(
-            color: const Color.fromRGBO(238, 74, 104, 1),
-            borderRadius: BorderRadius.circular(8),
+            color:
+                colorScheme?.errorContainer ??
+                const Color.fromRGBO(238, 74, 104, 1),
+            borderRadius: borderRadius,
+            border: Border.all(
+              color: colorScheme?.error ?? Colors.transparent,
+              width: borderWidth,
+            ),
           ),
         );
 
@@ -102,11 +127,15 @@ class AuthIdpTheme extends ThemeExtension<AuthIdpTheme> {
 extension IdpTheme on ThemeData {
   /// Accessor for the [AuthIdpTheme] stored in [ThemeData].
   ///
+  /// When no [AuthIdpTheme] is registered, returns
+  /// [AuthIdpTheme.defaultTheme] derived from this theme's [colorScheme].
+  ///
   /// Example:
   ///
   /// ```dart
   /// Theme.of(context).idpTheme
   /// ```
   AuthIdpTheme get idpTheme =>
-      extension<AuthIdpTheme>() ?? AuthIdpTheme.defaultTheme();
+      extension<AuthIdpTheme>() ??
+      AuthIdpTheme.defaultTheme(colorScheme: colorScheme);
 }

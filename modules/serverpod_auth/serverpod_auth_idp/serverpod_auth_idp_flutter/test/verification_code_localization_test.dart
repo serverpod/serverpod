@@ -103,6 +103,50 @@ void main() {
       expect(find.text("Didn't receive? Send a new code"), findsNothing);
     },
   );
+
+  testWidgets(
+    'Given no localization provider, '
+    'when a verification code input is displayed, '
+    'then the paste button uses the Material paste label.',
+    (tester) async {
+      await tester.pumpWidget(
+        _app(
+          VerificationCodeInput(
+            verificationCodeController: TextEditingController(),
+            onCompleted: () {},
+            isLoading: false,
+          ),
+        ),
+      );
+
+      expect(find.byTooltip('Paste'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Given shared verification code texts with a paste label, '
+    'when a verification code input is displayed, '
+    'then the paste button uses that label.',
+    (tester) async {
+      await tester.pumpWidget(
+        _app(
+          SignInLocalizationProvider(
+            verificationCodeTexts: VerificationCodeTexts.defaults.copyWith(
+              pasteCode: 'Colar código',
+            ),
+            child: VerificationCodeInput(
+              verificationCodeController: TextEditingController(),
+              onCompleted: () {},
+              isLoading: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byTooltip('Colar código'), findsOneWidget);
+      expect(find.byTooltip('Paste'), findsNothing);
+    },
+  );
 }
 
 Widget _app(Widget child) => MaterialApp(home: Scaffold(body: child));
