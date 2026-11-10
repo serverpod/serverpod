@@ -14,10 +14,10 @@ import '../text_formatters.dart';
 /// Displays a row of pin inputs and a paste-from-clipboard button. The callback
 /// [onCompleted] is invoked when the input reaches the configured [length].
 ///
-/// On the web, the browser context menu is disabled while the input has focus,
-/// so a long press or right click on it shows Flutter's text selection
-/// toolbar, which has a paste action. The browser context menu is restored
-/// when the input loses focus, unless the app had disabled it itself.
+/// On the web, the browser context menu is disabled while the input has focus
+/// or is pressed, so a long press or right click on it shows Flutter's text
+/// selection toolbar, which has a paste action. The browser context menu is
+/// restored when the input loses focus, unless the app had disabled it itself.
 class VerificationCodeInput extends StatefulWidget {
   /// Controller that holds the entered verification code.
   final TextEditingController verificationCodeController;
@@ -76,6 +76,10 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
   /// Whether this input holds the browser context menu disabled.
   bool _holdsBrowserContextMenu = false;
 
+  /// The pointers pressed on the pins, which hold the browser context menu
+  /// disabled until the gesture focuses the input.
+  int _pressedPointers = 0;
+
   /// The context menu of the input, same as Pinput's default.
   ///
   /// [EditableText] decides whether to show Flutter's menu or leave it to the
@@ -115,7 +119,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
       _focusNode.removeListener(_handleFocusChange);
       _focusNode = widget.focusNode ?? (_ownedFocusNode ??= FocusNode());
       _focusNode.addListener(_handleFocusChange);
-      _handleFocusChange();
+      _updateBrowserContextMenuHold();
     }
   }
 
@@ -127,7 +131,32 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
     super.dispose();
   }
 
-  void _handleFocusChange() => _setHoldsBrowserContextMenu(_focusNode.hasFocus);
+  void _handleFocusChange() => _updateBrowserContextMenuHold();
+
+  void _updateBrowserContextMenuHold() {
+    _setHoldsBrowserContextMenu(_focusNode.hasFocus || _pressedPointers > 0);
+  }
+
+  // A right click or long press on an unfocused input asks for the toolbar in
+  // the same gesture that focuses the input. Disabling the browser menu when
+  // the pointer goes down lets that request see the menu already disabled.
+  void _handlePointerDown(PointerDownEvent event) {
+    if (!kIsWeb) return;
+    _pressedPointers++;
+    _updateBrowserContextMenuHold();
+  }
+
+  void _handlePointerUpOrCancel(PointerEvent event) {
+    if (!kIsWeb || _pressedPointers == 0) return;
+    _pressedPointers--;
+    // The gesture focuses the input after the pointer goes up, so the hold is
+    // updated after the next frame, once that focus change has been applied.
+    WidgetsBinding.instance
+      ..addPostFrameCallback((_) {
+        if (mounted) _updateBrowserContextMenuHold();
+      })
+      ..scheduleFrame();
+  }
 
   void _setHoldsBrowserContextMenu(bool holds) {
     if (!kIsWeb || holds == _holdsBrowserContextMenu) return;
@@ -212,48 +241,54 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
         return Container(
           height: math.max(itemWidth, 48),
           alignment: Alignment.center,
-          child: Pinput(
-            controller: widget.verificationCodeController,
-            length: widget.length,
-            showCursor: true,
-            // The cursor blinks by itself, see [_PinCursor].
-            isCursorAnimationEnabled: false,
-            cursor: _PinCursor(color: cursorColor, height: fontSize * 1.4),
-            enableInteractiveSelection: true,
-            contextMenuBuilder: _contextMenuBuilder,
-            keyboardType: widget.keyboardType,
-            textCapitalization: widget.allowedLetterCase == LetterCase.uppercase
-                ? TextCapitalization.characters
-                : TextCapitalization.none,
-            inputFormatters: inputFormatters,
-            // Pinput reads the clipboard when it is mounted and when the app
-            // resumes. Browsers only allow clipboard reads after a user
-            // gesture, so on the web this would ask for the clipboard
-            // permission when the form opens, or fail. The paste button
-            // covers the web instead.
-            onClipboardFound: kIsWeb
-                ? null
-                : (value) {
-                    if (value.length != widget.length) return;
-                    final formattedValue = inputFormatters.apply(value);
-                    if (formattedValue.length != value.length) return;
-                    if (_completedCodes.contains(formattedValue)) return;
+          child: Listener(
+            onPointerDown: _handlePointerDown,
+            onPointerUp: _handlePointerUpOrCancel,
+            onPointerCancel: _handlePointerUpOrCancel,
+            child: Pinput(
+              controller: widget.verificationCodeController,
+              length: widget.length,
+              showCursor: true,
+              // The cursor blinks by itself, see [_PinCursor].
+              isCursorAnimationEnabled: false,
+              cursor: _PinCursor(color: cursorColor, height: fontSize * 1.4),
+              enableInteractiveSelection: true,
+              contextMenuBuilder: _contextMenuBuilder,
+              keyboardType: widget.keyboardType,
+              textCapitalization:
+                  widget.allowedLetterCase == LetterCase.uppercase
+                  ? TextCapitalization.characters
+                  : TextCapitalization.none,
+              inputFormatters: inputFormatters,
+              // Pinput reads the clipboard when it is mounted and when the app
+              // resumes. Browsers only allow clipboard reads after a user
+              // gesture, so on the web this would ask for the clipboard
+              // permission when the form opens, or fail. The paste button
+              // covers the web instead.
+              onClipboardFound: kIsWeb
+                  ? null
+                  : (value) {
+                      if (value.length != widget.length) return;
+                      final formattedValue = inputFormatters.apply(value);
+                      if (formattedValue.length != value.length) return;
+                      if (_completedCodes.contains(formattedValue)) return;
 
-                    setState(() {
-                      widget.verificationCodeController.text = formattedValue;
-                    });
-                  },
-            separatorBuilder: (index) => idpTheme.separator,
-            autofocus: true,
-            enabled: !widget.isLoading,
-            focusNode: _focusNode,
-            defaultPinTheme: defaultPinTheme,
-            onCompleted: (code) {
-              _completedCodes.add(code);
-              widget.onCompleted();
-            },
-            focusedPinTheme: focusedPinTheme,
-            errorPinTheme: errorPinTheme,
+                      setState(() {
+                        widget.verificationCodeController.text = formattedValue;
+                      });
+                    },
+              separatorBuilder: (index) => idpTheme.separator,
+              autofocus: true,
+              enabled: !widget.isLoading,
+              focusNode: _focusNode,
+              defaultPinTheme: defaultPinTheme,
+              onCompleted: (code) {
+                _completedCodes.add(code);
+                widget.onCompleted();
+              },
+              focusedPinTheme: focusedPinTheme,
+              errorPinTheme: errorPinTheme,
+            ),
           ),
         );
       },

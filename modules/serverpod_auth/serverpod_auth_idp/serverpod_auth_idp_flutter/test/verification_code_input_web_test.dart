@@ -85,6 +85,30 @@ void main() {
   });
 
   testWidgets(
+    'Given a verification code input that lost focus, '
+    'when it is right-clicked, '
+    'then the paste action of Flutter is shown.',
+    (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(_host(_input(focusNode: focusNode)));
+      await tester.pump();
+      focusNode.unfocus();
+      await tester.pump();
+
+      await tester.tap(
+        find.byType(AnimatedContainer).first,
+        buttons: kSecondaryButton,
+        kind: PointerDeviceKind.mouse,
+      );
+      await tester.pump();
+
+      expect(find.text('Paste'), findsOneWidget);
+      await _disposeInput(tester);
+    },
+  );
+
+  testWidgets(
     'Given a verification code input that lost focus while the browser '
     'context menu is still being enabled again, '
     'when the input gets focus again, '
@@ -105,6 +129,33 @@ void main() {
       await tester.pump();
 
       expect(BrowserContextMenu.enabled, isFalse);
+      await _disposeInput(tester);
+    },
+  );
+
+  testWidgets(
+    'Given a code in the clipboard, '
+    'when a verification code input is shown and the app resumes, '
+    'then the clipboard is not read.',
+    (tester) async {
+      var clipboardReads = 0;
+      final messenger = tester.binding.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method != 'Clipboard.getData') return null;
+        clipboardReads++;
+        return {'text': '12345678'};
+      });
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+
+      await tester.pumpWidget(_host(_input()));
+      await tester.pump();
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+
+      expect(clipboardReads, 0);
       await _disposeInput(tester);
     },
   );
