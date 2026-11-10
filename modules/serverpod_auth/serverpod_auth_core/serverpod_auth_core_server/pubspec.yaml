@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_auth_core_server
-description: Serverpod core authentication server module.
+description: Serverpod core authentication server module, used by serverpod_auth_idp.
 version: 4.1.1
 repository: https://github.com/serverpod/serverpod
 

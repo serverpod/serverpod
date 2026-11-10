@@ -3,7 +3,7 @@
 
 name: serverpod_database
 version: 4.1.1
-description: Database implementations for Serverpod.
+description: PostgreSQL and SQLite database implementations for Serverpod.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues

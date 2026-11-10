@@ -3,7 +3,7 @@
 
 name: serverpod_client
 version: 4.1.1
-description: Base classes for communication with the server.
+description: Base classes for communication with the Serverpod server.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues

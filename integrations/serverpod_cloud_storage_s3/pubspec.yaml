@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_cloud_storage_s3
-description: Serverpod integration for S3 cloud storage
+description: Serverpod integration for Amazon S3 cloud storage.
 version: 4.1.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev

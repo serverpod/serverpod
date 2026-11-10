@@ -3,7 +3,7 @@
 
 name: serverpod_serialization
 version: 4.1.1
-description: Serialization package for Serverpod.
+description: Serialization package for Serverpod's server and client.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
