@@ -26,6 +26,15 @@ rm -rf "$STAGE"; mkdir -p "$STAGE"
 cp -R "$PREFIX/." "$STAGE/"
 rm -rf "$STAGE/include" "$STAGE/lib/pkgconfig" "$STAGE"/lib/*.a 2>/dev/null || true
 
+# Preserve notices for the additional contrib dependencies, including the
+# libraries linked statically into PostgreSQL and its extension modules.
+licenses="$STAGE/share/licenses/contrib-dependencies"
+mkdir -p "$licenses"
+cp "$B/src/openssl-$OPENSSL_VERSION/LICENSE.txt" "$licenses/OpenSSL.txt"
+cp "$B/src/uuid-$OSSP_UUID_VERSION/README" "$licenses/OSSP-UUID.txt"
+cp "$B/src/libxslt-$LIBXSLT_VERSION/Copyright" "$licenses/libxslt.txt"
+cp "$B/src/zlib-$ZLIB_VERSION/LICENSE" "$licenses/zlib.txt"
+
 # PROJ runtime data (proj.db etc.) - OS-agnostic. The launcher sets PROJ_LIB
 # to <install>/share/proj (see supervisor.dart).
 mkdir -p "$STAGE/share/proj"; cp -R "$DEPS"/share/proj/. "$STAGE/share/proj/"

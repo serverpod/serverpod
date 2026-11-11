@@ -28,6 +28,10 @@ cmake -S . -B build -G "Unix Makefiles" \
   >"$LOG/dep-zlib.log" 2>&1
 cmake --build build -j"$J" >>"$LOG/dep-zlib.log" 2>&1
 cmake --install build >>"$LOG/dep-zlib.log" 2>&1
+# Upstream names its Windows static library libzs.a; PostgreSQL uses -lz.
+if [ -f "$DEPS/lib/libzs.a" ]; then
+  cp "$DEPS/lib/libzs.a" "$DEPS/lib/libz.a"
+fi
 
 echo "=== OpenSSL ($(date +%H:%M:%S)) ==="
 cd "$SRC/openssl-$OPENSSL_VERSION"
@@ -48,6 +52,10 @@ make install_sw >>"$LOG/dep-openssl.log" 2>&1
 
 echo "=== OSSP UUID ($(date +%H:%M:%S)) ==="
 cd "$SRC/uuid-$OSSP_UUID_VERSION"
+# OSSP predates ARM64. Use the platform detection scripts from the pinned
+# PostgreSQL source so its configure recognizes every bundle target.
+cp "$SRC/postgresql-$PG_UPSTREAM_VERSION/config/config.guess" .
+cp "$SRC/postgresql-$PG_UPSTREAM_VERSION/config/config.sub" .
 CC="$WCC" CFLAGS="-O2 -fPIC" ./configure --prefix="$DEPS" \
   --disable-shared --enable-static --without-cxx --without-perl \
   --without-php --without-pgsql >"$LOG/dep-uuid.log" 2>&1
