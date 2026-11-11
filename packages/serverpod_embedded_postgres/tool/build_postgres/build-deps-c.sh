@@ -28,6 +28,7 @@ cmake -S . -B build -G "Unix Makefiles" \
   >"$LOG/dep-zlib.log" 2>&1
 cmake --build build -j"$J" >>"$LOG/dep-zlib.log" 2>&1
 cmake --install build >>"$LOG/dep-zlib.log" 2>&1
+
 # Upstream names its Windows static library libzs.a; PostgreSQL uses -lz.
 if [ -f "$DEPS/lib/libzs.a" ]; then
   cp "$DEPS/lib/libzs.a" "$DEPS/lib/libz.a"
@@ -59,8 +60,12 @@ cp "$SRC/postgresql-$PG_UPSTREAM_VERSION/config/config.sub" .
 CC="$WCC" CFLAGS="-O2 -fPIC" ./configure --prefix="$DEPS" \
   --disable-shared --enable-static --without-cxx --without-perl \
   --without-php --without-pgsql >"$LOG/dep-uuid.log" 2>&1
-make -j"$J" >>"$LOG/dep-uuid.log" 2>&1
-make install >>"$LOG/dep-uuid.log" 2>&1
+# Only PostgreSQL's library dependency is needed. OSSP's CLI installer predates
+# MinGW's .exe handling and fails while stripping its temporary executable.
+make -j"$J" libuuid.la >>"$LOG/dep-uuid.log" 2>&1
+install -d "$DEPS/lib" "$DEPS/include/ossp"
+install -m 644 .libs/libuuid.a "$DEPS/lib/libossp-uuid.a"
+install -m 644 uuid.h "$DEPS/include/ossp/uuid.h"
 
 echo "=== sqlite ($(date +%H:%M:%S)) ==="
 cd "$SRC/sqlite-autoconf-$SQLITE_AUTOCONF"

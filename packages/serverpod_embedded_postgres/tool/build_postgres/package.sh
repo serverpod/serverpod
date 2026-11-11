@@ -32,6 +32,7 @@ licenses="$STAGE/share/licenses/contrib-dependencies"
 mkdir -p "$licenses"
 cp "$B/src/openssl-$OPENSSL_VERSION/LICENSE.txt" "$licenses/OpenSSL.txt"
 cp "$B/src/uuid-$OSSP_UUID_VERSION/README" "$licenses/OSSP-UUID.txt"
+cp "$B/src/libxml2-$LIBXML2_VERSION/Copyright" "$licenses/libxml2.txt"
 cp "$B/src/libxslt-$LIBXSLT_VERSION/Copyright" "$licenses/libxslt.txt"
 cp "$B/src/zlib-$ZLIB_VERSION/LICENSE" "$licenses/zlib.txt"
 
