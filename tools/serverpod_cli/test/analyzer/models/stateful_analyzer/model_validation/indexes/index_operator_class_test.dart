@@ -51,6 +51,127 @@ void main() {
   );
 
   test(
+    'Given a class with a gin index and trgmOps on a String field, '
+    'when the model is validated, '
+    'then return a definition where operatorClass is trgmOps.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            searchText: String
+          indexes:
+            search_trgm_idx:
+              fields: searchText
+              type: gin
+              operatorClass: trgmOps
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+
+      var definition = definitions.first as ModelClassDefinition;
+      var operatorClass = definition.indexes.first.ginOperatorClass;
+
+      expect(operatorClass, isNotNull);
+      expect(operatorClass!.name, 'trgmOps');
+    },
+  );
+
+  test(
+    'Given a class with a gin index and trgmOps on a non-String field, '
+    'when the model is validated, '
+    'then an error reports that trgmOps requires String fields.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            tags: List<String>, serializationDataType=jsonb
+          indexes:
+            tags_ndx:
+              fields: tags
+              type: gin
+              operatorClass: trgmOps
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
+      expect(
+        collector.errors.first.message,
+        'The "gin" index type with operator class "trgmOps" requires '
+        'all indexed fields to be of type String (fields: tags).',
+      );
+    },
+  );
+
+  test(
+    'Given an implicit gin index with trgmOps on a JSONB field, '
+    'when the model is validated, '
+    'then an error reports that trgmOps requires String fields.',
+    () {
+      var model = ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          tags: List<String>, serializationDataType=jsonb
+        indexes:
+          tags_ndx:
+            fields: tags
+            operatorClass: trgmOps
+        ''',
+      ).build();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        [model],
+        onErrorsCollector(collector),
+      );
+
+      analyzer.validateAll();
+
+      expect(
+        collector.errors.map((error) => error.message),
+        [
+          'The "gin" index type with operator class "trgmOps" requires '
+              'all indexed fields to be of type String (fields: tags).',
+        ],
+      );
+    },
+  );
+
+  test(
     'Given a class with a gin index without operator class, then return a definition where operatorClass defaults to jsonbOps.',
     () {
       var models = [
@@ -126,7 +247,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        '"invalid" is not a valid property. Valid properties are (arrayOps, jsonbOps, jsonbPathOps, tsvectorOps).',
+        '"invalid" is not a valid property. Valid properties are (arrayOps, jsonbOps, jsonbPathOps, tsvectorOps, trgmOps).',
       );
     },
   );
@@ -165,7 +286,7 @@ void main() {
       );
       expect(
         collector.errors.first.message,
-        '"1" is not a valid property. Valid properties are (arrayOps, jsonbOps, jsonbPathOps, tsvectorOps).',
+        '"1" is not a valid property. Valid properties are (arrayOps, jsonbOps, jsonbPathOps, tsvectorOps, trgmOps).',
       );
     },
   );

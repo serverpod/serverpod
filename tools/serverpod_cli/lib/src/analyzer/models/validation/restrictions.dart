@@ -1170,6 +1170,26 @@ class Restrictions {
       ];
     }
 
+    if (index.ginOperatorClass == GinOperatorClass.trgmOps) {
+      var nonStringFields = definition.fieldsIncludingInherited
+          .where(
+            (field) =>
+                index.fields.contains(field.columnName) &&
+                field.type.className != 'String',
+          )
+          .map((field) => field.name)
+          .toList();
+      if (nonStringFields.isNotEmpty) {
+        return [
+          SourceSpanSeverityException(
+            'The "gin" index type with operator class "trgmOps" requires all '
+            'indexed fields to be of type String (fields: ${nonStringFields.join(', ')}).',
+            span,
+          ),
+        ];
+      }
+    }
+
     return [];
   }
 
@@ -2272,7 +2292,8 @@ class Restrictions {
         validIndexTypes = {'gist', 'spgist'};
       }
 
-      if (content == 'gin') {
+      if (content == 'gin' &&
+          index.firstOrNull?.ginOperatorClass != GinOperatorClass.trgmOps) {
         var nonJsonbFields = indexFields
             .where((f) => !f.type.isJsonbSerialized)
             .map((f) => f.name)
