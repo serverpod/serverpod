@@ -1,0 +1,87 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_trgm",
+        "dartName": "ObjectWithTrgm",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "searchText",
+            "fieldName": "searchText",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "searchTextIndexed",
+            "fieldName": "searchTextIndexed",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "nullableSearchTextIndexed",
+            "fieldName": "nullableSearchTextIndexed",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "search_text_trgm_idx",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "searchTextIndexed"
+              }
+            ],
+            "type": "gin",
+            "isUnique": false,
+            "isPrimary": false,
+            "ginOperatorClass": "trgmOps"
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "nullable_search_text_trgm_idx",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "nullableSearchTextIndexed"
+              }
+            ],
+            "type": "gin",
+            "isUnique": false,
+            "isPrimary": false,
+            "ginOperatorClass": "trgmOps"
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

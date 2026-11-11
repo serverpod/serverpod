@@ -252,6 +252,7 @@ import 'object_with_sealed_class.dart' as _im4j7lpz;
 import 'object_with_sealed_exception.dart' as _itdevv9e;
 import 'object_with_self_parent.dart' as _ihluvkmz;
 import 'object_with_sparse_vector.dart' as _i8t20dyr;
+import 'object_with_trgm.dart' as _imx80w87;
 import 'object_with_uuid.dart' as _iusk9w05;
 import 'object_with_vector.dart' as _itmc4j9i;
 import 'record.dart' as _ificmsie;
@@ -489,6 +490,7 @@ export 'object_with_sealed_class.dart';
 export 'object_with_sealed_exception.dart';
 export 'object_with_self_parent.dart';
 export 'object_with_sparse_vector.dart';
+export 'object_with_trgm.dart';
 export 'object_with_uuid.dart';
 export 'object_with_vector.dart';
 export 'record.dart';
@@ -746,6 +748,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_itdevv9e.ObjectWithSealedException>,
       _is.getType<_ihluvkmz.ObjectWithSelfParent>,
       _is.getType<_i8t20dyr.ObjectWithSparseVector>,
+      _is.getType<_imx80w87.ObjectWithTrgm>,
       _is.getType<_iusk9w05.ObjectWithUuid>,
       _is.getType<_itmc4j9i.ObjectWithVector>,
       _is.getType<_ificmsie.Record>,
@@ -989,6 +992,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.getType<_itdevv9e.ObjectWithSealedException?>,
       _is.getType<_ihluvkmz.ObjectWithSelfParent?>,
       _is.getType<_i8t20dyr.ObjectWithSparseVector?>,
+      _is.getType<_imx80w87.ObjectWithTrgm?>,
       _is.getType<_iusk9w05.ObjectWithUuid?>,
       _is.getType<_itmc4j9i.ObjectWithVector?>,
       _is.getType<_ificmsie.Record?>,
@@ -1889,6 +1893,7 @@ class Protocol extends _is.DatabaseSerializationManager
       'ObjectWithSealedException',
       'ObjectWithSelfParent',
       'ObjectWithSparseVector',
+      'ObjectWithTrgm',
       'ObjectWithUuid',
       'ObjectWithVector',
       'Record',
@@ -6352,6 +6357,71 @@ class Protocol extends _is.DatabaseSerializationManager
       managed: true,
     ),
     _isp.TableDefinition(
+      name: 'object_with_trgm',
+      dartName: 'ObjectWithTrgm',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'searchText',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'searchTextIndexed',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'nullableSearchTextIndexed',
+          columnType: _isp.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _isp.IndexDefinition(
+          indexName: 'search_text_trgm_idx',
+          tableSpace: null,
+          elements: [
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'searchTextIndexed',
+            ),
+          ],
+          type: 'gin',
+          isUnique: false,
+          isPrimary: false,
+          ginOperatorClass: _isp.GinOperatorClass.trgmOps,
+        ),
+        _isp.IndexDefinition(
+          indexName: 'nullable_search_text_trgm_idx',
+          tableSpace: null,
+          elements: [
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'nullableSearchTextIndexed',
+            ),
+          ],
+          type: 'gin',
+          isUnique: false,
+          isPrimary: false,
+          ginOperatorClass: _isp.GinOperatorClass.trgmOps,
+        ),
+      ],
+      managed: true,
+    ),
+    _isp.TableDefinition(
       name: 'object_with_uuid',
       dartName: 'ObjectWithUuid',
       schema: 'public',
@@ -9243,6 +9313,9 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == _i8t20dyr.ObjectWithSparseVector) {
       return _i8t20dyr.ObjectWithSparseVector.fromJson(data) as T;
     }
+    if (t == _imx80w87.ObjectWithTrgm) {
+      return _imx80w87.ObjectWithTrgm.fromJson(data) as T;
+    }
     if (t == _iusk9w05.ObjectWithUuid) {
       return _iusk9w05.ObjectWithUuid.fromJson(data) as T;
     }
@@ -10266,6 +10339,10 @@ class Protocol extends _is.DatabaseSerializationManager
       return (data != null
               ? _i8t20dyr.ObjectWithSparseVector.fromJson(data)
               : null)
+          as T;
+    }
+    if (t == _is.getType<_imx80w87.ObjectWithTrgm?>()) {
+      return (data != null ? _imx80w87.ObjectWithTrgm.fromJson(data) : null)
           as T;
     }
     if (t == _is.getType<_iusk9w05.ObjectWithUuid?>()) {
@@ -14992,6 +15069,7 @@ class Protocol extends _is.DatabaseSerializationManager
       _itdevv9e.ObjectWithSealedException => 'ObjectWithSealedException',
       _ihluvkmz.ObjectWithSelfParent => 'ObjectWithSelfParent',
       _i8t20dyr.ObjectWithSparseVector => 'ObjectWithSparseVector',
+      _imx80w87.ObjectWithTrgm => 'ObjectWithTrgm',
       _iusk9w05.ObjectWithUuid => 'ObjectWithUuid',
       _itmc4j9i.ObjectWithVector => 'ObjectWithVector',
       _ificmsie.Record => 'Record',
@@ -15469,6 +15547,8 @@ class Protocol extends _is.DatabaseSerializationManager
         return 'ObjectWithSelfParent';
       case _i8t20dyr.ObjectWithSparseVector():
         return 'ObjectWithSparseVector';
+      case _imx80w87.ObjectWithTrgm():
+        return 'ObjectWithTrgm';
       case _iusk9w05.ObjectWithUuid():
         return 'ObjectWithUuid';
       case _itmc4j9i.ObjectWithVector():
@@ -16303,6 +16383,9 @@ class Protocol extends _is.DatabaseSerializationManager
     if (dataClassName == 'ObjectWithSparseVector') {
       return deserialize<_i8t20dyr.ObjectWithSparseVector>(data['data']);
     }
+    if (dataClassName == 'ObjectWithTrgm') {
+      return deserialize<_imx80w87.ObjectWithTrgm>(data['data']);
+    }
     if (dataClassName == 'ObjectWithUuid') {
       return deserialize<_iusk9w05.ObjectWithUuid>(data['data']);
     }
@@ -16849,6 +16932,8 @@ class Protocol extends _is.DatabaseSerializationManager
         return _ihluvkmz.ObjectWithSelfParent.t;
       case _i8t20dyr.ObjectWithSparseVector:
         return _i8t20dyr.ObjectWithSparseVector.t;
+      case _imx80w87.ObjectWithTrgm:
+        return _imx80w87.ObjectWithTrgm.t;
       case _iusk9w05.ObjectWithUuid:
         return _iusk9w05.ObjectWithUuid.t;
       case _itmc4j9i.ObjectWithVector:
