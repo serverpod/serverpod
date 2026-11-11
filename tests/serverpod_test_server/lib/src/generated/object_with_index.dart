@@ -243,6 +243,7 @@ class ObjectWithIndexRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithIndex>(
+      table: ObjectWithIndex.t,
       where: where?.call(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -307,6 +308,7 @@ class ObjectWithIndexRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithIndex>(
+      table: ObjectWithIndex.t,
       where: where?.call(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -345,6 +347,7 @@ class ObjectWithIndexRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithIndex>(
+      table: ObjectWithIndex.t,
       where: where?.call(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -365,6 +368,7 @@ class ObjectWithIndexRepository {
   }) async {
     return session.db.findById<ObjectWithIndex>(
       id,
+      table: ObjectWithIndex.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -534,6 +538,7 @@ class ObjectWithIndexRepository {
   }) async {
     return session.db.updateById<ObjectWithIndex>(
       id,
+      table: ObjectWithIndex.t,
       columnValues: columnValues(ObjectWithIndex.t.updateTable),
       transaction: transaction,
     );
@@ -558,6 +563,7 @@ class ObjectWithIndexRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithIndex>(
+      table: ObjectWithIndex.t,
       columnValues: columnValues(ObjectWithIndex.t.updateTable),
       where: where(ObjectWithIndex.t),
       limit: limit,
@@ -626,6 +632,7 @@ class ObjectWithIndexRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithIndex>(
+      table: ObjectWithIndex.t,
       where: where(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -643,6 +650,7 @@ class ObjectWithIndexRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithIndex>(
+      table: ObjectWithIndex.t,
       where: where?.call(ObjectWithIndex.t),
       limit: limit,
       transaction: transaction,
@@ -658,6 +666,7 @@ class ObjectWithIndexRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithIndex>(
+      table: ObjectWithIndex.t,
       where: where(ObjectWithIndex.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

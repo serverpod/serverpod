@@ -453,6 +453,7 @@ class FacebookAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FacebookAccount>(
+      table: FacebookAccount.t,
       where: where?.call(FacebookAccount.t),
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
@@ -519,6 +520,7 @@ class FacebookAccountRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<FacebookAccount>(
+      table: FacebookAccount.t,
       where: where?.call(FacebookAccount.t),
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
@@ -559,6 +561,7 @@ class FacebookAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FacebookAccount>(
+      table: FacebookAccount.t,
       where: where?.call(FacebookAccount.t),
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
@@ -581,6 +584,7 @@ class FacebookAccountRepository {
   }) async {
     return session.db.findById<FacebookAccount>(
       id,
+      table: FacebookAccount.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -751,6 +755,7 @@ class FacebookAccountRepository {
   }) async {
     return session.db.updateById<FacebookAccount>(
       id,
+      table: FacebookAccount.t,
       columnValues: columnValues(FacebookAccount.t.updateTable),
       transaction: transaction,
     );
@@ -775,6 +780,7 @@ class FacebookAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<FacebookAccount>(
+      table: FacebookAccount.t,
       columnValues: columnValues(FacebookAccount.t.updateTable),
       where: where(FacebookAccount.t),
       limit: limit,
@@ -843,6 +849,7 @@ class FacebookAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<FacebookAccount>(
+      table: FacebookAccount.t,
       where: where(FacebookAccount.t),
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
@@ -860,6 +867,7 @@ class FacebookAccountRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<FacebookAccount>(
+      table: FacebookAccount.t,
       where: where?.call(FacebookAccount.t),
       limit: limit,
       transaction: transaction,
@@ -875,6 +883,7 @@ class FacebookAccountRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<FacebookAccount>(
+      table: FacebookAccount.t,
       where: where(FacebookAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -491,6 +491,7 @@ class EmailAccountPasswordResetRequestRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAccountPasswordResetRequest>(
+      table: EmailAccountPasswordResetRequest.t,
       where: where?.call(EmailAccountPasswordResetRequest.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
@@ -557,6 +558,7 @@ class EmailAccountPasswordResetRequestRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EmailAccountPasswordResetRequest>(
+      table: EmailAccountPasswordResetRequest.t,
       where: where?.call(EmailAccountPasswordResetRequest.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
@@ -597,6 +599,7 @@ class EmailAccountPasswordResetRequestRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAccountPasswordResetRequest>(
+      table: EmailAccountPasswordResetRequest.t,
       where: where?.call(EmailAccountPasswordResetRequest.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
@@ -619,6 +622,7 @@ class EmailAccountPasswordResetRequestRepository {
   }) async {
     return session.db.findById<EmailAccountPasswordResetRequest>(
       id,
+      table: EmailAccountPasswordResetRequest.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -795,6 +799,7 @@ class EmailAccountPasswordResetRequestRepository {
   }) async {
     return session.db.updateById<EmailAccountPasswordResetRequest>(
       id,
+      table: EmailAccountPasswordResetRequest.t,
       columnValues: columnValues(
         EmailAccountPasswordResetRequest.t.updateTable,
       ),
@@ -824,6 +829,7 @@ class EmailAccountPasswordResetRequestRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetRequest>(
+      table: EmailAccountPasswordResetRequest.t,
       columnValues: columnValues(
         EmailAccountPasswordResetRequest.t.updateTable,
       ),
@@ -895,6 +901,7 @@ class EmailAccountPasswordResetRequestRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAccountPasswordResetRequest>(
+      table: EmailAccountPasswordResetRequest.t,
       where: where(EmailAccountPasswordResetRequest.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
@@ -912,6 +919,7 @@ class EmailAccountPasswordResetRequestRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailAccountPasswordResetRequest>(
+      table: EmailAccountPasswordResetRequest.t,
       where: where?.call(EmailAccountPasswordResetRequest.t),
       limit: limit,
       transaction: transaction,
@@ -928,6 +936,7 @@ class EmailAccountPasswordResetRequestRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailAccountPasswordResetRequest>(
+      table: EmailAccountPasswordResetRequest.t,
       where: where(EmailAccountPasswordResetRequest.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

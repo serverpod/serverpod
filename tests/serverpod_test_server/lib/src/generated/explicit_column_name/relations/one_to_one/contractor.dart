@@ -304,6 +304,7 @@ class ContractorRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Contractor>(
+      table: Contractor.t,
       where: where?.call(Contractor.t),
       orderBy: orderBy?.call(Contractor.t),
       orderByList: orderByList?.call(Contractor.t),
@@ -370,6 +371,7 @@ class ContractorRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Contractor>(
+      table: Contractor.t,
       where: where?.call(Contractor.t),
       orderBy: orderBy?.call(Contractor.t),
       orderByList: orderByList?.call(Contractor.t),
@@ -410,6 +412,7 @@ class ContractorRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Contractor>(
+      table: Contractor.t,
       where: where?.call(Contractor.t),
       orderBy: orderBy?.call(Contractor.t),
       orderByList: orderByList?.call(Contractor.t),
@@ -432,6 +435,7 @@ class ContractorRepository {
   }) async {
     return session.db.findById<Contractor>(
       id,
+      table: Contractor.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -601,6 +605,7 @@ class ContractorRepository {
   }) async {
     return session.db.updateById<Contractor>(
       id,
+      table: Contractor.t,
       columnValues: columnValues(Contractor.t.updateTable),
       transaction: transaction,
     );
@@ -624,6 +629,7 @@ class ContractorRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Contractor>(
+      table: Contractor.t,
       columnValues: columnValues(Contractor.t.updateTable),
       where: where(Contractor.t),
       limit: limit,
@@ -692,6 +698,7 @@ class ContractorRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Contractor>(
+      table: Contractor.t,
       where: where(Contractor.t),
       orderBy: orderBy?.call(Contractor.t),
       orderByList: orderByList?.call(Contractor.t),
@@ -709,6 +716,7 @@ class ContractorRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Contractor>(
+      table: Contractor.t,
       where: where?.call(Contractor.t),
       limit: limit,
       transaction: transaction,
@@ -724,6 +732,7 @@ class ContractorRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Contractor>(
+      table: Contractor.t,
       where: where(Contractor.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

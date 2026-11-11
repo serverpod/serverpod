@@ -316,6 +316,7 @@ class SharedTableRecordRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SharedTableRecord>(
+      table: SharedTableRecord.t,
       where: where?.call(SharedTableRecord.t),
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
@@ -380,6 +381,7 @@ class SharedTableRecordRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<SharedTableRecord>(
+      table: SharedTableRecord.t,
       where: where?.call(SharedTableRecord.t),
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
@@ -418,6 +420,7 @@ class SharedTableRecordRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SharedTableRecord>(
+      table: SharedTableRecord.t,
       where: where?.call(SharedTableRecord.t),
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
@@ -438,6 +441,7 @@ class SharedTableRecordRepository {
   }) async {
     return session.db.findById<SharedTableRecord>(
       id,
+      table: SharedTableRecord.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -607,6 +611,7 @@ class SharedTableRecordRepository {
   }) async {
     return session.db.updateById<SharedTableRecord>(
       id,
+      table: SharedTableRecord.t,
       columnValues: columnValues(SharedTableRecord.t.updateTable),
       transaction: transaction,
     );
@@ -631,6 +636,7 @@ class SharedTableRecordRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SharedTableRecord>(
+      table: SharedTableRecord.t,
       columnValues: columnValues(SharedTableRecord.t.updateTable),
       where: where(SharedTableRecord.t),
       limit: limit,
@@ -699,6 +705,7 @@ class SharedTableRecordRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SharedTableRecord>(
+      table: SharedTableRecord.t,
       where: where(SharedTableRecord.t),
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
@@ -716,6 +723,7 @@ class SharedTableRecordRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<SharedTableRecord>(
+      table: SharedTableRecord.t,
       where: where?.call(SharedTableRecord.t),
       limit: limit,
       transaction: transaction,
@@ -731,6 +739,7 @@ class SharedTableRecordRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SharedTableRecord>(
+      table: SharedTableRecord.t,
       where: where(SharedTableRecord.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

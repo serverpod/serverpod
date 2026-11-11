@@ -334,6 +334,7 @@ class UserDataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserData>(
+      table: UserData.t,
       where: where?.call(UserData.t),
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
@@ -400,6 +401,7 @@ class UserDataRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UserData>(
+      table: UserData.t,
       where: where?.call(UserData.t),
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
@@ -440,6 +442,7 @@ class UserDataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserData>(
+      table: UserData.t,
       where: where?.call(UserData.t),
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
@@ -462,6 +465,7 @@ class UserDataRepository {
   }) async {
     return session.db.findById<UserData>(
       id,
+      table: UserData.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -631,6 +635,7 @@ class UserDataRepository {
   }) async {
     return session.db.updateById<UserData>(
       id,
+      table: UserData.t,
       columnValues: columnValues(UserData.t.updateTable),
       transaction: transaction,
     );
@@ -654,6 +659,7 @@ class UserDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserData>(
+      table: UserData.t,
       columnValues: columnValues(UserData.t.updateTable),
       where: where(UserData.t),
       limit: limit,
@@ -722,6 +728,7 @@ class UserDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserData>(
+      table: UserData.t,
       where: where(UserData.t),
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
@@ -739,6 +746,7 @@ class UserDataRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UserData>(
+      table: UserData.t,
       where: where?.call(UserData.t),
       limit: limit,
       transaction: transaction,
@@ -754,6 +762,7 @@ class UserDataRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserData>(
+      table: UserData.t,
       where: where(UserData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

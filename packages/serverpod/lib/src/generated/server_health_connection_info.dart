@@ -362,6 +362,7 @@ class ServerHealthConnectionInfoRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerHealthConnectionInfo>(
+      table: ServerHealthConnectionInfo.t,
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
@@ -426,6 +427,7 @@ class ServerHealthConnectionInfoRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ServerHealthConnectionInfo>(
+      table: ServerHealthConnectionInfo.t,
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
@@ -464,6 +466,7 @@ class ServerHealthConnectionInfoRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerHealthConnectionInfo>(
+      table: ServerHealthConnectionInfo.t,
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
@@ -484,6 +487,7 @@ class ServerHealthConnectionInfoRepository {
   }) async {
     return session.db.findById<ServerHealthConnectionInfo>(
       id,
+      table: ServerHealthConnectionInfo.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -655,6 +659,7 @@ class ServerHealthConnectionInfoRepository {
   }) async {
     return session.db.updateById<ServerHealthConnectionInfo>(
       id,
+      table: ServerHealthConnectionInfo.t,
       columnValues: columnValues(ServerHealthConnectionInfo.t.updateTable),
       transaction: transaction,
     );
@@ -679,6 +684,7 @@ class ServerHealthConnectionInfoRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ServerHealthConnectionInfo>(
+      table: ServerHealthConnectionInfo.t,
       columnValues: columnValues(ServerHealthConnectionInfo.t.updateTable),
       where: where(ServerHealthConnectionInfo.t),
       limit: limit,
@@ -747,6 +753,7 @@ class ServerHealthConnectionInfoRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ServerHealthConnectionInfo>(
+      table: ServerHealthConnectionInfo.t,
       where: where(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
@@ -764,6 +771,7 @@ class ServerHealthConnectionInfoRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ServerHealthConnectionInfo>(
+      table: ServerHealthConnectionInfo.t,
       where: where?.call(ServerHealthConnectionInfo.t),
       limit: limit,
       transaction: transaction,
@@ -779,6 +787,7 @@ class ServerHealthConnectionInfoRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ServerHealthConnectionInfo>(
+      table: ServerHealthConnectionInfo.t,
       where: where(ServerHealthConnectionInfo.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

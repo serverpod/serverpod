@@ -298,6 +298,7 @@ class ObjectUserRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectUser>(
+      table: ObjectUser.t,
       where: where?.call(ObjectUser.t),
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
@@ -364,6 +365,7 @@ class ObjectUserRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectUser>(
+      table: ObjectUser.t,
       where: where?.call(ObjectUser.t),
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
@@ -404,6 +406,7 @@ class ObjectUserRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectUser>(
+      table: ObjectUser.t,
       where: where?.call(ObjectUser.t),
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
@@ -426,6 +429,7 @@ class ObjectUserRepository {
   }) async {
     return session.db.findById<ObjectUser>(
       id,
+      table: ObjectUser.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -595,6 +599,7 @@ class ObjectUserRepository {
   }) async {
     return session.db.updateById<ObjectUser>(
       id,
+      table: ObjectUser.t,
       columnValues: columnValues(ObjectUser.t.updateTable),
       transaction: transaction,
     );
@@ -618,6 +623,7 @@ class ObjectUserRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectUser>(
+      table: ObjectUser.t,
       columnValues: columnValues(ObjectUser.t.updateTable),
       where: where(ObjectUser.t),
       limit: limit,
@@ -686,6 +692,7 @@ class ObjectUserRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectUser>(
+      table: ObjectUser.t,
       where: where(ObjectUser.t),
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
@@ -703,6 +710,7 @@ class ObjectUserRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectUser>(
+      table: ObjectUser.t,
       where: where?.call(ObjectUser.t),
       limit: limit,
       transaction: transaction,
@@ -718,6 +726,7 @@ class ObjectUserRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectUser>(
+      table: ObjectUser.t,
       where: where(ObjectUser.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

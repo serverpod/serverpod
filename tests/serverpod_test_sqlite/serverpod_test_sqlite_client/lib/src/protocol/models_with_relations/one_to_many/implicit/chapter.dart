@@ -270,6 +270,7 @@ class ChapterRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Chapter>(
+      table: Chapter.t,
       where: where?.call(Chapter.t),
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
@@ -334,6 +335,7 @@ class ChapterRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Chapter>(
+      table: Chapter.t,
       where: where?.call(Chapter.t),
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
@@ -372,6 +374,7 @@ class ChapterRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Chapter>(
+      table: Chapter.t,
       where: where?.call(Chapter.t),
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
@@ -392,6 +395,7 @@ class ChapterRepository {
   }) async {
     return session.db.findById<Chapter>(
       id,
+      table: Chapter.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -560,6 +564,7 @@ class ChapterRepository {
   }) async {
     return session.db.updateById<Chapter>(
       id,
+      table: Chapter.t,
       columnValues: columnValues(Chapter.t.updateTable),
       transaction: transaction,
     );
@@ -583,6 +588,7 @@ class ChapterRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Chapter>(
+      table: Chapter.t,
       columnValues: columnValues(Chapter.t.updateTable),
       where: where(Chapter.t),
       limit: limit,
@@ -651,6 +657,7 @@ class ChapterRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Chapter>(
+      table: Chapter.t,
       where: where(Chapter.t),
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
@@ -668,6 +675,7 @@ class ChapterRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<Chapter>(
+      table: Chapter.t,
       where: where?.call(Chapter.t),
       limit: limit,
       transaction: transaction,
@@ -683,6 +691,7 @@ class ChapterRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Chapter>(
+      table: Chapter.t,
       where: where(Chapter.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

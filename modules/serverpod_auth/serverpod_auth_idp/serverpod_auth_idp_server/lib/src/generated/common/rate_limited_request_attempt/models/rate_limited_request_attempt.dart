@@ -380,6 +380,7 @@ class RateLimitedRequestAttemptRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RateLimitedRequestAttempt>(
+      table: RateLimitedRequestAttempt.t,
       where: where?.call(RateLimitedRequestAttempt.t),
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
@@ -444,6 +445,7 @@ class RateLimitedRequestAttemptRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<RateLimitedRequestAttempt>(
+      table: RateLimitedRequestAttempt.t,
       where: where?.call(RateLimitedRequestAttempt.t),
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
@@ -482,6 +484,7 @@ class RateLimitedRequestAttemptRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RateLimitedRequestAttempt>(
+      table: RateLimitedRequestAttempt.t,
       where: where?.call(RateLimitedRequestAttempt.t),
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
@@ -502,6 +505,7 @@ class RateLimitedRequestAttemptRepository {
   }) async {
     return session.db.findById<RateLimitedRequestAttempt>(
       id,
+      table: RateLimitedRequestAttempt.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -673,6 +677,7 @@ class RateLimitedRequestAttemptRepository {
   }) async {
     return session.db.updateById<RateLimitedRequestAttempt>(
       id,
+      table: RateLimitedRequestAttempt.t,
       columnValues: columnValues(RateLimitedRequestAttempt.t.updateTable),
       transaction: transaction,
     );
@@ -697,6 +702,7 @@ class RateLimitedRequestAttemptRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<RateLimitedRequestAttempt>(
+      table: RateLimitedRequestAttempt.t,
       columnValues: columnValues(RateLimitedRequestAttempt.t.updateTable),
       where: where(RateLimitedRequestAttempt.t),
       limit: limit,
@@ -765,6 +771,7 @@ class RateLimitedRequestAttemptRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RateLimitedRequestAttempt>(
+      table: RateLimitedRequestAttempt.t,
       where: where(RateLimitedRequestAttempt.t),
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
@@ -782,6 +789,7 @@ class RateLimitedRequestAttemptRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<RateLimitedRequestAttempt>(
+      table: RateLimitedRequestAttempt.t,
       where: where?.call(RateLimitedRequestAttempt.t),
       limit: limit,
       transaction: transaction,
@@ -797,6 +805,7 @@ class RateLimitedRequestAttemptRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<RateLimitedRequestAttempt>(
+      table: RateLimitedRequestAttempt.t,
       where: where(RateLimitedRequestAttempt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

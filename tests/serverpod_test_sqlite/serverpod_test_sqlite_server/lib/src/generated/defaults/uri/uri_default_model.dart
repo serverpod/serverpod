@@ -257,6 +257,7 @@ class UriDefaultModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UriDefaultModel>(
+      table: UriDefaultModel.t,
       where: where?.call(UriDefaultModel.t),
       orderBy: orderBy?.call(UriDefaultModel.t),
       orderByList: orderByList?.call(UriDefaultModel.t),
@@ -321,6 +322,7 @@ class UriDefaultModelRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UriDefaultModel>(
+      table: UriDefaultModel.t,
       where: where?.call(UriDefaultModel.t),
       orderBy: orderBy?.call(UriDefaultModel.t),
       orderByList: orderByList?.call(UriDefaultModel.t),
@@ -359,6 +361,7 @@ class UriDefaultModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UriDefaultModel>(
+      table: UriDefaultModel.t,
       where: where?.call(UriDefaultModel.t),
       orderBy: orderBy?.call(UriDefaultModel.t),
       orderByList: orderByList?.call(UriDefaultModel.t),
@@ -379,6 +382,7 @@ class UriDefaultModelRepository {
   }) async {
     return session.db.findById<UriDefaultModel>(
       id,
+      table: UriDefaultModel.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -548,6 +552,7 @@ class UriDefaultModelRepository {
   }) async {
     return session.db.updateById<UriDefaultModel>(
       id,
+      table: UriDefaultModel.t,
       columnValues: columnValues(UriDefaultModel.t.updateTable),
       transaction: transaction,
     );
@@ -572,6 +577,7 @@ class UriDefaultModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UriDefaultModel>(
+      table: UriDefaultModel.t,
       columnValues: columnValues(UriDefaultModel.t.updateTable),
       where: where(UriDefaultModel.t),
       limit: limit,
@@ -640,6 +646,7 @@ class UriDefaultModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UriDefaultModel>(
+      table: UriDefaultModel.t,
       where: where(UriDefaultModel.t),
       orderBy: orderBy?.call(UriDefaultModel.t),
       orderByList: orderByList?.call(UriDefaultModel.t),
@@ -657,6 +664,7 @@ class UriDefaultModelRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UriDefaultModel>(
+      table: UriDefaultModel.t,
       where: where?.call(UriDefaultModel.t),
       limit: limit,
       transaction: transaction,
@@ -672,6 +680,7 @@ class UriDefaultModelRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UriDefaultModel>(
+      table: UriDefaultModel.t,
       where: where(UriDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -314,6 +314,7 @@ class GeneratedRelationOfficeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GeneratedRelationOffice>(
+      table: GeneratedRelationOffice.t,
       where: where?.call(GeneratedRelationOffice.t),
       orderBy: orderBy?.call(GeneratedRelationOffice.t),
       orderByList: orderByList?.call(GeneratedRelationOffice.t),
@@ -380,6 +381,7 @@ class GeneratedRelationOfficeRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<GeneratedRelationOffice>(
+      table: GeneratedRelationOffice.t,
       where: where?.call(GeneratedRelationOffice.t),
       orderBy: orderBy?.call(GeneratedRelationOffice.t),
       orderByList: orderByList?.call(GeneratedRelationOffice.t),
@@ -420,6 +422,7 @@ class GeneratedRelationOfficeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GeneratedRelationOffice>(
+      table: GeneratedRelationOffice.t,
       where: where?.call(GeneratedRelationOffice.t),
       orderBy: orderBy?.call(GeneratedRelationOffice.t),
       orderByList: orderByList?.call(GeneratedRelationOffice.t),
@@ -442,6 +445,7 @@ class GeneratedRelationOfficeRepository {
   }) async {
     return session.db.findById<GeneratedRelationOffice>(
       id,
+      table: GeneratedRelationOffice.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -612,6 +616,7 @@ class GeneratedRelationOfficeRepository {
   }) async {
     return session.db.updateById<GeneratedRelationOffice>(
       id,
+      table: GeneratedRelationOffice.t,
       columnValues: columnValues(GeneratedRelationOffice.t.updateTable),
       transaction: transaction,
     );
@@ -636,6 +641,7 @@ class GeneratedRelationOfficeRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GeneratedRelationOffice>(
+      table: GeneratedRelationOffice.t,
       columnValues: columnValues(GeneratedRelationOffice.t.updateTable),
       where: where(GeneratedRelationOffice.t),
       limit: limit,
@@ -704,6 +710,7 @@ class GeneratedRelationOfficeRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GeneratedRelationOffice>(
+      table: GeneratedRelationOffice.t,
       where: where(GeneratedRelationOffice.t),
       orderBy: orderBy?.call(GeneratedRelationOffice.t),
       orderByList: orderByList?.call(GeneratedRelationOffice.t),
@@ -721,6 +728,7 @@ class GeneratedRelationOfficeRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<GeneratedRelationOffice>(
+      table: GeneratedRelationOffice.t,
       where: where?.call(GeneratedRelationOffice.t),
       limit: limit,
       transaction: transaction,
@@ -736,6 +744,7 @@ class GeneratedRelationOfficeRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GeneratedRelationOffice>(
+      table: GeneratedRelationOffice.t,
       where: where(GeneratedRelationOffice.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

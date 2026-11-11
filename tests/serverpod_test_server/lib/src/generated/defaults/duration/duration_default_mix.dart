@@ -328,6 +328,7 @@ class DurationDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DurationDefaultMix>(
+      table: DurationDefaultMix.t,
       where: where?.call(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
@@ -392,6 +393,7 @@ class DurationDefaultMixRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<DurationDefaultMix>(
+      table: DurationDefaultMix.t,
       where: where?.call(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
@@ -430,6 +432,7 @@ class DurationDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DurationDefaultMix>(
+      table: DurationDefaultMix.t,
       where: where?.call(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
@@ -450,6 +453,7 @@ class DurationDefaultMixRepository {
   }) async {
     return session.db.findById<DurationDefaultMix>(
       id,
+      table: DurationDefaultMix.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -619,6 +623,7 @@ class DurationDefaultMixRepository {
   }) async {
     return session.db.updateById<DurationDefaultMix>(
       id,
+      table: DurationDefaultMix.t,
       columnValues: columnValues(DurationDefaultMix.t.updateTable),
       transaction: transaction,
     );
@@ -643,6 +648,7 @@ class DurationDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DurationDefaultMix>(
+      table: DurationDefaultMix.t,
       columnValues: columnValues(DurationDefaultMix.t.updateTable),
       where: where(DurationDefaultMix.t),
       limit: limit,
@@ -711,6 +717,7 @@ class DurationDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DurationDefaultMix>(
+      table: DurationDefaultMix.t,
       where: where(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
@@ -728,6 +735,7 @@ class DurationDefaultMixRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<DurationDefaultMix>(
+      table: DurationDefaultMix.t,
       where: where?.call(DurationDefaultMix.t),
       limit: limit,
       transaction: transaction,
@@ -743,6 +751,7 @@ class DurationDefaultMixRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DurationDefaultMix>(
+      table: DurationDefaultMix.t,
       where: where(DurationDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

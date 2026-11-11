@@ -324,6 +324,7 @@ class ObjectWithSparseVectorRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithSparseVector>(
+      table: ObjectWithSparseVector.t,
       where: where?.call(ObjectWithSparseVector.t),
       orderBy: orderBy?.call(ObjectWithSparseVector.t),
       orderByList: orderByList?.call(ObjectWithSparseVector.t),
@@ -388,6 +389,7 @@ class ObjectWithSparseVectorRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithSparseVector>(
+      table: ObjectWithSparseVector.t,
       where: where?.call(ObjectWithSparseVector.t),
       orderBy: orderBy?.call(ObjectWithSparseVector.t),
       orderByList: orderByList?.call(ObjectWithSparseVector.t),
@@ -426,6 +428,7 @@ class ObjectWithSparseVectorRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithSparseVector>(
+      table: ObjectWithSparseVector.t,
       where: where?.call(ObjectWithSparseVector.t),
       orderBy: orderBy?.call(ObjectWithSparseVector.t),
       orderByList: orderByList?.call(ObjectWithSparseVector.t),
@@ -446,6 +449,7 @@ class ObjectWithSparseVectorRepository {
   }) async {
     return session.db.findById<ObjectWithSparseVector>(
       id,
+      table: ObjectWithSparseVector.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -615,6 +619,7 @@ class ObjectWithSparseVectorRepository {
   }) async {
     return session.db.updateById<ObjectWithSparseVector>(
       id,
+      table: ObjectWithSparseVector.t,
       columnValues: columnValues(ObjectWithSparseVector.t.updateTable),
       transaction: transaction,
     );
@@ -639,6 +644,7 @@ class ObjectWithSparseVectorRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithSparseVector>(
+      table: ObjectWithSparseVector.t,
       columnValues: columnValues(ObjectWithSparseVector.t.updateTable),
       where: where(ObjectWithSparseVector.t),
       limit: limit,
@@ -707,6 +713,7 @@ class ObjectWithSparseVectorRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithSparseVector>(
+      table: ObjectWithSparseVector.t,
       where: where(ObjectWithSparseVector.t),
       orderBy: orderBy?.call(ObjectWithSparseVector.t),
       orderByList: orderByList?.call(ObjectWithSparseVector.t),
@@ -724,6 +731,7 @@ class ObjectWithSparseVectorRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithSparseVector>(
+      table: ObjectWithSparseVector.t,
       where: where?.call(ObjectWithSparseVector.t),
       limit: limit,
       transaction: transaction,
@@ -739,6 +747,7 @@ class ObjectWithSparseVectorRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithSparseVector>(
+      table: ObjectWithSparseVector.t,
       where: where(ObjectWithSparseVector.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

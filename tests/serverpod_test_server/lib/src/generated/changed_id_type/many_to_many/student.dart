@@ -300,6 +300,7 @@ class StudentUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<StudentUuid>(
+      table: StudentUuid.t,
       where: where?.call(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
@@ -366,6 +367,7 @@ class StudentUuidRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<StudentUuid>(
+      table: StudentUuid.t,
       where: where?.call(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
@@ -406,6 +408,7 @@ class StudentUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<StudentUuid>(
+      table: StudentUuid.t,
       where: where?.call(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
@@ -428,6 +431,7 @@ class StudentUuidRepository {
   }) async {
     return session.db.findById<StudentUuid>(
       id,
+      table: StudentUuid.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -597,6 +601,7 @@ class StudentUuidRepository {
   }) async {
     return session.db.updateById<StudentUuid>(
       id,
+      table: StudentUuid.t,
       columnValues: columnValues(StudentUuid.t.updateTable),
       transaction: transaction,
     );
@@ -620,6 +625,7 @@ class StudentUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<StudentUuid>(
+      table: StudentUuid.t,
       columnValues: columnValues(StudentUuid.t.updateTable),
       where: where(StudentUuid.t),
       limit: limit,
@@ -688,6 +694,7 @@ class StudentUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<StudentUuid>(
+      table: StudentUuid.t,
       where: where(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
@@ -705,6 +712,7 @@ class StudentUuidRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<StudentUuid>(
+      table: StudentUuid.t,
       where: where?.call(StudentUuid.t),
       limit: limit,
       transaction: transaction,
@@ -720,6 +728,7 @@ class StudentUuidRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<StudentUuid>(
+      table: StudentUuid.t,
       where: where(StudentUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

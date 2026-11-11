@@ -305,6 +305,7 @@ class UuidDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UuidDefaultPersist>(
+      table: UuidDefaultPersist.t,
       where: where?.call(UuidDefaultPersist.t),
       orderBy: orderBy?.call(UuidDefaultPersist.t),
       orderByList: orderByList?.call(UuidDefaultPersist.t),
@@ -369,6 +370,7 @@ class UuidDefaultPersistRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UuidDefaultPersist>(
+      table: UuidDefaultPersist.t,
       where: where?.call(UuidDefaultPersist.t),
       orderBy: orderBy?.call(UuidDefaultPersist.t),
       orderByList: orderByList?.call(UuidDefaultPersist.t),
@@ -407,6 +409,7 @@ class UuidDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UuidDefaultPersist>(
+      table: UuidDefaultPersist.t,
       where: where?.call(UuidDefaultPersist.t),
       orderBy: orderBy?.call(UuidDefaultPersist.t),
       orderByList: orderByList?.call(UuidDefaultPersist.t),
@@ -427,6 +430,7 @@ class UuidDefaultPersistRepository {
   }) async {
     return session.db.findById<UuidDefaultPersist>(
       id,
+      table: UuidDefaultPersist.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -596,6 +600,7 @@ class UuidDefaultPersistRepository {
   }) async {
     return session.db.updateById<UuidDefaultPersist>(
       id,
+      table: UuidDefaultPersist.t,
       columnValues: columnValues(UuidDefaultPersist.t.updateTable),
       transaction: transaction,
     );
@@ -620,6 +625,7 @@ class UuidDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UuidDefaultPersist>(
+      table: UuidDefaultPersist.t,
       columnValues: columnValues(UuidDefaultPersist.t.updateTable),
       where: where(UuidDefaultPersist.t),
       limit: limit,
@@ -688,6 +694,7 @@ class UuidDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UuidDefaultPersist>(
+      table: UuidDefaultPersist.t,
       where: where(UuidDefaultPersist.t),
       orderBy: orderBy?.call(UuidDefaultPersist.t),
       orderByList: orderByList?.call(UuidDefaultPersist.t),
@@ -705,6 +712,7 @@ class UuidDefaultPersistRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UuidDefaultPersist>(
+      table: UuidDefaultPersist.t,
       where: where?.call(UuidDefaultPersist.t),
       limit: limit,
       transaction: transaction,
@@ -720,6 +728,7 @@ class UuidDefaultPersistRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UuidDefaultPersist>(
+      table: UuidDefaultPersist.t,
       where: where(UuidDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

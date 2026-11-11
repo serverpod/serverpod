@@ -229,6 +229,7 @@ class UriDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UriDefaultPersist>(
+      table: UriDefaultPersist.t,
       where: where?.call(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
@@ -293,6 +294,7 @@ class UriDefaultPersistRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UriDefaultPersist>(
+      table: UriDefaultPersist.t,
       where: where?.call(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
@@ -331,6 +333,7 @@ class UriDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UriDefaultPersist>(
+      table: UriDefaultPersist.t,
       where: where?.call(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
@@ -351,6 +354,7 @@ class UriDefaultPersistRepository {
   }) async {
     return session.db.findById<UriDefaultPersist>(
       id,
+      table: UriDefaultPersist.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -520,6 +524,7 @@ class UriDefaultPersistRepository {
   }) async {
     return session.db.updateById<UriDefaultPersist>(
       id,
+      table: UriDefaultPersist.t,
       columnValues: columnValues(UriDefaultPersist.t.updateTable),
       transaction: transaction,
     );
@@ -544,6 +549,7 @@ class UriDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UriDefaultPersist>(
+      table: UriDefaultPersist.t,
       columnValues: columnValues(UriDefaultPersist.t.updateTable),
       where: where(UriDefaultPersist.t),
       limit: limit,
@@ -612,6 +618,7 @@ class UriDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UriDefaultPersist>(
+      table: UriDefaultPersist.t,
       where: where(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
@@ -629,6 +636,7 @@ class UriDefaultPersistRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UriDefaultPersist>(
+      table: UriDefaultPersist.t,
       where: where?.call(UriDefaultPersist.t),
       limit: limit,
       transaction: transaction,
@@ -644,6 +652,7 @@ class UriDefaultPersistRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UriDefaultPersist>(
+      table: UriDefaultPersist.t,
       where: where(UriDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

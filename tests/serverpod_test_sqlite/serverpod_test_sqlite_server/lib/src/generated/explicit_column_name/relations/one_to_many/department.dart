@@ -300,6 +300,7 @@ class DepartmentRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Department>(
+      table: Department.t,
       where: where?.call(Department.t),
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
@@ -366,6 +367,7 @@ class DepartmentRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Department>(
+      table: Department.t,
       where: where?.call(Department.t),
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
@@ -406,6 +408,7 @@ class DepartmentRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Department>(
+      table: Department.t,
       where: where?.call(Department.t),
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
@@ -428,6 +431,7 @@ class DepartmentRepository {
   }) async {
     return session.db.findById<Department>(
       id,
+      table: Department.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -597,6 +601,7 @@ class DepartmentRepository {
   }) async {
     return session.db.updateById<Department>(
       id,
+      table: Department.t,
       columnValues: columnValues(Department.t.updateTable),
       transaction: transaction,
     );
@@ -620,6 +625,7 @@ class DepartmentRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Department>(
+      table: Department.t,
       columnValues: columnValues(Department.t.updateTable),
       where: where(Department.t),
       limit: limit,
@@ -688,6 +694,7 @@ class DepartmentRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Department>(
+      table: Department.t,
       where: where(Department.t),
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
@@ -705,6 +712,7 @@ class DepartmentRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Department>(
+      table: Department.t,
       where: where?.call(Department.t),
       limit: limit,
       transaction: transaction,
@@ -720,6 +728,7 @@ class DepartmentRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Department>(
+      table: Department.t,
       where: where(Department.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

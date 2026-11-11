@@ -300,6 +300,7 @@ class CommentIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CommentInt>(
+      table: CommentInt.t,
       where: where?.call(CommentInt.t),
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
@@ -366,6 +367,7 @@ class CommentIntRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<CommentInt>(
+      table: CommentInt.t,
       where: where?.call(CommentInt.t),
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
@@ -406,6 +408,7 @@ class CommentIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CommentInt>(
+      table: CommentInt.t,
       where: where?.call(CommentInt.t),
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
@@ -428,6 +431,7 @@ class CommentIntRepository {
   }) async {
     return session.db.findById<CommentInt>(
       id,
+      table: CommentInt.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -597,6 +601,7 @@ class CommentIntRepository {
   }) async {
     return session.db.updateById<CommentInt>(
       id,
+      table: CommentInt.t,
       columnValues: columnValues(CommentInt.t.updateTable),
       transaction: transaction,
     );
@@ -620,6 +625,7 @@ class CommentIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CommentInt>(
+      table: CommentInt.t,
       columnValues: columnValues(CommentInt.t.updateTable),
       where: where(CommentInt.t),
       limit: limit,
@@ -688,6 +694,7 @@ class CommentIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CommentInt>(
+      table: CommentInt.t,
       where: where(CommentInt.t),
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
@@ -705,6 +712,7 @@ class CommentIntRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<CommentInt>(
+      table: CommentInt.t,
       where: where?.call(CommentInt.t),
       limit: limit,
       transaction: transaction,
@@ -720,6 +728,7 @@ class CommentIntRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CommentInt>(
+      table: CommentInt.t,
       where: where(CommentInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

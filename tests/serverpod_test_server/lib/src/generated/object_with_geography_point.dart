@@ -282,6 +282,7 @@ class ObjectWithGeographyPointRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithGeographyPoint>(
+      table: ObjectWithGeographyPoint.t,
       where: where?.call(ObjectWithGeographyPoint.t),
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
@@ -346,6 +347,7 @@ class ObjectWithGeographyPointRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithGeographyPoint>(
+      table: ObjectWithGeographyPoint.t,
       where: where?.call(ObjectWithGeographyPoint.t),
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
@@ -384,6 +386,7 @@ class ObjectWithGeographyPointRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithGeographyPoint>(
+      table: ObjectWithGeographyPoint.t,
       where: where?.call(ObjectWithGeographyPoint.t),
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
@@ -404,6 +407,7 @@ class ObjectWithGeographyPointRepository {
   }) async {
     return session.db.findById<ObjectWithGeographyPoint>(
       id,
+      table: ObjectWithGeographyPoint.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -575,6 +579,7 @@ class ObjectWithGeographyPointRepository {
   }) async {
     return session.db.updateById<ObjectWithGeographyPoint>(
       id,
+      table: ObjectWithGeographyPoint.t,
       columnValues: columnValues(ObjectWithGeographyPoint.t.updateTable),
       transaction: transaction,
     );
@@ -599,6 +604,7 @@ class ObjectWithGeographyPointRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithGeographyPoint>(
+      table: ObjectWithGeographyPoint.t,
       columnValues: columnValues(ObjectWithGeographyPoint.t.updateTable),
       where: where(ObjectWithGeographyPoint.t),
       limit: limit,
@@ -667,6 +673,7 @@ class ObjectWithGeographyPointRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithGeographyPoint>(
+      table: ObjectWithGeographyPoint.t,
       where: where(ObjectWithGeographyPoint.t),
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
@@ -684,6 +691,7 @@ class ObjectWithGeographyPointRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithGeographyPoint>(
+      table: ObjectWithGeographyPoint.t,
       where: where?.call(ObjectWithGeographyPoint.t),
       limit: limit,
       transaction: transaction,
@@ -699,6 +707,7 @@ class ObjectWithGeographyPointRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithGeographyPoint>(
+      table: ObjectWithGeographyPoint.t,
       where: where(ObjectWithGeographyPoint.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

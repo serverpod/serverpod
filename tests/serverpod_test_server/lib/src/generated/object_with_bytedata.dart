@@ -224,6 +224,7 @@ class ObjectWithByteDataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithByteData>(
+      table: ObjectWithByteData.t,
       where: where?.call(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
@@ -288,6 +289,7 @@ class ObjectWithByteDataRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithByteData>(
+      table: ObjectWithByteData.t,
       where: where?.call(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
@@ -326,6 +328,7 @@ class ObjectWithByteDataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithByteData>(
+      table: ObjectWithByteData.t,
       where: where?.call(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
@@ -346,6 +349,7 @@ class ObjectWithByteDataRepository {
   }) async {
     return session.db.findById<ObjectWithByteData>(
       id,
+      table: ObjectWithByteData.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -515,6 +519,7 @@ class ObjectWithByteDataRepository {
   }) async {
     return session.db.updateById<ObjectWithByteData>(
       id,
+      table: ObjectWithByteData.t,
       columnValues: columnValues(ObjectWithByteData.t.updateTable),
       transaction: transaction,
     );
@@ -539,6 +544,7 @@ class ObjectWithByteDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithByteData>(
+      table: ObjectWithByteData.t,
       columnValues: columnValues(ObjectWithByteData.t.updateTable),
       where: where(ObjectWithByteData.t),
       limit: limit,
@@ -607,6 +613,7 @@ class ObjectWithByteDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithByteData>(
+      table: ObjectWithByteData.t,
       where: where(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
@@ -624,6 +631,7 @@ class ObjectWithByteDataRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithByteData>(
+      table: ObjectWithByteData.t,
       where: where?.call(ObjectWithByteData.t),
       limit: limit,
       transaction: transaction,
@@ -639,6 +647,7 @@ class ObjectWithByteDataRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithByteData>(
+      table: ObjectWithByteData.t,
       where: where(ObjectWithByteData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

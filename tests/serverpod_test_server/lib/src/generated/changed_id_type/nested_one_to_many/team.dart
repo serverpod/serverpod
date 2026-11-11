@@ -382,6 +382,7 @@ class TeamIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<TeamInt>(
+      table: TeamInt.t,
       where: where?.call(TeamInt.t),
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
@@ -448,6 +449,7 @@ class TeamIntRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<TeamInt>(
+      table: TeamInt.t,
       where: where?.call(TeamInt.t),
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
@@ -488,6 +490,7 @@ class TeamIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<TeamInt>(
+      table: TeamInt.t,
       where: where?.call(TeamInt.t),
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
@@ -510,6 +513,7 @@ class TeamIntRepository {
   }) async {
     return session.db.findById<TeamInt>(
       id,
+      table: TeamInt.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -679,6 +683,7 @@ class TeamIntRepository {
   }) async {
     return session.db.updateById<TeamInt>(
       id,
+      table: TeamInt.t,
       columnValues: columnValues(TeamInt.t.updateTable),
       transaction: transaction,
     );
@@ -702,6 +707,7 @@ class TeamIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<TeamInt>(
+      table: TeamInt.t,
       columnValues: columnValues(TeamInt.t.updateTable),
       where: where(TeamInt.t),
       limit: limit,
@@ -770,6 +776,7 @@ class TeamIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<TeamInt>(
+      table: TeamInt.t,
       where: where(TeamInt.t),
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
@@ -787,6 +794,7 @@ class TeamIntRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<TeamInt>(
+      table: TeamInt.t,
       where: where?.call(TeamInt.t),
       limit: limit,
       transaction: transaction,
@@ -802,6 +810,7 @@ class TeamIntRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<TeamInt>(
+      table: TeamInt.t,
       where: where(TeamInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

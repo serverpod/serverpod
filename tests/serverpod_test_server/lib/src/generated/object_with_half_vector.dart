@@ -386,6 +386,7 @@ class ObjectWithHalfVectorRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithHalfVector>(
+      table: ObjectWithHalfVector.t,
       where: where?.call(ObjectWithHalfVector.t),
       orderBy: orderBy?.call(ObjectWithHalfVector.t),
       orderByList: orderByList?.call(ObjectWithHalfVector.t),
@@ -450,6 +451,7 @@ class ObjectWithHalfVectorRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithHalfVector>(
+      table: ObjectWithHalfVector.t,
       where: where?.call(ObjectWithHalfVector.t),
       orderBy: orderBy?.call(ObjectWithHalfVector.t),
       orderByList: orderByList?.call(ObjectWithHalfVector.t),
@@ -488,6 +490,7 @@ class ObjectWithHalfVectorRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithHalfVector>(
+      table: ObjectWithHalfVector.t,
       where: where?.call(ObjectWithHalfVector.t),
       orderBy: orderBy?.call(ObjectWithHalfVector.t),
       orderByList: orderByList?.call(ObjectWithHalfVector.t),
@@ -508,6 +511,7 @@ class ObjectWithHalfVectorRepository {
   }) async {
     return session.db.findById<ObjectWithHalfVector>(
       id,
+      table: ObjectWithHalfVector.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -677,6 +681,7 @@ class ObjectWithHalfVectorRepository {
   }) async {
     return session.db.updateById<ObjectWithHalfVector>(
       id,
+      table: ObjectWithHalfVector.t,
       columnValues: columnValues(ObjectWithHalfVector.t.updateTable),
       transaction: transaction,
     );
@@ -701,6 +706,7 @@ class ObjectWithHalfVectorRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithHalfVector>(
+      table: ObjectWithHalfVector.t,
       columnValues: columnValues(ObjectWithHalfVector.t.updateTable),
       where: where(ObjectWithHalfVector.t),
       limit: limit,
@@ -769,6 +775,7 @@ class ObjectWithHalfVectorRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithHalfVector>(
+      table: ObjectWithHalfVector.t,
       where: where(ObjectWithHalfVector.t),
       orderBy: orderBy?.call(ObjectWithHalfVector.t),
       orderByList: orderByList?.call(ObjectWithHalfVector.t),
@@ -786,6 +793,7 @@ class ObjectWithHalfVectorRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithHalfVector>(
+      table: ObjectWithHalfVector.t,
       where: where?.call(ObjectWithHalfVector.t),
       limit: limit,
       transaction: transaction,
@@ -801,6 +809,7 @@ class ObjectWithHalfVectorRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithHalfVector>(
+      table: ObjectWithHalfVector.t,
       where: where(ObjectWithHalfVector.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

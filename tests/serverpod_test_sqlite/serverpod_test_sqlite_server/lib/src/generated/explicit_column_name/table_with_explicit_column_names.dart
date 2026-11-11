@@ -249,6 +249,7 @@ class TableWithExplicitColumnNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<TableWithExplicitColumnName>(
+      table: TableWithExplicitColumnName.t,
       where: where?.call(TableWithExplicitColumnName.t),
       orderBy: orderBy?.call(TableWithExplicitColumnName.t),
       orderByList: orderByList?.call(TableWithExplicitColumnName.t),
@@ -313,6 +314,7 @@ class TableWithExplicitColumnNameRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<TableWithExplicitColumnName>(
+      table: TableWithExplicitColumnName.t,
       where: where?.call(TableWithExplicitColumnName.t),
       orderBy: orderBy?.call(TableWithExplicitColumnName.t),
       orderByList: orderByList?.call(TableWithExplicitColumnName.t),
@@ -351,6 +353,7 @@ class TableWithExplicitColumnNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<TableWithExplicitColumnName>(
+      table: TableWithExplicitColumnName.t,
       where: where?.call(TableWithExplicitColumnName.t),
       orderBy: orderBy?.call(TableWithExplicitColumnName.t),
       orderByList: orderByList?.call(TableWithExplicitColumnName.t),
@@ -371,6 +374,7 @@ class TableWithExplicitColumnNameRepository {
   }) async {
     return session.db.findById<TableWithExplicitColumnName>(
       id,
+      table: TableWithExplicitColumnName.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -542,6 +546,7 @@ class TableWithExplicitColumnNameRepository {
   }) async {
     return session.db.updateById<TableWithExplicitColumnName>(
       id,
+      table: TableWithExplicitColumnName.t,
       columnValues: columnValues(TableWithExplicitColumnName.t.updateTable),
       transaction: transaction,
     );
@@ -566,6 +571,7 @@ class TableWithExplicitColumnNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<TableWithExplicitColumnName>(
+      table: TableWithExplicitColumnName.t,
       columnValues: columnValues(TableWithExplicitColumnName.t.updateTable),
       where: where(TableWithExplicitColumnName.t),
       limit: limit,
@@ -634,6 +640,7 @@ class TableWithExplicitColumnNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<TableWithExplicitColumnName>(
+      table: TableWithExplicitColumnName.t,
       where: where(TableWithExplicitColumnName.t),
       orderBy: orderBy?.call(TableWithExplicitColumnName.t),
       orderByList: orderByList?.call(TableWithExplicitColumnName.t),
@@ -651,6 +658,7 @@ class TableWithExplicitColumnNameRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<TableWithExplicitColumnName>(
+      table: TableWithExplicitColumnName.t,
       where: where?.call(TableWithExplicitColumnName.t),
       limit: limit,
       transaction: transaction,
@@ -666,6 +674,7 @@ class TableWithExplicitColumnNameRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<TableWithExplicitColumnName>(
+      table: TableWithExplicitColumnName.t,
       where: where(TableWithExplicitColumnName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

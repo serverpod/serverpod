@@ -302,6 +302,7 @@ class ChildEntityRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildEntity>(
+      table: ChildEntity.t,
       where: where?.call(ChildEntity.t),
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
@@ -366,6 +367,7 @@ class ChildEntityRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ChildEntity>(
+      table: ChildEntity.t,
       where: where?.call(ChildEntity.t),
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
@@ -404,6 +406,7 @@ class ChildEntityRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildEntity>(
+      table: ChildEntity.t,
       where: where?.call(ChildEntity.t),
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
@@ -424,6 +427,7 @@ class ChildEntityRepository {
   }) async {
     return session.db.findById<ChildEntity>(
       id,
+      table: ChildEntity.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -592,6 +596,7 @@ class ChildEntityRepository {
   }) async {
     return session.db.updateById<ChildEntity>(
       id,
+      table: ChildEntity.t,
       columnValues: columnValues(ChildEntity.t.updateTable),
       transaction: transaction,
     );
@@ -615,6 +620,7 @@ class ChildEntityRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChildEntity>(
+      table: ChildEntity.t,
       columnValues: columnValues(ChildEntity.t.updateTable),
       where: where(ChildEntity.t),
       limit: limit,
@@ -683,6 +689,7 @@ class ChildEntityRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChildEntity>(
+      table: ChildEntity.t,
       where: where(ChildEntity.t),
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
@@ -700,6 +707,7 @@ class ChildEntityRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ChildEntity>(
+      table: ChildEntity.t,
       where: where?.call(ChildEntity.t),
       limit: limit,
       transaction: transaction,
@@ -715,6 +723,7 @@ class ChildEntityRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ChildEntity>(
+      table: ChildEntity.t,
       where: where(ChildEntity.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -252,6 +252,7 @@ class ImmutableObjectWithTableRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ImmutableObjectWithTable>(
+      table: ImmutableObjectWithTable.t,
       where: where?.call(ImmutableObjectWithTable.t),
       orderBy: orderBy?.call(ImmutableObjectWithTable.t),
       orderByList: orderByList?.call(ImmutableObjectWithTable.t),
@@ -316,6 +317,7 @@ class ImmutableObjectWithTableRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ImmutableObjectWithTable>(
+      table: ImmutableObjectWithTable.t,
       where: where?.call(ImmutableObjectWithTable.t),
       orderBy: orderBy?.call(ImmutableObjectWithTable.t),
       orderByList: orderByList?.call(ImmutableObjectWithTable.t),
@@ -354,6 +356,7 @@ class ImmutableObjectWithTableRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ImmutableObjectWithTable>(
+      table: ImmutableObjectWithTable.t,
       where: where?.call(ImmutableObjectWithTable.t),
       orderBy: orderBy?.call(ImmutableObjectWithTable.t),
       orderByList: orderByList?.call(ImmutableObjectWithTable.t),
@@ -374,6 +377,7 @@ class ImmutableObjectWithTableRepository {
   }) async {
     return session.db.findById<ImmutableObjectWithTable>(
       id,
+      table: ImmutableObjectWithTable.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -545,6 +549,7 @@ class ImmutableObjectWithTableRepository {
   }) async {
     return session.db.updateById<ImmutableObjectWithTable>(
       id,
+      table: ImmutableObjectWithTable.t,
       columnValues: columnValues(ImmutableObjectWithTable.t.updateTable),
       transaction: transaction,
     );
@@ -569,6 +574,7 @@ class ImmutableObjectWithTableRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ImmutableObjectWithTable>(
+      table: ImmutableObjectWithTable.t,
       columnValues: columnValues(ImmutableObjectWithTable.t.updateTable),
       where: where(ImmutableObjectWithTable.t),
       limit: limit,
@@ -637,6 +643,7 @@ class ImmutableObjectWithTableRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ImmutableObjectWithTable>(
+      table: ImmutableObjectWithTable.t,
       where: where(ImmutableObjectWithTable.t),
       orderBy: orderBy?.call(ImmutableObjectWithTable.t),
       orderByList: orderByList?.call(ImmutableObjectWithTable.t),
@@ -654,6 +661,7 @@ class ImmutableObjectWithTableRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ImmutableObjectWithTable>(
+      table: ImmutableObjectWithTable.t,
       where: where?.call(ImmutableObjectWithTable.t),
       limit: limit,
       transaction: transaction,
@@ -669,6 +677,7 @@ class ImmutableObjectWithTableRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ImmutableObjectWithTable>(
+      table: ImmutableObjectWithTable.t,
       where: where(ImmutableObjectWithTable.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

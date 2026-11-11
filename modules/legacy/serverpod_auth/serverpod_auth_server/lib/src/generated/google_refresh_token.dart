@@ -249,6 +249,7 @@ class GoogleRefreshTokenRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GoogleRefreshToken>(
+      table: GoogleRefreshToken.t,
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
@@ -313,6 +314,7 @@ class GoogleRefreshTokenRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<GoogleRefreshToken>(
+      table: GoogleRefreshToken.t,
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
@@ -351,6 +353,7 @@ class GoogleRefreshTokenRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GoogleRefreshToken>(
+      table: GoogleRefreshToken.t,
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
@@ -371,6 +374,7 @@ class GoogleRefreshTokenRepository {
   }) async {
     return session.db.findById<GoogleRefreshToken>(
       id,
+      table: GoogleRefreshToken.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -540,6 +544,7 @@ class GoogleRefreshTokenRepository {
   }) async {
     return session.db.updateById<GoogleRefreshToken>(
       id,
+      table: GoogleRefreshToken.t,
       columnValues: columnValues(GoogleRefreshToken.t.updateTable),
       transaction: transaction,
     );
@@ -564,6 +569,7 @@ class GoogleRefreshTokenRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GoogleRefreshToken>(
+      table: GoogleRefreshToken.t,
       columnValues: columnValues(GoogleRefreshToken.t.updateTable),
       where: where(GoogleRefreshToken.t),
       limit: limit,
@@ -632,6 +638,7 @@ class GoogleRefreshTokenRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GoogleRefreshToken>(
+      table: GoogleRefreshToken.t,
       where: where(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
@@ -649,6 +656,7 @@ class GoogleRefreshTokenRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<GoogleRefreshToken>(
+      table: GoogleRefreshToken.t,
       where: where?.call(GoogleRefreshToken.t),
       limit: limit,
       transaction: transaction,
@@ -664,6 +672,7 @@ class GoogleRefreshTokenRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GoogleRefreshToken>(
+      table: GoogleRefreshToken.t,
       where: where(GoogleRefreshToken.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

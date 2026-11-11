@@ -319,6 +319,7 @@ class EnumDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EnumDefaultMix>(
+      table: EnumDefaultMix.t,
       where: where?.call(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
@@ -383,6 +384,7 @@ class EnumDefaultMixRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EnumDefaultMix>(
+      table: EnumDefaultMix.t,
       where: where?.call(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
@@ -421,6 +423,7 @@ class EnumDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EnumDefaultMix>(
+      table: EnumDefaultMix.t,
       where: where?.call(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
@@ -441,6 +444,7 @@ class EnumDefaultMixRepository {
   }) async {
     return session.db.findById<EnumDefaultMix>(
       id,
+      table: EnumDefaultMix.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -609,6 +613,7 @@ class EnumDefaultMixRepository {
   }) async {
     return session.db.updateById<EnumDefaultMix>(
       id,
+      table: EnumDefaultMix.t,
       columnValues: columnValues(EnumDefaultMix.t.updateTable),
       transaction: transaction,
     );
@@ -632,6 +637,7 @@ class EnumDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EnumDefaultMix>(
+      table: EnumDefaultMix.t,
       columnValues: columnValues(EnumDefaultMix.t.updateTable),
       where: where(EnumDefaultMix.t),
       limit: limit,
@@ -700,6 +706,7 @@ class EnumDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EnumDefaultMix>(
+      table: EnumDefaultMix.t,
       where: where(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
@@ -717,6 +724,7 @@ class EnumDefaultMixRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EnumDefaultMix>(
+      table: EnumDefaultMix.t,
       where: where?.call(EnumDefaultMix.t),
       limit: limit,
       transaction: transaction,
@@ -732,6 +740,7 @@ class EnumDefaultMixRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EnumDefaultMix>(
+      table: EnumDefaultMix.t,
       where: where(EnumDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

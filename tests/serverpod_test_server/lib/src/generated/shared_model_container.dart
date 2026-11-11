@@ -1048,6 +1048,7 @@ class SharedModelContainerRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SharedModelContainer>(
+      table: SharedModelContainer.t,
       where: where?.call(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
@@ -1112,6 +1113,7 @@ class SharedModelContainerRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<SharedModelContainer>(
+      table: SharedModelContainer.t,
       where: where?.call(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
@@ -1150,6 +1152,7 @@ class SharedModelContainerRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SharedModelContainer>(
+      table: SharedModelContainer.t,
       where: where?.call(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
@@ -1170,6 +1173,7 @@ class SharedModelContainerRepository {
   }) async {
     return session.db.findById<SharedModelContainer>(
       id,
+      table: SharedModelContainer.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -1339,6 +1343,7 @@ class SharedModelContainerRepository {
   }) async {
     return session.db.updateById<SharedModelContainer>(
       id,
+      table: SharedModelContainer.t,
       columnValues: columnValues(SharedModelContainer.t.updateTable),
       transaction: transaction,
     );
@@ -1363,6 +1368,7 @@ class SharedModelContainerRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SharedModelContainer>(
+      table: SharedModelContainer.t,
       columnValues: columnValues(SharedModelContainer.t.updateTable),
       where: where(SharedModelContainer.t),
       limit: limit,
@@ -1431,6 +1437,7 @@ class SharedModelContainerRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SharedModelContainer>(
+      table: SharedModelContainer.t,
       where: where(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
@@ -1448,6 +1455,7 @@ class SharedModelContainerRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<SharedModelContainer>(
+      table: SharedModelContainer.t,
       where: where?.call(SharedModelContainer.t),
       limit: limit,
       transaction: transaction,
@@ -1463,6 +1471,7 @@ class SharedModelContainerRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SharedModelContainer>(
+      table: SharedModelContainer.t,
       where: where(SharedModelContainer.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

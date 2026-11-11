@@ -346,6 +346,7 @@ class MultipleMaxFieldNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MultipleMaxFieldName>(
+      table: MultipleMaxFieldName.t,
       where: where?.call(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
@@ -410,6 +411,7 @@ class MultipleMaxFieldNameRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<MultipleMaxFieldName>(
+      table: MultipleMaxFieldName.t,
       where: where?.call(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
@@ -448,6 +450,7 @@ class MultipleMaxFieldNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MultipleMaxFieldName>(
+      table: MultipleMaxFieldName.t,
       where: where?.call(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
@@ -468,6 +471,7 @@ class MultipleMaxFieldNameRepository {
   }) async {
     return session.db.findById<MultipleMaxFieldName>(
       id,
+      table: MultipleMaxFieldName.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -637,6 +641,7 @@ class MultipleMaxFieldNameRepository {
   }) async {
     return session.db.updateById<MultipleMaxFieldName>(
       id,
+      table: MultipleMaxFieldName.t,
       columnValues: columnValues(MultipleMaxFieldName.t.updateTable),
       transaction: transaction,
     );
@@ -661,6 +666,7 @@ class MultipleMaxFieldNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MultipleMaxFieldName>(
+      table: MultipleMaxFieldName.t,
       columnValues: columnValues(MultipleMaxFieldName.t.updateTable),
       where: where(MultipleMaxFieldName.t),
       limit: limit,
@@ -729,6 +735,7 @@ class MultipleMaxFieldNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MultipleMaxFieldName>(
+      table: MultipleMaxFieldName.t,
       where: where(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
@@ -746,6 +753,7 @@ class MultipleMaxFieldNameRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<MultipleMaxFieldName>(
+      table: MultipleMaxFieldName.t,
       where: where?.call(MultipleMaxFieldName.t),
       limit: limit,
       transaction: transaction,
@@ -761,6 +769,7 @@ class MultipleMaxFieldNameRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MultipleMaxFieldName>(
+      table: MultipleMaxFieldName.t,
       where: where(MultipleMaxFieldName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -302,6 +302,7 @@ class AddressUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<AddressUuid>(
+      table: AddressUuid.t,
       where: where?.call(AddressUuid.t),
       orderBy: orderBy?.call(AddressUuid.t),
       orderByList: orderByList?.call(AddressUuid.t),
@@ -368,6 +369,7 @@ class AddressUuidRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<AddressUuid>(
+      table: AddressUuid.t,
       where: where?.call(AddressUuid.t),
       orderBy: orderBy?.call(AddressUuid.t),
       orderByList: orderByList?.call(AddressUuid.t),
@@ -408,6 +410,7 @@ class AddressUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<AddressUuid>(
+      table: AddressUuid.t,
       where: where?.call(AddressUuid.t),
       orderBy: orderBy?.call(AddressUuid.t),
       orderByList: orderByList?.call(AddressUuid.t),
@@ -430,6 +433,7 @@ class AddressUuidRepository {
   }) async {
     return session.db.findById<AddressUuid>(
       id,
+      table: AddressUuid.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -599,6 +603,7 @@ class AddressUuidRepository {
   }) async {
     return session.db.updateById<AddressUuid>(
       id,
+      table: AddressUuid.t,
       columnValues: columnValues(AddressUuid.t.updateTable),
       transaction: transaction,
     );
@@ -622,6 +627,7 @@ class AddressUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<AddressUuid>(
+      table: AddressUuid.t,
       columnValues: columnValues(AddressUuid.t.updateTable),
       where: where(AddressUuid.t),
       limit: limit,
@@ -690,6 +696,7 @@ class AddressUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<AddressUuid>(
+      table: AddressUuid.t,
       where: where(AddressUuid.t),
       orderBy: orderBy?.call(AddressUuid.t),
       orderByList: orderByList?.call(AddressUuid.t),
@@ -707,6 +714,7 @@ class AddressUuidRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<AddressUuid>(
+      table: AddressUuid.t,
       where: where?.call(AddressUuid.t),
       limit: limit,
       transaction: transaction,
@@ -722,6 +730,7 @@ class AddressUuidRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<AddressUuid>(
+      table: AddressUuid.t,
       where: where(AddressUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

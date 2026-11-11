@@ -375,6 +375,7 @@ class MemberRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Member>(
+      table: Member.t,
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -441,6 +442,7 @@ class MemberRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Member>(
+      table: Member.t,
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -481,6 +483,7 @@ class MemberRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Member>(
+      table: Member.t,
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -503,6 +506,7 @@ class MemberRepository {
   }) async {
     return session.db.findById<Member>(
       id,
+      table: Member.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -672,6 +676,7 @@ class MemberRepository {
   }) async {
     return session.db.updateById<Member>(
       id,
+      table: Member.t,
       columnValues: columnValues(Member.t.updateTable),
       transaction: transaction,
     );
@@ -695,6 +700,7 @@ class MemberRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Member>(
+      table: Member.t,
       columnValues: columnValues(Member.t.updateTable),
       where: where(Member.t),
       limit: limit,
@@ -763,6 +769,7 @@ class MemberRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Member>(
+      table: Member.t,
       where: where(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -780,6 +787,7 @@ class MemberRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Member>(
+      table: Member.t,
       where: where?.call(Member.t),
       limit: limit,
       transaction: transaction,
@@ -795,6 +803,7 @@ class MemberRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Member>(
+      table: Member.t,
       where: where(Member.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

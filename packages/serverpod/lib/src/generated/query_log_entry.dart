@@ -460,6 +460,7 @@ class QueryLogEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<QueryLogEntry>(
+      table: QueryLogEntry.t,
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
@@ -524,6 +525,7 @@ class QueryLogEntryRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<QueryLogEntry>(
+      table: QueryLogEntry.t,
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
@@ -562,6 +564,7 @@ class QueryLogEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<QueryLogEntry>(
+      table: QueryLogEntry.t,
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
@@ -582,6 +585,7 @@ class QueryLogEntryRepository {
   }) async {
     return session.db.findById<QueryLogEntry>(
       id,
+      table: QueryLogEntry.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -750,6 +754,7 @@ class QueryLogEntryRepository {
   }) async {
     return session.db.updateById<QueryLogEntry>(
       id,
+      table: QueryLogEntry.t,
       columnValues: columnValues(QueryLogEntry.t.updateTable),
       transaction: transaction,
     );
@@ -773,6 +778,7 @@ class QueryLogEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<QueryLogEntry>(
+      table: QueryLogEntry.t,
       columnValues: columnValues(QueryLogEntry.t.updateTable),
       where: where(QueryLogEntry.t),
       limit: limit,
@@ -841,6 +847,7 @@ class QueryLogEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<QueryLogEntry>(
+      table: QueryLogEntry.t,
       where: where(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
@@ -858,6 +865,7 @@ class QueryLogEntryRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<QueryLogEntry>(
+      table: QueryLogEntry.t,
       where: where?.call(QueryLogEntry.t),
       limit: limit,
       transaction: transaction,
@@ -873,6 +881,7 @@ class QueryLogEntryRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<QueryLogEntry>(
+      table: QueryLogEntry.t,
       where: where(QueryLogEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

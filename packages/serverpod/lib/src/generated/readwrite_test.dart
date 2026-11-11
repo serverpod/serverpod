@@ -224,6 +224,7 @@ class ReadWriteTestEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ReadWriteTestEntry>(
+      table: ReadWriteTestEntry.t,
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -288,6 +289,7 @@ class ReadWriteTestEntryRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ReadWriteTestEntry>(
+      table: ReadWriteTestEntry.t,
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -326,6 +328,7 @@ class ReadWriteTestEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ReadWriteTestEntry>(
+      table: ReadWriteTestEntry.t,
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -346,6 +349,7 @@ class ReadWriteTestEntryRepository {
   }) async {
     return session.db.findById<ReadWriteTestEntry>(
       id,
+      table: ReadWriteTestEntry.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -515,6 +519,7 @@ class ReadWriteTestEntryRepository {
   }) async {
     return session.db.updateById<ReadWriteTestEntry>(
       id,
+      table: ReadWriteTestEntry.t,
       columnValues: columnValues(ReadWriteTestEntry.t.updateTable),
       transaction: transaction,
     );
@@ -539,6 +544,7 @@ class ReadWriteTestEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ReadWriteTestEntry>(
+      table: ReadWriteTestEntry.t,
       columnValues: columnValues(ReadWriteTestEntry.t.updateTable),
       where: where(ReadWriteTestEntry.t),
       limit: limit,
@@ -607,6 +613,7 @@ class ReadWriteTestEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ReadWriteTestEntry>(
+      table: ReadWriteTestEntry.t,
       where: where(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -624,6 +631,7 @@ class ReadWriteTestEntryRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ReadWriteTestEntry>(
+      table: ReadWriteTestEntry.t,
       where: where?.call(ReadWriteTestEntry.t),
       limit: limit,
       transaction: transaction,
@@ -639,6 +647,7 @@ class ReadWriteTestEntryRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ReadWriteTestEntry>(
+      table: ReadWriteTestEntry.t,
       where: where(ReadWriteTestEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

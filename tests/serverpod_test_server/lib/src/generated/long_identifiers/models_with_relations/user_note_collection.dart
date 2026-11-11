@@ -321,6 +321,7 @@ class UserNoteCollectionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserNoteCollection>(
+      table: UserNoteCollection.t,
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
@@ -387,6 +388,7 @@ class UserNoteCollectionRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UserNoteCollection>(
+      table: UserNoteCollection.t,
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
@@ -427,6 +429,7 @@ class UserNoteCollectionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserNoteCollection>(
+      table: UserNoteCollection.t,
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
@@ -449,6 +452,7 @@ class UserNoteCollectionRepository {
   }) async {
     return session.db.findById<UserNoteCollection>(
       id,
+      table: UserNoteCollection.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -619,6 +623,7 @@ class UserNoteCollectionRepository {
   }) async {
     return session.db.updateById<UserNoteCollection>(
       id,
+      table: UserNoteCollection.t,
       columnValues: columnValues(UserNoteCollection.t.updateTable),
       transaction: transaction,
     );
@@ -643,6 +648,7 @@ class UserNoteCollectionRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserNoteCollection>(
+      table: UserNoteCollection.t,
       columnValues: columnValues(UserNoteCollection.t.updateTable),
       where: where(UserNoteCollection.t),
       limit: limit,
@@ -711,6 +717,7 @@ class UserNoteCollectionRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserNoteCollection>(
+      table: UserNoteCollection.t,
       where: where(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
@@ -728,6 +735,7 @@ class UserNoteCollectionRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UserNoteCollection>(
+      table: UserNoteCollection.t,
       where: where?.call(UserNoteCollection.t),
       limit: limit,
       transaction: transaction,
@@ -743,6 +751,7 @@ class UserNoteCollectionRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserNoteCollection>(
+      table: UserNoteCollection.t,
       where: where(UserNoteCollection.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

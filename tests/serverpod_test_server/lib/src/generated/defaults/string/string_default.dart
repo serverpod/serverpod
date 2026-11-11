@@ -250,6 +250,7 @@ class StringDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<StringDefault>(
+      table: StringDefault.t,
       where: where?.call(StringDefault.t),
       orderBy: orderBy?.call(StringDefault.t),
       orderByList: orderByList?.call(StringDefault.t),
@@ -314,6 +315,7 @@ class StringDefaultRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<StringDefault>(
+      table: StringDefault.t,
       where: where?.call(StringDefault.t),
       orderBy: orderBy?.call(StringDefault.t),
       orderByList: orderByList?.call(StringDefault.t),
@@ -352,6 +354,7 @@ class StringDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<StringDefault>(
+      table: StringDefault.t,
       where: where?.call(StringDefault.t),
       orderBy: orderBy?.call(StringDefault.t),
       orderByList: orderByList?.call(StringDefault.t),
@@ -372,6 +375,7 @@ class StringDefaultRepository {
   }) async {
     return session.db.findById<StringDefault>(
       id,
+      table: StringDefault.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -540,6 +544,7 @@ class StringDefaultRepository {
   }) async {
     return session.db.updateById<StringDefault>(
       id,
+      table: StringDefault.t,
       columnValues: columnValues(StringDefault.t.updateTable),
       transaction: transaction,
     );
@@ -563,6 +568,7 @@ class StringDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<StringDefault>(
+      table: StringDefault.t,
       columnValues: columnValues(StringDefault.t.updateTable),
       where: where(StringDefault.t),
       limit: limit,
@@ -631,6 +637,7 @@ class StringDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<StringDefault>(
+      table: StringDefault.t,
       where: where(StringDefault.t),
       orderBy: orderBy?.call(StringDefault.t),
       orderByList: orderByList?.call(StringDefault.t),
@@ -648,6 +655,7 @@ class StringDefaultRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<StringDefault>(
+      table: StringDefault.t,
       where: where?.call(StringDefault.t),
       limit: limit,
       transaction: transaction,
@@ -663,6 +671,7 @@ class StringDefaultRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<StringDefault>(
+      table: StringDefault.t,
       where: where(StringDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

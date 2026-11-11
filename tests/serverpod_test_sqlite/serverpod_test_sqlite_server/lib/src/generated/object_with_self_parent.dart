@@ -222,6 +222,7 @@ class ObjectWithSelfParentRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithSelfParent>(
+      table: ObjectWithSelfParent.t,
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
@@ -286,6 +287,7 @@ class ObjectWithSelfParentRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithSelfParent>(
+      table: ObjectWithSelfParent.t,
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
@@ -324,6 +326,7 @@ class ObjectWithSelfParentRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithSelfParent>(
+      table: ObjectWithSelfParent.t,
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
@@ -344,6 +347,7 @@ class ObjectWithSelfParentRepository {
   }) async {
     return session.db.findById<ObjectWithSelfParent>(
       id,
+      table: ObjectWithSelfParent.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -513,6 +517,7 @@ class ObjectWithSelfParentRepository {
   }) async {
     return session.db.updateById<ObjectWithSelfParent>(
       id,
+      table: ObjectWithSelfParent.t,
       columnValues: columnValues(ObjectWithSelfParent.t.updateTable),
       transaction: transaction,
     );
@@ -537,6 +542,7 @@ class ObjectWithSelfParentRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithSelfParent>(
+      table: ObjectWithSelfParent.t,
       columnValues: columnValues(ObjectWithSelfParent.t.updateTable),
       where: where(ObjectWithSelfParent.t),
       limit: limit,
@@ -605,6 +611,7 @@ class ObjectWithSelfParentRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithSelfParent>(
+      table: ObjectWithSelfParent.t,
       where: where(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
@@ -622,6 +629,7 @@ class ObjectWithSelfParentRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithSelfParent>(
+      table: ObjectWithSelfParent.t,
       where: where?.call(ObjectWithSelfParent.t),
       limit: limit,
       transaction: transaction,
@@ -637,6 +645,7 @@ class ObjectWithSelfParentRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithSelfParent>(
+      table: ObjectWithSelfParent.t,
       where: where(ObjectWithSelfParent.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

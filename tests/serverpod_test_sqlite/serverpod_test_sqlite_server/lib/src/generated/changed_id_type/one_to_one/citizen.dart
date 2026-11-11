@@ -437,6 +437,7 @@ class CitizenIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CitizenInt>(
+      table: CitizenInt.t,
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
@@ -503,6 +504,7 @@ class CitizenIntRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<CitizenInt>(
+      table: CitizenInt.t,
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
@@ -543,6 +545,7 @@ class CitizenIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CitizenInt>(
+      table: CitizenInt.t,
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
@@ -565,6 +568,7 @@ class CitizenIntRepository {
   }) async {
     return session.db.findById<CitizenInt>(
       id,
+      table: CitizenInt.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -734,6 +738,7 @@ class CitizenIntRepository {
   }) async {
     return session.db.updateById<CitizenInt>(
       id,
+      table: CitizenInt.t,
       columnValues: columnValues(CitizenInt.t.updateTable),
       transaction: transaction,
     );
@@ -757,6 +762,7 @@ class CitizenIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CitizenInt>(
+      table: CitizenInt.t,
       columnValues: columnValues(CitizenInt.t.updateTable),
       where: where(CitizenInt.t),
       limit: limit,
@@ -825,6 +831,7 @@ class CitizenIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CitizenInt>(
+      table: CitizenInt.t,
       where: where(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
@@ -842,6 +849,7 @@ class CitizenIntRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<CitizenInt>(
+      table: CitizenInt.t,
       where: where?.call(CitizenInt.t),
       limit: limit,
       transaction: transaction,
@@ -857,6 +865,7 @@ class CitizenIntRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CitizenInt>(
+      table: CitizenInt.t,
       where: where(CitizenInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

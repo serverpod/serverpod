@@ -305,6 +305,7 @@ class ObjectWithGeographyGeometryCollectionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithGeographyGeometryCollection>(
+      table: ObjectWithGeographyGeometryCollection.t,
       where: where?.call(ObjectWithGeographyGeometryCollection.t),
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
@@ -371,6 +372,7 @@ class ObjectWithGeographyGeometryCollectionRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithGeographyGeometryCollection>(
+      table: ObjectWithGeographyGeometryCollection.t,
       where: where?.call(ObjectWithGeographyGeometryCollection.t),
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
@@ -411,6 +413,7 @@ class ObjectWithGeographyGeometryCollectionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithGeographyGeometryCollection>(
+      table: ObjectWithGeographyGeometryCollection.t,
       where: where?.call(ObjectWithGeographyGeometryCollection.t),
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
@@ -431,6 +434,7 @@ class ObjectWithGeographyGeometryCollectionRepository {
   }) async {
     return session.db.findById<ObjectWithGeographyGeometryCollection>(
       id,
+      table: ObjectWithGeographyGeometryCollection.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -612,6 +616,7 @@ class ObjectWithGeographyGeometryCollectionRepository {
   }) async {
     return session.db.updateById<ObjectWithGeographyGeometryCollection>(
       id,
+      table: ObjectWithGeographyGeometryCollection.t,
       columnValues: columnValues(
         ObjectWithGeographyGeometryCollection.t.updateTable,
       ),
@@ -644,6 +649,7 @@ class ObjectWithGeographyGeometryCollectionRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithGeographyGeometryCollection>(
+      table: ObjectWithGeographyGeometryCollection.t,
       columnValues: columnValues(
         ObjectWithGeographyGeometryCollection.t.updateTable,
       ),
@@ -719,6 +725,7 @@ class ObjectWithGeographyGeometryCollectionRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithGeographyGeometryCollection>(
+      table: ObjectWithGeographyGeometryCollection.t,
       where: where(ObjectWithGeographyGeometryCollection.t),
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
@@ -737,6 +744,7 @@ class ObjectWithGeographyGeometryCollectionRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithGeographyGeometryCollection>(
+      table: ObjectWithGeographyGeometryCollection.t,
       where: where?.call(ObjectWithGeographyGeometryCollection.t),
       limit: limit,
       transaction: transaction,
@@ -755,6 +763,7 @@ class ObjectWithGeographyGeometryCollectionRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithGeographyGeometryCollection>(
+      table: ObjectWithGeographyGeometryCollection.t,
       where: where(ObjectWithGeographyGeometryCollection.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

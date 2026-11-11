@@ -369,6 +369,7 @@ class FutureCallEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FutureCallEntry>(
+      table: FutureCallEntry.t,
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
@@ -433,6 +434,7 @@ class FutureCallEntryRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<FutureCallEntry>(
+      table: FutureCallEntry.t,
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
@@ -471,6 +473,7 @@ class FutureCallEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FutureCallEntry>(
+      table: FutureCallEntry.t,
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
@@ -491,6 +494,7 @@ class FutureCallEntryRepository {
   }) async {
     return session.db.findById<FutureCallEntry>(
       id,
+      table: FutureCallEntry.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -660,6 +664,7 @@ class FutureCallEntryRepository {
   }) async {
     return session.db.updateById<FutureCallEntry>(
       id,
+      table: FutureCallEntry.t,
       columnValues: columnValues(FutureCallEntry.t.updateTable),
       transaction: transaction,
     );
@@ -684,6 +689,7 @@ class FutureCallEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<FutureCallEntry>(
+      table: FutureCallEntry.t,
       columnValues: columnValues(FutureCallEntry.t.updateTable),
       where: where(FutureCallEntry.t),
       limit: limit,
@@ -752,6 +758,7 @@ class FutureCallEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<FutureCallEntry>(
+      table: FutureCallEntry.t,
       where: where(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
@@ -769,6 +776,7 @@ class FutureCallEntryRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<FutureCallEntry>(
+      table: FutureCallEntry.t,
       where: where?.call(FutureCallEntry.t),
       limit: limit,
       transaction: transaction,
@@ -784,6 +792,7 @@ class FutureCallEntryRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<FutureCallEntry>(
+      table: FutureCallEntry.t,
       where: where(FutureCallEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

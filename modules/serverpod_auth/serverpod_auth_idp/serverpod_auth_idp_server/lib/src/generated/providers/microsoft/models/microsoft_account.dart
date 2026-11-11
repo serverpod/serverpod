@@ -375,6 +375,7 @@ class MicrosoftAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MicrosoftAccount>(
+      table: MicrosoftAccount.t,
       where: where?.call(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
@@ -441,6 +442,7 @@ class MicrosoftAccountRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<MicrosoftAccount>(
+      table: MicrosoftAccount.t,
       where: where?.call(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
@@ -481,6 +483,7 @@ class MicrosoftAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MicrosoftAccount>(
+      table: MicrosoftAccount.t,
       where: where?.call(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
@@ -503,6 +506,7 @@ class MicrosoftAccountRepository {
   }) async {
     return session.db.findById<MicrosoftAccount>(
       id,
+      table: MicrosoftAccount.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -673,6 +677,7 @@ class MicrosoftAccountRepository {
   }) async {
     return session.db.updateById<MicrosoftAccount>(
       id,
+      table: MicrosoftAccount.t,
       columnValues: columnValues(MicrosoftAccount.t.updateTable),
       transaction: transaction,
     );
@@ -697,6 +702,7 @@ class MicrosoftAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MicrosoftAccount>(
+      table: MicrosoftAccount.t,
       columnValues: columnValues(MicrosoftAccount.t.updateTable),
       where: where(MicrosoftAccount.t),
       limit: limit,
@@ -765,6 +771,7 @@ class MicrosoftAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MicrosoftAccount>(
+      table: MicrosoftAccount.t,
       where: where(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
@@ -782,6 +789,7 @@ class MicrosoftAccountRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<MicrosoftAccount>(
+      table: MicrosoftAccount.t,
       where: where?.call(MicrosoftAccount.t),
       limit: limit,
       transaction: transaction,
@@ -797,6 +805,7 @@ class MicrosoftAccountRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MicrosoftAccount>(
+      table: MicrosoftAccount.t,
       where: where(MicrosoftAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

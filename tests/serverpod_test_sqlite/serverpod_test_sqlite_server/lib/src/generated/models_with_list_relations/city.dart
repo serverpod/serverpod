@@ -379,6 +379,7 @@ class CityRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<City>(
+      table: City.t,
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
@@ -445,6 +446,7 @@ class CityRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<City>(
+      table: City.t,
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
@@ -485,6 +487,7 @@ class CityRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<City>(
+      table: City.t,
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
@@ -507,6 +510,7 @@ class CityRepository {
   }) async {
     return session.db.findById<City>(
       id,
+      table: City.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -676,6 +680,7 @@ class CityRepository {
   }) async {
     return session.db.updateById<City>(
       id,
+      table: City.t,
       columnValues: columnValues(City.t.updateTable),
       transaction: transaction,
     );
@@ -699,6 +704,7 @@ class CityRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<City>(
+      table: City.t,
       columnValues: columnValues(City.t.updateTable),
       where: where(City.t),
       limit: limit,
@@ -767,6 +773,7 @@ class CityRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<City>(
+      table: City.t,
       where: where(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
@@ -784,6 +791,7 @@ class CityRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<City>(
+      table: City.t,
       where: where?.call(City.t),
       limit: limit,
       transaction: transaction,
@@ -799,6 +807,7 @@ class CityRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<City>(
+      table: City.t,
       where: where(City.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

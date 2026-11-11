@@ -229,6 +229,7 @@ class DoubleDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DoubleDefaultPersist>(
+      table: DoubleDefaultPersist.t,
       where: where?.call(DoubleDefaultPersist.t),
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
@@ -293,6 +294,7 @@ class DoubleDefaultPersistRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<DoubleDefaultPersist>(
+      table: DoubleDefaultPersist.t,
       where: where?.call(DoubleDefaultPersist.t),
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
@@ -331,6 +333,7 @@ class DoubleDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DoubleDefaultPersist>(
+      table: DoubleDefaultPersist.t,
       where: where?.call(DoubleDefaultPersist.t),
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
@@ -351,6 +354,7 @@ class DoubleDefaultPersistRepository {
   }) async {
     return session.db.findById<DoubleDefaultPersist>(
       id,
+      table: DoubleDefaultPersist.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -520,6 +524,7 @@ class DoubleDefaultPersistRepository {
   }) async {
     return session.db.updateById<DoubleDefaultPersist>(
       id,
+      table: DoubleDefaultPersist.t,
       columnValues: columnValues(DoubleDefaultPersist.t.updateTable),
       transaction: transaction,
     );
@@ -544,6 +549,7 @@ class DoubleDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DoubleDefaultPersist>(
+      table: DoubleDefaultPersist.t,
       columnValues: columnValues(DoubleDefaultPersist.t.updateTable),
       where: where(DoubleDefaultPersist.t),
       limit: limit,
@@ -612,6 +618,7 @@ class DoubleDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DoubleDefaultPersist>(
+      table: DoubleDefaultPersist.t,
       where: where(DoubleDefaultPersist.t),
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
@@ -629,6 +636,7 @@ class DoubleDefaultPersistRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<DoubleDefaultPersist>(
+      table: DoubleDefaultPersist.t,
       where: where?.call(DoubleDefaultPersist.t),
       limit: limit,
       transaction: transaction,
@@ -644,6 +652,7 @@ class DoubleDefaultPersistRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DoubleDefaultPersist>(
+      table: DoubleDefaultPersist.t,
       where: where(DoubleDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

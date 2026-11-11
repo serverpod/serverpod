@@ -381,6 +381,7 @@ class OrganizationRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Organization>(
+      table: Organization.t,
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
@@ -447,6 +448,7 @@ class OrganizationRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Organization>(
+      table: Organization.t,
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
@@ -487,6 +489,7 @@ class OrganizationRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Organization>(
+      table: Organization.t,
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
@@ -509,6 +512,7 @@ class OrganizationRepository {
   }) async {
     return session.db.findById<Organization>(
       id,
+      table: Organization.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -678,6 +682,7 @@ class OrganizationRepository {
   }) async {
     return session.db.updateById<Organization>(
       id,
+      table: Organization.t,
       columnValues: columnValues(Organization.t.updateTable),
       transaction: transaction,
     );
@@ -701,6 +706,7 @@ class OrganizationRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Organization>(
+      table: Organization.t,
       columnValues: columnValues(Organization.t.updateTable),
       where: where(Organization.t),
       limit: limit,
@@ -769,6 +775,7 @@ class OrganizationRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Organization>(
+      table: Organization.t,
       where: where(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
@@ -786,6 +793,7 @@ class OrganizationRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<Organization>(
+      table: Organization.t,
       where: where?.call(Organization.t),
       limit: limit,
       transaction: transaction,
@@ -801,6 +809,7 @@ class OrganizationRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Organization>(
+      table: Organization.t,
       where: where(Organization.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

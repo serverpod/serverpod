@@ -349,6 +349,7 @@ class PostRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Post>(
+      table: Post.t,
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -415,6 +416,7 @@ class PostRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Post>(
+      table: Post.t,
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -455,6 +457,7 @@ class PostRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Post>(
+      table: Post.t,
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -477,6 +480,7 @@ class PostRepository {
   }) async {
     return session.db.findById<Post>(
       id,
+      table: Post.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -646,6 +650,7 @@ class PostRepository {
   }) async {
     return session.db.updateById<Post>(
       id,
+      table: Post.t,
       columnValues: columnValues(Post.t.updateTable),
       transaction: transaction,
     );
@@ -669,6 +674,7 @@ class PostRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Post>(
+      table: Post.t,
       columnValues: columnValues(Post.t.updateTable),
       where: where(Post.t),
       limit: limit,
@@ -737,6 +743,7 @@ class PostRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Post>(
+      table: Post.t,
       where: where(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -754,6 +761,7 @@ class PostRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Post>(
+      table: Post.t,
       where: where?.call(Post.t),
       limit: limit,
       transaction: transaction,
@@ -769,6 +777,7 @@ class PostRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Post>(
+      table: Post.t,
       where: where(Post.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
