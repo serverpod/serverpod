@@ -19,7 +19,8 @@ The complete portable contrib set is built, including `pgcrypto`, `sslinfo`,
 libxml2 and libxslt are built from pinned sources and linked statically. These
 dependencies are built before PostgreSQL so configure cannot silently omit
 their extensions. Every installable contrib extension is covered by the
-five-platform bundle smoke gate.
+five-platform bundle smoke gate. macOS uses its native UUID API; Linux and
+Windows use the bundled OSSP UUID library for the same `uuid-ossp` extension.
 
 ## Run
 

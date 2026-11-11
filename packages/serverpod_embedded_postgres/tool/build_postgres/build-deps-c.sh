@@ -51,21 +51,25 @@ CC="$WCC" perl ./Configure "$OPENSSL_TARGET" --prefix="$DEPS" --libdir=lib \
 make -j"$J" >>"$LOG/dep-openssl.log" 2>&1
 make install_sw >>"$LOG/dep-openssl.log" 2>&1
 
-echo "=== OSSP UUID ($(date +%H:%M:%S)) ==="
-cd "$SRC/uuid-$OSSP_UUID_VERSION"
-# OSSP predates ARM64. Use the platform detection scripts from the pinned
-# PostgreSQL source so its configure recognizes every bundle target.
-cp "$SRC/postgresql-$PG_UPSTREAM_VERSION/config/config.guess" .
-cp "$SRC/postgresql-$PG_UPSTREAM_VERSION/config/config.sub" .
-CC="$WCC" CFLAGS="-O2 -fPIC" ./configure --prefix="$DEPS" \
-  --disable-shared --enable-static --without-cxx --without-perl \
-  --without-php --without-pgsql >"$LOG/dep-uuid.log" 2>&1
-# Only PostgreSQL's library dependency is needed. OSSP's CLI installer predates
-# MinGW's .exe handling and fails while stripping its temporary executable.
-make -j"$J" libuuid.la >>"$LOG/dep-uuid.log" 2>&1
-install -d "$DEPS/lib" "$DEPS/include/ossp"
-install -m 644 .libs/libuuid.a "$DEPS/lib/libossp-uuid.a"
-install -m 644 uuid.h "$DEPS/include/ossp/uuid.h"
+# macOS uses the UUID API in libc; Linux and Windows need a bundled provider.
+if [ "$(uname -s)" != Darwin ]; then
+  echo "=== OSSP UUID ($(date +%H:%M:%S)) ==="
+  cd "$SRC/uuid-$OSSP_UUID_VERSION"
+  # OSSP predates ARM64. Use the platform detection scripts from the pinned
+  # PostgreSQL source so its configure recognizes every bundle target.
+  cp "$SRC/postgresql-$PG_UPSTREAM_VERSION/config/config.guess" .
+  cp "$SRC/postgresql-$PG_UPSTREAM_VERSION/config/config.sub" .
+  CC="$WCC" CFLAGS="-O2 -fPIC" ./configure --prefix="$DEPS" \
+    --disable-shared --enable-static --without-cxx --without-perl \
+    --without-php --without-pgsql >"$LOG/dep-uuid.log" 2>&1
+
+  # Only PostgreSQL's library dependency is needed. OSSP's CLI installer predates
+  # MinGW's .exe handling and fails while stripping its temporary executable.
+  make -j"$J" libuuid.la >>"$LOG/dep-uuid.log" 2>&1
+  install -d "$DEPS/lib" "$DEPS/include/ossp"
+  install -m 644 .libs/libuuid.a "$DEPS/lib/libossp-uuid.a"
+  install -m 644 uuid.h "$DEPS/include/ossp/uuid.h"
+fi
 
 echo "=== sqlite ($(date +%H:%M:%S)) ==="
 cd "$SRC/sqlite-autoconf-$SQLITE_AUTOCONF"

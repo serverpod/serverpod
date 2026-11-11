@@ -19,6 +19,20 @@ export PKG_CONFIG_PATH="$DEPS/lib/pkgconfig"
 export CPPFLAGS="-I$DEPS/include -I$DEPS/include/libxml2 -DLIBXML_STATIC -DLIBXSLT_STATIC"
 export LDFLAGS="-L$DEPS/lib -Wl,-rpath,$DEPS/lib"
 
+# macOS supplies the e2fs UUID API in libc. Its uuid_t conflicts with OSSP's
+# type, so use the native provider there; both build the same SQL extension.
+case "$(uname -s)" in
+  Darwin) UUID_PROVIDER=e2fs ;;
+  MINGW*|MSYS*|CYGWIN*)
+    UUID_PROVIDER=ossp
+    # PostgreSQL 16's XML configure probe drops libxml2's private libraries.
+    # The static Windows build uses BCryptGenRandom, so retain its dependency
+    # for that probe and for the server/extension link commands.
+    export LIBS="${LIBS:-} -lbcrypt"
+    ;;
+  *) UUID_PROVIDER=ossp ;;
+esac
+
 cd "$SRC"
 make distclean >/dev/null 2>&1 || true
 rm -rf "$PREFIX"
@@ -43,7 +57,7 @@ echo "=== configure ($(date +%H:%M:%S)) ==="
 ./configure --prefix="$PREFIX" \
   --without-icu --without-readline --with-zlib \
   --without-zstd --without-lz4 --without-gssapi --without-ldap \
-  --with-ssl=openssl --with-uuid=ossp --with-libxml --with-libxslt \
+  --with-ssl=openssl --with-uuid="$UUID_PROVIDER" --with-libxml --with-libxslt \
   --disable-nls \
   || {
     echo "=== configure FAILED - config.log diagnostics ==="
