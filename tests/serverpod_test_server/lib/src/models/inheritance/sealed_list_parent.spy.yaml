@@ -1,0 +1,4 @@
+class: SealedListParent
+sealed: true
+fields:
+  items: List<SealedListItem>

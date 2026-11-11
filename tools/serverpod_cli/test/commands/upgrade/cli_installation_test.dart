@@ -24,7 +24,7 @@ final _sourceScript = p.join(
   'serverpod_cli.dart',
 );
 
-String _pathVariable(final List<String> directories) =>
+String _pathVariable(List<String> directories) =>
     directories.join(Platform.isWindows ? ';' : ':');
 
 Directory _createTempDirectory() {
@@ -33,14 +33,14 @@ Directory _createTempDirectory() {
   return directory;
 }
 
-String _createExecutable(final Directory directory) {
+String _createExecutable(Directory directory) {
   final path = p.join(directory.path, _executableName);
   File(path).writeAsStringSync('');
   return path;
 }
 
 /// Resolves a path the way [CliInstallation.resolve] does before classifying.
-String _canonicalize(final String path) {
+String _canonicalize(String path) {
   try {
     return File(path).resolveSymbolicLinksSync();
   } catch (_) {
@@ -50,7 +50,7 @@ String _canonicalize(final String path) {
 
 /// Builds the tree `dart install` leaves behind, and returns the bundle
 /// executable it installed.
-String _createAppBundle(final Directory root) {
+String _createAppBundle(Directory root) {
   final bundleBin = Directory(
     p.join(
       root.path,

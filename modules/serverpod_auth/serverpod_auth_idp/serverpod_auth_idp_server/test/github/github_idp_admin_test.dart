@@ -25,7 +25,7 @@ void main() {
 
   withServerpod(
     'Given an existing GitHub account,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late Session session;
       late UuidValue authUserId;
       const userIdentifier = '12345';
@@ -75,7 +75,7 @@ void main() {
 
   withServerpod(
     'Given an auth user without GitHub authentication,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late Session session;
       late UuidValue authUserId;
       late GitHubIdpAdmin admin;
@@ -111,7 +111,7 @@ void main() {
 
           final foundAccount = await GitHubAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('54321'),
+            where: (t) => t.userIdentifier.equals('54321'),
           );
 
           expect(foundAccount, isNotNull);

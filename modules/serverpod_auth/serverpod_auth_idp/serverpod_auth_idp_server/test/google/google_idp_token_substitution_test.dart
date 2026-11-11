@@ -26,8 +26,8 @@ import '../test_utils/profile_image_idp_test_utils.dart';
 /// login onto a different account.
 void main() {
   withServerpod('Given two users with linked Google accounts,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late GoogleIdp googleIdp;
@@ -45,7 +45,7 @@ void main() {
         tokenIssuer: const TestTokenIssuer(),
         userProfiles: UserProfiles(
           config: UserProfileConfig(
-            imageFetchFunc: (final _) => onePixelPng,
+            imageFetchFunc: (_) => onePixelPng,
           ),
         ),
       );
@@ -156,7 +156,7 @@ void main() {
           // failure.
           () => googleApisClient(
             userInfo: _userInfo(subject: otherGoogleSub),
-            onUserInfoRequested: (final bearer) {
+            onUserInfoRequested: (bearer) {
               userInfoWasRequested = true;
               bearerSeenByUserInfo = bearer;
             },
@@ -196,8 +196,7 @@ void main() {
               'id_token': _signedIdToken(signingInGoogleSub),
               'token_type': 'Bearer',
             },
-            onUserInfoRequested: (final bearer) =>
-                bearerSeenByUserInfo = bearer,
+            onUserInfoRequested: (bearer) => bearerSeenByUserInfo = bearer,
           ),
         );
 
@@ -222,10 +221,10 @@ void main() {
 /// is stubbed. A null [userInfo] means no access token is sent, so userinfo is
 /// never consulted.
 Future<AuthSuccess> _login(
-  final GoogleIdp googleIdp,
-  final Session session, {
-  required final String idTokenSubject,
-  required final Map<String, dynamic>? userInfo,
+  GoogleIdp googleIdp,
+  Session session, {
+  required String idTokenSubject,
+  required Map<String, dynamic>? userInfo,
 }) {
   return http.runWithClient(
     () => googleIdp.login(
@@ -238,7 +237,7 @@ Future<AuthSuccess> _login(
 }
 
 /// A genuinely signed ID token for [subject], audience-bound to this app.
-String _signedIdToken(final String subject) {
+String _signedIdToken(String subject) {
   return createSignedIdToken(
     subject: subject,
     issuer: 'https://accounts.google.com',
@@ -253,7 +252,7 @@ String _signedIdToken(final String subject) {
 }
 
 /// A response body as returned by Google's `/oauth2/v3/userinfo`.
-Map<String, dynamic> _userInfo({required final String subject}) {
+Map<String, dynamic> _userInfo({required String subject}) {
   return {
     'sub': subject,
     'email': '$subject@gmail.com',
@@ -264,8 +263,8 @@ Map<String, dynamic> _userInfo({required final String subject}) {
 }
 
 Future<UuidValue> _createGoogleUser(
-  final Session session, {
-  required final String userIdentifier,
+  Session session, {
+  required String userIdentifier,
 }) async {
   final authUser = await const AuthUsers().create(session);
 

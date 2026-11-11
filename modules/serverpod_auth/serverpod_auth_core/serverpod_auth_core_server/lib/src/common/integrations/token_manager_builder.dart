@@ -7,7 +7,7 @@ import 'token_manager.dart';
 /// with the necessary dependencies that should be used in token manager implementations.
 abstract interface class TokenManagerBuilder<T extends TokenManager> {
   /// Builds a new instance of the token manager.
-  T build({required final AuthUsers authUsers});
+  T build({required AuthUsers authUsers});
 }
 
 /// A builder that returns a pre-built token manager.
@@ -23,5 +23,5 @@ class PreBuiltTokenManagerBuilder<T extends TokenManager>
   const PreBuiltTokenManagerBuilder(this.tokenManager);
 
   @override
-  T build({required final AuthUsers authUsers}) => tokenManager;
+  T build({required AuthUsers authUsers}) => tokenManager;
 }

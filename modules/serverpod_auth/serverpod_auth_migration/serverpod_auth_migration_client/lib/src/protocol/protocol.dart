@@ -42,6 +42,8 @@ class Protocol extends _isc.SerializationManager
           _iaic.Protocol.new,
           _i312scxx.Protocol.new,
         ],
+        classNames: const [],
+        classNamePrefix: 'serverpod_auth_migration.',
       );
 
   void registerHostProtocol(
@@ -51,13 +53,11 @@ class Protocol extends _isc.SerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth_migration.')) return className;
-    return className.substring(25);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth_migration.',
+      );
 
   @override
   T deserialize<T>(
@@ -65,8 +65,11 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth_migration.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -80,9 +83,10 @@ class Protocol extends _isc.SerializationManager
       }
     }
 
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -118,6 +122,30 @@ class Protocol extends _isc.SerializationManager
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_bridge.')) {
+      return _iabc.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(22),
+      });
+    }
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
+      return _iacc.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(20),
+      });
+    }
+    if (dataClassName.startsWith('serverpod_auth_idp.')) {
+      return _iaic.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(19),
+      });
+    }
+    if (dataClassName.startsWith('serverpod_auth.')) {
+      return _i312scxx.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(15),
+      });
     }
     return super.deserializeByClassName(data);
   }

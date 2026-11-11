@@ -61,8 +61,8 @@ void main() {
   final victimAccessToken = Platform.environment['GOOGLE_VICTIM_ACCESS_TOKEN'];
 
   withServerpod('Given the real Google endpoints,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     test(
       'the login resolves only to the account named by the verified ID token, '
@@ -103,7 +103,7 @@ void main() {
                 'redirect_uris': ['https://example.com/unused'],
               },
             }),
-            googleAccountDetailsValidation: (final _) {},
+            googleAccountDetailsValidation: (_) {},
           ),
           authUsers: const AuthUsers(),
         );
@@ -160,7 +160,7 @@ void main() {
 }
 
 /// Runs `gcloud` and returns trimmed stdout, never surfacing the token on error.
-Future<String> _gcloud(final List<String> args) async {
+Future<String> _gcloud(List<String> args) async {
   for (final exe in const ['gcloud', '/usr/local/bin/gcloud']) {
     try {
       final result = await Process.run(exe, args);
@@ -178,19 +178,19 @@ Future<String> _gcloud(final List<String> args) async {
   throw StateError('gcloud executable not found on PATH.');
 }
 
-List<String>? _accountArg(final String? account) =>
+List<String>? _accountArg(String? account) =>
     account == null ? null : ['--account', account];
 
 /// Decodes a JWT payload without verifying it - used only to read `aud`/`sub`
 /// for configuration and display. Never trust values read this way.
-Map<String, dynamic> _jwtPayload(final String jwt) {
+Map<String, dynamic> _jwtPayload(String jwt) {
   final payload = jwt.split('.')[1];
   return jsonDecode(utf8.decode(base64Url.decode(base64Url.normalize(payload))))
       as Map<String, dynamic>;
 }
 
 /// Masks an identifier so nothing sensitive lands in test output.
-String _mask(final String? value) {
+String _mask(String? value) {
   if (value == null) return 'null';
   if (value.contains('@')) {
     final parts = value.split('@');

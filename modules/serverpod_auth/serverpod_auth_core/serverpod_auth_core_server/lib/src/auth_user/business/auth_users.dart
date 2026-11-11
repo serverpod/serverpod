@@ -9,19 +9,19 @@ class AuthUsers {
 
   /// Creates a new [AuthUsers] instance.
   const AuthUsers({
-    final AuthUsersConfig config = const AuthUsersConfig(),
+    AuthUsersConfig config = const AuthUsersConfig(),
   }) : _config = config;
 
   /// Retrieves an auth user.
   ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
   Future<AuthUserModel> get(
-    final Session session, {
-    required final UuidValue authUserId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       final authUser = await AuthUser.db.findById(
         session,
@@ -39,13 +39,13 @@ class AuthUsers {
 
   /// Creates a new auth user.
   Future<AuthUserModel> create(
-    final Session session, {
-    final Set<Scope> scopes = const {},
-    final bool blocked = false,
-    final Transaction? transaction,
+    Session session, {
+    Set<Scope> scopes = const {},
+    bool blocked = false,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       final authUserToCreate =
           await _config.onBeforeAuthUserCreated?.call(
@@ -61,7 +61,7 @@ class AuthUsers {
         AuthUser(
           blocked: authUserToCreate.blocked,
           scopeNames: authUserToCreate.scopes
-              .map((final s) => s.name)
+              .map((s) => s.name)
               .nonNulls
               .toSet(),
         ),
@@ -89,14 +89,14 @@ class AuthUsers {
   ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
   Future<AuthUserModel> update(
-    final Session session, {
-    required final UuidValue authUserId,
-    final Set<Scope>? scopes,
-    final bool? blocked,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    Set<Scope>? scopes,
+    bool? blocked,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       var authUser = await AuthUser.db.findById(
         session,
@@ -109,7 +109,7 @@ class AuthUsers {
 
       if (scopes != null) {
         authUser = authUser.copyWith(
-          scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
+          scopeNames: scopes.map((s) => s.name).nonNulls.toSet(),
         );
       }
 
@@ -131,18 +131,18 @@ class AuthUsers {
 
   /// Returns all auth users.
   Future<List<AuthUserModel>> list(
-    final Session session, {
-    final Transaction? transaction,
+    Session session, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       final authUsers = await AuthUser.db.find(
         session,
         transaction: transaction,
       );
 
-      return authUsers.map((final a) => a.toModel()).toList();
+      return authUsers.map((a) => a.toModel()).toList();
     });
   }
 
@@ -161,16 +161,16 @@ class AuthUsers {
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for
   /// the ID.
   Future<void> delete(
-    final Session session, {
-    required final UuidValue authUserId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       final deletedUsers = await AuthUser.db.deleteWhere(
         session,
-        where: (final t) => t.id.equals(authUserId),
+        where: (t) => t.id.equals(authUserId),
         transaction: transaction,
       );
 

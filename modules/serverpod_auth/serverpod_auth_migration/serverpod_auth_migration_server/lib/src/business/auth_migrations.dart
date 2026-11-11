@@ -19,9 +19,9 @@ abstract class AuthMigrations {
   /// This is intended to be used to block access for migrated users on the
   /// legacy login/registration endpoints, and potentially even sessions.
   static Future<bool> isUserMigrated(
-    final Session session,
-    final int userId, {
-    final Transaction? transaction,
+    Session session,
+    int userId, {
+    Transaction? transaction,
   }) async {
     final authUserId = await getNewAuthUserId(
       session,
@@ -34,13 +34,13 @@ abstract class AuthMigrations {
 
   /// Returns the `AuthUser` id for a `UserInfo` if it has been migrated.
   static Future<UuidValue?> getNewAuthUserId(
-    final Session session,
-    final int userId, {
-    final Transaction? transaction,
+    Session session,
+    int userId, {
+    Transaction? transaction,
   }) async {
     final migratedUser = await MigratedUser.db.findFirstRow(
       session,
-      where: (final t) => t.oldUserId.equals(userId),
+      where: (t) => t.oldUserId.equals(userId),
       transaction: transaction,
     );
 
@@ -49,16 +49,16 @@ abstract class AuthMigrations {
 
   /// Migrates the next batch of users and their authentication methods.
   static Future<int> migrateUsers(
-    final Session session, {
-    required final UserMigrationFunction? userMigration,
-    final int? maxUsers,
-    @visibleForTesting final int? legacyUserId,
-    final Transaction? transaction,
+    Session session, {
+    required UserMigrationFunction? userMigration,
+    int? maxUsers,
+    @visibleForTesting int? legacyUserId,
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final results = await session.db.unsafeQuery(
           'SELECT id FROM serverpod_user_info u '
           'WHERE NOT EXISTS ( '
@@ -70,7 +70,7 @@ abstract class AuthMigrations {
         );
 
         final userIdsToMigrate = results.map(
-          (final r) => r.toColumnMap()['id'] as int,
+          (r) => r.toColumnMap()['id'] as int,
         );
 
         for (final userId in userIdsToMigrate) {

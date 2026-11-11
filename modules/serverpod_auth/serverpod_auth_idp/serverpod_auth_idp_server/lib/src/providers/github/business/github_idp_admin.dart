@@ -13,8 +13,8 @@ class GitHubIdpAdmin {
 
   /// Returns the account details for the given [accessToken].
   Future<GitHubAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String accessToken,
+    Session session, {
+    required String accessToken,
   }) async {
     return utils.fetchAccountDetails(
       session,
@@ -26,10 +26,10 @@ class GitHubIdpAdmin {
   ///
   /// Returns the newly created GitHub account.
   Future<GitHubAccount> linkGitHubAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final GitHubAccountDetails accountDetails,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required GitHubAccountDetails accountDetails,
+    Transaction? transaction,
   }) async {
     return utils.linkGitHubAuthentication(
       session,
@@ -41,13 +41,13 @@ class GitHubIdpAdmin {
 
   /// Return the `AuthUser` id for the GitHub user id, if any.
   static Future<UuidValue?> findUserByGitHubUserId(
-    final Session session, {
-    required final String userIdentifier,
-    final Transaction? transaction,
+    Session session, {
+    required String userIdentifier,
+    Transaction? transaction,
   }) async {
     final account = await GitHubAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(userIdentifier),
+      where: (t) => t.userIdentifier.equals(userIdentifier),
       transaction: transaction,
     );
 

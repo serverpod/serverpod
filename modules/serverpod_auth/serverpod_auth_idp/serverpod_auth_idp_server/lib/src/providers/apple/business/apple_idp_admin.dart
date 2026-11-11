@@ -8,7 +8,7 @@ class AppleIdpAdmin {
   final AppleIdpUtils _utils;
 
   /// Creates a new instance of the admin utilities.
-  AppleIdpAdmin({required final AppleIdpUtils utils}) : _utils = utils;
+  AppleIdpAdmin({required AppleIdpUtils utils}) : _utils = utils;
 
   /// Checks whether all accounts are in good standing with Apple and that the
   /// authorization has not been revoked.
@@ -20,21 +20,20 @@ class AppleIdpAdmin {
   /// Then all their sessions created through Sign in with Apple should be
   /// revoked.
   Future<void> checkAccountStatus(
-    final Session session, {
+    Session session, {
 
     /// Callback to be invoked when an Apple authentication has been revoked.
     ///
     /// In this case all sessions associated with this sign-in method should be
     /// removed.
-    required final void Function(UuidValue authUserId)
-    onExpiredUserAuthentication,
-    final Transaction? transaction,
-    final int databaseBatchSize = 100,
+    required void Function(UuidValue authUserId) onExpiredUserAuthentication,
+    Transaction? transaction,
+    int databaseBatchSize = 100,
   }) async {
     while (true) {
       final appleAccounts = await AppleAccount.db.find(
         session,
-        where: (final t) =>
+        where: (t) =>
             t.lastRefreshedAt <
             DateTime.now().subtract(const Duration(days: 1)),
         limit: databaseBatchSize,

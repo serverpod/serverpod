@@ -16,7 +16,7 @@ void main() {
 
   withServerpod(
     'Given a pending challenge,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late Session session;
       final passKeyIdp = PasskeyIdp(
         const PasskeyIdpConfig(

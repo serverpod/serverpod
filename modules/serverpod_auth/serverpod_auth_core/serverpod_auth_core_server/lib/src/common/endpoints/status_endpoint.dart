@@ -12,13 +12,13 @@ class StatusEndpoint extends Endpoint {
   TokenManager get tokenManager => AuthServices.instance.tokenManager;
 
   /// Returns true if the client user is signed in.
-  Future<bool> isSignedIn(final Session session) async {
+  Future<bool> isSignedIn(Session session) async {
     final authInfo = session.authenticated;
     return authInfo?.authId != null;
   }
 
   /// Signs out a user from the current device.
-  Future<void> signOutDevice(final Session session) async {
+  Future<void> signOutDevice(Session session) async {
     await _clearCookieThenRevoke(session, () async {
       final authInfoIdStr = session.authenticated?.authId;
       if (authInfoIdStr == null) return;
@@ -28,7 +28,7 @@ class StatusEndpoint extends Endpoint {
   }
 
   /// Signs out a user from all active devices.
-  Future<void> signOutAllDevices(final Session session) async {
+  Future<void> signOutAllDevices(Session session) async {
     await _clearCookieThenRevoke(session, () async {
       final authUserIdStr = session.authenticated?.userIdentifier;
       if (authUserIdStr == null) return;
@@ -40,8 +40,8 @@ class StatusEndpoint extends Endpoint {
   /// Expires the web auth cookie on the client (a no-op for non-cookie clients)
   /// before running [revokeTokens].
   Future<void> _clearCookieThenRevoke(
-    final Session session,
-    final Future<void> Function() revokeTokens,
+    Session session,
+    Future<void> Function() revokeTokens,
   ) async {
     session.clearWebAuthCookie(
       refreshCookiePath: jwtRefreshCookiePath(session),

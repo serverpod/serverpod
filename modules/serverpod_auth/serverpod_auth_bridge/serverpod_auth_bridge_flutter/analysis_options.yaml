@@ -3,6 +3,10 @@ include: package:flutter_lints/flutter.yaml
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
 
+linter:
+  rules:
+    avoid_final_parameters: true
+
 formatter:
   trailing_commas: preserve
 analyzer:

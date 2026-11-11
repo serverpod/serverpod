@@ -20,8 +20,8 @@ class ServerSideSessionsTokenManager extends TokenManager {
 
   /// Creates a new [ServerSideSessionsTokenManager] instance.
   ServerSideSessionsTokenManager({
-    required final ServerSideSessionsConfig config,
-    final AuthUsers authUsers = const AuthUsers(),
+    required ServerSideSessionsConfig config,
+    AuthUsers authUsers = const AuthUsers(),
   }) : serverSideSessions = ServerSideSessions(
          config: config,
          authUsers: authUsers,
@@ -29,11 +29,11 @@ class ServerSideSessionsTokenManager extends TokenManager {
 
   @override
   Future<AuthSuccess> createToken(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
-    final Set<Scope>? scopes,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
+    Set<Scope>? scopes,
+    Transaction? transaction,
   }) {
     return serverSideSessions.createSession(
       session,
@@ -46,11 +46,11 @@ class ServerSideSessionsTokenManager extends TokenManager {
 
   @override
   Future<List<TokenInfo>> listTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final String? method,
-    final String? tokenIssuer,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue? authUserId,
+    String? method,
+    String? tokenIssuer,
+    Transaction? transaction,
   }) async {
     if (tokenIssuer != null && tokenIssuer != tokenIssuerName) {
       return [];
@@ -63,7 +63,7 @@ class ServerSideSessionsTokenManager extends TokenManager {
           transaction: transaction,
         ))
         .map(
-          (final element) => TokenInfo(
+          (element) => TokenInfo(
             userId: element.authUserId.toString(),
             tokenId: element.id.toString(),
             tokenIssuer: tokenIssuerName,
@@ -76,11 +76,11 @@ class ServerSideSessionsTokenManager extends TokenManager {
 
   @override
   Future<void> revokeAllTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
-    final String? tokenIssuer,
+    Session session, {
+    required UuidValue? authUserId,
+    Transaction? transaction,
+    String? method,
+    String? tokenIssuer,
   }) async {
     if (tokenIssuer != null && tokenIssuer != tokenIssuerName) return;
 
@@ -101,10 +101,10 @@ class ServerSideSessionsTokenManager extends TokenManager {
 
   @override
   Future<void> revokeToken(
-    final Session session, {
-    required final String tokenId,
-    final Transaction? transaction,
-    final String? tokenIssuer,
+    Session session, {
+    required String tokenId,
+    Transaction? transaction,
+    String? tokenIssuer,
   }) async {
     if (tokenIssuer != null && tokenIssuer != tokenIssuerName) return;
 
@@ -141,8 +141,8 @@ class ServerSideSessionsTokenManager extends TokenManager {
 
   @override
   Future<AuthenticationInfo?> validateToken(
-    final Session session,
-    final String token,
+    Session session,
+    String token,
   ) async {
     return serverSideSessions.authenticationHandler(session, token);
   }

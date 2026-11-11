@@ -19,15 +19,33 @@ class DartSharedCodeGenerator extends CodeGenerator {
     required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
   }) {
-    var sharedModels = models.where((e) => e.isSharedModel).toList();
-    if (sharedModels.isEmpty) return {};
-
     var generator = SerializableModelLibraryGenerator(
       serverCode: false,
       config: config,
     );
 
-    var result = <String, String>{};
+    return {
+      for (var context in _packageContexts(models, config))
+        ...generator.generateCode(context),
+    };
+  }
+
+  @override
+  Set<String> serializableModelPaths({
+    required List<SerializableModelDefinition> models,
+    required GeneratorConfig config,
+  }) => {
+    for (var context in _packageContexts(models, config))
+      for (var entry in context.entries)
+        entry.model.getFullFilePath(config, serverCode: false),
+  };
+
+  /// One allocator context per shared package that has models.
+  static Iterable<ModelAllocatorContext> _packageContexts(
+    List<SerializableModelDefinition> models,
+    GeneratorConfig config,
+  ) sync* {
+    var sharedModels = models.where((e) => e.isSharedModel).toList();
 
     for (var packageName in config.sharedModelsSourcePathsParts.keys) {
       var packageModels = sharedModels
@@ -35,16 +53,12 @@ class DartSharedCodeGenerator extends CodeGenerator {
           .toList();
       if (packageModels.isEmpty) continue;
 
-      var modelAllocatorContext = ModelAllocatorContext.build(
+      yield ModelAllocatorContext.build(
         packageModels,
         config,
         resolveUrl: _sharedPackageUrl,
       );
-
-      result.addAll(generator.generateCode(modelAllocatorContext));
     }
-
-    return result;
   }
 
   @override

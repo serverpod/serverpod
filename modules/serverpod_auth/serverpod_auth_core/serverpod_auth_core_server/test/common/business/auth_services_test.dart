@@ -8,7 +8,7 @@ import 'fakes/fakes.dart';
 void main() {
   withServerpod(
     'Given AuthServices is being configured',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late List<IdentityProviderBuilder<IdentityProvider>>
       identityProviderBuilders;
       late List<TokenManagerBuilder> tokenManagerBuilders;
@@ -82,7 +82,7 @@ void main() {
 
   withServerpod(
     'Given an AuthServices with identity providers',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
       late List<IdentityProviderBuilder<IdentityProvider>>
       identityProviderBuilders;
@@ -145,7 +145,7 @@ void main() {
               () => AuthServices.getIdentityProvider<UnregisteredIdp>(),
               throwsA(
                 isA<StateError>().having(
-                  (final e) => e.message,
+                  (e) => e.message,
                   'message',
                   contains('Provider for UnregisteredIdp is not registered'),
                 ),
@@ -178,7 +178,7 @@ void main() {
 
   withServerpod(
     'Given an AuthServices with multiple identity providers',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -216,7 +216,7 @@ void main() {
 
   withServerpod(
     'Given identity provider builders with duplicate authentication methods,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -243,7 +243,7 @@ void main() {
             ),
             throwsA(
               isA<StateError>().having(
-                (final error) => error.message,
+                (error) => error.message,
                 'message',
                 'Identity provider method "fake" is already registered by '
                     'FakeIdentityProvider; cannot register '
@@ -258,7 +258,7 @@ void main() {
 
   withServerpod(
     'Given an identity provider with an empty authentication method,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       test(
         'when configuring AuthServices, '
         'then registration fails with the provider type in the error.',
@@ -276,7 +276,7 @@ void main() {
             ),
             throwsA(
               isA<StateError>().having(
-                (final error) => error.message,
+                (error) => error.message,
                 'message',
                 'Identity provider _EmptyMethodIdentityProvider has an empty method.',
               ),
@@ -289,7 +289,7 @@ void main() {
 
   withServerpod(
     'Given an AuthServices with authentication handler',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late FakeTokenManagerBuilder fakeTokenManagerBuilder;
       late List<IdentityProviderBuilder<IdentityProvider>>
       identityProviderBuilders;
@@ -352,7 +352,7 @@ void main() {
 
         test('then the scopes should match', () {
           expect(
-            result!.scopes.map((final s) => s.name),
+            result!.scopes.map((s) => s.name),
             contains('test-scope'),
           );
         });
@@ -382,7 +382,7 @@ void main() {
           );
 
           expect(result, isNotNull);
-          final scopeNames = result!.scopes.map((final s) => s.name);
+          final scopeNames = result!.scopes.map((s) => s.name);
           expect(scopeNames, contains('read'));
           expect(scopeNames, contains('write'));
           expect(scopeNames, contains('admin'));
@@ -415,10 +415,10 @@ class UnregisteredIdp implements IdentityProvider {
 
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {}
 }
 
@@ -428,10 +428,10 @@ class _SecondaryIdp implements IdentityProvider {
 
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {}
 }
 
@@ -441,10 +441,10 @@ class _DuplicateMethodIdentityProvider implements IdentityProvider {
 
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {}
 }
 
@@ -454,9 +454,9 @@ class _EmptyMethodIdentityProvider implements IdentityProvider {
 
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {}
 }

@@ -94,11 +94,11 @@ abstract class SerializationManager {
     t ??= T;
 
     if (_isNullableType<int>(t)) {
-      return data;
+      return (data as int?) as T;
     } else if (_isNullableType<double>(t)) {
       return (data as num?)?.toDouble() as T;
     } else if (_isNullableType<String>(t)) {
-      return data;
+      return (data as String?) as T;
     } else if (_isNullableType<bool>(t)) {
       if (data == null) return null as T;
       return BoolJsonExtension.fromJson(data) as T;

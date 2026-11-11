@@ -14,7 +14,7 @@ void main() {
         late http.Request captured;
         final client = ServerpodCloudEmailClient(
           baseUrl: 'https://emails.example.test',
-          httpClient: MockClient((final request) async {
+          httpClient: MockClient((request) async {
             captured = request;
             return http.Response(jsonEncode({'success': true}), 200);
           }),
@@ -50,7 +50,7 @@ void main() {
       () async {
         late http.Request captured;
         final client = ServerpodCloudEmailClient(
-          httpClient: MockClient((final request) async {
+          httpClient: MockClient((request) async {
             captured = request;
             return http.Response(jsonEncode({'success': true}), 200);
           }),
@@ -81,7 +81,7 @@ void main() {
       () async {
         final client = ServerpodCloudEmailClient(
           httpClient: MockClient(
-            (final _) async =>
+            (_) async =>
                 http.Response(jsonEncode({'error': 'Invalid field'}), 400),
           ),
         );
@@ -96,8 +96,8 @@ void main() {
           ),
           throwsA(
             isA<ServerpodCloudEmailException>()
-                .having((final e) => e.statusCode, 'statusCode', 400)
-                .having((final e) => e.message, 'message', 'Invalid field'),
+                .having((e) => e.statusCode, 'statusCode', 400)
+                .having((e) => e.message, 'message', 'Invalid field'),
           ),
         );
       },
@@ -109,7 +109,7 @@ void main() {
       () async {
         final client = ServerpodCloudEmailClient(
           httpClient: MockClient(
-            (final _) async =>
+            (_) async =>
                 http.Response(jsonEncode({'error': 'Token expired'}), 401),
           ),
         );
@@ -124,7 +124,7 @@ void main() {
           ),
           throwsA(
             isA<ServerpodCloudEmailException>().having(
-              (final e) => e.statusCode,
+              (e) => e.statusCode,
               'statusCode',
               401,
             ),
@@ -139,7 +139,7 @@ void main() {
       () async {
         final client = ServerpodCloudEmailClient(
           httpClient: MockClient(
-            (final _) async => http.Response('Internal Server Error', 500),
+            (_) async => http.Response('Internal Server Error', 500),
           ),
         );
 
@@ -153,9 +153,9 @@ void main() {
           ),
           throwsA(
             isA<ServerpodCloudEmailException>()
-                .having((final e) => e.statusCode, 'statusCode', 500)
+                .having((e) => e.statusCode, 'statusCode', 500)
                 .having(
-                  (final e) => e.message,
+                  (e) => e.message,
                   'message',
                   'Internal Server Error',
                 ),

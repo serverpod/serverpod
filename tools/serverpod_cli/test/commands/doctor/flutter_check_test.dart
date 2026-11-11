@@ -3,9 +3,9 @@ import 'package:serverpod_cli/src/doctor/flutter_check.dart';
 import 'package:test/test.dart';
 
 String _machineOutput({
-  final String version = '3.47.7',
-  final String channel = 'stable',
-  final String root = '/opt/flutter',
+  String version = '3.47.7',
+  String channel = 'stable',
+  String root = '/opt/flutter',
 }) =>
     '{"frameworkVersion": "$version", "channel": "$channel", '
     '"repositoryUrl": "https://github.com/flutter/flutter.git", '

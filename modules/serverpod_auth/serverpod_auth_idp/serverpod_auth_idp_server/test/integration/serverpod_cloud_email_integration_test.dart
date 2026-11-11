@@ -21,7 +21,7 @@ import 'package:test/test.dart';
 void main() {
   final env = Platform.environment;
   // Treat unset and empty (e.g. an absent GitHub secret resolves to '') alike.
-  String? read(final String key) {
+  String? read(String key) {
     final value = env[key];
     return (value == null || value.isEmpty) ? null : value;
   }
@@ -50,7 +50,7 @@ void main() {
           ),
           throwsA(
             isA<ServerpodCloudEmailException>().having(
-              (final e) => e.statusCode,
+              (e) => e.statusCode,
               'statusCode',
               401,
             ),
@@ -74,7 +74,7 @@ void main() {
           ),
           throwsA(
             isA<ServerpodCloudEmailException>().having(
-              (final e) => e.statusCode,
+              (e) => e.statusCode,
               'statusCode',
               400,
             ),

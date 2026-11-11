@@ -9,7 +9,7 @@ class TestAuthKeyProvider implements ClientAuthKeyProvider {
     return wrapAsBearerAuthHeaderValue(_key!);
   }
 
-  Future<void> put(final String key) async {
+  Future<void> put(String key) async {
     _key = key;
   }
 

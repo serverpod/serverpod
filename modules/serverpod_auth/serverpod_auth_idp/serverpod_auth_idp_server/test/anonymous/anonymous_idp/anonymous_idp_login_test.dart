@@ -10,7 +10,7 @@ void main() {
   withServerpod(
     'Given login request with no previous attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
       setUp(() {
@@ -35,7 +35,7 @@ void main() {
   withServerpod(
     'Given login request within configured rate limit with existing request attempt',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
       setUp(() async {
@@ -70,7 +70,7 @@ void main() {
   withServerpod(
     'Given login request exceeding configured rate limit',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
       setUp(() async {
@@ -107,7 +107,7 @@ void main() {
   withServerpod(
     'Given rate limit of 1 and an existing request attempt with a different IP address',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
       setUp(() async {
@@ -125,7 +125,7 @@ void main() {
 
         // NOTE: This test is coupled to the implementation of the rate limiting
         // due to the impossibility of mocking the IP address.
-        await session.db.transaction((final transaction) async {
+        await session.db.transaction((transaction) async {
           final loggedAttempt = await RateLimitedRequestAttempt.db.findFirstRow(
             session,
             transaction: transaction,
@@ -162,7 +162,7 @@ void main() {
   withServerpod(
     'Given onBeforeAnonymousAccountCreated callback configured to receive the token',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
       String? receivedToken;
@@ -172,9 +172,9 @@ void main() {
           config: AnonymousIdpConfig(
             onBeforeAnonymousAccountCreated:
                 (
-                  final Session session, {
-                  final String? token,
-                  final Transaction? transaction,
+                  Session session, {
+                  String? token,
+                  Transaction? transaction,
                 }) async {
                   receivedToken = token;
                 },
@@ -202,7 +202,7 @@ void main() {
   withServerpod(
     'Given onBeforeAnonymousAccountCreated configured to block login attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
       setUp(() {
@@ -211,9 +211,9 @@ void main() {
           config: AnonymousIdpConfig(
             onBeforeAnonymousAccountCreated:
                 (
-                  final Session session, {
-                  final String? token,
-                  final Transaction? transaction,
+                  Session session, {
+                  String? token,
+                  Transaction? transaction,
                 }) async {
                   await Future.delayed(Duration.zero);
                   throw Exception('Test exception');
@@ -243,7 +243,7 @@ void main() {
     'Given login request with onAfterAuthUserCreated and '
     'onBeforeAuthUserCreated callbacks configured',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
 
@@ -259,18 +259,18 @@ void main() {
           authUsersConfig: AuthUsersConfig(
             onAfterAuthUserCreated:
                 (
-                  final Session session,
-                  final AuthUserModel authUser, {
-                  required final Transaction transaction,
+                  Session session,
+                  AuthUserModel authUser, {
+                  required Transaction transaction,
                 }) {
                   onAfterAuthUserCreatedCalled = true;
                 },
             onBeforeAuthUserCreated:
                 (
-                  final Session session,
-                  final Set<Scope> scopes,
-                  final bool blocked, {
-                  required final Transaction transaction,
+                  Session session,
+                  Set<Scope> scopes,
+                  bool blocked, {
+                  required Transaction transaction,
                 }) {
                   onBeforeAuthUserCreatedCalled = true;
                   return (scopes: scopes, blocked: blocked);

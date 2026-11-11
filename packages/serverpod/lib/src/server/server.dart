@@ -291,9 +291,9 @@ class Server implements RouterInjectable {
       final isOptions = req.method == Method.options;
       final headers = isOptions
           ? httpResponseHeaders.transform((mh) {
-              for (final h in httpOptionsResponseHeaders.entries) {
-                mh[h.key] = h.value;
-              }
+              httpOptionsResponseHeaders.forEach((key, value) {
+                mh[key] = [value];
+              });
               if (serverpod.config.authCookie != null) {
                 ensureCookieAuthAllowedHeaders(
                   mh,
@@ -319,9 +319,9 @@ class Server implements RouterInjectable {
       var merged = result.headers.isEmpty
           ? headers
           : result.headers.transform((mh) {
-              for (final h in headers.entries) {
-                mh[h.key] ??= h.value;
-              }
+              headers.forEach((key, value) {
+                mh[key] ??= [value];
+              });
             });
       return result.copyWith(
         headers: _applyCredentialedCorsHeaders(merged, req),
@@ -332,7 +332,7 @@ class Server implements RouterInjectable {
   /// The `Origin` header of [req] normalized to lowercase with any trailing
   /// slash dropped, or null if absent.
   String? _requestOrigin(Request req) => req
-      .headers[Headers.originHeader]
+      .headers[HeaderName.origin]
       ?.firstOrNull
       ?.trim()
       .toLowerCase()
@@ -398,11 +398,11 @@ class Server implements RouterInjectable {
       // names to lowercase; a wildcard Vary already covers Origin.
       var vary = mh.vary;
       if (vary == null) {
-        mh.vary = VaryHeader.headers(fields: const [Headers.originHeader]);
+        mh.vary = VaryHeader.headers(fields: [HeaderName.origin.lower]);
       } else if (!vary.isWildcard &&
-          !vary.fields.contains(Headers.originHeader)) {
+          !vary.fields.contains(HeaderName.origin.lower)) {
         mh.vary = VaryHeader.headers(
-          fields: [...vary.fields, Headers.originHeader],
+          fields: [...vary.fields, HeaderName.origin.lower],
         );
       }
     });
@@ -616,8 +616,6 @@ class Server implements RouterInjectable {
           cookies: session.responseCookies,
         );
       } catch (e, stackTrace) {
-        // Note: In case of malformed argument, the method connector may throw,
-        // which may be argued is not an "application space" exception.
         serverpod.internalSubmitEvent(
           ExceptionEvent(e, stackTrace),
           space: OriginSpace.application,

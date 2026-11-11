@@ -21,13 +21,13 @@ class FirebaseIdpAdmin {
   /// Returns `null` if no account with the given email exists.
   /// The email lookup is case-insensitive.
   Future<FirebaseAccount?> findAccountByEmail(
-    final Session session, {
-    required final String email,
-    final Transaction? transaction,
+    Session session, {
+    required String email,
+    Transaction? transaction,
   }) async {
     return await FirebaseAccount.db.findFirstRow(
       session,
-      where: (final t) => t.email.equals(email.toLowerCase()),
+      where: (t) => t.email.equals(email.toLowerCase()),
       transaction: transaction,
     );
   }
@@ -36,13 +36,13 @@ class FirebaseIdpAdmin {
   ///
   /// Returns `null` if no account with the given auth user ID exists.
   Future<FirebaseAccount?> findAccountByAuthUserId(
-    final Session session, {
-    required final UuidValue authUserId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    Transaction? transaction,
   }) async {
     return await FirebaseAccount.db.findFirstRow(
       session,
-      where: (final t) => t.authUserId.equals(authUserId),
+      where: (t) => t.authUserId.equals(authUserId),
       transaction: transaction,
     );
   }
@@ -55,13 +55,13 @@ class FirebaseIdpAdmin {
   /// [AuthUser] is not deleted. To fully delete a user, use the auth core
   /// admin functions.
   Future<FirebaseAccount?> deleteFirebaseAccount(
-    final Session session, {
-    required final String userIdentifier,
-    final Transaction? transaction,
+    Session session, {
+    required String userIdentifier,
+    Transaction? transaction,
   }) async {
     final accounts = await FirebaseAccount.db.deleteWhere(
       session,
-      where: (final t) => t.userIdentifier.equals(userIdentifier),
+      where: (t) => t.userIdentifier.equals(userIdentifier),
       transaction: transaction,
     );
     return accounts.firstOrNull;
@@ -75,13 +75,13 @@ class FirebaseIdpAdmin {
   /// [AuthUser] is not deleted. To fully delete a user, use the auth core
   /// admin functions.
   Future<FirebaseAccount?> deleteFirebaseAccountByAuthUserId(
-    final Session session, {
-    required final UuidValue authUserId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    Transaction? transaction,
   }) async {
     final accounts = await FirebaseAccount.db.deleteWhere(
       session,
-      where: (final t) => t.authUserId.equals(authUserId),
+      where: (t) => t.authUserId.equals(authUserId),
       transaction: transaction,
     );
     return accounts.firstOrNull;
@@ -91,10 +91,10 @@ class FirebaseIdpAdmin {
   ///
   /// Returns the newly created Firebase account.
   Future<FirebaseAccount> linkFirebaseAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final FirebaseAccountDetails accountDetails,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required FirebaseAccountDetails accountDetails,
+    Transaction? transaction,
   }) async {
     return utils.linkFirebaseAuthentication(
       session,
@@ -106,8 +106,8 @@ class FirebaseIdpAdmin {
 
   /// Returns the account details for the given [idToken].
   Future<FirebaseAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String idToken,
+    Session session, {
+    required String idToken,
   }) async {
     return utils.fetchAccountDetails(
       session,
@@ -117,13 +117,13 @@ class FirebaseIdpAdmin {
 
   /// Returns the `AuthUser` id for the Firebase user id, if any.
   static Future<UuidValue?> findUserByFirebaseUserId(
-    final Session session, {
-    required final String userIdentifier,
-    final Transaction? transaction,
+    Session session, {
+    required String userIdentifier,
+    Transaction? transaction,
   }) async {
     final account = await FirebaseAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(userIdentifier),
+      where: (t) => t.userIdentifier.equals(userIdentifier),
       transaction: transaction,
     );
 

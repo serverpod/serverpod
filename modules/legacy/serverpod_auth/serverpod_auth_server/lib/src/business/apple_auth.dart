@@ -330,6 +330,6 @@ class _AppleKeySet {
 
   bool get isStale => !wasFetchedWithin(_keyCacheLifetime);
 
-  bool wasFetchedWithin(final Duration duration) =>
+  bool wasFetchedWithin(Duration duration) =>
       DateTime.now().toUtc().difference(fetchedAt) < duration;
 }

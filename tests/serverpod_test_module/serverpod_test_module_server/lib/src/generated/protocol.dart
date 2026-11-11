@@ -74,6 +74,19 @@ class Protocol extends _is.DatabaseSerializationManager
           _is.getType<(int?, _irv1xa50.ModuleStreamingClass?)>,
         ],
         modules: const [_isp.Protocol.new],
+        classNames: const [
+          'DynamicOnModule',
+          'TestGeneratedCallHelloModel',
+          'ModulePolymorphicGrandChild',
+          'ModulePolymorphicChild',
+          'ModulePolymorphicParent',
+          'ModuleClass',
+          'MyModuleFeatureModel',
+          'ModuleStreamingClass',
+          'ProjectStreamingClass',
+          '(int?,ModuleStreamingClass?)',
+        ],
+        classNamePrefix: 'serverpod_test_module.',
       );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [];
@@ -85,13 +98,11 @@ class Protocol extends _is.DatabaseSerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_test_module.')) return className;
-    return className.substring(22);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_test_module.',
+      );
 
   @override
   T deserialize<T>(
@@ -99,8 +110,11 @@ class Protocol extends _is.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_test_module.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -225,9 +239,10 @@ class Protocol extends _is.DatabaseSerializationManager
           )
           as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -328,8 +343,10 @@ class Protocol extends _is.DatabaseSerializationManager
       return deserialize<_iqrw583n.ProjectStreamingClass>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     if (dataClassName == '(int?,ModuleStreamingClass?)') {
       return deserialize<(int?, _irv1xa50.ModuleStreamingClass?)>(data['data']);

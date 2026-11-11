@@ -7,9 +7,9 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 /// it did not exit and close its output within [timeout]. The process is
 /// killed on timeout so it cannot outlive the doctor run.
 Future<ProcessResult?> runProbe(
-  final String executable,
-  final List<String> arguments, {
-  final Duration timeout = const Duration(seconds: 10),
+  String executable,
+  List<String> arguments, {
+  Duration timeout = const Duration(seconds: 10),
 }) async {
   final Process process;
   try {
@@ -48,7 +48,7 @@ Future<ProcessResult?> runProbe(
   }
 }
 
-bool _isBatchFile(final String executable) {
+bool _isBatchFile(String executable) {
   final lower = executable.toLowerCase();
   return lower.endsWith('.bat') || lower.endsWith('.cmd');
 }

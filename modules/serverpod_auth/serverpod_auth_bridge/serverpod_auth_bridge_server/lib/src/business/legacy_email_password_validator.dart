@@ -15,10 +15,10 @@ import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 // Copied from `modules/legacy/serverpod_auth/serverpod_auth_server/lib/src/business/email_auth.dart`
 @internal
 Future<bool> legacyEmailPasswordValidator(
-  final Session session, {
-  required final String email,
-  required final String password,
-  required final String passwordHash,
+  Session session, {
+  required String email,
+  required String password,
+  required String passwordHash,
 }) async {
   try {
     return await PasswordHash(
@@ -58,7 +58,7 @@ enum _PasswordHashType {
   migratedLegacy,
   ;
 
-  factory _PasswordHashType.fromPasswordHash(final String passwordHash) {
+  factory _PasswordHashType.fromPasswordHash(String passwordHash) {
     final passwordHashParts = passwordHash.split('\$');
     if (passwordHashParts.length < 2) {
       return _PasswordHashType.legacy;
@@ -90,10 +90,10 @@ class PasswordHash {
   ///
   /// Throws an [ArgumentError] if the password hash is not recognized.
   PasswordHash(
-    final String passwordHash, {
-    required final String legacySalt,
-    final String? legacyEmail,
-    final String? pepper,
+    String passwordHash, {
+    required String legacySalt,
+    String? legacyEmail,
+    String? pepper,
   }) {
     _type = _PasswordHashType.fromPasswordHash(passwordHash);
     final passwordHashParts = passwordHash.split('\$');
@@ -145,8 +145,8 @@ class PasswordHash {
   /// If the password does not match the hash, the [onValidationFailure] function
   /// will be called with the hash and the password hash as arguments.
   Future<bool> validate(
-    final String password, {
-    final void Function({
+    String password, {
+    void Function({
       required String storedHash,
       required String passwordHash,
     })?
@@ -169,9 +169,9 @@ class PasswordHash {
   /// If the [email] parameter is provided, the email will be used as an
   /// additional salt for the password hash.
   static Future<String> legacyHash(
-    final String password,
-    final String salt, {
-    final String? email,
+    String password,
+    String salt, {
+    String? email,
   }) async => Isolate.run(
     () => _LegacyPasswordHashGenerator(
       salt: salt,
@@ -195,11 +195,11 @@ class PasswordHash {
   /// number generation. If set to false (default value), an error will be thrown
   /// if the platform does not support secure random number generation.
   static Future<String> migratedLegacyToArgon2idHash(
-    final String legacyHash, {
-    required final String legacySalt,
-    final String? salt,
-    final String? pepper,
-    final bool allowUnsecureRandom = false,
+    String legacyHash, {
+    required String legacySalt,
+    String? salt,
+    String? pepper,
+    bool allowUnsecureRandom = false,
   }) async => Isolate.run(() {
     final encodedSalt = _generateSalt(
       salt: salt,
@@ -223,10 +223,10 @@ class PasswordHash {
   /// number generation. If set to false (default value), an error will be thrown
   /// if the platform does not support secure random number generation.
   static Future<String> argon2id(
-    final String password, {
-    final String? salt,
-    final String? pepper,
-    final bool allowUnsecureRandom = false,
+    String password, {
+    String? salt,
+    String? pepper,
+    bool allowUnsecureRandom = false,
   }) async => Isolate.run(() {
     final encodedSalt = _generateSalt(
       salt: salt,
@@ -240,8 +240,8 @@ class PasswordHash {
   });
 
   static String _generateSalt({
-    required final bool allowUnsecureRandom,
-    final String? salt,
+    required bool allowUnsecureRandom,
+    String? salt,
   }) {
     if (salt != null) {
       return const Base64Encoder().convert(salt.codeUnits);
@@ -262,7 +262,7 @@ class PasswordHash {
 /// Interface for password hash generators.
 abstract interface class _PasswordHashGenerator {
   /// Generates a hash from a password.
-  String generateHash(final String password);
+  String generateHash(String password);
 }
 
 /// A password hash generator for legacy password hashes.
@@ -272,17 +272,17 @@ class _LegacyPasswordHashGenerator implements _PasswordHashGenerator {
   final String? _email;
 
   _LegacyPasswordHashGenerator({
-    required final String salt,
-    final String? email,
+    required String salt,
+    String? email,
   }) : _salt = salt,
        _email = email;
 
-  String generatePasswordHash(final String password) {
+  String generatePasswordHash(String password) {
     return generateHash(password);
   }
 
   @override
-  String generateHash(final String password) {
+  String generateHash(String password) {
     var salt = _salt;
     if (_email != null) {
       salt += ':$_email';
@@ -300,18 +300,18 @@ class _Argon2idPasswordHashGenerator implements _PasswordHashGenerator {
   final String? _pepper;
 
   _Argon2idPasswordHashGenerator({
-    required final String salt,
-    final String? pepper,
+    required String salt,
+    String? pepper,
   }) : _salt = salt,
        _pepper = pepper;
 
-  String generatePasswordHash(final String password) {
+  String generatePasswordHash(String password) {
     final hash = generateHash(password);
     return '\$${type.name}\$$_salt\$$hash';
   }
 
   @override
-  String generateHash(final String password) {
+  String generateHash(String password) {
     final parameters = Argon2Parameters(
       Argon2Parameters.ARGON2_id,
       // Required cast because of a breaking change in dart 3.2: https://github.com/dart-lang/sdk/issues/52801
@@ -341,16 +341,16 @@ class _LegacyToArgon2idPasswordHash implements _PasswordHashGenerator {
   final String? _pepper;
 
   _LegacyToArgon2idPasswordHash({
-    required final String legacySalt,
-    required final String salt,
-    final String? email,
-    final String? pepper,
+    required String legacySalt,
+    required String salt,
+    String? email,
+    String? pepper,
   }) : _legacySalt = legacySalt,
        _salt = salt,
        _email = email,
        _pepper = pepper;
 
-  String generatePasswordHash(final String legacyHash) {
+  String generatePasswordHash(String legacyHash) {
     final hash = _Argon2idPasswordHashGenerator(
       salt: _salt,
       pepper: _pepper,
@@ -359,7 +359,7 @@ class _LegacyToArgon2idPasswordHash implements _PasswordHashGenerator {
   }
 
   @override
-  String generateHash(final String password) {
+  String generateHash(String password) {
     final legacyHash = _LegacyPasswordHashGenerator(
       salt: _legacySalt,
       email: _email,
@@ -378,14 +378,14 @@ extension on Random {
   /// Returns a random [String] consisting of letters and numbers, by default
   /// the [length] of the string will be 16 characters.
   String nextString({
-    final int length = 16,
-    final String chars =
+    int length = 16,
+    String chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890',
   }) {
     return String.fromCharCodes(
       Iterable.generate(
         length,
-        (final _) => chars.codeUnitAt(nextInt(chars.length)),
+        (_) => chars.codeUnitAt(nextInt(chars.length)),
       ),
     );
   }

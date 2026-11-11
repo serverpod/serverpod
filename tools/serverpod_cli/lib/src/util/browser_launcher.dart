@@ -4,7 +4,7 @@ import 'package:ci/ci.dart' as ci;
 abstract final class BrowserLauncher {
   /// Opens a URL in the default browser, if possible. Returns true if
   /// successful.
-  static Future<bool> openUrl(final Uri url) async {
+  static Future<bool> openUrl(Uri url) async {
     if (!canLaunchBrowser()) return false;
     try {
       final commandWithArgs = _getPlatformBrowserCommand();

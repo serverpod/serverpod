@@ -42,7 +42,7 @@ void main() {
     });
 
     /// Non-zero means runDartInstall threw rather than returning a result.
-    int runProbe(final Map<String, String> environment) {
+    int runProbe(Map<String, String> environment) {
       final result = Process.runSync(
         probe,
         const [],

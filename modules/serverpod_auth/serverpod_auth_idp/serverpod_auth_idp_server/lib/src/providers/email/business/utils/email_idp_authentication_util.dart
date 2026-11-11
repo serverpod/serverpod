@@ -18,8 +18,8 @@ class EmailIdpAuthenticationUtil {
 
   /// Creates a new instance of [EmailIdpAuthenticationUtil].
   EmailIdpAuthenticationUtil({
-    required final Argon2HashUtil hashUtil,
-    required final RateLimit failedLoginRateLimit,
+    required Argon2HashUtil hashUtil,
+    required RateLimit failedLoginRateLimit,
   }) : _hashUtil = hashUtil,
        _rateLimitUtil = DatabaseRateLimiter(
          RateLimiterConfig(
@@ -44,10 +44,10 @@ class EmailIdpAuthenticationUtil {
   /// can not be rolled back. A successful authentication clears the log for
   /// [email], so the count only ever accumulates over failures.
   Future<UuidValue> authenticate(
-    final Session session, {
+    Session session, {
     required String email,
-    required final String password,
-    required final Transaction? transaction,
+    required String password,
+    required Transaction? transaction,
   }) async {
     email = email.normalizedEmail;
 
@@ -62,7 +62,7 @@ class EmailIdpAuthenticationUtil {
 
     final account = await EmailAccount.db.findFirstRow(
       session,
-      where: (final t) => t.email.equals(email),
+      where: (t) => t.email.equals(email),
       transaction: transaction,
     );
 
@@ -98,10 +98,10 @@ class EmailIdpAuthenticationUtil {
   /// If [email] is provided, only attempts for the given email will be deleted.
   /// {@endtemplate}
   Future<void> deleteFailedLoginAttempts(
-    final Session session, {
-    final Duration? olderThan,
-    final String? email,
-    required final Transaction transaction,
+    Session session, {
+    Duration? olderThan,
+    String? email,
+    required Transaction transaction,
   }) async {
     await _rateLimitUtil.deleteAttempts(
       session,

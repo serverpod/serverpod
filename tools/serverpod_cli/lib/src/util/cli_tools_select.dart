@@ -13,9 +13,9 @@ export 'package:cli_tools/cli_tools.dart' show Option;
 /// API-compatible with `package:cli_tools` `select()`, but redraws the prompt
 /// in place using cursor movement + erase-below instead of full-screen clear.
 Future<Option> select(
-  final String prompt, {
-  required final List<Option> options,
-  required final Logger logger,
+  String prompt, {
+  required List<Option> options,
+  required Logger logger,
 }) async {
   // Keep the cli_tools signature for drop-in compatibility, but we intentionally
   // do not use the passed logger because some logger adapters ignore write()
@@ -169,4 +169,4 @@ abstract final class _KeyCodes {
   static const k = 107;
 }
 
-String _underline(final String text) => '\x1B[4m$text\x1B[0m';
+String _underline(String text) => '\x1B[4m$text\x1B[0m';

@@ -9,7 +9,7 @@ void main() {
   withServerpod(
     'Given an existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -57,7 +57,7 @@ void main() {
               accountRequestIdFuture,
               completion(
                 isA<UuidValue>().having(
-                  (final uuid) => uuid.version,
+                  (uuid) => uuid.version,
                   'version',
                   equals(capturedAccountRequestId.version),
                 ),
@@ -93,7 +93,7 @@ void main() {
                 accountRequestIdFuture,
                 completion(
                   isA<UuidValue>().having(
-                    (final uuid) => uuid.version,
+                    (uuid) => uuid.version,
                     'version',
                     equals(capturedAccountRequestId.version),
                   ),
@@ -109,7 +109,7 @@ void main() {
   withServerpod(
     'Given no email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'newuser@serverpod.dev';
@@ -153,7 +153,7 @@ void main() {
   withServerpod(
     'Given pending email account request that was not verified',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'newuser@serverpod.dev';

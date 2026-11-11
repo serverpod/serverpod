@@ -12,7 +12,7 @@ void main() {
   withServerpod(
     'Given existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late EmailIdpTestFixture fixture;
@@ -52,7 +52,7 @@ void main() {
         'when authenticating with correct credentials then it succeeds with the auth user id',
         () async {
           final result = session.db.transaction(
-            (final transaction) => authenticationUtil.authenticate(
+            (transaction) => authenticationUtil.authenticate(
               session,
               email: email,
               password: password,
@@ -69,9 +69,9 @@ void main() {
         () async {
           final loginAttempts = List.generate(
             failedLoginRateLimit.maxAttempts,
-            (final index) async {
+            (index) async {
               return session.db.transaction(
-                (final transaction) => authenticationUtil.authenticate(
+                (transaction) => authenticationUtil.authenticate(
                   session,
                   email: email,
                   password: password,
@@ -88,7 +88,7 @@ void main() {
       test(
         'when authenticating with correct password but modified casing of email then it succeeds with the auth user id',
         () async {
-          final result = session.db.transaction((final transaction) async {
+          final result = session.db.transaction((transaction) async {
             return await authenticationUtil.authenticate(
               session,
               email: email.toUpperCase(),
@@ -105,7 +105,7 @@ void main() {
         'when authenticating with incorrect credentials then it throws an error with invalidCredentials',
         () async {
           final result = session.db.transaction(
-            (final transaction) => authenticationUtil.authenticate(
+            (transaction) => authenticationUtil.authenticate(
               session,
               email: email,
               password: '$password-incorrect',
@@ -125,7 +125,7 @@ void main() {
   withServerpod(
     'Given an existing email account and a failed login rate limit',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late EmailIdpAuthenticationUtil authenticationUtil;
@@ -167,7 +167,7 @@ void main() {
           const parallelAttempts = 12;
 
           final passwordWasCompared = await Future.wait(
-            List.generate(parallelAttempts, (final _) async {
+            List.generate(parallelAttempts, (_) async {
               try {
                 await authenticationUtil.authenticate(
                   session,
@@ -187,7 +187,7 @@ void main() {
           );
 
           expect(
-            passwordWasCompared.where((final compared) => compared).length,
+            passwordWasCompared.where((compared) => compared).length,
             lessThanOrEqualTo(failedLoginRateLimit.maxAttempts),
             reason:
                 'Guesses sent in parallel must consume the same budget as '
@@ -201,7 +201,7 @@ void main() {
   withServerpod(
     'Given non-existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late EmailIdpAuthenticationUtil emailIdpAuthenticationUtil;
@@ -221,7 +221,7 @@ void main() {
         'when authenticating then it throws an error with email account not found exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) => emailIdpAuthenticationUtil.authenticate(
+            (transaction) => emailIdpAuthenticationUtil.authenticate(
               session,
               email: 'invalid@serverpod.dev',
               password: 'invalid-password',
@@ -244,7 +244,7 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late AuthUserModel authUser;
       late Session session;
       const failedLoginRateLimit = RateLimit(
@@ -278,7 +278,7 @@ void main() {
 
         final result = inTheRecentPast(
           () => session.db.transaction(
-            (final transaction) => authenticationUtil.authenticate(
+            (transaction) => authenticationUtil.authenticate(
               session,
               email: email,
               password: '$password-incorrect',
@@ -311,7 +311,7 @@ void main() {
       test(
         'when authenticating with correct credentials then it throws an error with tooManyFailedAttempts',
         () async {
-          final result = session.db.transaction((final transaction) async {
+          final result = session.db.transaction((transaction) async {
             return await authenticationUtil.authenticate(
               session,
               email: email,
@@ -332,7 +332,7 @@ void main() {
         () async {
           // Removal must happen in a separate transaction since the count of
           // failed login attempts is checked outside of the transaction.
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await authenticationUtil.deleteFailedLoginAttempts(
               session,
               transaction: transaction,
@@ -343,7 +343,7 @@ void main() {
           });
 
           final result = session.db.transaction((
-            final transaction,
+            transaction,
           ) async {
             return await authenticationUtil.authenticate(
               session,
@@ -367,7 +367,7 @@ void main() {
             Clock.fixed(DateTime.now().add(failedLoginRateLimit.timeframe)),
             () async {
               final result = session.db.transaction(
-                (final transaction) => authenticationUtil.authenticate(
+                (transaction) => authenticationUtil.authenticate(
                   session,
                   email: email,
                   password: password,
@@ -392,7 +392,7 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
@@ -415,7 +415,7 @@ void main() {
         authenticationUtil = fixture.authenticationUtil;
 
         final result = session.db.transaction(
-          (final transaction) => authenticationUtil.authenticate(
+          (transaction) => authenticationUtil.authenticate(
             session,
             email: email,
             password: password,
@@ -448,7 +448,7 @@ void main() {
         'when authenticating with same email then it throws an error with tooManyFailedAttempts',
         () async {
           final result = session.db.transaction(
-            (final transaction) => authenticationUtil.authenticate(
+            (transaction) => authenticationUtil.authenticate(
               session,
               email: email,
               password: password,
@@ -471,7 +471,7 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
@@ -496,7 +496,7 @@ void main() {
         for (var i = 0; i < failedLoginRateLimit.maxAttempts; i++) {
           try {
             await session.db.transaction(
-              (final transaction) => authenticationUtil.authenticate(
+              (transaction) => authenticationUtil.authenticate(
                 session,
                 email: email,
                 password: password,
@@ -527,7 +527,7 @@ void main() {
         'when authenticating with same email then it throws an error with tooManyFailedAttempts',
         () async {
           final result = session.db.transaction(
-            (final transaction) => authenticationUtil.authenticate(
+            (transaction) => authenticationUtil.authenticate(
               session,
               email: email,
               password: password,
@@ -550,7 +550,7 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late EmailIdpAuthenticationUtil authenticationUtil;
@@ -583,7 +583,7 @@ void main() {
 
         final result = inTheRecentPast(
           () => session.db.transaction(
-            (final transaction) => authenticationUtil.authenticate(
+            (transaction) => authenticationUtil.authenticate(
               session,
               email: email,
               password: '$password-incorrect',
@@ -616,7 +616,7 @@ void main() {
       test(
         'when deleting failed login attempts without specifying olderThan argument then authentication within timeframe still fails',
         () async {
-          final result = session.db.transaction((final transaction) async {
+          final result = session.db.transaction((transaction) async {
             await authenticationUtil.deleteFailedLoginAttempts(
               session,
               transaction: transaction,
@@ -642,7 +642,7 @@ void main() {
         () async {
           // Removal must happen in a separate transaction since the count of
           // failed login attempts is checked outside of the transaction.
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await authenticationUtil.deleteFailedLoginAttempts(
               session,
               email: email,
@@ -651,7 +651,7 @@ void main() {
             );
           });
 
-          final result = session.db.transaction((final transaction) async {
+          final result = session.db.transaction((transaction) async {
             return await authenticationUtil.authenticate(
               session,
               email: email,
@@ -670,7 +670,7 @@ void main() {
       test(
         'when deleting all failed login attempts specifying different email then authentication within timeframe still fails',
         () async {
-          final result = session.db.transaction((final transaction) async {
+          final result = session.db.transaction((transaction) async {
             await authenticationUtil.deleteFailedLoginAttempts(
               session,
               email: 'different-$email',
@@ -697,12 +697,12 @@ void main() {
 }
 
 Future<List<RateLimitedRequestAttempt>> _getFailedLoginAttempts(
-  final Session session,
-  final String email,
+  Session session,
+  String email,
 ) async {
   return await RateLimitedRequestAttempt.db.find(
     session,
-    where: (final t) =>
+    where: (t) =>
         t.domain.equals('email') &
         t.source.equals('failed_login') &
         t.key.equals(email),
