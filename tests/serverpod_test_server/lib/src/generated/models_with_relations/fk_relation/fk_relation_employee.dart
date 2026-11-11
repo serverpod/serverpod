@@ -385,6 +385,7 @@ class FkRelationEmployeeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FkRelationEmployee>(
+      table: FkRelationEmployee.t,
       where: where?.call(FkRelationEmployee.t),
       orderBy: orderBy?.call(FkRelationEmployee.t),
       orderByList: orderByList?.call(FkRelationEmployee.t),
@@ -451,6 +452,7 @@ class FkRelationEmployeeRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<FkRelationEmployee>(
+      table: FkRelationEmployee.t,
       where: where?.call(FkRelationEmployee.t),
       orderBy: orderBy?.call(FkRelationEmployee.t),
       orderByList: orderByList?.call(FkRelationEmployee.t),
@@ -491,6 +493,7 @@ class FkRelationEmployeeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FkRelationEmployee>(
+      table: FkRelationEmployee.t,
       where: where?.call(FkRelationEmployee.t),
       orderBy: orderBy?.call(FkRelationEmployee.t),
       orderByList: orderByList?.call(FkRelationEmployee.t),
@@ -513,6 +516,7 @@ class FkRelationEmployeeRepository {
   }) async {
     return session.db.findById<FkRelationEmployee>(
       id,
+      table: FkRelationEmployee.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -683,6 +687,7 @@ class FkRelationEmployeeRepository {
   }) async {
     return session.db.updateById<FkRelationEmployee>(
       id,
+      table: FkRelationEmployee.t,
       columnValues: columnValues(FkRelationEmployee.t.updateTable),
       transaction: transaction,
     );
@@ -707,6 +712,7 @@ class FkRelationEmployeeRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<FkRelationEmployee>(
+      table: FkRelationEmployee.t,
       columnValues: columnValues(FkRelationEmployee.t.updateTable),
       where: where(FkRelationEmployee.t),
       limit: limit,
@@ -775,6 +781,7 @@ class FkRelationEmployeeRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<FkRelationEmployee>(
+      table: FkRelationEmployee.t,
       where: where(FkRelationEmployee.t),
       orderBy: orderBy?.call(FkRelationEmployee.t),
       orderByList: orderByList?.call(FkRelationEmployee.t),
@@ -792,6 +799,7 @@ class FkRelationEmployeeRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<FkRelationEmployee>(
+      table: FkRelationEmployee.t,
       where: where?.call(FkRelationEmployee.t),
       limit: limit,
       transaction: transaction,
@@ -807,6 +815,7 @@ class FkRelationEmployeeRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<FkRelationEmployee>(
+      table: FkRelationEmployee.t,
       where: where(FkRelationEmployee.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

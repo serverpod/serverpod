@@ -531,6 +531,7 @@ class CloudStorageDirectUploadEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CloudStorageDirectUploadEntry>(
+      table: CloudStorageDirectUploadEntry.t,
       where: where?.call(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
@@ -595,6 +596,7 @@ class CloudStorageDirectUploadEntryRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<CloudStorageDirectUploadEntry>(
+      table: CloudStorageDirectUploadEntry.t,
       where: where?.call(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
@@ -633,6 +635,7 @@ class CloudStorageDirectUploadEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CloudStorageDirectUploadEntry>(
+      table: CloudStorageDirectUploadEntry.t,
       where: where?.call(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
@@ -653,6 +656,7 @@ class CloudStorageDirectUploadEntryRepository {
   }) async {
     return session.db.findById<CloudStorageDirectUploadEntry>(
       id,
+      table: CloudStorageDirectUploadEntry.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -826,6 +830,7 @@ class CloudStorageDirectUploadEntryRepository {
   }) async {
     return session.db.updateById<CloudStorageDirectUploadEntry>(
       id,
+      table: CloudStorageDirectUploadEntry.t,
       columnValues: columnValues(CloudStorageDirectUploadEntry.t.updateTable),
       transaction: transaction,
     );
@@ -853,6 +858,7 @@ class CloudStorageDirectUploadEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CloudStorageDirectUploadEntry>(
+      table: CloudStorageDirectUploadEntry.t,
       columnValues: columnValues(CloudStorageDirectUploadEntry.t.updateTable),
       where: where(CloudStorageDirectUploadEntry.t),
       limit: limit,
@@ -922,6 +928,7 @@ class CloudStorageDirectUploadEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CloudStorageDirectUploadEntry>(
+      table: CloudStorageDirectUploadEntry.t,
       where: where(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
@@ -939,6 +946,7 @@ class CloudStorageDirectUploadEntryRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<CloudStorageDirectUploadEntry>(
+      table: CloudStorageDirectUploadEntry.t,
       where: where?.call(CloudStorageDirectUploadEntry.t),
       limit: limit,
       transaction: transaction,
@@ -955,6 +963,7 @@ class CloudStorageDirectUploadEntryRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CloudStorageDirectUploadEntry>(
+      table: CloudStorageDirectUploadEntry.t,
       where: where(CloudStorageDirectUploadEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

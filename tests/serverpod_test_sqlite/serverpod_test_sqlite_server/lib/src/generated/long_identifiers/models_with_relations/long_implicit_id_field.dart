@@ -282,6 +282,7 @@ class LongImplicitIdFieldRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LongImplicitIdField>(
+      table: LongImplicitIdField.t,
       where: where?.call(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -346,6 +347,7 @@ class LongImplicitIdFieldRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<LongImplicitIdField>(
+      table: LongImplicitIdField.t,
       where: where?.call(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -384,6 +386,7 @@ class LongImplicitIdFieldRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LongImplicitIdField>(
+      table: LongImplicitIdField.t,
       where: where?.call(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -404,6 +407,7 @@ class LongImplicitIdFieldRepository {
   }) async {
     return session.db.findById<LongImplicitIdField>(
       id,
+      table: LongImplicitIdField.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -573,6 +577,7 @@ class LongImplicitIdFieldRepository {
   }) async {
     return session.db.updateById<LongImplicitIdField>(
       id,
+      table: LongImplicitIdField.t,
       columnValues: columnValues(LongImplicitIdField.t.updateTable),
       transaction: transaction,
     );
@@ -597,6 +602,7 @@ class LongImplicitIdFieldRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<LongImplicitIdField>(
+      table: LongImplicitIdField.t,
       columnValues: columnValues(LongImplicitIdField.t.updateTable),
       where: where(LongImplicitIdField.t),
       limit: limit,
@@ -665,6 +671,7 @@ class LongImplicitIdFieldRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LongImplicitIdField>(
+      table: LongImplicitIdField.t,
       where: where(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -682,6 +689,7 @@ class LongImplicitIdFieldRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<LongImplicitIdField>(
+      table: LongImplicitIdField.t,
       where: where?.call(LongImplicitIdField.t),
       limit: limit,
       transaction: transaction,
@@ -697,6 +705,7 @@ class LongImplicitIdFieldRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<LongImplicitIdField>(
+      table: LongImplicitIdField.t,
       where: where(LongImplicitIdField.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -405,6 +405,7 @@ class CityWithLongTableNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CityWithLongTableName>(
+      table: CityWithLongTableName.t,
       where: where?.call(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
@@ -471,6 +472,7 @@ class CityWithLongTableNameRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<CityWithLongTableName>(
+      table: CityWithLongTableName.t,
       where: where?.call(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
@@ -511,6 +513,7 @@ class CityWithLongTableNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CityWithLongTableName>(
+      table: CityWithLongTableName.t,
       where: where?.call(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
@@ -533,6 +536,7 @@ class CityWithLongTableNameRepository {
   }) async {
     return session.db.findById<CityWithLongTableName>(
       id,
+      table: CityWithLongTableName.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -703,6 +707,7 @@ class CityWithLongTableNameRepository {
   }) async {
     return session.db.updateById<CityWithLongTableName>(
       id,
+      table: CityWithLongTableName.t,
       columnValues: columnValues(CityWithLongTableName.t.updateTable),
       transaction: transaction,
     );
@@ -727,6 +732,7 @@ class CityWithLongTableNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CityWithLongTableName>(
+      table: CityWithLongTableName.t,
       columnValues: columnValues(CityWithLongTableName.t.updateTable),
       where: where(CityWithLongTableName.t),
       limit: limit,
@@ -795,6 +801,7 @@ class CityWithLongTableNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CityWithLongTableName>(
+      table: CityWithLongTableName.t,
       where: where(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
@@ -812,6 +819,7 @@ class CityWithLongTableNameRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<CityWithLongTableName>(
+      table: CityWithLongTableName.t,
       where: where?.call(CityWithLongTableName.t),
       limit: limit,
       transaction: transaction,
@@ -827,6 +835,7 @@ class CityWithLongTableNameRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CityWithLongTableName>(
+      table: CityWithLongTableName.t,
       where: where(CityWithLongTableName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -296,6 +296,7 @@ class CompanyRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Company>(
+      table: Company.t,
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
@@ -362,6 +363,7 @@ class CompanyRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Company>(
+      table: Company.t,
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
@@ -402,6 +404,7 @@ class CompanyRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Company>(
+      table: Company.t,
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
@@ -424,6 +427,7 @@ class CompanyRepository {
   }) async {
     return session.db.findById<Company>(
       id,
+      table: Company.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -593,6 +597,7 @@ class CompanyRepository {
   }) async {
     return session.db.updateById<Company>(
       id,
+      table: Company.t,
       columnValues: columnValues(Company.t.updateTable),
       transaction: transaction,
     );
@@ -616,6 +621,7 @@ class CompanyRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Company>(
+      table: Company.t,
       columnValues: columnValues(Company.t.updateTable),
       where: where(Company.t),
       limit: limit,
@@ -684,6 +690,7 @@ class CompanyRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Company>(
+      table: Company.t,
       where: where(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
@@ -701,6 +708,7 @@ class CompanyRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Company>(
+      table: Company.t,
       where: where?.call(Company.t),
       limit: limit,
       transaction: transaction,
@@ -716,6 +724,7 @@ class CompanyRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Company>(
+      table: Company.t,
       where: where(Company.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

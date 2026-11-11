@@ -296,6 +296,7 @@ class CustomerIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CustomerInt>(
+      table: CustomerInt.t,
       where: where?.call(CustomerInt.t),
       orderBy: orderBy?.call(CustomerInt.t),
       orderByList: orderByList?.call(CustomerInt.t),
@@ -362,6 +363,7 @@ class CustomerIntRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<CustomerInt>(
+      table: CustomerInt.t,
       where: where?.call(CustomerInt.t),
       orderBy: orderBy?.call(CustomerInt.t),
       orderByList: orderByList?.call(CustomerInt.t),
@@ -402,6 +404,7 @@ class CustomerIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CustomerInt>(
+      table: CustomerInt.t,
       where: where?.call(CustomerInt.t),
       orderBy: orderBy?.call(CustomerInt.t),
       orderByList: orderByList?.call(CustomerInt.t),
@@ -424,6 +427,7 @@ class CustomerIntRepository {
   }) async {
     return session.db.findById<CustomerInt>(
       id,
+      table: CustomerInt.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -593,6 +597,7 @@ class CustomerIntRepository {
   }) async {
     return session.db.updateById<CustomerInt>(
       id,
+      table: CustomerInt.t,
       columnValues: columnValues(CustomerInt.t.updateTable),
       transaction: transaction,
     );
@@ -616,6 +621,7 @@ class CustomerIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CustomerInt>(
+      table: CustomerInt.t,
       columnValues: columnValues(CustomerInt.t.updateTable),
       where: where(CustomerInt.t),
       limit: limit,
@@ -684,6 +690,7 @@ class CustomerIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CustomerInt>(
+      table: CustomerInt.t,
       where: where(CustomerInt.t),
       orderBy: orderBy?.call(CustomerInt.t),
       orderByList: orderByList?.call(CustomerInt.t),
@@ -701,6 +708,7 @@ class CustomerIntRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<CustomerInt>(
+      table: CustomerInt.t,
       where: where?.call(CustomerInt.t),
       limit: limit,
       transaction: transaction,
@@ -716,6 +724,7 @@ class CustomerIntRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CustomerInt>(
+      table: CustomerInt.t,
       where: where(CustomerInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

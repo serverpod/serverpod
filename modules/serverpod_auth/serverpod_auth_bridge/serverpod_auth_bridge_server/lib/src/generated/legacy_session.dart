@@ -360,6 +360,7 @@ class LegacySessionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LegacySession>(
+      table: LegacySession.t,
       where: where?.call(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
@@ -426,6 +427,7 @@ class LegacySessionRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<LegacySession>(
+      table: LegacySession.t,
       where: where?.call(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
@@ -466,6 +468,7 @@ class LegacySessionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LegacySession>(
+      table: LegacySession.t,
       where: where?.call(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
@@ -488,6 +491,7 @@ class LegacySessionRepository {
   }) async {
     return session.db.findById<LegacySession>(
       id,
+      table: LegacySession.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -657,6 +661,7 @@ class LegacySessionRepository {
   }) async {
     return session.db.updateById<LegacySession>(
       id,
+      table: LegacySession.t,
       columnValues: columnValues(LegacySession.t.updateTable),
       transaction: transaction,
     );
@@ -680,6 +685,7 @@ class LegacySessionRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<LegacySession>(
+      table: LegacySession.t,
       columnValues: columnValues(LegacySession.t.updateTable),
       where: where(LegacySession.t),
       limit: limit,
@@ -748,6 +754,7 @@ class LegacySessionRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LegacySession>(
+      table: LegacySession.t,
       where: where(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
@@ -765,6 +772,7 @@ class LegacySessionRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<LegacySession>(
+      table: LegacySession.t,
       where: where?.call(LegacySession.t),
       limit: limit,
       transaction: transaction,
@@ -780,6 +788,7 @@ class LegacySessionRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<LegacySession>(
+      table: LegacySession.t,
       where: where(LegacySession.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

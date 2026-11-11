@@ -399,6 +399,7 @@ class FirebaseAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FirebaseAccount>(
+      table: FirebaseAccount.t,
       where: where?.call(FirebaseAccount.t),
       orderBy: orderBy?.call(FirebaseAccount.t),
       orderByList: orderByList?.call(FirebaseAccount.t),
@@ -465,6 +466,7 @@ class FirebaseAccountRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<FirebaseAccount>(
+      table: FirebaseAccount.t,
       where: where?.call(FirebaseAccount.t),
       orderBy: orderBy?.call(FirebaseAccount.t),
       orderByList: orderByList?.call(FirebaseAccount.t),
@@ -505,6 +507,7 @@ class FirebaseAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FirebaseAccount>(
+      table: FirebaseAccount.t,
       where: where?.call(FirebaseAccount.t),
       orderBy: orderBy?.call(FirebaseAccount.t),
       orderByList: orderByList?.call(FirebaseAccount.t),
@@ -527,6 +530,7 @@ class FirebaseAccountRepository {
   }) async {
     return session.db.findById<FirebaseAccount>(
       id,
+      table: FirebaseAccount.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -697,6 +701,7 @@ class FirebaseAccountRepository {
   }) async {
     return session.db.updateById<FirebaseAccount>(
       id,
+      table: FirebaseAccount.t,
       columnValues: columnValues(FirebaseAccount.t.updateTable),
       transaction: transaction,
     );
@@ -721,6 +726,7 @@ class FirebaseAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<FirebaseAccount>(
+      table: FirebaseAccount.t,
       columnValues: columnValues(FirebaseAccount.t.updateTable),
       where: where(FirebaseAccount.t),
       limit: limit,
@@ -789,6 +795,7 @@ class FirebaseAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<FirebaseAccount>(
+      table: FirebaseAccount.t,
       where: where(FirebaseAccount.t),
       orderBy: orderBy?.call(FirebaseAccount.t),
       orderByList: orderByList?.call(FirebaseAccount.t),
@@ -806,6 +813,7 @@ class FirebaseAccountRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<FirebaseAccount>(
+      table: FirebaseAccount.t,
       where: where?.call(FirebaseAccount.t),
       limit: limit,
       transaction: transaction,
@@ -821,6 +829,7 @@ class FirebaseAccountRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<FirebaseAccount>(
+      table: FirebaseAccount.t,
       where: where(FirebaseAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

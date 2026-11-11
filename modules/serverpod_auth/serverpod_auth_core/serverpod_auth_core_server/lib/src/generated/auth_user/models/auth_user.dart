@@ -288,6 +288,7 @@ class AuthUserRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<AuthUser>(
+      table: AuthUser.t,
       where: where?.call(AuthUser.t),
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
@@ -352,6 +353,7 @@ class AuthUserRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<AuthUser>(
+      table: AuthUser.t,
       where: where?.call(AuthUser.t),
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
@@ -390,6 +392,7 @@ class AuthUserRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<AuthUser>(
+      table: AuthUser.t,
       where: where?.call(AuthUser.t),
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
@@ -410,6 +413,7 @@ class AuthUserRepository {
   }) async {
     return session.db.findById<AuthUser>(
       id,
+      table: AuthUser.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -578,6 +582,7 @@ class AuthUserRepository {
   }) async {
     return session.db.updateById<AuthUser>(
       id,
+      table: AuthUser.t,
       columnValues: columnValues(AuthUser.t.updateTable),
       transaction: transaction,
     );
@@ -601,6 +606,7 @@ class AuthUserRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<AuthUser>(
+      table: AuthUser.t,
       columnValues: columnValues(AuthUser.t.updateTable),
       where: where(AuthUser.t),
       limit: limit,
@@ -669,6 +675,7 @@ class AuthUserRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<AuthUser>(
+      table: AuthUser.t,
       where: where(AuthUser.t),
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
@@ -686,6 +693,7 @@ class AuthUserRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<AuthUser>(
+      table: AuthUser.t,
       where: where?.call(AuthUser.t),
       limit: limit,
       transaction: transaction,
@@ -701,6 +709,7 @@ class AuthUserRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<AuthUser>(
+      table: AuthUser.t,
       where: where(AuthUser.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

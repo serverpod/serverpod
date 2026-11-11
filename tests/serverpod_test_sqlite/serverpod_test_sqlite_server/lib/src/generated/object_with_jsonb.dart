@@ -467,6 +467,7 @@ class ObjectWithJsonbRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithJsonb>(
+      table: ObjectWithJsonb.t,
       where: where?.call(ObjectWithJsonb.t),
       orderBy: orderBy?.call(ObjectWithJsonb.t),
       orderByList: orderByList?.call(ObjectWithJsonb.t),
@@ -531,6 +532,7 @@ class ObjectWithJsonbRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithJsonb>(
+      table: ObjectWithJsonb.t,
       where: where?.call(ObjectWithJsonb.t),
       orderBy: orderBy?.call(ObjectWithJsonb.t),
       orderByList: orderByList?.call(ObjectWithJsonb.t),
@@ -569,6 +571,7 @@ class ObjectWithJsonbRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithJsonb>(
+      table: ObjectWithJsonb.t,
       where: where?.call(ObjectWithJsonb.t),
       orderBy: orderBy?.call(ObjectWithJsonb.t),
       orderByList: orderByList?.call(ObjectWithJsonb.t),
@@ -589,6 +592,7 @@ class ObjectWithJsonbRepository {
   }) async {
     return session.db.findById<ObjectWithJsonb>(
       id,
+      table: ObjectWithJsonb.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -758,6 +762,7 @@ class ObjectWithJsonbRepository {
   }) async {
     return session.db.updateById<ObjectWithJsonb>(
       id,
+      table: ObjectWithJsonb.t,
       columnValues: columnValues(ObjectWithJsonb.t.updateTable),
       transaction: transaction,
     );
@@ -782,6 +787,7 @@ class ObjectWithJsonbRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithJsonb>(
+      table: ObjectWithJsonb.t,
       columnValues: columnValues(ObjectWithJsonb.t.updateTable),
       where: where(ObjectWithJsonb.t),
       limit: limit,
@@ -850,6 +856,7 @@ class ObjectWithJsonbRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithJsonb>(
+      table: ObjectWithJsonb.t,
       where: where(ObjectWithJsonb.t),
       orderBy: orderBy?.call(ObjectWithJsonb.t),
       orderByList: orderByList?.call(ObjectWithJsonb.t),
@@ -867,6 +874,7 @@ class ObjectWithJsonbRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithJsonb>(
+      table: ObjectWithJsonb.t,
       where: where?.call(ObjectWithJsonb.t),
       limit: limit,
       transaction: transaction,
@@ -882,6 +890,7 @@ class ObjectWithJsonbRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithJsonb>(
+      table: ObjectWithJsonb.t,
       where: where(ObjectWithJsonb.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

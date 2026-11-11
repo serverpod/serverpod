@@ -434,6 +434,7 @@ class EmailAccountRequestRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAccountRequest>(
+      table: EmailAccountRequest.t,
       where: where?.call(EmailAccountRequest.t),
       orderBy: orderBy?.call(EmailAccountRequest.t),
       orderByList: orderByList?.call(EmailAccountRequest.t),
@@ -500,6 +501,7 @@ class EmailAccountRequestRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EmailAccountRequest>(
+      table: EmailAccountRequest.t,
       where: where?.call(EmailAccountRequest.t),
       orderBy: orderBy?.call(EmailAccountRequest.t),
       orderByList: orderByList?.call(EmailAccountRequest.t),
@@ -540,6 +542,7 @@ class EmailAccountRequestRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAccountRequest>(
+      table: EmailAccountRequest.t,
       where: where?.call(EmailAccountRequest.t),
       orderBy: orderBy?.call(EmailAccountRequest.t),
       orderByList: orderByList?.call(EmailAccountRequest.t),
@@ -562,6 +565,7 @@ class EmailAccountRequestRepository {
   }) async {
     return session.db.findById<EmailAccountRequest>(
       id,
+      table: EmailAccountRequest.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -732,6 +736,7 @@ class EmailAccountRequestRepository {
   }) async {
     return session.db.updateById<EmailAccountRequest>(
       id,
+      table: EmailAccountRequest.t,
       columnValues: columnValues(EmailAccountRequest.t.updateTable),
       transaction: transaction,
     );
@@ -756,6 +761,7 @@ class EmailAccountRequestRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAccountRequest>(
+      table: EmailAccountRequest.t,
       columnValues: columnValues(EmailAccountRequest.t.updateTable),
       where: where(EmailAccountRequest.t),
       limit: limit,
@@ -824,6 +830,7 @@ class EmailAccountRequestRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAccountRequest>(
+      table: EmailAccountRequest.t,
       where: where(EmailAccountRequest.t),
       orderBy: orderBy?.call(EmailAccountRequest.t),
       orderByList: orderByList?.call(EmailAccountRequest.t),
@@ -841,6 +848,7 @@ class EmailAccountRequestRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailAccountRequest>(
+      table: EmailAccountRequest.t,
       where: where?.call(EmailAccountRequest.t),
       limit: limit,
       transaction: transaction,
@@ -856,6 +864,7 @@ class EmailAccountRequestRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailAccountRequest>(
+      table: EmailAccountRequest.t,
       where: where(EmailAccountRequest.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

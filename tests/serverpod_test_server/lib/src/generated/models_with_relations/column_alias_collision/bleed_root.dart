@@ -439,6 +439,7 @@ class BleedRootRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BleedRoot>(
+      table: BleedRoot.t,
       where: where?.call(BleedRoot.t),
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
@@ -505,6 +506,7 @@ class BleedRootRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<BleedRoot>(
+      table: BleedRoot.t,
       where: where?.call(BleedRoot.t),
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
@@ -545,6 +547,7 @@ class BleedRootRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BleedRoot>(
+      table: BleedRoot.t,
       where: where?.call(BleedRoot.t),
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
@@ -567,6 +570,7 @@ class BleedRootRepository {
   }) async {
     return session.db.findById<BleedRoot>(
       id,
+      table: BleedRoot.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -736,6 +740,7 @@ class BleedRootRepository {
   }) async {
     return session.db.updateById<BleedRoot>(
       id,
+      table: BleedRoot.t,
       columnValues: columnValues(BleedRoot.t.updateTable),
       transaction: transaction,
     );
@@ -759,6 +764,7 @@ class BleedRootRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BleedRoot>(
+      table: BleedRoot.t,
       columnValues: columnValues(BleedRoot.t.updateTable),
       where: where(BleedRoot.t),
       limit: limit,
@@ -827,6 +833,7 @@ class BleedRootRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BleedRoot>(
+      table: BleedRoot.t,
       where: where(BleedRoot.t),
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
@@ -844,6 +851,7 @@ class BleedRootRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<BleedRoot>(
+      table: BleedRoot.t,
       where: where?.call(BleedRoot.t),
       limit: limit,
       transaction: transaction,
@@ -859,6 +867,7 @@ class BleedRootRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BleedRoot>(
+      table: BleedRoot.t,
       where: where(BleedRoot.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

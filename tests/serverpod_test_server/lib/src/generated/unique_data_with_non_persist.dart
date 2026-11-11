@@ -258,6 +258,7 @@ class UniqueDataWithNonPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UniqueDataWithNonPersist>(
+      table: UniqueDataWithNonPersist.t,
       where: where?.call(UniqueDataWithNonPersist.t),
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
@@ -322,6 +323,7 @@ class UniqueDataWithNonPersistRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UniqueDataWithNonPersist>(
+      table: UniqueDataWithNonPersist.t,
       where: where?.call(UniqueDataWithNonPersist.t),
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
@@ -360,6 +362,7 @@ class UniqueDataWithNonPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UniqueDataWithNonPersist>(
+      table: UniqueDataWithNonPersist.t,
       where: where?.call(UniqueDataWithNonPersist.t),
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
@@ -380,6 +383,7 @@ class UniqueDataWithNonPersistRepository {
   }) async {
     return session.db.findById<UniqueDataWithNonPersist>(
       id,
+      table: UniqueDataWithNonPersist.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -551,6 +555,7 @@ class UniqueDataWithNonPersistRepository {
   }) async {
     return session.db.updateById<UniqueDataWithNonPersist>(
       id,
+      table: UniqueDataWithNonPersist.t,
       columnValues: columnValues(UniqueDataWithNonPersist.t.updateTable),
       transaction: transaction,
     );
@@ -575,6 +580,7 @@ class UniqueDataWithNonPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UniqueDataWithNonPersist>(
+      table: UniqueDataWithNonPersist.t,
       columnValues: columnValues(UniqueDataWithNonPersist.t.updateTable),
       where: where(UniqueDataWithNonPersist.t),
       limit: limit,
@@ -643,6 +649,7 @@ class UniqueDataWithNonPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UniqueDataWithNonPersist>(
+      table: UniqueDataWithNonPersist.t,
       where: where(UniqueDataWithNonPersist.t),
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
@@ -660,6 +667,7 @@ class UniqueDataWithNonPersistRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UniqueDataWithNonPersist>(
+      table: UniqueDataWithNonPersist.t,
       where: where?.call(UniqueDataWithNonPersist.t),
       limit: limit,
       transaction: transaction,
@@ -675,6 +683,7 @@ class UniqueDataWithNonPersistRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UniqueDataWithNonPersist>(
+      table: UniqueDataWithNonPersist.t,
       where: where(UniqueDataWithNonPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

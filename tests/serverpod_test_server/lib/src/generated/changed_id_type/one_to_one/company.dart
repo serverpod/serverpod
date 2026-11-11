@@ -296,6 +296,7 @@ class CompanyUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CompanyUuid>(
+      table: CompanyUuid.t,
       where: where?.call(CompanyUuid.t),
       orderBy: orderBy?.call(CompanyUuid.t),
       orderByList: orderByList?.call(CompanyUuid.t),
@@ -362,6 +363,7 @@ class CompanyUuidRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<CompanyUuid>(
+      table: CompanyUuid.t,
       where: where?.call(CompanyUuid.t),
       orderBy: orderBy?.call(CompanyUuid.t),
       orderByList: orderByList?.call(CompanyUuid.t),
@@ -402,6 +404,7 @@ class CompanyUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CompanyUuid>(
+      table: CompanyUuid.t,
       where: where?.call(CompanyUuid.t),
       orderBy: orderBy?.call(CompanyUuid.t),
       orderByList: orderByList?.call(CompanyUuid.t),
@@ -424,6 +427,7 @@ class CompanyUuidRepository {
   }) async {
     return session.db.findById<CompanyUuid>(
       id,
+      table: CompanyUuid.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -593,6 +597,7 @@ class CompanyUuidRepository {
   }) async {
     return session.db.updateById<CompanyUuid>(
       id,
+      table: CompanyUuid.t,
       columnValues: columnValues(CompanyUuid.t.updateTable),
       transaction: transaction,
     );
@@ -616,6 +621,7 @@ class CompanyUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CompanyUuid>(
+      table: CompanyUuid.t,
       columnValues: columnValues(CompanyUuid.t.updateTable),
       where: where(CompanyUuid.t),
       limit: limit,
@@ -684,6 +690,7 @@ class CompanyUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CompanyUuid>(
+      table: CompanyUuid.t,
       where: where(CompanyUuid.t),
       orderBy: orderBy?.call(CompanyUuid.t),
       orderByList: orderByList?.call(CompanyUuid.t),
@@ -701,6 +708,7 @@ class CompanyUuidRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<CompanyUuid>(
+      table: CompanyUuid.t,
       where: where?.call(CompanyUuid.t),
       limit: limit,
       transaction: transaction,
@@ -716,6 +724,7 @@ class CompanyUuidRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CompanyUuid>(
+      table: CompanyUuid.t,
       where: where(CompanyUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

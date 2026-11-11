@@ -359,6 +359,7 @@ class MigratedUserRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MigratedUser>(
+      table: MigratedUser.t,
       where: where?.call(MigratedUser.t),
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
@@ -425,6 +426,7 @@ class MigratedUserRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<MigratedUser>(
+      table: MigratedUser.t,
       where: where?.call(MigratedUser.t),
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
@@ -465,6 +467,7 @@ class MigratedUserRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MigratedUser>(
+      table: MigratedUser.t,
       where: where?.call(MigratedUser.t),
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
@@ -487,6 +490,7 @@ class MigratedUserRepository {
   }) async {
     return session.db.findById<MigratedUser>(
       id,
+      table: MigratedUser.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -656,6 +660,7 @@ class MigratedUserRepository {
   }) async {
     return session.db.updateById<MigratedUser>(
       id,
+      table: MigratedUser.t,
       columnValues: columnValues(MigratedUser.t.updateTable),
       transaction: transaction,
     );
@@ -679,6 +684,7 @@ class MigratedUserRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MigratedUser>(
+      table: MigratedUser.t,
       columnValues: columnValues(MigratedUser.t.updateTable),
       where: where(MigratedUser.t),
       limit: limit,
@@ -747,6 +753,7 @@ class MigratedUserRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MigratedUser>(
+      table: MigratedUser.t,
       where: where(MigratedUser.t),
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
@@ -764,6 +771,7 @@ class MigratedUserRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<MigratedUser>(
+      table: MigratedUser.t,
       where: where?.call(MigratedUser.t),
       limit: limit,
       transaction: transaction,
@@ -779,6 +787,7 @@ class MigratedUserRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MigratedUser>(
+      table: MigratedUser.t,
       where: where(MigratedUser.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

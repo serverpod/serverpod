@@ -262,6 +262,7 @@ class BigIntDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BigIntDefault>(
+      table: BigIntDefault.t,
       where: where?.call(BigIntDefault.t),
       orderBy: orderBy?.call(BigIntDefault.t),
       orderByList: orderByList?.call(BigIntDefault.t),
@@ -326,6 +327,7 @@ class BigIntDefaultRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<BigIntDefault>(
+      table: BigIntDefault.t,
       where: where?.call(BigIntDefault.t),
       orderBy: orderBy?.call(BigIntDefault.t),
       orderByList: orderByList?.call(BigIntDefault.t),
@@ -364,6 +366,7 @@ class BigIntDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BigIntDefault>(
+      table: BigIntDefault.t,
       where: where?.call(BigIntDefault.t),
       orderBy: orderBy?.call(BigIntDefault.t),
       orderByList: orderByList?.call(BigIntDefault.t),
@@ -384,6 +387,7 @@ class BigIntDefaultRepository {
   }) async {
     return session.db.findById<BigIntDefault>(
       id,
+      table: BigIntDefault.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -552,6 +556,7 @@ class BigIntDefaultRepository {
   }) async {
     return session.db.updateById<BigIntDefault>(
       id,
+      table: BigIntDefault.t,
       columnValues: columnValues(BigIntDefault.t.updateTable),
       transaction: transaction,
     );
@@ -575,6 +580,7 @@ class BigIntDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BigIntDefault>(
+      table: BigIntDefault.t,
       columnValues: columnValues(BigIntDefault.t.updateTable),
       where: where(BigIntDefault.t),
       limit: limit,
@@ -643,6 +649,7 @@ class BigIntDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BigIntDefault>(
+      table: BigIntDefault.t,
       where: where(BigIntDefault.t),
       orderBy: orderBy?.call(BigIntDefault.t),
       orderByList: orderByList?.call(BigIntDefault.t),
@@ -660,6 +667,7 @@ class BigIntDefaultRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<BigIntDefault>(
+      table: BigIntDefault.t,
       where: where?.call(BigIntDefault.t),
       limit: limit,
       transaction: transaction,
@@ -675,6 +683,7 @@ class BigIntDefaultRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BigIntDefault>(
+      table: BigIntDefault.t,
       where: where(BigIntDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

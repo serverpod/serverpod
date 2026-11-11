@@ -446,6 +446,7 @@ class PasskeyAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<PasskeyAccount>(
+      table: PasskeyAccount.t,
       where: where?.call(PasskeyAccount.t),
       orderBy: orderBy?.call(PasskeyAccount.t),
       orderByList: orderByList?.call(PasskeyAccount.t),
@@ -512,6 +513,7 @@ class PasskeyAccountRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<PasskeyAccount>(
+      table: PasskeyAccount.t,
       where: where?.call(PasskeyAccount.t),
       orderBy: orderBy?.call(PasskeyAccount.t),
       orderByList: orderByList?.call(PasskeyAccount.t),
@@ -552,6 +554,7 @@ class PasskeyAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<PasskeyAccount>(
+      table: PasskeyAccount.t,
       where: where?.call(PasskeyAccount.t),
       orderBy: orderBy?.call(PasskeyAccount.t),
       orderByList: orderByList?.call(PasskeyAccount.t),
@@ -574,6 +577,7 @@ class PasskeyAccountRepository {
   }) async {
     return session.db.findById<PasskeyAccount>(
       id,
+      table: PasskeyAccount.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -743,6 +747,7 @@ class PasskeyAccountRepository {
   }) async {
     return session.db.updateById<PasskeyAccount>(
       id,
+      table: PasskeyAccount.t,
       columnValues: columnValues(PasskeyAccount.t.updateTable),
       transaction: transaction,
     );
@@ -766,6 +771,7 @@ class PasskeyAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<PasskeyAccount>(
+      table: PasskeyAccount.t,
       columnValues: columnValues(PasskeyAccount.t.updateTable),
       where: where(PasskeyAccount.t),
       limit: limit,
@@ -834,6 +840,7 @@ class PasskeyAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<PasskeyAccount>(
+      table: PasskeyAccount.t,
       where: where(PasskeyAccount.t),
       orderBy: orderBy?.call(PasskeyAccount.t),
       orderByList: orderByList?.call(PasskeyAccount.t),
@@ -851,6 +858,7 @@ class PasskeyAccountRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<PasskeyAccount>(
+      table: PasskeyAccount.t,
       where: where?.call(PasskeyAccount.t),
       limit: limit,
       transaction: transaction,
@@ -866,6 +874,7 @@ class PasskeyAccountRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<PasskeyAccount>(
+      table: PasskeyAccount.t,
       where: where(PasskeyAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

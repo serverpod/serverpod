@@ -226,6 +226,7 @@ class BleedChildRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BleedChild>(
+      table: BleedChild.t,
       where: where?.call(BleedChild.t),
       orderBy: orderBy?.call(BleedChild.t),
       orderByList: orderByList?.call(BleedChild.t),
@@ -290,6 +291,7 @@ class BleedChildRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<BleedChild>(
+      table: BleedChild.t,
       where: where?.call(BleedChild.t),
       orderBy: orderBy?.call(BleedChild.t),
       orderByList: orderByList?.call(BleedChild.t),
@@ -328,6 +330,7 @@ class BleedChildRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BleedChild>(
+      table: BleedChild.t,
       where: where?.call(BleedChild.t),
       orderBy: orderBy?.call(BleedChild.t),
       orderByList: orderByList?.call(BleedChild.t),
@@ -348,6 +351,7 @@ class BleedChildRepository {
   }) async {
     return session.db.findById<BleedChild>(
       id,
+      table: BleedChild.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -516,6 +520,7 @@ class BleedChildRepository {
   }) async {
     return session.db.updateById<BleedChild>(
       id,
+      table: BleedChild.t,
       columnValues: columnValues(BleedChild.t.updateTable),
       transaction: transaction,
     );
@@ -539,6 +544,7 @@ class BleedChildRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BleedChild>(
+      table: BleedChild.t,
       columnValues: columnValues(BleedChild.t.updateTable),
       where: where(BleedChild.t),
       limit: limit,
@@ -607,6 +613,7 @@ class BleedChildRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BleedChild>(
+      table: BleedChild.t,
       where: where(BleedChild.t),
       orderBy: orderBy?.call(BleedChild.t),
       orderByList: orderByList?.call(BleedChild.t),
@@ -624,6 +631,7 @@ class BleedChildRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<BleedChild>(
+      table: BleedChild.t,
       where: where?.call(BleedChild.t),
       limit: limit,
       transaction: transaction,
@@ -639,6 +647,7 @@ class BleedChildRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BleedChild>(
+      table: BleedChild.t,
       where: where(BleedChild.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

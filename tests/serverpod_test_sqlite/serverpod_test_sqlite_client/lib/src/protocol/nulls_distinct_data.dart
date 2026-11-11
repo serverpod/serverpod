@@ -270,6 +270,7 @@ class NullsDistinctDataRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<NullsDistinctData>(
+      table: NullsDistinctData.t,
       where: where?.call(NullsDistinctData.t),
       orderBy: orderBy?.call(NullsDistinctData.t),
       orderByList: orderByList?.call(NullsDistinctData.t),
@@ -334,6 +335,7 @@ class NullsDistinctDataRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<NullsDistinctData>(
+      table: NullsDistinctData.t,
       where: where?.call(NullsDistinctData.t),
       orderBy: orderBy?.call(NullsDistinctData.t),
       orderByList: orderByList?.call(NullsDistinctData.t),
@@ -372,6 +374,7 @@ class NullsDistinctDataRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<NullsDistinctData>(
+      table: NullsDistinctData.t,
       where: where?.call(NullsDistinctData.t),
       orderBy: orderBy?.call(NullsDistinctData.t),
       orderByList: orderByList?.call(NullsDistinctData.t),
@@ -392,6 +395,7 @@ class NullsDistinctDataRepository {
   }) async {
     return session.db.findById<NullsDistinctData>(
       id,
+      table: NullsDistinctData.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -561,6 +565,7 @@ class NullsDistinctDataRepository {
   }) async {
     return session.db.updateById<NullsDistinctData>(
       id,
+      table: NullsDistinctData.t,
       columnValues: columnValues(NullsDistinctData.t.updateTable),
       transaction: transaction,
     );
@@ -585,6 +590,7 @@ class NullsDistinctDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<NullsDistinctData>(
+      table: NullsDistinctData.t,
       columnValues: columnValues(NullsDistinctData.t.updateTable),
       where: where(NullsDistinctData.t),
       limit: limit,
@@ -653,6 +659,7 @@ class NullsDistinctDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<NullsDistinctData>(
+      table: NullsDistinctData.t,
       where: where(NullsDistinctData.t),
       orderBy: orderBy?.call(NullsDistinctData.t),
       orderByList: orderByList?.call(NullsDistinctData.t),
@@ -670,6 +677,7 @@ class NullsDistinctDataRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<NullsDistinctData>(
+      table: NullsDistinctData.t,
       where: where?.call(NullsDistinctData.t),
       limit: limit,
       transaction: transaction,
@@ -685,6 +693,7 @@ class NullsDistinctDataRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<NullsDistinctData>(
+      table: NullsDistinctData.t,
       where: where(NullsDistinctData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

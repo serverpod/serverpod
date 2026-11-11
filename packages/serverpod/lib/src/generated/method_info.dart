@@ -248,6 +248,7 @@ class MethodInfoRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MethodInfo>(
+      table: MethodInfo.t,
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -312,6 +313,7 @@ class MethodInfoRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<MethodInfo>(
+      table: MethodInfo.t,
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -350,6 +352,7 @@ class MethodInfoRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MethodInfo>(
+      table: MethodInfo.t,
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -370,6 +373,7 @@ class MethodInfoRepository {
   }) async {
     return session.db.findById<MethodInfo>(
       id,
+      table: MethodInfo.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -538,6 +542,7 @@ class MethodInfoRepository {
   }) async {
     return session.db.updateById<MethodInfo>(
       id,
+      table: MethodInfo.t,
       columnValues: columnValues(MethodInfo.t.updateTable),
       transaction: transaction,
     );
@@ -561,6 +566,7 @@ class MethodInfoRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MethodInfo>(
+      table: MethodInfo.t,
       columnValues: columnValues(MethodInfo.t.updateTable),
       where: where(MethodInfo.t),
       limit: limit,
@@ -629,6 +635,7 @@ class MethodInfoRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MethodInfo>(
+      table: MethodInfo.t,
       where: where(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -646,6 +653,7 @@ class MethodInfoRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<MethodInfo>(
+      table: MethodInfo.t,
       where: where?.call(MethodInfo.t),
       limit: limit,
       transaction: transaction,
@@ -661,6 +669,7 @@ class MethodInfoRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MethodInfo>(
+      table: MethodInfo.t,
       where: where(MethodInfo.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

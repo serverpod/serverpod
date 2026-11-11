@@ -382,6 +382,7 @@ class TokenMetadataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<TokenMetadata>(
+      table: TokenMetadata.t,
       where: where?.call(TokenMetadata.t),
       orderBy: orderBy?.call(TokenMetadata.t),
       orderByList: orderByList?.call(TokenMetadata.t),
@@ -448,6 +449,7 @@ class TokenMetadataRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<TokenMetadata>(
+      table: TokenMetadata.t,
       where: where?.call(TokenMetadata.t),
       orderBy: orderBy?.call(TokenMetadata.t),
       orderByList: orderByList?.call(TokenMetadata.t),
@@ -488,6 +490,7 @@ class TokenMetadataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<TokenMetadata>(
+      table: TokenMetadata.t,
       where: where?.call(TokenMetadata.t),
       orderBy: orderBy?.call(TokenMetadata.t),
       orderByList: orderByList?.call(TokenMetadata.t),
@@ -510,6 +513,7 @@ class TokenMetadataRepository {
   }) async {
     return session.db.findById<TokenMetadata>(
       id,
+      table: TokenMetadata.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -679,6 +683,7 @@ class TokenMetadataRepository {
   }) async {
     return session.db.updateById<TokenMetadata>(
       id,
+      table: TokenMetadata.t,
       columnValues: columnValues(TokenMetadata.t.updateTable),
       transaction: transaction,
     );
@@ -702,6 +707,7 @@ class TokenMetadataRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<TokenMetadata>(
+      table: TokenMetadata.t,
       columnValues: columnValues(TokenMetadata.t.updateTable),
       where: where(TokenMetadata.t),
       limit: limit,
@@ -770,6 +776,7 @@ class TokenMetadataRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<TokenMetadata>(
+      table: TokenMetadata.t,
       where: where(TokenMetadata.t),
       orderBy: orderBy?.call(TokenMetadata.t),
       orderByList: orderByList?.call(TokenMetadata.t),
@@ -787,6 +794,7 @@ class TokenMetadataRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<TokenMetadata>(
+      table: TokenMetadata.t,
       where: where?.call(TokenMetadata.t),
       limit: limit,
       transaction: transaction,
@@ -802,6 +810,7 @@ class TokenMetadataRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<TokenMetadata>(
+      table: TokenMetadata.t,
       where: where(TokenMetadata.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

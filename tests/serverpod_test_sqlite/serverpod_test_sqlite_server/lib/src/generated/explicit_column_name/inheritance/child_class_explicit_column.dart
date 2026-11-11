@@ -249,6 +249,7 @@ class ChildClassExplicitColumnRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildClassExplicitColumn>(
+      table: ChildClassExplicitColumn.t,
       where: where?.call(ChildClassExplicitColumn.t),
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
@@ -313,6 +314,7 @@ class ChildClassExplicitColumnRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ChildClassExplicitColumn>(
+      table: ChildClassExplicitColumn.t,
       where: where?.call(ChildClassExplicitColumn.t),
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
@@ -351,6 +353,7 @@ class ChildClassExplicitColumnRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildClassExplicitColumn>(
+      table: ChildClassExplicitColumn.t,
       where: where?.call(ChildClassExplicitColumn.t),
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
@@ -371,6 +374,7 @@ class ChildClassExplicitColumnRepository {
   }) async {
     return session.db.findById<ChildClassExplicitColumn>(
       id,
+      table: ChildClassExplicitColumn.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -542,6 +546,7 @@ class ChildClassExplicitColumnRepository {
   }) async {
     return session.db.updateById<ChildClassExplicitColumn>(
       id,
+      table: ChildClassExplicitColumn.t,
       columnValues: columnValues(ChildClassExplicitColumn.t.updateTable),
       transaction: transaction,
     );
@@ -566,6 +571,7 @@ class ChildClassExplicitColumnRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChildClassExplicitColumn>(
+      table: ChildClassExplicitColumn.t,
       columnValues: columnValues(ChildClassExplicitColumn.t.updateTable),
       where: where(ChildClassExplicitColumn.t),
       limit: limit,
@@ -634,6 +640,7 @@ class ChildClassExplicitColumnRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChildClassExplicitColumn>(
+      table: ChildClassExplicitColumn.t,
       where: where(ChildClassExplicitColumn.t),
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
@@ -651,6 +658,7 @@ class ChildClassExplicitColumnRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ChildClassExplicitColumn>(
+      table: ChildClassExplicitColumn.t,
       where: where?.call(ChildClassExplicitColumn.t),
       limit: limit,
       transaction: transaction,
@@ -666,6 +674,7 @@ class ChildClassExplicitColumnRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ChildClassExplicitColumn>(
+      table: ChildClassExplicitColumn.t,
       where: where(ChildClassExplicitColumn.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -366,6 +366,7 @@ class UuidDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UuidDefault>(
+      table: UuidDefault.t,
       where: where?.call(UuidDefault.t),
       orderBy: orderBy?.call(UuidDefault.t),
       orderByList: orderByList?.call(UuidDefault.t),
@@ -430,6 +431,7 @@ class UuidDefaultRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UuidDefault>(
+      table: UuidDefault.t,
       where: where?.call(UuidDefault.t),
       orderBy: orderBy?.call(UuidDefault.t),
       orderByList: orderByList?.call(UuidDefault.t),
@@ -468,6 +470,7 @@ class UuidDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UuidDefault>(
+      table: UuidDefault.t,
       where: where?.call(UuidDefault.t),
       orderBy: orderBy?.call(UuidDefault.t),
       orderByList: orderByList?.call(UuidDefault.t),
@@ -488,6 +491,7 @@ class UuidDefaultRepository {
   }) async {
     return session.db.findById<UuidDefault>(
       id,
+      table: UuidDefault.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -656,6 +660,7 @@ class UuidDefaultRepository {
   }) async {
     return session.db.updateById<UuidDefault>(
       id,
+      table: UuidDefault.t,
       columnValues: columnValues(UuidDefault.t.updateTable),
       transaction: transaction,
     );
@@ -679,6 +684,7 @@ class UuidDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UuidDefault>(
+      table: UuidDefault.t,
       columnValues: columnValues(UuidDefault.t.updateTable),
       where: where(UuidDefault.t),
       limit: limit,
@@ -747,6 +753,7 @@ class UuidDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UuidDefault>(
+      table: UuidDefault.t,
       where: where(UuidDefault.t),
       orderBy: orderBy?.call(UuidDefault.t),
       orderByList: orderByList?.call(UuidDefault.t),
@@ -764,6 +771,7 @@ class UuidDefaultRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UuidDefault>(
+      table: UuidDefault.t,
       where: where?.call(UuidDefault.t),
       limit: limit,
       transaction: transaction,
@@ -779,6 +787,7 @@ class UuidDefaultRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UuidDefault>(
+      table: UuidDefault.t,
       where: where(UuidDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

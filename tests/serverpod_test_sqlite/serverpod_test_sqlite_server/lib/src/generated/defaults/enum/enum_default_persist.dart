@@ -272,6 +272,7 @@ class EnumDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EnumDefaultPersist>(
+      table: EnumDefaultPersist.t,
       where: where?.call(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
@@ -336,6 +337,7 @@ class EnumDefaultPersistRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EnumDefaultPersist>(
+      table: EnumDefaultPersist.t,
       where: where?.call(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
@@ -374,6 +376,7 @@ class EnumDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EnumDefaultPersist>(
+      table: EnumDefaultPersist.t,
       where: where?.call(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
@@ -394,6 +397,7 @@ class EnumDefaultPersistRepository {
   }) async {
     return session.db.findById<EnumDefaultPersist>(
       id,
+      table: EnumDefaultPersist.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -563,6 +567,7 @@ class EnumDefaultPersistRepository {
   }) async {
     return session.db.updateById<EnumDefaultPersist>(
       id,
+      table: EnumDefaultPersist.t,
       columnValues: columnValues(EnumDefaultPersist.t.updateTable),
       transaction: transaction,
     );
@@ -587,6 +592,7 @@ class EnumDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EnumDefaultPersist>(
+      table: EnumDefaultPersist.t,
       columnValues: columnValues(EnumDefaultPersist.t.updateTable),
       where: where(EnumDefaultPersist.t),
       limit: limit,
@@ -655,6 +661,7 @@ class EnumDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EnumDefaultPersist>(
+      table: EnumDefaultPersist.t,
       where: where(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
@@ -672,6 +679,7 @@ class EnumDefaultPersistRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EnumDefaultPersist>(
+      table: EnumDefaultPersist.t,
       where: where?.call(EnumDefaultPersist.t),
       limit: limit,
       transaction: transaction,
@@ -687,6 +695,7 @@ class EnumDefaultPersistRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EnumDefaultPersist>(
+      table: EnumDefaultPersist.t,
       where: where(EnumDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

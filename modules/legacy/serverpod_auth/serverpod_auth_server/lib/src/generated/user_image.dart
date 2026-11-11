@@ -274,6 +274,7 @@ class UserImageRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserImage>(
+      table: UserImage.t,
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
@@ -338,6 +339,7 @@ class UserImageRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UserImage>(
+      table: UserImage.t,
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
@@ -376,6 +378,7 @@ class UserImageRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserImage>(
+      table: UserImage.t,
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
@@ -396,6 +399,7 @@ class UserImageRepository {
   }) async {
     return session.db.findById<UserImage>(
       id,
+      table: UserImage.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -564,6 +568,7 @@ class UserImageRepository {
   }) async {
     return session.db.updateById<UserImage>(
       id,
+      table: UserImage.t,
       columnValues: columnValues(UserImage.t.updateTable),
       transaction: transaction,
     );
@@ -587,6 +592,7 @@ class UserImageRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserImage>(
+      table: UserImage.t,
       columnValues: columnValues(UserImage.t.updateTable),
       where: where(UserImage.t),
       limit: limit,
@@ -655,6 +661,7 @@ class UserImageRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserImage>(
+      table: UserImage.t,
       where: where(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
@@ -672,6 +679,7 @@ class UserImageRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UserImage>(
+      table: UserImage.t,
       where: where?.call(UserImage.t),
       limit: limit,
       transaction: transaction,
@@ -687,6 +695,7 @@ class UserImageRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserImage>(
+      table: UserImage.t,
       where: where(UserImage.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -359,6 +359,7 @@ class ObjectWithEnumRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithEnum>(
+      table: ObjectWithEnum.t,
       where: where?.call(ObjectWithEnum.t),
       orderBy: orderBy?.call(ObjectWithEnum.t),
       orderByList: orderByList?.call(ObjectWithEnum.t),
@@ -423,6 +424,7 @@ class ObjectWithEnumRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithEnum>(
+      table: ObjectWithEnum.t,
       where: where?.call(ObjectWithEnum.t),
       orderBy: orderBy?.call(ObjectWithEnum.t),
       orderByList: orderByList?.call(ObjectWithEnum.t),
@@ -461,6 +463,7 @@ class ObjectWithEnumRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithEnum>(
+      table: ObjectWithEnum.t,
       where: where?.call(ObjectWithEnum.t),
       orderBy: orderBy?.call(ObjectWithEnum.t),
       orderByList: orderByList?.call(ObjectWithEnum.t),
@@ -481,6 +484,7 @@ class ObjectWithEnumRepository {
   }) async {
     return session.db.findById<ObjectWithEnum>(
       id,
+      table: ObjectWithEnum.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -649,6 +653,7 @@ class ObjectWithEnumRepository {
   }) async {
     return session.db.updateById<ObjectWithEnum>(
       id,
+      table: ObjectWithEnum.t,
       columnValues: columnValues(ObjectWithEnum.t.updateTable),
       transaction: transaction,
     );
@@ -672,6 +677,7 @@ class ObjectWithEnumRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithEnum>(
+      table: ObjectWithEnum.t,
       columnValues: columnValues(ObjectWithEnum.t.updateTable),
       where: where(ObjectWithEnum.t),
       limit: limit,
@@ -740,6 +746,7 @@ class ObjectWithEnumRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithEnum>(
+      table: ObjectWithEnum.t,
       where: where(ObjectWithEnum.t),
       orderBy: orderBy?.call(ObjectWithEnum.t),
       orderByList: orderByList?.call(ObjectWithEnum.t),
@@ -757,6 +764,7 @@ class ObjectWithEnumRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithEnum>(
+      table: ObjectWithEnum.t,
       where: where?.call(ObjectWithEnum.t),
       limit: limit,
       transaction: transaction,
@@ -772,6 +780,7 @@ class ObjectWithEnumRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithEnum>(
+      table: ObjectWithEnum.t,
       where: where(ObjectWithEnum.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

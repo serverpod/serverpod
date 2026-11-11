@@ -300,6 +300,7 @@ class CourseUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CourseUuid>(
+      table: CourseUuid.t,
       where: where?.call(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
@@ -366,6 +367,7 @@ class CourseUuidRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<CourseUuid>(
+      table: CourseUuid.t,
       where: where?.call(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
@@ -406,6 +408,7 @@ class CourseUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CourseUuid>(
+      table: CourseUuid.t,
       where: where?.call(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
@@ -428,6 +431,7 @@ class CourseUuidRepository {
   }) async {
     return session.db.findById<CourseUuid>(
       id,
+      table: CourseUuid.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -597,6 +601,7 @@ class CourseUuidRepository {
   }) async {
     return session.db.updateById<CourseUuid>(
       id,
+      table: CourseUuid.t,
       columnValues: columnValues(CourseUuid.t.updateTable),
       transaction: transaction,
     );
@@ -620,6 +625,7 @@ class CourseUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CourseUuid>(
+      table: CourseUuid.t,
       columnValues: columnValues(CourseUuid.t.updateTable),
       where: where(CourseUuid.t),
       limit: limit,
@@ -688,6 +694,7 @@ class CourseUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CourseUuid>(
+      table: CourseUuid.t,
       where: where(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
@@ -705,6 +712,7 @@ class CourseUuidRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<CourseUuid>(
+      table: CourseUuid.t,
       where: where?.call(CourseUuid.t),
       limit: limit,
       transaction: transaction,
@@ -720,6 +728,7 @@ class CourseUuidRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CourseUuid>(
+      table: CourseUuid.t,
       where: where(CourseUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

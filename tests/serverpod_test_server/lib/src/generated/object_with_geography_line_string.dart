@@ -282,6 +282,7 @@ class ObjectWithGeographyLineStringRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithGeographyLineString>(
+      table: ObjectWithGeographyLineString.t,
       where: where?.call(ObjectWithGeographyLineString.t),
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
@@ -346,6 +347,7 @@ class ObjectWithGeographyLineStringRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithGeographyLineString>(
+      table: ObjectWithGeographyLineString.t,
       where: where?.call(ObjectWithGeographyLineString.t),
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
@@ -384,6 +386,7 @@ class ObjectWithGeographyLineStringRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithGeographyLineString>(
+      table: ObjectWithGeographyLineString.t,
       where: where?.call(ObjectWithGeographyLineString.t),
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
@@ -404,6 +407,7 @@ class ObjectWithGeographyLineStringRepository {
   }) async {
     return session.db.findById<ObjectWithGeographyLineString>(
       id,
+      table: ObjectWithGeographyLineString.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -577,6 +581,7 @@ class ObjectWithGeographyLineStringRepository {
   }) async {
     return session.db.updateById<ObjectWithGeographyLineString>(
       id,
+      table: ObjectWithGeographyLineString.t,
       columnValues: columnValues(ObjectWithGeographyLineString.t.updateTable),
       transaction: transaction,
     );
@@ -604,6 +609,7 @@ class ObjectWithGeographyLineStringRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithGeographyLineString>(
+      table: ObjectWithGeographyLineString.t,
       columnValues: columnValues(ObjectWithGeographyLineString.t.updateTable),
       where: where(ObjectWithGeographyLineString.t),
       limit: limit,
@@ -673,6 +679,7 @@ class ObjectWithGeographyLineStringRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithGeographyLineString>(
+      table: ObjectWithGeographyLineString.t,
       where: where(ObjectWithGeographyLineString.t),
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
@@ -690,6 +697,7 @@ class ObjectWithGeographyLineStringRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithGeographyLineString>(
+      table: ObjectWithGeographyLineString.t,
       where: where?.call(ObjectWithGeographyLineString.t),
       limit: limit,
       transaction: transaction,
@@ -706,6 +714,7 @@ class ObjectWithGeographyLineStringRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithGeographyLineString>(
+      table: ObjectWithGeographyLineString.t,
       where: where(ObjectWithGeographyLineString.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

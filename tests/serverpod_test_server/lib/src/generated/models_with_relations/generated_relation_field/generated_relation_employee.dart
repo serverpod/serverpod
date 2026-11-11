@@ -401,6 +401,7 @@ class GeneratedRelationEmployeeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GeneratedRelationEmployee>(
+      table: GeneratedRelationEmployee.t,
       where: where?.call(GeneratedRelationEmployee.t),
       orderBy: orderBy?.call(GeneratedRelationEmployee.t),
       orderByList: orderByList?.call(GeneratedRelationEmployee.t),
@@ -467,6 +468,7 @@ class GeneratedRelationEmployeeRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<GeneratedRelationEmployee>(
+      table: GeneratedRelationEmployee.t,
       where: where?.call(GeneratedRelationEmployee.t),
       orderBy: orderBy?.call(GeneratedRelationEmployee.t),
       orderByList: orderByList?.call(GeneratedRelationEmployee.t),
@@ -507,6 +509,7 @@ class GeneratedRelationEmployeeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GeneratedRelationEmployee>(
+      table: GeneratedRelationEmployee.t,
       where: where?.call(GeneratedRelationEmployee.t),
       orderBy: orderBy?.call(GeneratedRelationEmployee.t),
       orderByList: orderByList?.call(GeneratedRelationEmployee.t),
@@ -529,6 +532,7 @@ class GeneratedRelationEmployeeRepository {
   }) async {
     return session.db.findById<GeneratedRelationEmployee>(
       id,
+      table: GeneratedRelationEmployee.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -701,6 +705,7 @@ class GeneratedRelationEmployeeRepository {
   }) async {
     return session.db.updateById<GeneratedRelationEmployee>(
       id,
+      table: GeneratedRelationEmployee.t,
       columnValues: columnValues(GeneratedRelationEmployee.t.updateTable),
       transaction: transaction,
     );
@@ -725,6 +730,7 @@ class GeneratedRelationEmployeeRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GeneratedRelationEmployee>(
+      table: GeneratedRelationEmployee.t,
       columnValues: columnValues(GeneratedRelationEmployee.t.updateTable),
       where: where(GeneratedRelationEmployee.t),
       limit: limit,
@@ -793,6 +799,7 @@ class GeneratedRelationEmployeeRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GeneratedRelationEmployee>(
+      table: GeneratedRelationEmployee.t,
       where: where(GeneratedRelationEmployee.t),
       orderBy: orderBy?.call(GeneratedRelationEmployee.t),
       orderByList: orderByList?.call(GeneratedRelationEmployee.t),
@@ -810,6 +817,7 @@ class GeneratedRelationEmployeeRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<GeneratedRelationEmployee>(
+      table: GeneratedRelationEmployee.t,
       where: where?.call(GeneratedRelationEmployee.t),
       limit: limit,
       transaction: transaction,
@@ -825,6 +833,7 @@ class GeneratedRelationEmployeeRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GeneratedRelationEmployee>(
+      table: GeneratedRelationEmployee.t,
       where: where(GeneratedRelationEmployee.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

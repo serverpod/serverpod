@@ -302,6 +302,7 @@ class UriDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UriDefaultMix>(
+      table: UriDefaultMix.t,
       where: where?.call(UriDefaultMix.t),
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
@@ -366,6 +367,7 @@ class UriDefaultMixRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UriDefaultMix>(
+      table: UriDefaultMix.t,
       where: where?.call(UriDefaultMix.t),
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
@@ -404,6 +406,7 @@ class UriDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UriDefaultMix>(
+      table: UriDefaultMix.t,
       where: where?.call(UriDefaultMix.t),
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
@@ -424,6 +427,7 @@ class UriDefaultMixRepository {
   }) async {
     return session.db.findById<UriDefaultMix>(
       id,
+      table: UriDefaultMix.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -592,6 +596,7 @@ class UriDefaultMixRepository {
   }) async {
     return session.db.updateById<UriDefaultMix>(
       id,
+      table: UriDefaultMix.t,
       columnValues: columnValues(UriDefaultMix.t.updateTable),
       transaction: transaction,
     );
@@ -615,6 +620,7 @@ class UriDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UriDefaultMix>(
+      table: UriDefaultMix.t,
       columnValues: columnValues(UriDefaultMix.t.updateTable),
       where: where(UriDefaultMix.t),
       limit: limit,
@@ -683,6 +689,7 @@ class UriDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UriDefaultMix>(
+      table: UriDefaultMix.t,
       where: where(UriDefaultMix.t),
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
@@ -700,6 +707,7 @@ class UriDefaultMixRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UriDefaultMix>(
+      table: UriDefaultMix.t,
       where: where?.call(UriDefaultMix.t),
       limit: limit,
       transaction: transaction,
@@ -715,6 +723,7 @@ class UriDefaultMixRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UriDefaultMix>(
+      table: UriDefaultMix.t,
       where: where(UriDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -276,6 +276,7 @@ class DatabaseMigrationVersionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DatabaseMigrationVersion>(
+      table: DatabaseMigrationVersion.t,
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
@@ -340,6 +341,7 @@ class DatabaseMigrationVersionRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<DatabaseMigrationVersion>(
+      table: DatabaseMigrationVersion.t,
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
@@ -378,6 +380,7 @@ class DatabaseMigrationVersionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DatabaseMigrationVersion>(
+      table: DatabaseMigrationVersion.t,
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
@@ -398,6 +401,7 @@ class DatabaseMigrationVersionRepository {
   }) async {
     return session.db.findById<DatabaseMigrationVersion>(
       id,
+      table: DatabaseMigrationVersion.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -569,6 +573,7 @@ class DatabaseMigrationVersionRepository {
   }) async {
     return session.db.updateById<DatabaseMigrationVersion>(
       id,
+      table: DatabaseMigrationVersion.t,
       columnValues: columnValues(DatabaseMigrationVersion.t.updateTable),
       transaction: transaction,
     );
@@ -593,6 +598,7 @@ class DatabaseMigrationVersionRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DatabaseMigrationVersion>(
+      table: DatabaseMigrationVersion.t,
       columnValues: columnValues(DatabaseMigrationVersion.t.updateTable),
       where: where(DatabaseMigrationVersion.t),
       limit: limit,
@@ -661,6 +667,7 @@ class DatabaseMigrationVersionRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DatabaseMigrationVersion>(
+      table: DatabaseMigrationVersion.t,
       where: where(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
@@ -678,6 +685,7 @@ class DatabaseMigrationVersionRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<DatabaseMigrationVersion>(
+      table: DatabaseMigrationVersion.t,
       where: where?.call(DatabaseMigrationVersion.t),
       limit: limit,
       transaction: transaction,
@@ -693,6 +701,7 @@ class DatabaseMigrationVersionRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DatabaseMigrationVersion>(
+      table: DatabaseMigrationVersion.t,
       where: where(DatabaseMigrationVersion.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

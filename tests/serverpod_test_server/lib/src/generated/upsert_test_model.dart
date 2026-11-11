@@ -267,6 +267,7 @@ class UpsertTestModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UpsertTestModel>(
+      table: UpsertTestModel.t,
       where: where?.call(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
@@ -331,6 +332,7 @@ class UpsertTestModelRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UpsertTestModel>(
+      table: UpsertTestModel.t,
       where: where?.call(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
@@ -369,6 +371,7 @@ class UpsertTestModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UpsertTestModel>(
+      table: UpsertTestModel.t,
       where: where?.call(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
@@ -389,6 +392,7 @@ class UpsertTestModelRepository {
   }) async {
     return session.db.findById<UpsertTestModel>(
       id,
+      table: UpsertTestModel.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -558,6 +562,7 @@ class UpsertTestModelRepository {
   }) async {
     return session.db.updateById<UpsertTestModel>(
       id,
+      table: UpsertTestModel.t,
       columnValues: columnValues(UpsertTestModel.t.updateTable),
       transaction: transaction,
     );
@@ -582,6 +587,7 @@ class UpsertTestModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UpsertTestModel>(
+      table: UpsertTestModel.t,
       columnValues: columnValues(UpsertTestModel.t.updateTable),
       where: where(UpsertTestModel.t),
       limit: limit,
@@ -650,6 +656,7 @@ class UpsertTestModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UpsertTestModel>(
+      table: UpsertTestModel.t,
       where: where(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
@@ -667,6 +674,7 @@ class UpsertTestModelRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UpsertTestModel>(
+      table: UpsertTestModel.t,
       where: where?.call(UpsertTestModel.t),
       limit: limit,
       transaction: transaction,
@@ -682,6 +690,7 @@ class UpsertTestModelRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UpsertTestModel>(
+      table: UpsertTestModel.t,
       where: where(UpsertTestModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -226,6 +226,7 @@ class SimpleDateTimeRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SimpleDateTime>(
+      table: SimpleDateTime.t,
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
@@ -290,6 +291,7 @@ class SimpleDateTimeRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<SimpleDateTime>(
+      table: SimpleDateTime.t,
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
@@ -328,6 +330,7 @@ class SimpleDateTimeRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SimpleDateTime>(
+      table: SimpleDateTime.t,
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
@@ -348,6 +351,7 @@ class SimpleDateTimeRepository {
   }) async {
     return session.db.findById<SimpleDateTime>(
       id,
+      table: SimpleDateTime.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -517,6 +521,7 @@ class SimpleDateTimeRepository {
   }) async {
     return session.db.updateById<SimpleDateTime>(
       id,
+      table: SimpleDateTime.t,
       columnValues: columnValues(SimpleDateTime.t.updateTable),
       transaction: transaction,
     );
@@ -541,6 +546,7 @@ class SimpleDateTimeRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SimpleDateTime>(
+      table: SimpleDateTime.t,
       columnValues: columnValues(SimpleDateTime.t.updateTable),
       where: where(SimpleDateTime.t),
       limit: limit,
@@ -609,6 +615,7 @@ class SimpleDateTimeRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SimpleDateTime>(
+      table: SimpleDateTime.t,
       where: where(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
@@ -626,6 +633,7 @@ class SimpleDateTimeRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<SimpleDateTime>(
+      table: SimpleDateTime.t,
       where: where?.call(SimpleDateTime.t),
       limit: limit,
       transaction: transaction,
@@ -641,6 +649,7 @@ class SimpleDateTimeRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SimpleDateTime>(
+      table: SimpleDateTime.t,
       where: where(SimpleDateTime.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

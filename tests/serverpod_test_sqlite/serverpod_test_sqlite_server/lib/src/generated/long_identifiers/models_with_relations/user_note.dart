@@ -279,6 +279,7 @@ class UserNoteRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserNote>(
+      table: UserNote.t,
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -343,6 +344,7 @@ class UserNoteRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UserNote>(
+      table: UserNote.t,
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -381,6 +383,7 @@ class UserNoteRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserNote>(
+      table: UserNote.t,
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -401,6 +404,7 @@ class UserNoteRepository {
   }) async {
     return session.db.findById<UserNote>(
       id,
+      table: UserNote.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -569,6 +573,7 @@ class UserNoteRepository {
   }) async {
     return session.db.updateById<UserNote>(
       id,
+      table: UserNote.t,
       columnValues: columnValues(UserNote.t.updateTable),
       transaction: transaction,
     );
@@ -592,6 +597,7 @@ class UserNoteRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserNote>(
+      table: UserNote.t,
       columnValues: columnValues(UserNote.t.updateTable),
       where: where(UserNote.t),
       limit: limit,
@@ -660,6 +666,7 @@ class UserNoteRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserNote>(
+      table: UserNote.t,
       where: where(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -677,6 +684,7 @@ class UserNoteRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UserNote>(
+      table: UserNote.t,
       where: where?.call(UserNote.t),
       limit: limit,
       transaction: transaction,
@@ -692,6 +700,7 @@ class UserNoteRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserNote>(
+      table: UserNote.t,
       where: where(UserNote.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

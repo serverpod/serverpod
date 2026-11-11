@@ -301,6 +301,7 @@ class AddressRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Address>(
+      table: Address.t,
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
@@ -367,6 +368,7 @@ class AddressRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Address>(
+      table: Address.t,
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
@@ -407,6 +409,7 @@ class AddressRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Address>(
+      table: Address.t,
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
@@ -429,6 +432,7 @@ class AddressRepository {
   }) async {
     return session.db.findById<Address>(
       id,
+      table: Address.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -598,6 +602,7 @@ class AddressRepository {
   }) async {
     return session.db.updateById<Address>(
       id,
+      table: Address.t,
       columnValues: columnValues(Address.t.updateTable),
       transaction: transaction,
     );
@@ -621,6 +626,7 @@ class AddressRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Address>(
+      table: Address.t,
       columnValues: columnValues(Address.t.updateTable),
       where: where(Address.t),
       limit: limit,
@@ -689,6 +695,7 @@ class AddressRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Address>(
+      table: Address.t,
       where: where(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
@@ -706,6 +713,7 @@ class AddressRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Address>(
+      table: Address.t,
       where: where?.call(Address.t),
       limit: limit,
       transaction: transaction,
@@ -721,6 +729,7 @@ class AddressRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Address>(
+      table: Address.t,
       where: where(Address.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

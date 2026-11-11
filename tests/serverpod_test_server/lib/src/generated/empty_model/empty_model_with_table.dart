@@ -178,6 +178,7 @@ class EmptyModelWithTableRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmptyModelWithTable>(
+      table: EmptyModelWithTable.t,
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
@@ -242,6 +243,7 @@ class EmptyModelWithTableRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EmptyModelWithTable>(
+      table: EmptyModelWithTable.t,
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
@@ -280,6 +282,7 @@ class EmptyModelWithTableRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmptyModelWithTable>(
+      table: EmptyModelWithTable.t,
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
@@ -300,6 +303,7 @@ class EmptyModelWithTableRepository {
   }) async {
     return session.db.findById<EmptyModelWithTable>(
       id,
+      table: EmptyModelWithTable.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -469,6 +473,7 @@ class EmptyModelWithTableRepository {
   }) async {
     return session.db.updateById<EmptyModelWithTable>(
       id,
+      table: EmptyModelWithTable.t,
       columnValues: columnValues(EmptyModelWithTable.t.updateTable),
       transaction: transaction,
     );
@@ -493,6 +498,7 @@ class EmptyModelWithTableRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmptyModelWithTable>(
+      table: EmptyModelWithTable.t,
       columnValues: columnValues(EmptyModelWithTable.t.updateTable),
       where: where(EmptyModelWithTable.t),
       limit: limit,
@@ -561,6 +567,7 @@ class EmptyModelWithTableRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmptyModelWithTable>(
+      table: EmptyModelWithTable.t,
       where: where(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
@@ -578,6 +585,7 @@ class EmptyModelWithTableRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EmptyModelWithTable>(
+      table: EmptyModelWithTable.t,
       where: where?.call(EmptyModelWithTable.t),
       limit: limit,
       transaction: transaction,
@@ -593,6 +601,7 @@ class EmptyModelWithTableRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmptyModelWithTable>(
+      table: EmptyModelWithTable.t,
       where: where(EmptyModelWithTable.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

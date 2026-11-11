@@ -301,6 +301,7 @@ class StudentRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Student>(
+      table: Student.t,
       where: where?.call(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
@@ -367,6 +368,7 @@ class StudentRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Student>(
+      table: Student.t,
       where: where?.call(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
@@ -407,6 +409,7 @@ class StudentRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Student>(
+      table: Student.t,
       where: where?.call(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
@@ -429,6 +432,7 @@ class StudentRepository {
   }) async {
     return session.db.findById<Student>(
       id,
+      table: Student.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -598,6 +602,7 @@ class StudentRepository {
   }) async {
     return session.db.updateById<Student>(
       id,
+      table: Student.t,
       columnValues: columnValues(Student.t.updateTable),
       transaction: transaction,
     );
@@ -621,6 +626,7 @@ class StudentRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Student>(
+      table: Student.t,
       columnValues: columnValues(Student.t.updateTable),
       where: where(Student.t),
       limit: limit,
@@ -689,6 +695,7 @@ class StudentRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Student>(
+      table: Student.t,
       where: where(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
@@ -706,6 +713,7 @@ class StudentRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Student>(
+      table: Student.t,
       where: where?.call(Student.t),
       limit: limit,
       transaction: transaction,
@@ -721,6 +729,7 @@ class StudentRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Student>(
+      table: Student.t,
       where: where(Student.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

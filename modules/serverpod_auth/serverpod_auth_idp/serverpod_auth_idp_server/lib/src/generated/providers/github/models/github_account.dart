@@ -374,6 +374,7 @@ class GitHubAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GitHubAccount>(
+      table: GitHubAccount.t,
       where: where?.call(GitHubAccount.t),
       orderBy: orderBy?.call(GitHubAccount.t),
       orderByList: orderByList?.call(GitHubAccount.t),
@@ -440,6 +441,7 @@ class GitHubAccountRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<GitHubAccount>(
+      table: GitHubAccount.t,
       where: where?.call(GitHubAccount.t),
       orderBy: orderBy?.call(GitHubAccount.t),
       orderByList: orderByList?.call(GitHubAccount.t),
@@ -480,6 +482,7 @@ class GitHubAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GitHubAccount>(
+      table: GitHubAccount.t,
       where: where?.call(GitHubAccount.t),
       orderBy: orderBy?.call(GitHubAccount.t),
       orderByList: orderByList?.call(GitHubAccount.t),
@@ -502,6 +505,7 @@ class GitHubAccountRepository {
   }) async {
     return session.db.findById<GitHubAccount>(
       id,
+      table: GitHubAccount.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -671,6 +675,7 @@ class GitHubAccountRepository {
   }) async {
     return session.db.updateById<GitHubAccount>(
       id,
+      table: GitHubAccount.t,
       columnValues: columnValues(GitHubAccount.t.updateTable),
       transaction: transaction,
     );
@@ -694,6 +699,7 @@ class GitHubAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GitHubAccount>(
+      table: GitHubAccount.t,
       columnValues: columnValues(GitHubAccount.t.updateTable),
       where: where(GitHubAccount.t),
       limit: limit,
@@ -762,6 +768,7 @@ class GitHubAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GitHubAccount>(
+      table: GitHubAccount.t,
       where: where(GitHubAccount.t),
       orderBy: orderBy?.call(GitHubAccount.t),
       orderByList: orderByList?.call(GitHubAccount.t),
@@ -779,6 +786,7 @@ class GitHubAccountRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<GitHubAccount>(
+      table: GitHubAccount.t,
       where: where?.call(GitHubAccount.t),
       limit: limit,
       transaction: transaction,
@@ -794,6 +802,7 @@ class GitHubAccountRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GitHubAccount>(
+      table: GitHubAccount.t,
       where: where(GitHubAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

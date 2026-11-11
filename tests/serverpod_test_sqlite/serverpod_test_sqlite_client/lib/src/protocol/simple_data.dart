@@ -226,6 +226,7 @@ class SimpleDataRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SimpleData>(
+      table: SimpleData.t,
       where: where?.call(SimpleData.t),
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
@@ -290,6 +291,7 @@ class SimpleDataRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<SimpleData>(
+      table: SimpleData.t,
       where: where?.call(SimpleData.t),
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
@@ -328,6 +330,7 @@ class SimpleDataRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SimpleData>(
+      table: SimpleData.t,
       where: where?.call(SimpleData.t),
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
@@ -348,6 +351,7 @@ class SimpleDataRepository {
   }) async {
     return session.db.findById<SimpleData>(
       id,
+      table: SimpleData.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -516,6 +520,7 @@ class SimpleDataRepository {
   }) async {
     return session.db.updateById<SimpleData>(
       id,
+      table: SimpleData.t,
       columnValues: columnValues(SimpleData.t.updateTable),
       transaction: transaction,
     );
@@ -539,6 +544,7 @@ class SimpleDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SimpleData>(
+      table: SimpleData.t,
       columnValues: columnValues(SimpleData.t.updateTable),
       where: where(SimpleData.t),
       limit: limit,
@@ -607,6 +613,7 @@ class SimpleDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SimpleData>(
+      table: SimpleData.t,
       where: where(SimpleData.t),
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
@@ -624,6 +631,7 @@ class SimpleDataRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<SimpleData>(
+      table: SimpleData.t,
       where: where?.call(SimpleData.t),
       limit: limit,
       transaction: transaction,
@@ -639,6 +647,7 @@ class SimpleDataRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SimpleData>(
+      table: SimpleData.t,
       where: where(SimpleData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

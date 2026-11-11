@@ -318,6 +318,7 @@ class LegacyExternalUserIdentifierRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LegacyExternalUserIdentifier>(
+      table: LegacyExternalUserIdentifier.t,
       where: where?.call(LegacyExternalUserIdentifier.t),
       orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
       orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
@@ -384,6 +385,7 @@ class LegacyExternalUserIdentifierRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<LegacyExternalUserIdentifier>(
+      table: LegacyExternalUserIdentifier.t,
       where: where?.call(LegacyExternalUserIdentifier.t),
       orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
       orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
@@ -424,6 +426,7 @@ class LegacyExternalUserIdentifierRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LegacyExternalUserIdentifier>(
+      table: LegacyExternalUserIdentifier.t,
       where: where?.call(LegacyExternalUserIdentifier.t),
       orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
       orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
@@ -446,6 +449,7 @@ class LegacyExternalUserIdentifierRepository {
   }) async {
     return session.db.findById<LegacyExternalUserIdentifier>(
       id,
+      table: LegacyExternalUserIdentifier.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -618,6 +622,7 @@ class LegacyExternalUserIdentifierRepository {
   }) async {
     return session.db.updateById<LegacyExternalUserIdentifier>(
       id,
+      table: LegacyExternalUserIdentifier.t,
       columnValues: columnValues(LegacyExternalUserIdentifier.t.updateTable),
       transaction: transaction,
     );
@@ -643,6 +648,7 @@ class LegacyExternalUserIdentifierRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<LegacyExternalUserIdentifier>(
+      table: LegacyExternalUserIdentifier.t,
       columnValues: columnValues(LegacyExternalUserIdentifier.t.updateTable),
       where: where(LegacyExternalUserIdentifier.t),
       limit: limit,
@@ -712,6 +718,7 @@ class LegacyExternalUserIdentifierRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LegacyExternalUserIdentifier>(
+      table: LegacyExternalUserIdentifier.t,
       where: where(LegacyExternalUserIdentifier.t),
       orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
       orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
@@ -729,6 +736,7 @@ class LegacyExternalUserIdentifierRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<LegacyExternalUserIdentifier>(
+      table: LegacyExternalUserIdentifier.t,
       where: where?.call(LegacyExternalUserIdentifier.t),
       limit: limit,
       transaction: transaction,
@@ -745,6 +753,7 @@ class LegacyExternalUserIdentifierRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<LegacyExternalUserIdentifier>(
+      table: LegacyExternalUserIdentifier.t,
       where: where(LegacyExternalUserIdentifier.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

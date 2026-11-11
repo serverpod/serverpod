@@ -278,6 +278,7 @@ class EmailResetRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailReset>(
+      table: EmailReset.t,
       where: where?.call(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
@@ -342,6 +343,7 @@ class EmailResetRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EmailReset>(
+      table: EmailReset.t,
       where: where?.call(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
@@ -380,6 +382,7 @@ class EmailResetRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailReset>(
+      table: EmailReset.t,
       where: where?.call(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
@@ -400,6 +403,7 @@ class EmailResetRepository {
   }) async {
     return session.db.findById<EmailReset>(
       id,
+      table: EmailReset.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -568,6 +572,7 @@ class EmailResetRepository {
   }) async {
     return session.db.updateById<EmailReset>(
       id,
+      table: EmailReset.t,
       columnValues: columnValues(EmailReset.t.updateTable),
       transaction: transaction,
     );
@@ -591,6 +596,7 @@ class EmailResetRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailReset>(
+      table: EmailReset.t,
       columnValues: columnValues(EmailReset.t.updateTable),
       where: where(EmailReset.t),
       limit: limit,
@@ -659,6 +665,7 @@ class EmailResetRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailReset>(
+      table: EmailReset.t,
       where: where(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
@@ -676,6 +683,7 @@ class EmailResetRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailReset>(
+      table: EmailReset.t,
       where: where?.call(EmailReset.t),
       limit: limit,
       transaction: transaction,
@@ -691,6 +699,7 @@ class EmailResetRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailReset>(
+      table: EmailReset.t,
       where: where(EmailReset.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

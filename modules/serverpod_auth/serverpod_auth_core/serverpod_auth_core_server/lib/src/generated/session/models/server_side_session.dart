@@ -543,6 +543,7 @@ class ServerSideSessionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerSideSession>(
+      table: ServerSideSession.t,
       where: where?.call(ServerSideSession.t),
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
@@ -609,6 +610,7 @@ class ServerSideSessionRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ServerSideSession>(
+      table: ServerSideSession.t,
       where: where?.call(ServerSideSession.t),
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
@@ -649,6 +651,7 @@ class ServerSideSessionRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerSideSession>(
+      table: ServerSideSession.t,
       where: where?.call(ServerSideSession.t),
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
@@ -671,6 +674,7 @@ class ServerSideSessionRepository {
   }) async {
     return session.db.findById<ServerSideSession>(
       id,
+      table: ServerSideSession.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -841,6 +845,7 @@ class ServerSideSessionRepository {
   }) async {
     return session.db.updateById<ServerSideSession>(
       id,
+      table: ServerSideSession.t,
       columnValues: columnValues(ServerSideSession.t.updateTable),
       transaction: transaction,
     );
@@ -865,6 +870,7 @@ class ServerSideSessionRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ServerSideSession>(
+      table: ServerSideSession.t,
       columnValues: columnValues(ServerSideSession.t.updateTable),
       where: where(ServerSideSession.t),
       limit: limit,
@@ -933,6 +939,7 @@ class ServerSideSessionRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ServerSideSession>(
+      table: ServerSideSession.t,
       where: where(ServerSideSession.t),
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
@@ -950,6 +957,7 @@ class ServerSideSessionRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ServerSideSession>(
+      table: ServerSideSession.t,
       where: where?.call(ServerSideSession.t),
       limit: limit,
       transaction: transaction,
@@ -965,6 +973,7 @@ class ServerSideSessionRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ServerSideSession>(
+      table: ServerSideSession.t,
       where: where(ServerSideSession.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

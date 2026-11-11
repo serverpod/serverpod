@@ -186,6 +186,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerOnlyChangedIdFieldClass>(
+      table: ServerOnlyChangedIdFieldClass.t,
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
@@ -250,6 +251,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ServerOnlyChangedIdFieldClass>(
+      table: ServerOnlyChangedIdFieldClass.t,
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
@@ -288,6 +290,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerOnlyChangedIdFieldClass>(
+      table: ServerOnlyChangedIdFieldClass.t,
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
@@ -308,6 +311,7 @@ class ServerOnlyChangedIdFieldClassRepository {
   }) async {
     return session.db.findById<ServerOnlyChangedIdFieldClass>(
       id,
+      table: ServerOnlyChangedIdFieldClass.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -481,6 +485,7 @@ class ServerOnlyChangedIdFieldClassRepository {
   }) async {
     return session.db.updateById<ServerOnlyChangedIdFieldClass>(
       id,
+      table: ServerOnlyChangedIdFieldClass.t,
       columnValues: columnValues(ServerOnlyChangedIdFieldClass.t.updateTable),
       transaction: transaction,
     );
@@ -508,6 +513,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ServerOnlyChangedIdFieldClass>(
+      table: ServerOnlyChangedIdFieldClass.t,
       columnValues: columnValues(ServerOnlyChangedIdFieldClass.t.updateTable),
       where: where(ServerOnlyChangedIdFieldClass.t),
       limit: limit,
@@ -577,6 +583,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ServerOnlyChangedIdFieldClass>(
+      table: ServerOnlyChangedIdFieldClass.t,
       where: where(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
@@ -594,6 +601,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ServerOnlyChangedIdFieldClass>(
+      table: ServerOnlyChangedIdFieldClass.t,
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
       limit: limit,
       transaction: transaction,
@@ -610,6 +618,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ServerOnlyChangedIdFieldClass>(
+      table: ServerOnlyChangedIdFieldClass.t,
       where: where(ServerOnlyChangedIdFieldClass.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
