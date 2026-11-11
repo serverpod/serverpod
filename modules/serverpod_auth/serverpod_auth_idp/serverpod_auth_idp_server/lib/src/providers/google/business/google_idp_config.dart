@@ -179,7 +179,7 @@ final class GoogleClientSecret {
   /// The client secret.
   final String clientSecret;
 
-  /// List of redirect uris.
+  /// List of redirect uris. Empty when none are set.
   final List<String> redirectUris;
 
   /// Private constructor to initialize the object.
@@ -222,10 +222,8 @@ final class GoogleClientSecret {
       throw const FormatException('Missing "client_secret"');
     }
 
-    final webRedirectUris = web['redirect_uris'] as List<dynamic>?;
-    if (webRedirectUris == null) {
-      throw const FormatException('Missing "redirect_uris"');
-    }
+    // Google leaves out "redirect_uris" when no redirect URIs are set.
+    final webRedirectUris = web['redirect_uris'] as List<dynamic>? ?? const [];
 
     return GoogleClientSecret._(
       clientId: webClientId,
