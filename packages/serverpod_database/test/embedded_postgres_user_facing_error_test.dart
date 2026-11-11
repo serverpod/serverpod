@@ -14,10 +14,8 @@ void main() {
           formatEmbeddedPostgresFailure(failure),
           'Port 8090 is already in use, so the local database cannot accept '
           'TCP connections there. Stop the other service on that port (for '
-          'example a Docker database from an earlier setup), change '
-          '`database.port` in the relevant file in `config/`, or leave the '
-          "database password in `config/passwords.yaml` empty (`database: ''`) "
-          'to serve the local database over its Unix socket only.\n\n'
+          'example a Docker database from an earlier setup), or change '
+          '`database.port` in the relevant file in `config/`.\n\n'
           'To use Docker instead, remove `database.dataPath` from the relevant '
           'file in `config/`, then try again.',
         );

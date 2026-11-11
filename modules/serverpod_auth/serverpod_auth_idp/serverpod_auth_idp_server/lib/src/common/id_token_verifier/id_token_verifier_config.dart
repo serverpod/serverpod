@@ -16,7 +16,7 @@ abstract class IdTokenVerifierConfig {
 
   /// Parses the response body from the certificates URL and returns
   /// an iterable of JWT keys for verification.
-  Iterable<dart_jsonwebtoken.JWTKey> parseKeys(final String responseBody);
+  Iterable<dart_jsonwebtoken.JWTKey> parseKeys(String responseBody);
 
   /// Tolerance for time-based claim validation to handle small clock skews.
   Duration get clockSkewTolerance;
@@ -24,15 +24,15 @@ abstract class IdTokenVerifierConfig {
   /// Validates the issuer claim.
   ///
   /// Throws an exception if the issuer is invalid.
-  void validateIssuer(final Map<String, dynamic> claims);
+  void validateIssuer(Map<String, dynamic> claims);
 
   /// Validates the audience claim.
   ///
   /// The [audience] parameter is the expected audience value.
   /// Throws an exception if the audience is invalid.
   void validateAudience(
-    final Map<String, dynamic> claims,
-    final String? audience,
+    Map<String, dynamic> claims,
+    String? audience,
   );
 
   /// Performs provider-specific extra claim validations.
@@ -40,10 +40,10 @@ abstract class IdTokenVerifierConfig {
   /// Called after common claims (exp, iat, sub) have been validated.
   /// The [now] parameter is the current time for time-based validations.
   void validateExtraClaims(
-    final Map<String, dynamic> claims,
-    final DateTime now,
+    Map<String, dynamic> claims,
+    DateTime now,
   );
 
   /// Creates a provider-specific exception with the given message.
-  Exception createException(final String message);
+  Exception createException(String message);
 }

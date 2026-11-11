@@ -7,7 +7,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 void main() {
   withServerpod(
     'Given multiple email accounts',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue authUserId1;
@@ -56,7 +56,7 @@ void main() {
         'when listAccounts is called with email then only that email account is returned',
         () async {
           final accounts = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+            (transaction) => fixture.emailIdp.utils.account.listAccounts(
               session,
               email: email1,
               transaction: transaction,
@@ -72,7 +72,7 @@ void main() {
         'when listAccounts is called with authUserId then all accounts for that user are returned',
         () async {
           final accounts = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+            (transaction) => fixture.emailIdp.utils.account.listAccounts(
               session,
               authUserId: authUserId1,
               transaction: transaction,
@@ -80,10 +80,10 @@ void main() {
           );
 
           expect(accounts, hasLength(2));
-          final emails = accounts.map((final a) => a.email);
+          final emails = accounts.map((a) => a.email);
           expect(emails, containsAll([email1, email2]));
           expect(
-            accounts.every((final a) => a.authUserId == authUserId1),
+            accounts.every((a) => a.authUserId == authUserId1),
             isTrue,
           );
         },
@@ -93,7 +93,7 @@ void main() {
         'when listAccounts is called with both email and authUserId then only matching account is returned',
         () async {
           final accounts = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+            (transaction) => fixture.emailIdp.utils.account.listAccounts(
               session,
               email: email1,
               authUserId: authUserId1,
@@ -111,7 +111,7 @@ void main() {
         'when listAccounts is called with non-matching filters then no accounts are returned',
         () async {
           final accounts = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+            (transaction) => fixture.emailIdp.utils.account.listAccounts(
               session,
               email: email1,
               authUserId: authUserId2,
@@ -127,14 +127,14 @@ void main() {
         'when listAccounts is called with neither email nor authUserId then all accounts are returned',
         () async {
           final accounts = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+            (transaction) => fixture.emailIdp.utils.account.listAccounts(
               session,
               transaction: transaction,
             ),
           );
 
           expect(accounts, hasLength(3));
-          final emails = accounts.map((final a) => a.email);
+          final emails = accounts.map((a) => a.email);
           expect(emails, containsAll([email1, email2, email3]));
         },
       );
@@ -143,7 +143,7 @@ void main() {
         'when listAccounts is called with uppercase email then account is found',
         () async {
           final accounts = await session.db.transaction(
-            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+            (transaction) => fixture.emailIdp.utils.account.listAccounts(
               session,
               email: email1.toUpperCase(),
               transaction: transaction,
@@ -159,7 +159,7 @@ void main() {
 
   withServerpod(
     'Given no email accounts',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -174,7 +174,7 @@ void main() {
 
       test('when listAccounts is called then empty list is returned', () async {
         final accounts = await session.db.transaction(
-          (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+          (transaction) => fixture.emailIdp.utils.account.listAccounts(
             session,
             transaction: transaction,
           ),

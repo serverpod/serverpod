@@ -29,7 +29,7 @@ void main() {
       fallbackSessionKeyHashPeppers: const [],
     );
 
-    final secret = Uint8List.fromList(List.generate(32, (final i) => i));
+    final secret = Uint8List.fromList(List.generate(32, (i) => i));
 
     test(
       'when the same secret is hashed twice, then the two hashes differ.',
@@ -95,7 +95,7 @@ void main() {
       () {
         final stored = sessionKeyHash.createSessionKeyHash(secret: secret);
         final otherSecret = Uint8List.fromList(
-          List.generate(32, (final i) => i + 1),
+          List.generate(32, (i) => i + 1),
         );
 
         expect(
@@ -119,10 +119,10 @@ void main() {
         fallbackSessionKeyHashPeppers: const [],
       );
 
-      final secret = Uint8List.fromList(List.generate(32, (final i) => i));
+      final secret = Uint8List.fromList(List.generate(32, (i) => i));
 
       // Any stored salt: the pre-fix digest never mixed it in.
-      final salt = Uint8List.fromList(List.generate(16, (final i) => 255 - i));
+      final salt = Uint8List.fromList(List.generate(16, (i) => 255 - i));
 
       final legacyHash = _legacySaltlessHash(secret, 'test-pepper');
 
@@ -151,7 +151,7 @@ void main() {
         'when it is validated with the wrong secret, then it is rejected.',
         () {
           final otherSecret = Uint8List.fromList(
-            List.generate(32, (final i) => i + 1),
+            List.generate(32, (i) => i + 1),
           );
 
           expect(
@@ -233,8 +233,8 @@ void main() {
         fallbackSessionKeyHashPeppers: const [],
       );
 
-      final secret = Uint8List.fromList(List.generate(32, (final i) => i));
-      final salt = Uint8List.fromList(List.generate(16, (final i) => 255 - i));
+      final secret = Uint8List.fromList(List.generate(32, (i) => i));
+      final salt = Uint8List.fromList(List.generate(16, (i) => 255 - i));
 
       // An empty hash reached `hash[0]` and threw a RangeError, turning a
       // corrupt row into a server error rather than a failed authentication.
@@ -273,7 +273,7 @@ void main() {
 }
 
 /// The pre-fix digest: `sha512(secret + pepper)`, with the salt never mixed in.
-Uint8List _legacySaltlessHash(final Uint8List secret, final String pepper) {
+Uint8List _legacySaltlessHash(Uint8List secret, String pepper) {
   return Uint8List.fromList(
     sha512.convert(secret + utf8.encode(pepper)).bytes,
   );

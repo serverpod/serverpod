@@ -32,7 +32,7 @@ void main() {
 
   withServerpod(
     'Given JWT auth, a client with cached storage and an expiring refresh token that is changed directly on the storage layer to a non-expiring refresh token ',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       setUp(() async {
         onAuthInfoChangedCalls = 0;
         final session = sessionBuilder.build();
@@ -111,7 +111,7 @@ void main() {
 
   withServerpod(
     'Given JWT auth, a client with cached storage and an expiring refresh token that is changed directly on the storage layer to a another expiring refresh token ',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       setUp(() async {
         onAuthInfoChangedCalls = 0;
         final session = sessionBuilder.build();
@@ -197,7 +197,7 @@ class InMemoryClientAuthSuccessStorage
   client_auth.AuthSuccess? _data;
 
   @override
-  Future<void> set(final client_auth.AuthSuccess? data) async {
+  Future<void> set(client_auth.AuthSuccess? data) async {
     _data = data;
   }
 

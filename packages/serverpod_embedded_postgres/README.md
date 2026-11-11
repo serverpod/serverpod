@@ -56,17 +56,18 @@ to `PGDATA` before binding so `unix_socket_directories = '../run'` lands a
 regardless of how deep your project lives. No password is involved.
 
 **TCP loopback (`TcpTransport`).** scram-sha-256 against `127.0.0.1`,
-password via [TcpTransport.password] (Serverpod passes `config/passwords.yaml`
-`database` here) or a random credential for this launch when omitted. The
-default `TcpTransport(port: 0)` gets an ephemeral port; explicit ports are
-honored. Port-race collision is retried once before bubbling up. Platforms
-without Unix domain socket support select this transport by default.
+password via [TcpTransport.password] or a random credential for this launch
+when omitted. The default `TcpTransport(port: 0)` gets an ephemeral port;
+explicit ports are honored. Port-race collision is retried once before bubbling
+up. Platforms without Unix domain socket support select this transport by default.
 
 **Both (`DualTransport`).** One postmaster serving the trusted socket and
 scram-sha-256 loopback TCP at the same time. `endpoint` is the socket;
 `tcpEndpoint` and `tcpConnectionUri` carry the loopback coordinates for
-external tools. Serverpod uses the socket alone without a database password
-and this transport with one; it never uses TCP alone. For any transport, a pinned port that another process holds fails
+external tools. Automatic Serverpod server and test startup uses only the Unix
+socket, even when a database password is configured. `serverpod database start`
+uses this dual transport when launching a database with a configured password.
+For any transport, a pinned port that another process holds fails
 the start with `PortInUseException`; only an ephemeral request is re-allocated.
 
 **The password lives in your configuration, not on disk.** Every start of an
@@ -99,14 +100,21 @@ serverpod database start
 ```
 
 The command reads `config/development.yaml` and `config/passwords.yaml`, starts
-the embedded database (or joins the one the server already runs), and prints
-connection URIs for tools such as `psql`, DBeaver, and DataGrip. With a
-database password configured the postmaster also listens on the configured
-TCP port; without one only the Unix socket is served. It keeps the database
-running until interrupted. The server and this command agree on the listeners
-because both derive them from the same configuration, so start order does not
-matter. Use `--mode` to select a different configuration or `--server-dir` to
-select a server project explicitly.
+the embedded database (or joins one already running), and prints connection
+URIs for tools such as `psql`, DBeaver, and DataGrip. When it launches the
+database with a password configured, the postmaster serves both the Unix socket
+and loopback TCP on `database.port`; without a password it serves only the Unix
+socket. Use `--port` to override the TCP port, `--mode` to select a different
+configuration, or `--server-dir` to select a server project explicitly.
+
+Start order matters: automatic server and test startup uses only the Unix
+socket, and attaching to a running database preserves its listeners. To enable
+TCP, configure the run mode's database password, stop the running embedded
+database and its owning process, then run `serverpod database start` for that
+mode before starting the server again in another terminal. Keep the database
+command running while using its database; interrupting the command that
+launched it stops the database. The server can join this TCP-enabled database
+through its Unix socket.
 
 ## Detach + attach for cross-VM dev DBs
 

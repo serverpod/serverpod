@@ -11,7 +11,7 @@ void main() {
   withServerpod(
     'Given password reset request created',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
@@ -32,7 +32,7 @@ void main() {
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordResetVerificationCodeLifetime:
                 passwordResetVerificationCodeLifetime,
-            passwordValidationFunction: (final password) =>
+            passwordValidationFunction: (password) =>
                 password == allowedNewPassword,
           ),
         );
@@ -91,7 +91,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -113,7 +113,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.policyViolation,
               ),
@@ -127,7 +127,7 @@ void main() {
   withServerpod(
     'Given expired password reset request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
@@ -199,7 +199,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.expired,
               ),
@@ -221,7 +221,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -235,7 +235,7 @@ void main() {
   withServerpod(
     'Given no password reset request created',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -261,7 +261,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),
@@ -275,7 +275,7 @@ void main() {
   withServerpod(
     'Given password reset request exists for blocked auth user',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
@@ -343,7 +343,7 @@ void main() {
   withServerpod(
     'Given user with multiple sessions and password reset request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
@@ -423,7 +423,7 @@ void main() {
   withServerpod(
     'Given completed password reset request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
@@ -485,7 +485,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountPasswordResetException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountPasswordResetExceptionReason.invalid,
               ),

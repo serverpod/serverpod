@@ -23,14 +23,14 @@ var _defaultUserImageColors = <int>[
   _colorFromHexStr('546E7A'),
 ];
 
-int _colorFromHexStr(final String hexStr) {
+int _colorFromHexStr(String hexStr) {
   return int.parse(hexStr, radix: 16) | 0xff000000;
 }
 
 /// The default [UserImageGenerator], mimics the default avatars used by Google.
 Future<Image> defaultUserImageGenerator(
-  final UserProfileModel userInfo,
-  final int imageSize,
+  UserProfileModel userInfo,
+  int imageSize,
 ) {
   return Isolate.run(() {
     final image = Image(width: 256, height: 256);

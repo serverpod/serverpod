@@ -30,7 +30,7 @@ void main() {
 
   withServerpod(
     'Given a session for an existing `AuthUser` without authentication,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late AuthUserModel user;
       late Session session;
 
@@ -108,7 +108,7 @@ void main() {
 
   withServerpod(
     'Given an `AuthUser` with a registered passkey,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late AuthUserModel user;
       late Session session;
 
@@ -231,7 +231,7 @@ void main() {
             ),
             throwsA(
               isA<Exception>().having(
-                (final e) => e.toString(),
+                (e) => e.toString(),
                 'message',
                 contains('Invalid signature'),
               ),
@@ -263,7 +263,7 @@ void main() {
             ),
             throwsA(
               isA<Exception>().having(
-                (final e) => e.toString(),
+                (e) => e.toString(),
                 'message',
                 contains('wrong challenge'),
               ),
@@ -291,7 +291,7 @@ void main() {
             ),
             throwsA(
               isA<Exception>().having(
-                (final e) => e.toString(),
+                (e) => e.toString(),
                 'message',
                 contains('Invalid signature'),
               ),

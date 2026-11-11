@@ -175,15 +175,49 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<List<String>>,
         ],
         modules: const [_isd.Protocol.new],
+        classNames: const [
+          'CacheInfo',
+          'CachesInfo',
+          'CloudStorageEntry',
+          'CloudStorageDirectDownloadEntry',
+          'CloudStorageDirectUploadEntry',
+          'ClusterInfo',
+          'ClusterServerInfo',
+          'CronFutureCallScheduling',
+          'DatabaseMigrationVersion',
+          'DistributedCacheEntry',
+          'AccessDeniedException',
+          'FileNotFoundException',
+          'FutureCallClaimEntry',
+          'FutureCallEntry',
+          'IntervalFutureCallScheduling',
+          'LogEntry',
+          'LogLevel',
+          'LogResult',
+          'LogSettings',
+          'LogSettingsOverride',
+          'MessageLogEntry',
+          'MethodInfo',
+          'QueryLogEntry',
+          'ReadWriteTestEntry',
+          'RuntimeSettings',
+          'ServerHealthConnectionInfo',
+          'ServerHealthMetric',
+          'ServerHealthResult',
+          'ServerpodSqlException',
+          'SessionLogEntry',
+          'SessionLogFilter',
+          'SessionLogInfo',
+          'SessionLogResult',
+        ],
+        classNamePrefix: 'serverpod.',
       );
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod.')) return className;
-    return className.substring(10);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod.',
+      );
 
   @override
   T deserialize<T>(
@@ -191,8 +225,11 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -543,9 +580,10 @@ class Protocol extends _isc.SerializationManager
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -790,9 +828,14 @@ class Protocol extends _isc.SerializationManager
       return deserialize<_idz92mnt.SessionLogResult>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_database.')) {
-      data['className'] = dataClassName.substring(19);
-      return _isd.Protocol().deserializeByClassName(data);
+      return _isd.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(19),
+      });
     }
+    try {
+      return _isd.Protocol().deserializeByClassName(data);
+    } on _isc.DeserializationClassNameNotFoundException catch (_) {}
     return super.deserializeByClassName(data);
   }
 

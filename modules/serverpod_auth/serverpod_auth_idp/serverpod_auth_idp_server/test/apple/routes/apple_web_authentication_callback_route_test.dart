@@ -23,8 +23,8 @@ void main() {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36';
 
   AppleWebAuthenticationCallbackRoute createRoute({
-    final String? androidPackageIdentifier,
-    final String? webRedirectUri,
+    String? androidPackageIdentifier,
+    String? webRedirectUri,
   }) {
     final signInWithApple = _SignInWithAppleFake();
     final utils = AppleIdpUtils(
@@ -40,9 +40,9 @@ void main() {
   }
 
   Future<Response> callRoute(
-    final AppleWebAuthenticationCallbackRoute route, {
-    required final String? userAgent,
-    required final String body,
+    AppleWebAuthenticationCallbackRoute route, {
+    required String? userAgent,
+    required String body,
   }) async {
     final request = _RequestFake(userAgent: userAgent, body: body);
     final result = await route.handleCall(_SessionFake(), request);
@@ -276,13 +276,13 @@ class _RequestFake extends Fake implements Request {
   final String _body;
 
   _RequestFake({
-    required final String? userAgent,
-    required final String body,
+    required String? userAgent,
+    required String body,
   }) : _userAgent = userAgent,
        _body = body;
 
   @override
-  Headers get headers => Headers.build((final h) {
+  Headers get headers => Headers.build((h) {
     if (_userAgent != null) {
       h['User-Agent'] = [_userAgent];
     }
@@ -290,7 +290,7 @@ class _RequestFake extends Fake implements Request {
 
   @override
   Future<String> readAsString({
-    final Encoding? encoding,
-    final int? maxLength,
+    Encoding? encoding,
+    int? maxLength,
   }) async => _body;
 }

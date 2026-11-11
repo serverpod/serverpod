@@ -102,10 +102,10 @@ class CliInstallation {
 ///
 /// All paths must be canonical, as produced by [CliInstallation.resolve].
 CliInstallationKind classifyInstallation({
-  required final String runningExecutable,
-  required final String runningScript,
-  required final String installRoot,
-  required final String? globalPackagesRoot,
+  required String runningExecutable,
+  required String runningScript,
+  required String installRoot,
+  required String? globalPackagesRoot,
 }) {
   if (p.isWithin(installRoot, runningExecutable)) {
     return CliInstallationKind.managed;
@@ -145,8 +145,8 @@ String? _globalPackagesRoot() {
 /// Returns the first executable named [name] on `PATH`, the way a shell
 /// resolves a bare command name, or `null` if there is none.
 String? findExecutableOnPath(
-  final String name, {
-  final Map<String, String>? environment,
+  String name, {
+  Map<String, String>? environment,
 }) {
   final env = environment ?? Platform.environment;
   final pathVariable = env['PATH'];
@@ -169,12 +169,12 @@ String? findExecutableOnPath(
 
 /// Whether both paths point at the same executable, ignoring the platform
 /// extension that distinguishes a binstub from the binary it wraps.
-bool isSameExecutable(final String a, final String b) =>
+bool isSameExecutable(String a, String b) =>
     p.equals(p.dirname(a), p.dirname(b)) &&
     p.equals(p.basenameWithoutExtension(a), p.basenameWithoutExtension(b));
 
 /// Resolves [path] to a comparable absolute path, following symbolic links.
-String _canonicalize(final String path) {
+String _canonicalize(String path) {
   try {
     return File(path).resolveSymbolicLinksSync();
   } catch (_) {

@@ -6,7 +6,7 @@ final Random _random = Random.secure();
 ///
 /// The code is [length] digits long, 8 by default. Excludes the digit 0 to
 /// avoid confusion with the letter 'o'.
-String defaultVerificationCodeGenerator({final int length = 8}) {
+String defaultVerificationCodeGenerator({int length = 8}) {
   const characters = '123456789';
 
   return String.fromCharCodes(

@@ -14,7 +14,7 @@ void main() {
   withServerpod(
     'Given default email idp configuration',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late List<String> sentCodes;
@@ -27,11 +27,11 @@ void main() {
             secretHashPepper: 'pepper',
             sendOtpLoginVerificationCode:
                 (
-                  final session, {
-                  required final email,
-                  required final otpLoginRequestId,
-                  required final verificationCode,
-                  required final transaction,
+                  session, {
+                  required email,
+                  required otpLoginRequestId,
+                  required verificationCode,
+                  required transaction,
                 }) => sentCodes.add(verificationCode),
           ),
         );
@@ -58,7 +58,7 @@ void main() {
             fixture.emailIdp.startOtpLogin(session, email: 'not-an-email'),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.policyViolation,
               ),
@@ -79,7 +79,7 @@ void main() {
             fixture.emailIdp.startOtpLogin(session, email: email),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.tooManyAttempts,
               ),
@@ -125,7 +125,7 @@ void main() {
   withServerpod(
     'Given an otp login code generator for 8 digit codes',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late List<String> sentCodes;
@@ -140,11 +140,11 @@ void main() {
                 defaultVerificationCodeGenerator(length: 8),
             sendOtpLoginVerificationCode:
                 (
-                  final session, {
-                  required final email,
-                  required final otpLoginRequestId,
-                  required final verificationCode,
-                  required final transaction,
+                  session, {
+                  required email,
+                  required otpLoginRequestId,
+                  required verificationCode,
+                  required transaction,
                 }) => sentCodes.add(verificationCode),
           ),
         );
@@ -168,7 +168,7 @@ void main() {
   withServerpod(
     'Given an existing email account and a started otp login',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue authUserId;
@@ -262,7 +262,7 @@ void main() {
             fixture.emailIdp.startOtpLogin(session, email: email),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.tooManyAttempts,
               ),
@@ -282,7 +282,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -315,7 +315,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.tooManyAttempts,
               ),
@@ -345,7 +345,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.expired,
               ),
@@ -380,7 +380,7 @@ void main() {
               session,
               authUserId: authUserId,
             );
-            expect(tokens.map((final t) => t.method), [
+            expect(tokens.map((t) => t.method), [
               fixture.emailIdp.method,
             ]);
           },
@@ -415,7 +415,7 @@ void main() {
               ),
               throwsA(
                 isA<EmailAccountRequestException>().having(
-                  (final e) => e.reason,
+                  (e) => e.reason,
                   'reason',
                   EmailAccountRequestExceptionReason.invalid,
                 ),
@@ -434,7 +434,7 @@ void main() {
               ),
               throwsA(
                 isA<EmailAccountRequestException>().having(
-                  (final e) => e.reason,
+                  (e) => e.reason,
                   'reason',
                   EmailAccountRequestExceptionReason.invalid,
                 ),
@@ -453,7 +453,7 @@ void main() {
               ),
               throwsA(
                 isA<EmailAccountRequestException>().having(
-                  (final e) => e.reason,
+                  (e) => e.reason,
                   'reason',
                   EmailAccountRequestExceptionReason.invalid,
                 ),
@@ -468,7 +468,7 @@ void main() {
   withServerpod(
     'Given passwords are allowed on otp registration and a verified otp login without account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late EmailAccountOtpVerificationResult verificationResult;
@@ -484,15 +484,15 @@ void main() {
             sendOtpLoginVerificationCode: _ignoreOtpCode,
             otpLoginVerificationCodeGenerator: () => verificationCode,
             allowPasswordOnOtpRegistration: true,
-            passwordValidationFunction: (final password) =>
+            passwordValidationFunction: (password) =>
                 password == allowedPassword,
             onAfterAccountCreated:
                 (
-                  final session, {
-                  required final email,
-                  required final authUserId,
-                  required final emailAccountId,
-                  required final transaction,
+                  session, {
+                  required email,
+                  required authUserId,
+                  required emailAccountId,
+                  required transaction,
                 }) => createdAccounts.add(emailAccountId),
           ),
         );
@@ -530,7 +530,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -573,7 +573,7 @@ void main() {
             authUserId: authSuccess.authUserId,
           );
 
-          expect(tokens.map((final t) => t.method), [fixture.emailIdp.method]);
+          expect(tokens.map((t) => t.method), [fixture.emailIdp.method]);
         });
 
         test(
@@ -607,7 +607,7 @@ void main() {
               ),
               throwsA(
                 isA<EmailAccountLoginException>().having(
-                  (final e) => e.reason,
+                  (e) => e.reason,
                   'reason',
                   EmailAccountLoginExceptionReason.invalidCredentials,
                 ),
@@ -648,7 +648,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.policyViolation,
               ),
@@ -674,7 +674,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -688,7 +688,7 @@ void main() {
   withServerpod(
     'Given the default otp registration config and a verified otp login without account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late EmailAccountOtpVerificationResult verificationResult;
@@ -734,7 +734,7 @@ void main() {
             ),
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.policyViolation,
               ),
@@ -761,7 +761,7 @@ void main() {
   withServerpod(
     'Given an existing email account with sessions from password and otp logins',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue authUserId;
@@ -842,7 +842,7 @@ void main() {
   withServerpod(
     'Given a started otp login',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -913,7 +913,7 @@ void main() {
   withServerpod(
     'Given an email idp configured with a registration sender, but no otp sender',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late List<(UuidValue, String)> registrationSends;
@@ -926,11 +926,11 @@ void main() {
             secretHashPepper: 'pepper',
             sendRegistrationVerificationCode:
                 (
-                  final session, {
-                  required final email,
-                  required final accountRequestId,
-                  required final verificationCode,
-                  required final transaction,
+                  session, {
+                  required email,
+                  required accountRequestId,
+                  required verificationCode,
+                  required transaction,
                 }) => registrationSends.add((
                   accountRequestId,
                   verificationCode,
@@ -972,7 +972,7 @@ void main() {
             ),
             completion(
               isA<EmailAccountOtpVerificationResult>().having(
-                (final r) => r.accountExists,
+                (r) => r.accountExists,
                 'accountExists',
                 isFalse,
               ),
@@ -986,7 +986,7 @@ void main() {
   withServerpod(
     'Given an email idp configured with both a registration and an otp sender',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late List<String> registrationCodes;
@@ -1001,19 +1001,19 @@ void main() {
             secretHashPepper: 'pepper',
             sendRegistrationVerificationCode:
                 (
-                  final session, {
-                  required final email,
-                  required final accountRequestId,
-                  required final verificationCode,
-                  required final transaction,
+                  session, {
+                  required email,
+                  required accountRequestId,
+                  required verificationCode,
+                  required transaction,
                 }) => registrationCodes.add(verificationCode),
             sendOtpLoginVerificationCode:
                 (
-                  final session, {
-                  required final email,
-                  required final otpLoginRequestId,
-                  required final verificationCode,
-                  required final transaction,
+                  session, {
+                  required email,
+                  required otpLoginRequestId,
+                  required verificationCode,
+                  required transaction,
                 }) => otpCodes.add(verificationCode),
           ),
         );
@@ -1038,7 +1038,7 @@ void main() {
   withServerpod(
     'Given an email idp configured without registration or otp sender',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -1058,7 +1058,7 @@ void main() {
             fixture.emailIdp.startOtpLogin(session, email: email),
             throwsA(
               isA<StateError>().having(
-                (final e) => e.message,
+                (e) => e.message,
                 'message',
                 contains('sendOtpLoginVerificationCode'),
               ),
@@ -1079,7 +1079,7 @@ void main() {
           expect(
             await RateLimitedRequestAttempt.db.count(
               session,
-              where: (final t) => t.domain.equals('email'),
+              where: (t) => t.domain.equals('email'),
             ),
             0,
           );
@@ -1091,7 +1091,7 @@ void main() {
   withServerpod(
     'Given an existing email account and an otp login that was verified but expired before it was finished',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late String otpLoginToken;
@@ -1148,7 +1148,7 @@ void main() {
                 ),
                 throwsA(
                   isA<EmailAccountRequestException>().having(
-                    (final e) => e.reason,
+                    (e) => e.reason,
                     'reason',
                     EmailAccountRequestExceptionReason.expired,
                   ),
@@ -1166,7 +1166,7 @@ void main() {
   withServerpod(
     'Given no email account and an otp login that was verified but expired before it was finished',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late String otpLoginToken;
@@ -1215,7 +1215,7 @@ void main() {
                 ),
                 throwsA(
                   isA<EmailAccountRequestException>().having(
-                    (final e) => e.reason,
+                    (e) => e.reason,
                     'reason',
                     EmailAccountRequestExceptionReason.expired,
                   ),
@@ -1236,9 +1236,9 @@ void main() {
 }
 
 void _ignoreOtpCode(
-  final Session session, {
-  required final String email,
-  required final UuidValue otpLoginRequestId,
-  required final String verificationCode,
-  required final Transaction? transaction,
+  Session session, {
+  required String email,
+  required UuidValue otpLoginRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
 }) {}

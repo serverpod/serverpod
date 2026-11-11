@@ -14,14 +14,14 @@ abstract final class RefreshTokenString {
 
   /// Returns the external refresh token string
   static String buildRefreshTokenString({
-    required final RefreshToken refreshToken,
-    required final Uint8List rotatingSecret,
+    required RefreshToken refreshToken,
+    required Uint8List rotatingSecret,
   }) {
     return '$_refreshTokenPrefix:${base64Encode(refreshToken.id!.toBytes())}:${base64Encode(Uint8List.sublistView(refreshToken.fixedSecret))}:${base64Encode(rotatingSecret)}';
   }
 
   static RefreshTokenStringData parseRefreshTokenString(
-    final String refreshToken,
+    String refreshToken,
   ) {
     if (!refreshToken.startsWith('$_refreshTokenPrefix:')) {
       throw ArgumentError.value(

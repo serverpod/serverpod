@@ -5,6 +5,7 @@ linter:
     always_declare_return_types: true
     avoid_dynamic_calls: true
     avoid_escaping_inner_quotes: true
+    avoid_final_parameters: true
     avoid_print: true
     directives_ordering: true
     prefer_const_constructors_in_immutables: true

@@ -14,9 +14,9 @@ Directory _createTempDirectory() {
 }
 
 String _writeScript(
-  final Directory directory,
-  final String name,
-  final String source,
+  Directory directory,
+  String name,
+  String source,
 ) {
   final path = p.join(directory.path, name);
   File(path).writeAsStringSync(source);

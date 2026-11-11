@@ -4,6 +4,7 @@
 
 import 'package:serverpod/serverpod.dart';
 import '../module_util.dart';
+
 // import '../generated/protocol.dart';
 
 class ModuleEndpoint extends Endpoint {

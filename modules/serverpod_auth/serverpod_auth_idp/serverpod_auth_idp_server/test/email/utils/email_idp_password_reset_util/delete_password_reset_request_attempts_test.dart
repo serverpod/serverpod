@@ -10,7 +10,7 @@ void main() {
   withServerpod(
     'Given a user reached the password reset rate limit at a fixed time,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -41,7 +41,7 @@ void main() {
         await withClock(
           attemptClock,
           () => session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            (transaction) => fixture.passwordResetUtil.startPasswordReset(
               session,
               email: email,
               transaction: transaction,
@@ -60,7 +60,7 @@ void main() {
         () async {
           await withClock(attemptClock, () async {
             await session.db.transaction(
-              (final transaction) =>
+              (transaction) =>
                   fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
                     session,
                     olderThan: null,
@@ -70,12 +70,11 @@ void main() {
             );
 
             final result = session.db.transaction(
-              (final transaction) =>
-                  fixture.passwordResetUtil.startPasswordReset(
-                    session,
-                    email: email,
-                    transaction: transaction,
-                  ),
+              (transaction) => fixture.passwordResetUtil.startPasswordReset(
+                session,
+                email: email,
+                transaction: transaction,
+              ),
             );
 
             await expectLater(
@@ -92,7 +91,7 @@ void main() {
         () async {
           await withClock(attemptClock, () async {
             await session.db.transaction(
-              (final transaction) =>
+              (transaction) =>
                   fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
                     session,
                     olderThan: Duration.zero,
@@ -102,12 +101,11 @@ void main() {
             );
 
             final result = session.db.transaction(
-              (final transaction) =>
-                  fixture.passwordResetUtil.startPasswordReset(
-                    session,
-                    email: email,
-                    transaction: transaction,
-                  ),
+              (transaction) => fixture.passwordResetUtil.startPasswordReset(
+                session,
+                email: email,
+                transaction: transaction,
+              ),
             );
 
             await expectLater(result, completion(isA<UuidValue>()));
@@ -126,7 +124,7 @@ void main() {
           await withClock(
             cleanupClock,
             () => session.db.transaction(
-              (final transaction) =>
+              (transaction) =>
                   fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
                     session,
                     olderThan: Duration.zero,
@@ -139,12 +137,11 @@ void main() {
           final result = withClock(
             attemptClock,
             () => session.db.transaction(
-              (final transaction) =>
-                  fixture.passwordResetUtil.startPasswordReset(
-                    session,
-                    email: email,
-                    transaction: transaction,
-                  ),
+              (transaction) => fixture.passwordResetUtil.startPasswordReset(
+                session,
+                email: email,
+                transaction: transaction,
+              ),
             ),
           );
 
@@ -162,7 +159,7 @@ void main() {
           await withClock(
             cleanupClock,
             () => session.db.transaction(
-              (final transaction) =>
+              (transaction) =>
                   fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
                     session,
                     olderThan: duration,
@@ -175,12 +172,11 @@ void main() {
           final result = withClock(
             attemptClock,
             () => session.db.transaction(
-              (final transaction) =>
-                  fixture.passwordResetUtil.startPasswordReset(
-                    session,
-                    email: email,
-                    transaction: transaction,
-                  ),
+              (transaction) => fixture.passwordResetUtil.startPasswordReset(
+                session,
+                email: email,
+                transaction: transaction,
+              ),
             ),
           );
 
@@ -203,7 +199,7 @@ void main() {
           await withClock(
             cleanupClock,
             () => session.db.transaction(
-              (final transaction) =>
+              (transaction) =>
                   fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
                     session,
                     olderThan: duration,
@@ -216,12 +212,11 @@ void main() {
           final result = withClock(
             attemptClock,
             () => session.db.transaction(
-              (final transaction) =>
-                  fixture.passwordResetUtil.startPasswordReset(
-                    session,
-                    email: email,
-                    transaction: transaction,
-                  ),
+              (transaction) => fixture.passwordResetUtil.startPasswordReset(
+                session,
+                email: email,
+                transaction: transaction,
+              ),
             ),
           );
 
@@ -234,7 +229,7 @@ void main() {
   withServerpod(
     'Given max password reset attempts exist for user in the past that is before configured timeframe',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -271,7 +266,7 @@ void main() {
         await withClock(
           clockBeforeTimeframe,
           () => session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            (transaction) => fixture.passwordResetUtil.startPasswordReset(
               session,
               email: email,
               transaction: transaction,
@@ -291,7 +286,7 @@ void main() {
         'when deleting password reset request attempts without older than then requesting new password reset in the past succeeds',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
                   session,
                   olderThan: null,
@@ -302,12 +297,11 @@ void main() {
 
           await withClock(clockBeforeTimeframe, () async {
             final result = session.db.transaction(
-              (final transaction) =>
-                  fixture.passwordResetUtil.startPasswordReset(
-                    session,
-                    email: email,
-                    transaction: transaction,
-                  ),
+              (transaction) => fixture.passwordResetUtil.startPasswordReset(
+                session,
+                email: email,
+                transaction: transaction,
+              ),
             );
             await expectLater(result, completion(isA<UuidValue>()));
           });
@@ -319,7 +313,7 @@ void main() {
   withServerpod(
     'Given password reset attempt within timeframe has been reached for two users',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const firstEmail = 'test1@serverpod.dev';
@@ -347,7 +341,7 @@ void main() {
           email: firstEmail,
         );
         await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+          (transaction) => fixture.passwordResetUtil.startPasswordReset(
             session,
             email: firstEmail,
             transaction: transaction,
@@ -362,7 +356,7 @@ void main() {
           email: secondEmail,
         );
         await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+          (transaction) => fixture.passwordResetUtil.startPasswordReset(
             session,
             email: secondEmail,
             transaction: transaction,
@@ -377,7 +371,7 @@ void main() {
       group('when deleting all password reset attempts for first user', () {
         setUp(() async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
                   session,
                   olderThan: Duration.zero,
@@ -389,7 +383,7 @@ void main() {
 
         test('then first user can request password reset', () async {
           final result = session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            (transaction) => fixture.passwordResetUtil.startPasswordReset(
               session,
               email: firstEmail,
               transaction: transaction,
@@ -401,7 +395,7 @@ void main() {
 
         test('then second user still cannot request password reset', () async {
           final result = session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            (transaction) => fixture.passwordResetUtil.startPasswordReset(
               session,
               email: secondEmail,
               transaction: transaction,
@@ -419,7 +413,7 @@ void main() {
         'when deleting all password reset attempts for all users then both users can request password reset',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.passwordResetUtil.deletePasswordResetRequestAttempts(
                   session,
                   olderThan: Duration.zero,
@@ -429,7 +423,7 @@ void main() {
           );
 
           final firstResult = session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            (transaction) => fixture.passwordResetUtil.startPasswordReset(
               session,
               email: firstEmail,
               transaction: transaction,
@@ -437,7 +431,7 @@ void main() {
           );
 
           final secondResult = session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            (transaction) => fixture.passwordResetUtil.startPasswordReset(
               session,
               email: secondEmail,
               transaction: transaction,

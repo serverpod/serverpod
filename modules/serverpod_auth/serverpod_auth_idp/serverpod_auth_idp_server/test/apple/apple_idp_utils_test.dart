@@ -12,7 +12,7 @@ void main() {
 
   withServerpod(
     'Given an unauthenticated session',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       setUp(() {
         utils = _createUtils();
         session = sessionBuilder.build();
@@ -29,8 +29,8 @@ void main() {
   );
 
   withServerpod('Given an authenticated session but no Apple account', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     setUp(() {
       utils = _createUtils();
@@ -54,8 +54,8 @@ void main() {
   });
 
   withServerpod('Given an authenticated session with an Apple account', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late AppleAccount appleAccount;
     late AuthUserModel authUser;

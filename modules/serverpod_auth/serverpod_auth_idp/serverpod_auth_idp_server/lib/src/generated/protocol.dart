@@ -202,6 +202,44 @@ class Protocol extends _is.DatabaseSerializationManager
           _iacs.Protocol.new,
           _isp.Protocol.new,
         ],
+        classNames: const [
+          'RateLimitedRequestAttempt',
+          'SecretChallenge',
+          'AnonymousAccount',
+          'AnonymousAccountBlockedException',
+          'AnonymousAccountBlockedExceptionReason',
+          'AppleAccount',
+          'EmailAccount',
+          'EmailAccountOtpLoginRequest',
+          'EmailAccountOtpVerificationResult',
+          'EmailAccountPasswordResetRequest',
+          'EmailAccountRequest',
+          'EmailAccountLoginException',
+          'EmailAccountLoginExceptionReason',
+          'EmailAccountPasswordResetException',
+          'EmailAccountPasswordResetExceptionReason',
+          'EmailAccountRequestException',
+          'EmailAccountRequestExceptionReason',
+          'FacebookAccessTokenVerificationException',
+          'FacebookAccount',
+          'FirebaseAccount',
+          'FirebaseEmailNotVerifiedException',
+          'FirebaseIdTokenVerificationException',
+          'GitHubAccessTokenVerificationException',
+          'GitHubAccount',
+          'GoogleAccount',
+          'GoogleIdTokenVerificationException',
+          'MicrosoftAccessTokenVerificationException',
+          'MicrosoftAccount',
+          'PasskeyAccount',
+          'PasskeyChallenge',
+          'PasskeyChallengeExpiredException',
+          'PasskeyChallengeNotFoundException',
+          'PasskeyLoginRequest',
+          'PasskeyPublicKeyNotFoundException',
+          'PasskeyRegistrationRequest',
+        ],
+        classNamePrefix: 'serverpod_auth_idp.',
       );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
@@ -1247,13 +1285,11 @@ class Protocol extends _is.DatabaseSerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth_idp.')) return className;
-    return className.substring(19);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth_idp.',
+      );
 
   @override
   T deserialize<T>(
@@ -1261,8 +1297,11 @@ class Protocol extends _is.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth_idp.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -1605,9 +1644,10 @@ class Protocol extends _is.DatabaseSerializationManager
           )
           as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -1911,9 +1951,17 @@ class Protocol extends _is.DatabaseSerializationManager
     if (dataClassName == 'PasskeyRegistrationRequest') {
       return deserialize<_izjoggd8.PasskeyRegistrationRequest>(data['data']);
     }
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
+      return _iacs.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(20),
+      });
+    }
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     return super.deserializeByClassName(data);
   }

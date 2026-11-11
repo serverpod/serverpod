@@ -27,16 +27,16 @@ abstract class AppleIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Returns a session for the user upon successful login.
   /// {@endtemplate}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String identityToken,
-    required final String authorizationCode,
+    Session session, {
+    required String identityToken,
+    required String authorizationCode,
 
     /// Whether the sign-in was triggered from a native Apple platform app.
     ///
     /// Pass `false` for web sign-ins or 3rd party platforms like Android.
-    required final bool isNativeApplePlatformSignIn,
-    final String? firstName,
-    final String? lastName,
+    required bool isNativeApplePlatformSignIn,
+    String? firstName,
+    String? lastName,
   }) async {
     return appleIdp.login(
       session,
@@ -49,6 +49,6 @@ abstract class AppleIdpBaseEndpoint extends IdpBaseEndpoint {
   }
 
   @override
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await appleIdp.hasAccount(session);
 }

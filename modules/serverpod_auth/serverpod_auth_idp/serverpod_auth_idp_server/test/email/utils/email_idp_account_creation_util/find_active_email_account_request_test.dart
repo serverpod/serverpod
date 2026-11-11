@@ -10,7 +10,7 @@ void main() {
   withServerpod(
     'Given pending account request within verification code lifetime',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -22,7 +22,7 @@ void main() {
         fixture = EmailIdpTestFixture();
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -38,7 +38,7 @@ void main() {
         'when find active email account request is called then it returns the account request',
         () async {
           final request = await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.findActiveEmailAccountRequest(
                   session,
                   accountRequestId: accountRequestId,
@@ -57,7 +57,7 @@ void main() {
   withServerpod(
     'Given expired account request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -82,12 +82,11 @@ void main() {
             ),
           ),
           () => session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: email,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
           ),
         );
       });
@@ -100,7 +99,7 @@ void main() {
         'when find active email account request is called then it returns null',
         () async {
           final request = await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.findActiveEmailAccountRequest(
                   session,
                   accountRequestId: accountRequestId,
@@ -117,7 +116,7 @@ void main() {
   withServerpod(
     'Given no account request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       final accountRequestId = const Uuid().v4obj();
@@ -135,7 +134,7 @@ void main() {
         'when find active email account request is called then it returns null',
         () async {
           final request = await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.findActiveEmailAccountRequest(
                   session,
                   accountRequestId: accountRequestId,

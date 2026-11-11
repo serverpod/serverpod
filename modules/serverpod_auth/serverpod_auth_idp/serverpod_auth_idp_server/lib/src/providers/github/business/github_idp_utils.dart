@@ -61,7 +61,7 @@ class GitHubIdpUtils {
   /// Creates a new instance of [GitHubIdpUtils].
   GitHubIdpUtils({
     required this.config,
-    required final AuthUsers authUsers,
+    required AuthUsers authUsers,
   }) : _authUsers = authUsers {
     _oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
   }
@@ -81,10 +81,10 @@ class GitHubIdpUtils {
   ///
   /// Throws [GitHubAccessTokenVerificationException] if the token exchange fails.
   Future<String> exchangeCodeForToken(
-    final Session session, {
-    required final String code,
-    required final String codeVerifier,
-    required final String redirectUri,
+    Session session, {
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
   }) async {
     try {
       final tokenResponse = await _oauth2Util.exchangeCodeForToken(
@@ -107,9 +107,9 @@ class GitHubIdpUtils {
   /// The [transaction] parameter can be used to perform the database operations
   /// within an existing transaction.
   Future<GitHubAuthSuccess> authenticate(
-    final Session session, {
-    required final String accessToken,
-    required final Transaction? transaction,
+    Session session, {
+    required String accessToken,
+    required Transaction? transaction,
   }) async {
     final accountDetails = await fetchAccountDetails(
       session,
@@ -118,7 +118,7 @@ class GitHubIdpUtils {
 
     var githubAccount = await GitHubAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(
+      where: (t) => t.userIdentifier.equals(
         accountDetails.userIdentifier,
       ),
       transaction: transaction,
@@ -183,8 +183,8 @@ class GitHubIdpUtils {
   ///
   /// Throws [GitHubAccessTokenVerificationException] if the user info retrieval fails.
   Future<GitHubAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String accessToken,
+    Session session, {
+    required String accessToken,
   }) async {
     // More info on the user API:
     // https://docs.github.com/en/rest/users/users#get-the-authenticated-user
@@ -224,7 +224,7 @@ class GitHubIdpUtils {
           final emails = (jsonDecode(emailResponse.body) as List)
               .cast<Map<String, dynamic>>();
           final primary = emails.firstWhere(
-            (final e) => e['primary'] == true && e['verified'] == true,
+            (e) => e['primary'] == true && e['verified'] == true,
             orElse: () => <String, dynamic>{},
           );
           if (primary['email'] is String) {
@@ -250,7 +250,7 @@ class GitHubIdpUtils {
     return details;
   }
 
-  GitHubAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
+  GitHubAccountDetails _parseAccountDetails(Map<String, dynamic> data) {
     final userId = data['id'];
     final email = data['email'] as String?;
     final name = data['name'] as String?;
@@ -283,10 +283,10 @@ class GitHubIdpUtils {
   /// The [transaction] parameter can be used to perform the database operations
   /// within an existing transaction.
   Future<GitHubAccount> linkGitHubAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final GitHubAccountDetails accountDetails,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required GitHubAccountDetails accountDetails,
+    Transaction? transaction,
   }) async {
     return await GitHubAccount.db.insertRow(
       session,
@@ -300,12 +300,12 @@ class GitHubIdpUtils {
   }
 
   /// Returns the possible [GitHubAccount] associated with a session.
-  Future<GitHubAccount?> getAccount(final Session session) {
+  Future<GitHubAccount?> getAccount(Session session) {
     return switch (session.authenticated) {
       null => Future.value(null),
       _ => GitHubAccount.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(
+        where: (t) => t.authUserId.equals(
           session.authenticated!.authUserId,
         ),
       ),
@@ -314,7 +314,7 @@ class GitHubIdpUtils {
 }
 
 extension on Session {
-  Never logAndThrow(final String message) {
+  Never logAndThrow(String message) {
     log(message, level: LogLevel.debug);
     throw GitHubAccessTokenVerificationException();
   }

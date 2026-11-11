@@ -9,7 +9,7 @@ class LegacyUserEndpoint extends Endpoint {
   bool get requireLogin => true;
 
   /// Removes the user's profile image.
-  Future<bool> removeUserImage(final Session session) async {
+  Future<bool> removeUserImage(Session session) async {
     try {
       await AuthServices.instance.userProfiles.removeUserImage(
         session,
@@ -29,8 +29,8 @@ class LegacyUserEndpoint extends Endpoint {
 
   /// Sets the user's profile image from binary data.
   Future<bool> setUserImage(
-    final Session session,
-    final ByteData image,
+    Session session,
+    ByteData image,
   ) async {
     try {
       await AuthServices.instance.userProfiles.setUserImageFromBytes(
@@ -52,8 +52,8 @@ class LegacyUserEndpoint extends Endpoint {
 
   /// Changes the user's display name.
   Future<bool> changeUserName(
-    final Session session,
-    final String userName,
+    Session session,
+    String userName,
   ) async {
     try {
       await AuthServices.instance.userProfiles.changeUserName(
@@ -75,8 +75,8 @@ class LegacyUserEndpoint extends Endpoint {
 
   /// Changes the user's full name.
   Future<bool> changeFullName(
-    final Session session,
-    final String fullName,
+    Session session,
+    String fullName,
   ) async {
     try {
       await AuthServices.instance.userProfiles.changeFullName(

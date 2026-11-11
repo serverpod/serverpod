@@ -41,7 +41,7 @@ void main() {
       test('then uses provided salt when salt is provided.', () async {
         const testSecret = 'test-secret-123';
         final providedSalt = Uint8List.fromList(
-          List.generate(16, (final i) => i + 1),
+          List.generate(16, (i) => i + 1),
         );
 
         final result = await hashUtil.createHashFromString(
@@ -60,9 +60,9 @@ void main() {
 
       test('then produces different hashes with different salts.', () async {
         const testSecret = 'test-secret-123';
-        final salt1 = Uint8List.fromList(List.generate(16, (final i) => i + 1));
+        final salt1 = Uint8List.fromList(List.generate(16, (i) => i + 1));
         final salt2 = Uint8List.fromList(
-          List.generate(16, (final i) => 16 - i),
+          List.generate(16, (i) => 16 - i),
         );
 
         final result1 = await hashUtil.createHashFromString(
@@ -82,7 +82,7 @@ void main() {
         () async {
           const testSecret = 'test-secret-123';
           final salt = Uint8List.fromList(
-            List.generate(16, (final i) => i + 1),
+            List.generate(16, (i) => i + 1),
           );
 
           final result1 = await hashUtil.createHashFromString(
@@ -135,7 +135,7 @@ void main() {
       test('then uses provided salt when salt is provided.', () async {
         final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
         final providedSalt = Uint8List.fromList(
-          List.generate(16, (final i) => i + 1),
+          List.generate(16, (i) => i + 1),
         );
 
         final result = await hashUtil.createHashFromBytes(
@@ -157,7 +157,7 @@ void main() {
         () async {
           final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
           final salt = Uint8List.fromList(
-            List.generate(16, (final i) => i + 1),
+            List.generate(16, (i) => i + 1),
           );
 
           final result1 = await hashUtil.createHashFromBytes(

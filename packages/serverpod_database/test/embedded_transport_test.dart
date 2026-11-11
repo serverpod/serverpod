@@ -17,7 +17,7 @@ void main() {
   test(
     'Given an embedded database config with an empty password, '
     'when the transport is derived, '
-    'then only the Unix socket is served',
+    'then only the Unix socket is served.',
     () {
       expect(embeddedTransportFor(config(password: '')), isA<UnixTransport>());
     },
@@ -26,13 +26,40 @@ void main() {
   test(
     'Given an embedded database config with a password and port 8090, '
     'when the transport is derived, '
-    'then the Unix socket and scram TCP on port 8090 are served',
+    'then only the Unix socket is served.',
     () {
       expect(
         embeddedTransportFor(config(password: 'secret', port: 8090)),
+        isA<UnixTransport>(),
+      );
+    },
+  );
+
+  test(
+    'Given an embedded database config with a password and port 8090, '
+    'when TCP is explicitly enabled, '
+    'then the Unix socket and scram TCP on port 8090 are served.',
+    () {
+      expect(
+        embeddedTransportFor(
+          config(password: 'secret', port: 8090),
+          enableTcp: true,
+        ),
         isA<DualTransport>()
             .having((t) => t.port, 'port', 8090)
             .having((t) => t.password, 'password', 'secret'),
+      );
+    },
+  );
+
+  test(
+    'Given an embedded database config with an empty password, '
+    'when TCP is explicitly enabled, '
+    'then only the Unix socket is served.',
+    () {
+      expect(
+        embeddedTransportFor(config(password: ''), enableTcp: true),
+        isA<UnixTransport>(),
       );
     },
   );

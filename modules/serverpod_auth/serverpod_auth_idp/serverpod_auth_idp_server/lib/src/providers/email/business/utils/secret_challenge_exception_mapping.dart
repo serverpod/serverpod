@@ -4,10 +4,10 @@ import '../email_idp_server_exceptions.dart';
 /// Runs [fn], replacing challenge-related exceptions by the email account
 /// request exceptions used for registrations and passwordless logins.
 Future<T> withEmailAccountRequestExceptions<T>(
-  final Future<T> Function() fn,
+  Future<T> Function() fn,
 ) => _withReplacedSecretChallengeException(
   fn,
-  (final e) => switch (e) {
+  (e) => switch (e) {
     ChallengeRequestNotFoundException() =>
       EmailAccountRequestNotFoundException(),
     ChallengeAlreadyUsedException() =>
@@ -28,10 +28,10 @@ Future<T> withEmailAccountRequestExceptions<T>(
 /// Runs [fn], replacing challenge-related exceptions by the password reset
 /// exceptions.
 Future<T> withEmailPasswordResetExceptions<T>(
-  final Future<T> Function() fn,
+  Future<T> Function() fn,
 ) => _withReplacedSecretChallengeException(
   fn,
-  (final e) => switch (e) {
+  (e) => switch (e) {
     ChallengeRequestNotFoundException() =>
       EmailPasswordResetRequestNotFoundException(),
     ChallengeAlreadyUsedException() =>
@@ -48,8 +48,8 @@ Future<T> withEmailPasswordResetExceptions<T>(
 );
 
 Future<T> _withReplacedSecretChallengeException<T>(
-  final Future<T> Function() fn,
-  final EmailServerException Function(SecretChallengeException e) replace,
+  Future<T> Function() fn,
+  EmailServerException Function(SecretChallengeException e) replace,
 ) async {
   try {
     return await fn();

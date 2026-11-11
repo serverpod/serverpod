@@ -46,8 +46,8 @@ class EmailIdpUtils {
 
   /// Creates a new instance of [EmailIdpUtils].
   EmailIdpUtils({
-    required final EmailIdpConfig config,
-    final AuthUsers authUsers = const AuthUsers(),
+    required EmailIdpConfig config,
+    AuthUsers authUsers = const AuthUsers(),
   }) : hashUtil = Argon2HashUtil(
          hashPepper: config.secretHashPepper,
          fallbackHashPeppers: config.fallbackSecretHashPeppers,
@@ -99,12 +99,12 @@ class EmailIdpUtils {
   }
 
   /// Returns the possible [EmailAccount] associated with a session.
-  Future<EmailAccount?> getAccount(final Session session) {
+  Future<EmailAccount?> getAccount(Session session) {
     return switch (session.authenticated) {
       null => Future.value(null),
       _ => EmailAccount.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(
+        where: (t) => t.authUserId.equals(
           session.authenticated!.authUserId,
         ),
       ),
@@ -114,7 +114,7 @@ class EmailIdpUtils {
   /// Replaces server-side exceptions by client-side exceptions, hiding details
   /// that could leak account information.
   static Future<T> withReplacedServerEmailException<T>(
-    final Future<T> Function() fn,
+    Future<T> Function() fn,
   ) async {
     try {
       return await fn();

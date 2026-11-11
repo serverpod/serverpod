@@ -68,7 +68,7 @@ class GoogleIdpUtils {
   /// Creates a new instance of [GoogleIdpUtils].
   GoogleIdpUtils({
     required this.config,
-    required final AuthUsers authUsers,
+    required AuthUsers authUsers,
   }) : _authUsers = authUsers;
 
   /// Exchanges a Google authorization code for access and ID tokens.
@@ -80,10 +80,10 @@ class GoogleIdpUtils {
   /// Throws [GoogleIdTokenVerificationException] if the token exchange fails
   /// or if the response is missing the `id_token`.
   Future<({String accessToken, String idToken})> exchangeCodeForToken(
-    final Session session, {
-    required final String code,
-    required final String codeVerifier,
-    required final String redirectUri,
+    Session session, {
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
   }) async {
     try {
       final tokenResponse =
@@ -112,10 +112,10 @@ class GoogleIdpUtils {
   /// If the external user ID is not yet known in the system, a new `AuthUser`
   /// is created for it.
   Future<GoogleAuthSuccess> authenticate(
-    final Session session, {
-    required final String idToken,
-    required final String? accessToken,
-    required final Transaction? transaction,
+    Session session, {
+    required String idToken,
+    required String? accessToken,
+    required Transaction? transaction,
   }) async {
     final accountDetails = await fetchAccountDetails(
       session,
@@ -125,7 +125,7 @@ class GoogleIdpUtils {
 
     var googleAccount = await GoogleAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(
+      where: (t) => t.userIdentifier.equals(
         accountDetails.userIdentifier,
       ),
       transaction: transaction,
@@ -176,9 +176,9 @@ class GoogleIdpUtils {
   /// as well, but only to fill in profile fields the ID token does not carry.
   /// The identity always comes from the ID token.
   Future<GoogleAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String idToken,
-    required final String? accessToken,
+    Session session, {
+    required String idToken,
+    required String? accessToken,
   }) async {
     final String clientId = config.clientSecret.clientId;
 
@@ -249,7 +249,7 @@ class GoogleIdpUtils {
     return details;
   }
 
-  GoogleAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
+  GoogleAccountDetails _parseAccountDetails(Map<String, dynamic> data) {
     final userId = data['sub'] as String?;
     final email = data['email'] as String?;
     final name = data['given_name'] as String?;
@@ -283,10 +283,10 @@ class GoogleIdpUtils {
   ///
   /// Returns the newly created Google account.
   Future<GoogleAccount> linkGoogleAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final GoogleAccountDetails accountDetails,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required GoogleAccountDetails accountDetails,
+    Transaction? transaction,
   }) async {
     return await GoogleAccount.db.insertRow(
       session,
@@ -300,12 +300,12 @@ class GoogleIdpUtils {
   }
 
   /// Returns the possible [GoogleAccount] associated with a session.
-  Future<GoogleAccount?> getAccount(final Session session) {
+  Future<GoogleAccount?> getAccount(Session session) {
     return switch (session.authenticated) {
       null => Future.value(null),
       _ => GoogleAccount.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(
+        where: (t) => t.authUserId.equals(
           session.authenticated!.authUserId,
         ),
       ),
@@ -314,7 +314,7 @@ class GoogleIdpUtils {
 }
 
 extension on Session {
-  Never logAndThrow(final String message) {
+  Never logAndThrow(String message) {
     log(message, level: LogLevel.debug);
     throw GoogleIdTokenVerificationException();
   }

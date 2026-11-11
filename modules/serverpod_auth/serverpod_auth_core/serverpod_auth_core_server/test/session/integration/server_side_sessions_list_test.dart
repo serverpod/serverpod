@@ -10,8 +10,8 @@ void main() {
   );
 
   withServerpod('Given an auth session for a user,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -150,8 +150,8 @@ void main() {
   withServerpod(
     'Given sessions with different expiration states',
     (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       late Session session;
       late UuidValue authUserId;
@@ -195,7 +195,7 @@ void main() {
         // Update the last used time to make it expired
         final expiredByInactivitySession = (await ServerSideSession.db.find(
           session,
-          where: (final t) => t.method.equals('expired-by-inactivity'),
+          where: (t) => t.method.equals('expired-by-inactivity'),
         )).single;
 
         await ServerSideSession.db.updateRow(
@@ -206,14 +206,12 @@ void main() {
         );
 
         final sessions = await ServerSideSession.db.find(session);
-        activeSessionId = sessions
-            .firstWhere((final s) => s.method == 'active')
-            .id!;
+        activeSessionId = sessions.firstWhere((s) => s.method == 'active').id!;
         expiredByDateSessionId = sessions
-            .firstWhere((final s) => s.method == 'expired-by-date')
+            .firstWhere((s) => s.method == 'expired-by-date')
             .id!;
         expiredByInactivitySessionId = sessions
-            .firstWhere((final s) => s.method == 'expired-by-inactivity')
+            .firstWhere((s) => s.method == 'expired-by-inactivity')
             .id!;
       });
 
@@ -249,7 +247,7 @@ void main() {
 
           expect(sessions, hasLength(2));
           expect(
-            sessions.map((final s) => s.id).toSet(),
+            sessions.map((s) => s.id).toSet(),
             {expiredByDateSessionId, expiredByInactivitySessionId},
           );
         },
@@ -301,8 +299,8 @@ void main() {
   withServerpod(
     'Given multiple sessions',
     (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       late Session session;
       late UuidValue authUserId;
@@ -324,7 +322,7 @@ void main() {
         }
 
         final sessions = await ServerSideSession.db.find(session);
-        sessionIds = sessions.map((final s) => s.id!).toList();
+        sessionIds = sessions.map((s) => s.id!).toList();
       });
 
       test(
@@ -357,11 +355,9 @@ void main() {
           );
 
           // Results should be ordered by ID (as strings)
-          final sortedIds = sessionIds.map((final id) => id.toString()).toList()
+          final sortedIds = sessionIds.map((id) => id.toString()).toList()
             ..sort();
-          final returnedIds = sessions
-              .map((final s) => s.id.toString())
-              .toList();
+          final returnedIds = sessions.map((s) => s.id.toString()).toList();
 
           expect(returnedIds, sortedIds);
         },
@@ -378,7 +374,7 @@ void main() {
 
           expect(sessions, hasLength(2));
           expect(
-            sessions.every((final s) => s.authUserId == authUserId),
+            sessions.every((s) => s.authUserId == authUserId),
             isTrue,
           );
         },

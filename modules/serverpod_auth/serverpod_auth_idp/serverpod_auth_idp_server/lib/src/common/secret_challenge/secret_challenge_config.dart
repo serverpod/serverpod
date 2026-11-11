@@ -142,9 +142,9 @@ extension SecretChallengeVerificationConfigExtension<T>
   /// Returns `true` if admitted, `false` if rate limited.
   /// If no rate limiter is provided, returns `true`.
   Future<bool> tryRecordAttempt(
-    final Session session, {
-    required final UuidValue requestId,
-    final Map<String, String>? extraData,
+    Session session, {
+    required UuidValue requestId,
+    Map<String, String>? extraData,
   }) async {
     return await rateLimiter?.tryRecordAttempt(
           session,
@@ -163,9 +163,9 @@ extension SecretChallengeCompletionConfigExtension<T>
   /// Returns `true` if admitted, `false` if rate limited.
   /// If no rate limiter is provided, returns `true`.
   Future<bool> tryRecordAttempt(
-    final Session session, {
-    required final UuidValue requestId,
-    final Map<String, String>? extraData,
+    Session session, {
+    required UuidValue requestId,
+    Map<String, String>? extraData,
   }) async {
     return await rateLimiter?.tryRecordAttempt(
           session,

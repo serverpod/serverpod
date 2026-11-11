@@ -260,9 +260,9 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
 
   @override
   EmailIdp build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   }) {
     return EmailIdp(
       this,

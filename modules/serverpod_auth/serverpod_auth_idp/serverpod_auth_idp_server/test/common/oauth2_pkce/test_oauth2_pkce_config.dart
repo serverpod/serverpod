@@ -13,18 +13,18 @@ class TestOAuth2PkceServerConfig {
 
   /// Creates a test configuration with sensible defaults.
   TestOAuth2PkceServerConfig({
-    final String testClientId = 'test_client_id',
-    final String testClientSecret = 'test_client_secret',
-    final Uri? testTokenEndpointUrl,
-    final OAuth2CredentialsLocation testCredentialsLocation =
+    String testClientId = 'test_client_id',
+    String testClientSecret = 'test_client_secret',
+    Uri? testTokenEndpointUrl,
+    OAuth2CredentialsLocation testCredentialsLocation =
         OAuth2CredentialsLocation.header,
-    final String testClientIdKey = 'client_id',
-    final String testClientSecretKey = 'client_secret',
-    final Map<String, String> testTokenRequestHeaders = const {
+    String testClientIdKey = 'client_id',
+    String testClientSecretKey = 'client_secret',
+    Map<String, String> testTokenRequestHeaders = const {
       'Accept': 'application/json',
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    final Map<String, dynamic> testTokenRequestParams = const {},
+    Map<String, dynamic> testTokenRequestParams = const {},
     this.testShouldThrowOnError = false,
   }) {
     oauth2Config = OAuth2PkceServerConfig(
@@ -44,7 +44,7 @@ class TestOAuth2PkceServerConfig {
 
   /// Custom token response parser for testing.
   OAuth2PkceTokenResponse _parseTokenResponse(
-    final Map<String, dynamic> responseBody,
+    Map<String, dynamic> responseBody,
   ) {
     if (testShouldThrowOnError) {
       final error = responseBody['error'] as String?;

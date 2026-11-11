@@ -14,15 +14,15 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart'
 /// In case the user has been migrated earlier, this method does nothing.
 @internal
 Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
-  final Session session,
-  final legacy_auth.UserInfo userInfo, {
-  required final Transaction transaction,
-  required final new_auth_email.EmailIdp newEmailIdp,
-  final new_auth_core.AuthUsers authUsers = const new_auth_core.AuthUsers(),
+  Session session,
+  legacy_auth.UserInfo userInfo, {
+  required Transaction transaction,
+  required new_auth_email.EmailIdp newEmailIdp,
+  new_auth_core.AuthUsers authUsers = const new_auth_core.AuthUsers(),
 }) async {
   var migratedUser = await MigratedUser.db.findFirstRow(
     session,
-    where: (final t) => t.oldUserId.equals(userInfo.id!),
+    where: (t) => t.oldUserId.equals(userInfo.id!),
     transaction: transaction,
   );
 
@@ -85,15 +85,15 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
 }
 
 Future<void> _importEmailAccounts(
-  final Session session, {
-  required final int oldUserId,
-  required final UuidValue newAuthUserId,
-  required final Transaction transaction,
-  required final new_auth_email.EmailIdp newEmailIdp,
+  Session session, {
+  required int oldUserId,
+  required UuidValue newAuthUserId,
+  required Transaction transaction,
+  required new_auth_email.EmailIdp newEmailIdp,
 }) async {
   final emailAuths = await legacy_auth.EmailAuth.db.find(
     session,
-    where: (final t) => t.userId.equals(oldUserId),
+    where: (t) => t.userId.equals(oldUserId),
     transaction: transaction,
   );
   for (final emailAuth in emailAuths) {
@@ -115,14 +115,14 @@ Future<void> _importEmailAccounts(
 }
 
 Future<void> _importSessions(
-  final Session session, {
-  required final int oldUserId,
-  required final UuidValue newAuthUserId,
-  required final Transaction transaction,
+  Session session, {
+  required int oldUserId,
+  required UuidValue newAuthUserId,
+  required Transaction transaction,
 }) async {
   final authKeys = await legacy_auth.AuthKey.db.find(
     session,
-    where: (final t) => t.userId.equals(oldUserId),
+    where: (t) => t.userId.equals(oldUserId),
     transaction: transaction,
   );
 
@@ -140,10 +140,10 @@ Future<void> _importSessions(
 }
 
 Future<void> _importUserIdentifier(
-  final Session session, {
-  required final legacy_auth.UserInfo userInfo,
-  required final UuidValue newAuthUserId,
-  required final Transaction transaction,
+  Session session, {
+  required legacy_auth.UserInfo userInfo,
+  required UuidValue newAuthUserId,
+  required Transaction transaction,
 }) async {
   // We have to always import the user identifier, even if it matches the email,
   // as the legacy Google sign-in was using the email instead a "user ID".
@@ -158,12 +158,11 @@ Future<void> _importUserIdentifier(
 }
 
 Future<void> _importProfile(
-  final Session session,
-  final UuidValue authUserId,
-  final legacy_auth.UserInfo userInfo, {
-  required final Transaction transaction,
-  final new_auth_core.UserProfiles userProfiles =
-      const new_auth_core.UserProfiles(),
+  Session session,
+  UuidValue authUserId,
+  legacy_auth.UserInfo userInfo, {
+  required Transaction transaction,
+  new_auth_core.UserProfiles userProfiles = const new_auth_core.UserProfiles(),
 }) async {
   await userProfiles.createUserProfile(
     session,

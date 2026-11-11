@@ -278,7 +278,7 @@ void _cleanupStaleBuildDirs(String prefix) {
   }
 }
 
-String getServerpodCliProjectPath({required final String rootPath}) {
+String getServerpodCliProjectPath({required String rootPath}) {
   return path.join(
     rootPath,
     'tools',
@@ -286,7 +286,7 @@ String getServerpodCliProjectPath({required final String rootPath}) {
   );
 }
 
-String getServerpodCliEntrypointPath({required final String rootPath}) {
+String getServerpodCliEntrypointPath({required String rootPath}) {
   return path.join(
     getServerpodCliProjectPath(rootPath: rootPath),
     'bin',

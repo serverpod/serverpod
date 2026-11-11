@@ -47,6 +47,12 @@ class Protocol extends _isd.DatabaseSerializationManager
           _iss.getType<_itms6rpy.SharedTableRecord?>,
         ],
         modules: const [_isd.Protocol.new],
+        classNames: const [
+          'SharedEnum',
+          'SharedSubclass',
+          'SharedModel',
+          'SharedTableRecord',
+        ],
       );
 
   static List<_isd.TableDefinition> get targetTableDefinitions => [
@@ -102,11 +108,8 @@ class Protocol extends _isd.DatabaseSerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _iss.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -114,8 +117,8 @@ class Protocol extends _isd.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _iss.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -155,9 +158,10 @@ class Protocol extends _isd.DatabaseSerializationManager
       return (data != null ? _itms6rpy.SharedTableRecord.fromJson(data) : null)
           as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);

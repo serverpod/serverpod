@@ -40,13 +40,18 @@ class ResolvedEmbeddedPostgres {
 /// externally-managed server). Relative `dataPath` values are used as-is
 /// (typically already resolved with [DatabaseConfig.withResolvedLocalPath]).
 ///
+/// Uses only the Unix socket by default. [enableTcp] also enables loopback TCP
+/// on the configured port when a database password is configured. Attaching to
+/// an existing postmaster keeps its current listeners.
+///
 /// This pulls `package:serverpod_embedded_postgres` (and its `dart:ffi`
 /// dependencies), so it is deliberately NOT exported from the package barrel -
 /// it must never reach a web client. Server-side consumers reach it via
 /// `package:serverpod_database/embedded.dart`.
 Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
-  PostgresDatabaseConfig config,
-) async {
+  PostgresDatabaseConfig config, {
+  bool enableTcp = false,
+}) async {
   final dataDir = config._embeddedPostgresDataDir();
   if (dataDir == null) return null;
 
@@ -57,7 +62,7 @@ Future<ResolvedEmbeddedPostgres?> startOrAttachEmbeddedPostgres(
         dataDir: dataDir,
         databaseName: config.name,
         username: config.user,
-        transport: embeddedTransportFor(config),
+        transport: embeddedTransportFor(config, enableTcp: enableTcp),
         detach: false,
         repairStaleLocks: true,
       ),
@@ -126,18 +131,14 @@ Future<void> forceStopDatabasePool(DatabasePoolManager poolManager) =>
 
 /// How the embedded postmaster for [config] listens.
 ///
-/// Always the Unix socket, plus loopback TCP on [config]'s port when a password
-/// is configured. Every process derives the same answer, so start order does
-/// not matter.
-Transport embeddedTransportFor(PostgresDatabaseConfig config) =>
-    config.password.isEmpty
+/// Always the Unix socket, plus loopback TCP on [config]'s port when
+/// [enableTcp] is requested and a password is configured.
+Transport embeddedTransportFor(
+  PostgresDatabaseConfig config, {
+  bool enableTcp = false,
+}) => !enableTcp || config.password.isEmpty
     ? const UnixTransport()
     : DualTransport(port: config.port, password: config.password);
-
-/// Whether the embedded postmaster for [config] also listens on loopback TCP.
-bool embeddedPostgresListensOnTcp(PostgresDatabaseConfig config) =>
-    config._embeddedPostgresDataDir() != null &&
-    embeddedTransportFor(config) is DualTransport;
 
 extension on PostgresDatabaseConfig {
   /// The effective PGDATA [Directory] for the embedded PostgreSQL, or `null`

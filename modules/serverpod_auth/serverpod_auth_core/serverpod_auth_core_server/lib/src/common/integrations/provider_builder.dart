@@ -20,9 +20,9 @@ abstract class IdentityProviderBuilder<T extends IdentityProvider> {
   /// [authUsers] is the manager for managing auth users.
   /// [userProfiles] is the manager for managing user profiles.
   T build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   });
 }
 
@@ -40,8 +40,8 @@ class PreBuiltIdpBuilder<T extends IdentityProvider>
 
   @override
   T build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   }) => idp;
 }

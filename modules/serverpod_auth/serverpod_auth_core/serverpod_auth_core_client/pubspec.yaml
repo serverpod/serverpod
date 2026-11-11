@@ -1,6 +1,10 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 name: serverpod_auth_core_client
-description: Serverpod core authentication client module.
-version: 4.1.0-rc.1
+description: Serverpod core authentication client module, used by serverpod_auth_idp.
+version: 4.1.1
+repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '^3.12.2'
@@ -9,7 +13,7 @@ resolution: workspace
 
 dependencies:
   clock: ^1.1.1
-  serverpod_client: 4.1.0-rc.1
+  serverpod_client: 4.1.1
 
 dev_dependencies:
   test: ^1.25.5

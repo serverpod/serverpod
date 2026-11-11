@@ -35,7 +35,10 @@ webServer:
 database:
   # {{#postgres}}
   host: localhost
-  port: 9090
+  # Port 0 lets the embedded test database use an available port with no conflicts.
+  # If using Docker or other external PostgreSQL instances, use their actual port
+  # and remove `dataPath`.
+  port: 0
   name: projectname_test
   user: postgres
   dataPath: .serverpod/test/pgdata

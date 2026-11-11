@@ -2,12 +2,17 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
 import '../../../../test_util/builders/endpoint_definition_builder.dart';
 import '../../../../test_util/builders/exception_class_definition_builder.dart';
 import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../../test_util/builders/type_definition_builder.dart';
 import '../../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
@@ -275,6 +280,69 @@ void main() {
           });
         });
       });
+    },
+  );
+
+  group(
+    'Given a sealed parent exception with a List field of a model when generating protocol files',
+    () {
+      var item = ModelClassDefinitionBuilder()
+          .withClassName('Item')
+          .withFileName('item')
+          .withSimpleField('name', 'String')
+          .build();
+
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('ListException')
+          .withFileName('list_exception')
+          .withIsSealed(true)
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('items')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withListOf(
+                        'Item',
+                        url: defaultModuleAlias,
+                        modelInfo: item,
+                      )
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('ChildListException')
+          .withFileName('child_list_exception')
+          .withSimpleField('extra', 'String')
+          .withExtendsClass(parent)
+          .build();
+
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [EndpointDefinitionBuilder().build()],
+        models: [item, parent, child],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      var itemPrefix = importPrefixFor('item.dart');
+
+      test(
+        'then the protocol.dart contains a deserializer for the List type.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('List<$itemPrefix.Item>'),
+          );
+        },
+      );
     },
   );
 }

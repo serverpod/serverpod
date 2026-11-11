@@ -13,19 +13,19 @@ class ServerSideSessionsAdmin {
   /// Deletes the session where [ServerSideSession.expiresAt] has elapsed, or where
   /// the session has not been used in since [ServerSideSession.expireAfterUnusedFor] expired it.
   Future<void> deleteExpiredSessions(
-    final Session session, {
+    Session session, {
 
     /// Whether to delete sessions which [ServerSideSession.expiresAt] is in the past.
-    final bool deleteExpired = true,
+    bool deleteExpired = true,
 
     /// Whether to delete sessions which have not been used for [ServerSideSession.expireAfterUnusedFor].
-    final bool deleteInactive = true,
-    final Transaction? transaction,
+    bool deleteInactive = true,
+    Transaction? transaction,
   }) async {
     if (deleteExpired) {
       await ServerSideSession.db.deleteWhere(
         session,
-        where: (final t) => t.expiresAt < clock.now(),
+        where: (t) => t.expiresAt < clock.now(),
         transaction: transaction,
       );
     }
@@ -48,15 +48,15 @@ class ServerSideSessionsAdmin {
   ///
   /// Returns a list with [DeletedSession]s.
   Future<List<DeletedSession>> deleteSessions(
-    final Session session, {
-    final UuidValue? authUserId,
-    final UuidValue? serverSideSessionId,
-    final String? method,
-    final Transaction? transaction,
+    Session session, {
+    UuidValue? authUserId,
+    UuidValue? serverSideSessionId,
+    String? method,
+    Transaction? transaction,
   }) async {
     final serverSideSessions = await ServerSideSession.db.deleteWhere(
       session,
-      where: (final row) {
+      where: (row) {
         Expression<dynamic> expression = Constant.bool(true);
 
         if (authUserId != null) {
@@ -78,7 +78,7 @@ class ServerSideSessionsAdmin {
 
     return serverSideSessions
         .map(
-          (final session) => (
+          (session) => (
             authUserId: session.authUserId,
             sessionId: session.id!,
           ),
