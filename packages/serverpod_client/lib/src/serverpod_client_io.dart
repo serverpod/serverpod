@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:serverpod_client/serverpod_client.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'serverpod_client_shared_private.dart';
 
@@ -19,6 +21,11 @@ class ServerpodClientRequestDelegateImpl
   final SerializationManager serializationManager;
 
   late http.Client _httpClient;
+
+  /// The client that WebSocket connections are opened with when a security
+  /// context is set. It is the one behind [_httpClient], so it is closed with
+  /// it.
+  HttpClient? _webSocketHttpClient;
 
   /// Creates a new ServerpodClientRequestDelegateImpl.
   ServerpodClientRequestDelegateImpl({
@@ -43,6 +50,7 @@ class ServerpodClientRequestDelegateImpl
       final inner = HttpClient(context: securityContext as SecurityContext?);
       inner.connectionTimeout = connectionTimeout;
       _httpClient = IOClient(inner);
+      if (securityContext != null) _webSocketHttpClient = inner;
     }
   }
 
@@ -84,6 +92,14 @@ class ServerpodClientRequestDelegateImpl
     } on TimeoutException catch (e) {
       throw ServerpodClientNetworkException('Request timed out. ($e)');
     }
+  }
+
+  @override
+  WebSocketChannel connectWebSocket(Uri uri) {
+    final webSocketHttpClient = _webSocketHttpClient;
+    if (webSocketHttpClient == null) return super.connectWebSocket(uri);
+
+    return IOWebSocketChannel.connect(uri, customClient: webSocketHttpClient);
   }
 
   @override
