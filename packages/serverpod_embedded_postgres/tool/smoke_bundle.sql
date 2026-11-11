@@ -1,13 +1,108 @@
 -- The Serverpod-supported extension contract, exercised end-to-end against a
--- freshly built bundle. This is deliberately scoped to what Serverpod's model
--- and column APIs can emit (serverpod_database columns.dart + the
--- serverpod_serialization postgis/pgvector types) - the bundle is NOT a full
+-- freshly built bundle: PostgreSQL contrib plus the types and operators from
+-- Serverpod's model and column APIs. The bundle is NOT a full
 -- PostGIS distribution (no raster / address standardizer / protobuf).
 -- Executed by smoke_bundle.sh (unix socket) and smoke_bundle_windows.sh (TCP)
 -- under ON_ERROR_STOP; a crash or load failure in any path fails the gate.
 
 CREATE EXTENSION vector;
 CREATE EXTENSION postgis;
+
+-- The production image's PostgreSQL contrib extensions must all be available
+-- and installable. Start with the geocoder to exercise its fuzzystrmatch
+-- dependency on a fresh database (the missing dependency reported in #5949).
+CREATE EXTENSION postgis_tiger_geocoder CASCADE;
+
+DO $$
+DECLARE
+  extension_name text;
+BEGIN
+  FOREACH extension_name IN ARRAY ARRAY[
+    'adminpack', 'amcheck', 'autoinc', 'bloom', 'btree_gin', 'btree_gist',
+    'citext', 'cube', 'dblink', 'dict_int', 'dict_xsyn', 'earthdistance',
+    'file_fdw', 'fuzzystrmatch', 'hstore', 'insert_username', 'intagg',
+    'intarray', 'isn', 'lo', 'ltree', 'moddatetime', 'old_snapshot',
+    'pageinspect', 'pg_buffercache', 'pg_freespacemap', 'pg_prewarm',
+    'pg_stat_statements', 'pg_surgery', 'pg_trgm', 'pg_visibility',
+    'pg_walinspect', 'pgcrypto', 'pgrowlocks', 'pgstattuple', 'postgres_fdw',
+    'refint', 'seg', 'sslinfo', 'tablefunc', 'tcn', 'tsm_system_rows',
+    'tsm_system_time', 'unaccent', 'uuid-ossp', 'xml2'
+  ] LOOP
+    EXECUTE format('CREATE EXTENSION IF NOT EXISTS %I CASCADE', extension_name);
+  END LOOP;
+END
+$$;
+
+-- Reproduce the exclusion constraint from #5949 and verify its enforcement.
+CREATE TABLE smoke_booking (
+  key integer,
+  at timestamp,
+  EXCLUDE USING gist (key WITH =, tsrange(at, at + interval '30 seconds') WITH &&)
+);
+INSERT INTO smoke_booking VALUES (1, '2026-01-01 00:00:00');
+INSERT INTO smoke_booking VALUES (2, '2026-01-01 00:00:10');
+INSERT INTO smoke_booking VALUES (1, '2026-01-01 00:00:30');
+
+DO $$
+BEGIN
+  BEGIN
+    INSERT INTO smoke_booking VALUES (1, '2026-01-01 00:00:10');
+    RAISE EXCEPTION 'btree_gist failed to reject an overlapping booking';
+  EXCEPTION WHEN exclusion_violation THEN
+    NULL;
+  END;
+END
+$$;
+
+CREATE TABLE smoke_trgm (title text, description text);
+CREATE INDEX smoke_trgm_gin ON smoke_trgm
+  USING gin (title gin_trgm_ops, description gin_trgm_ops);
+CREATE INDEX smoke_trgm_gist ON smoke_trgm USING gist (title gist_trgm_ops);
+CREATE INDEX smoke_text_gin ON smoke_trgm USING gin (description);
+INSERT INTO smoke_trgm VALUES ('Serverpod', 'embedded PostgreSQL');
+SET enable_seqscan = off;
+
+DO $$
+DECLARE
+  secret text := 'contrib compression and encryption round trip';
+BEGIN
+  IF (SELECT count(*) FROM smoke_trgm WHERE title ILIKE '%pod%') <> 1 THEN
+    RAISE EXCEPTION 'trigram index query failed';
+  END IF;
+
+  IF 'Serverpod'::citext <> 'SERVERPOD'::citext
+      OR ('key=>value'::hstore -> 'key') <> 'value'
+      OR unaccent('Hôtel') <> 'Hotel'
+      OR levenshtein('serverpod', 'serverpods') <> 1 THEN
+    RAISE EXCEPTION 'contrib text functions returned unexpected values';
+  END IF;
+
+  IF encode(digest('abc', 'sha256'), 'hex') <>
+      'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'
+      OR pgp_sym_decrypt(pgp_sym_encrypt(secret, 'key', 'compress-algo=1'), 'key') <> secret THEN
+    RAISE EXCEPTION 'pgcrypto digest or compressed encryption failed';
+  END IF;
+
+  IF substring(uuid_generate_v1()::text, 15, 1) <> '1'
+      OR substring(uuid_generate_v1mc()::text, 15, 1) <> '1'
+      OR uuid_generate_v3(uuid_ns_dns(), 'www.widgets.com') <>
+         '3d813cbb-47fb-32ba-91df-831e1593ac29'::uuid
+      OR substring(uuid_generate_v4()::text, 15, 1) <> '4'
+      OR uuid_generate_v5(uuid_ns_dns(), 'www.widgets.com') <>
+         '21f7f8de-8051-5b89-8680-0195ef798b6a'::uuid THEN
+    RAISE EXCEPTION 'uuid-ossp generators returned unexpected UUIDs';
+  END IF;
+
+  IF xpath_string('<root>value</root>', '/root') <> 'value'
+      OR xslt_process('<root>value</root>',
+        '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><xsl:output method="text"/><xsl:template match="/"><xsl:value-of select="root"/></xsl:template></xsl:stylesheet>') <> 'value'
+      OR ssl_is_used() THEN
+    RAISE EXCEPTION 'XML/XSLT or SSL information functions failed';
+  END IF;
+END
+$$;
+
+RESET enable_seqscan;
 
 -- ===== pgvector: every value type Serverpod maps =====
 -- halfvec exercises pgvector's _Float16 code paths, which have miscompiled

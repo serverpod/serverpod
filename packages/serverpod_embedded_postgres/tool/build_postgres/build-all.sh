@@ -33,8 +33,8 @@ cp -R "$HERE/shim" "$B/"            # the cc/c++ wrapper the scripts expect at $
 chmod +x "$B"/shim/*
 
 echo "### fetch-sources";  "$HERE/fetch-sources.sh"
-echo "### build-core";     "$HERE/build-core.sh"
 echo "### build-deps-c";   "$HERE/build-deps-c.sh"
+echo "### build-core";     "$HERE/build-core.sh"
 echo "### build-deps-cpp"; "$HERE/build-deps-cpp.sh"
 
 echo "### pgvector"

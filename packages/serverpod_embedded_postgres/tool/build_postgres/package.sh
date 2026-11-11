@@ -46,6 +46,7 @@ EOF
 
 case "$(uname -s)" in
 Darwin)
+  cp -P "$DEPS"/lib/libssl*.dylib "$DEPS"/lib/libcrypto*.dylib "$STAGE/lib/"
   # Shared geo deps live in lib/ next to postgres's own dylibs.
   cp -P "$DEPS"/lib/libgeos_c.* "$DEPS"/lib/libgeos.* "$DEPS"/lib/libproj.* "$STAGE/lib/" 2>/dev/null || true
   # postgres bakes absolute install_names + build-tree rpaths; rewrite every
@@ -71,6 +72,7 @@ Darwin)
   for f in "$STAGE"/lib/postgresql/*.dylib; do [ -L "$f" ] || relocate "$f" "@loader_path/.."; done
   ;;
 MINGW*|MSYS*|CYGWIN*)
+  cp "$DEPS"/bin/libssl*.dll "$DEPS"/bin/libcrypto*.dll "$STAGE/bin/"
   # Windows: shared libs are .dll, installed by CMake into bin/. postgres.exe's
   # dir (bin/) is on the default DLL search path, so DLLs that postgis-3.dll
   # depends on resolve there - no rpath/install_name surgery.
@@ -101,6 +103,7 @@ MINGW*|MSYS*|CYGWIN*)
   done
   ;;
 *)
+  cp -P "$DEPS"/lib/libssl.so* "$DEPS"/lib/libcrypto.so* "$STAGE/lib/"
   # Linux: shared geo deps live in lib/ next to postgres's own libs. Rewrite ELF
   # rpaths to $ORIGIN-relative so the relocated postgis-3.so finds libgeos_c /
   # libproj in lib/, and those find each other - the ELF analog of the macOS

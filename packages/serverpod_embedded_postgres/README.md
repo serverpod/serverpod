@@ -217,11 +217,23 @@ final class DualTransport extends Transport {
 ```
 
 
+## Bundled extensions
+
+The bundle includes PostgreSQL's contrib extensions, including `btree_gist`,
+`btree_gin`, `pg_trgm`, `citext`, `hstore`, `unaccent`, `fuzzystrmatch`,
+`pgcrypto`, `uuid-ossp`, and `xml2`, as well as PostGIS and pgvector.
+All 46 installable contrib extensions supplied by the production image's
+PostgreSQL package are built and smoke-tested on every supported platform.
+`postgis_tiger_geocoder` can install its `fuzzystrmatch` dependency.
+
+Extensions are available for `CREATE EXTENSION`; they are not automatically
+enabled in each database. Modules such as `pg_stat_statements` still require
+their usual PostgreSQL configuration before use.
+
 ## What's not included
 
-- **PostgreSQL extensions** beyond PostGIS and pgvector (which the bundle
-  ships) - others would need to be added to the build in
-  `tool/build_postgres/`.
+- **External extensions**, procedural-language runtimes (PL/Perl, PL/Python,
+  PL/Tcl and their transforms), and the Linux-only SELinux integration.
 - **Full PostGIS.** The bundled PostGIS covers Serverpod's supported
   surface (geography types + `ST_Intersects`/`ST_DWithin`/`ST_Distance`/
   `ST_Covers`/`ST_CoveredBy`); raster, the address standardizer, and

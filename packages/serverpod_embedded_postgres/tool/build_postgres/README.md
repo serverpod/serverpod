@@ -1,7 +1,7 @@
 # Building the embedded PostgreSQL bundles
 
 These scripts build the binary bundles that `serverpod_embedded_postgres`
-downloads at runtime: **PostgreSQL + PostGIS + pgvector**, with every
+downloads at runtime: **PostgreSQL + contrib + PostGIS + pgvector**, with every
 component version (and its source SHA-256) pinned in `versions.env` - the
 canonical bundle spec, cross-checked against the Dart-side `BundleSpec` by
 `bundle_spec_test.dart`. The scripts drive each project's own build system
@@ -14,7 +14,12 @@ relocatable `.tar.xz` per platform.
 (macOS used zig too until zig's bundled clang 21.1.0 was found to miscompile the
 backend into an intermittent segfault - Apple clang builds it crash-free.)
 
-Unlike Zonky's stock binaries, these ship the spatial + vector extensions.
+The complete portable contrib set is built, including `pgcrypto`, `sslinfo`,
+`uuid-ossp`, and `xml2`. OpenSSL is bundled as shared libraries; zlib, OSSP UUID,
+libxml2 and libxslt are built from pinned sources and linked statically. These
+dependencies are built before PostgreSQL so configure cannot silently omit
+their extensions. Every installable contrib extension is covered by the
+five-platform bundle smoke gate.
 
 ## Run
 
@@ -49,8 +54,8 @@ version explicitly: `export ZIG_VERSION=0.16.0` and `shim` will invoke
 | script | what |
 |---|---|
 | `fetch-sources.sh` | download + extract all pinned upstream sources |
-| `build-core.sh` | PostgreSQL core (force-keeps backend symbols for extensions) |
-| `build-deps-c.sh` | sqlite, libxml2, json-c (static) |
+| `build-core.sh` | PostgreSQL core and contrib (force-keeps backend symbols for extensions) |
+| `build-deps-c.sh` | OpenSSL (shared); zlib, OSSP UUID, sqlite, libxml2, libxslt, json-c (static) |
 | `build-deps-cpp.sh` | GEOS + PROJ (shared dylibs) |
 | `build-postgis.sh` | PostGIS against core + deps |
 | `package.sh` | stage + relocate + `tar.xz` + sha256 |

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Build the C dependencies of PostGIS as static libs into $DEPS, using zig cc.
-# (sqlite3 - needed by PROJ; libxml2 - GML/KML; json-c - GeoJSON)
+# Build the C dependencies of PostgreSQL/contrib and PostGIS into $DEPS.
+# OpenSSL is shared; the remaining libraries are static and position independent.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=versions.env
@@ -19,6 +19,41 @@ case "$(uname -s)" in
   *)                    CMAKE_CC="$WCC" ;;
 esac
 
+echo "=== zlib ($(date +%H:%M:%S)) ==="
+cd "$SRC/zlib-$ZLIB_VERSION"
+cmake -S . -B build -G "Unix Makefiles" \
+  -DCMAKE_INSTALL_PREFIX="$DEPS" -DCMAKE_INSTALL_LIBDIR=lib \
+  -DCMAKE_C_COMPILER="$CMAKE_CC" -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+  -DZLIB_BUILD_SHARED=OFF -DZLIB_BUILD_STATIC=ON -DZLIB_BUILD_TESTING=OFF \
+  >"$LOG/dep-zlib.log" 2>&1
+cmake --build build -j"$J" >>"$LOG/dep-zlib.log" 2>&1
+cmake --install build >>"$LOG/dep-zlib.log" 2>&1
+
+echo "=== OpenSSL ($(date +%H:%M:%S)) ==="
+cd "$SRC/openssl-$OPENSSL_VERSION"
+case "$(uname -s)-$(uname -m)" in
+  Linux-x86_64) OPENSSL_TARGET=linux-x86_64 ;;
+  Linux-aarch64) OPENSSL_TARGET=linux-aarch64 ;;
+  Darwin-x86_64) OPENSSL_TARGET=darwin64-x86_64-cc ;;
+  Darwin-arm64) OPENSSL_TARGET=darwin64-arm64-cc ;;
+  MINGW*|MSYS*|CYGWIN*) OPENSSL_TARGET=mingw64 ;;
+  *) echo "Unsupported OpenSSL target" >&2; exit 1 ;;
+esac
+# Keep providers built into libcrypto so relocation does not depend on a
+# build-machine OPENSSLDIR or a separately located provider module.
+CC="$WCC" perl ./Configure "$OPENSSL_TARGET" --prefix="$DEPS" --libdir=lib \
+  shared no-module no-tests >"$LOG/dep-openssl.log" 2>&1
+make -j"$J" >>"$LOG/dep-openssl.log" 2>&1
+make install_sw >>"$LOG/dep-openssl.log" 2>&1
+
+echo "=== OSSP UUID ($(date +%H:%M:%S)) ==="
+cd "$SRC/uuid-$OSSP_UUID_VERSION"
+CC="$WCC" CFLAGS="-O2 -fPIC" ./configure --prefix="$DEPS" \
+  --disable-shared --enable-static --without-cxx --without-perl \
+  --without-php --without-pgsql >"$LOG/dep-uuid.log" 2>&1
+make -j"$J" >>"$LOG/dep-uuid.log" 2>&1
+make install >>"$LOG/dep-uuid.log" 2>&1
+
 echo "=== sqlite ($(date +%H:%M:%S)) ==="
 cd "$SRC/sqlite-autoconf-$SQLITE_AUTOCONF"
 make distclean >/dev/null 2>&1 || true
@@ -30,11 +65,20 @@ echo "sqlite: $("$DEPS/bin/sqlite3" --version | awk '{print $1}')"
 echo "=== libxml2 ($(date +%H:%M:%S)) ==="
 cd "$SRC/libxml2-$LIBXML2_VERSION"
 make distclean >/dev/null 2>&1 || true
-CC="$WCC" ./configure --prefix="$DEPS" --disable-shared --enable-static \
+CC="$WCC" CFLAGS="-O2 -fPIC" ./configure --prefix="$DEPS" --disable-shared --enable-static \
   --without-python --without-lzma --without-zlib --without-iconv >"$LOG/dep-libxml2.log" 2>&1
 make -j"$J" >>"$LOG/dep-libxml2.log" 2>&1
 make install >>"$LOG/dep-libxml2.log" 2>&1
 echo "libxml2: $("$DEPS/bin/xml2-config" --version)"
+
+echo "=== libxslt ($(date +%H:%M:%S)) ==="
+cd "$SRC/libxslt-$LIBXSLT_VERSION"
+CC="$WCC" CFLAGS="-O2 -fPIC" CPPFLAGS="-DLIBXML_STATIC" \
+  PKG_CONFIG_PATH="$DEPS/lib/pkgconfig" ./configure --prefix="$DEPS" \
+  --disable-shared --enable-static --without-python --without-crypto \
+  --with-libxml-prefix="$DEPS" >"$LOG/dep-libxslt.log" 2>&1
+make -j"$J" >>"$LOG/dep-libxslt.log" 2>&1
+make install >>"$LOG/dep-libxslt.log" 2>&1
 
 echo "=== json-c ($(date +%H:%M:%S)) ==="
 cd "$SRC/json-c-$JSONC_VERSION"

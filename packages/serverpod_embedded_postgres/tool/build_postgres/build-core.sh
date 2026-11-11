@@ -13,6 +13,11 @@ B="${PGBUILD:-$HOME/pgzig}"; SRC="$B/src/postgresql-$PG_UPSTREAM_VERSION"; PREFI
 WCC="$B/shim/cc"; WCXX="$B/shim/cxx"
 J="$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 export CC="$WCC" CXX="$WCXX"
+DEPS="$B/deps"
+export PATH="$DEPS/bin:$PATH"
+export PKG_CONFIG_PATH="$DEPS/lib/pkgconfig"
+export CPPFLAGS="-I$DEPS/include -I$DEPS/include/libxml2 -DLIBXML_STATIC -DLIBXSLT_STATIC"
+export LDFLAGS="-L$DEPS/lib -Wl,-rpath,$DEPS/lib"
 
 cd "$SRC"
 make distclean >/dev/null 2>&1 || true
@@ -36,8 +41,9 @@ echo "=== configure ($(date +%H:%M:%S)) ==="
 # path, so PostGIS then fails to compile ("libintl.h file not found"). We want
 # English-only messages in the embedded bundle regardless, so just turn it off.
 ./configure --prefix="$PREFIX" \
-  --without-icu --without-readline --without-zlib \
-  --without-zstd --without-lz4 --without-gssapi --without-ldap --without-openssl \
+  --without-icu --without-readline --with-zlib \
+  --without-zstd --without-lz4 --without-gssapi --without-ldap \
+  --with-ssl=openssl --with-uuid=ossp --with-libxml --with-libxslt \
   --disable-nls \
   || {
     echo "=== configure FAILED - config.log diagnostics ==="
@@ -85,6 +91,10 @@ make -j"$J" PG_EXPORTS="@$B/uflags.rsp -rdynamic"
 make install PG_EXPORTS="@$B/uflags.rsp -rdynamic"
     ;;
 esac
+
+echo "=== build + install contrib ($(date +%H:%M:%S)) ==="
+make -C "$SRC/contrib" -j"$J"
+make -C "$SRC/contrib" install
 
 echo "=== verify ($(date +%H:%M:%S)) ==="
 echo "pg_config --cc: $("$PREFIX/bin/pg_config" --cc)"
