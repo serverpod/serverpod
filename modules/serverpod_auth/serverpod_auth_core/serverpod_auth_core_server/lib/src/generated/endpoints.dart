@@ -17,6 +17,11 @@ import '../profile/endpoints/user_profile_base_endpoint.dart' as _ijdx9s01;
 class Endpoints extends _is.EndpointDispatch {
   @override
   void initializeEndpoints(_is.Server server) {
+    initializeOwnEndpoints(server);
+  }
+
+  @override
+  void initializeOwnEndpoints(_is.Server server) {
     var endpoints = <String, _is.Endpoint>{
       'status': _id66yt13.StatusEndpoint()
         ..initialize(

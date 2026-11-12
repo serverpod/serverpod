@@ -880,6 +880,22 @@ class Protocol extends _isd.DatabaseSerializationManager
   );
 
   static List<_isd.TableDefinition> get targetTableDefinitions => [
+    ..._ownTableDefinitions,
+    ..._iacc.Protocol() is _isd.DatabaseSerializationManager
+        ? (_iacc.Protocol() as _isd.DatabaseSerializationManager)
+              .getOwnTableDefinitions()
+        : [],
+    ..._iaic.Protocol() is _isd.DatabaseSerializationManager
+        ? (_iaic.Protocol() as _isd.DatabaseSerializationManager)
+              .getOwnTableDefinitions()
+        : [],
+    ..._iyerxm0e.Protocol() is _isd.DatabaseSerializationManager
+        ? (_iyerxm0e.Protocol() as _isd.DatabaseSerializationManager)
+              .getOwnTableDefinitions()
+        : [],
+  ];
+
+  static List<_isd.TableDefinition> get _ownTableDefinitions => [
     _isd.TableDefinition(
       name: 'address',
       dartName: 'Address',
@@ -2332,21 +2348,9 @@ class Protocol extends _isd.DatabaseSerializationManager
       ],
       managed: true,
     ),
-    ..._iacc.Protocol() is _isd.DatabaseSerializationManager
-        ? (_iacc.Protocol() as _isd.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
-        : [],
-    ..._iaic.Protocol() is _isd.DatabaseSerializationManager
-        ? (_iaic.Protocol() as _isd.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
-        : [],
-    ..._iyerxm0e.Protocol() is _isd.DatabaseSerializationManager
-        ? (_iyerxm0e.Protocol() as _isd.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
-        : [],
     ..._iqfgygbv.Protocol() is _isd.DatabaseSerializationManager
         ? (_iqfgygbv.Protocol() as _isd.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
+              .getOwnTableDefinitions()
         : [],
   ];
 
@@ -5174,6 +5178,9 @@ class Protocol extends _isd.DatabaseSerializationManager
   @override
   List<_isd.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isd.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test_sqlite';
