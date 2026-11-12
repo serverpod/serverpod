@@ -881,17 +881,21 @@ class PostgresDatabaseConnection
     dynamic exception,
     StackTrace? trace,
   }) {
+    var logQuery = session.logQuery;
+    if (logQuery == null) return;
+
     var duration = DateTime.now().difference(startTime);
 
-    // Use the current stack trace if there is no exception.
-    trace ??= StackTrace.current;
-
-    session.logQuery?.call(
+    // A successful query passes [StackTrace.empty] instead of capturing
+    // [StackTrace.current]: capturing walks the async stack on every query,
+    // while most queries are never logged. [logQuery] runs synchronously from
+    // here, so a receiver that does log the query can capture the trace then.
+    logQuery(
       query: query,
       duration: duration,
       numRowsAffected: numRowsAffected,
       error: exception?.toString(),
-      stackTrace: trace,
+      stackTrace: trace ?? StackTrace.empty,
     );
   }
 

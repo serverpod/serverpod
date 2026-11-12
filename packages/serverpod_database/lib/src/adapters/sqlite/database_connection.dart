@@ -1479,13 +1479,17 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     StackTrace? trace,
   }) {
     stopwatch.stop();
-    trace ??= StackTrace.current;
-    session.logQuery?.call(
+    var logQuery = session.logQuery;
+    if (logQuery == null) return;
+
+    // See the PostgreSQL adapter: successful queries pass [StackTrace.empty]
+    // and the receiver captures the trace only if it logs the query.
+    logQuery(
       query: query,
       duration: stopwatch.elapsed,
       numRowsAffected: numRowsAffected,
       error: exception?.toString(),
-      stackTrace: trace,
+      stackTrace: trace ?? StackTrace.empty,
     );
   }
 
