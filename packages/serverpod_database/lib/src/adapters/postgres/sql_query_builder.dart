@@ -1719,8 +1719,13 @@ void _validateDeleteOrderByAndReturning(
 extension _ColumnHelpers on Column {
   /// Returns true if the column has the specified table as base table.
   bool hasBaseTable(String table) {
-    // Regex matches 'tableName_' and 'tableName.'
-    return queryAlias.startsWith(RegExp(RegExp.escape(table) + r'[_\.]'));
+    // Matches 'tableName_' and 'tableName.'. A string check: this runs for
+    // every column of every query, and building a RegExp each time (run by an
+    // interpreter in AOT builds) was a measurable part of a query's cost.
+    var alias = queryAlias;
+    if (alias.length <= table.length || !alias.startsWith(table)) return false;
+    var next = alias.codeUnitAt(table.length);
+    return next == 0x5f /* _ */ || next == 0x2e /* . */;
   }
 }
 
