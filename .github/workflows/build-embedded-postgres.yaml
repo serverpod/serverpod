@@ -108,6 +108,15 @@ jobs:
           [ -f "$f" ] || { echo "::error::expected bundle $f not produced; dist has: $(ls "$PGBUILD"/dist 2>/dev/null)"; exit 1; }
           echo "verified bundle: $(basename "$f")"
 
+      - name: Upload build diagnostics
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: postgres-build-logs-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            ${{ runner.temp }}/pgbuild/logs/
+            ${{ runner.temp }}/pgbuild/src/**/config.log
+
       # Inspection artifact for every platform, uploaded BEFORE the smoke gate so
       # a failing bundle is still downloadable for debugging.
       - name: Upload bundle artifact (inspection)

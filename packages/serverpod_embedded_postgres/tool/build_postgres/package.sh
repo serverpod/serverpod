@@ -26,6 +26,16 @@ rm -rf "$STAGE"; mkdir -p "$STAGE"
 cp -R "$PREFIX/." "$STAGE/"
 rm -rf "$STAGE/include" "$STAGE/lib/pkgconfig" "$STAGE"/lib/*.a 2>/dev/null || true
 
+# Preserve notices for the additional contrib dependencies, including the
+# libraries linked statically into PostgreSQL and its extension modules.
+licenses="$STAGE/share/licenses/contrib-dependencies"
+mkdir -p "$licenses"
+cp "$B/src/openssl-$OPENSSL_VERSION/LICENSE.txt" "$licenses/OpenSSL.txt"
+cp "$B/src/uuid-$OSSP_UUID_VERSION/README" "$licenses/OSSP-UUID.txt"
+cp "$B/src/libxml2-$LIBXML2_VERSION/Copyright" "$licenses/libxml2.txt"
+cp "$B/src/libxslt-$LIBXSLT_VERSION/Copyright" "$licenses/libxslt.txt"
+cp "$B/src/zlib-$ZLIB_VERSION/LICENSE" "$licenses/zlib.txt"
+
 # PROJ runtime data (proj.db etc.) - OS-agnostic. The launcher sets PROJ_LIB
 # to <install>/share/proj (see supervisor.dart).
 mkdir -p "$STAGE/share/proj"; cp -R "$DEPS"/share/proj/. "$STAGE/share/proj/"
@@ -46,6 +56,7 @@ EOF
 
 case "$(uname -s)" in
 Darwin)
+  cp -P "$DEPS"/lib/libssl*.dylib "$DEPS"/lib/libcrypto*.dylib "$STAGE/lib/"
   # Shared geo deps live in lib/ next to postgres's own dylibs.
   cp -P "$DEPS"/lib/libgeos_c.* "$DEPS"/lib/libgeos.* "$DEPS"/lib/libproj.* "$STAGE/lib/" 2>/dev/null || true
   # postgres bakes absolute install_names + build-tree rpaths; rewrite every
@@ -60,6 +71,10 @@ Darwin)
         "$PREFIX"/*|"$DEPS"/*) install_name_tool -change "$dep" "@rpath/$(basename "$dep")" "$f" 2>/dev/null || true ;;
       esac
     done
+    # Drop the build-tree rpaths the link step baked in (LDFLAGS), so the
+    # bundle's own lib/ is the only place dyld looks.
+    install_name_tool -delete_rpath "$DEPS/lib" "$f" 2>/dev/null || true
+    install_name_tool -delete_rpath "$PREFIX/lib" "$f" 2>/dev/null || true
     install_name_tool -add_rpath "$rp" "$f" 2>/dev/null || true
     # arm64 requires a (re)signature after install_name_tool; on x64 it is
     # unnecessary (ad-hoc signing these zig-built dylibs tripped loader crashes
@@ -69,8 +84,11 @@ Darwin)
   for f in "$STAGE"/bin/*;                  do [ -L "$f" ] || { file "$f" | grep -q Mach-O && relocate "$f" "@loader_path/../lib"; }; done
   for f in "$STAGE"/lib/*.dylib;            do [ -L "$f" ] || relocate "$f" "@loader_path"; done
   for f in "$STAGE"/lib/postgresql/*.dylib; do [ -L "$f" ] || relocate "$f" "@loader_path/.."; done
+  # PGXS test helpers (pg_regress, isolationtester) link libpq too.
+  for f in "$STAGE"/lib/postgresql/pgxs/src/test/*/*; do [ -L "$f" ] || { file "$f" | grep -q Mach-O && relocate "$f" "@loader_path/../../../../.."; }; done
   ;;
 MINGW*|MSYS*|CYGWIN*)
+  cp "$DEPS"/bin/libssl*.dll "$DEPS"/bin/libcrypto*.dll "$STAGE/bin/"
   # Windows: shared libs are .dll, installed by CMake into bin/. postgres.exe's
   # dir (bin/) is on the default DLL search path, so DLLs that postgis-3.dll
   # depends on resolve there - no rpath/install_name surgery.
@@ -101,6 +119,7 @@ MINGW*|MSYS*|CYGWIN*)
   done
   ;;
 *)
+  cp -P "$DEPS"/lib/libssl.so* "$DEPS"/lib/libcrypto.so* "$STAGE/lib/"
   # Linux: shared geo deps live in lib/ next to postgres's own libs. Rewrite ELF
   # rpaths to $ORIGIN-relative so the relocated postgis-3.so finds libgeos_c /
   # libproj in lib/, and those find each other - the ELF analog of the macOS
@@ -130,8 +149,55 @@ MINGW*|MSYS*|CYGWIN*)
   for f in "$STAGE"/lib/postgresql/*.so; do
     if [ -f "$f" ] && [ ! -L "$f" ]; then patchelf --set-rpath '$ORIGIN/..' "$f"; fi
   done
+  # PGXS test helpers (pg_regress, isolationtester) link libpq too.
+  for f in "$STAGE"/lib/postgresql/pgxs/src/test/*/*; do
+    if [ -f "$f" ] && [ ! -L "$f" ] && head -c 4 "$f" | grep -q ELF; then
+      patchelf --set-rpath '$ORIGIN/../../../../..' "$f"
+    fi
+  done
   ;;
 esac
+
+# Relocatability gate: nothing the loader or OpenSSL consults at runtime may
+# point into the build tree. Such a path is dead on the user's machine at
+# best, and at worst one a local user can create to inject libraries, config
+# or trusted certs. Running the server can't catch this (the paths just don't
+# exist there), so inspect the binaries.
+build_refs=(-e "$B" -e "/$(basename "$B")/")
+leaks=""
+crypto="$(find "$STAGE/bin" "$STAGE/lib" -maxdepth 1 -type f -name 'libcrypto*' | head -1)"
+[ -n "$crypto" ] || { echo "package: bundled libcrypto not found" >&2; exit 1; }
+ossl_dirs="$(grep -a -o -E '(OPENSSLDIR|ENGINESDIR|MODULESDIR): "[^"]*"' "$crypto" || true)"
+[ "$(echo "$ossl_dirs" | grep -c .)" -eq 3 ] || {
+  echo "package: could not read OPENSSLDIR/ENGINESDIR/MODULESDIR from $crypto" >&2; exit 1;
+}
+if echo "$ossl_dirs" | grep -qF "${build_refs[@]}"; then
+  leaks="$leaks$(basename "$crypto"): $(echo "$ossl_dirs" | grep -F "${build_refs[@]}" | tr '\n' ' ')"$'\n'
+fi
+case "$(uname -s)" in
+Darwin)
+  for f in $(find "$STAGE/bin" "$STAGE/lib" -type f); do
+    file "$f" | grep -q Mach-O || continue
+    # Only the load commands' path/name fields: otool's first line echoes the
+    # inspected file's own path, which lives under $B.
+    refs="$(otool -l "$f" | grep -E '^ +(path|name) ' | grep -F "${build_refs[@]}" || true)"
+    [ -z "$refs" ] || leaks="$leaks${f#"$STAGE"/}: $(echo "$refs" | tr -s ' \n' ' ')"$'\n'
+  done
+  ;;
+MINGW*|MSYS*|CYGWIN*) ;; # PE has no rpath; imports are bare DLL names.
+*)
+  for f in $(find "$STAGE/bin" "$STAGE/lib" -type f); do
+    head -c 4 "$f" | grep -q ELF || continue
+    refs="$(patchelf --print-rpath "$f" | grep -F "${build_refs[@]}" || true)"
+    [ -z "$refs" ] || leaks="$leaks${f#"$STAGE"/}: rpath $refs"$'\n'
+  done
+  ;;
+esac
+[ -z "$leaks" ] || {
+  echo "package: bundle still references the build tree ($B):" >&2
+  printf '%s' "$leaks" >&2; exit 1;
+}
+echo "package: relocatability OK (no build-tree rpaths, install names or OpenSSL dirs)"
 
 # The bundle must BE what its name claims. Assert the packaged binaries' own
 # version strings against the declared identity, so a version bump that
