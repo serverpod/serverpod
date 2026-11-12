@@ -27,7 +27,10 @@ workspace:
   - tools/*
 
 dev_dependencies:
+  cli_tools: ^0.13.2
+  config: ^0.9.0
   melos: ^8.0.0
+  path: ^1.8.3
   sort_pubspec_dependencies: ^0.0.2
 
 melos:
@@ -135,6 +138,27 @@ melos:
       run: dart run melos downgrade_flutter && dart run melos downgrade_dart
     sort_pubspec_dependencies:
       run: util/sort_pubspec_dependencies
+    # Changelog entries live in changelog.d until a release collects them, see
+    # changelog.d/README.md. Melos joins extra arguments into a shell command
+    # without quoting, so pass `--entry` values to the Dart script directly.
+    changelog_add:
+      description: >-
+        Add changelog entries for the current pull request to changelog.d. The
+        PR number and author are detected with the GitHub CLI and the entries
+        are prompted for. Accepts `--pr <number>` and `--author <login>`.
+      run: dart run util/changelog.dart add
+      stdio: inherit
+    changelog_check:
+      description: Validate the names and contents of the changelog.d entries.
+      run: dart run util/changelog.dart check
+    changelog_preview:
+      description: Print the pending changelog.d entries as they would be collected.
+      run: dart run util/changelog.dart preview
+    changelog_collect:
+      description: >-
+        Release step. Move the changelog.d entries into CHANGELOG.md under the
+        version in SERVERPOD_VERSION (or `--version <v>`) and delete them.
+      run: dart run util/changelog.dart collect
 
 serverpod_cli:
   analyze_pubspecs:
