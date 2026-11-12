@@ -29,7 +29,7 @@ Once the pull request is open, run from the repository root:
 dart run melos run changelog_add
 ```
 
-The script detects the PR number and author with the [GitHub CLI](https://cli.github.com/), asks for the entries, and creates the file with the current UTC timestamp. Running it again for the same PR appends to the existing file. Commit the file with the rest of the PR.
+The script detects the PR number and author with the [GitHub CLI](https://cli.github.com/), asks for the entries, and creates the file with the current UTC timestamp. Running it again for the same PR appends to the existing file. Characters of the author that are not valid in a file name are replaced, e.g. `app/copilot-swe-agent` becomes `app-copilot-swe-agent`. Commit the file with the rest of the PR.
 
 Without the GitHub CLI, or before the PR exists, the script asks for the values instead. They can also be passed through melos, e.g. `dart run melos run changelog_add -- --pr 123 --author john_doe`.
 

@@ -1,5 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:cli_tools/better_command_runner.dart';
+import 'package:config/config.dart';
+import 'package:path/path.dart' as p;
 
 /// Manages the pending changelog entries in `changelog.d`.
 ///
@@ -13,47 +18,148 @@ import 'dart:io';
 /// - `collect`: moves the pending entries into `CHANGELOG.md` under a new
 ///   version heading and deletes the entry files.
 Future<void> main(List<String> arguments) async {
-  if (!File('util/.serverpod_util_root').existsSync()) {
+  if (!File(p.join('util', '.serverpod_util_root')).existsSync()) {
     _fail(
       'Run this script from the root of the Serverpod repository, e.g. '
       '`dart run melos run changelog_add`.',
     );
   }
 
-  if (arguments.isEmpty || const {'-h', '--help'}.contains(arguments.first)) {
-    stdout.writeln(_usage);
-    return;
-  }
+  final runner =
+      BetterCommandRunner<OptionDefinition, void>(
+          'dart run util/changelog.dart',
+          'Manages the pending changelog entries in $_changelogDir.',
+          globalOptions: const [],
+        )
+        ..addCommand(_AddCommand())
+        ..addCommand(
+          _SimpleCommand(
+            'check',
+            'Validate the pending entry files in $_changelogDir.',
+            _check,
+          ),
+        )
+        ..addCommand(
+          _SimpleCommand(
+            'preview',
+            'Print the pending entries as they would be collected.',
+            _preview,
+          ),
+        )
+        ..addCommand(_CollectCommand());
 
-  final command = arguments.first;
-  final options = _Options.parse(arguments.skip(1).toList());
-
-  switch (command) {
-    case 'add':
-      await _add(options);
-    case 'check':
-      _check(options);
-    case 'preview':
-      _preview(options);
-    case 'collect':
-      _collect(options);
-    default:
-      _fail('Unknown command "$command".\n\n$_usage');
+  try {
+    await runner.run(arguments);
+  } on UsageException catch (e) {
+    _fail('$e');
   }
 }
 
-const _usage = '''
-Usage: dart run util/changelog.dart <command> [options]
+enum _AddOption<V extends Object> implements OptionDefinition<V> {
+  pr(
+    IntOption(
+      argName: 'pr',
+      helpText: 'Pull request number. Detected with `gh` if omitted.',
+      valueHelp: 'number',
+      min: 1,
+    ),
+  ),
+  author(
+    StringOption(
+      argName: 'author',
+      helpText: 'GitHub login of the PR author. Detected with `gh` if omitted.',
+      valueHelp: 'login',
+    ),
+  ),
+  entry(
+    MultiStringOption.noSplit(
+      argName: 'entry',
+      helpText:
+          'Entry like "feat: Adds X". Repeatable. Prompted for if omitted.',
+      valueHelp: 'text',
+    ),
+  );
 
-Commands:
-  add       Add changelog entries for a pull request to changelog.d.
-              --pr <number>     Pull request number. Detected with `gh` if omitted.
-              --author <login>  GitHub login of the PR author. Detected with `gh` if omitted.
-              --entry <text>    Entry like "feat: Adds X". Repeatable. Prompted for if omitted.
-  check     Validate the pending entry files in changelog.d.
-  preview   Print the pending entries as they would be collected.
-  collect   Move the pending entries into CHANGELOG.md and delete the entry files.
-              --version <v>     Version heading. Defaults to the SERVERPOD_VERSION file.''';
+  const _AddOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}
+
+class _AddCommand extends BetterCommand<_AddOption, void> {
+  _AddCommand() : super(options: _AddOption.values);
+
+  @override
+  String get name => 'add';
+
+  @override
+  String get description =>
+      'Add changelog entries for a pull request to $_changelogDir.';
+
+  @override
+  bool get takesArguments => false;
+
+  @override
+  Future<void> runWithConfig(Configuration<_AddOption> commandConfig) => _add(
+    pr: commandConfig.optionalValue(_AddOption.pr)?.toString(),
+    author: commandConfig.optionalValue(_AddOption.author),
+    entries: commandConfig.optionalValue(_AddOption.entry) ?? const [],
+  );
+}
+
+enum _CollectOption<V extends Object> implements OptionDefinition<V> {
+  version(
+    StringOption(
+      argName: 'version',
+      helpText: 'Version heading. Defaults to the $_versionFile file.',
+      valueHelp: 'version',
+    ),
+  );
+
+  const _CollectOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}
+
+class _CollectCommand extends BetterCommand<_CollectOption, void> {
+  _CollectCommand() : super(options: _CollectOption.values);
+
+  @override
+  String get name => 'collect';
+
+  @override
+  String get description =>
+      'Move the pending entries into $_changelogFile and delete the entry '
+      'files.';
+
+  @override
+  bool get takesArguments => false;
+
+  @override
+  void runWithConfig(Configuration<_CollectOption> commandConfig) =>
+      _collect(version: commandConfig.optionalValue(_CollectOption.version));
+}
+
+/// A command without options.
+class _SimpleCommand extends BetterCommand<OptionDefinition, void> {
+  _SimpleCommand(this.name, this.description, this._action);
+
+  @override
+  final String name;
+
+  @override
+  final String description;
+
+  final void Function() _action;
+
+  @override
+  bool get takesArguments => false;
+
+  @override
+  void runWithConfig(Configuration<OptionDefinition> commandConfig) =>
+      _action();
+}
 
 const _changelogDir = 'changelog.d';
 const _changelogFile = 'CHANGELOG.md';
@@ -74,17 +180,19 @@ final _fileNamePattern = RegExp(
   r'^(\d{14})-PR([1-9]\d*)-([A-Za-z0-9][A-Za-z0-9_-]*)\.md$',
 );
 
-Future<void> _add(_Options options) async {
-  options.ensureOnly(const {'pr', 'author', 'entry'});
+Future<void> _add({
+  required String? pr,
+  required String? author,
+  required List<String> entries,
+}) async {
   // Dart reports `/dev/null` as a terminal, so stdout has to be one too.
   final interactive = stdin.hasTerminal && stdout.hasTerminal;
 
-  final prOption = options.single('pr');
-  var detected = await _detectPullRequest(prOption);
+  var detected = await _detectPullRequest(pr);
 
-  final pr = _resolve(
+  final number = _resolve(
     label: 'Pull request number',
-    value: prOption,
+    value: pr,
     detected: detected?.number,
     interactive: interactive,
     validate: (value) => RegExp(r'^[1-9]\d*$').hasMatch(value)
@@ -92,54 +200,59 @@ Future<void> _add(_Options options) async {
         : 'Expected a pull request number, e.g. 1234.',
   );
 
-  final authorOption = options.single('author');
-  if (authorOption == null && detected?.number != pr) {
+  if (author == null && detected?.number != number) {
     // A different PR than the branch's was entered, so look up its author.
-    detected = await _detectPullRequest(pr);
+    detected = await _detectPullRequest(number);
   }
 
-  final author = _resolve(
-    label: 'PR author GitHub login',
-    value: authorOption,
-    detected: authorOption != null
-        ? null
-        : detected?.author ?? await _gh(['api', 'user', '--jq', '.login']),
-    interactive: interactive,
-    validate: (value) => RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]*$').hasMatch(value)
-        ? null
-        : 'Expected a GitHub login, e.g. john_doe.',
+  final login = author != null
+      ? null
+      : detected?.author ?? await _run('gh', ['api', 'user', '--jq', '.login']);
+  final authorSlug = _authorSlug(
+    _resolve(
+      label: 'PR author GitHub login',
+      value: author,
+      detected: login == null ? null : _authorSlug(login),
+      interactive: interactive,
+      validate: (value) => _authorSlug(value).isNotEmpty
+          ? null
+          : 'Expected a GitHub login, e.g. john_doe.',
+    ),
   );
 
-  final entries = <String>[];
-  for (final entry in options.all('entry')) {
+  final added = <String>[];
+  for (final entry in entries) {
     final normalized = _normalizeEntry(entry);
     final error = _validateEntry(normalized);
     if (error != null) _fail('Invalid entry "$entry": $error');
-    entries.add(normalized);
+    added.add(normalized);
   }
 
-  if (entries.isEmpty) {
+  if (added.isEmpty) {
     if (!interactive) {
       _fail('No entries given. Pass at least one --entry "<type>: <Text>".');
     }
-    entries.addAll(_promptEntries());
+    added.addAll(_promptEntries());
   }
 
-  if (entries.isEmpty) _fail('No entries added.');
+  if (added.isEmpty) _fail('No entries added.');
 
-  final lines = entries.map((entry) => '- $entry').join('\n');
+  final lines = added.map((entry) => '- $entry').join('\n');
   final existing = _entryFiles().where(
-    (file) => _fileNamePattern.firstMatch(_baseName(file.path))?.group(2) == pr,
+    (file) =>
+        _fileNamePattern.firstMatch(p.basename(file.path))?.group(2) == number,
   );
 
   if (existing.isNotEmpty) {
     final file = existing.first;
     final content = file.readAsStringSync().trimRight();
     file.writeAsStringSync('$content\n$lines\n');
-    stdout.writeln('Appended ${entries.length} entries to ${file.path}');
+    stdout.writeln('Appended ${added.length} entries to ${file.path}');
   } else {
     final timestamp = _formatTimestamp(DateTime.now().toUtc());
-    final file = File('$_changelogDir/$timestamp-PR$pr-$author.md');
+    final file = File(
+      p.join(_changelogDir, '$timestamp-PR$number-$authorSlug.md'),
+    );
     file.writeAsStringSync('$lines\n');
     stdout.writeln('Created ${file.path}');
   }
@@ -147,8 +260,7 @@ Future<void> _add(_Options options) async {
   stdout.writeln('Commit the file together with the pull request changes.');
 }
 
-void _check(_Options options) {
-  options.ensureOnly(const {});
+void _check() {
   final files = _loadEntryFiles();
   final count = files.fold(0, (sum, file) => sum + file.entries.length);
   stdout.writeln(
@@ -156,8 +268,7 @@ void _check(_Options options) {
   );
 }
 
-void _preview(_Options options) {
-  options.ensureOnly(const {});
+void _preview() {
   final files = _loadEntryFiles();
   if (files.isEmpty) {
     stdout.writeln('No pending changelog entries.');
@@ -166,20 +277,18 @@ void _preview(_Options options) {
   stdout.write(_buildSection('Unreleased', files));
 }
 
-void _collect(_Options options) {
-  options.ensureOnly(const {'version'});
+void _collect({required String? version}) {
   final files = _loadEntryFiles();
   if (files.isEmpty) _fail('No pending changelog entries in $_changelogDir.');
 
-  final version =
-      options.single('version') ?? File(_versionFile).readAsStringSync().trim();
-  if (version.isEmpty) _fail('Empty version. Pass --version <version>.');
+  final heading = version ?? File(_versionFile).readAsStringSync().trim();
+  if (heading.isEmpty) _fail('Empty version. Pass --version <version>.');
 
   final changelog = File(_changelogFile);
   final lines = changelog.readAsLinesSync();
-  if (lines.any((line) => line.trim() == '## $version')) {
+  if (lines.any((line) => line.trim() == '## $heading')) {
     _fail(
-      '$_changelogFile already has a "## $version" section. Update '
+      '$_changelogFile already has a "## $heading" section. Update '
       '$_versionFile to the version being released or pass --version.',
     );
   }
@@ -190,7 +299,7 @@ void _collect(_Options options) {
 
   final head = lines.take(insertAt).join('\n');
   final tail = lines.skip(insertAt).join('\n');
-  final section = _buildSection(version, files);
+  final section = _buildSection(heading, files);
 
   changelog.writeAsStringSync(
     [
@@ -207,7 +316,7 @@ void _collect(_Options options) {
   final count = files.fold(0, (sum, file) => sum + file.entries.length);
   stdout.writeln(
     'Added $count entries from ${files.length} files to $_changelogFile '
-    'under "## $version" and deleted them from $_changelogDir.\n'
+    'under "## $heading" and deleted them from $_changelogDir.\n'
     'Review the section, group the entries and add the release highlights '
     'before committing.',
   );
@@ -227,7 +336,7 @@ List<_EntryFile> _loadEntryFiles() {
   final files = <_EntryFile>[];
 
   for (final entity in _entities()) {
-    final name = _baseName(entity.path);
+    final name = p.basename(entity.path);
     if (entity is! File) {
       errors.add('$name: unexpected directory.');
       continue;
@@ -301,7 +410,7 @@ List<_EntryFile> _loadEntryFiles() {
 /// Every pending entry, skipping the README and hidden files.
 List<FileSystemEntity> _entities() {
   return Directory(_changelogDir).listSync().where((entity) {
-    final name = _baseName(entity.path);
+    final name = p.basename(entity.path);
     return name != 'README.md' && !name.startsWith('.');
   }).toList();
 }
@@ -386,10 +495,14 @@ String _resolve({
 /// Looks up the pull request (and its author) for [pr], or for the current
 /// branch when [pr] is null.
 Future<({String number, String author})?> _detectPullRequest(String? pr) async {
-  final output = await _gh([
+  // `gh pr view` requires the pull request when given `--repo`.
+  final selector = pr ?? await _currentBranchHead();
+  if (selector == null) return null;
+
+  final output = await _run('gh', [
     'pr',
     'view',
-    ?pr,
+    selector,
     '--repo',
     _repository,
     '--json',
@@ -402,11 +515,48 @@ Future<({String number, String author})?> _detectPullRequest(String? pr) async {
   return (number: parts[0], author: parts[1]);
 }
 
-/// Runs the GitHub CLI and returns its trimmed output, or null if it is not
+/// The branch that the current branch is pushed to, as `<owner>:<branch>` when
+/// pushed to a fork. Null if the branch was not pushed yet.
+Future<String?> _currentBranchHead() async {
+  final pushRef =
+      await _run('git', ['rev-parse', '--abbrev-ref', '@{push}']) ??
+      await _run('git', ['rev-parse', '--abbrev-ref', '@{upstream}']);
+  if (pushRef == null) return null;
+
+  // Both remote and branch names can contain slashes.
+  final remotes = const LineSplitter().convert(
+    await _run('git', ['remote']) ?? '',
+  );
+  final remote = remotes
+      .where((remote) => pushRef.startsWith('$remote/'))
+      .fold<String?>(
+        null,
+        (longest, remote) => longest == null || remote.length > longest.length
+            ? remote
+            : longest,
+      );
+  if (remote == null) return null;
+
+  final url = await _run('git', ['remote', 'get-url', '--push', remote]);
+  final owner = RegExp(r'[:/]([^/:]+)/[^/]+/?$').firstMatch(url ?? '')?[1];
+  if (owner == null) return null;
+
+  // The owner is only accepted for branches of forks.
+  final branch = pushRef.substring(remote.length + 1);
+  return owner == _repository.split('/').first ? branch : '$owner:$branch';
+}
+
+/// The file name form of a GitHub [login]. Bot logins have characters that
+/// are not valid in file names, e.g. `app/copilot-swe-agent`.
+String _authorSlug(String login) => login
+    .replaceAll(RegExp('[^A-Za-z0-9_-]+'), '-')
+    .replaceAll(RegExp(r'^[-_]+|-+$'), '');
+
+/// Runs [executable] and returns its trimmed output, or null if it is not
 /// installed or fails (e.g. no pull request for the branch yet).
-Future<String?> _gh(List<String> arguments) async {
+Future<String?> _run(String executable, List<String> arguments) async {
   try {
-    final result = await Process.run('gh', arguments);
+    final result = await Process.run(executable, arguments);
     if (result.exitCode != 0) return null;
     final output = (result.stdout as String).trim();
     return output.isEmpty ? null : output;
@@ -434,8 +584,6 @@ bool _isValidTimestamp(String timestamp) {
   return _formatTimestamp(time) == timestamp;
 }
 
-String _baseName(String path) => path.split(RegExp(r'[/\\]')).last;
-
 Never _fail(String message) {
   stderr.writeln(message);
   exit(1);
@@ -453,51 +601,4 @@ class _EntryFile {
   final String timestamp;
   final int pr;
   final List<String> entries;
-}
-
-/// Minimal `--name value` / `--name=value` parser, so the script needs no
-/// dependencies beyond the SDK.
-class _Options {
-  _Options(this._values);
-
-  factory _Options.parse(List<String> arguments) {
-    final values = <String, List<String>>{};
-    for (var i = 0; i < arguments.length; i++) {
-      final argument = arguments[i];
-      if (!argument.startsWith('--')) {
-        _fail('Unexpected argument "$argument".\n\n$_usage');
-      }
-
-      final separator = argument.indexOf('=');
-      final String name;
-      final String value;
-      if (separator != -1) {
-        name = argument.substring(2, separator);
-        value = argument.substring(separator + 1);
-      } else {
-        name = argument.substring(2);
-        if (i + 1 >= arguments.length) _fail('Missing value for --$name.');
-        value = arguments[++i];
-      }
-      values.putIfAbsent(name, () => []).add(value);
-    }
-    return _Options(values);
-  }
-
-  final Map<String, List<String>> _values;
-
-  void ensureOnly(Set<String> allowed) {
-    for (final name in _values.keys) {
-      if (!allowed.contains(name)) _fail('Unknown option --$name.\n\n$_usage');
-    }
-  }
-
-  String? single(String name) {
-    final values = _values[name];
-    if (values == null) return null;
-    if (values.length > 1) _fail('--$name can only be given once.');
-    return values.single;
-  }
-
-  List<String> all(String name) => _values[name] ?? const [];
 }
