@@ -178,7 +178,9 @@ case "$(uname -s)" in
 Darwin)
   for f in $(find "$STAGE/bin" "$STAGE/lib" -type f); do
     file "$f" | grep -q Mach-O || continue
-    refs="$(otool -l "$f" | grep -F "${build_refs[@]}" || true)"
+    # Only the load commands' path/name fields: otool's first line echoes the
+    # inspected file's own path, which lives under $B.
+    refs="$(otool -l "$f" | grep -E '^ +(path|name) ' | grep -F "${build_refs[@]}" || true)"
     [ -z "$refs" ] || leaks="$leaks${f#"$STAGE"/}: $(echo "$refs" | tr -s ' \n' ' ')"$'\n'
   done
   ;;
