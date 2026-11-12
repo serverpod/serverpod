@@ -1,6 +1,7 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../../serverpod_database.dart';
+import 'columns.dart';
 import 'table_relation.dart';
 
 /// Holds data corresponding to a row in the database. Concrete classes are
@@ -98,21 +99,9 @@ class Table<T_ID> {
       );
     }
     if (equalsType<T_ID, int>()) {
-      id =
-          ColumnInt(
-                'id',
-                this,
-                hasDefault: true,
-              )
-              as ColumnComparable<T_ID>;
+      id = ColumnIntId(this) as ColumnComparable<T_ID>;
     } else if (equalsType<T_ID, UuidValue>()) {
-      id =
-          ColumnUuid(
-                'id',
-                this,
-                hasDefault: true,
-              )
-              as ColumnComparable<T_ID>;
+      id = ColumnUuidId(this) as ColumnComparable<T_ID>;
     } else {
       throw Exception('Unsupported id type: $T_ID');
     }
