@@ -816,17 +816,28 @@ class PostgresDatabaseConnection
       context: _resolveQueryContext(transaction),
     );
 
-    return result.map((row) {
-      return {
-        for (final entry in row.toColumnMap().entries)
-          // Serverpod serialization already knows the type of the target
-          // class, so we can remove `UndecodedBytes` here to avoid the
-          // dependency of serverpod_serialization on the `postgres` package.
-          entry.key: entry.value is pg.UndecodedBytes
-              ? (entry.value as pg.UndecodedBytes).bytes
-              : entry.value,
-      };
-    });
+    // Build each row's map once, straight from the row values, instead of
+    // copying [pg.ResultRow.toColumnMap]. Rows are materialized eagerly so
+    // that callers iterating the result more than once (e.g. to resolve
+    // includes) don't rebuild the maps.
+    // Same keys as [pg.ResultRow.toColumnMap].
+    final columnNames = [
+      for (final (i, column) in result.schema.columns.indexed)
+        column.columnName ?? '[$i]',
+    ];
+    return [
+      for (final row in result)
+        {
+          for (var i = 0; i < columnNames.length; i++)
+            // Serverpod serialization already knows the type of the target
+            // class, so we can remove `UndecodedBytes` here to avoid the
+            // dependency of serverpod_serialization on the `postgres` package.
+            columnNames[i]: switch (row[i]) {
+              pg.UndecodedBytes(:final bytes) => bytes,
+              final value => value,
+            },
+        },
+    ];
   }
 
   Future<pg.Session> _resolveQueryContext(Transaction? transaction) async {
