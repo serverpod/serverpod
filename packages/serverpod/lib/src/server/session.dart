@@ -56,8 +56,13 @@ abstract class Session implements DatabaseSession {
     (_responseCookies ??= []).add(cookie);
   }
 
+  final UuidValue? _sessionId;
+
   /// The id of the session.
-  final UuidValue sessionId;
+  ///
+  /// Generated on first access: most sessions never read it, and a random
+  /// UUID costs a call into the secure random generator.
+  late final UuidValue sessionId = _sessionId ?? const Uuid().v4obj();
 
   /// The [Server] that created the session.
   final Server server;
@@ -162,7 +167,7 @@ abstract class Session implements DatabaseSession {
     this.method,
     this.request,
   }) : _authenticationKey = authenticationKey,
-       sessionId = sessionId ?? const Uuid().v4obj() {
+       _sessionId = sessionId {
     _startTime = DateTime.now();
 
     storage = StorageAccess._(this);
