@@ -698,7 +698,7 @@ class PostgresDatabaseConnection
         numRowsAffected: result.affectedRows,
       );
       return result;
-    } on pg.ServerException catch (exception, trace) {
+    } on pg.ServerException catch (exception) {
       var message = switch (exception.code) {
         (PgErrorCode.undefinedTable) =>
           'Table not found, have you applied the database migration? (${exception.message})',
@@ -710,6 +710,7 @@ class PostgresDatabaseConnection
         messageOverride: message,
       );
 
+      var trace = _callerStackTrace();
       _logQuery(
         session,
         query,
@@ -718,8 +719,9 @@ class PostgresDatabaseConnection
         trace: trace,
       );
       Error.throwWithStackTrace(serverpodException, trace);
-    } on pg.PgException catch (exception, trace) {
+    } on pg.PgException catch (exception) {
       var serverpodException = DatabaseQueryException(exception.message);
+      var trace = _callerStackTrace();
       _logQuery(
         session,
         query,
@@ -728,9 +730,12 @@ class PostgresDatabaseConnection
         trace: trace,
       );
       Error.throwWithStackTrace(serverpodException, trace);
-    } catch (exception, trace) {
+    } catch (exception, stackTrace) {
+      var trace = identical(stackTrace, StackTrace.empty)
+          ? _callerStackTrace()
+          : stackTrace;
       _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
+      Error.throwWithStackTrace(exception, trace);
     }
   }
 
@@ -872,6 +877,15 @@ class PostgresDatabaseConnection
         .map(poolManager.serializationManager.deserialize<T>)
         .toList();
   }
+
+  /// The stack trace for an error from the driver.
+  ///
+  /// The pool is created with `ignoreStackTraces` (see
+  /// [PostgresPoolManager]), so the driver no longer captures a stack trace
+  /// for every statement in case it fails. Captured here instead, in the
+  /// catch of the awaiting [_query], the trace is the awaiter chain of the
+  /// code that ran the query, and only failed queries pay for it.
+  static StackTrace _callerStackTrace() => StackTrace.current;
 
   static void _logQuery(
     DatabaseSession session,
