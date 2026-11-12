@@ -47,11 +47,23 @@ case "$(uname -s)-$(uname -m)" in
   MINGW*|MSYS*|CYGWIN*) OPENSSL_TARGET=mingw64 ;;
   *) echo "Unsupported OpenSSL target" >&2; exit 1 ;;
 esac
-# Keep providers built into libcrypto so relocation does not depend on a
-# build-machine OPENSSLDIR or a separately located provider module.
+# libcrypto compiles in the directories it reads openssl.cnf, default CA
+# certs, engines and provider modules from. Left alone they derive from
+# --prefix, i.e. the build scratch dir - a path an unprivileged local user can
+# recreate on the target machine (/tmp/..., D:/...) to feed the bundle config
+# or trusted certs. Pin them to a fixed location only root/admin can create.
+# Nothing is installed there: the bundle runs on OpenSSL's built-in defaults,
+# with providers built into libcrypto (no-module).
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*) OPENSSL_DIR="C:/Program Files/Common Files/serverpod-postgres/ssl" ;;
+  *)                    OPENSSL_DIR="/etc/serverpod-postgres/ssl" ;;
+esac
 CC="$WCC" perl ./Configure "$OPENSSL_TARGET" --prefix="$DEPS" --libdir=lib \
-  shared no-module no-tests >"$LOG/dep-openssl.log" 2>&1
-make -j"$J" >>"$LOG/dep-openssl.log" 2>&1
+  --openssldir="$OPENSSL_DIR" shared no-module no-tests >"$LOG/dep-openssl.log" 2>&1
+# ENGINESDIR/MODULESDIR have no Configure switch; override them for the build
+# only (install_sw must keep installing under $DEPS).
+make -j"$J" ENGINESDIR="$OPENSSL_DIR/engines" MODULESDIR="$OPENSSL_DIR/modules" \
+  >>"$LOG/dep-openssl.log" 2>&1
 make install_sw >>"$LOG/dep-openssl.log" 2>&1
 
 # macOS uses the UUID API in libc; Linux and Windows need a bundled provider.
