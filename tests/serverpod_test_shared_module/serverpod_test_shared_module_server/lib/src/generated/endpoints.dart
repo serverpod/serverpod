@@ -17,7 +17,12 @@ export 'future_calls.dart' show ServerpodTestSharedModuleFutureCallsGetter;
 
 class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_is.Server server) {}
+  void initializeEndpoints(_is.Server server) {
+    initializeOwnEndpoints(server);
+  }
+
+  @override
+  void initializeOwnEndpoints(_is.Server server) {}
   @override
   _is.FutureCallDispatch? get futureCalls {
     return _in8bpk14.FutureCalls();

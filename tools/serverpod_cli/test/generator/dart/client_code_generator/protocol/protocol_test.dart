@@ -161,7 +161,7 @@ void main() {
       );
 
       test(
-        'then targetTableDefinitions conditionally merges table definitions from module protocols that implement DatabaseSerializationManager.',
+        'then targetTableDefinitions conditionally merges the own table definitions of module protocols that implement DatabaseSerializationManager.',
         () {
           var protocol = codeMap[expectedFileName]!;
           expect(
@@ -170,7 +170,7 @@ void main() {
               RegExp(
                 r'    \.\.\._i([a-z0-9]+)\.Protocol\(\) is _i[a-z0-9]+\.DatabaseSerializationManager\n'
                 r'        \? \(_i\1\.Protocol\(\) as _i[a-z0-9]+\.DatabaseSerializationManager\)\n'
-                r'              \.getTargetTableDefinitions\(\)\n'
+                r'              \.getOwnTableDefinitions\(\)\n'
                 r'        : \[\],\n'
                 r'  \];',
               ),
@@ -293,7 +293,7 @@ void main() {
       );
 
       test(
-        'then targetTableDefinitions merges table definitions from the shared package protocol through DatabaseSerializationManager.',
+        'then the own table definitions merge the tables of the shared package protocol through DatabaseSerializationManager.',
         () {
           var protocol = codeMap[expectedFileName]!;
           expect(
@@ -302,7 +302,7 @@ void main() {
               RegExp(
                 r'\.\.\._i([a-z0-9]+)\.Protocol\(\) is _i([a-z0-9]+)\.DatabaseSerializationManager\n'
                 r'        \? \(_i\1\.Protocol\(\) as _i\2\.DatabaseSerializationManager\)\n'
-                r'              \.getTargetTableDefinitions\(\)\n'
+                r'              \.getOwnTableDefinitions\(\)\n'
                 r'        : \[\],',
               ),
             ),
@@ -496,7 +496,7 @@ void main() {
       );
 
       test(
-        'then targetTableDefinitions merges table definitions from each auth module protocol through DatabaseSerializationManager.',
+        'then targetTableDefinitions merges the own table definitions of each auth module protocol through DatabaseSerializationManager.',
         () {
           var protocol = codeMap[expectedFileName]!;
           expect(
@@ -506,7 +506,7 @@ void main() {
                 RegExp(
                   r'\.\.\._i([a-z0-9]+)\.Protocol\(\) is _i([a-z0-9]+)\.DatabaseSerializationManager\n'
                   r'        \? \(_i\1\.Protocol\(\) as _i\2\.DatabaseSerializationManager\)\n'
-                  r'              \.getTargetTableDefinitions\(\)\n'
+                  r'              \.getOwnTableDefinitions\(\)\n'
                   r'        : \[\],',
                 ),
               ),

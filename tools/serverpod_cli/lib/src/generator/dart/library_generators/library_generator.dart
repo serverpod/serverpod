@@ -363,18 +363,56 @@ class LibraryGenerator {
       ),
     );
 
+    // Modules are combined from their own tables. `config.modules` already
+    // holds every transitive module, so spreading each module's complete
+    // target tables would build a module once per dependency path to it.
+    final moduleTableDefinitions = [
+      for (var module in config.modules)
+        serverCode
+            ? refer(
+                'Protocol',
+                module.dartImportUrl(serverCode),
+              ).call([]).property('getOwnTableDefinitions').call([]).spread
+            : _protocolOwnTableDefinitionsSpread(
+                module.dartImportUrl(serverCode),
+                serverCode,
+              ),
+      if (serverCode &&
+          config.name != 'serverpod' &&
+          config.type != PackageType.module)
+        refer(
+          'Protocol.targetTableDefinitions',
+          serverpodProtocolUrl(serverCode),
+        ).spread,
+    ];
+
+    final tableDefinitionsType = TypeReference(
+      (t) => t
+        ..symbol = 'List'
+        ..types.add(_tableDefinitionReference(serverCode)),
+    );
+
     protocol.methods.addAll([
-      if (shouldExtendDatabaseSerializationManager)
+      if (shouldExtendDatabaseSerializationManager) ...[
         Method(
           (m) => m
             ..name = 'targetTableDefinitions'
             ..static = true
             ..type = MethodType.getter
-            ..returns = TypeReference(
-              (t) => t
-                ..symbol = 'List'
-                ..types.add(_tableDefinitionReference(serverCode)),
-            )
+            ..returns = tableDefinitionsType
+            ..body = moduleTableDefinitions.isEmpty
+                ? refer('_ownTableDefinitions').code
+                : literalList([
+                    refer('_ownTableDefinitions').spread,
+                    ...moduleTableDefinitions,
+                  ]).code,
+        ),
+        Method(
+          (m) => m
+            ..name = '_ownTableDefinitions'
+            ..static = true
+            ..type = MethodType.getter
+            ..returns = tableDefinitionsType
             ..body =
                 createDatabaseDefinitionFromModels(
                   allModels,
@@ -384,43 +422,18 @@ class LibraryGenerator {
                 ).toCode(
                   config: config,
                   serverCode: serverCode,
-                  additionalTables: serverCode
-                      ? [
-                          for (var module in config.modules)
-                            refer(
-                              'Protocol.targetTableDefinitions',
-                              module.dartImportUrl(serverCode),
-                            ).spread,
-                          for (var packageName
-                              in config.sharedModelsSourcePathsParts.keys)
-                            if (!sharedPackage)
-                              _protocolTargetTableDefinitionsSpread(
-                                'package:$packageName/$packageName.dart',
-                                serverCode,
-                              ),
-                          if (config.name != 'serverpod' &&
-                              config.type != PackageType.module)
-                            refer(
-                              'Protocol.targetTableDefinitions',
-                              serverpodProtocolUrl(serverCode),
-                            ).spread,
-                        ]
-                      : [
-                          for (var module in config.modules)
-                            _protocolTargetTableDefinitionsSpread(
-                              module.dartImportUrl(serverCode),
-                              serverCode,
-                            ),
-                          for (var packageName
-                              in config.sharedModelsSourcePathsParts.keys)
-                            if (!sharedPackage)
-                              _protocolTargetTableDefinitionsSpread(
-                                'package:$packageName/$packageName.dart',
-                                serverCode,
-                              ),
-                        ],
+                  additionalTables: [
+                    if (!sharedPackage)
+                      for (var packageName
+                          in config.sharedModelsSourcePathsParts.keys)
+                        _protocolOwnTableDefinitionsSpread(
+                          'package:$packageName/$packageName.dart',
+                          serverCode,
+                        ),
+                  ],
                 ),
         ),
+      ],
       if (_supportsHostProtocols) ..._buildModuleHostProtocolMethods(),
       Method(
         (m) => m
@@ -702,18 +715,22 @@ class LibraryGenerator {
               const Code('return null;'),
             ]),
         ),
-      if (shouldExtendDatabaseSerializationManager)
+      if (shouldExtendDatabaseSerializationManager) ...[
         Method(
           (m) => m
             ..name = 'getTargetTableDefinitions'
             ..annotations.add(refer('override'))
-            ..returns = TypeReference(
-              (t) => t
-                ..symbol = 'List'
-                ..types.add(_tableDefinitionReference(serverCode)),
-            )
+            ..returns = tableDefinitionsType
             ..body = refer('targetTableDefinitions').code,
         ),
+        Method(
+          (m) => m
+            ..name = 'getOwnTableDefinitions'
+            ..annotations.add(refer('override'))
+            ..returns = tableDefinitionsType
+            ..body = refer('_ownTableDefinitions').code,
+        ),
+      ],
       Method(
         (m) => m
           ..name = 'getModuleName'
@@ -1032,6 +1049,12 @@ return deserializeByClassName(value);
       library.ignoreForFile.add('deprecated_member_use_from_same_package');
     }
 
+    final serverParameter = Parameter(
+      (p) => p
+        ..name = 'server'
+        ..type = refer('Server', serverpodUrl(true)),
+    );
+
     // Endpoint class
     library.body.add(
       Class(
@@ -1039,18 +1062,39 @@ return deserializeByClassName(value);
           ..name = 'Endpoints'
           ..extend = refer('EndpointDispatch', serverpodUrl(true))
           ..methods.addAll([
-            // Init method
             Method.returnsVoid(
               (m) => m
                 ..name = 'initializeEndpoints'
                 ..annotations.add(refer('override'))
-                ..requiredParameters.add(
-                  Parameter(
-                    ((p) => p
-                      ..name = 'server'
-                      ..type = refer('Server', serverpodUrl(true))),
-                  ),
-                )
+                ..requiredParameters.add(serverParameter)
+                ..body = Block.of([
+                  refer('initializeOwnEndpoints').call([
+                    refer('server'),
+                  ]).statement,
+                  // `config.modules` already holds every transitive module, so
+                  // modules only initialize their own endpoints. Otherwise
+                  // each module would be built once per dependency path.
+                  for (var module in config.modules)
+                    refer('modules')
+                        .index(literalString(module.name))
+                        .assign(
+                          refer(
+                            'Endpoints',
+                            'package:${module.serverPackage}/${module.serverPackage}.dart',
+                          ).call([]).cascade('initializeOwnEndpoints').call([
+                            refer('server'),
+                          ]),
+                        )
+                        .statement,
+                ]),
+            ),
+            // Always overridden, since the default implementation calls
+            // `initializeEndpoints`, which calls this method.
+            Method.returnsVoid(
+              (m) => m
+                ..name = 'initializeOwnEndpoints'
+                ..annotations.add(refer('override'))
+                ..requiredParameters.add(serverParameter)
                 ..body = Block.of([
                   if (protocolDefinition.endpoints.isNotEmpty &&
                       !protocolDefinition.endpoints.every(
@@ -1059,21 +1103,6 @@ return deserializeByClassName(value);
                     _buildEndpointLookupMap(protocolDefinition.endpoints),
                     _buildEndpointConnectors(protocolDefinition.endpoints),
                   ],
-
-                  // Connectors
-                  // Hook up modules
-                  for (var module in config.modules)
-                    refer('modules')
-                        .index(literalString(module.name))
-                        .assign(
-                          refer(
-                            'Endpoints',
-                            'package:${module.serverPackage}/${module.serverPackage}.dart',
-                          ).call([]).cascade('initializeEndpoints').call([
-                            refer('server'),
-                          ]),
-                        )
-                        .statement,
                 ]),
             ),
 
@@ -2829,7 +2858,7 @@ extension on List<SerializableModelDefinition> {
 Reference _tableDefinitionReference(bool serverCode) =>
     refer('TableDefinition', serverpodDatabaseUrl(serverCode));
 
-Expression _protocolTargetTableDefinitionsSpread(
+Expression _protocolOwnTableDefinitionsSpread(
   String protocolImportUrl,
   bool serverCode,
 ) {
@@ -2846,7 +2875,7 @@ Expression _protocolTargetTableDefinitionsSpread(
         protocol
             .call([])
             .asA(databaseSerializationManager)
-            .property('getTargetTableDefinitions')
+            .property('getOwnTableDefinitions')
             .call([]),
         literalList([]),
       )

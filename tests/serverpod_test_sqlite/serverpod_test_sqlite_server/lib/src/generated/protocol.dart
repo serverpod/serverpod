@@ -882,6 +882,14 @@ class Protocol extends _is.DatabaseSerializationManager
   );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
+    ..._ownTableDefinitions,
+    ..._iacs.Protocol().getOwnTableDefinitions(),
+    ..._iais.Protocol().getOwnTableDefinitions(),
+    ..._iyx9etqn.Protocol().getOwnTableDefinitions(),
+    ..._isp.Protocol.targetTableDefinitions,
+  ];
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'address',
       dartName: 'Address',
@@ -6361,14 +6369,10 @@ class Protocol extends _is.DatabaseSerializationManager
       indexes: [],
       managed: true,
     ),
-    ..._iacs.Protocol.targetTableDefinitions,
-    ..._iais.Protocol.targetTableDefinitions,
-    ..._iyx9etqn.Protocol.targetTableDefinitions,
     ..._iqfgygbv.Protocol() is _is.DatabaseSerializationManager
         ? (_iqfgygbv.Protocol() as _is.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
+              .getOwnTableDefinitions()
         : [],
-    ..._isp.Protocol.targetTableDefinitions,
   ];
 
   static String? getClassNameFromObjectJson(dynamic data) =>
@@ -9406,6 +9410,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test_sqlite';
