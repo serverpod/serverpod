@@ -225,7 +225,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       // We will retry only once in such case, and only if the `authKeyProvider`
       // exposes a `refreshAuthKey` method (like JWT).
       if (keyProvider is RefresherClientAuthKeyProvider) {
-        final refreshResult = await keyProvider.refreshAuthKey();
+        final refreshResult = await keyProvider.refreshAuthKey(force: true);
         if (refreshResult == RefreshAuthKeyResult.success) {
           return _callServerEndpoint(
             endpoint,

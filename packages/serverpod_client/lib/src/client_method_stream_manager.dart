@@ -116,7 +116,7 @@ final class ClientMethodStreamManager {
       // exposes a `refreshAuthKey` method (like JWT).
       if (e.responseType == OpenMethodStreamResponseType.authenticationFailed &&
           authKeyProvider is RefresherClientAuthKeyProvider) {
-        final refreshResult = await authKeyProvider.refreshAuthKey();
+        final refreshResult = await authKeyProvider.refreshAuthKey(force: true);
         if (refreshResult == RefreshAuthKeyResult.success) {
           return _openMethodStream(connectionDetails);
         }
