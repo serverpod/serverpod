@@ -14,9 +14,12 @@ J="$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || e
 # then names the lib MSVC-style (json-c.lib, not libjson-c.a). The wrapper is a
 # pass-through to gcc there, so let cmake use native gcc; zig wrapper elsewhere.
 # (sqlite/libxml2 use autoconf, which needs no compiler-ID table, so they're ok.)
+# libxslt's configure searches --with-libxml-prefix as a ':'-separated path
+# list, so a drive-letter prefix (D:/...) splits at the colon and xml2-config
+# is never found. Hand it the POSIX form (/d/...) on Windows.
 case "$(uname -s)" in
-  MINGW*|MSYS*|CYGWIN*) CMAKE_CC=gcc ;;
-  *)                    CMAKE_CC="$WCC" ;;
+  MINGW*|MSYS*|CYGWIN*) CMAKE_CC=gcc;     XML_PREFIX="$(cygpath -u "$DEPS")" ;;
+  *)                    CMAKE_CC="$WCC"; XML_PREFIX="$DEPS" ;;
 esac
 
 echo "=== zlib ($(date +%H:%M:%S)) ==="
@@ -93,7 +96,7 @@ cd "$SRC/libxslt-$LIBXSLT_VERSION"
 CC="$WCC" CFLAGS="-O2 -fPIC" CPPFLAGS="-DLIBXML_STATIC" \
   PKG_CONFIG_PATH="$DEPS/lib/pkgconfig" ./configure --prefix="$DEPS" \
   --disable-shared --enable-static --without-python --without-crypto \
-  --with-libxml-prefix="$DEPS" >"$LOG/dep-libxslt.log" 2>&1
+  --with-libxml-prefix="$XML_PREFIX" >"$LOG/dep-libxslt.log" 2>&1
 make -j"$J" >>"$LOG/dep-libxslt.log" 2>&1
 make install >>"$LOG/dep-libxslt.log" 2>&1
 
