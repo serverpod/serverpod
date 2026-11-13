@@ -13,12 +13,14 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Operator classes used by GIN indexes.
-/// See: https://www.postgresql.org/docs/current/gin.html#GIN-BUILTIN-OPCLASSES
+/// Built-in classes: https://www.postgresql.org/docs/current/gin.html#GIN-BUILTIN-OPCLASSES
+/// trgmOps maps to gin_trgm_ops and requires the pg_trgm extension.
 enum GinOperatorClass implements _iss.SerializableModel {
   arrayOps,
   jsonbOps,
   jsonbPathOps,
-  tsvectorOps;
+  tsvectorOps,
+  trgmOps;
 
   static GinOperatorClass fromJson(String name) {
     switch (name) {
@@ -30,6 +32,8 @@ enum GinOperatorClass implements _iss.SerializableModel {
         return GinOperatorClass.jsonbPathOps;
       case 'tsvectorOps':
         return GinOperatorClass.tsvectorOps;
+      case 'trgmOps':
+        return GinOperatorClass.trgmOps;
       default:
         throw ArgumentError(
           'Value "$name" cannot be converted to "GinOperatorClass"',

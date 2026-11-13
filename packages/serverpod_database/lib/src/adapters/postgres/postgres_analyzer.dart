@@ -374,6 +374,8 @@ extension on String {
         return GinOperatorClass.jsonbPathOps;
       case 'tsvector_ops':
         return GinOperatorClass.tsvectorOps;
+      case 'gin_trgm_ops':
+        return GinOperatorClass.trgmOps;
       default:
         return null;
     }

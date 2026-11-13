@@ -412,6 +412,56 @@ void main() async {
   );
 
   group(
+    'Given declared ObjectWithTrgm class when analyzing database schema',
+    () {
+      late List<IndexDefinition> indexes;
+
+      setUpAll(() async {
+        var databaseDefinition = await session.db.analyzer.analyze();
+
+        var table = databaseDefinition.tables.firstWhere(
+          (table) => table.name == 'object_with_trgm',
+        );
+
+        indexes = table.indexes;
+      });
+
+      test(
+        'then the explicitly declared gin trigram index exists with trgm operator class.',
+        () {
+          final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'search_text_trgm_idx',
+          );
+
+          expect(index.type, 'gin');
+          expect(index.ginOperatorClass, GinOperatorClass.trgmOps);
+          expect(index.elements.length, 1);
+          expect(index.elements.first.type, IndexElementDefinitionType.column);
+          expect(index.elements.first.definition, 'searchTextIndexed');
+        },
+      );
+
+      test(
+        'then the nullable string gin trigram index exists with trgm operator class.',
+        () {
+          final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'nullable_search_text_trgm_idx',
+          );
+
+          expect(index.type, 'gin');
+          expect(index.ginOperatorClass, GinOperatorClass.trgmOps);
+          expect(index.elements.length, 1);
+          expect(index.elements.first.type, IndexElementDefinitionType.column);
+          expect(
+            index.elements.first.definition,
+            'nullableSearchTextIndexed',
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given declared ObjectWithGeographyPoint class when analyzing database schema',
     () {
       late List<IndexDefinition> indexes;
