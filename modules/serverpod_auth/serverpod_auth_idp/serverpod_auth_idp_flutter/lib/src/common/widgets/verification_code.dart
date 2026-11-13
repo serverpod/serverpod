@@ -8,6 +8,8 @@ import 'package:pinput/pinput.dart';
 
 import '../../theme.dart';
 import '../text_formatters.dart';
+import 'one_time_code_input_style.dart'
+    if (dart.library.js_interop) 'one_time_code_input_style_web.dart';
 
 /// A widget for entering one-time verification codes (OTP).
 ///
@@ -18,6 +20,8 @@ import '../text_formatters.dart';
 /// or is pressed, so a long press or right click on it shows Flutter's text
 /// selection toolbar, which has a paste action. The browser context menu is
 /// restored when the input loses focus, unless the app had disabled it itself.
+/// The page also gets a style that keeps iOS Safari from zooming in when the
+/// input is tapped.
 class VerificationCodeInput extends StatefulWidget {
   /// Controller that holds the entered verification code.
   final TextEditingController verificationCodeController;
@@ -108,6 +112,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
   @override
   void initState() {
     super.initState();
+    ensureOneTimeCodeInputStyle();
     _focusNode = widget.focusNode ?? (_ownedFocusNode = FocusNode());
     _focusNode.addListener(_handleFocusChange);
   }
@@ -255,6 +260,9 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
               enableInteractiveSelection: true,
               contextMenuBuilder: _contextMenuBuilder,
               keyboardType: widget.keyboardType,
+              // Also marks the browser input on the web, see
+              // [ensureOneTimeCodeInputStyle].
+              autofillHints: const [AutofillHints.oneTimeCode],
               textCapitalization:
                   widget.allowedLetterCase == LetterCase.uppercase
                   ? TextCapitalization.characters

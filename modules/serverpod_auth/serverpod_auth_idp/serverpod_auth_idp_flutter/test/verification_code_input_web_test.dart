@@ -4,6 +4,7 @@
 library;
 
 import 'dart:async';
+import 'dart:js_interop';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -177,6 +178,36 @@ void main() {
       expect(BrowserContextMenu.enabled, isFalse);
     },
   );
+
+  group('Given a verification code input was shown,', () {
+    testWidgets(
+      'when the browser has an input for a one-time code with a 1px font, '
+      'then the font size of that input is 16px.',
+      (tester) async {
+        await tester.pumpWidget(_host(_input()));
+        await tester.pump();
+
+        final input = _addBrowserInput(autocomplete: 'one-time-code');
+
+        expect(_computedStyleOf(input).fontSize, '16px');
+        await _disposeInput(tester);
+      },
+    );
+
+    testWidgets(
+      'when the browser has an input for other text with a 1px font, '
+      'then the font size of that input stays 1px.',
+      (tester) async {
+        await tester.pumpWidget(_host(_input()));
+        await tester.pump();
+
+        final input = _addBrowserInput(autocomplete: 'on');
+
+        expect(_computedStyleOf(input).fontSize, '1px');
+        await _disposeInput(tester);
+      },
+    );
+  });
 }
 
 Widget _host(Widget child) {
@@ -201,4 +232,39 @@ VerificationCodeInput _input({FocusNode? focusNode}) {
 Future<void> _disposeInput(WidgetTester tester) async {
   await tester.pumpWidget(const SizedBox());
   await tester.pump();
+}
+
+/// Adds a browser input like the one Flutter creates for a focused text field
+/// with the [autocomplete] hint, with the 1px font of Pinput's hidden text.
+_Element _addBrowserInput({required String autocomplete}) {
+  final input = _document.createElement('input')
+    ..setAttribute('autocomplete', autocomplete)
+    ..style.font = '400 1px sans-serif';
+  final host = _document.createElement('flt-text-editing-host')..append(input);
+  _document.body.append(host);
+  addTearDown(() => host.remove());
+  return input;
+}
+
+@JS('document')
+external _Document get _document;
+
+@JS('getComputedStyle')
+external _CssStyle _computedStyleOf(_Element element);
+
+extension type _Document._(JSObject _) implements JSObject {
+  external _Element get body;
+  external _Element createElement(String tagName);
+}
+
+extension type _Element._(JSObject _) implements JSObject {
+  external _CssStyle get style;
+  external void setAttribute(String name, String value);
+  external void append(_Element node);
+  external void remove();
+}
+
+extension type _CssStyle._(JSObject _) implements JSObject {
+  external set font(String value);
+  external String get fontSize;
 }
