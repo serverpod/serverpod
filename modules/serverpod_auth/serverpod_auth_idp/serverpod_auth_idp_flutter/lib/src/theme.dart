@@ -53,7 +53,7 @@ class AuthIdpTheme extends ThemeExtension<AuthIdpTheme> {
     focusedPinTheme =
         focusedPinTheme ??
         defaultPinTheme.copyWith(
-          decoration: defaultPinTheme.decoration!.copyWith(
+          decoration: (defaultPinTheme.decoration! as BoxDecoration).copyWith(
             border: Border.all(color: borderColor ?? Colors.black, width: 1),
           ),
         );
