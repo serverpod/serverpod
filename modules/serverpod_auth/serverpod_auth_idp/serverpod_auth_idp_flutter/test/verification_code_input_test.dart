@@ -1,4 +1,4 @@
-import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -176,205 +176,36 @@ void main() {
         expect(_cursorFinder(theme.colorScheme.primary), findsNothing);
       },
     );
-
-    testWidgets(
-      'when the paste button is tapped with a mouse, '
-      'then the input keeps the focus.',
-      (tester) async {
-        final focusNode = FocusNode();
-        addTearDown(focusNode.dispose);
-        await tester.pumpWidget(
-          _VerificationCodeInputHost(
-            child: VerificationCodeInput(
-              verificationCodeController: TextEditingController(),
-              onCompleted: () {},
-              isLoading: false,
-              focusNode: focusNode,
-            ),
-          ),
-        );
-        await tester.pump();
-
-        _mockClipboard(tester, text: '');
-        await tester.tap(
-          find.byTooltip('Paste'),
-          kind: PointerDeviceKind.mouse,
-        );
-        await tester.pump();
-
-        expect(focusNode.hasFocus, isTrue);
-      },
-    );
-  });
-
-  group('Given a verification code input for 8 digits,', () {
-    testWidgets(
-      'when pasting a code surrounded by whitespace, '
-      'then the input holds the code without the whitespace.',
-      (tester) async {
-        final controller = TextEditingController();
-        await tester.pumpWidget(
-          _VerificationCodeInputHost(
-            child: _digitsInput(controller: controller, onCompleted: () {}),
-          ),
-        );
-
-        _mockClipboard(tester, text: ' 1234 5678\n');
-        await tester.tap(find.byTooltip('Paste'));
-        await tester.pump();
-
-        expect(controller.text, '12345678');
-      },
-    );
-
-    testWidgets(
-      'when pasting a complete code, '
-      'then completion is reported once.',
-      (tester) async {
-        var completedCount = 0;
-        await tester.pumpWidget(
-          _VerificationCodeInputHost(
-            child: _digitsInput(
-              controller: TextEditingController(),
-              onCompleted: () => completedCount++,
-            ),
-          ),
-        );
-
-        _mockClipboard(tester, text: '12345678');
-        await tester.tap(find.byTooltip('Paste'));
-        await tester.pump();
-
-        expect(completedCount, 1);
-      },
-    );
-
-    testWidgets(
-      'when pasting text with only 4 allowed characters, '
-      'then the input holds those characters without reporting completion.',
-      (tester) async {
-        final controller = TextEditingController();
-        var completedCount = 0;
-        await tester.pumpWidget(
-          _VerificationCodeInputHost(
-            child: _digitsInput(
-              controller: controller,
-              onCompleted: () => completedCount++,
-            ),
-          ),
-        );
-
-        _mockClipboard(tester, text: 'Code: 1234');
-        await tester.tap(find.byTooltip('Paste'));
-        await tester.pump();
-
-        expect(controller.text, '1234');
-        expect(completedCount, 0);
-      },
-    );
-
-    testWidgets(
-      'when pasting a code with 12 digits, '
-      'then the input holds the first 8 digits.',
-      (tester) async {
-        final controller = TextEditingController();
-        await tester.pumpWidget(
-          _VerificationCodeInputHost(
-            child: _digitsInput(controller: controller, onCompleted: () {}),
-          ),
-        );
-
-        _mockClipboard(tester, text: '123456789012');
-        await tester.tap(find.byTooltip('Paste'));
-        await tester.pump();
-
-        expect(controller.text, '12345678');
-      },
-    );
-
-    testWidgets(
-      'when pasting text without allowed characters, '
-      'then the entered code is kept.',
-      (tester) async {
-        final controller = TextEditingController(text: '12');
-        await tester.pumpWidget(
-          _VerificationCodeInputHost(
-            child: _digitsInput(controller: controller, onCompleted: () {}),
-          ),
-        );
-
-        _mockClipboard(tester, text: 'hello');
-        await tester.tap(find.byTooltip('Paste'));
-        await tester.pump();
-
-        expect(controller.text, '12');
-      },
-    );
-
-    testWidgets(
-      'when the clipboard cannot be read, '
-      'then the entered code is kept.',
-      (tester) async {
-        final controller = TextEditingController(text: '12');
-        await tester.pumpWidget(
-          _VerificationCodeInputHost(
-            child: _digitsInput(controller: controller, onCompleted: () {}),
-          ),
-        );
-
-        _mockClipboard(tester, error: PlatformException(code: 'denied'));
-        await tester.tap(find.byTooltip('Paste'));
-        await tester.pump();
-
-        expect(controller.text, '12');
-      },
-    );
   });
 
   testWidgets(
-    'Given a loading verification code input, '
-    'when it is shown, '
-    'then the paste button is disabled.',
+    'Given a verification code input for 8 digits, '
+    'when pasting a complete code from the context menu, '
+    'then the input holds the code and reports completion once.',
     (tester) async {
+      final controller = TextEditingController();
+      var completedCount = 0;
       await tester.pumpWidget(
         _VerificationCodeInputHost(
-          child: VerificationCodeInput(
-            verificationCodeController: TextEditingController(),
-            onCompleted: () {},
-            isLoading: true,
+          child: _digitsInput(
+            controller: controller,
+            onCompleted: () => completedCount++,
           ),
         ),
       );
+      await tester.pump();
 
-      final button = tester.widget<IconButton>(
-        find.ancestor(
-          of: find.byTooltip('Paste'),
-          matching: find.byType(IconButton),
-        ),
-      );
+      _mockClipboard(tester, text: '12345678');
+      await tester.longPress(find.byType(AnimatedContainer).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Paste'));
+      await tester.pumpAndSettle();
 
-      expect(button.onPressed, isNull);
+      expect(controller.text, '12345678');
+      expect(completedCount, 1);
     },
-  );
-
-  testWidgets(
-    'Given a verification code input with the paste button hidden, '
-    'when it is shown, '
-    'then no paste button is shown.',
-    (tester) async {
-      await tester.pumpWidget(
-        _VerificationCodeInputHost(
-          child: VerificationCodeInput(
-            verificationCodeController: TextEditingController(),
-            onCompleted: () {},
-            isLoading: false,
-            showPasteButton: false,
-          ),
-        ),
-      );
-
-      expect(find.byTooltip('Paste'), findsNothing);
-    },
+    // The browser test covers the context menu on the web.
+    skip: kIsWeb,
   );
 }
 
@@ -412,20 +243,18 @@ Finder _cursorFinder(Color color) => find.byWidgetPredicate(
   (widget) => widget is ColoredBox && widget.color == color,
 );
 
-/// Answers clipboard reads with [text] or throws [error].
+/// Answers clipboard reads with [text].
 ///
 /// Install it after pumping the input: on native platforms Pinput reads the
 /// clipboard when it is mounted, which would mix that read into the scenario.
-void _mockClipboard(
-  WidgetTester tester, {
-  String? text,
-  PlatformException? error,
-}) {
+void _mockClipboard(WidgetTester tester, {required String text}) {
   final messenger = tester.binding.defaultBinaryMessenger;
   messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
-    if (call.method != 'Clipboard.getData') return null;
-    if (error != null) throw error;
-    return {'text': text};
+    return switch (call.method) {
+      'Clipboard.hasStrings' => {'value': true},
+      'Clipboard.getData' => {'text': text},
+      _ => null,
+    };
   });
   addTearDown(
     () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),

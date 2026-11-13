@@ -13,8 +13,8 @@ import 'one_time_code_input_style.dart'
 
 /// A widget for entering one-time verification codes (OTP).
 ///
-/// Displays a row of pin inputs and a paste-from-clipboard button. The callback
-/// [onCompleted] is invoked when the input reaches the configured [length].
+/// Displays a row of pin inputs. The callback [onCompleted] is invoked when the
+/// input reaches the configured [length].
 ///
 /// On the web, the browser context menu is disabled while the input has focus
 /// or is pressed, so a long press or right click on it shows Flutter's text
@@ -47,9 +47,6 @@ class VerificationCodeInput extends StatefulWidget {
   /// The focus node for the verification code input.
   final FocusNode? focusNode;
 
-  /// Whether to show the button that pastes the code from the clipboard.
-  final bool showPasteButton;
-
   /// Creates a [VerificationCodeInput] widget.
   const VerificationCodeInput({
     required this.onCompleted,
@@ -60,7 +57,6 @@ class VerificationCodeInput extends StatefulWidget {
     this.allowedLetterCase = LetterCase.mixed,
     this.allowedCharactersPattern,
     this.focusNode,
-    this.showPasteButton = true,
     super.key,
   });
 
@@ -182,49 +178,13 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
     );
   }
 
-  /// Replaces the current code with the clipboard text.
-  ///
-  /// The text is filtered with the same rules as typed input and cut to
-  /// [VerificationCodeInput.length], so it behaves like pasting into the
-  /// field. Whitespace is removed first, so codes copied with surrounding
-  /// spaces or line breaks still fit.
-  Future<void> _pasteFromClipboard() async {
-    final ClipboardData? data;
-    try {
-      data = await Clipboard.getData(Clipboard.kTextPlain);
-    } on PlatformException {
-      // The clipboard can't be read, e.g. the user denied the permission.
-      return;
-    }
-    if (!mounted || widget.isLoading) return;
-
-    final text = data?.text;
-    if (text == null) return;
-
-    final code = _inputFormatters
-        .apply(text.replaceAll(RegExp(r'\s'), ''))
-        .characters
-        .take(widget.length)
-        .toString();
-    if (code.isEmpty) return;
-
-    widget.verificationCodeController.value = TextEditingValue(
-      text: code,
-      selection: TextSelection.collapsed(offset: code.length),
-    );
-
-    if (code.characters.length < widget.length) {
-      _focusNode.requestFocus();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cursorColor =
         TextSelectionTheme.of(context).cursorColor ?? theme.colorScheme.primary;
 
-    final pinInput = LayoutBuilder(
+    return LayoutBuilder(
       builder: (context, constraints) {
         final itemWidth = constraints.maxWidth / widget.length;
 
@@ -271,8 +231,8 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
               // Pinput reads the clipboard when it is mounted and when the app
               // resumes. Browsers only allow clipboard reads after a user
               // gesture, so on the web this would ask for the clipboard
-              // permission when the form opens, or fail. The paste button
-              // covers the web instead.
+              // permission when the form opens, or fail. Users paste from the
+              // context menu or the keyboard instead.
               onClipboardFound: kIsWeb
                   ? null
                   : (value) {
@@ -300,25 +260,6 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
           ),
         );
       },
-    );
-
-    if (!widget.showPasteButton) return pinInput;
-
-    // The button sits next to the pins instead of below them, so the input
-    // keeps its height in forms with a fixed height.
-    return Row(
-      children: [
-        Expanded(child: pinInput),
-        // Keeps the input focused when the button is tapped, so the keyboard
-        // stays open on mobile.
-        TextFieldTapRegion(
-          child: IconButton(
-            onPressed: widget.isLoading ? null : _pasteFromClipboard,
-            tooltip: MaterialLocalizations.of(context).pasteButtonLabel,
-            icon: const Icon(Icons.content_paste),
-          ),
-        ),
-      ],
     );
   }
 }

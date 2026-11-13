@@ -103,25 +103,6 @@ void main() {
       expect(find.text("Didn't receive? Send a new code"), findsNothing);
     },
   );
-
-  testWidgets(
-    'Given no localization provider, '
-    'when a verification code input is displayed, '
-    'then the paste button uses the Material paste label.',
-    (tester) async {
-      await tester.pumpWidget(
-        _app(
-          VerificationCodeInput(
-            verificationCodeController: TextEditingController(),
-            onCompleted: () {},
-            isLoading: false,
-          ),
-        ),
-      );
-
-      expect(find.byTooltip('Paste'), findsOneWidget);
-    },
-  );
 }
 
 Widget _app(Widget child) => MaterialApp(home: Scaffold(body: child));

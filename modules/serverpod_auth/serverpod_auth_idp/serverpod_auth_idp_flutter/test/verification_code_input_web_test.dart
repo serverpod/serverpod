@@ -110,6 +110,45 @@ void main() {
   );
 
   testWidgets(
+    'Given a verification code input for 8 digits, '
+    'when pasting a complete code from the context menu of a long press, '
+    'then the input holds the code and reports completion once.',
+    (tester) async {
+      final controller = TextEditingController();
+      var completedCount = 0;
+      await tester.pumpWidget(
+        _host(
+          VerificationCodeInput(
+            verificationCodeController: controller,
+            onCompleted: () => completedCount++,
+            isLoading: false,
+            length: 8,
+            allowedCharactersPattern: RegExp(r'[0-9]'),
+          ),
+        ),
+      );
+      await tester.pump();
+      final messenger = tester.binding.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method != 'Clipboard.getData') return null;
+        return {'text': '12345678'};
+      });
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+
+      await tester.longPress(find.byType(AnimatedContainer).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Paste'));
+      await tester.pumpAndSettle();
+
+      expect(controller.text, '12345678');
+      expect(completedCount, 1);
+      await _disposeInput(tester);
+    },
+  );
+
+  testWidgets(
     'Given a verification code input that lost focus while the browser '
     'context menu is still being enabled again, '
     'when the input gets focus again, '
