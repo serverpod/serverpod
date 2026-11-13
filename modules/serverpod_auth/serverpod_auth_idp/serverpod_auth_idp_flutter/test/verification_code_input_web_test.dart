@@ -5,6 +5,7 @@ library;
 
 import 'dart:async';
 import 'dart:js_interop';
+import 'dart:ui_web' as ui_web;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -218,31 +219,39 @@ void main() {
     },
   );
 
-  group('Given a verification code input was shown,', () {
+  group('Given text input is handled by the browser,', () {
     testWidgets(
-      'when the browser has an input for a one-time code with a 1px font, '
-      'then the font size of that input is 16px.',
+      'when a verification code input gets focus, '
+      'then the browser input of the code has a 16px font.',
       (tester) async {
+        _useBrowserTextInput(tester);
+
         await tester.pumpWidget(_host(_input()));
         await tester.pump();
 
-        final input = _addBrowserInput(autocomplete: 'one-time-code');
-
-        expect(_computedStyleOf(input).fontSize, '16px');
+        expect(_computedStyleOf(_browserInput()).fontSize, '16px');
         await _disposeInput(tester);
       },
     );
 
     testWidgets(
-      'when the browser has an input for other text with a 1px font, '
-      'then the font size of that input stays 1px.',
+      'when a text field with a 10px font gets focus after a verification '
+      'code input was shown, '
+      'then the browser input of the text field keeps the 10px font.',
       (tester) async {
+        _useBrowserTextInput(tester);
         await tester.pumpWidget(_host(_input()));
         await tester.pump();
+        await _disposeInput(tester);
 
-        final input = _addBrowserInput(autocomplete: 'on');
+        await tester.pumpWidget(
+          _host(
+            const TextField(autofocus: true, style: TextStyle(fontSize: 10)),
+          ),
+        );
+        await tester.pump();
 
-        expect(_computedStyleOf(input).fontSize, '1px');
+        expect(_computedStyleOf(_browserInput()).fontSize, '10px');
         await _disposeInput(tester);
       },
     );
@@ -267,21 +276,38 @@ VerificationCodeInput _input({FocusNode? focusNode}) {
 }
 
 /// Disposes the input before the test ends, so the browser context menu change
-/// it starts completes while the test can still process it.
+/// it starts, and the answers of the web engine to text input messages,
+/// complete while the test can still process them.
 Future<void> _disposeInput(WidgetTester tester) async {
   await tester.pumpWidget(const SizedBox());
-  await tester.pump();
+  await tester.pump(Duration.zero);
 }
 
-/// Adds a browser input like the one Flutter creates for a focused text field
-/// with the [autocomplete] hint, with the 1px font of Pinput's hidden text.
-_Element _addBrowserInput({required String autocomplete}) {
-  final input = _document.createElement('input')
-    ..setAttribute('autocomplete', autocomplete)
-    ..style.font = '400 1px sans-serif';
-  final host = _document.createElement('flt-text-editing-host')..append(input);
-  _document.body.append(host);
-  addTearDown(() => host.remove());
+/// Lets the web engine create the browser inputs of focused text fields, as in
+/// an app, instead of the fake text input of widget tests.
+void _useBrowserTextInput(WidgetTester tester) {
+  final environment = ui_web.TestEnvironment.instance;
+  ui_web.TestEnvironment.setUp(
+    ui_web.TestEnvironment(
+      forceTestFonts: environment.forceTestFonts,
+      disableFontFallbacks: environment.disableFontFallbacks,
+      keepSemanticsDisabledOnUpdate: environment.keepSemanticsDisabledOnUpdate,
+      defaultToTestUrlStrategy: environment.defaultToTestUrlStrategy,
+    ),
+  );
+  addTearDown(() => ui_web.TestEnvironment.setUp(environment));
+  tester.testTextInput.unregister();
+}
+
+/// The browser input the web engine created for the focused text field.
+///
+/// The engine keeps the inputs of previous autofill groups on the page, so the
+/// focused one is the input of the text field.
+_Element _browserInput() {
+  final input = _document.activeElement;
+  if (input == null || input.tagName != 'INPUT') {
+    throw StateError('No browser input is focused.');
+  }
   return input;
 }
 
@@ -292,18 +318,13 @@ external _Document get _document;
 external _CssStyle _computedStyleOf(_Element element);
 
 extension type _Document._(JSObject _) implements JSObject {
-  external _Element get body;
-  external _Element createElement(String tagName);
+  external _Element? get activeElement;
 }
 
 extension type _Element._(JSObject _) implements JSObject {
-  external _CssStyle get style;
-  external void setAttribute(String name, String value);
-  external void append(_Element node);
-  external void remove();
+  external String get tagName;
 }
 
 extension type _CssStyle._(JSObject _) implements JSObject {
-  external set font(String value);
   external String get fontSize;
 }
