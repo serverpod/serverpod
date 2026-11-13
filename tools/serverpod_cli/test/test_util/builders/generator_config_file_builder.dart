@@ -12,6 +12,7 @@ class GeneratorConfigFileBuilder {
   String? _nickname;
   String _clientPackagePath;
   String? _serverTestToolsPath;
+  String? _defaultSchema;
   List<ModuleConfigEntry> _modules;
 
   GeneratorConfigFileBuilder()
@@ -43,6 +44,11 @@ class GeneratorConfigFileBuilder {
     return this;
   }
 
+  GeneratorConfigFileBuilder withDefaultSchema(String? defaultSchema) {
+    _defaultSchema = defaultSchema;
+    return this;
+  }
+
   GeneratorConfigFileBuilder addModule(ModuleConfigEntry module) {
     _modules.add(module);
     return this;
@@ -65,6 +71,12 @@ class GeneratorConfigFileBuilder {
 
     if (_serverTestToolsPath != null) {
       buffer.writeln('server_test_tools_path: $_serverTestToolsPath');
+    }
+
+    if (_defaultSchema != null) {
+      buffer.writeln();
+      buffer.writeln('database:');
+      buffer.writeln('  default_schema: $_defaultSchema');
     }
 
     if (_modules.isNotEmpty) {
