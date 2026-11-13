@@ -48,12 +48,11 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
 
   if (Features.enableDatabase) {
     try {
-      var startTime = DateTime.now();
+      var stopwatch = Stopwatch()..start();
 
       dbHealthy = await pod.internalSession.db.testConnection();
 
-      dbResponseTime =
-          DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+      dbResponseTime = stopwatch.elapsedMicroseconds / 1000000.0;
     } catch (e, stackTrace) {
       dbHealthy = false;
       pod.internalSubmitEvent(
