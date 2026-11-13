@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -53,11 +54,51 @@ class VerificationCodeInput extends StatefulWidget {
   State<VerificationCodeInput> createState() => _VerificationCodeInputState();
 }
 
-class _VerificationCodeInputState extends State<VerificationCodeInput> {
+class _VerificationCodeInputState extends State<VerificationCodeInput>
+    with WidgetsBindingObserver {
   /// Codes completed in any verification code input of the app, which are not
   /// filled in from the clipboard again, e.g. the code of a previous sign-in
   /// that is still in the clipboard when signing in again.
   static final _completedCodes = <String>{};
+
+  List<TextInputFormatter> get _inputFormatters {
+    final allowedCharactersPattern = widget.allowedCharactersPattern;
+    return [
+      LetterCaseTextFormatter(letterCase: widget.allowedLetterCase),
+      if (allowedCharactersPattern != null)
+        FilteringTextInputFormatter.allow(allowedCharactersPattern),
+    ];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    unawaited(_fillInFromClipboard());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) unawaited(_fillInFromClipboard());
+  }
+
+  Future<void> _fillInFromClipboard() async {
+    final value = (await Clipboard.getData(Clipboard.kTextPlain))?.text;
+    if (!mounted || value == null || value.length != widget.length) return;
+    final formattedValue = _inputFormatters.apply(value);
+    if (formattedValue.length != value.length) return;
+    if (_completedCodes.contains(formattedValue)) return;
+
+    setState(() {
+      widget.verificationCodeController.setText(formattedValue);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,47 +115,39 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
         );
         final errorPinTheme = idpTheme.errorPinTheme.copyWith(width: itemWidth);
 
-        final allowedCharactersPattern = widget.allowedCharactersPattern;
-        final inputFormatters = [
-          LetterCaseTextFormatter(letterCase: widget.allowedLetterCase),
-          if (allowedCharactersPattern != null)
-            FilteringTextInputFormatter.allow(allowedCharactersPattern),
-        ];
-
         return Container(
           height: math.max(itemWidth, 48),
           alignment: Alignment.center,
           child: Pinput(
             controller: widget.verificationCodeController,
             length: widget.length,
-            showCursor: false,
+            cursor: const PinCursor.hidden(),
             enableInteractiveSelection: true,
-            keyboardType: widget.keyboardType,
-            textCapitalization: widget.allowedLetterCase == LetterCase.uppercase
-                ? TextCapitalization.characters
-                : TextCapitalization.none,
-            inputFormatters: inputFormatters,
-            onClipboardFound: (value) {
-              if (value.length != widget.length) return;
-              final formattedValue = inputFormatters.apply(value);
-              if (formattedValue.length != value.length) return;
-              if (_completedCodes.contains(formattedValue)) return;
-
-              setState(() {
-                widget.verificationCodeController.text = formattedValue;
-              });
-            },
-            separatorBuilder: (index) => idpTheme.separator,
+            keyboard: PinKeyboard(
+              keyboardType: widget.keyboardType,
+              textCapitalization:
+                  widget.allowedLetterCase == LetterCase.uppercase
+                  ? TextCapitalization.characters
+                  : TextCapitalization.none,
+            ),
+            inputFormatters: _inputFormatters,
+            layout: PinLayout(
+              separatorBuilder: (context, index) => idpTheme.separator,
+            ),
             autofocus: true,
-            enabled: !widget.isLoading,
+            inputMode: widget.isLoading
+                ? PinInputMode.disabled
+                : PinInputMode.editable,
             focusNode: widget.focusNode,
-            defaultPinTheme: defaultPinTheme,
+            theme: PinThemes(
+              fallback: defaultPinTheme,
+              focused: focusedPinTheme,
+              error: errorPinTheme,
+            ),
             onCompleted: (code) {
               _completedCodes.add(code);
               widget.onCompleted();
             },
-            focusedPinTheme: focusedPinTheme,
-            errorPinTheme: errorPinTheme,
           ),
         );
       },
