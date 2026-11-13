@@ -245,6 +245,7 @@ class MigrationGenerator {
     } catch (e) {
       throw MigrationLiveDatabaseDefinitionException(
         exception: e.toString(),
+        address: insightsAddress,
       );
     } finally {
       client.close();
