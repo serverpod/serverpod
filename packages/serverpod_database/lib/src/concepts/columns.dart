@@ -64,7 +64,8 @@ class ColumnByteData extends Column<ByteData> {
 
 /// A [Column] holding an [SerializableModel]. The entity will be stored in the
 /// database as a json column.
-class ColumnSerializable<T> extends Column<T> {
+class ColumnSerializable<T> extends _ValueOperatorColumn<T>
+    with _NullableColumnDefaultOperations<T> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnSerializable(
     super.columnName,
@@ -72,6 +73,11 @@ class ColumnSerializable<T> extends Column<T> {
     super.hasDefault,
     super.fieldName,
   });
+
+  @override
+  Expression _encodeValueForQuery(T value) {
+    return EscapedExpression(SerializationManager.encode(value));
+  }
 }
 
 /// A [Column] holding a [SerializableModel]. The entity will be stored in the
