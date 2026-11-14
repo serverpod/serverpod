@@ -1,15 +1,16 @@
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:test/test.dart';
 
 import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
-  withServerpod('Given no account request when trying to create account ', (
+  withServerpod('Given no account request, when trying to create account,', (
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
 
     late UserInfo? response;
     setUp(
@@ -36,11 +37,12 @@ void main() async {
     });
   });
 
-  withServerpod('Given existing account request', (
+  withServerpod('Given existing account request,', (
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
     var username = 'test';
     var password = 'password';
     var email = 'test@serverpod.dev';

@@ -7,7 +7,7 @@ import 'test_util/many_relation_builder.dart';
 import 'test_util/table_relation_builder.dart';
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   group('Given a company table related to a town table, ', () {
     late Table companyTable;

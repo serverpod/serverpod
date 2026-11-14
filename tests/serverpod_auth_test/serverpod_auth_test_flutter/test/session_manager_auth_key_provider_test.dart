@@ -4,14 +4,18 @@ import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
 import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
+import 'utils/test_server.dart';
+
 void main() {
+  withTestServer();
+
   late Client client;
   late AuthSuccess jwtAuthSuccess;
   late AuthSuccess sasAuthSuccess;
 
   setUp(() async {
     client = Client(
-      'http://localhost:8080/',
+      serverUrl,
     )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
     final testUserId = await client.authTest.createTestUser();

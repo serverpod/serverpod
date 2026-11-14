@@ -7,7 +7,7 @@ import '../../test_util/many_relation_builder.dart';
 import '../../test_util/table_relation_builder.dart';
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -19,11 +19,14 @@ void main() {
   ]).build();
   var manyRelation = ManyRelationBuilder(relationTable).build();
 
-  group('Given SelectQueryBuilder', () {
-    group('when ordering by list relation with a long field name', () {
-      var query = SelectQueryBuilder(
-        table: citizenTable,
-      ).withOrderBy([manyRelation.count().asc()]).build();
+  group('Given SelectQueryBuilder,', () {
+    group('when ordering by list relation with a long field name,', () {
+      late String query;
+      setUp(() {
+        query = SelectQueryBuilder(
+          table: citizenTable,
+        ).withOrderBy([manyRelation.count().asc()]).build();
+      });
       var expectedTruncatedName =
           'order_by_citizen_thisFieldIsExactly61CharactersLongAndIsThee498';
 
