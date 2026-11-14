@@ -276,8 +276,6 @@ void main() async {
               transaction: t,
             );
 
-            await Future.delayed(Duration(milliseconds: 100));
-
             c1.complete();
             await c2.future;
 
@@ -305,10 +303,14 @@ void main() async {
               testData1.copyWith(num: data2!.num + 20),
               transaction: t,
             );
-            c2.complete();
           },
           settings: settings,
         );
+        // Transaction 1 writes only after transaction 2 has committed. A
+        // committed transaction can't be aborted, so PostgreSQL has to abort
+        // transaction 1. If transaction 1 wrote while transaction 2 was still
+        // committing, PostgreSQL could abort either of them.
+        transaction2.whenComplete(c2.complete).ignore();
 
         expectLater(
           transaction1,
