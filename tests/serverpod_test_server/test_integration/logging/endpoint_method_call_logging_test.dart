@@ -197,6 +197,27 @@ void main() async {
     );
 
     test(
+      'Given a log setting that enables all logs when calling a method executing a query then the logged query keeps the stack trace of its caller',
+      () async {
+        var settings = RuntimeSettingsBuilder()
+            .withLogSettings(
+              LogSettingsBuilder().build(),
+            )
+            .build();
+
+        await server.updateRuntimeSettings(settings);
+
+        await client.logging.queryMethod(1);
+
+        var logs = await LoggingUtil.findAllLogs(session);
+
+        expect(logs, hasLength(1));
+        expect(logs.first.queries, hasLength(1));
+        expect(logs.first.queries.first.stackTrace, contains('queryMethod'));
+      },
+    );
+
+    test(
       'Given a log setting that turns off all database query logging when calling a method executing several queries then the number of queries are still counted.',
       () async {
         var settings = RuntimeSettingsBuilder()
