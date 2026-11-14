@@ -70,6 +70,10 @@ abstract class Session implements DatabaseSession {
   /// The time the session object was created.
   DateTime get startTime => _startTime;
 
+  /// Measures [duration] with a monotonic clock, so it is not affected by
+  /// changes to the system clock.
+  final Stopwatch _stopwatch = Stopwatch();
+
   AuthenticationInfo? _authenticated;
 
   /// Updates the authentication information for the session.
@@ -164,6 +168,7 @@ abstract class Session implements DatabaseSession {
   }) : _authenticationKey = authenticationKey,
        sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
+    _stopwatch.start();
 
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
@@ -188,7 +193,7 @@ abstract class Session implements DatabaseSession {
   }
 
   /// Returns the duration this session has been open.
-  Duration get duration => DateTime.now().difference(_startTime);
+  Duration get duration => _stopwatch.elapsed;
 
   /// Closes the session. This method should only be called if you have
   /// manually created a the [Session] e.g. by calling [createSession] on

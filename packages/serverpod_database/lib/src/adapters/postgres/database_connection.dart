@@ -679,6 +679,7 @@ class PostgresDatabaseConnection
         : null;
 
     var startTime = DateTime.now();
+    var stopwatch = Stopwatch()..start();
     try {
       final resolvedContext = await context;
       var result = await resolvedContext.execute(
@@ -694,7 +695,7 @@ class PostgresDatabaseConnection
       _logQuery(
         session,
         query,
-        startTime,
+        stopwatch,
         numRowsAffected: result.affectedRows,
       );
       return result;
@@ -713,7 +714,7 @@ class PostgresDatabaseConnection
       _logQuery(
         session,
         query,
-        startTime,
+        stopwatch,
         exception: serverpodException,
         trace: trace,
       );
@@ -723,13 +724,13 @@ class PostgresDatabaseConnection
       _logQuery(
         session,
         query,
-        startTime,
+        stopwatch,
         exception: serverpodException,
         trace: trace,
       );
       Error.throwWithStackTrace(serverpodException, trace);
     } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      _logQuery(session, query, stopwatch, exception: exception, trace: trace);
       rethrow;
     }
   }
@@ -876,12 +877,13 @@ class PostgresDatabaseConnection
   static void _logQuery(
     DatabaseSession session,
     String query,
-    DateTime startTime, {
+    Stopwatch stopwatch, {
     int? numRowsAffected,
     dynamic exception,
     StackTrace? trace,
   }) {
-    var duration = DateTime.now().difference(startTime);
+    stopwatch.stop();
+    var duration = stopwatch.elapsed;
 
     // Use the current stack trace if there is no exception.
     trace ??= StackTrace.current;

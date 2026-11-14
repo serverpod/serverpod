@@ -123,7 +123,7 @@ class DatabaseBulkData {
     var result = await database.transaction<BulkQueryResult>((
       transaction,
     ) async {
-      var startTime = DateTime.now();
+      var stopwatch = Stopwatch()..start();
       DatabaseResult? result;
       int numAffectedRows = 0;
 
@@ -133,7 +133,7 @@ class DatabaseBulkData {
       }
       result!;
 
-      var duration = DateTime.now().difference(startTime);
+      var duration = stopwatch.elapsed;
 
       return BulkQueryResult(
         headers: result.schema.columns
