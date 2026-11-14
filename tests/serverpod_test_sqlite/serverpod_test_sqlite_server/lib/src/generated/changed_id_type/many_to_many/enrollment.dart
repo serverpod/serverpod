@@ -364,6 +364,7 @@ class EnrollmentIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EnrollmentInt>(
+      table: EnrollmentInt.t,
       where: where?.call(EnrollmentInt.t),
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
@@ -430,6 +431,7 @@ class EnrollmentIntRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EnrollmentInt>(
+      table: EnrollmentInt.t,
       where: where?.call(EnrollmentInt.t),
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
@@ -470,6 +472,7 @@ class EnrollmentIntRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EnrollmentInt>(
+      table: EnrollmentInt.t,
       where: where?.call(EnrollmentInt.t),
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
@@ -492,6 +495,7 @@ class EnrollmentIntRepository {
   }) async {
     return session.db.findById<EnrollmentInt>(
       id,
+      table: EnrollmentInt.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -661,6 +665,7 @@ class EnrollmentIntRepository {
   }) async {
     return session.db.updateById<EnrollmentInt>(
       id,
+      table: EnrollmentInt.t,
       columnValues: columnValues(EnrollmentInt.t.updateTable),
       transaction: transaction,
     );
@@ -684,6 +689,7 @@ class EnrollmentIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EnrollmentInt>(
+      table: EnrollmentInt.t,
       columnValues: columnValues(EnrollmentInt.t.updateTable),
       where: where(EnrollmentInt.t),
       limit: limit,
@@ -752,6 +758,7 @@ class EnrollmentIntRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EnrollmentInt>(
+      table: EnrollmentInt.t,
       where: where(EnrollmentInt.t),
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
@@ -769,6 +776,7 @@ class EnrollmentIntRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EnrollmentInt>(
+      table: EnrollmentInt.t,
       where: where?.call(EnrollmentInt.t),
       limit: limit,
       transaction: transaction,
@@ -784,6 +792,7 @@ class EnrollmentIntRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EnrollmentInt>(
+      table: EnrollmentInt.t,
       where: where(EnrollmentInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

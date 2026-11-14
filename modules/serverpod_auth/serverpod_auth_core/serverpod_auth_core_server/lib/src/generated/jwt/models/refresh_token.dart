@@ -527,6 +527,7 @@ class RefreshTokenRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RefreshToken>(
+      table: RefreshToken.t,
       where: where?.call(RefreshToken.t),
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
@@ -593,6 +594,7 @@ class RefreshTokenRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<RefreshToken>(
+      table: RefreshToken.t,
       where: where?.call(RefreshToken.t),
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
@@ -633,6 +635,7 @@ class RefreshTokenRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RefreshToken>(
+      table: RefreshToken.t,
       where: where?.call(RefreshToken.t),
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
@@ -655,6 +658,7 @@ class RefreshTokenRepository {
   }) async {
     return session.db.findById<RefreshToken>(
       id,
+      table: RefreshToken.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -824,6 +828,7 @@ class RefreshTokenRepository {
   }) async {
     return session.db.updateById<RefreshToken>(
       id,
+      table: RefreshToken.t,
       columnValues: columnValues(RefreshToken.t.updateTable),
       transaction: transaction,
     );
@@ -847,6 +852,7 @@ class RefreshTokenRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<RefreshToken>(
+      table: RefreshToken.t,
       columnValues: columnValues(RefreshToken.t.updateTable),
       where: where(RefreshToken.t),
       limit: limit,
@@ -915,6 +921,7 @@ class RefreshTokenRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RefreshToken>(
+      table: RefreshToken.t,
       where: where(RefreshToken.t),
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
@@ -932,6 +939,7 @@ class RefreshTokenRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<RefreshToken>(
+      table: RefreshToken.t,
       where: where?.call(RefreshToken.t),
       limit: limit,
       transaction: transaction,
@@ -947,6 +955,7 @@ class RefreshTokenRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<RefreshToken>(
+      table: RefreshToken.t,
       where: where(RefreshToken.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

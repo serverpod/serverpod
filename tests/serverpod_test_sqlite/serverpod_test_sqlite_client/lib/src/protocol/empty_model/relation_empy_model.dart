@@ -292,6 +292,7 @@ class RelationEmptyModelRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RelationEmptyModel>(
+      table: RelationEmptyModel.t,
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
@@ -358,6 +359,7 @@ class RelationEmptyModelRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<RelationEmptyModel>(
+      table: RelationEmptyModel.t,
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
@@ -398,6 +400,7 @@ class RelationEmptyModelRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RelationEmptyModel>(
+      table: RelationEmptyModel.t,
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
@@ -420,6 +423,7 @@ class RelationEmptyModelRepository {
   }) async {
     return session.db.findById<RelationEmptyModel>(
       id,
+      table: RelationEmptyModel.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -590,6 +594,7 @@ class RelationEmptyModelRepository {
   }) async {
     return session.db.updateById<RelationEmptyModel>(
       id,
+      table: RelationEmptyModel.t,
       columnValues: columnValues(RelationEmptyModel.t.updateTable),
       transaction: transaction,
     );
@@ -614,6 +619,7 @@ class RelationEmptyModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<RelationEmptyModel>(
+      table: RelationEmptyModel.t,
       columnValues: columnValues(RelationEmptyModel.t.updateTable),
       where: where(RelationEmptyModel.t),
       limit: limit,
@@ -682,6 +688,7 @@ class RelationEmptyModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RelationEmptyModel>(
+      table: RelationEmptyModel.t,
       where: where(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
@@ -699,6 +706,7 @@ class RelationEmptyModelRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<RelationEmptyModel>(
+      table: RelationEmptyModel.t,
       where: where?.call(RelationEmptyModel.t),
       limit: limit,
       transaction: transaction,
@@ -714,6 +722,7 @@ class RelationEmptyModelRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<RelationEmptyModel>(
+      table: RelationEmptyModel.t,
       where: where(RelationEmptyModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

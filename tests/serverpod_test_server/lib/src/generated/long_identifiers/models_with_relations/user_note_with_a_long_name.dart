@@ -284,6 +284,7 @@ class UserNoteWithALongNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserNoteWithALongName>(
+      table: UserNoteWithALongName.t,
       where: where?.call(UserNoteWithALongName.t),
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
@@ -348,6 +349,7 @@ class UserNoteWithALongNameRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UserNoteWithALongName>(
+      table: UserNoteWithALongName.t,
       where: where?.call(UserNoteWithALongName.t),
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
@@ -386,6 +388,7 @@ class UserNoteWithALongNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserNoteWithALongName>(
+      table: UserNoteWithALongName.t,
       where: where?.call(UserNoteWithALongName.t),
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
@@ -406,6 +409,7 @@ class UserNoteWithALongNameRepository {
   }) async {
     return session.db.findById<UserNoteWithALongName>(
       id,
+      table: UserNoteWithALongName.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -575,6 +579,7 @@ class UserNoteWithALongNameRepository {
   }) async {
     return session.db.updateById<UserNoteWithALongName>(
       id,
+      table: UserNoteWithALongName.t,
       columnValues: columnValues(UserNoteWithALongName.t.updateTable),
       transaction: transaction,
     );
@@ -599,6 +604,7 @@ class UserNoteWithALongNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserNoteWithALongName>(
+      table: UserNoteWithALongName.t,
       columnValues: columnValues(UserNoteWithALongName.t.updateTable),
       where: where(UserNoteWithALongName.t),
       limit: limit,
@@ -667,6 +673,7 @@ class UserNoteWithALongNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserNoteWithALongName>(
+      table: UserNoteWithALongName.t,
       where: where(UserNoteWithALongName.t),
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
@@ -684,6 +691,7 @@ class UserNoteWithALongNameRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UserNoteWithALongName>(
+      table: UserNoteWithALongName.t,
       where: where?.call(UserNoteWithALongName.t),
       limit: limit,
       transaction: transaction,
@@ -699,6 +707,7 @@ class UserNoteWithALongNameRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserNoteWithALongName>(
+      table: UserNoteWithALongName.t,
       where: where(UserNoteWithALongName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

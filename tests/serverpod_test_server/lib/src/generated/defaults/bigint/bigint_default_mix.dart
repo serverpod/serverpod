@@ -305,6 +305,7 @@ class BigIntDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BigIntDefaultMix>(
+      table: BigIntDefaultMix.t,
       where: where?.call(BigIntDefaultMix.t),
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
@@ -369,6 +370,7 @@ class BigIntDefaultMixRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<BigIntDefaultMix>(
+      table: BigIntDefaultMix.t,
       where: where?.call(BigIntDefaultMix.t),
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
@@ -407,6 +409,7 @@ class BigIntDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BigIntDefaultMix>(
+      table: BigIntDefaultMix.t,
       where: where?.call(BigIntDefaultMix.t),
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
@@ -427,6 +430,7 @@ class BigIntDefaultMixRepository {
   }) async {
     return session.db.findById<BigIntDefaultMix>(
       id,
+      table: BigIntDefaultMix.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -596,6 +600,7 @@ class BigIntDefaultMixRepository {
   }) async {
     return session.db.updateById<BigIntDefaultMix>(
       id,
+      table: BigIntDefaultMix.t,
       columnValues: columnValues(BigIntDefaultMix.t.updateTable),
       transaction: transaction,
     );
@@ -620,6 +625,7 @@ class BigIntDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BigIntDefaultMix>(
+      table: BigIntDefaultMix.t,
       columnValues: columnValues(BigIntDefaultMix.t.updateTable),
       where: where(BigIntDefaultMix.t),
       limit: limit,
@@ -688,6 +694,7 @@ class BigIntDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BigIntDefaultMix>(
+      table: BigIntDefaultMix.t,
       where: where(BigIntDefaultMix.t),
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
@@ -705,6 +712,7 @@ class BigIntDefaultMixRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<BigIntDefaultMix>(
+      table: BigIntDefaultMix.t,
       where: where?.call(BigIntDefaultMix.t),
       limit: limit,
       transaction: transaction,
@@ -720,6 +728,7 @@ class BigIntDefaultMixRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BigIntDefaultMix>(
+      table: BigIntDefaultMix.t,
       where: where(BigIntDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

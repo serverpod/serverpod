@@ -362,6 +362,7 @@ class CloudStorageDirectDownloadEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CloudStorageDirectDownloadEntry>(
+      table: CloudStorageDirectDownloadEntry.t,
       where: where?.call(CloudStorageDirectDownloadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectDownloadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectDownloadEntry.t),
@@ -426,6 +427,7 @@ class CloudStorageDirectDownloadEntryRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<CloudStorageDirectDownloadEntry>(
+      table: CloudStorageDirectDownloadEntry.t,
       where: where?.call(CloudStorageDirectDownloadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectDownloadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectDownloadEntry.t),
@@ -464,6 +466,7 @@ class CloudStorageDirectDownloadEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CloudStorageDirectDownloadEntry>(
+      table: CloudStorageDirectDownloadEntry.t,
       where: where?.call(CloudStorageDirectDownloadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectDownloadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectDownloadEntry.t),
@@ -484,6 +487,7 @@ class CloudStorageDirectDownloadEntryRepository {
   }) async {
     return session.db.findById<CloudStorageDirectDownloadEntry>(
       id,
+      table: CloudStorageDirectDownloadEntry.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -659,6 +663,7 @@ class CloudStorageDirectDownloadEntryRepository {
   }) async {
     return session.db.updateById<CloudStorageDirectDownloadEntry>(
       id,
+      table: CloudStorageDirectDownloadEntry.t,
       columnValues: columnValues(CloudStorageDirectDownloadEntry.t.updateTable),
       transaction: transaction,
     );
@@ -686,6 +691,7 @@ class CloudStorageDirectDownloadEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CloudStorageDirectDownloadEntry>(
+      table: CloudStorageDirectDownloadEntry.t,
       columnValues: columnValues(CloudStorageDirectDownloadEntry.t.updateTable),
       where: where(CloudStorageDirectDownloadEntry.t),
       limit: limit,
@@ -755,6 +761,7 @@ class CloudStorageDirectDownloadEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CloudStorageDirectDownloadEntry>(
+      table: CloudStorageDirectDownloadEntry.t,
       where: where(CloudStorageDirectDownloadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectDownloadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectDownloadEntry.t),
@@ -772,6 +779,7 @@ class CloudStorageDirectDownloadEntryRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<CloudStorageDirectDownloadEntry>(
+      table: CloudStorageDirectDownloadEntry.t,
       where: where?.call(CloudStorageDirectDownloadEntry.t),
       limit: limit,
       transaction: transaction,
@@ -788,6 +796,7 @@ class CloudStorageDirectDownloadEntryRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CloudStorageDirectDownloadEntry>(
+      table: CloudStorageDirectDownloadEntry.t,
       where: where(CloudStorageDirectDownloadEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

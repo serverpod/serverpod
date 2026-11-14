@@ -932,6 +932,7 @@ class TypesRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Types>(
+      table: Types.t,
       where: where?.call(Types.t),
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
@@ -996,6 +997,7 @@ class TypesRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Types>(
+      table: Types.t,
       where: where?.call(Types.t),
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
@@ -1034,6 +1036,7 @@ class TypesRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Types>(
+      table: Types.t,
       where: where?.call(Types.t),
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
@@ -1054,6 +1057,7 @@ class TypesRepository {
   }) async {
     return session.db.findById<Types>(
       id,
+      table: Types.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -1222,6 +1226,7 @@ class TypesRepository {
   }) async {
     return session.db.updateById<Types>(
       id,
+      table: Types.t,
       columnValues: columnValues(Types.t.updateTable),
       transaction: transaction,
     );
@@ -1245,6 +1250,7 @@ class TypesRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Types>(
+      table: Types.t,
       columnValues: columnValues(Types.t.updateTable),
       where: where(Types.t),
       limit: limit,
@@ -1313,6 +1319,7 @@ class TypesRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Types>(
+      table: Types.t,
       where: where(Types.t),
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
@@ -1330,6 +1337,7 @@ class TypesRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Types>(
+      table: Types.t,
       where: where?.call(Types.t),
       limit: limit,
       transaction: transaction,
@@ -1345,6 +1353,7 @@ class TypesRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Types>(
+      table: Types.t,
       where: where(Types.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -505,6 +505,7 @@ class CloudStorageEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CloudStorageEntry>(
+      table: CloudStorageEntry.t,
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
@@ -569,6 +570,7 @@ class CloudStorageEntryRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<CloudStorageEntry>(
+      table: CloudStorageEntry.t,
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
@@ -607,6 +609,7 @@ class CloudStorageEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CloudStorageEntry>(
+      table: CloudStorageEntry.t,
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
@@ -627,6 +630,7 @@ class CloudStorageEntryRepository {
   }) async {
     return session.db.findById<CloudStorageEntry>(
       id,
+      table: CloudStorageEntry.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -796,6 +800,7 @@ class CloudStorageEntryRepository {
   }) async {
     return session.db.updateById<CloudStorageEntry>(
       id,
+      table: CloudStorageEntry.t,
       columnValues: columnValues(CloudStorageEntry.t.updateTable),
       transaction: transaction,
     );
@@ -820,6 +825,7 @@ class CloudStorageEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CloudStorageEntry>(
+      table: CloudStorageEntry.t,
       columnValues: columnValues(CloudStorageEntry.t.updateTable),
       where: where(CloudStorageEntry.t),
       limit: limit,
@@ -888,6 +894,7 @@ class CloudStorageEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CloudStorageEntry>(
+      table: CloudStorageEntry.t,
       where: where(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
@@ -905,6 +912,7 @@ class CloudStorageEntryRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<CloudStorageEntry>(
+      table: CloudStorageEntry.t,
       where: where?.call(CloudStorageEntry.t),
       limit: limit,
       transaction: transaction,
@@ -920,6 +928,7 @@ class CloudStorageEntryRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CloudStorageEntry>(
+      table: CloudStorageEntry.t,
       where: where(CloudStorageEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

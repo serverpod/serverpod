@@ -274,6 +274,7 @@ class ArenaUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ArenaUuid>(
+      table: ArenaUuid.t,
       where: where?.call(ArenaUuid.t),
       orderBy: orderBy?.call(ArenaUuid.t),
       orderByList: orderByList?.call(ArenaUuid.t),
@@ -340,6 +341,7 @@ class ArenaUuidRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ArenaUuid>(
+      table: ArenaUuid.t,
       where: where?.call(ArenaUuid.t),
       orderBy: orderBy?.call(ArenaUuid.t),
       orderByList: orderByList?.call(ArenaUuid.t),
@@ -380,6 +382,7 @@ class ArenaUuidRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ArenaUuid>(
+      table: ArenaUuid.t,
       where: where?.call(ArenaUuid.t),
       orderBy: orderBy?.call(ArenaUuid.t),
       orderByList: orderByList?.call(ArenaUuid.t),
@@ -402,6 +405,7 @@ class ArenaUuidRepository {
   }) async {
     return session.db.findById<ArenaUuid>(
       id,
+      table: ArenaUuid.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -571,6 +575,7 @@ class ArenaUuidRepository {
   }) async {
     return session.db.updateById<ArenaUuid>(
       id,
+      table: ArenaUuid.t,
       columnValues: columnValues(ArenaUuid.t.updateTable),
       transaction: transaction,
     );
@@ -594,6 +599,7 @@ class ArenaUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ArenaUuid>(
+      table: ArenaUuid.t,
       columnValues: columnValues(ArenaUuid.t.updateTable),
       where: where(ArenaUuid.t),
       limit: limit,
@@ -662,6 +668,7 @@ class ArenaUuidRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ArenaUuid>(
+      table: ArenaUuid.t,
       where: where(ArenaUuid.t),
       orderBy: orderBy?.call(ArenaUuid.t),
       orderByList: orderByList?.call(ArenaUuid.t),
@@ -679,6 +686,7 @@ class ArenaUuidRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ArenaUuid>(
+      table: ArenaUuid.t,
       where: where?.call(ArenaUuid.t),
       limit: limit,
       transaction: transaction,
@@ -694,6 +702,7 @@ class ArenaUuidRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ArenaUuid>(
+      table: ArenaUuid.t,
       where: where(ArenaUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

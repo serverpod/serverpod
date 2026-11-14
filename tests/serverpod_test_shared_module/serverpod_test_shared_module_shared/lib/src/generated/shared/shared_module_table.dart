@@ -252,6 +252,7 @@ class SharedModuleTableRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SharedModuleTable>(
+      table: SharedModuleTable.t,
       where: where?.call(SharedModuleTable.t),
       orderBy: orderBy?.call(SharedModuleTable.t),
       orderByList: orderByList?.call(SharedModuleTable.t),
@@ -316,6 +317,7 @@ class SharedModuleTableRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<SharedModuleTable>(
+      table: SharedModuleTable.t,
       where: where?.call(SharedModuleTable.t),
       orderBy: orderBy?.call(SharedModuleTable.t),
       orderByList: orderByList?.call(SharedModuleTable.t),
@@ -354,6 +356,7 @@ class SharedModuleTableRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SharedModuleTable>(
+      table: SharedModuleTable.t,
       where: where?.call(SharedModuleTable.t),
       orderBy: orderBy?.call(SharedModuleTable.t),
       orderByList: orderByList?.call(SharedModuleTable.t),
@@ -374,6 +377,7 @@ class SharedModuleTableRepository {
   }) async {
     return session.db.findById<SharedModuleTable>(
       id,
+      table: SharedModuleTable.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -543,6 +547,7 @@ class SharedModuleTableRepository {
   }) async {
     return session.db.updateById<SharedModuleTable>(
       id,
+      table: SharedModuleTable.t,
       columnValues: columnValues(SharedModuleTable.t.updateTable),
       transaction: transaction,
     );
@@ -567,6 +572,7 @@ class SharedModuleTableRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SharedModuleTable>(
+      table: SharedModuleTable.t,
       columnValues: columnValues(SharedModuleTable.t.updateTable),
       where: where(SharedModuleTable.t),
       limit: limit,
@@ -635,6 +641,7 @@ class SharedModuleTableRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SharedModuleTable>(
+      table: SharedModuleTable.t,
       where: where(SharedModuleTable.t),
       orderBy: orderBy?.call(SharedModuleTable.t),
       orderByList: orderByList?.call(SharedModuleTable.t),
@@ -652,6 +659,7 @@ class SharedModuleTableRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<SharedModuleTable>(
+      table: SharedModuleTable.t,
       where: where?.call(SharedModuleTable.t),
       limit: limit,
       transaction: transaction,
@@ -667,6 +675,7 @@ class SharedModuleTableRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SharedModuleTable>(
+      table: SharedModuleTable.t,
       where: where(SharedModuleTable.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

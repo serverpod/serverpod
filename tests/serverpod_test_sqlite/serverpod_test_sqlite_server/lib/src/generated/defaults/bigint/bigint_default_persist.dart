@@ -233,6 +233,7 @@ class BigIntDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BigIntDefaultPersist>(
+      table: BigIntDefaultPersist.t,
       where: where?.call(BigIntDefaultPersist.t),
       orderBy: orderBy?.call(BigIntDefaultPersist.t),
       orderByList: orderByList?.call(BigIntDefaultPersist.t),
@@ -297,6 +298,7 @@ class BigIntDefaultPersistRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<BigIntDefaultPersist>(
+      table: BigIntDefaultPersist.t,
       where: where?.call(BigIntDefaultPersist.t),
       orderBy: orderBy?.call(BigIntDefaultPersist.t),
       orderByList: orderByList?.call(BigIntDefaultPersist.t),
@@ -335,6 +337,7 @@ class BigIntDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BigIntDefaultPersist>(
+      table: BigIntDefaultPersist.t,
       where: where?.call(BigIntDefaultPersist.t),
       orderBy: orderBy?.call(BigIntDefaultPersist.t),
       orderByList: orderByList?.call(BigIntDefaultPersist.t),
@@ -355,6 +358,7 @@ class BigIntDefaultPersistRepository {
   }) async {
     return session.db.findById<BigIntDefaultPersist>(
       id,
+      table: BigIntDefaultPersist.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -524,6 +528,7 @@ class BigIntDefaultPersistRepository {
   }) async {
     return session.db.updateById<BigIntDefaultPersist>(
       id,
+      table: BigIntDefaultPersist.t,
       columnValues: columnValues(BigIntDefaultPersist.t.updateTable),
       transaction: transaction,
     );
@@ -548,6 +553,7 @@ class BigIntDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BigIntDefaultPersist>(
+      table: BigIntDefaultPersist.t,
       columnValues: columnValues(BigIntDefaultPersist.t.updateTable),
       where: where(BigIntDefaultPersist.t),
       limit: limit,
@@ -616,6 +622,7 @@ class BigIntDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BigIntDefaultPersist>(
+      table: BigIntDefaultPersist.t,
       where: where(BigIntDefaultPersist.t),
       orderBy: orderBy?.call(BigIntDefaultPersist.t),
       orderByList: orderByList?.call(BigIntDefaultPersist.t),
@@ -633,6 +640,7 @@ class BigIntDefaultPersistRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<BigIntDefaultPersist>(
+      table: BigIntDefaultPersist.t,
       where: where?.call(BigIntDefaultPersist.t),
       limit: limit,
       transaction: transaction,
@@ -648,6 +656,7 @@ class BigIntDefaultPersistRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BigIntDefaultPersist>(
+      table: BigIntDefaultPersist.t,
       where: where(BigIntDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -424,6 +424,7 @@ class ObjectWithDynamicRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithDynamic>(
+      table: ObjectWithDynamic.t,
       where: where?.call(ObjectWithDynamic.t),
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
@@ -488,6 +489,7 @@ class ObjectWithDynamicRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithDynamic>(
+      table: ObjectWithDynamic.t,
       where: where?.call(ObjectWithDynamic.t),
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
@@ -526,6 +528,7 @@ class ObjectWithDynamicRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithDynamic>(
+      table: ObjectWithDynamic.t,
       where: where?.call(ObjectWithDynamic.t),
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
@@ -546,6 +549,7 @@ class ObjectWithDynamicRepository {
   }) async {
     return session.db.findById<ObjectWithDynamic>(
       id,
+      table: ObjectWithDynamic.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -715,6 +719,7 @@ class ObjectWithDynamicRepository {
   }) async {
     return session.db.updateById<ObjectWithDynamic>(
       id,
+      table: ObjectWithDynamic.t,
       columnValues: columnValues(ObjectWithDynamic.t.updateTable),
       transaction: transaction,
     );
@@ -739,6 +744,7 @@ class ObjectWithDynamicRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithDynamic>(
+      table: ObjectWithDynamic.t,
       columnValues: columnValues(ObjectWithDynamic.t.updateTable),
       where: where(ObjectWithDynamic.t),
       limit: limit,
@@ -807,6 +813,7 @@ class ObjectWithDynamicRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithDynamic>(
+      table: ObjectWithDynamic.t,
       where: where(ObjectWithDynamic.t),
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
@@ -824,6 +831,7 @@ class ObjectWithDynamicRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithDynamic>(
+      table: ObjectWithDynamic.t,
       where: where?.call(ObjectWithDynamic.t),
       limit: limit,
       transaction: transaction,
@@ -839,6 +847,7 @@ class ObjectWithDynamicRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithDynamic>(
+      table: ObjectWithDynamic.t,
       where: where(ObjectWithDynamic.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -232,6 +232,7 @@ class MaxFieldNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MaxFieldName>(
+      table: MaxFieldName.t,
       where: where?.call(MaxFieldName.t),
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
@@ -296,6 +297,7 @@ class MaxFieldNameRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<MaxFieldName>(
+      table: MaxFieldName.t,
       where: where?.call(MaxFieldName.t),
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
@@ -334,6 +336,7 @@ class MaxFieldNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MaxFieldName>(
+      table: MaxFieldName.t,
       where: where?.call(MaxFieldName.t),
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
@@ -354,6 +357,7 @@ class MaxFieldNameRepository {
   }) async {
     return session.db.findById<MaxFieldName>(
       id,
+      table: MaxFieldName.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -522,6 +526,7 @@ class MaxFieldNameRepository {
   }) async {
     return session.db.updateById<MaxFieldName>(
       id,
+      table: MaxFieldName.t,
       columnValues: columnValues(MaxFieldName.t.updateTable),
       transaction: transaction,
     );
@@ -545,6 +550,7 @@ class MaxFieldNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MaxFieldName>(
+      table: MaxFieldName.t,
       columnValues: columnValues(MaxFieldName.t.updateTable),
       where: where(MaxFieldName.t),
       limit: limit,
@@ -613,6 +619,7 @@ class MaxFieldNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MaxFieldName>(
+      table: MaxFieldName.t,
       where: where(MaxFieldName.t),
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
@@ -630,6 +637,7 @@ class MaxFieldNameRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<MaxFieldName>(
+      table: MaxFieldName.t,
       where: where?.call(MaxFieldName.t),
       limit: limit,
       transaction: transaction,
@@ -645,6 +653,7 @@ class MaxFieldNameRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MaxFieldName>(
+      table: MaxFieldName.t,
       where: where(MaxFieldName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

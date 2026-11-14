@@ -365,6 +365,7 @@ class PersonRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Person>(
+      table: Person.t,
       where: where?.call(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
@@ -431,6 +432,7 @@ class PersonRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Person>(
+      table: Person.t,
       where: where?.call(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
@@ -471,6 +473,7 @@ class PersonRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Person>(
+      table: Person.t,
       where: where?.call(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
@@ -493,6 +496,7 @@ class PersonRepository {
   }) async {
     return session.db.findById<Person>(
       id,
+      table: Person.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -662,6 +666,7 @@ class PersonRepository {
   }) async {
     return session.db.updateById<Person>(
       id,
+      table: Person.t,
       columnValues: columnValues(Person.t.updateTable),
       transaction: transaction,
     );
@@ -685,6 +690,7 @@ class PersonRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Person>(
+      table: Person.t,
       columnValues: columnValues(Person.t.updateTable),
       where: where(Person.t),
       limit: limit,
@@ -753,6 +759,7 @@ class PersonRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Person>(
+      table: Person.t,
       where: where(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
@@ -770,6 +777,7 @@ class PersonRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<Person>(
+      table: Person.t,
       where: where?.call(Person.t),
       limit: limit,
       transaction: transaction,
@@ -785,6 +793,7 @@ class PersonRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Person>(
+      table: Person.t,
       where: where(Person.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

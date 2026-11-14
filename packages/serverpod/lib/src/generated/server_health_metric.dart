@@ -360,6 +360,7 @@ class ServerHealthMetricRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerHealthMetric>(
+      table: ServerHealthMetric.t,
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
@@ -424,6 +425,7 @@ class ServerHealthMetricRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ServerHealthMetric>(
+      table: ServerHealthMetric.t,
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
@@ -462,6 +464,7 @@ class ServerHealthMetricRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerHealthMetric>(
+      table: ServerHealthMetric.t,
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
@@ -482,6 +485,7 @@ class ServerHealthMetricRepository {
   }) async {
     return session.db.findById<ServerHealthMetric>(
       id,
+      table: ServerHealthMetric.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -651,6 +655,7 @@ class ServerHealthMetricRepository {
   }) async {
     return session.db.updateById<ServerHealthMetric>(
       id,
+      table: ServerHealthMetric.t,
       columnValues: columnValues(ServerHealthMetric.t.updateTable),
       transaction: transaction,
     );
@@ -675,6 +680,7 @@ class ServerHealthMetricRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ServerHealthMetric>(
+      table: ServerHealthMetric.t,
       columnValues: columnValues(ServerHealthMetric.t.updateTable),
       where: where(ServerHealthMetric.t),
       limit: limit,
@@ -743,6 +749,7 @@ class ServerHealthMetricRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ServerHealthMetric>(
+      table: ServerHealthMetric.t,
       where: where(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
@@ -760,6 +767,7 @@ class ServerHealthMetricRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ServerHealthMetric>(
+      table: ServerHealthMetric.t,
       where: where?.call(ServerHealthMetric.t),
       limit: limit,
       transaction: transaction,
@@ -775,6 +783,7 @@ class ServerHealthMetricRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ServerHealthMetric>(
+      table: ServerHealthMetric.t,
       where: where(ServerHealthMetric.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

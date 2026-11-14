@@ -247,6 +247,7 @@ class IntDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<IntDefault>(
+      table: IntDefault.t,
       where: where?.call(IntDefault.t),
       orderBy: orderBy?.call(IntDefault.t),
       orderByList: orderByList?.call(IntDefault.t),
@@ -311,6 +312,7 @@ class IntDefaultRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<IntDefault>(
+      table: IntDefault.t,
       where: where?.call(IntDefault.t),
       orderBy: orderBy?.call(IntDefault.t),
       orderByList: orderByList?.call(IntDefault.t),
@@ -349,6 +351,7 @@ class IntDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<IntDefault>(
+      table: IntDefault.t,
       where: where?.call(IntDefault.t),
       orderBy: orderBy?.call(IntDefault.t),
       orderByList: orderByList?.call(IntDefault.t),
@@ -369,6 +372,7 @@ class IntDefaultRepository {
   }) async {
     return session.db.findById<IntDefault>(
       id,
+      table: IntDefault.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -537,6 +541,7 @@ class IntDefaultRepository {
   }) async {
     return session.db.updateById<IntDefault>(
       id,
+      table: IntDefault.t,
       columnValues: columnValues(IntDefault.t.updateTable),
       transaction: transaction,
     );
@@ -560,6 +565,7 @@ class IntDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<IntDefault>(
+      table: IntDefault.t,
       columnValues: columnValues(IntDefault.t.updateTable),
       where: where(IntDefault.t),
       limit: limit,
@@ -628,6 +634,7 @@ class IntDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<IntDefault>(
+      table: IntDefault.t,
       where: where(IntDefault.t),
       orderBy: orderBy?.call(IntDefault.t),
       orderByList: orderByList?.call(IntDefault.t),
@@ -645,6 +652,7 @@ class IntDefaultRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<IntDefault>(
+      table: IntDefault.t,
       where: where?.call(IntDefault.t),
       limit: limit,
       transaction: transaction,
@@ -660,6 +668,7 @@ class IntDefaultRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<IntDefault>(
+      table: IntDefault.t,
       where: where(IntDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -276,6 +276,7 @@ class GreetingRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Greeting>(
+      table: Greeting.t,
       where: where?.call(Greeting.t),
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
@@ -340,6 +341,7 @@ class GreetingRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Greeting>(
+      table: Greeting.t,
       where: where?.call(Greeting.t),
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
@@ -378,6 +380,7 @@ class GreetingRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Greeting>(
+      table: Greeting.t,
       where: where?.call(Greeting.t),
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
@@ -398,6 +401,7 @@ class GreetingRepository {
   }) async {
     return session.db.findById<Greeting>(
       id,
+      table: Greeting.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -566,6 +570,7 @@ class GreetingRepository {
   }) async {
     return session.db.updateById<Greeting>(
       id,
+      table: Greeting.t,
       columnValues: columnValues(Greeting.t.updateTable),
       transaction: transaction,
     );
@@ -589,6 +594,7 @@ class GreetingRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Greeting>(
+      table: Greeting.t,
       columnValues: columnValues(Greeting.t.updateTable),
       where: where(Greeting.t),
       limit: limit,
@@ -657,6 +663,7 @@ class GreetingRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Greeting>(
+      table: Greeting.t,
       where: where(Greeting.t),
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
@@ -674,6 +681,7 @@ class GreetingRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Greeting>(
+      table: Greeting.t,
       where: where?.call(Greeting.t),
       limit: limit,
       transaction: transaction,
@@ -689,6 +697,7 @@ class GreetingRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Greeting>(
+      table: Greeting.t,
       where: where(Greeting.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

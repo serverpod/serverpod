@@ -396,6 +396,7 @@ class UserProfileImageRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserProfileImage>(
+      table: UserProfileImage.t,
       where: where?.call(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
@@ -462,6 +463,7 @@ class UserProfileImageRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UserProfileImage>(
+      table: UserProfileImage.t,
       where: where?.call(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
@@ -502,6 +504,7 @@ class UserProfileImageRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserProfileImage>(
+      table: UserProfileImage.t,
       where: where?.call(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
@@ -524,6 +527,7 @@ class UserProfileImageRepository {
   }) async {
     return session.db.findById<UserProfileImage>(
       id,
+      table: UserProfileImage.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -694,6 +698,7 @@ class UserProfileImageRepository {
   }) async {
     return session.db.updateById<UserProfileImage>(
       id,
+      table: UserProfileImage.t,
       columnValues: columnValues(UserProfileImage.t.updateTable),
       transaction: transaction,
     );
@@ -718,6 +723,7 @@ class UserProfileImageRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserProfileImage>(
+      table: UserProfileImage.t,
       columnValues: columnValues(UserProfileImage.t.updateTable),
       where: where(UserProfileImage.t),
       limit: limit,
@@ -786,6 +792,7 @@ class UserProfileImageRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserProfileImage>(
+      table: UserProfileImage.t,
       where: where(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
@@ -803,6 +810,7 @@ class UserProfileImageRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UserProfileImage>(
+      table: UserProfileImage.t,
       where: where?.call(UserProfileImage.t),
       limit: limit,
       transaction: transaction,
@@ -818,6 +826,7 @@ class UserProfileImageRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserProfileImage>(
+      table: UserProfileImage.t,
       where: where(UserProfileImage.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

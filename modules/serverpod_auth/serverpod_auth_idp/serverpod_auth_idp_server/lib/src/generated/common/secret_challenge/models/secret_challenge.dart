@@ -224,6 +224,7 @@ class SecretChallengeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SecretChallenge>(
+      table: SecretChallenge.t,
       where: where?.call(SecretChallenge.t),
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
@@ -288,6 +289,7 @@ class SecretChallengeRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<SecretChallenge>(
+      table: SecretChallenge.t,
       where: where?.call(SecretChallenge.t),
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
@@ -326,6 +328,7 @@ class SecretChallengeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SecretChallenge>(
+      table: SecretChallenge.t,
       where: where?.call(SecretChallenge.t),
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
@@ -346,6 +349,7 @@ class SecretChallengeRepository {
   }) async {
     return session.db.findById<SecretChallenge>(
       id,
+      table: SecretChallenge.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -515,6 +519,7 @@ class SecretChallengeRepository {
   }) async {
     return session.db.updateById<SecretChallenge>(
       id,
+      table: SecretChallenge.t,
       columnValues: columnValues(SecretChallenge.t.updateTable),
       transaction: transaction,
     );
@@ -539,6 +544,7 @@ class SecretChallengeRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SecretChallenge>(
+      table: SecretChallenge.t,
       columnValues: columnValues(SecretChallenge.t.updateTable),
       where: where(SecretChallenge.t),
       limit: limit,
@@ -607,6 +613,7 @@ class SecretChallengeRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SecretChallenge>(
+      table: SecretChallenge.t,
       where: where(SecretChallenge.t),
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
@@ -624,6 +631,7 @@ class SecretChallengeRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<SecretChallenge>(
+      table: SecretChallenge.t,
       where: where?.call(SecretChallenge.t),
       limit: limit,
       transaction: transaction,
@@ -639,6 +647,7 @@ class SecretChallengeRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SecretChallenge>(
+      table: SecretChallenge.t,
       where: where(SecretChallenge.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

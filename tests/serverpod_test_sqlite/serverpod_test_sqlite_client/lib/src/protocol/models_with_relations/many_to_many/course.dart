@@ -300,6 +300,7 @@ class CourseRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Course>(
+      table: Course.t,
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
@@ -366,6 +367,7 @@ class CourseRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Course>(
+      table: Course.t,
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
@@ -406,6 +408,7 @@ class CourseRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Course>(
+      table: Course.t,
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
@@ -428,6 +431,7 @@ class CourseRepository {
   }) async {
     return session.db.findById<Course>(
       id,
+      table: Course.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -597,6 +601,7 @@ class CourseRepository {
   }) async {
     return session.db.updateById<Course>(
       id,
+      table: Course.t,
       columnValues: columnValues(Course.t.updateTable),
       transaction: transaction,
     );
@@ -620,6 +625,7 @@ class CourseRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Course>(
+      table: Course.t,
       columnValues: columnValues(Course.t.updateTable),
       where: where(Course.t),
       limit: limit,
@@ -688,6 +694,7 @@ class CourseRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Course>(
+      table: Course.t,
       where: where(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
@@ -705,6 +712,7 @@ class CourseRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<Course>(
+      table: Course.t,
       where: where?.call(Course.t),
       limit: limit,
       transaction: transaction,
@@ -720,6 +728,7 @@ class CourseRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Course>(
+      table: Course.t,
       where: where(Course.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

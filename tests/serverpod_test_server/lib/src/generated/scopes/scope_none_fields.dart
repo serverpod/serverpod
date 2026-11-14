@@ -256,6 +256,7 @@ class ScopeNoneFieldsRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ScopeNoneFields>(
+      table: ScopeNoneFields.t,
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
@@ -320,6 +321,7 @@ class ScopeNoneFieldsRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ScopeNoneFields>(
+      table: ScopeNoneFields.t,
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
@@ -358,6 +360,7 @@ class ScopeNoneFieldsRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ScopeNoneFields>(
+      table: ScopeNoneFields.t,
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
@@ -378,6 +381,7 @@ class ScopeNoneFieldsRepository {
   }) async {
     return session.db.findById<ScopeNoneFields>(
       id,
+      table: ScopeNoneFields.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -547,6 +551,7 @@ class ScopeNoneFieldsRepository {
   }) async {
     return session.db.updateById<ScopeNoneFields>(
       id,
+      table: ScopeNoneFields.t,
       columnValues: columnValues(ScopeNoneFields.t.updateTable),
       transaction: transaction,
     );
@@ -571,6 +576,7 @@ class ScopeNoneFieldsRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ScopeNoneFields>(
+      table: ScopeNoneFields.t,
       columnValues: columnValues(ScopeNoneFields.t.updateTable),
       where: where(ScopeNoneFields.t),
       limit: limit,
@@ -639,6 +645,7 @@ class ScopeNoneFieldsRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ScopeNoneFields>(
+      table: ScopeNoneFields.t,
       where: where(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
@@ -656,6 +663,7 @@ class ScopeNoneFieldsRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ScopeNoneFields>(
+      table: ScopeNoneFields.t,
       where: where?.call(ScopeNoneFields.t),
       limit: limit,
       transaction: transaction,
@@ -671,6 +679,7 @@ class ScopeNoneFieldsRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ScopeNoneFields>(
+      table: ScopeNoneFields.t,
       where: where(ScopeNoneFields.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

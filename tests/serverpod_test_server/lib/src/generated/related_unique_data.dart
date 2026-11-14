@@ -304,6 +304,7 @@ class RelatedUniqueDataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RelatedUniqueData>(
+      table: RelatedUniqueData.t,
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -370,6 +371,7 @@ class RelatedUniqueDataRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<RelatedUniqueData>(
+      table: RelatedUniqueData.t,
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -410,6 +412,7 @@ class RelatedUniqueDataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RelatedUniqueData>(
+      table: RelatedUniqueData.t,
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -432,6 +435,7 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.db.findById<RelatedUniqueData>(
       id,
+      table: RelatedUniqueData.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -602,6 +606,7 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.db.updateById<RelatedUniqueData>(
       id,
+      table: RelatedUniqueData.t,
       columnValues: columnValues(RelatedUniqueData.t.updateTable),
       transaction: transaction,
     );
@@ -626,6 +631,7 @@ class RelatedUniqueDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<RelatedUniqueData>(
+      table: RelatedUniqueData.t,
       columnValues: columnValues(RelatedUniqueData.t.updateTable),
       where: where(RelatedUniqueData.t),
       limit: limit,
@@ -694,6 +700,7 @@ class RelatedUniqueDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RelatedUniqueData>(
+      table: RelatedUniqueData.t,
       where: where(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -711,6 +718,7 @@ class RelatedUniqueDataRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<RelatedUniqueData>(
+      table: RelatedUniqueData.t,
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
       transaction: transaction,
@@ -726,6 +734,7 @@ class RelatedUniqueDataRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<RelatedUniqueData>(
+      table: RelatedUniqueData.t,
       where: where(RelatedUniqueData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

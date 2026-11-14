@@ -243,6 +243,7 @@ class EmployeeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Employee>(
+      table: Employee.t,
       where: where?.call(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
@@ -307,6 +308,7 @@ class EmployeeRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Employee>(
+      table: Employee.t,
       where: where?.call(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
@@ -345,6 +347,7 @@ class EmployeeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Employee>(
+      table: Employee.t,
       where: where?.call(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
@@ -365,6 +368,7 @@ class EmployeeRepository {
   }) async {
     return session.db.findById<Employee>(
       id,
+      table: Employee.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -533,6 +537,7 @@ class EmployeeRepository {
   }) async {
     return session.db.updateById<Employee>(
       id,
+      table: Employee.t,
       columnValues: columnValues(Employee.t.updateTable),
       transaction: transaction,
     );
@@ -556,6 +561,7 @@ class EmployeeRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Employee>(
+      table: Employee.t,
       columnValues: columnValues(Employee.t.updateTable),
       where: where(Employee.t),
       limit: limit,
@@ -624,6 +630,7 @@ class EmployeeRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Employee>(
+      table: Employee.t,
       where: where(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
@@ -641,6 +648,7 @@ class EmployeeRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Employee>(
+      table: Employee.t,
       where: where?.call(Employee.t),
       limit: limit,
       transaction: transaction,
@@ -656,6 +664,7 @@ class EmployeeRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Employee>(
+      table: Employee.t,
       where: where(Employee.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

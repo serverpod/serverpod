@@ -220,6 +220,7 @@ class ObjectWithParentRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithParent>(
+      table: ObjectWithParent.t,
       where: where?.call(ObjectWithParent.t),
       orderBy: orderBy?.call(ObjectWithParent.t),
       orderByList: orderByList?.call(ObjectWithParent.t),
@@ -284,6 +285,7 @@ class ObjectWithParentRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithParent>(
+      table: ObjectWithParent.t,
       where: where?.call(ObjectWithParent.t),
       orderBy: orderBy?.call(ObjectWithParent.t),
       orderByList: orderByList?.call(ObjectWithParent.t),
@@ -322,6 +324,7 @@ class ObjectWithParentRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithParent>(
+      table: ObjectWithParent.t,
       where: where?.call(ObjectWithParent.t),
       orderBy: orderBy?.call(ObjectWithParent.t),
       orderByList: orderByList?.call(ObjectWithParent.t),
@@ -342,6 +345,7 @@ class ObjectWithParentRepository {
   }) async {
     return session.db.findById<ObjectWithParent>(
       id,
+      table: ObjectWithParent.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -511,6 +515,7 @@ class ObjectWithParentRepository {
   }) async {
     return session.db.updateById<ObjectWithParent>(
       id,
+      table: ObjectWithParent.t,
       columnValues: columnValues(ObjectWithParent.t.updateTable),
       transaction: transaction,
     );
@@ -535,6 +540,7 @@ class ObjectWithParentRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithParent>(
+      table: ObjectWithParent.t,
       columnValues: columnValues(ObjectWithParent.t.updateTable),
       where: where(ObjectWithParent.t),
       limit: limit,
@@ -603,6 +609,7 @@ class ObjectWithParentRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithParent>(
+      table: ObjectWithParent.t,
       where: where(ObjectWithParent.t),
       orderBy: orderBy?.call(ObjectWithParent.t),
       orderByList: orderByList?.call(ObjectWithParent.t),
@@ -620,6 +627,7 @@ class ObjectWithParentRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithParent>(
+      table: ObjectWithParent.t,
       where: where?.call(ObjectWithParent.t),
       limit: limit,
       transaction: transaction,
@@ -635,6 +643,7 @@ class ObjectWithParentRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithParent>(
+      table: ObjectWithParent.t,
       where: where(ObjectWithParent.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

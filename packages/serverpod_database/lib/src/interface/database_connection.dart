@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
 import '../concepts/column_value.dart';
 import '../concepts/columns.dart';
 import '../concepts/database_result.dart';
@@ -29,9 +31,36 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     return poolManager.testConnection();
   }
 
+  /// The table of [T]: [table] when given, otherwise looked up by type.
+  @protected
+  Table resolveTable<T>(Table? table, {required String operation}) {
+    if (table == null) {
+      var tableOfType = poolManager.serializationManager.getTableForType(T);
+      assert(tableOfType is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
+Current type was $T''');
+      return tableOfType!;
+    }
+
+    assert(
+      _isTableOf<T>(table),
+      'The table "${table.tableName}" passed to $operation<$T> is not the '
+      'table of $T.',
+    );
+    return table;
+  }
+
+  bool _isTableOf<T>(Table table) {
+    var tableOfType = poolManager.serializationManager.getTableForType(T);
+    return identical(table, tableOfType) ||
+        table.tableName == tableOfType?.tableName;
+  }
+
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> find<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,
@@ -46,6 +75,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   /// For most cases use the corresponding method in [Database] instead.
   Future<T?> findFirstRow<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -60,6 +90,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   Future<T?> findById<T extends TableRow>(
     DatabaseSession session,
     Object id, {
+    Table? table,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -69,6 +100,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   /// For most cases use the corresponding method in [Database] instead.
   Future<void> lockRows<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     required Expression where,
     required LockMode lockMode,
     required Transaction transaction,
@@ -138,6 +170,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   Future<T> updateById<T extends TableRow>(
     DatabaseSession session,
     Object id, {
+    Table? table,
     required List<ColumnValue> columnValues,
     Transaction? transaction,
   });
@@ -153,6 +186,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> updateWhere<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     required List<ColumnValue> columnValues,
     required Expression where,
     int? limit,
@@ -184,6 +218,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   Future<List<T>> deleteWhere<T extends TableRow>(
     DatabaseSession session,
     Expression where, {
+    Table? table,
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
@@ -193,6 +228,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   /// For most cases use the corresponding method in [Database] instead.
   Future<int> count<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? limit,
     Transaction? transaction,
@@ -201,6 +237,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   /// For most cases use the corresponding method in [Database] instead.
   Stream<List<T>> watch<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,

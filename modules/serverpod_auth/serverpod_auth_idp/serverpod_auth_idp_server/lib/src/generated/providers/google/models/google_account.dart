@@ -368,6 +368,7 @@ class GoogleAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GoogleAccount>(
+      table: GoogleAccount.t,
       where: where?.call(GoogleAccount.t),
       orderBy: orderBy?.call(GoogleAccount.t),
       orderByList: orderByList?.call(GoogleAccount.t),
@@ -434,6 +435,7 @@ class GoogleAccountRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<GoogleAccount>(
+      table: GoogleAccount.t,
       where: where?.call(GoogleAccount.t),
       orderBy: orderBy?.call(GoogleAccount.t),
       orderByList: orderByList?.call(GoogleAccount.t),
@@ -474,6 +476,7 @@ class GoogleAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GoogleAccount>(
+      table: GoogleAccount.t,
       where: where?.call(GoogleAccount.t),
       orderBy: orderBy?.call(GoogleAccount.t),
       orderByList: orderByList?.call(GoogleAccount.t),
@@ -496,6 +499,7 @@ class GoogleAccountRepository {
   }) async {
     return session.db.findById<GoogleAccount>(
       id,
+      table: GoogleAccount.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -665,6 +669,7 @@ class GoogleAccountRepository {
   }) async {
     return session.db.updateById<GoogleAccount>(
       id,
+      table: GoogleAccount.t,
       columnValues: columnValues(GoogleAccount.t.updateTable),
       transaction: transaction,
     );
@@ -688,6 +693,7 @@ class GoogleAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GoogleAccount>(
+      table: GoogleAccount.t,
       columnValues: columnValues(GoogleAccount.t.updateTable),
       where: where(GoogleAccount.t),
       limit: limit,
@@ -756,6 +762,7 @@ class GoogleAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GoogleAccount>(
+      table: GoogleAccount.t,
       where: where(GoogleAccount.t),
       orderBy: orderBy?.call(GoogleAccount.t),
       orderByList: orderByList?.call(GoogleAccount.t),
@@ -773,6 +780,7 @@ class GoogleAccountRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<GoogleAccount>(
+      table: GoogleAccount.t,
       where: where?.call(GoogleAccount.t),
       limit: limit,
       transaction: transaction,
@@ -788,6 +796,7 @@ class GoogleAccountRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GoogleAccount>(
+      table: GoogleAccount.t,
       where: where(GoogleAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

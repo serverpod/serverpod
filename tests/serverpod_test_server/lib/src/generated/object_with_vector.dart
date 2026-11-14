@@ -374,6 +374,7 @@ class ObjectWithVectorRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithVector>(
+      table: ObjectWithVector.t,
       where: where?.call(ObjectWithVector.t),
       orderBy: orderBy?.call(ObjectWithVector.t),
       orderByList: orderByList?.call(ObjectWithVector.t),
@@ -438,6 +439,7 @@ class ObjectWithVectorRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithVector>(
+      table: ObjectWithVector.t,
       where: where?.call(ObjectWithVector.t),
       orderBy: orderBy?.call(ObjectWithVector.t),
       orderByList: orderByList?.call(ObjectWithVector.t),
@@ -476,6 +478,7 @@ class ObjectWithVectorRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithVector>(
+      table: ObjectWithVector.t,
       where: where?.call(ObjectWithVector.t),
       orderBy: orderBy?.call(ObjectWithVector.t),
       orderByList: orderByList?.call(ObjectWithVector.t),
@@ -496,6 +499,7 @@ class ObjectWithVectorRepository {
   }) async {
     return session.db.findById<ObjectWithVector>(
       id,
+      table: ObjectWithVector.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -665,6 +669,7 @@ class ObjectWithVectorRepository {
   }) async {
     return session.db.updateById<ObjectWithVector>(
       id,
+      table: ObjectWithVector.t,
       columnValues: columnValues(ObjectWithVector.t.updateTable),
       transaction: transaction,
     );
@@ -689,6 +694,7 @@ class ObjectWithVectorRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithVector>(
+      table: ObjectWithVector.t,
       columnValues: columnValues(ObjectWithVector.t.updateTable),
       where: where(ObjectWithVector.t),
       limit: limit,
@@ -757,6 +763,7 @@ class ObjectWithVectorRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithVector>(
+      table: ObjectWithVector.t,
       where: where(ObjectWithVector.t),
       orderBy: orderBy?.call(ObjectWithVector.t),
       orderByList: orderByList?.call(ObjectWithVector.t),
@@ -774,6 +781,7 @@ class ObjectWithVectorRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithVector>(
+      table: ObjectWithVector.t,
       where: where?.call(ObjectWithVector.t),
       limit: limit,
       transaction: transaction,
@@ -789,6 +797,7 @@ class ObjectWithVectorRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithVector>(
+      table: ObjectWithVector.t,
       where: where(ObjectWithVector.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

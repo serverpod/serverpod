@@ -280,6 +280,7 @@ class ObjectWithGeographyPolygonRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithGeographyPolygon>(
+      table: ObjectWithGeographyPolygon.t,
       where: where?.call(ObjectWithGeographyPolygon.t),
       orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
       orderByList: orderByList?.call(ObjectWithGeographyPolygon.t),
@@ -344,6 +345,7 @@ class ObjectWithGeographyPolygonRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithGeographyPolygon>(
+      table: ObjectWithGeographyPolygon.t,
       where: where?.call(ObjectWithGeographyPolygon.t),
       orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
       orderByList: orderByList?.call(ObjectWithGeographyPolygon.t),
@@ -382,6 +384,7 @@ class ObjectWithGeographyPolygonRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithGeographyPolygon>(
+      table: ObjectWithGeographyPolygon.t,
       where: where?.call(ObjectWithGeographyPolygon.t),
       orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
       orderByList: orderByList?.call(ObjectWithGeographyPolygon.t),
@@ -402,6 +405,7 @@ class ObjectWithGeographyPolygonRepository {
   }) async {
     return session.db.findById<ObjectWithGeographyPolygon>(
       id,
+      table: ObjectWithGeographyPolygon.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -573,6 +577,7 @@ class ObjectWithGeographyPolygonRepository {
   }) async {
     return session.db.updateById<ObjectWithGeographyPolygon>(
       id,
+      table: ObjectWithGeographyPolygon.t,
       columnValues: columnValues(ObjectWithGeographyPolygon.t.updateTable),
       transaction: transaction,
     );
@@ -597,6 +602,7 @@ class ObjectWithGeographyPolygonRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithGeographyPolygon>(
+      table: ObjectWithGeographyPolygon.t,
       columnValues: columnValues(ObjectWithGeographyPolygon.t.updateTable),
       where: where(ObjectWithGeographyPolygon.t),
       limit: limit,
@@ -665,6 +671,7 @@ class ObjectWithGeographyPolygonRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithGeographyPolygon>(
+      table: ObjectWithGeographyPolygon.t,
       where: where(ObjectWithGeographyPolygon.t),
       orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
       orderByList: orderByList?.call(ObjectWithGeographyPolygon.t),
@@ -682,6 +689,7 @@ class ObjectWithGeographyPolygonRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithGeographyPolygon>(
+      table: ObjectWithGeographyPolygon.t,
       where: where?.call(ObjectWithGeographyPolygon.t),
       limit: limit,
       transaction: transaction,
@@ -697,6 +705,7 @@ class ObjectWithGeographyPolygonRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithGeographyPolygon>(
+      table: ObjectWithGeographyPolygon.t,
       where: where(ObjectWithGeographyPolygon.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

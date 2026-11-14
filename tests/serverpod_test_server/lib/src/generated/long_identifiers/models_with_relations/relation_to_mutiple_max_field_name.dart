@@ -330,6 +330,7 @@ class RelationToMultipleMaxFieldNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RelationToMultipleMaxFieldName>(
+      table: RelationToMultipleMaxFieldName.t,
       where: where?.call(RelationToMultipleMaxFieldName.t),
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
@@ -396,6 +397,7 @@ class RelationToMultipleMaxFieldNameRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<RelationToMultipleMaxFieldName>(
+      table: RelationToMultipleMaxFieldName.t,
       where: where?.call(RelationToMultipleMaxFieldName.t),
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
@@ -436,6 +438,7 @@ class RelationToMultipleMaxFieldNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RelationToMultipleMaxFieldName>(
+      table: RelationToMultipleMaxFieldName.t,
       where: where?.call(RelationToMultipleMaxFieldName.t),
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
@@ -458,6 +461,7 @@ class RelationToMultipleMaxFieldNameRepository {
   }) async {
     return session.db.findById<RelationToMultipleMaxFieldName>(
       id,
+      table: RelationToMultipleMaxFieldName.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -634,6 +638,7 @@ class RelationToMultipleMaxFieldNameRepository {
   }) async {
     return session.db.updateById<RelationToMultipleMaxFieldName>(
       id,
+      table: RelationToMultipleMaxFieldName.t,
       columnValues: columnValues(RelationToMultipleMaxFieldName.t.updateTable),
       transaction: transaction,
     );
@@ -661,6 +666,7 @@ class RelationToMultipleMaxFieldNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<RelationToMultipleMaxFieldName>(
+      table: RelationToMultipleMaxFieldName.t,
       columnValues: columnValues(RelationToMultipleMaxFieldName.t.updateTable),
       where: where(RelationToMultipleMaxFieldName.t),
       limit: limit,
@@ -730,6 +736,7 @@ class RelationToMultipleMaxFieldNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RelationToMultipleMaxFieldName>(
+      table: RelationToMultipleMaxFieldName.t,
       where: where(RelationToMultipleMaxFieldName.t),
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
@@ -747,6 +754,7 @@ class RelationToMultipleMaxFieldNameRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<RelationToMultipleMaxFieldName>(
+      table: RelationToMultipleMaxFieldName.t,
       where: where?.call(RelationToMultipleMaxFieldName.t),
       limit: limit,
       transaction: transaction,
@@ -763,6 +771,7 @@ class RelationToMultipleMaxFieldNameRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<RelationToMultipleMaxFieldName>(
+      table: RelationToMultipleMaxFieldName.t,
       where: where(RelationToMultipleMaxFieldName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

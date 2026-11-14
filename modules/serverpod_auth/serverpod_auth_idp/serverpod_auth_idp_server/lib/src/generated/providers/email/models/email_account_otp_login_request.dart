@@ -437,6 +437,7 @@ class EmailAccountOtpLoginRequestRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAccountOtpLoginRequest>(
+      table: EmailAccountOtpLoginRequest.t,
       where: where?.call(EmailAccountOtpLoginRequest.t),
       orderBy: orderBy?.call(EmailAccountOtpLoginRequest.t),
       orderByList: orderByList?.call(EmailAccountOtpLoginRequest.t),
@@ -503,6 +504,7 @@ class EmailAccountOtpLoginRequestRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EmailAccountOtpLoginRequest>(
+      table: EmailAccountOtpLoginRequest.t,
       where: where?.call(EmailAccountOtpLoginRequest.t),
       orderBy: orderBy?.call(EmailAccountOtpLoginRequest.t),
       orderByList: orderByList?.call(EmailAccountOtpLoginRequest.t),
@@ -543,6 +545,7 @@ class EmailAccountOtpLoginRequestRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAccountOtpLoginRequest>(
+      table: EmailAccountOtpLoginRequest.t,
       where: where?.call(EmailAccountOtpLoginRequest.t),
       orderBy: orderBy?.call(EmailAccountOtpLoginRequest.t),
       orderByList: orderByList?.call(EmailAccountOtpLoginRequest.t),
@@ -565,6 +568,7 @@ class EmailAccountOtpLoginRequestRepository {
   }) async {
     return session.db.findById<EmailAccountOtpLoginRequest>(
       id,
+      table: EmailAccountOtpLoginRequest.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -737,6 +741,7 @@ class EmailAccountOtpLoginRequestRepository {
   }) async {
     return session.db.updateById<EmailAccountOtpLoginRequest>(
       id,
+      table: EmailAccountOtpLoginRequest.t,
       columnValues: columnValues(EmailAccountOtpLoginRequest.t.updateTable),
       transaction: transaction,
     );
@@ -761,6 +766,7 @@ class EmailAccountOtpLoginRequestRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAccountOtpLoginRequest>(
+      table: EmailAccountOtpLoginRequest.t,
       columnValues: columnValues(EmailAccountOtpLoginRequest.t.updateTable),
       where: where(EmailAccountOtpLoginRequest.t),
       limit: limit,
@@ -829,6 +835,7 @@ class EmailAccountOtpLoginRequestRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAccountOtpLoginRequest>(
+      table: EmailAccountOtpLoginRequest.t,
       where: where(EmailAccountOtpLoginRequest.t),
       orderBy: orderBy?.call(EmailAccountOtpLoginRequest.t),
       orderByList: orderByList?.call(EmailAccountOtpLoginRequest.t),
@@ -846,6 +853,7 @@ class EmailAccountOtpLoginRequestRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailAccountOtpLoginRequest>(
+      table: EmailAccountOtpLoginRequest.t,
       where: where?.call(EmailAccountOtpLoginRequest.t),
       limit: limit,
       transaction: transaction,
@@ -861,6 +869,7 @@ class EmailAccountOtpLoginRequestRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailAccountOtpLoginRequest>(
+      table: EmailAccountOtpLoginRequest.t,
       where: where(EmailAccountOtpLoginRequest.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

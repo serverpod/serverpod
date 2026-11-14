@@ -365,6 +365,7 @@ class EmailAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAccount>(
+      table: EmailAccount.t,
       where: where?.call(EmailAccount.t),
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
@@ -431,6 +432,7 @@ class EmailAccountRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EmailAccount>(
+      table: EmailAccount.t,
       where: where?.call(EmailAccount.t),
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
@@ -471,6 +473,7 @@ class EmailAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAccount>(
+      table: EmailAccount.t,
       where: where?.call(EmailAccount.t),
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
@@ -493,6 +496,7 @@ class EmailAccountRepository {
   }) async {
     return session.db.findById<EmailAccount>(
       id,
+      table: EmailAccount.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -662,6 +666,7 @@ class EmailAccountRepository {
   }) async {
     return session.db.updateById<EmailAccount>(
       id,
+      table: EmailAccount.t,
       columnValues: columnValues(EmailAccount.t.updateTable),
       transaction: transaction,
     );
@@ -685,6 +690,7 @@ class EmailAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAccount>(
+      table: EmailAccount.t,
       columnValues: columnValues(EmailAccount.t.updateTable),
       where: where(EmailAccount.t),
       limit: limit,
@@ -753,6 +759,7 @@ class EmailAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAccount>(
+      table: EmailAccount.t,
       where: where(EmailAccount.t),
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
@@ -770,6 +777,7 @@ class EmailAccountRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailAccount>(
+      table: EmailAccount.t,
       where: where?.call(EmailAccount.t),
       limit: limit,
       transaction: transaction,
@@ -785,6 +793,7 @@ class EmailAccountRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailAccount>(
+      table: EmailAccount.t,
       where: where(EmailAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

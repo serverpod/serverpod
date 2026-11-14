@@ -255,6 +255,7 @@ class ObjectFieldPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectFieldPersist>(
+      table: ObjectFieldPersist.t,
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
@@ -319,6 +320,7 @@ class ObjectFieldPersistRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectFieldPersist>(
+      table: ObjectFieldPersist.t,
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
@@ -357,6 +359,7 @@ class ObjectFieldPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectFieldPersist>(
+      table: ObjectFieldPersist.t,
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
@@ -377,6 +380,7 @@ class ObjectFieldPersistRepository {
   }) async {
     return session.db.findById<ObjectFieldPersist>(
       id,
+      table: ObjectFieldPersist.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -546,6 +550,7 @@ class ObjectFieldPersistRepository {
   }) async {
     return session.db.updateById<ObjectFieldPersist>(
       id,
+      table: ObjectFieldPersist.t,
       columnValues: columnValues(ObjectFieldPersist.t.updateTable),
       transaction: transaction,
     );
@@ -570,6 +575,7 @@ class ObjectFieldPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectFieldPersist>(
+      table: ObjectFieldPersist.t,
       columnValues: columnValues(ObjectFieldPersist.t.updateTable),
       where: where(ObjectFieldPersist.t),
       limit: limit,
@@ -638,6 +644,7 @@ class ObjectFieldPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectFieldPersist>(
+      table: ObjectFieldPersist.t,
       where: where(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
@@ -655,6 +662,7 @@ class ObjectFieldPersistRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectFieldPersist>(
+      table: ObjectFieldPersist.t,
       where: where?.call(ObjectFieldPersist.t),
       limit: limit,
       transaction: transaction,
@@ -670,6 +678,7 @@ class ObjectFieldPersistRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectFieldPersist>(
+      table: ObjectFieldPersist.t,
       where: where(ObjectFieldPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

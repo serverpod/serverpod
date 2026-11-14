@@ -274,6 +274,7 @@ class ArenaRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Arena>(
+      table: Arena.t,
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -340,6 +341,7 @@ class ArenaRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Arena>(
+      table: Arena.t,
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -380,6 +382,7 @@ class ArenaRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Arena>(
+      table: Arena.t,
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -402,6 +405,7 @@ class ArenaRepository {
   }) async {
     return session.db.findById<Arena>(
       id,
+      table: Arena.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -571,6 +575,7 @@ class ArenaRepository {
   }) async {
     return session.db.updateById<Arena>(
       id,
+      table: Arena.t,
       columnValues: columnValues(Arena.t.updateTable),
       transaction: transaction,
     );
@@ -594,6 +599,7 @@ class ArenaRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Arena>(
+      table: Arena.t,
       columnValues: columnValues(Arena.t.updateTable),
       where: where(Arena.t),
       limit: limit,
@@ -662,6 +668,7 @@ class ArenaRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Arena>(
+      table: Arena.t,
       where: where(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -679,6 +686,7 @@ class ArenaRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Arena>(
+      table: Arena.t,
       where: where?.call(Arena.t),
       limit: limit,
       transaction: transaction,
@@ -694,6 +702,7 @@ class ArenaRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Arena>(
+      table: Arena.t,
       where: where(Arena.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

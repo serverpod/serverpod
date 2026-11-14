@@ -380,6 +380,7 @@ class TeamRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Team>(
+      table: Team.t,
       where: where?.call(Team.t),
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
@@ -446,6 +447,7 @@ class TeamRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Team>(
+      table: Team.t,
       where: where?.call(Team.t),
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
@@ -486,6 +488,7 @@ class TeamRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Team>(
+      table: Team.t,
       where: where?.call(Team.t),
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
@@ -508,6 +511,7 @@ class TeamRepository {
   }) async {
     return session.db.findById<Team>(
       id,
+      table: Team.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -677,6 +681,7 @@ class TeamRepository {
   }) async {
     return session.db.updateById<Team>(
       id,
+      table: Team.t,
       columnValues: columnValues(Team.t.updateTable),
       transaction: transaction,
     );
@@ -700,6 +705,7 @@ class TeamRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Team>(
+      table: Team.t,
       columnValues: columnValues(Team.t.updateTable),
       where: where(Team.t),
       limit: limit,
@@ -768,6 +774,7 @@ class TeamRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Team>(
+      table: Team.t,
       where: where(Team.t),
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
@@ -785,6 +792,7 @@ class TeamRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Team>(
+      table: Team.t,
       where: where?.call(Team.t),
       limit: limit,
       transaction: transaction,
@@ -800,6 +808,7 @@ class TeamRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Team>(
+      table: Team.t,
       where: where(Team.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

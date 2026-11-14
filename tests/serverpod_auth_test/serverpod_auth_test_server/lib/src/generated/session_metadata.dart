@@ -387,6 +387,7 @@ class SessionMetadataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SessionMetadata>(
+      table: SessionMetadata.t,
       where: where?.call(SessionMetadata.t),
       orderBy: orderBy?.call(SessionMetadata.t),
       orderByList: orderByList?.call(SessionMetadata.t),
@@ -453,6 +454,7 @@ class SessionMetadataRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<SessionMetadata>(
+      table: SessionMetadata.t,
       where: where?.call(SessionMetadata.t),
       orderBy: orderBy?.call(SessionMetadata.t),
       orderByList: orderByList?.call(SessionMetadata.t),
@@ -493,6 +495,7 @@ class SessionMetadataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SessionMetadata>(
+      table: SessionMetadata.t,
       where: where?.call(SessionMetadata.t),
       orderBy: orderBy?.call(SessionMetadata.t),
       orderByList: orderByList?.call(SessionMetadata.t),
@@ -515,6 +518,7 @@ class SessionMetadataRepository {
   }) async {
     return session.db.findById<SessionMetadata>(
       id,
+      table: SessionMetadata.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -685,6 +689,7 @@ class SessionMetadataRepository {
   }) async {
     return session.db.updateById<SessionMetadata>(
       id,
+      table: SessionMetadata.t,
       columnValues: columnValues(SessionMetadata.t.updateTable),
       transaction: transaction,
     );
@@ -709,6 +714,7 @@ class SessionMetadataRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SessionMetadata>(
+      table: SessionMetadata.t,
       columnValues: columnValues(SessionMetadata.t.updateTable),
       where: where(SessionMetadata.t),
       limit: limit,
@@ -777,6 +783,7 @@ class SessionMetadataRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SessionMetadata>(
+      table: SessionMetadata.t,
       where: where(SessionMetadata.t),
       orderBy: orderBy?.call(SessionMetadata.t),
       orderByList: orderByList?.call(SessionMetadata.t),
@@ -794,6 +801,7 @@ class SessionMetadataRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<SessionMetadata>(
+      table: SessionMetadata.t,
       where: where?.call(SessionMetadata.t),
       limit: limit,
       transaction: transaction,
@@ -809,6 +817,7 @@ class SessionMetadataRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SessionMetadata>(
+      table: SessionMetadata.t,
       where: where(SessionMetadata.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

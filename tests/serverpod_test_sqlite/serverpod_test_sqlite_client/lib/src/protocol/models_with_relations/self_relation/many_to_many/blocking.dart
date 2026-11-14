@@ -352,6 +352,7 @@ class BlockingRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Blocking>(
+      table: Blocking.t,
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
@@ -418,6 +419,7 @@ class BlockingRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Blocking>(
+      table: Blocking.t,
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
@@ -458,6 +460,7 @@ class BlockingRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Blocking>(
+      table: Blocking.t,
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
@@ -480,6 +483,7 @@ class BlockingRepository {
   }) async {
     return session.db.findById<Blocking>(
       id,
+      table: Blocking.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -649,6 +653,7 @@ class BlockingRepository {
   }) async {
     return session.db.updateById<Blocking>(
       id,
+      table: Blocking.t,
       columnValues: columnValues(Blocking.t.updateTable),
       transaction: transaction,
     );
@@ -672,6 +677,7 @@ class BlockingRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Blocking>(
+      table: Blocking.t,
       columnValues: columnValues(Blocking.t.updateTable),
       where: where(Blocking.t),
       limit: limit,
@@ -740,6 +746,7 @@ class BlockingRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Blocking>(
+      table: Blocking.t,
       where: where(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
@@ -757,6 +764,7 @@ class BlockingRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<Blocking>(
+      table: Blocking.t,
       where: where?.call(Blocking.t),
       limit: limit,
       transaction: transaction,
@@ -772,6 +780,7 @@ class BlockingRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Blocking>(
+      table: Blocking.t,
       where: where(Blocking.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

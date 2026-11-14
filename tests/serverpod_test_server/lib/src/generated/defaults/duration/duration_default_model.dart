@@ -280,6 +280,7 @@ class DurationDefaultModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DurationDefaultModel>(
+      table: DurationDefaultModel.t,
       where: where?.call(DurationDefaultModel.t),
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
@@ -344,6 +345,7 @@ class DurationDefaultModelRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<DurationDefaultModel>(
+      table: DurationDefaultModel.t,
       where: where?.call(DurationDefaultModel.t),
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
@@ -382,6 +384,7 @@ class DurationDefaultModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DurationDefaultModel>(
+      table: DurationDefaultModel.t,
       where: where?.call(DurationDefaultModel.t),
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
@@ -402,6 +405,7 @@ class DurationDefaultModelRepository {
   }) async {
     return session.db.findById<DurationDefaultModel>(
       id,
+      table: DurationDefaultModel.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -571,6 +575,7 @@ class DurationDefaultModelRepository {
   }) async {
     return session.db.updateById<DurationDefaultModel>(
       id,
+      table: DurationDefaultModel.t,
       columnValues: columnValues(DurationDefaultModel.t.updateTable),
       transaction: transaction,
     );
@@ -595,6 +600,7 @@ class DurationDefaultModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DurationDefaultModel>(
+      table: DurationDefaultModel.t,
       columnValues: columnValues(DurationDefaultModel.t.updateTable),
       where: where(DurationDefaultModel.t),
       limit: limit,
@@ -663,6 +669,7 @@ class DurationDefaultModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DurationDefaultModel>(
+      table: DurationDefaultModel.t,
       where: where(DurationDefaultModel.t),
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
@@ -680,6 +687,7 @@ class DurationDefaultModelRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<DurationDefaultModel>(
+      table: DurationDefaultModel.t,
       where: where?.call(DurationDefaultModel.t),
       limit: limit,
       transaction: transaction,
@@ -695,6 +703,7 @@ class DurationDefaultModelRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DurationDefaultModel>(
+      table: DurationDefaultModel.t,
       where: where(DurationDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
