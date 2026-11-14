@@ -287,12 +287,27 @@ class AnnotationDefinition {
   ///  within the generated server code.
   final String? methodCallAnalyzerIgnoreRule;
 
+  /// Structured values of the annotation, keyed by field name. Used by
+  /// annotations that only feed generated documentation and are never
+  /// re-emitted as Dart code.
+  final Map<String, Object?> properties;
+
   const AnnotationDefinition({
     required this.name,
     this.arguments,
     this.methodCallAnalyzerIgnoreRule,
+    this.properties = const {},
   });
 }
+
+/// Names of annotations that only influence the generated OpenAPI spec and must
+/// not be copied into generated client or test code.
+const openApiAnnotationNames = {
+  'OpenApiAuth',
+  'OpenApiDoc',
+  'OpenApiResponse',
+  'openApiExclude',
+};
 
 extension HasAnnotation on List<AnnotationDefinition> {
   bool has(String name) => any((e) => e.name == name);

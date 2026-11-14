@@ -24,6 +24,7 @@ class GeneratorConfigBuilder {
   DatabaseDialect _databaseDialect;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
+  OpenApiConfig _openApi = const OpenApiConfig();
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -159,8 +160,14 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withOpenApi(OpenApiConfig openApi) {
+    _openApi = openApi;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
+      openApi: _openApi,
       name: _name,
       type: _type,
       serverPackage: _serverPackage,

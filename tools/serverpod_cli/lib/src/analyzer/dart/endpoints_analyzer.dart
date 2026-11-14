@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/analyzer/dart/definition_hash.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/openapi_annotation_validator.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -73,6 +74,9 @@ class EndpointsAnalyzer {
   /// Uses [SplayTreeMap] to keep keys sorted, ensuring deterministic
   /// iteration order when collecting definitions across runs.
   final _fileCache = SplayTreeMap<String, _CachedFileResult>();
+
+  /// Security schemes `@OpenApiAuth` may refer to, or null to skip the check.
+  Set<String>? _openApiSecuritySchemes;
 
   /// Cached template entries for files that don't contain endpoints.
   /// These are tracked separately since they don't appear in [_fileCache].
@@ -188,7 +192,13 @@ class EndpointsAnalyzer {
     required CodeAnalysisCollector collector,
     List<SerializableModelDefinition>? models,
     Set<String>? changedFiles,
+
+    /// The names of the security schemes declared in `generator.yaml`. When
+    /// non-null, `@OpenApiAuth` annotations must refer to one of them. Pass null
+    /// when OpenAPI generation is disabled to skip that check.
+    Set<String>? openApiSecuritySchemes,
   }) async {
+    _openApiSecuritySchemes = openApiSecuritySchemes;
     changedFiles = await refreshAnalysisContext(collection, changedFiles ?? {});
 
     // On the first run, mark every Dart file as dirty so the single
@@ -503,6 +513,12 @@ class EndpointsAnalyzer {
         classElement,
         duplicatedClasses,
       );
+      var schemes = _openApiSecuritySchemes;
+      if (schemes != null) {
+        errors.addAll(
+          OpenApiAnnotationValidator.validate(classElement, schemes),
+        );
+      }
       if (errors.isNotEmpty) {
         validationErrors[EndpointClassAnalyzer.elementNamespace(
               classElement,
@@ -529,6 +545,9 @@ class EndpointsAnalyzer {
             models,
           ),
         );
+        if (schemes != null) {
+          errors.addAll(OpenApiAnnotationValidator.validate(method, schemes));
+        }
         if (errors.isNotEmpty) {
           validationErrors[EndpointMethodAnalyzer.elementNamespace(
                 classElement,
