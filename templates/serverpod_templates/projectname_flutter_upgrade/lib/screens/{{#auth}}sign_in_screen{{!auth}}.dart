@@ -1,3 +1,5 @@
+// Serverpod's Flutter packages still build on package:flutter/material.dart.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 

@@ -1,4 +1,6 @@
 import 'package:projectname_client/projectname_client.dart';
+// Serverpod's Flutter packages still build on package:flutter/material.dart.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
