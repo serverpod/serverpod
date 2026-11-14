@@ -1,1 +1,0 @@
-- perf: Fixes excessive memory usage on generated `targetTableDefinitions` when modules depend on each other.
