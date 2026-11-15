@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../../serverpod_database.dart';
@@ -277,6 +278,13 @@ class ColumnUuid extends ColumnComparable<UuidValue> {
   Expression _encodeValueForQuery(UuidValue value) => EscapedExpression(value);
 }
 
+/// The id column of a [Table] with a [UuidValue] id. Created by [Table] only.
+@internal
+class ColumnUuidId extends ColumnUuid with _IdColumnSetOperations<UuidValue> {
+  /// Creates the id column of [table].
+  ColumnUuidId(Table table) : super('id', table, hasDefault: true);
+}
+
 /// A [Column] holding [Uri].
 class ColumnUri extends _ValueOperatorColumn<Uri>
     with _NullableColumnDefaultOperations<Uri> {
@@ -320,6 +328,13 @@ class ColumnInt extends ColumnComparable<int>
 
   @override
   Expression _encodeValueForQuery(int value) => Expression(value);
+}
+
+/// The id column of a [Table] with an [int] id. Created by [Table] only.
+@internal
+class ColumnIntId extends ColumnInt with _IdColumnSetOperations<int> {
+  /// Creates the id column of [table].
+  ColumnIntId(Table table) : super('id', table, hasDefault: true);
 }
 
 /// A [Column] holding an [double].
@@ -705,6 +720,41 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
     return _NotInSetExpression(this, valuesAsExpressions) |
         _IsNullExpression(this);
+  }
+}
+
+/// Widens [inSet] and [notInSet] of an id column to sets of nullable values.
+///
+/// [Table.id] is typed by the table's id type, which is nullable in generated
+/// tables (`Table<int?>`), so callers pass a `Set<int?>`. Without the wider
+/// parameter, that set fails the run-time type check of the `Set<int>`
+/// parameter of [ColumnInt].
+///
+/// A null in the set matches a null id, the same way [equals] does with null.
+/// The id of a table joined through an optional relation can be null.
+mixin _IdColumnSetOperations<T extends Object>
+    on _NullableColumnDefaultOperations<T> {
+  @override
+  Expression inSet(Set<T?> values) {
+    var nonNullValues = values.nonNulls.toSet();
+    if (!values.contains(null)) return super.inSet(nonNullValues);
+    if (nonNullValues.isEmpty) return _IsNullExpression(this);
+
+    return super.inSet(nonNullValues) | _IsNullExpression(this);
+  }
+
+  @override
+  Expression notInSet(Set<T?> values) {
+    var nonNullValues = values.nonNulls.toSet();
+    if (!values.contains(null)) return super.notInSet(nonNullValues);
+    if (nonNullValues.isEmpty) return _IsNotNullExpression(this);
+
+    var valuesAsExpressions = nonNullValues
+        .map((e) => _encodeValueForQuery(e))
+        .toList();
+
+    return _NotInSetExpression(this, valuesAsExpressions) &
+        _IsNotNullExpression(this);
   }
 }
 
