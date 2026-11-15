@@ -976,4 +976,27 @@ void main() {
       );
     });
   });
+
+  test(
+    'Given a class with a schema-qualified table name when generating server '
+    'code then the table class keeps the qualified name.',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withFileName(testClassFileName)
+            .withTableName('auth.$tableName')
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      expect(
+        codeMap[expectedFilePath],
+        contains("tableName: 'auth.$tableName'"),
+      );
+    },
+  );
 }
