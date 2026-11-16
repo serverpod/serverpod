@@ -394,17 +394,11 @@ jobs:
           rc=0
           dart run serverpod_embedded_postgres:prefetch --version "$PG_BOM" || rc=$?
           if [ "$rc" != 0 ]; then
-            # Windows builds are slow to iterate, so surface the cause inline:
-            # the per-dep build logs + deps/lib (BundleBuilder leaves its scratch
-            # under /tmp on failure). The ::error:: annotation flags it red even
-            # though the step is continue-on-error (kept green so it doesn't block
-            # the macOS/Linux test jobs).
-            echo "::error title=Windows seed build::failed (exit $rc) - see dep logs below"
-            for f in $(find /tmp -path '*serverpod-pg-build-*/logs/dep-*.log' 2>/dev/null | sort); do
-              echo "----- $f (last 40 lines) -----"; tail -n 40 "$f"
-            done
-            echo "----- deps/lib contents -----"
-            find /tmp -path '*serverpod-pg-build-*/deps/lib/*' 2>/dev/null | sed 's#.*/deps/lib/#deps/lib/#' | sort
+            # BundleBuilder prints the tail of the failing build log above. The
+            # ::error:: annotation flags it red even though the step is
+            # continue-on-error (kept green so it doesn't block the macOS/Linux
+            # test jobs).
+            echo "::error title=Windows seed build::failed (exit $rc) - see build log above"
             exit "$rc"
           fi
       - name: Save embedded PostgreSQL bundle cache
@@ -1118,7 +1112,7 @@ jobs:
   cli_e2e_tests:
     name: CLI e2e tests
     runs-on: ${{ matrix.os }}
-    needs: build_cli
+    needs: [seed_embedded_pg, build_cli]
     strategy:
       fail-fast: false
       matrix:
@@ -1143,6 +1137,7 @@ jobs:
           ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
 
           colima start
+      - uses: ./.github/actions/use-embedded-pg
       - uses: ./.github/actions/use-cli-bundle
       - name: Run unit tests
         run: >-

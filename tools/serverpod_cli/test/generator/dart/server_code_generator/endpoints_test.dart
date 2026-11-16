@@ -2,12 +2,14 @@ import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/endpoint_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/method_definition_builder.dart';
+import '../../../test_util/builders/module_config_builder.dart';
 import '../../../test_util/builders/type_definition_builder.dart';
 
 const projectName = 'example_project';
@@ -54,6 +56,110 @@ void main() {
           test('has no endpoint connectors defined.', () {
             expect(endpointsFile, isNot(contains('connectors')));
           });
+        },
+      );
+    },
+  );
+
+  test(
+    'Given a protocol definition without endpoints, '
+    'when generating the endpoints file, '
+    'then initializeOwnEndpoints is overridden with an empty body.',
+    () {
+      final endpointsFile = generator.generateProtocolCode(
+        protocolDefinition: const ProtocolDefinition(
+          endpoints: [],
+          models: [],
+          futureCalls: [],
+        ),
+        config: config,
+      )[expectedFileName];
+
+      expect(
+        endpointsFile,
+        contains(
+          '  @override\n'
+          '  void initializeOwnEndpoints(_is.Server server) {}\n',
+        ),
+      );
+    },
+  );
+
+  group(
+    'Given a project with a testing endpoint and the modules module_a and module_b, '
+    'when generating the endpoints file,',
+    () {
+      late String endpointsFile;
+
+      setUpAll(() {
+        final modulesConfig = GeneratorConfigBuilder()
+            .withName(projectName)
+            .withModules([
+              ModuleConfigBuilder('module_a').build(),
+              ModuleConfigBuilder('module_b').build(),
+            ])
+            .build();
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [
+            EndpointDefinitionBuilder()
+                .withClassName('TestingEndpoint')
+                .withName('testing')
+                .build(),
+          ],
+          models: [],
+          futureCalls: [],
+        );
+
+        endpointsFile = generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: modulesConfig,
+        )[expectedFileName]!;
+      });
+
+      test(
+        'then initializeEndpoints initializes the own endpoints of the project and of each module.',
+        () {
+          final moduleA = importPrefixFor(
+            'package:module_a_server/module_a_server.dart',
+          );
+          final moduleB = importPrefixFor(
+            'package:module_b_server/module_b_server.dart',
+          );
+
+          expect(
+            endpointsFile,
+            contains(
+              '  void initializeEndpoints(_is.Server server) {\n'
+              '    initializeOwnEndpoints(server);\n'
+              "    modules['module_a'] = $moduleA.Endpoints()..initializeOwnEndpoints(server);\n"
+              "    modules['module_b'] = $moduleB.Endpoints()..initializeOwnEndpoints(server);\n"
+              '  }\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'then no module endpoints are initialized with their own modules.',
+        () {
+          expect(
+            endpointsFile,
+            isNot(contains('..initializeEndpoints(server)')),
+          );
+        },
+      );
+
+      test(
+        'then initializeOwnEndpoints connects the testing endpoint.',
+        () {
+          expect(
+            endpointsFile,
+            contains(
+              '  void initializeOwnEndpoints(_is.Server server) {\n'
+              '    var endpoints = <String, _is.Endpoint>{\n'
+              "      'testing':",
+            ),
+          );
         },
       );
     },

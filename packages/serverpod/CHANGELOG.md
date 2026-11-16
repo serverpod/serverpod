@@ -1,3 +1,12 @@
+## 4.1.2
+
+- fix: Makes the verification code input usable on iOS web that uses Safari.
+- fix: Bundles missing PostgreSQL contrib extensions in embedded PostgreSQL.
+- fix: Allows Google client secret without `redirect_uris` on IDP configuration. ([@mackings](https://github.com/mackings))
+- fix: Fixes excessive memory usage on generated definitions when modules depend on each other.
+- docs: Updates package descriptions and READMEs.
+- chore: Adds Android release signing config to new Flutter apps.
+
 ## 4.1.1
 
 - fix: Generates deserializers for container types of exception and sealed parent fields. ([@BiAksoy](https://github.com/BiAksoy))

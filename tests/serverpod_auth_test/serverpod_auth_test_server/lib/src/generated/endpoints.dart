@@ -43,6 +43,21 @@ import '../endpoints/user_profile_endpoint.dart' as _i5r4pchv;
 class Endpoints extends _is.EndpointDispatch {
   @override
   void initializeEndpoints(_is.Server server) {
+    initializeOwnEndpoints(server);
+    modules['serverpod_auth_bridge'] = _iabs.Endpoints()
+      ..initializeOwnEndpoints(server);
+    modules['serverpod_auth_core'] = _iacs.Endpoints()
+      ..initializeOwnEndpoints(server);
+    modules['serverpod_auth_idp'] = _iais.Endpoints()
+      ..initializeOwnEndpoints(server);
+    modules['serverpod_auth_migration'] = _iams.Endpoints()
+      ..initializeOwnEndpoints(server);
+    modules['serverpod_auth'] = _i1n3uhu0.Endpoints()
+      ..initializeOwnEndpoints(server);
+  }
+
+  @override
+  void initializeOwnEndpoints(_is.Server server) {
     var endpoints = <String, _is.Endpoint>{
       'appleAccount': _icrxlub7.AppleAccountEndpoint()
         ..initialize(
@@ -1453,15 +1468,5 @@ class Endpoints extends _is.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_bridge'] = _iabs.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _iacs.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _iais.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_migration'] = _iams.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i1n3uhu0.Endpoints()
-      ..initializeEndpoints(server);
   }
 }

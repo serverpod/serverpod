@@ -46,10 +46,13 @@ class Protocol extends _is.DatabaseSerializationManager
         classNamePrefix: 'serverpod_test_shared_module.',
       );
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [
+  static List<_isp.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     ..._ivdm85cg.Protocol() is _is.DatabaseSerializationManager
         ? (_ivdm85cg.Protocol() as _is.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
+              .getOwnTableDefinitions()
         : [],
   ];
 
@@ -248,6 +251,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test_shared_module';

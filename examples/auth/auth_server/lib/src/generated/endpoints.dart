@@ -31,6 +31,15 @@ import '../greeting_endpoint.dart' as _ikvw90o4;
 class Endpoints extends _is.EndpointDispatch {
   @override
   void initializeEndpoints(_is.Server server) {
+    initializeOwnEndpoints(server);
+    modules['serverpod_auth_idp'] = _iais.Endpoints()
+      ..initializeOwnEndpoints(server);
+    modules['serverpod_auth_core'] = _iacs.Endpoints()
+      ..initializeOwnEndpoints(server);
+  }
+
+  @override
+  void initializeOwnEndpoints(_is.Server server) {
     var endpoints = <String, _is.Endpoint>{
       'anonymousIdp': _i6e224xf.AnonymousIdpEndpoint()
         ..initialize(
@@ -825,9 +834,5 @@ class Endpoints extends _is.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _iais.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _iacs.Endpoints()
-      ..initializeEndpoints(server);
   }
 }

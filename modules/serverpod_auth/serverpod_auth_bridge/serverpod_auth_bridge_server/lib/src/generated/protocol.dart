@@ -82,6 +82,12 @@ class Protocol extends _is.DatabaseSerializationManager
       );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
+    ..._ownTableDefinitions,
+    ..._iacs.Protocol().getOwnTableDefinitions(),
+    ..._iais.Protocol().getOwnTableDefinitions(),
+  ];
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'serverpod_auth_bridge_email_password',
       dartName: 'LegacyEmailPassword',
@@ -245,8 +251,6 @@ class Protocol extends _is.DatabaseSerializationManager
       indexes: [],
       managed: true,
     ),
-    ..._iacs.Protocol.targetTableDefinitions,
-    ..._iais.Protocol.targetTableDefinitions,
   ];
 
   void registerHostProtocol(
@@ -556,6 +560,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_auth_bridge';

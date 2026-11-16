@@ -107,7 +107,10 @@ class Protocol extends _is.DatabaseSerializationManager
         classNamePrefix: 'serverpod_auth.',
       );
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [
+  static List<_isp.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'serverpod_auth_key',
       dartName: 'AuthKey',
@@ -945,6 +948,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_auth';

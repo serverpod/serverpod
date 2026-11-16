@@ -22,13 +22,17 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
 class Endpoints extends _is.EndpointDispatch {
   @override
   void initializeEndpoints(_is.Server server) {
+    initializeOwnEndpoints(server);
     modules['serverpod_auth_bridge'] = _iabs.Endpoints()
-      ..initializeEndpoints(server);
+      ..initializeOwnEndpoints(server);
     modules['serverpod_auth_core'] = _iacs.Endpoints()
-      ..initializeEndpoints(server);
+      ..initializeOwnEndpoints(server);
     modules['serverpod_auth_idp'] = _iais.Endpoints()
-      ..initializeEndpoints(server);
+      ..initializeOwnEndpoints(server);
     modules['serverpod_auth'] = _i1n3uhu0.Endpoints()
-      ..initializeEndpoints(server);
+      ..initializeOwnEndpoints(server);
   }
+
+  @override
+  void initializeOwnEndpoints(_is.Server server) {}
 }

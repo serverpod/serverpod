@@ -18,6 +18,7 @@ import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
+import 'package:serverpod_cli/src/util/android_signing_modifier.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/entitlements_modifier.dart';
@@ -292,6 +293,11 @@ Future<CreateResult> performCreate(
     );
     await log.progress('Updating Flutter app MacOS entitlements.', () {
       return EntitlementsModifier.addNetworkToEntitlements(
+        serverpodDirs.flutterDir,
+      );
+    });
+    await log.progress('Adding Android release signing config.', () {
+      return AndroidSigningModifier.addReleaseSigningConfig(
         serverpodDirs.flutterDir,
       );
     });

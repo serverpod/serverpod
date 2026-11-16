@@ -53,6 +53,14 @@ class Protocol extends _is.DatabaseSerializationManager
       );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
+    ..._ownTableDefinitions,
+    ..._iabs.Protocol().getOwnTableDefinitions(),
+    ..._iacs.Protocol().getOwnTableDefinitions(),
+    ..._iais.Protocol().getOwnTableDefinitions(),
+    ..._i1n3uhu0.Protocol().getOwnTableDefinitions(),
+  ];
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'serverpod_auth_migration_migrated_user',
       dartName: 'MigratedUser',
@@ -131,10 +139,6 @@ class Protocol extends _is.DatabaseSerializationManager
       ],
       managed: true,
     ),
-    ..._iabs.Protocol.targetTableDefinitions,
-    ..._iacs.Protocol.targetTableDefinitions,
-    ..._iais.Protocol.targetTableDefinitions,
-    ..._i1n3uhu0.Protocol.targetTableDefinitions,
   ];
 
   void registerHostProtocol(
@@ -366,6 +370,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_auth_migration';

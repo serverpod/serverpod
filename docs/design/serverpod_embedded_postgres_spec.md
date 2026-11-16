@@ -24,7 +24,7 @@ Status: **draft**. Audience: implementors.
 - iOS / Android / WASM. Desktop only.
 - Replacing `package:postgres` as the driver. We produce a connection string.
 - Multi-version-PG-side-by-side in one project.
-- PostgreSQL extensions beyond the bundled PostGIS and pgvector. See §11.
+- External extensions and procedural-language runtimes beyond PL/pgSQL. See §11.
 
 ## 3. Public API
 
@@ -445,11 +445,11 @@ availability surprises.
 
 Ships with Serverpod 3.5.
 
-- **PostgreSQL extensions beyond PostGIS and pgvector.** The Serverpod-built
-  bundles already ship PostGIS and pgvector (matching
-  `ghcr.io/serverpod/postgres:16`), so newly created projects can use
-  embedded Postgres as a drop-in for the template docker-compose DB. Other
-  extensions would need to be added to `tool/build_postgres/`.
+- **External extensions and procedural-language runtimes.** The bundles ship
+  PostgreSQL's 46 installable contrib extensions from the production image's
+  PostgreSQL package, plus PostGIS and pgvector. This includes the OpenSSL,
+  UUID and XML-dependent modules. PL/Perl, PL/Python, PL/Tcl, their transforms,
+  and the Linux-only SELinux integration are not included.
 - Replication, logical decoding, hot standby.
 - Backup/restore tooling - use `pg_dump` directly.
 - pgAdmin / web UI.

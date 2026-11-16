@@ -28,6 +28,11 @@ export 'future_calls.dart' show ServerpodTestModuleFutureCallsGetter;
 class Endpoints extends _is.EndpointDispatch {
   @override
   void initializeEndpoints(_is.Server server) {
+    initializeOwnEndpoints(server);
+  }
+
+  @override
+  void initializeOwnEndpoints(_is.Server server) {
     var endpoints = <String, _is.Endpoint>{
       'concreteBase': _iaxb2v6g.ConcreteBaseEndpoint()
         ..initialize(

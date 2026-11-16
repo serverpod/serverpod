@@ -25,6 +25,11 @@ import '../endpoints/user_endpoint.dart' as _iymy5306;
 class Endpoints extends _is.EndpointDispatch {
   @override
   void initializeEndpoints(_is.Server server) {
+    initializeOwnEndpoints(server);
+  }
+
+  @override
+  void initializeOwnEndpoints(_is.Server server) {
     var endpoints = <String, _is.Endpoint>{
       'admin': _i5t1w2d2.AdminEndpoint()
         ..initialize(

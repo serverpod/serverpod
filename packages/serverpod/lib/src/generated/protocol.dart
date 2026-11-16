@@ -228,7 +228,10 @@ class Protocol extends _is.DatabaseSerializationManager
         classNamePrefix: 'serverpod.',
       );
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [
+  static List<_isp.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'serverpod_cloud_storage',
       dartName: 'CloudStorageEntry',
@@ -1482,7 +1485,7 @@ class Protocol extends _is.DatabaseSerializationManager
     ),
     ..._isd.Protocol() is _is.DatabaseSerializationManager
         ? (_isd.Protocol() as _is.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
+              .getOwnTableDefinitions()
         : [],
   ];
 
@@ -2210,6 +2213,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod';

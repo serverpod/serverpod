@@ -1951,6 +1951,14 @@ class Protocol extends _is.DatabaseSerializationManager
   );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
+    ..._ownTableDefinitions,
+    ..._i1n3uhu0.Protocol().getOwnTableDefinitions(),
+    ..._iom2gwyu.Protocol().getOwnTableDefinitions(),
+    ..._iyx9etqn.Protocol().getOwnTableDefinitions(),
+    ..._isp.Protocol.targetTableDefinitions,
+  ];
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'address',
       dartName: 'Address',
@@ -8599,14 +8607,10 @@ class Protocol extends _is.DatabaseSerializationManager
       indexes: [],
       managed: true,
     ),
-    ..._i1n3uhu0.Protocol.targetTableDefinitions,
-    ..._iom2gwyu.Protocol.targetTableDefinitions,
-    ..._iyx9etqn.Protocol.targetTableDefinitions,
     ..._ilwf0zl1.Protocol() is _is.DatabaseSerializationManager
         ? (_ilwf0zl1.Protocol() as _is.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
+              .getOwnTableDefinitions()
         : [],
-    ..._isp.Protocol.targetTableDefinitions,
   ];
 
   static String? getClassNameFromObjectJson(dynamic data) =>
@@ -16876,6 +16880,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test';

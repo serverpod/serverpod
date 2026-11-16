@@ -31,6 +31,12 @@ dl "https://s3.amazonaws.com/json-c_releases/releases/json-c-$JSONC_VERSION.tar.
 dl "https://download.osgeo.org/proj/proj-$PROJ_VERSION.tar.gz" proj.tar.gz "$PROJ_SHA256"
 dl "https://download.osgeo.org/geos/geos-$GEOS_VERSION.tar.bz2" geos.tar.bz2 "$GEOS_SHA256"
 dl "https://download.osgeo.org/postgis/source/postgis-$POSTGIS_VERSION.tar.gz" postgis.tar.gz "$POSTGIS_SHA256"
+dl "https://github.com/openssl/openssl/releases/download/openssl-$OPENSSL_VERSION/openssl-$OPENSSL_VERSION.tar.gz" openssl.tar.gz "$OPENSSL_SHA256"
+# OSSP's original download host is no longer reliably available. MacPorts
+# mirrors the unmodified release; verify the pinned archive on every build.
+dl "https://distfiles.macports.org/ossp-uuid/uuid-$OSSP_UUID_VERSION.tar.gz" uuid.tar.gz "$OSSP_UUID_SHA256"
+dl "https://download.gnome.org/sources/libxslt/${LIBXSLT_VERSION%.*}/libxslt-$LIBXSLT_VERSION.tar.xz" libxslt.tar.xz "$LIBXSLT_SHA256"
+dl "https://zlib.net/fossils/zlib-$ZLIB_VERSION.tar.gz" zlib.tar.gz "$ZLIB_SHA256"
 
 [ -d "postgresql-$PG_UPSTREAM_VERSION" ]      || tar xjf "postgresql-$PG_UPSTREAM_VERSION.tar.bz2"
 [ -d "pgvector-$PGVECTOR_VERSION" ]           || tar xzf "pgvector-$PGVECTOR_VERSION.tar.gz"
@@ -44,5 +50,9 @@ dl "https://download.osgeo.org/postgis/source/postgis-$POSTGIS_VERSION.tar.gz" p
 [ -d "proj-$PROJ_VERSION" ]                   || tar xzf proj.tar.gz
 [ -d "geos-$GEOS_VERSION" ]                   || tar xjf geos.tar.bz2
 [ -d "postgis-$POSTGIS_VERSION" ]             || tar xzf postgis.tar.gz
+[ -d "openssl-$OPENSSL_VERSION" ]             || tar xzf openssl.tar.gz
+[ -d "uuid-$OSSP_UUID_VERSION" ]               || tar xzf uuid.tar.gz
+[ -d "libxslt-$LIBXSLT_VERSION" ]               || tar xJf libxslt.tar.xz
+[ -d "zlib-$ZLIB_VERSION" ]                     || tar xzf zlib.tar.gz
 
 echo "sources ready in $SRC"
