@@ -21,7 +21,7 @@ abstract class DatabaseUtil {
   ///   before invoking [f].
   ///
   ///   In case [f] errs, this method rolls back to the previously created savepoint, thus undoing any
-  ///   changes made in [f]. If the rollback to the savepoint should fail for whatever reason,
+  ///   changes made in [f], and then releases it. If the rollback or release should fail for whatever reason,
   ///   this method will throw a [RollbackToSavepointFailedException], with the error from [f]
   ///   available as `innerException`. In this case, the entire [transaction] is in an unclear
   ///   state and should probably be discarded by the caller.
@@ -57,7 +57,11 @@ abstract class DatabaseUtil {
       return result;
     } catch (_) {
       try {
+        // Rolling back to a savepoint keeps it established, so release it
+        // as well. Otherwise every caught error would leave one more
+        // nesting level behind in the outer transaction.
         await savepoint?.rollback();
+        await savepoint?.release();
       } catch (e) {
         throw RollbackToSavepointFailedException(e);
       }
