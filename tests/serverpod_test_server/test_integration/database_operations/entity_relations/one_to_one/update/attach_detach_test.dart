@@ -102,7 +102,7 @@ void main() async {
 
         var copy = address.copyWith(street: 'New street');
 
-        Address.db.attachRow.inhabitant(session, copy, alice);
+        await Address.db.attachRow.inhabitant(session, copy, alice);
 
         var updatedAddress = await Address.db.findById(session, address.id!);
 
