@@ -14,8 +14,16 @@ import 'package:uuid/uuid.dart';
 final resourceManager = ResourceManager();
 
 const _cliVersionKey = 'cli_version';
+const _templateInstallationMarker = '.serverpod-template-complete';
 
 class ResourceManager {
+  final bool _useLocalTemplates;
+
+  /// Uses source-checkout templates in development and downloaded templates
+  /// otherwise. Downloaded templates are installed only after extraction finishes.
+  ResourceManager({bool useLocalTemplates = !productionMode})
+    : _useLocalTemplates = useLocalTemplates;
+
   static int? _runCount;
 
   Directory get localStorageDirectory =>
@@ -25,7 +33,7 @@ class ResourceManager {
       Directory(p.join(localStorageDirectory.path, templateVersion));
 
   Directory get templateDirectory {
-    if (productionMode) {
+    if (!_useLocalTemplates) {
       return Directory(p.join(versionedDir.path, 'serverpod_template'));
     } else {
       return Directory(
@@ -200,36 +208,68 @@ class ResourceManager {
       'https://pub.dev/packages/serverpod_templates/versions/$templateVersion.tar.gz';
 
   bool get isTemplatesInstalled {
-    if (!versionedDir.existsSync() && productionMode) return false;
+    if (!File(p.join(templateDirectory.path, 'pubspec.yaml')).existsSync()) {
+      return false;
+    }
 
-    return templateDirectory.existsSync();
+    // Source templates do not go through the download/install process. Old
+    // downloaded caches without a completion marker must be installed again.
+    return _useLocalTemplates ||
+        File(
+          p.join(templateDirectory.path, _templateInstallationMarker),
+        ).existsSync();
   }
 
   Future<void> installTemplates() async {
     log.info('Downloading templates for version $templateVersion');
-    if (!versionedDir.existsSync()) versionedDir.createSync(recursive: true);
 
-    var response = await http.get(Uri.parse(packageDownloadUrl));
-    var data = response.bodyBytes;
+    final uri = Uri.parse(packageDownloadUrl);
+    final response = await http.get(uri);
+    if (response.statusCode != HttpStatus.ok) {
+      throw HttpException(
+        'Failed to download templates: HTTP ${response.statusCode}.',
+        uri: uri,
+      );
+    }
 
-    // var outFile = File(p.join(versionedDir.path, 'serverpod_templates.tar.gz'));
-    // outFile.writeAsBytesSync(data);
+    final unzipped = const GZipDecoder().decodeBytes(response.bodyBytes);
+    final archive = TarDecoder().decodeBytes(unzipped);
 
-    // Const constructor was introduced in version 4.0.0 of archive package.
-    // At the time this was written, that version was 2 days old and we don't
-    // want to force a constraint on the package for this.
-    // ignore: prefer_const_constructors
-    var unzipped = GZipDecoder().decodeBytes(data);
-    var archive = TarDecoder().decodeBytes(unzipped);
+    // Extract next to the destination so publishing the complete package is a
+    // rename on the same filesystem. Failed extraction leaves the cache intact.
+    final destination = templateDirectory;
+    await destination.parent.create(recursive: true);
+    final staging = await destination.parent.createTemp('.serverpod-template-');
+    try {
+      for (final file in archive) {
+        final outFileName = p.join(staging.path, file.name);
+        if (file.isFile) {
+          final outFile = await File(outFileName).create(recursive: true);
+          await outFile.writeAsBytes(file.content);
+        } else {
+          await Directory(outFileName).create(recursive: true);
+        }
+      }
 
-    for (var file in archive) {
-      var outFileName = p.join(templateDirectory.path, file.name);
-      if (file.isFile) {
-        var outFile = File(outFileName);
-        outFile = await outFile.create(recursive: true);
-        await outFile.writeAsBytes(file.content);
-      } else {
-        await Directory(outFileName).create(recursive: true);
+      if (!await File(p.join(staging.path, 'pubspec.yaml')).exists()) {
+        throw const FormatException('Template archive has no pubspec.yaml.');
+      }
+      await File(
+        p.join(staging.path, _templateInstallationMarker),
+      ).writeAsString(
+        templateVersion,
+      );
+
+      // Another installer may have completed while this one was downloading.
+      if (!isTemplatesInstalled) {
+        if (await destination.exists()) {
+          await destination.delete(recursive: true);
+        }
+        await staging.rename(destination.path);
+      }
+    } finally {
+      if (await staging.exists()) {
+        await staging.delete(recursive: true);
       }
     }
     log.info('Download complete.');
