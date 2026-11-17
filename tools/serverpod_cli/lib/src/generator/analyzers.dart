@@ -63,7 +63,8 @@ class Analyzers {
   /// Fresh analyzers hold nothing a generation could be stale against: they
   /// read every source the first time they need it. Once used, they keep the
   /// models and the resolved Dart files they saw, and only [update] tells them
-  /// what changed since.
+  /// what changed since. Generated model files are the exception:
+  /// [performGenerate] compares them with what it last refreshed.
   Future<bool> get isFresh async => _isFresh;
 
   /// Creates the analyzers needed for code generation from [config].
@@ -134,6 +135,35 @@ class Analyzers {
   /// [GenerationRequirements.none] when no change is relevant for code
   /// generation.
   Future<GenerationRequirements> update({
+    required GeneratorConfig config,
+    required Set<String> affectedPaths,
+  }) async {
+    if (!_isFresh) {
+      return _update(config: config, affectedPaths: affectedPaths);
+    }
+
+    // The first update is where the context makes its first reads of the
+    // generated model files, if it makes any. A file left untouched while it
+    // ran is taken as read, or still to be read, in that state; see
+    // [_modelFileStamps]. Seeding only saves the first model generation from
+    // refreshing every model file, so a file system error skips it.
+    final before = await _stampGeneratedFilesOrNull(config);
+    final requirements = await _update(
+      config: config,
+      affectedPaths: affectedPaths,
+    );
+    final after = await _stampGeneratedFilesOrNull(config);
+    if (before != null && after != null) {
+      for (final MapEntry(key: path, value: stamp) in before.entries) {
+        if (after[path] == stamp) {
+          _modelFileStamps[_fingerprintKey(path)] = stamp;
+        }
+      }
+    }
+    return requirements;
+  }
+
+  Future<GenerationRequirements> _update({
     required GeneratorConfig config,
     required Set<String> affectedPaths,
   }) async {
@@ -222,6 +252,20 @@ class Analyzers {
   /// Keyed by [_fingerprintKey].
   final Map<String, int> _contentFingerprints = {};
 
+  /// [FileStamp] tokens of the generated model files as the analysis context
+  /// was last told about them.
+  ///
+  /// Seeded around the first [update] and kept up to date by the project
+  /// model generation in [performGenerate]. File stamps rather than content
+  /// fingerprints, as in the generation staleness check: every model
+  /// generation checks every model file, reading them all measurably slows it
+  /// down in a large project, and a pull or checkout that rewrites a file
+  /// gives it a new stamp. A rewrite that keeps both the size and the
+  /// modification time goes unnoticed until the file is next written.
+  ///
+  /// Keyed by [_fingerprintKey].
+  final Map<String, String> _modelFileStamps = {};
+
   /// The key of [path] in the fingerprint maps. The same file can be reported
   /// under differently spelled paths (mixed casing)
   /// which must not make it look like a second file.
@@ -253,6 +297,85 @@ class Analyzers {
       }
     }
     if (anythingChanged) _nonDeclaringFingerprints.clear();
+  }
+
+  /// Refreshes the analysis context with the model files generation just
+  /// produced, together with [alongWith].
+  ///
+  /// Generation does not write a file whose content is already on disk, and
+  /// such a file can still be newer than what the context read: a pull or a
+  /// branch switch can bring a regenerated model before generation runs for
+  /// it, and an endpoint using the change would then be analyzed against the
+  /// old model. So besides the written files, every file that changed on disk
+  /// since the context was last told about it is refreshed. The client package
+  /// is left out: the server's analysis context never reads it. The future
+  /// call parameter models generated later in a run are not checked this way;
+  /// they are refreshed when written, as before.
+  Future<void> _refreshModelFiles(
+    GeneratorConfig config,
+    GeneratedFilePaths modelFiles, {
+    Iterable<String> alongWith = const [],
+  }) async {
+    final clientPackageDir = p.absolute(
+      p.joinAll(config.clientPackagePathParts),
+    );
+    final serverModelFiles = modelFiles.all
+        .where((path) => !isWithinAnyDirectory(path, {clientPackageDir}))
+        .toList();
+    final stamps = await _stampTokens(serverModelFiles);
+    final changedOnDisk = {
+      for (final MapEntry(key: path, value: stamp) in stamps.entries)
+        if (_modelFileStamps[_fingerprintKey(path)] != stamp) path,
+    };
+
+    await refreshAnalysisContext(_futureCalls.collection, [
+      ...modelFiles.written,
+      ...changedOnDisk,
+      ...alongWith,
+    ]);
+
+    // Recorded only once the refresh went through, so a failed one leaves the
+    // files to be refreshed next time.
+    for (final path in serverModelFiles) {
+      final stamp = stamps[path];
+      if (stamp == null) {
+        _modelFileStamps.remove(_fingerprintKey(path));
+      } else {
+        _modelFileStamps[_fingerprintKey(path)] = stamp;
+      }
+    }
+  }
+
+  /// Stamps the files in the generated code directories of the server and the
+  /// shared model packages, or returns `null` if one could not be listed.
+  Future<Map<String, String>?> _stampGeneratedFilesOrNull(
+    GeneratorConfig config,
+  ) async {
+    final directories = [
+      p.joinAll(config.generatedServeModelPathParts),
+      ...config.generatedSharedModelsPaths,
+    ].map(Directory.new).where((directory) => directory.existsSync());
+    try {
+      return await _stampTokens([
+        for (final directory in directories)
+          await for (final entity in directory.list(recursive: true))
+            if (entity is File) entity.path,
+      ]);
+    } on FileSystemException {
+      return null;
+    }
+  }
+
+  /// The [FileStamp] tokens of the existing files among [paths].
+  static Future<Map<String, String>> _stampTokens(
+    Iterable<String> paths,
+  ) async {
+    final pathList = paths.toList();
+    final stamps = await stampAll(pathList);
+    return {
+      for (var i = 0; i < pathList.length; i++)
+        if (stamps[i] case final stamp?) pathList[i]: stamp.token,
+    };
   }
 
   /// Fingerprints the Dart files among [paths], in bounded-concurrency
@@ -389,8 +512,7 @@ class Analyzers {
       // Every model file this run owns, for the generation stamp and for
       // cleanup of stale output.
       List<String> generatedModelFiles = [];
-      // The subset whose content actually changed, which is all the analysis
-      // context needs to hear about.
+      // The subset whose content actually changed on disk in this run.
       Set<String> changedModelFiles = {};
 
       // Generate model files and temporary protocol.dart stubs before analyzing
@@ -440,10 +562,10 @@ class Analyzers {
             );
         generatedModelFiles = modelFiles.all;
         changedModelFiles = modelFiles.written;
-
-        await refreshAnalysisContext(
-          _futureCalls.collection,
-          [...changedModelFiles, ...tempProtocolPaths],
+        await _refreshModelFiles(
+          config,
+          modelFiles,
+          alongWith: tempProtocolPaths,
         );
       }
 
