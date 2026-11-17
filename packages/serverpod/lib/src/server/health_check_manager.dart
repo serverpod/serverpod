@@ -137,20 +137,24 @@ class HealthCheckManager {
         var result = await performHealthChecks(_pod, granularity: interval);
         numHealthChecks = result.metrics.length;
 
-        for (var metric in result.metrics) {
-          await ServerHealthMetric.db.insertRow(session, metric);
-        }
-
-        for (var connectionInfo in result.connectionInfos) {
-          await ServerHealthConnectionInfo.db.insertRow(
-            session,
-            connectionInfo,
-          );
-        }
-      } catch (e) {
-        // ISSUE(https://github.com/serverpod/serverpod/issues/4123):
-        // Sometimes serverpod attempts to write duplicate health checks for the
-        // same time.
+        // Checks in the same time interval can produce duplicate entries.
+        // Preserve existing samples without aborting the remaining inserts.
+        await ServerHealthMetric.db.insert(
+          session,
+          result.metrics,
+          ignoreConflicts: true,
+        );
+        await ServerHealthConnectionInfo.db.insert(
+          session,
+          result.connectionInfos,
+          ignoreConflicts: true,
+        );
+      } catch (e, stackTrace) {
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Failed to record health checks',
+        );
       }
 
       await _pod.reloadRuntimeSettings();
