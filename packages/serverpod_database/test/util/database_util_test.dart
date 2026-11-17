@@ -63,6 +63,32 @@ void main() {
     );
 
     test(
+      'when the callback succeeds but releasing the savepoint fails once '
+      'then the savepoint is rolled back and released again and the '
+      'release error is rethrown.',
+      () async {
+        transaction.failFirstReleaseOnly = true;
+
+        await expectLater(
+          DatabaseUtil.runInTransactionOrSavepoint(
+            _UnusedDatabase(),
+            transaction,
+            (_) async => 42,
+          ),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              'release failed',
+            ),
+          ),
+        );
+
+        expect(calls, ['create', 'release', 'rollback', 'release']);
+      },
+    );
+
+    test(
       'when the callback throws and rolling back fails '
       'then the savepoint is not released and a '
       'RollbackToSavepointFailedException is thrown.',
@@ -90,6 +116,8 @@ class _RecordingTransaction implements Transaction {
   final List<String> calls;
   bool failRollback = false;
   bool failRelease = false;
+  bool failFirstReleaseOnly = false;
+  int releaseCount = 0;
 
   @override
   Future<Savepoint> createSavepoint() async {
@@ -125,7 +153,11 @@ class _RecordingSavepoint implements Savepoint {
   @override
   Future<void> release() async {
     _transaction.calls.add('release');
-    if (_transaction.failRelease) throw StateError('release failed');
+    _transaction.releaseCount++;
+    if (_transaction.failRelease ||
+        (_transaction.failFirstReleaseOnly && _transaction.releaseCount == 1)) {
+      throw StateError('release failed');
+    }
   }
 }
 

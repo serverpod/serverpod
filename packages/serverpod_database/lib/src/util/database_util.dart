@@ -22,8 +22,8 @@ abstract class DatabaseUtil {
   ///
   ///   In case [f] errs, this method rolls back to the previously created savepoint, thus undoing any
   ///   changes made in [f], and then releases it. If the rollback or release should fail for whatever reason,
-  ///   this method will throw a [RollbackToSavepointFailedException], with the error from [f]
-  ///   available as `innerException`. In this case, the entire [transaction] is in an unclear
+  ///   this method will throw a [RollbackToSavepointFailedException], with the error from the
+  ///   failed rollback or release available as `innerException`. In this case, the entire [transaction] is in an unclear
   ///   state and should probably be discarded by the caller.
   ///
   ///   Callers that pass a [transaction] should ensure that it is not used in parallel while this method
