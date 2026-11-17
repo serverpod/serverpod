@@ -47,7 +47,11 @@ class DatabaseSessionLogWriter extends SessionLogWriter {
   Future<void> dispose() async {
     if (_closing) return;
     _closing = true;
-    final pending = _inflight.map((f) => f.catchError((_) => null)).toList();
+    // Discard results before ignoring errors: a tracked Future<int> cannot
+    // recover with null through catchError.
+    final pending = _inflight
+        .map((f) => f.then<void>((_) {}, onError: (Object _) {}))
+        .toList();
     await Future.wait(pending).timeout(
       _drainTimeout,
       onTimeout: () => const <void>[],
