@@ -36,12 +36,10 @@ PostgreSQL 13+ on Windows 10 1803+ supports AF_UNIX, and the Windows
 bundle is built with that flag. Dart 3.11+ added
 `InternetAddressType.unix` support on Windows.
 
-`requireUnixSocketSupport()` (in `serverpod_shared`) enforces the Dart
-SDK requirement; it does not enforce the OS version. The default transport
-automatically falls back to loopback TCP when the running Dart SDK lacks
-AF_UNIX support. Explicitly requesting `UnixTransport()` on a Windows version
-older than 1803 will fail at PG bind time with a less-friendly error; use
-`TcpTransport()` on those hosts.
+The minimum Dart SDK requirement is 3.12.2, so all supported SDKs include
+AF_UNIX support. The default transport is `UnixTransport()` on all supported
+platforms. On a Windows version older than 1803, binding the PostgreSQL Unix
+socket still fails; explicitly select `TcpTransport()` on those hosts.
 
 ### 3. Elevated tokens
 

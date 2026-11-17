@@ -125,7 +125,7 @@ The runner's MCP socket survives this operation because the socket is owned by t
 
 The shared tool/resource definitions live in `lib/src/mcp/runner_surface.dart` and are consumed by both the runner-side server and the bridge forwarders.
 
-The low-level Unix socket primitives live in `serverpod_shared` (`bindUnixSocket`, `connectUnixSocket`, `hasUnixSocketSupport`, and the `sockaddr_un.sun_path` length checks). `bindUnixSocket` unlinks any stale file before binding and shortens the path to fit the platform's socket-path limit (104 bytes on macOS, 108 on Linux/Windows).
+The low-level Unix socket primitives live in `serverpod_shared` (`bindUnixSocket`, `connectUnixSocket`, and the `sockaddr_un.sun_path` length checks). `bindUnixSocket` unlinks any stale file before binding and shortens the path to fit the platform's socket-path limit (104 bytes on macOS, 108 on Linux/Windows).
 
 ### Runner side (`lib/src/commands/start/mcp_socket.dart`)
 

@@ -5,35 +5,6 @@ import 'package:path/path.dart' as p;
 
 import 'file_ex.dart';
 
-/// Throws a [SocketException] if the current platform does not support Unix
-/// domain sockets.
-///
-/// On Windows, AF_UNIX sockets require Dart 3.11+. On macOS and Linux they
-/// are always available.
-void requireUnixSocketSupport() {
-  if (!hasUnixSocketSupport()) {
-    throw SocketException(
-      'Unix domain sockets require Dart 3.11+ on Windows '
-      '(current: ${Platform.version.split(' ').first}).',
-    );
-  }
-}
-
-/// Returns `true` if the current platform supports Unix domain sockets.
-///
-/// On Windows, AF_UNIX sockets require Dart 3.11+. On macOS and Linux they
-/// are always available.
-bool hasUnixSocketSupport() {
-  if (Platform.isWindows) {
-    final parts = Platform.version.split(' ').first.split('.');
-    final major = int.parse(parts[0]);
-    final minor = parts.length > 1 ? int.parse(parts[1]) : 0;
-
-    if (major < 3 || (major == 3 && minor < 11)) return false;
-  }
-  return true; // supported on other platforms if it compiles
-}
-
 /// Returns the shortest equivalent form of [path].
 ///
 /// Normalizes the path (removing `.`, `..`, duplicate separators), then
@@ -93,7 +64,6 @@ int _unixSocketPathBytes(String path) =>
 /// Removes any stale socket file before binding and uses [shortestPath] to
 /// minimize the path length.
 Future<ServerSocket> bindUnixSocket(String path) async {
-  requireUnixSocketSupport();
   requireUnixSocketPathFits(path);
 
   // Clean up stale socket file if it exists.
@@ -111,7 +81,6 @@ Future<ServerSocket> bindUnixSocket(String path) async {
 /// to 104-108 bytes). If [timeout] is provided, the connect attempt is
 /// abandoned with a [SocketException] after that duration.
 Future<Socket> connectUnixSocket(String path, {Duration? timeout}) async {
-  requireUnixSocketSupport();
   requireUnixSocketPathFits(path);
 
   return Socket.connect(
