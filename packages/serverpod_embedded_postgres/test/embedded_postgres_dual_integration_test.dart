@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import 'test_util/select_one.dart';
@@ -61,7 +60,6 @@ void main() {
         await pg_.stop();
       }
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 120)),
   );
 
@@ -78,7 +76,6 @@ void main() {
         await pg_.stop();
       }
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 120)),
   );
 
@@ -106,7 +103,6 @@ void main() {
         await dual.stop();
       }
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 180)),
   );
 
@@ -131,7 +127,6 @@ void main() {
         await holder.close();
       }
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 120)),
   );
 
@@ -159,7 +154,6 @@ void main() {
         ),
       );
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 120)),
   );
 
@@ -179,7 +173,6 @@ void main() {
       expect(pg_.tcpEndpoint!.port, holder.port);
       expect(await selectOne(pg_.tcpEndpoint!), 1);
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 120)),
   );
 
@@ -201,7 +194,6 @@ void main() {
 
       expect(await selectOne(pg_.tcpEndpoint!), 1);
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 180)),
   );
 
@@ -229,7 +221,6 @@ void main() {
         await attached.stop();
       }
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 180)),
   );
 
@@ -262,7 +253,6 @@ void main() {
         ),
       );
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 180)),
   );
 
@@ -297,7 +287,6 @@ void main() {
         await running.stop();
       }
     },
-    skip: !hasUnixSocketSupport(),
     timeout: const Timeout(Duration(seconds: 180)),
   );
 }

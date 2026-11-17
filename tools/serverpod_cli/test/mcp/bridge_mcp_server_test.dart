@@ -6,7 +6,6 @@ import 'package:dart_mcp/client.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
 
@@ -29,7 +28,6 @@ import '../test_util/fake_runner_api.dart';
 void main() {
   group(
     'Given a BridgeMcpServer wired to a running runner socket,',
-    skip: !hasUnixSocketSupport(),
     () {
       late Directory tempServerDir;
       late McpSocketServer runner;
@@ -138,7 +136,6 @@ void main() {
 
   group(
     'Given a BridgeMcpServer wired to a socket with no runner listening',
-    skip: !hasUnixSocketSupport(),
     () {
       late Directory tempServerDir;
       late _Pair pair;
@@ -285,7 +282,6 @@ void main() {
 
   group(
     'Given a BridgeMcpServer that auto-connects after the runner appears,',
-    skip: !hasUnixSocketSupport(),
     () {
       test(
         'when the first call lands before the runner starts and the second after, '
@@ -334,7 +330,6 @@ void main() {
 
   group(
     'Given a BridgeMcpServer that has served a call through one runner,',
-    skip: !hasUnixSocketSupport(),
     () {
       late Directory tempServerDir;
       late String socketPath;

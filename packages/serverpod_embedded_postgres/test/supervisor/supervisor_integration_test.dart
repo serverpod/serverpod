@@ -12,7 +12,6 @@ import 'package:serverpod_embedded_postgres/src/binary/maven_url.dart';
 import 'package:serverpod_embedded_postgres/src/cluster/cluster_store.dart';
 import 'package:serverpod_embedded_postgres/src/supervisor/process_identity.dart';
 import 'package:serverpod_embedded_postgres/src/supervisor/supervisor.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 /// End-to-end test: BinaryStore -> ClusterStore -> Supervisor -> SELECT 1.
@@ -51,15 +50,8 @@ void main() {
     if (dataRoot.existsSync()) dataRoot.deleteSync(recursive: true);
   });
 
-  // Tests below use UnixTransport. Skip on platforms without Dart UDS
-  // support (Windows < Dart 3.11).
-  var udsSkip = hasUnixSocketSupport()
-      ? null
-      : 'Unix domain sockets not available on this Dart/platform';
-
   group(
     'Given an initialized cluster and the real Zonky binaries',
-    skip: udsSkip,
     () {
       test(
         'when Supervisor.start runs with UnixTransport '

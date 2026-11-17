@@ -2,24 +2,20 @@ import 'dart:io';
 
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
   test(
     'Given the public embedded PostgreSQL API, '
     'when constructing EmbeddedPostgresOptions with defaults, '
-    'then a supported local transport is selected and version matches the default.',
+    'then Unix transport is selected and version matches the default.',
     () {
       var opts = EmbeddedPostgresOptions(
         dataDir: Directory('/tmp/_unused'),
         databaseName: 'projectname',
       );
 
-      expect(
-        opts.transport,
-        hasUnixSocketSupport() ? isA<UnixTransport>() : isA<TcpTransport>(),
-      );
+      expect(opts.transport, isA<UnixTransport>());
       expect(opts.username, defaultUsername);
       expect(opts.version, defaultPostgresVersion);
       expect(opts.startTimeout, const Duration(seconds: 60));

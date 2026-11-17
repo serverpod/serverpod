@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 /// Public-API end-to-end: EmbeddedPostgres.start -> endpoint -> SELECT 1
@@ -41,7 +40,7 @@ void main() {
 
         expect(pg_.isRunning, isTrue);
         expect(pg_.pid, isNotNull);
-        expect(pg_.endpoint.isUnixSocket, hasUnixSocketSupport());
+        expect(pg_.endpoint.isUnixSocket, isTrue);
 
         var conn = await pg.Connection.open(
           pg_.endpoint,
