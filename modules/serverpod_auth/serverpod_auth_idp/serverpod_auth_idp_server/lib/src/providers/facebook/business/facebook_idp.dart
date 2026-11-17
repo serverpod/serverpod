@@ -124,7 +124,8 @@ class FacebookIdp implements IdentityProvider {
           authUserId: account.authUserId,
           transaction: transaction,
           method: method,
-          scopes: account.scopes,
+          // New-account callbacks may have changed the user's scopes.
+          scopes: account.newAccount ? null : account.scopes,
         );
       },
     );

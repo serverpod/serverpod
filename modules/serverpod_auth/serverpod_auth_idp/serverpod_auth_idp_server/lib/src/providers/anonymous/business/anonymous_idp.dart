@@ -83,11 +83,11 @@ class AnonymousIdp implements IdentityProvider {
           transaction: transaction,
         );
 
+        // Omit scopes so the token manager reads changes made by callbacks.
         return _tokenManager.issueToken(
           session,
           authUserId: result.authUserId,
           method: method,
-          scopes: result.scopes,
           transaction: transaction,
         );
       },
