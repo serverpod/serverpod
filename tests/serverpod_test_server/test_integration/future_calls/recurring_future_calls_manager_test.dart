@@ -18,6 +18,16 @@ class CompleterTestCall extends FutureCall<SimpleData>
   }
 }
 
+class CountingTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
+  int invocations = 0;
+
+  @override
+  Future<void> invoke(Session session, SimpleData? object) async {
+    invocations++;
+  }
+}
+
 void main() async {
   withServerpod(
     'Given FutureCallManager with registered recurring cron FutureCall that is due',
@@ -64,6 +74,34 @@ void main() async {
           where: (entry) => entry.name.equals(testCallName),
         );
       });
+
+      group(
+        'when the same recurring cron call is scheduled again with the same identifier',
+        () {
+          setUp(() async {
+            await futureCallManager.scheduleFutureCall(
+              testCallName,
+              data,
+              DateTime.now().subtract(const Duration(seconds: 1)),
+              '1',
+              identifier,
+              scheduling: CronFutureCallScheduling(cron: cronExpression),
+            );
+          });
+
+          test(
+            'then the pending chain is replaced instead of duplicated',
+            () async {
+              final futureCallEntries = await FutureCallEntry.db.find(
+                session,
+                where: (entry) => entry.name.equals(testCallName),
+              );
+
+              expect(futureCallEntries, hasLength(1));
+            },
+          );
+        },
+      );
 
       group('when running scheduled FutureCalls', () {
         late List<FutureCallEntry> oldFutureCallEntries;
@@ -424,6 +462,100 @@ void main() async {
               expect(futureCallEntries, isEmpty);
             },
           );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a recurring FutureCall whose entry survived a crash during a run',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late FutureCallManager futureCallManager;
+      late CountingTestCall testCall;
+      late Session session;
+      final testCallName = 'test-recurring-crash-recovery-call';
+      final identifier = 'recurring-crash-recovery-id';
+      final interval = Duration(minutes: 5);
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        futureCallManager =
+            FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+                .withConfig(
+                  FutureCallConfig(scanInterval: Duration(milliseconds: 10)),
+                )
+                .build();
+
+        testCall = CountingTestCall();
+
+        futureCallManager.registerFutureCall(testCall, testCallName);
+
+        await futureCallManager.scheduleFutureCall(
+          testCallName,
+          SimpleData(num: 1),
+          DateTime.now().subtract(const Duration(seconds: 1)),
+          '1',
+          identifier,
+          scheduling: IntervalFutureCallScheduling(interval: interval),
+        );
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.deleteWhere(
+          session,
+          where: (entry) => entry.name.equals(testCallName),
+        );
+      });
+
+      test(
+        'when the crashed entry is re-claimed and executed '
+        'then no second parallel chain is created',
+        () async {
+          // First run: executes the call and schedules the next occurrence.
+          await futureCallManager.runScheduledFutureCalls();
+          expect(testCall.invocations, 1);
+
+          final entriesAfterFirstRun = await FutureCallEntry.db.find(
+            session,
+            where: (entry) => entry.name.equals(testCallName),
+          );
+          expect(entriesAfterFirstRun, hasLength(1));
+
+          // Simulate a crash during a run: the process died while executing an
+          // occurrence, so its entry stayed behind and no successor was ever
+          // inserted. Remove the successor and insert a copy of the consumed
+          // entry that is due now.
+          await FutureCallEntry.db.deleteRow(
+            session,
+            entriesAfterFirstRun.first,
+          );
+          final crashedEntry = entriesAfterFirstRun.first.copyWith(
+            id: null,
+            time: DateTime.now().subtract(const Duration(seconds: 1)),
+          );
+          await FutureCallEntry.db.insertRow(session, crashedEntry);
+
+          // The recovered instance (a fresh manager, as after a server restart)
+          // re-claims the stale entry and executes it.
+          final restartedManager =
+              FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+                  .withConfig(
+                    FutureCallConfig(scanInterval: Duration(milliseconds: 10)),
+                  )
+                  .build();
+          restartedManager.registerFutureCall(testCall, testCallName);
+          await restartedManager.runScheduledFutureCalls();
+          expect(testCall.invocations, 2);
+
+          // The chain still has exactly one pending occurrence instead of the
+          // two parallel chains the old scheduling created.
+          final entriesAfterRecovery = await FutureCallEntry.db.find(
+            session,
+            where: (entry) => entry.name.equals(testCallName),
+          );
+          expect(entriesAfterRecovery, hasLength(1));
         },
       );
     },
