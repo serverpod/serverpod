@@ -12,7 +12,26 @@ abstract interface class Savepoint {
   Future<void> release();
 
   /// Rolls back the transaction to the state of the savepoint.
+  ///
+  /// The savepoint remains established after this call, so it can be rolled
+  /// back to again later. Once the code block that belongs to the savepoint is
+  /// finished, call [Savepoint.release] (or use [rollbackAndRelease]) to end
+  /// the savepoint's nesting level.
   Future<void> rollback();
+}
+
+/// Convenience methods on a [Savepoint].
+extension SavepointRollbackAndRelease on Savepoint {
+  /// Rolls back the transaction to the state of the savepoint and then
+  /// releases it, ending the savepoint's nesting level.
+  ///
+  /// This is the appropriate cleanup when the block belonging to the savepoint
+  /// is finished after a failure: `ROLLBACK TO SAVEPOINT` alone only undoes
+  /// the changes made since the savepoint, it does not remove the savepoint.
+  Future<void> rollbackAndRelease() async {
+    await rollback();
+    await release();
+  }
 }
 
 /// Holds the state of a running database transaction.

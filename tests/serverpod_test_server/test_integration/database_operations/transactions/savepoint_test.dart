@@ -140,6 +140,69 @@ void main() async {
     });
   });
 
+  test(
+    'Given a transaction with data inserted after savepoint '
+    'when rolling back and releasing the savepoint '
+    'then the savepoint nesting level is ended and no data is persisted in the database',
+    () async {
+      await session.db.transaction<void>(
+        (transaction) async {
+          var savepoint = await transaction.createSavepoint();
+          await SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 1),
+            transaction: transaction,
+          );
+          await savepoint.rollbackAndRelease();
+        },
+      );
+
+      var fetchedData = await SimpleData.db.find(session);
+
+      expect(fetchedData, isEmpty);
+    },
+  );
+
+  group('Given a savepoint that has been rolled back and released, '
+      'when rolling back to it again ', () {
+    late Future<void> transactionFuture;
+    setUp(() async {
+      transactionFuture = session.db.transaction<void>(
+        (transaction) async {
+          var savepoint = await transaction.createSavepoint();
+          await SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 1),
+            transaction: transaction,
+          );
+          await savepoint.rollbackAndRelease();
+          await savepoint.rollback();
+        },
+      );
+    });
+
+    test('then database exception is thrown', () async {
+      await expectLater(
+        transactionFuture,
+        throwsA(
+          isA<DatabaseQueryException>().having(
+            (e) => e.code,
+            'code',
+            PgErrorCode.invalidSavepointSpecification,
+          ),
+        ),
+      );
+    });
+
+    test('then no data is persisted in the database', () async {
+      await transactionFuture.catchError((e) => null);
+
+      var fetchedData = await SimpleData.db.find(session);
+
+      expect(fetchedData, isEmpty);
+    });
+  });
+
   group(
     'Given a transaction with two savepoints with data insertion in between '
     'when rolling back to first second savepoint after first has been released ',

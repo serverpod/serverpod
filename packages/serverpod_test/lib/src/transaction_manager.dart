@@ -95,10 +95,11 @@ class TransactionManager {
     _savepoints.add(savepoint);
   }
 
-  /// Rolls back the database to the previous savepoint in the current transaction.
+  /// Rolls back the database to the previous savepoint in the current
+  /// transaction and releases it, so that no nesting level is left behind.
   Future<void> rollbackToPreviousSavepoint({bool unlock = false}) async {
     var savepoint = await _popPreviousSavepoint(unlock: unlock);
-    await savepoint.rollback();
+    await savepoint.rollbackAndRelease();
   }
 
   /// Removes the previous savepoint in the current transaction.
@@ -134,7 +135,7 @@ class TransactionManager {
       // This handles cases where an exception other than DatabaseException occurred
       if (_savepoints.isNotEmpty) {
         var lastSavepoint = _savepoints.removeLast();
-        await lastSavepoint.rollback();
+        await lastSavepoint.rollbackAndRelease();
       }
     }
   }
