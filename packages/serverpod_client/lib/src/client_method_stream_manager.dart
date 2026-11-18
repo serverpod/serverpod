@@ -158,7 +158,21 @@ final class ClientMethodStreamManager {
     );
 
     _addMessageToWebSocket(openCommand);
-    var openResponse = await inboundStreamContext.openCompleter.future;
+
+    var openResponse = await inboundStreamContext.openCompleter.future.timeout(
+      _connectionTimeout,
+      onTimeout: () {
+        _inboundStreams.remove(inboundStreamKey);
+        // The socket is most likely half open (the server never answers the
+        // open command). Drop it so that the next open connects anew, and
+        // surface the timeout to the caller instead of hanging until the
+        // idle timeout closes the connection.
+        unawaited(
+          closeAllConnections(const ConnectionAttemptTimedOutException()),
+        );
+        throw const ConnectionAttemptTimedOutException();
+      },
+    );
 
     if (openResponse != OpenMethodStreamResponseType.success) {
       _inboundStreams.remove(inboundStreamKey);
@@ -238,6 +252,17 @@ final class ClientMethodStreamManager {
   /// If an exception is provided, it will be added to the inbound stream
   /// controller.
   Future<void> _closeAllStreams([Object? exception]) async {
+    // Complete the pending stream open attempts, otherwise their futures
+    // would never settle (e.g. when the connection is closed while an open
+    // response is awaited).
+    for (var c in _inboundStreams.values) {
+      if (c.openCompleter.isCompleted) continue;
+      c.openCompleter.completeError(
+        exception ?? const WebSocketClosedException(),
+        StackTrace.current,
+      );
+    }
+
     var inputControllers = _inboundStreams.values
         .map((c) => c.controller)
         .toList();
