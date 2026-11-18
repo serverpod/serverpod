@@ -405,15 +405,21 @@ class FutureCallManager {
       // is re-claimed and executed later without ever inserting a second,
       // parallel chain.
       await _internalSession.db.transaction((transaction) async {
-        await FutureCallEntry.db.deleteWhere(
+        final deleted = await FutureCallEntry.db.deleteWhere(
           _internalSession,
           transaction: transaction,
           where: (t) => t.id.equals(futureCallEntry.id),
         );
-        await _scheduleNextRecurringCallIfNeeded(
-          futureCallEntry,
-          transaction: transaction,
-        );
+        // If the entry is already gone, the chain was cancelled while this run
+        // was in flight; a cancelled chain must not resurrect itself, so the
+        // next occurrence is only inserted when the executed entry still
+        // existed.
+        if (deleted.isNotEmpty) {
+          await _scheduleNextRecurringCallIfNeeded(
+            futureCallEntry,
+            transaction: transaction,
+          );
+        }
       });
     }
   }

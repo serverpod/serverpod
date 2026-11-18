@@ -28,6 +28,18 @@ class CountingTestCall extends FutureCall<SimpleData>
   }
 }
 
+class GatedTestCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
+  final Completer<void> release = Completer<void>();
+  final Completer<void> started = Completer<void>();
+
+  @override
+  Future<void> invoke(Session session, SimpleData? object) async {
+    started.complete();
+    await release.future;
+  }
+}
+
 void main() async {
   withServerpod(
     'Given FutureCallManager with registered recurring cron FutureCall that is due',
@@ -556,6 +568,71 @@ void main() async {
             where: (entry) => entry.name.equals(testCallName),
           );
           expect(entriesAfterRecovery, hasLength(1));
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a recurring FutureCall that is cancelled while a run is in flight',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late FutureCallManager futureCallManager;
+      late GatedTestCall testCall;
+      late Session session;
+      final testCallName = 'test-recurring-cancel-mid-run-call';
+      final identifier = 'recurring-cancel-mid-run-id';
+      final interval = Duration(minutes: 5);
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        futureCallManager =
+            FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+                .withConfig(
+                  FutureCallConfig(scanInterval: Duration(milliseconds: 10)),
+                )
+                .build();
+
+        testCall = GatedTestCall();
+
+        futureCallManager.registerFutureCall(testCall, testCallName);
+
+        await futureCallManager.scheduleFutureCall(
+          testCallName,
+          SimpleData(num: 1),
+          DateTime.now().subtract(const Duration(seconds: 1)),
+          '1',
+          identifier,
+          scheduling: IntervalFutureCallScheduling(interval: interval),
+        );
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.deleteWhere(
+          session,
+          where: (entry) => entry.name.equals(testCallName),
+        );
+      });
+
+      test(
+        'when the call is cancelled mid-run then the chain does not resurrect',
+        () async {
+          final running = futureCallManager.runScheduledFutureCalls();
+          await testCall.started.future;
+
+          // The cancel deletes the only pending entry while the run is still
+          // executing.
+          await futureCallManager.cancelFutureCall(identifier);
+
+          testCall.release.complete();
+          await running;
+
+          final entriesAfterCancel = await FutureCallEntry.db.find(
+            session,
+            where: (entry) => entry.name.equals(testCallName),
+          );
+          expect(entriesAfterCancel, isEmpty);
         },
       );
     },
