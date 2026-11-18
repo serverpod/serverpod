@@ -477,6 +477,41 @@ final class ClientMethodStreamManager {
     return true;
   }
 
+  /// Fails only the stream an undecodable message belongs to and keeps the
+  /// websocket connection alive for all other streams.
+  void _failStreamOnUndecodableMessage(MethodStreamMessage message) {
+    var error = message.deserializationError!;
+    var stackTrace = StackTrace.current;
+    var inboundStreamKey = _buildStreamKey(
+      connectionId: message.connectionId,
+      endpoint: message.endpoint,
+      method: message.method,
+    );
+
+    _addMessageToWebSocket(
+      CloseMethodStreamCommand.buildMessage(
+        connectionId: message.connectionId,
+        endpoint: message.endpoint,
+        method: message.method,
+        reason: CloseReason.error,
+      ),
+    );
+
+    var inboundStreamContext = _inboundStreams.remove(inboundStreamKey);
+    if (inboundStreamContext != null) {
+      inboundStreamContext.controller.onCancel = null;
+      if (!inboundStreamContext.controller.isClosed) {
+        inboundStreamContext.controller.addError(
+          MethodStreamMessageDecodingException(error),
+          stackTrace,
+        );
+      }
+      unawaited(_closeControllers([inboundStreamContext.controller]));
+    }
+
+    _tryCloseConnection();
+  }
+
   void _dispatchMethodStreamResponse(OpenMethodStreamResponse message) {
     var inboundStreamKey = _buildStreamKey(
       connectionId: message.connectionId,
@@ -552,6 +587,11 @@ final class ClientMethodStreamManager {
             unawaited(_dispatchSerializableException(message));
             break;
           case MethodStreamMessage():
+            if (message.deserializationError != null) {
+              _failStreamOnUndecodableMessage(message);
+              break;
+            }
+
             var success = _dispatchMessage(message);
             if (success) break;
 

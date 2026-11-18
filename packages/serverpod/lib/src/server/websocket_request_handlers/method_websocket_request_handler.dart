@@ -249,6 +249,24 @@ class MethodWebsocketRequestHandler {
     Server server,
     MethodStreamManager methodStreamManager,
   ) {
+    if (message.deserializationError != null) {
+      // The envelope is valid but the payload could not be decoded. Fail only
+      // the stream this message belongs to and keep the connection alive.
+      server.serverpod.logVerbose(
+        'Failed to decode message: ${message.deserializationError}',
+      );
+      webSocket.tryAdd(
+        CloseMethodStreamCommand.buildMessage(
+          endpoint: message.endpoint,
+          method: message.method,
+          parameter: message.parameter,
+          connectionId: message.connectionId,
+          reason: CloseReason.error,
+        ),
+      );
+      return;
+    }
+
     if (message.parameter == null) {
       // Assume message is intended for method streams return stream.
       webSocket.tryAdd(
@@ -455,11 +473,24 @@ class MethodWebsocketRequestHandler {
             responseType: OpenMethodStreamResponseType.authenticationFailed,
           ),
       };
-    } catch (e) {
-      server.serverpod.logVerbose(
-        'Unexpected error when opening stream: $e',
+    } catch (e, stackTrace) {
+      _reportFrameworkException(
+        server,
+        e,
+        stackTrace,
+        message: 'Unexpected error when opening stream: $message',
+        streamCommandMessage: message,
+        webSocketIntermediary: webSocket,
+        session: maybeSession,
       );
-      throw StateError('Unexpected error when opening stream: $e');
+      // Fail only the stream that is being opened. The other streams on this
+      // websocket are unaffected and keep running.
+      return OpenMethodStreamResponse.buildMessage(
+        endpoint: message.endpoint,
+        method: message.method,
+        connectionId: message.connectionId,
+        responseType: OpenMethodStreamResponseType.internalError,
+      );
     } finally {
       if (!keepSessionOpen) await maybeSession?.close();
     }
