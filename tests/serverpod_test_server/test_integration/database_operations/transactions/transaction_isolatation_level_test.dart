@@ -310,27 +310,53 @@ void main() async {
           settings: settings,
         );
 
-        expectLater(
-          transaction1,
-          throwsA(
-            isA<DatabaseQueryException>().having(
-              (e) => e.code,
-              'code',
-              PgErrorCode.serializationFailure,
-            ),
-          ),
+        // Transaction 2 completes `c2` before it commits, so transaction 1's
+        // update races with transaction 2's commit. PostgreSQL may abort
+        // either transaction with a serialization failure, so accept either
+        // outcome and assert the resulting data accordingly.
+        var outcome1 = await transaction1.then<Object?>(
+          (_) => null,
+          onError: (Object e) => e,
         );
-        await transaction2;
-        var data1AfterTransaction = await SimpleData.db.findById(
-          session,
-          testData1.id!,
+        var outcome2 = await transaction2.then<Object?>(
+          (_) => null,
+          onError: (Object e) => e,
         );
-        expect(data1AfterTransaction?.num, 22);
-        var data2AfterTransaction = await SimpleData.db.findById(
-          session,
-          testData2.id!,
+
+        var serializationFailure = isA<DatabaseQueryException>().having(
+          (e) => e.code,
+          'code',
+          PgErrorCode.serializationFailure,
         );
-        expect(data2AfterTransaction?.num, 2);
+
+        if (outcome2 == null) {
+          // Transaction 2 committed, transaction 1 was aborted.
+          expect(outcome1, serializationFailure);
+          var data1AfterTransaction = await SimpleData.db.findById(
+            session,
+            testData1.id!,
+          );
+          expect(data1AfterTransaction?.num, 22);
+          var data2AfterTransaction = await SimpleData.db.findById(
+            session,
+            testData2.id!,
+          );
+          expect(data2AfterTransaction?.num, 2);
+        } else {
+          // Transaction 1 committed, transaction 2 was aborted.
+          expect(outcome1, isNull);
+          expect(outcome2, serializationFailure);
+          var data1AfterTransaction = await SimpleData.db.findById(
+            session,
+            testData1.id!,
+          );
+          expect(data1AfterTransaction?.num, 1);
+          var data2AfterTransaction = await SimpleData.db.findById(
+            session,
+            testData2.id!,
+          );
+          expect(data2AfterTransaction?.num, 11);
+        }
       });
     },
   );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
@@ -160,6 +162,11 @@ void main() {
         setUpAll(() async {
           endpointCall = endpoints.testTools
               .createSimpleDatasInParallelTransactionCalls(sessionBuilder);
+          // The endpoint call is expected to throw. Attach a no-op error
+          // handler immediately so that a failure occurring before the first
+          // test attaches its expectation does not surface as an unhandled
+          // error in setUpAll.
+          unawaited(endpointCall.catchError((_) {}));
         });
 
         test('then should enter invariant state and throw', () async {
