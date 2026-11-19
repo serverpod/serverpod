@@ -3,8 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_mcp/client.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
+import 'package:serverpod_cli/src/mcp/runner_surface.dart';
+import 'package:serverpod_cli/src/mcp/serverpod_issue_reporter.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:stream_channel/stream_channel.dart';
@@ -177,6 +181,7 @@ void main() {
               'spawn_flutter_app',
               'get_flutter_app_dtd',
               'tail_runner_logs',
+              'report_serverpod_issue',
             }),
           );
         },
@@ -280,6 +285,354 @@ void main() {
           expect(jsonDecode(text), lines.sublist(2));
         },
       );
+    },
+  );
+
+  group(
+    'Given a BridgeMcpServer with no runner listening,',
+    () {
+      late Directory tempServerDir;
+      late _Pair pair;
+      late List<http.Request> requests;
+      late http.Response response;
+
+      setUp(() async {
+        tempServerDir = await Directory.systemTemp.createTemp('bt');
+        requests = [];
+        response = http.Response('', 201);
+        pair = await _makeBridgePair(
+          '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock',
+          logPath: serverpodRunnerLogPath(tempServerDir.path),
+          serverDir: tempServerDir.path,
+          issueReporter: ServerpodIssueReporter(
+            url: Uri.parse('https://feedback.test/feedback'),
+            client: MockClient((request) async {
+              requests.add(request);
+              return response;
+            }),
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await pair.dispose();
+        await _safeDelete(tempServerDir);
+      });
+
+      group('with a feedback service that creates issues,', () {
+        group('when calling report_serverpod_issue for a bug,', () {
+          late CallToolResult result;
+
+          setUp(() async {
+            result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration drops index',
+                  'description': 'Renaming a column drops its index.',
+                  'type': 'bug',
+                },
+              ),
+            );
+          });
+
+          test('then the result is not an error', () {
+            expect(result.isError, isNull);
+          });
+
+          test('then the result says the report was sent', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('Report sent'),
+            );
+          });
+
+          test(
+            'then the report is sent with its title, description and type',
+            () {
+              final body =
+                  jsonDecode(requests.single.body) as Map<String, dynamic>;
+              expect(body, containsPair('title', 'Migration drops index'));
+              expect(
+                body,
+                containsPair(
+                  'description',
+                  'Renaming a column drops its index.',
+                ),
+              );
+              expect(body, containsPair('type', 'bug'));
+            },
+          );
+
+          test(
+            'then the report context names the MCP client that filed it',
+            () {
+              final body =
+                  jsonDecode(requests.single.body) as Map<String, dynamic>;
+              expect(
+                body['context'],
+                allOf(
+                  containsPair('agent', 'bridge-test-client'),
+                  containsPair('agentVersion', '0.0.0'),
+                ),
+              );
+            },
+          );
+
+          test('then the report context holds the MCP protocol version', () {
+            final body =
+                jsonDecode(requests.single.body) as Map<String, dynamic>;
+            expect(
+              body['context'],
+              containsPair(
+                'mcpVersion',
+                ProtocolVersion.latestSupported.versionString,
+              ),
+            );
+          });
+        });
+
+        test(
+          'when calling report_serverpod_issue without a type, '
+          'then the report is sent as feedback',
+          () async {
+            await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration tools are hard to discover',
+                  'description': 'It took a while to find `create_migration`.',
+                },
+              ),
+            );
+
+            final body =
+                jsonDecode(requests.single.body) as Map<String, dynamic>;
+            expect(body, containsPair('type', 'feedback'));
+          },
+        );
+
+        test(
+          'when calling report_serverpod_issue with a title padded by whitespace, '
+          'then the report is sent with the title trimmed.',
+          () async {
+            await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': '  Migration drops index  ',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+
+            final body =
+                jsonDecode(requests.single.body) as Map<String, dynamic>;
+            expect(body, containsPair('title', 'Migration drops index'));
+          },
+        );
+
+        test(
+          'when calling report_serverpod_issue with a title of the maximum length padded by whitespace, '
+          'then the report is sent with the title trimmed.',
+          () async {
+            final title = 'x' * reportServerpodIssueTitleMaxLength;
+
+            await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': '  $title  ',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+
+            final body =
+                jsonDecode(requests.single.body) as Map<String, dynamic>;
+            expect(body, containsPair('title', title));
+          },
+        );
+
+        group(
+          'when calling report_serverpod_issue with a description over the maximum length,',
+          () {
+            late CallToolResult result;
+
+            setUp(() async {
+              result = await pair.client.callTool(
+                CallToolRequest(
+                  name: 'report_serverpod_issue',
+                  arguments: {
+                    'title': 'Migration drops index',
+                    'description':
+                        'y' * (reportServerpodIssueDescriptionMaxLength + 1),
+                  },
+                ),
+              );
+            });
+
+            test(
+              'then the result is an error stating the length and the limit.',
+              () {
+                expect(result.isError, isTrue);
+                expect(
+                  (result.content.single as TextContent).text,
+                  '`description` is 50001 characters; at most 50000 are allowed.',
+                );
+              },
+            );
+
+            test('then no report is sent.', () {
+              expect(requests, isEmpty);
+            });
+          },
+        );
+
+        group(
+          'when calling report_serverpod_issue with a blank description,',
+          () {
+            late CallToolResult result;
+
+            setUp(() async {
+              result = await pair.client.callTool(
+                CallToolRequest(
+                  name: 'report_serverpod_issue',
+                  arguments: {
+                    'title': 'Migration drops index',
+                    'description': ' ',
+                  },
+                ),
+              );
+            });
+
+            test('then the result is an error', () {
+              expect(result.isError, isTrue);
+            });
+
+            test('then no report is sent', () {
+              expect(requests, isEmpty);
+            });
+          },
+        );
+      });
+
+      group('with a feedback service that returns the created issue url,', () {
+        setUp(() {
+          response = http.Response(
+            jsonEncode({'url': 'https://linear.app/serverpod/issue/SP-123'}),
+            201,
+          );
+        });
+
+        test(
+          'when calling report_serverpod_issue, '
+          'then the result holds the url.',
+          () async {
+            final result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration drops index',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+
+            expect(
+              (result.content.single as TextContent).text,
+              'Report sent to the Serverpod team. '
+              'Issue: https://linear.app/serverpod/issue/SP-123',
+            );
+          },
+        );
+      });
+
+      group('with a feedback service that rejects the report as invalid,', () {
+        setUp(() {
+          response = http.Response(
+            jsonEncode({'error': '"title" is too long.'}),
+            400,
+          );
+        });
+
+        group('when calling report_serverpod_issue,', () {
+          late CallToolResult result;
+
+          setUp(() async {
+            result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration drops index',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+          });
+
+          test('then the result is an error', () {
+            expect(result.isError, isTrue);
+          });
+
+          test('then the result holds the service error message', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('"title" is too long.'),
+            );
+          });
+
+          test('then the result asks the agent to fix it and call again', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('Fix it and call again'),
+            );
+          });
+        });
+      });
+
+      group('with a feedback service that fails internally,', () {
+        setUp(() {
+          response = http.Response(
+            jsonEncode({'error': 'Something went wrong.'}),
+            500,
+          );
+        });
+
+        group('when calling report_serverpod_issue,', () {
+          late CallToolResult result;
+
+          setUp(() async {
+            result = await pair.client.callTool(
+              CallToolRequest(
+                name: 'report_serverpod_issue',
+                arguments: {
+                  'title': 'Migration drops index',
+                  'description': 'Renaming a column drops its index.',
+                },
+              ),
+            );
+          });
+
+          test('then the result is an error', () {
+            expect(result.isError, isTrue);
+          });
+
+          test('then the result suggests retrying once later', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('retry once later'),
+            );
+          });
+
+          test('then the result points the user to GitHub issues', () {
+            expect(
+              (result.content.single as TextContent).text,
+              contains('https://github.com/serverpod/serverpod/issues'),
+            );
+          });
+        });
+      });
     },
   );
 
@@ -424,6 +777,7 @@ Future<_Pair> _makeBridgePair(
   String socketPath, {
   required String logPath,
   required String serverDir,
+  ServerpodIssueReporter? issueReporter,
 }) async {
   final clientToBridge = StreamController<String>();
   final bridgeToClient = StreamController<String>();
@@ -441,6 +795,7 @@ Future<_Pair> _makeBridgePair(
     socketPath: socketPath,
     logPath: logPath,
     serverDir: serverDir,
+    issueReporter: issueReporter,
   );
   final client = MCPClient(
     Implementation(name: 'bridge-test-client', version: '0.0.0'),
