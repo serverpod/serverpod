@@ -13,6 +13,10 @@ abstract class FutureCallDispatch<T> {
   T callWithDelay(Duration delay, {String? identifier});
 
   /// Calls a [FutureCall] at a recurring interval, optionally passing a [String] identifier.
+  ///
+  /// The [identifier] acts as the deduplication key for the recurring chain:
+  /// scheduling a recurring call again with the same identifier replaces the
+  /// previously scheduled chain instead of adding a second one.
   RecurringFutureCallDispatch<T> callRecurring({String? identifier});
 
   /// Cancels a [FutureCall] with the specified identifier. If no future call

@@ -160,6 +160,11 @@ class FutureCallManager {
   /// - [serverId]: The ID of the server responsible for executing the call.
   /// - [identifier]: An optional unique identifier for the call, used for cancellation.
   /// - [scheduling]: An optional scheduling configuration for recurring calls.
+  ///
+  /// For recurring calls ([scheduling] is set) with an [identifier], any
+  /// pending entries with the same identifier are replaced, so scheduling the
+  /// same recurring call again (for example at server startup) does not add a
+  /// second, parallel chain.
   Future<void> scheduleFutureCall(
     String name,
     SerializableModel? object,
@@ -183,6 +188,22 @@ class FutureCallManager {
     );
 
     var session = _internalSession;
+    if (scheduling != null && identifier != null) {
+      await session.db.transaction((transaction) async {
+        await FutureCallEntry.db.deleteWhere(
+          session,
+          transaction: transaction,
+          where: (t) => t.identifier.equals(identifier),
+        );
+        await FutureCallEntry.db.insertRow(
+          session,
+          entry,
+          transaction: transaction,
+        );
+      });
+      return;
+    }
+
     await FutureCallEntry.db.insertRow(session, entry);
   }
 
@@ -355,8 +376,6 @@ class FutureCallManager {
     // claim will run the call and clean up after running.
     if (heartbeatTimer == null) return;
 
-    await _scheduleNextRecurringCallIfNeeded(futureCallEntry);
-
     final futureCallSession = _sessionBuilder(futureCallEntry.name);
 
     try {
@@ -380,10 +399,28 @@ class FutureCallManager {
       await futureCallSession.close(error: error, stackTrace: stackTrace);
     } finally {
       _cancelHeartbeatTimer(heartbeatTimer);
-      await FutureCallEntry.db.deleteWhere(
-        _internalSession,
-        where: (t) => t.id.equals(futureCallEntry.id),
-      );
+      // Deleting the entry and scheduling the next recurring run in the same
+      // transaction guarantees that a recurring chain keeps at most one
+      // pending row, even when the process dies during a run: the stale entry
+      // is re-claimed and executed later without ever inserting a second,
+      // parallel chain.
+      await _internalSession.db.transaction((transaction) async {
+        final deleted = await FutureCallEntry.db.deleteWhere(
+          _internalSession,
+          transaction: transaction,
+          where: (t) => t.id.equals(futureCallEntry.id),
+        );
+        // If the entry is already gone, the chain was cancelled while this run
+        // was in flight; a cancelled chain must not resurrect itself, so the
+        // next occurrence is only inserted when the executed entry still
+        // existed.
+        if (deleted.isNotEmpty) {
+          await _scheduleNextRecurringCallIfNeeded(
+            futureCallEntry,
+            transaction: transaction,
+          );
+        }
+      });
     }
   }
 
@@ -413,14 +450,16 @@ class FutureCallManager {
   /// Schedules [futureCallEntry] for its next recurring run.
   /// This method does nothing if [futureCallEntry] is not recurring.
   Future<void> _scheduleNextRecurringCallIfNeeded(
-    FutureCallEntry futureCallEntry,
-  ) async {
+    FutureCallEntry futureCallEntry, {
+    Transaction? transaction,
+  }) async {
     final nextRunTime = _getNextRecurringRunTime(futureCallEntry);
     if (futureCallEntry.scheduling == null || nextRunTime == null) return;
 
     await FutureCallEntry.db.insertRow(
       _internalSession,
       futureCallEntry.copyWith(id: null, time: nextRunTime),
+      transaction: transaction,
     );
   }
 
