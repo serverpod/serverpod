@@ -6,9 +6,11 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart'
     show vmServiceWsUri;
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
@@ -216,6 +218,10 @@ class FlutterProcess {
         'Failed to launch `$executable`: not found. '
         'Install Flutter (https://flutter.dev) or pass `--no-flutter`.',
       );
+    }
+
+    if (root != null) {
+      await _ensurePubGetIfStale(invocation);
     }
 
     Process process;
@@ -1002,6 +1008,72 @@ class FlutterProcess {
     } finally {
       completer.complete();
     }
+  }
+
+  /// Runs `flutter pub get` when the app has no package resolution or its
+  /// `package_config.json` is older than the resolution's `pubspec.lock`.
+  /// `flutter run` fetches for itself, but its Xcode `flutter assemble` step
+  /// has been seen to fail on a workspace project with a cold `.dart_tool/`
+  /// ("Because the app requires the Flutter SDK, version solving failed").
+  /// A warm resolution short-circuits that step. No-op when deps are
+  /// current. Uses the same SDK invocation as the main spawn so puro
+  /// wrappers don't sit between us and flutter_tools. Pub finds the
+  /// workspace root from the package dir.
+  Future<void> _ensurePubGetIfStale(FlutterInvocation invocation) async {
+    final pkgDir = p.normalize(p.absolute(_flutterPackageDir));
+    if (!File(p.join(pkgDir, 'pubspec.yaml')).existsSync()) return;
+    final packageConfig = _resolvePackageConfig(pkgDir);
+    if (packageConfig != null) {
+      final rootDir = p.dirname(p.dirname(packageConfig));
+      final lockFile = File(p.join(rootDir, 'pubspec.lock'));
+      if (!await lockFile.exists()) return;
+      final lockMtime = (await lockFile.stat()).modified;
+      final cfgMtime = (await File(packageConfig).stat()).modified;
+      if (!lockMtime.isAfter(cfgMtime)) return;
+    }
+    try {
+      await log.progress(
+        'Running flutter pub get in ${p.basename(pkgDir)}',
+        () async {
+          final result = await Process.run(
+            invocation.executable,
+            [...invocation.baseArgs, 'pub', 'get'],
+            workingDirectory: pkgDir,
+            runInShell: _needsShell(invocation.executable),
+          );
+          if (result.exitCode != 0) {
+            log.warning(
+              'flutter pub get exited ${result.exitCode}:\n'
+              '${result.stdout}\n${result.stderr}',
+            );
+          }
+          return result.exitCode == 0;
+        },
+      );
+    } catch (e) {
+      log.warning('flutter pub get failed to spawn: $e');
+    }
+  }
+
+  /// The `package_config.json` the app resolves against: the nearest
+  /// resolution above [pkgDir] that lists the app, the same walk the
+  /// dependency tracker uses. `null` when dependencies have not been fetched
+  /// or the app's pubspec is unreadable.
+  String? _resolvePackageConfig(String pkgDir) {
+    final String packageName;
+    try {
+      packageName = parsePubspec(File(p.join(pkgDir, 'pubspec.yaml'))).name;
+    } catch (e) {
+      log.debug('Flutter package name unreadable at $pkgDir: $e');
+      return null;
+    }
+    final dartToolDir = PackageDependencyTracker.resolveDartToolDir(
+      pkgDir,
+      packageName: packageName,
+    );
+    return dartToolDir == null
+        ? null
+        : p.join(dartToolDir, 'package_config.json');
   }
 
   /// Whether [executable] has to be launched through a shell.
