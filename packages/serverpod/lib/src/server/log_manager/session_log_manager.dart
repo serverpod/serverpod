@@ -24,7 +24,20 @@ class SessionLogManager {
   final bool _disableSlowSessionLogging;
   final String _serverId;
 
-  late final SessionOpen _open;
+  /// Built on first use: a session that never emits anything (the common
+  /// case in production) doesn't need it.
+  late final SessionOpen _open = SessionOpen(
+    sessionId: '${_session.sessionId.hashCode}',
+    kind: _sessionKind(),
+    label: _buildLabel(),
+    startTime: _session.startTime,
+    serverId: _serverId,
+    endpoint: _session.endpoint,
+    method: _session.method,
+    futureCallName: _session is FutureCallSession
+        ? _session.futureCallName
+        : null,
+  );
 
   bool _opened = false;
   bool _closed = false;
@@ -61,19 +74,6 @@ class SessionLogManager {
        _bufferStreamingLogs =
            session is MethodStreamSession &&
            !settingsForSession(session).logStreamingSessionsContinuously {
-    _open = SessionOpen(
-      sessionId: '${_session.sessionId.hashCode}',
-      kind: _sessionKind(),
-      label: _buildLabel(),
-      startTime: session.startTime,
-      serverId: _serverId,
-      endpoint: session.endpoint,
-      method: session.method,
-      futureCallName: session is FutureCallSession
-          ? session.futureCallName
-          : null,
-    );
-
     _stopwatch.start();
 
     // Skipped for InternalSession: _internalLoggingSession is built

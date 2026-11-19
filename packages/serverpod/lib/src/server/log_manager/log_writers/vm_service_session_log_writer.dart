@@ -18,10 +18,12 @@ import '../session_log.dart';
 /// - [close] -> `{type: 'scope_end', id, success, duration, timestamp,
 ///   error, stackTrace, session: {...}}`
 ///
-/// Without a VM service, as in production, [developer.postEvent] is a no-op.
+/// Without a VM service, as in production, [developer.postEvent] is a no-op,
+/// so events are only built while something listens to the extension stream.
 class VmServiceSessionLogWriter extends SessionLogWriter {
   @override
   Future<void> open(SessionOpen event) async {
+    if (!developer.extensionStreamHasListener) return;
     _postEvent({
       'type': 'scope_start',
       'id': event.sessionId,
@@ -39,6 +41,7 @@ class VmServiceSessionLogWriter extends SessionLogWriter {
 
   @override
   Future<void> record(SessionEntry entry) async {
+    if (!developer.extensionStreamHasListener) return;
     switch (entry) {
       case SessionLogEntry e:
         _postEvent({
@@ -83,6 +86,7 @@ class VmServiceSessionLogWriter extends SessionLogWriter {
 
   @override
   Future<void> close(SessionClose event) async {
+    if (!developer.extensionStreamHasListener) return;
     _postEvent({
       'type': 'scope_end',
       'id': event.sessionId,
