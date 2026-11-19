@@ -45,7 +45,7 @@ String _fingerprint(Map<String, FileStamp?> entries) {
 }
 
 /// Stats [paths] in bounded-concurrency batches, preserving their order.
-Future<List<FileStamp?>> _stampAll(List<String> paths) async {
+Future<List<FileStamp?>> stampAll(List<String> paths) async {
   const concurrency = 32;
   final stamps = <FileStamp?>[];
 
@@ -72,7 +72,7 @@ Future<String> _computeFingerprint(
   // project contributes one per generated file, so they are issued together
   // rather than a round trip at a time.
   final paths = [...config.auxiliaryInputPaths, ...generatedFiles];
-  final stamps = await _stampAll(paths);
+  final stamps = await stampAll(paths);
   for (var i = 0; i < paths.length; i++) {
     entries[paths[i]] = stamps[i];
   }
