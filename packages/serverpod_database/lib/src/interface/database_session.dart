@@ -2,6 +2,12 @@ import '../concepts/transaction.dart';
 import '../database.dart';
 
 /// Function type for logging a query.
+///
+/// For a failed query, [stackTrace] is the stack trace of the error. For a
+/// successful query it is [StackTrace.empty], so that queries which are never
+/// logged don't pay for capturing a stack trace. The function is called
+/// synchronously from the query, so an implementation that wants the caller's
+/// stack can capture [StackTrace.current] itself.
 typedef LogQueryFunction =
     void Function({
       required String query,

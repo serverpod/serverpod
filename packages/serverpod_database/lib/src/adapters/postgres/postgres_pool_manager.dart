@@ -73,6 +73,10 @@ class PostgresPoolManager implements DatabasePoolManager {
         queryTimeout: const Duration(minutes: 1),
         sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
         typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
+        // Capturing a stack trace for every statement, in case it fails, was
+        // the largest single cost of a query. Errors get the caller's trace
+        // where they are caught instead (PostgresDatabaseConnection._query).
+        ignoreStackTraces: true,
         onOpen: (connection) async {
           var parameters =
               runtimeParametersBuilder?.call(RuntimeParametersBuilder()) ?? [];
