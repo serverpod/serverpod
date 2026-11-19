@@ -49,7 +49,7 @@ final class ClientMethodStreamManager {
   /// The serialization manager used to serialize and deserialize messages.
   final SerializationManager _serializationManager;
 
-  /// Optional connector used to override [WebSocketChannel.connect] in tests.
+  /// Optional connector used instead of [WebSocketChannel.connect].
   final WebSocketChannel Function(Uri uri)? _webSocketConnector;
 
   /// Lock used to synchronize access when establishing websocket connection.
@@ -70,7 +70,7 @@ final class ClientMethodStreamManager {
     required SerializationManager serializationManager,
     @visibleForTesting Duration? pingInterval,
     @visibleForTesting Duration? idleTimeout,
-    @visibleForTesting WebSocketChannel Function(Uri uri)? webSocketConnector,
+    WebSocketChannel Function(Uri uri)? webSocketConnector,
   }) : _webSocketHost = webSocketHost,
        _connectionTimeout = connectionTimeout,
        _serializationManager = serializationManager,
