@@ -27,6 +27,9 @@ workspace:
   - tools/*
 
 dev_dependencies:
+  # Direct floor for melos' launcher: older versions fail to find the
+  # workspace melos install on Dart 3.14.
+  cli_launcher: ^0.3.4+1
   melos: ^8.0.0
   sort_pubspec_dependencies: ^0.0.2
 

@@ -66,14 +66,14 @@ jobs:
             flutter-version: "3.44.4"
             lint: lint_strict
           - name: latest
-            flutter-version: "3.47.0"
+            flutter-version: "3.50.0"
             lint: lint
           - name: downgrade, floor
             flutter-version: "3.44.4"
             downgrade: true
             lint: lint_loose
           - name: downgrade, latest
-            flutter-version: "3.47.0"
+            flutter-version: "3.50.0"
             downgrade: true
             lint: lint_loose
     steps:
@@ -108,7 +108,7 @@ jobs:
       - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
         with:
-          sdk: "3.13.0"
+          sdk: "3.14.0"
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
@@ -146,7 +146,7 @@ jobs:
       - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
         with:
-          sdk: "3.13.0"
+          sdk: "3.14.0"
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
@@ -192,7 +192,7 @@ jobs:
       - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
         with:
-          sdk: "3.13.0"
+          sdk: "3.14.0"
       - name: Resolve workspace
         uses: ./.github/actions/retry
         with:
@@ -231,7 +231,7 @@ jobs:
       - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
         with:
-          sdk: "3.13.0"
+          sdk: "3.14.0"
       - name: Resolve workspace
         uses: ./.github/actions/retry
         with:
@@ -263,7 +263,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.44.4", "3.47.0"]
+        flutter-version: ["3.44.4", "3.50.0"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -624,7 +624,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.12.2", "3.13.0"]
+        sdk: ["3.12.2", "3.14.0"]
         os: [windows-latest, ubuntu-latest]
         project:
           - packages/serverpod
@@ -677,7 +677,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.12.2", "3.13.0"]
+        sdk: ["3.12.2", "3.14.0"]
         os: [windows-latest, ubuntu-latest]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
@@ -712,7 +712,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.44.4", "3.47.0"]
+        flutter-version: ["3.44.4", "3.50.0"]
         os: [ubuntu-latest, windows-latest]
         include:
           - compiler: dart2js
@@ -720,7 +720,7 @@ jobs:
             platform: chrome
           - os: windows-latest
             platform: edge
-          - flutter-version: "3.47.0"
+          - flutter-version: "3.50.0"
             platform: chrome
             compiler: dart2wasm
 
@@ -744,7 +744,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.44.4", "3.47.0"]
+        flutter-version: ["3.44.4", "3.50.0"]
         os: [windows-latest, ubuntu-latest]
         path: ["packages/serverpod_flutter"]
     steps:
@@ -764,7 +764,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.12.2", "3.13.0"]
+        sdk: ["3.12.2", "3.14.0"]
         shard: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -795,7 +795,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.12.2", "3.13.0"]
+        sdk: ["3.12.2", "3.14.0"]
         shard: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -830,7 +830,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.44.4", "3.47.0"]
+        flutter-version: ["3.44.4", "3.50.0"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -855,7 +855,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ["3.12.2", "3.13.0"]
+        sdk: ["3.12.2", "3.14.0"]
         path: ["packages/serverpod_shared"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -872,7 +872,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.44.4", "3.47.0"]
+        flutter-version: ["3.44.4", "3.50.0"]
         module:
           - server: tests/serverpod_auth_test/serverpod_auth_test_server
             client: tests/serverpod_auth_test/serverpod_auth_test_flutter
@@ -937,7 +937,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dart-version: ["3.12.2", "3.13.0"]
+        dart-version: ["3.12.2", "3.14.0"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -966,7 +966,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dart-version: ["3.12.2", "3.13.0"]
+        dart-version: ["3.12.2", "3.14.0"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -993,7 +993,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dart-version: ["3.12.2", "3.13.0"]
+        dart-version: ["3.12.2", "3.14.0"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-dart-only-workspace
@@ -1014,7 +1014,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.44.4", "3.47.0"]
+        flutter-version: ["3.44.4", "3.50.0"]
         os: [windows-latest, ubuntu-latest]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
@@ -1064,7 +1064,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.12.2", "3.13.0"]
+        sdk: ["3.12.2", "3.14.0"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -1093,7 +1093,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.12.2", "3.13.0"]
+        sdk: ["3.12.2", "3.14.0"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -1116,7 +1116,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.44.4", "3.47.0"]
+        flutter-version: ["3.44.4", "3.50.0"]
         os: [ubuntu-latest]
         shard: [0, 1, 2]
         path: ["tests/serverpod_cli_e2e_test"]
