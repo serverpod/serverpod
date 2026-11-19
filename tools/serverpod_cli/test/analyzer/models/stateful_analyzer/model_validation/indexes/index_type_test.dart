@@ -95,6 +95,43 @@ void main() {
   );
 
   test(
+    'Given a class with a gin index and trgmOps on a String field, '
+    'when the model is validated, '
+    'then no error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            searchText: String
+          indexes:
+            search_trgm_idx:
+              fields: searchText
+              type: gin
+              operatorClass: trgmOps
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+    },
+  );
+
+  test(
     'Given a class with a gin index on a jsonb field, '
     'then no error is collected.',
     () {
