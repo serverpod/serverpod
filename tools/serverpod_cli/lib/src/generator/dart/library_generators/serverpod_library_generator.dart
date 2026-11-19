@@ -165,6 +165,13 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
                         serverpodUrl(true),
                       ),
                   ),
+                  Parameter(
+                    (p) => p
+                      ..name = 'exitProcessOnInitializationError'
+                      ..named = true
+                      ..type = refer('bool', serverpodUrl(true))
+                      ..defaultTo = const Code('true'),
+                  ),
                 ])
                 ..initializers.add(
                   refer('super')
@@ -220,6 +227,9 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
                                               .ifNullThen(refer('inner')),
                                         ]).code,
                                 ).closure,
+                          'exitProcessOnInitializationError': refer(
+                            'exitProcessOnInitializationError',
+                          ),
                         },
                       )
                       .code,
