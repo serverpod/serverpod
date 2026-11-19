@@ -54,6 +54,8 @@ jobs:
           command: dart run melos bootstrap
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
+      - name: Validate changelog entries
+        run: dart run melos run changelog_check
 
   dart_analyze:
     name: dart analyze (${{ matrix.check.name }})
