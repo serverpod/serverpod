@@ -191,6 +191,13 @@ TableMigration? generateTableMigration(
 
   var renameColumns = <String, String>{};
   for (var srcColumn in srcTable.columns) {
+    // Without a stored field name (a live database schema, or a definition
+    // from before column renames), a column whose name still exists in the
+    // target is the same column, not a rename.
+    if (srcColumn.fieldName == null &&
+        dstTable.containsColumnNamed(srcColumn.name)) {
+      continue;
+    }
     var dstColumn = dstByFieldId[srcColumn.effectiveFieldName];
     if (dstColumn == null) continue;
     if (srcColumn.name == dstColumn.name) continue;
