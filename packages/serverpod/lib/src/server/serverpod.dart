@@ -435,6 +435,11 @@ class Serverpod {
   ///     params.vectorIndexQuery(enableSeqScan: false),
   ///   ],
   /// ```
+  ///
+  /// If the database config has `searchPaths` and the returned list contains
+  /// no `SearchPathsConfig`, the configured search paths are applied first, so
+  /// the returned parameters resolve unqualified names against them. The
+  /// returned list is never modified.
   final RuntimeParametersListBuilder? runtimeParametersBuilder;
 
   /// Optional interceptor that replaces the default [Database] for each session.
