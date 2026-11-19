@@ -12,6 +12,10 @@ abstract interface class Savepoint {
   Future<void> release();
 
   /// Rolls back the transaction to the state of the savepoint.
+  ///
+  /// The savepoint stays established after a rollback, so it can be rolled
+  /// back to again. Call [release] once the savepoint is no longer needed;
+  /// otherwise it keeps a nesting level open until the transaction ends.
   Future<void> rollback();
 }
 
