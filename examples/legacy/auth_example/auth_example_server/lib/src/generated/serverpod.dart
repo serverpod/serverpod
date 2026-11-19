@@ -41,6 +41,7 @@ class Serverpod extends _is.Serverpod {
     _is.ExperimentalFeatures? experimentalFeatures,
     _is.RuntimeParametersListBuilder? runtimeParametersBuilder,
     _is.DatabaseInterceptor? databaseInterceptor,
+    bool exitProcessOnInitializationError = true,
   }) : super(
          args,
          _il2as5qe.Protocol(),
@@ -57,5 +58,6 @@ class Serverpod extends _is.Serverpod {
          experimentalFeatures: experimentalFeatures,
          runtimeParametersBuilder: runtimeParametersBuilder,
          databaseInterceptor: databaseInterceptor,
+         exitProcessOnInitializationError: exitProcessOnInitializationError,
        );
 }
