@@ -169,7 +169,7 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
                     (p) => p
                       ..name = 'exitProcessOnInitializationError'
                       ..named = true
-                      ..type = refer('bool', serverpodUrl(true))
+                      ..type = refer('bool')
                       ..defaultTo = const Code('true'),
                   ),
                 ])
