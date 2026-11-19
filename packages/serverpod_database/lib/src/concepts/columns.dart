@@ -28,10 +28,16 @@ abstract class Column<T> {
   final Table table;
 
   /// Query alias for the [Column].
-  String get queryAlias => '${table.queryPrefix}.$columnName';
+  String get queryAlias => _queryAlias;
+
+  // A column and its table don't change once created, and these strings are
+  // used for every query on the table, so they are built once.
+  late final String _queryAlias = '${table.queryPrefix}.$columnName';
 
   /// Field name alias for the [Column] to be used in queries.
-  String get fieldQueryAlias => '${table.queryPrefix}.$fieldName';
+  String get fieldQueryAlias => _fieldQueryAlias;
+
+  late final String _fieldQueryAlias = '${table.queryPrefix}.$fieldName';
 
   /// flag to tell if this [Column] has any [default] value
   final bool hasDefault;
@@ -46,9 +52,9 @@ abstract class Column<T> {
        type = T;
 
   @override
-  String toString() {
-    return '"${table.queryPrefix}"."$_columnName"';
-  }
+  String toString() => _quotedName;
+
+  late final String _quotedName = '"${table.queryPrefix}"."$_columnName"';
 }
 
 /// A [Column] holding [ByteData].

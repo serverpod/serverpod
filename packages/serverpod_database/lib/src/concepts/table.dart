@@ -75,9 +75,12 @@ class Table<T_ID> {
   List<Column> get managedColumns => columns;
 
   /// Query prefix for [Column]s of the table.
-  String get queryPrefix {
-    return tableRelation?.relationQueryAlias ?? tableName;
-  }
+  String get queryPrefix => _queryPrefix;
+
+  // [tableRelation] and [tableName] are final, and the prefix is read for
+  // every column of every query, so it is built once.
+  late final String _queryPrefix =
+      tableRelation?.relationQueryAlias ?? tableName;
 
   /// Table relation for [Column]s of the table.
   final TableRelation? tableRelation;
