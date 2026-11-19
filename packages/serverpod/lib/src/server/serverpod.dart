@@ -448,6 +448,18 @@ class Serverpod {
   /// internal package and may face breaking changes in minor version bumps.
   final DatabaseInterceptor? databaseInterceptor;
 
+  /// Whether the process should exit when [Serverpod] initialization fails
+  /// during construction.
+  ///
+  /// When true (the default), a failure during construction prints the error
+  /// and exits the process, preserving the historical standalone server
+  /// behavior. When false, the error is rethrown to the caller instead, which
+  /// lets an embedded host (e.g. a Flutter application) catch the failure,
+  /// report it, and keep running.
+  ///
+  /// This mirrors [shutdown]'s `exitProcess` parameter.
+  final bool exitProcessOnInitializationError;
+
   /// Creates a new Serverpod.
   ///
   /// ## Experimental features
@@ -470,6 +482,7 @@ class Serverpod {
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
     this.databaseInterceptor,
+    this.exitProcessOnInitializationError = true,
   }) : serverDirectory = Directory(
          p.normalize(p.absolute((serverDirectory ?? Directory.current).path)),
        ),
@@ -489,6 +502,14 @@ class Serverpod {
         config: config,
       );
     } on ExitException catch (e) {
+      if (!exitProcessOnInitializationError) {
+        // Embedded hosts may want to keep running and surface the failure
+        // themselves, so hand the error back instead of exiting.
+        if (e.message.isNotEmpty) {
+          stderr.writeln(e.message);
+        }
+        rethrow;
+      }
       // Construction failed - the object is half-initialized so we
       // can't let control return to the caller. Emit the message
       // synchronously and exit before any async drain could return.
@@ -497,6 +518,11 @@ class Serverpod {
       }
       exit(e.exitCode);
     } catch (e, stackTrace) {
+      if (!exitProcessOnInitializationError) {
+        stderr.writeln('Error initializing Serverpod: $e');
+        stderr.writeln(stackTrace);
+        rethrow;
+      }
       stderr.writeln('Error initializing Serverpod: $e');
       stderr.writeln(stackTrace);
       exit(1);
