@@ -506,6 +506,38 @@ void main() {
   );
 
   test(
+    'Given a method stream message whose payload references an unknown class when building websocket message from string then MethodStreamMessage is returned with a deserializationError and a null object.',
+    () {
+      var serializationManager = _TestSerializationManager();
+      var connectionId = const Uuid().v4obj();
+      var message = MethodStreamMessage.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        connectionId: connectionId,
+        object: _SimpleData('hello world'),
+        serializationManager: serializationManager,
+      );
+
+      // Replace the payload with a class the serialization manager does not
+      // know, keeping the envelope intact.
+      message = message.replaceAll('"_SimpleData"', '"_UnknownClass"');
+
+      var result = WebSocketMessage.fromJsonString(
+        message,
+        serializationManager,
+      );
+
+      expect(result, isA<MethodStreamMessage>());
+      result as MethodStreamMessage;
+      expect(result.object, isNull);
+      expect(result.deserializationError, isNotNull);
+      expect(result.endpoint, 'endpoint');
+      expect(result.method, 'method');
+      expect(result.connectionId, connectionId);
+    },
+  );
+
+  test(
     'Given serializable model with server only field when building MethodStreamMessage then server only field is not included in serialization.',
     () {
       var serializationManager = _TestSerializationManager();
