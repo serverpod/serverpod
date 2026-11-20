@@ -1,0 +1,8 @@
+### Exception thrown when completing an account link would require merging a
+### pre-existing account, but the application has not configured how to merge
+### its own data.
+###
+### Configure an `AccountMergeConfig` with an `applicationMergeHandler` to
+### support this, or keep users from linking sign-in methods that already
+### belong to another account.
+exception: AccountMergeNotConfiguredException

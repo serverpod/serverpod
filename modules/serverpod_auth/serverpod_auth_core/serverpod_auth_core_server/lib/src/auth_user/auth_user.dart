@@ -1,9 +1,18 @@
 export '../generated/protocol.dart'
     show
+        AccountAlreadyLinkedException,
+        AccountLinkConflict,
+        AccountLinkRequest,
+        AccountLinkRequestNotFoundException,
+        AccountLinkResult,
+        AccountLinkStatus,
+        AccountMergeFailedException,
+        AccountMergeNotConfiguredException,
         AuthUser,
         AuthUserBlockedException,
         AuthUserModel,
         AuthUserNotFoundException;
+export 'business/account_link_requests.dart' show AccountLinkRequests;
 export 'business/account_merge_config.dart'
     show AccountMergeConfig, AccountMergeHandler;
 export 'business/account_merger.dart' show AccountMerger;

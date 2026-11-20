@@ -45,7 +45,8 @@ class AuthServices {
   /// that will be used to create the user profiles manager.
   ///
   /// [accountMergeConfig] is the configuration for the account merger that
-  /// will resolve conflicts when merging accounts.
+  /// will resolve conflicts when merging accounts, and for the account link
+  /// requests that lead up to a merge.
   ///
   /// These are passed to the [AuthServices] constructor to create the instance.
   /// {@endtemplate}
@@ -63,6 +64,7 @@ class AuthServices {
       authUsers: AuthUsers(config: authUsersConfig),
       userProfiles: UserProfiles(config: userProfileConfig),
       accountMerger: AccountMerger(config: accountMergeConfig),
+      accountLinkRequests: AccountLinkRequests(config: accountMergeConfig),
     );
     _instance = instance;
   }
@@ -97,6 +99,7 @@ class AuthServices {
     this.authUsers = const AuthUsers(),
     this.userProfiles = const UserProfiles(),
     this.accountMerger = const AccountMerger(),
+    this.accountLinkRequests = const AccountLinkRequests(),
   }) {
     tokenManager = MultiTokenManager(
       primaryTokenManager: primaryTokenManagerBuilder.build(
@@ -158,6 +161,9 @@ class AuthServices {
 
   /// Manager for managing account mergers.
   final AccountMerger accountMerger;
+
+  /// Manager for linking additional sign-in methods to existing accounts.
+  final AccountLinkRequests accountLinkRequests;
 
   /// The token manager that handles token lifecycle operations.
   late final MultiTokenManager tokenManager;

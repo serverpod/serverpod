@@ -121,6 +121,15 @@ class EmailIdp implements IdentityProvider {
           transaction: transaction,
         );
 
+        await AccountLinkRequests.attachToActiveLinkRequest(
+          session,
+          authUserId: result.authUserId,
+          method: method,
+          // Registration always creates the account it signs in to.
+          newAccount: true,
+          transaction: transaction,
+        );
+
         return _tokenManager.issueToken(
           session,
           authUserId: result.authUserId,
@@ -153,6 +162,15 @@ class EmailIdp implements IdentityProvider {
         final authUser = await _authUsers.get(
           session,
           authUserId: authUserId,
+          transaction: transaction,
+        );
+
+        await AccountLinkRequests.attachToActiveLinkRequest(
+          session,
+          authUserId: authUserId,
+          method: method,
+          // Logging in only ever signs in to an existing account.
+          newAccount: false,
           transaction: transaction,
         );
 
@@ -354,6 +372,15 @@ class EmailIdp implements IdentityProvider {
           transaction: transaction,
         );
 
+        await AccountLinkRequests.attachToActiveLinkRequest(
+          session,
+          authUserId: authUserId,
+          method: method,
+          // OTP login only ever signs in to an existing account.
+          newAccount: false,
+          transaction: transaction,
+        );
+
         return _tokenManager.issueToken(
           session,
           authUserId: authUserId,
@@ -389,6 +416,15 @@ class EmailIdp implements IdentityProvider {
           UserProfileData(
             email: result.email,
           ),
+          transaction: transaction,
+        );
+
+        await AccountLinkRequests.attachToActiveLinkRequest(
+          session,
+          authUserId: result.authUserId,
+          method: method,
+          // OTP registration always creates the account it signs in to.
+          newAccount: true,
           transaction: transaction,
         );
 
