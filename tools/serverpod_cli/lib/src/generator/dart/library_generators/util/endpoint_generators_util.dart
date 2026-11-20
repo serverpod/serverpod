@@ -8,7 +8,11 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 /// from endpoint methods to generated client code and test framework methods.
 Iterable<Expression> buildEndpointCallAnnotations(MethodDefinition methodDef) {
   return methodDef.annotations
-      .where((e) => e.name != 'unauthenticatedClientCall')
+      .where(
+        (e) =>
+            e.name != 'unauthenticatedClientCall' &&
+            !openApiAnnotationNames.contains(e.name),
+      )
       .map((annotation) {
         var args = annotation.arguments;
         return refer(
