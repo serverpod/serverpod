@@ -50,20 +50,29 @@ class _SlowToStartFileWatcher implements w.FileWatcher {
   Future<void> get ready => _readyCompleter.future;
 }
 
+/// The watcher factory the running scenario installed. Top-level so the
+/// once-per-isolate registration keeps reaching the current scenario.
+late w.FileWatcher Function(String path, Duration? pollingDelay)
+createPlatformWatcher;
+
+var _scenarioWatcherRegistered = false;
+
 void main() {
   late Directory tempDir;
   late File packageGraph;
-  late w.FileWatcher Function(String path, Duration? pollingDelay)
-  createPlatformWatcher;
-
   // `package:watcher` picks the platform's file watcher for a path. Route that
   // choice to whatever the running scenario installed. The registration is
-  // global and permanent, so it is made once for the whole file.
-  w.registerCustomWatcher(
-    'scenario-double',
-    null,
-    (path, {pollingDelay}) => createPlatformWatcher(path, pollingDelay),
-  );
+  // global and permanent, and registering an id twice throws, so it is made
+  // once per isolate.
+  setUpAll(() {
+    if (_scenarioWatcherRegistered) return;
+    w.registerCustomWatcher(
+      'scenario-double',
+      null,
+      (path, {pollingDelay}) => createPlatformWatcher(path, pollingDelay),
+    );
+    _scenarioWatcherRegistered = true;
+  });
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('file_watcher_reattach_');

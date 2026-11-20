@@ -5,7 +5,13 @@ import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(serverUrl);
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   group('Given a table model owned by the shared package of a module,', () {
     late shared_module.SharedModuleTable table;

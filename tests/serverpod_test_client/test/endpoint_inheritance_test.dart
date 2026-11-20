@@ -4,7 +4,13 @@ import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client('http://localhost:8080/');
+  late Client client;
+  setUpAll(() {
+    client = Client('http://localhost:8080/');
+  });
+  tearDownAll(() {
+    client.close();
+  });
 
   test(
     'Given an abstract base endpoint class then it is subclass of EndpointRef.',
@@ -14,9 +20,10 @@ void main() {
   );
 
   group(
-    'Given a concrete endpoint instance that extends an abstract endpoint class',
+    'Given a concrete endpoint instance that extends an abstract endpoint class,',
     () {
-      var endpoint = EndpointConcreteBase(client);
+      late EndpointConcreteBase endpoint;
+      setUpAll(() => endpoint = EndpointConcreteBase(client));
 
       test('then it is subclass of the generated abstract class.', () {
         expect(endpoint, isA<EndpointAbstractBase>());
@@ -44,9 +51,10 @@ void main() {
   );
 
   group(
-    'Given an instance of abstract > concrete > abstract subclass > concrete subclass endpoint class hierarchy',
+    'Given an instance of abstract > concrete > abstract subclass > concrete subclass endpoint class hierarchy,',
     () {
-      var endpoint = EndpointConcreteSubClass(client);
+      late EndpointConcreteSubClass endpoint;
+      setUpAll(() => endpoint = EndpointConcreteSubClass(client));
 
       test('then it is subclass of the abstract generated subclass.', () {
         expect(endpoint, isA<EndpointAbstractSubClass>());
@@ -63,9 +71,10 @@ void main() {
   );
 
   group(
-    'Given an instance of an endpoint class that extends a class annotated as @doNotGenerate',
+    'Given an instance of an endpoint class that extends a class annotated as @doNotGenerate,',
     () {
-      var endpoint = EndpointIndependent(client);
+      late EndpointIndependent endpoint;
+      setUpAll(() => endpoint = EndpointIndependent(client));
 
       test('then it is subclass of EndpointRef directly.', () {
         expect(endpoint, isNot(isA<EndpointConcreteSubClass>()));
@@ -105,9 +114,10 @@ void main() {
   );
 
   group(
-    'Given an instance of a concrete module endpoint that extends an abstract endpoint from the same module',
+    'Given an instance of a concrete module endpoint that extends an abstract endpoint from the same module,',
     () {
-      var endpoint = client.modules.module.concreteBase;
+      late m.EndpointConcreteBase endpoint;
+      setUpAll(() => endpoint = client.modules.module.concreteBase);
 
       test('then it is subclass of the generated module abstract class.', () {
         expect(endpoint, isA<m.EndpointAbstractBase>());
@@ -120,9 +130,10 @@ void main() {
   );
 
   group(
-    'Given an instance of a concrete endpoint that extends an abstract endpoint from a module',
+    'Given an instance of a concrete endpoint that extends an abstract endpoint from a module,',
     () {
-      var endpoint = EndpointConcreteFromModuleAbstractBase(client);
+      late EndpointConcreteFromModuleAbstractBase endpoint;
+      setUpAll(() => endpoint = EndpointConcreteFromModuleAbstractBase(client));
 
       test('then it is subclass of the generated module abstract class.', () {
         expect(endpoint, isA<m.EndpointAbstractBase>());
@@ -142,9 +153,10 @@ void main() {
   );
 
   group(
-    'Given an instance of a concrete endpoint that extends a concrete endpoint from a module',
+    'Given an instance of a concrete endpoint that extends a concrete endpoint from a module,',
     () {
-      var endpoint = EndpointConcreteModuleBase(client);
+      late EndpointConcreteModuleBase endpoint;
+      setUpAll(() => endpoint = EndpointConcreteModuleBase(client));
 
       test('then it is subclass of the generated module concrete class.', () {
         expect(endpoint, isA<m.EndpointConcreteBase>());

@@ -6,9 +6,10 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a table with an explicit column name',
+    'Given a table with an explicit column name,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       late TableWithExplicitColumnName data;
       late TableWithExplicitColumnNameRepository db;
@@ -30,9 +31,10 @@ void main() {
   );
 
   withServerpod(
-    'Given an entry in the database for a table with an explicit column name',
+    'Given an entry in the database for a table with an explicit column name,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       late TableWithExplicitColumnName data;
       late TableWithExplicitColumnName inserted;

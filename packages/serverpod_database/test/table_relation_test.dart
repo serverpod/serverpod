@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 import 'test_util/table_relation_builder.dart';
 
 void main() {
-  ValueEncoder.set(const PostgresValueEncoder());
+  setUpAll(() => ValueEncoder.set(const PostgresValueEncoder()));
 
   test(
     'Given empty list when trying to construct TableRelation then throws',

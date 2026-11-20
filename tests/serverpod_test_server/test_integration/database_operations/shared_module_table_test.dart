@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart';
 import 'package:test/test.dart';
 
@@ -8,7 +9,8 @@ void main() {
     rollbackDatabase: RollbackDatabase.disabled,
     'Given a table model declared in the shared package of a module,',
     (sessionBuilder, _) {
-      final session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       test(
         'when inserting the table through the module server package, '

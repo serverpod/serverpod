@@ -5,7 +5,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test/src/io_overrides.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/endpoints.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
-import 'package:test/test.dart';
 
 var _integrationTestMode =
     Platform.environment['INTEGRATION_TEST_SERVERPOD_MODE'] ?? 'production';
@@ -80,11 +79,15 @@ class TestServerpod {
   Future<Session> session() async {
     _session = await _serverpod.createSession();
     _sessionFinalizer.attach(this, _session, detach: this);
-    tearDownAll(() async {
-      _sessionFinalizer.detach(this);
-      await _session.close();
-      await _serverpod.shutdown(exitProcess: false);
-    });
     return _session;
   }
+}
+
+/// Closes [session] and shuts down the server it belongs to.
+///
+/// Declare it as a file's first `tearDownAll`, so it runs after the file's
+/// other `tearDownAll` callbacks, which may still use the database.
+Future<void> closeTestSession(Session session) async {
+  await session.close();
+  await session.serverpod.shutdown(exitProcess: false);
 }

@@ -5,7 +5,13 @@ import 'package:test/test.dart';
 
 void main() {
   var authKeyProvider = TestAuthKeyManager();
-  var client = Client(serverUrl)..authKeyProvider = authKeyProvider;
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl)..authKeyProvider = authKeyProvider;
+  });
+  tearDownAll(() {
+    client.close();
+  });
   // ".bar" is the only valid top level domain for test email addresses
   const email = 'test@serverpod.bar';
   const password = 'password';

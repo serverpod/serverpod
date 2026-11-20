@@ -34,6 +34,7 @@ database:
   port: 9090
   name: serverpod_auth_test_server_test
   user: postgres
+  dataPath: .serverpod/test/pgdata
 
 # This is the setup for your Redis test instance.
 redis:
@@ -41,9 +42,16 @@ redis:
   host: localhost
   port: 9091
 
+maxRequestSize: 524288 # The maximum size of requests allowed in bytes
+
 sessionLogs:
   persistentEnabled: true
   consoleEnabled: true
+
+authCookie:
+  secure: false
+allowedOrigins:
+  - http://localhost:8083
 
 # futureCallExecutionEnabled: true # Defaults to true
 

@@ -4,9 +4,13 @@ import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
 import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
+import 'utils/test_server.dart';
+
 void main() {
+  withTestServer();
+
   group(
-    'Given two authenticated clients with separate session managers of different auth strategies',
+    'Given two authenticated clients with separate session managers of different auth strategies,',
     () {
       late Client jwtClient;
       late Client sasClient;
@@ -15,11 +19,11 @@ void main() {
       late EndpointStatus sasStatusEndpoint;
 
       setUp(() async {
-        jwtClient = Client('http://localhost:8080/')
+        jwtClient = Client(serverUrl)
           ..authSessionManager = FlutterAuthSessionManager(
             storage: TestStorage(),
           );
-        sasClient = Client('http://localhost:8080/')
+        sasClient = Client(serverUrl)
           ..authSessionManager = FlutterAuthSessionManager(
             storage: TestStorage(),
           );
@@ -206,13 +210,13 @@ void main() {
   );
 
   group(
-    'Given an authenticated client with an unreachable server when signing out',
+    'Given an authenticated client with an unreachable server, when signing out,',
     () {
       late Client client;
       late TestStorage storage;
 
       setUp(() async {
-        final tempClient = Client('http://localhost:8080/');
+        final tempClient = Client(serverUrl);
         final testUserId = await tempClient.authTest.createTestUser();
         final authSuccess = await tempClient.authTest.createJwtToken(
           testUserId,

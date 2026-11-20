@@ -5,7 +5,12 @@ import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
-  ascii = false; // force uni-code glyphs on windows
+  late bool previousAscii;
+  setUpAll(() {
+    previousAscii = ascii;
+    ascii = false; // force uni-code glyphs on windows
+  });
+  tearDownAll(() => ascii = previousAscii);
 
   test('Given an empty string '
       'when calling loadYamlMap '
