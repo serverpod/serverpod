@@ -4,6 +4,39 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
+/// The outcome of an upload made by a [FileUploader].
+class FileUploadResult {
+  /// True if the file was uploaded.
+  final bool success;
+
+  /// The HTTP status code of the response, or null if the upload failed before
+  /// a response was received.
+  final int? statusCode;
+
+  /// The response body of a rejected upload, which is where the server and
+  /// storage providers explain the rejection. It is null if the upload
+  /// succeeded or the response has no body.
+  final String? reason;
+
+  /// The error that stopped the upload or the reading of its response, such as
+  /// a network error or an error from the source stream. It is null if the
+  /// whole response was received.
+  final Object? error;
+
+  /// Creates a new [FileUploadResult].
+  const FileUploadResult({
+    required this.success,
+    this.statusCode,
+    this.reason,
+    this.error,
+  });
+
+  @override
+  String toString() =>
+      'FileUploadResult(success: $success, statusCode: $statusCode, '
+      'reason: $reason, error: $error)';
+}
+
 /// The file uploader uploads files to Serverpod's cloud storage. On the server
 /// you can setup a custom storage service, such as S3 or Google Cloud. To
 /// directly upload a file, you first need to retrieve an upload description
@@ -20,20 +53,37 @@ class FileUploader {
   }
 
   /// Uploads a file contained by a [ByteData] object, returns true if
-  /// successful.
-  Future<bool> uploadByteData(ByteData byteData) async {
-    var stream = http.ByteStream.fromBytes(Uint8List.sublistView(byteData));
-    return _upload(stream, byteData.lengthInBytes);
-  }
+  /// successful. Use [uploadByteDataWithResult] to find out why an upload
+  /// failed.
+  Future<bool> uploadByteData(ByteData byteData) async =>
+      (await uploadByteDataWithResult(byteData)).success;
 
   /// Uploads a file from a [Stream], returns true if successful. The [length]
   /// of the stream is optional. If it's not provided for a multipart upload
   /// and the upload description doesn't pin the exact file size, the entire
-  /// file will be buffered in memory.
-  Future<bool> upload(Stream<List<int>> stream, [int? length]) =>
-      _upload(stream.toByteStream(), length);
+  /// file will be buffered in memory. Use [uploadWithResult] to find out why
+  /// an upload failed.
+  Future<bool> upload(Stream<List<int>> stream, [int? length]) async =>
+      (await uploadWithResult(stream, length)).success;
 
-  Future<bool> _upload(http.ByteStream stream, int? length) async {
+  /// Uploads a file contained by a [ByteData] object and returns the outcome
+  /// of the upload. A failed upload does not throw.
+  Future<FileUploadResult> uploadByteDataWithResult(ByteData byteData) {
+    var stream = http.ByteStream.fromBytes(Uint8List.sublistView(byteData));
+    return _upload(stream, byteData.lengthInBytes);
+  }
+
+  /// Uploads a file from a [Stream] and returns the outcome of the upload. A
+  /// failed upload does not throw. The [length] of the stream is optional. If
+  /// it's not provided for a multipart upload and the upload description
+  /// doesn't pin the exact file size, the entire file will be buffered in
+  /// memory.
+  Future<FileUploadResult> uploadWithResult(
+    Stream<List<int>> stream, [
+    int? length,
+  ]) => _upload(stream.toByteStream(), length);
+
+  Future<FileUploadResult> _upload(http.ByteStream stream, int? length) async {
     if (_attemptedUpload) {
       throw Exception(
         'Data has already been uploaded using this FileUploader.',
@@ -59,14 +109,17 @@ class FileUploader {
           request.headers.addAll(headers);
           request.contentLength = length;
 
-          final (_, response) = await (
-            stream.pipe(request.sink),
-            client.send(request),
-          ).wait;
-          await response.stream.drain();
+          // A failed send leaves the body unread, and the pipe would then never
+          // complete, so only the response decides how long to wait.
+          final piped = stream.pipe(request.sink)..ignore();
+          final response = await client.send(request);
+          await piped;
 
           // Accept both 200 and 204 as success (PUT uploads often return 200)
-          return response.statusCode == 200 || response.statusCode == 204;
+          return await _readResult(
+            response,
+            success: response.statusCode == 200 || response.statusCode == 204,
+          );
 
         case _UploadType.multipart:
           // Multipart providers require a Content-Length, so a file size
@@ -93,14 +146,43 @@ class FileUploader {
           }
 
           var response = await client.send(request);
-          await response.stream.drain();
 
-          return response.statusCode == 204;
+          return await _readResult(
+            response,
+            success: response.statusCode == 204,
+          );
       }
     } catch (e) {
-      return false;
+      return FileUploadResult(success: false, error: e);
     } finally {
       client.close();
+    }
+  }
+
+  /// Reads the [response] to its end, keeping the body only as the reason of a
+  /// rejected upload.
+  Future<FileUploadResult> _readResult(
+    http.StreamedResponse response, {
+    required bool success,
+  }) async {
+    try {
+      if (success) {
+        await response.stream.drain();
+        return FileUploadResult(success: true, statusCode: response.statusCode);
+      }
+
+      final body = await response.stream.toBytes();
+      return FileUploadResult(
+        success: false,
+        statusCode: response.statusCode,
+        reason: body.isEmpty ? null : utf8.decode(body, allowMalformed: true),
+      );
+    } catch (e) {
+      return FileUploadResult(
+        success: false,
+        statusCode: response.statusCode,
+        error: e,
+      );
     }
   }
 }
