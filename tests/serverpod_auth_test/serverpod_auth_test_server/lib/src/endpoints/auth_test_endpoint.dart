@@ -14,7 +14,7 @@ class AuthTestEndpoint extends Endpoint {
       AuthServices.getTokenManager<JwtTokenManager>();
 
   /// Creates a new test user.
-  Future<UuidValue> createTestUser(final Session session) async {
+  Future<UuidValue> createTestUser(Session session) async {
     const authUsers = AuthUsers();
     final authUser = await authUsers.create(session);
     return authUser.id;
@@ -22,8 +22,8 @@ class AuthTestEndpoint extends Endpoint {
 
   /// Creates a new session authentication for the test user.
   Future<AuthSuccess> createSasToken(
-    final Session session,
-    final UuidValue authUserId,
+    Session session,
+    UuidValue authUserId,
   ) async {
     return _serverSideSessions.issueToken(
       session,
@@ -34,8 +34,8 @@ class AuthTestEndpoint extends Endpoint {
   }
 
   Future<void> deleteSasTokens(
-    final Session session,
-    final UuidValue authUserId,
+    Session session,
+    UuidValue authUserId,
   ) async {
     await _serverSideSessions.serverSideSessions.revokeAllSessions(
       session,
@@ -45,8 +45,8 @@ class AuthTestEndpoint extends Endpoint {
 
   /// Creates a new JWT token for the test user.
   Future<AuthSuccess> createJwtToken(
-    final Session session,
-    final UuidValue authUserId,
+    Session session,
+    UuidValue authUserId,
   ) async {
     return _jwt.issueToken(
       session,
@@ -58,8 +58,8 @@ class AuthTestEndpoint extends Endpoint {
 
   /// Deletes all refresh tokens for the test user.
   Future<void> deleteJwtRefreshTokens(
-    final Session session,
-    final UuidValue authUserId,
+    Session session,
+    UuidValue authUserId,
   ) async {
     await _jwt.jwt.revokeAllRefreshTokens(
       session,
@@ -69,8 +69,8 @@ class AuthTestEndpoint extends Endpoint {
 
   /// Destroys a specific refresh token by ID.
   Future<bool> destroySpecificRefreshToken(
-    final Session session,
-    final String token,
+    Session session,
+    String token,
   ) async {
     final authInfo = await AuthServices.instance.authenticationHandler(
       session,
@@ -90,57 +90,57 @@ class AuthTestEndpoint extends Endpoint {
 
   /// Checks if the session is authenticated for the test user.
   Future<bool> checkSession(
-    final Session session,
-    final UuidValue authUserId,
+    Session session,
+    UuidValue authUserId,
   ) async {
     final userId = session.authenticated;
     return userId?.authUserId == authUserId;
   }
 
   @unauthenticatedClientCall
-  Future<bool> checkSessionUnauthenticated(final Session session) async {
+  Future<bool> checkSessionUnauthenticated(Session session) async {
     return session.isUserSignedIn;
   }
 
   @unauthenticatedClientCall
   Stream<bool> checkSessionUnauthenticatedStream(
-    final Session session,
+    Session session,
   ) async* {
     yield session.isUserSignedIn;
   }
 
-  Stream<String?> openPublicUserStream(final Session session) async* {
+  Stream<String?> openPublicUserStream(Session session) async* {
     yield session.authenticated?.userIdentifier;
     await Completer<void>().future;
   }
 
-  Future<void> resetJwtRefreshConcurrency(final Session session) async {
+  Future<void> resetJwtRefreshConcurrency(Session session) async {
     JwtRefreshEndpoint.resetConcurrencyTracking();
   }
 
-  Future<int> getMaxConcurrentJwtRefreshes(final Session session) async {
+  Future<int> getMaxConcurrentJwtRefreshes(Session session) async {
     return JwtRefreshEndpoint.maxConcurrentRefreshes;
   }
 
-  Future<int> getJwtRefreshCallCount(final Session session) async {
+  Future<int> getJwtRefreshCallCount(Session session) async {
     return JwtRefreshEndpoint.refreshCallCount;
   }
 
   /// Returns the auth-mode marker and whether an authorization header was
   /// received, as seen by the server on this authenticated call.
-  Future<List<String?>> getReceivedAuthHeaders(final Session session) async {
+  Future<List<String?>> getReceivedAuthHeaders(Session session) async {
     return _receivedAuthHeaders(session);
   }
 
   /// Like [getReceivedAuthHeaders], for an unauthenticated call.
   @unauthenticatedClientCall
   Future<List<String?>> getReceivedAuthHeadersUnauthenticated(
-    final Session session,
+    Session session,
   ) async {
     return _receivedAuthHeaders(session);
   }
 
-  static List<String?> _receivedAuthHeaders(final Session session) {
+  static List<String?> _receivedAuthHeaders(Session session) {
     final headers = session.request?.headers;
     return [
       headers?[webAuthModeHeaderName]?.firstOrNull,
@@ -154,5 +154,5 @@ class UnauthenticatedRequireLoginAuthTestEndpoint extends Endpoint {
   bool get requireLogin => true;
 
   @unauthenticatedClientCall
-  Future<void> call(final Session session) async {}
+  Future<void> call(Session session) async {}
 }

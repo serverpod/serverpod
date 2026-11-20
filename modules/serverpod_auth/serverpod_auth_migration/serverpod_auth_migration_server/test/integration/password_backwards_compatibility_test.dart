@@ -39,7 +39,7 @@ void main() {
   });
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account migrated with `migrateUsers`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'User@serverpod.DEV';
       const password = 'Somepassword123!';
 
@@ -62,10 +62,10 @@ void main() {
           session,
           userMigration:
               (
-                final session, {
-                required final newAuthUserId,
-                required final oldUserId,
-                final transaction,
+                session, {
+                required newAuthUserId,
+                required oldUserId,
+                transaction,
               }) async {
                 assert(migratedUsers[oldUserId] == null);
                 migratedUsers[oldUserId] = newAuthUserId;

@@ -1,0 +1,4 @@
+class: SealedListChild
+extends: SealedListParent
+fields:
+  name: String

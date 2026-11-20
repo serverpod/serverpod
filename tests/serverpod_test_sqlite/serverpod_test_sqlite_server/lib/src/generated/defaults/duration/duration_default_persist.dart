@@ -8,12 +8,10 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class DurationDefaultPersist
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -58,7 +56,7 @@ abstract class DurationDefaultPersist
   @_is.useResult
   DurationDefaultPersist copyWith({
     int? id,
-    Duration? durationDefaultPersist = const _issu.$UndefinedDuration(),
+    Duration? durationDefaultPersist = const _is.$UndefinedDuration(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -125,11 +123,11 @@ class _DurationDefaultPersistImpl extends DurationDefaultPersist {
   @override
   DurationDefaultPersist copyWith({
     Object? id = _Undefined,
-    Duration? durationDefaultPersist = const _issu.$UndefinedDuration(),
+    Duration? durationDefaultPersist = const _is.$UndefinedDuration(),
   }) {
     return DurationDefaultPersist(
       id: id is int? ? id : this.id,
-      durationDefaultPersist: durationDefaultPersist is _issu.UndefinedSentinel
+      durationDefaultPersist: durationDefaultPersist is _is.UndefinedSentinel
           ? this.durationDefaultPersist
           : durationDefaultPersist,
     );

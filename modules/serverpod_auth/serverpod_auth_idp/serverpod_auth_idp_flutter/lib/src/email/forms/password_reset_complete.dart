@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../localization/sign_in_localization_provider.dart';
 import '../email_auth_controller.dart';
-import 'widgets/back_to_sign_in_button.dart';
-import 'widgets/set_password_form.dart';
+import 'shared/shared_password_reset_forms.dart';
 
 /// Widget for completing password reset by setting a new password.
 ///
@@ -20,16 +18,8 @@ class CompletePasswordResetForm extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final texts = context.emailSignInTexts;
-
-    return SetPasswordForm(
-      controller: controller,
-      title: texts.setNewPasswordTitle,
-      passwordLabelText: texts.newPasswordLabel,
-      actionButtonLabel: texts.resetPassword,
-      onActionPressed: controller.finishPasswordReset,
-      bottomText: BackToSignInButton(controller: controller),
-    );
-  }
+  Widget build(BuildContext context) => SharedCompletePasswordResetForm(
+    controller: controller,
+    onBackToSignIn: () => controller.navigateTo(EmailFlowScreen.login),
+  );
 }

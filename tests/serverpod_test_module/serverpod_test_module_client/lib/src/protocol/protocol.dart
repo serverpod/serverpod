@@ -32,7 +32,8 @@ export 'module_streaming_class.dart';
 export 'project_streaming_class.dart';
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _isc.SerializationManager
+    implements _isc.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -41,6 +42,48 @@ class Protocol extends _isc.SerializationManager {
 
   final Set<_isc.SerializationManager> _hostProtocols = {};
 
+  @override
+  _isc.ProtocolDeserialization get deserializationMetadata =>
+      _isc.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _isc.getType<_ircaal6o.DynamicOnModule>,
+          _isc.getType<_i3gtzugh.ModulePolymorphicGrandChild>,
+          _isc.getType<_in13ph1t.ModulePolymorphicChild>,
+          _isc.getType<_is5pt2rl.ModulePolymorphicParent>,
+          _isc.getType<_izah8b1s.ModuleClass>,
+          _isc.getType<_iya6t7ee.MyModuleFeatureModel>,
+          _isc.getType<_idp5674x.ModuleStreamingClass>,
+          _isc.getType<_iqrw583n.ProjectStreamingClass>,
+          _isc.getType<_ircaal6o.DynamicOnModule?>,
+          _isc.getType<_i3gtzugh.ModulePolymorphicGrandChild?>,
+          _isc.getType<_in13ph1t.ModulePolymorphicChild?>,
+          _isc.getType<_is5pt2rl.ModulePolymorphicParent?>,
+          _isc.getType<_izah8b1s.ModuleClass?>,
+          _isc.getType<_iya6t7ee.MyModuleFeatureModel?>,
+          _isc.getType<_idp5674x.ModuleStreamingClass?>,
+          _isc.getType<_iqrw583n.ProjectStreamingClass?>,
+          _isc.getType<dynamic>,
+          _isc.getType<(bool,)?>,
+          _isc.getType<(int?, _ie8x2k8p.ModuleStreamingClass?)>,
+          _isc.getType<(bool,)?>,
+          _isc.getType<(int?, _ie8x2k8p.ModuleStreamingClass?)>,
+        ],
+        modules: const [],
+        classNames: const [
+          'DynamicOnModule',
+          'ModulePolymorphicGrandChild',
+          'ModulePolymorphicChild',
+          'ModulePolymorphicParent',
+          'ModuleClass',
+          'MyModuleFeatureModel',
+          'ModuleStreamingClass',
+          'ProjectStreamingClass',
+          '(int?,ModuleStreamingClass?)',
+        ],
+        classNamePrefix: 'serverpod_test_module.',
+      );
+
   void registerHostProtocol(
     String projectName,
     _isc.SerializationManager protocol,
@@ -48,13 +91,11 @@ class Protocol extends _isc.SerializationManager {
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_test_module.')) return className;
-    return className.substring(22);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_test_module.',
+      );
 
   @override
   T deserialize<T>(
@@ -62,8 +103,11 @@ class Protocol extends _isc.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_test_module.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({

@@ -11,10 +11,43 @@ import 'package:test/test.dart';
 /// title label does not render it, so its presence proves a real tab bar.
 const _tabBarRule = '━';
 
-/// Builds a state with a server log line and two companion app tabs (Admin
-/// focused), then pumps it at [size].
-Future<NoctermTester> _pumpAppsLayout(Size size) async {
+/// Adds one active operation per entry of [labels] to [state], in order.
+void _addOperations(ServerWatchState state, List<String> labels) {
+  for (final (i, label) in labels.indexed) {
+    state.activeOperations['op-$i'] = TrackedOperation(
+      id: 'op-$i',
+      label: label,
+    );
+  }
+}
+
+/// Builds a state with a server log line and an active operation per entry
+/// of [operations], then pumps it in the merged layout.
+Future<NoctermTester> _pumpOperations(List<String> operations) async {
   final state = ServerWatchState();
+  state.showSplash = false;
+  state.serverReady = true;
+  state.logHistory.add(
+    LogEntry(
+      time: DateTime(2026),
+      level: LogLevel.info,
+      message: 'server-log-line',
+      scope: LogScope.root('server'),
+    ),
+  );
+  _addOperations(state, operations);
+  return _pump(state, const Size(100, 24));
+}
+
+/// Builds a state with a server log line and two companion app tabs (Admin
+/// focused), plus an active operation per entry of [operations], then pumps
+/// it at [size].
+Future<NoctermTester> _pumpAppsLayout(
+  Size size, {
+  List<String> operations = const [],
+}) async {
+  final state = ServerWatchState();
+  _addOperations(state, operations);
   state.showSplash = false;
   state.serverReady = true;
   state.logHistory.add(
@@ -643,6 +676,129 @@ void main() {
           expect(tester.terminalState.containsText('boom'), isTrue);
         },
       );
+    },
+  );
+
+  group('Given twelve streams open on two endpoints', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpOperations([
+        for (var i = 0; i < 8; i++) 'STREAM board.watchTasks',
+        for (var i = 0; i < 4; i++) 'STREAM drive.watch',
+      ]);
+    });
+
+    test('then each endpoint is pinned once with a muted count', () {
+      final ts = tester.terminalState;
+
+      final tasks = ts.findText('STREAM board.watchTasks');
+      final drive = ts.findText('STREAM drive.watch');
+      expect(tasks, hasLength(1));
+      expect(drive, hasLength(1));
+      expect(tasks.first.y, lessThan(drive.first.y));
+      expect(ts.containsText('×8'), isTrue);
+      expect(ts.containsText('×4'), isTrue);
+    });
+
+    test('then the log pane keeps its content', () {
+      final ts = tester.terminalState;
+
+      expect(ts.containsText('server-log-line'), isTrue);
+    });
+
+    test('then a rule above the pinned rows tees into the outer border', () {
+      final ts = tester.terminalState;
+
+      final ruleRow = ts.findText('STREAM board.watchTasks').first.y - 1;
+      expect(ts.getTextAt(0, ruleRow, length: 1), '├');
+      expect(ts.getTextAt(99, ruleRow, length: 1), '┤');
+    });
+  });
+
+  group('Given streams open on five endpoints', () {
+    late NoctermTester tester;
+
+    setUp(() async {
+      tester = await _pumpOperations([
+        for (var i = 0; i < 5; i++) ...['STREAM e$i.watch', 'STREAM e$i.watch'],
+      ]);
+    });
+
+    test('then the first two are pinned and the rest fold into one row', () {
+      final ts = tester.terminalState;
+
+      expect(ts.containsText('STREAM e0.watch'), isTrue);
+      expect(ts.containsText('STREAM e1.watch'), isTrue);
+      expect(ts.containsText('STREAM e2.watch'), isFalse);
+      expect(ts.containsText('\u25b8 + 3 more (6 running) Expand'), isTrue);
+      // The fold row takes the third and last slot below the rule, flush
+      // left with the spinner column.
+      final first = ts.findText('STREAM e0.watch').first;
+      final fold = ts.findText('▸').first;
+      expect(fold.y, first.y + 2);
+      expect(fold.x, first.x - 2);
+    });
+
+    test('when the fold row is clicked then every group shows', () async {
+      final expand = tester.terminalState.findText('Expand').first;
+      await tester.tap(expand.x, expand.y);
+      await tester.pump();
+
+      final ts = tester.terminalState;
+      expect(ts.containsText('STREAM e2.watch'), isTrue);
+      expect(ts.containsText('STREAM e4.watch'), isTrue);
+      expect(ts.containsText('\u25be Collapse'), isTrue);
+      expect(ts.containsText('Expand'), isFalse);
+      expect(ts.containsText('server-log-line'), isTrue);
+
+      final collapse = ts.findText('Collapse').first;
+      await tester.tap(collapse.x, collapse.y);
+      await tester.pump();
+
+      expect(tester.terminalState.containsText('STREAM e2.watch'), isFalse);
+      expect(tester.terminalState.containsText('Expand'), isTrue);
+    });
+  });
+
+  test('Given streams open on three endpoints then none fold', () async {
+    final tester = await _pumpOperations([
+      for (var i = 0; i < 3; i++) 'STREAM e$i.watch',
+    ]);
+    final ts = tester.terminalState;
+
+    expect(ts.containsText('STREAM e2.watch'), isTrue);
+    expect(ts.containsText('Expand'), isFalse);
+  });
+
+  test(
+    'Given one active operation then it is pinned without a count',
+    () async {
+      final tester = await _pumpOperations(['Hot reloading']);
+      final ts = tester.terminalState;
+
+      expect(ts.containsText('Hot reloading'), isTrue);
+      expect(ts.containsText('×'), isFalse);
+    },
+  );
+
+  test(
+    'Given two distinct operations in the side-by-side layout '
+    'then the pinned rows span both panes below the rule',
+    () async {
+      final tester = await _pumpAppsLayout(
+        const Size(200, 30),
+        operations: ['STREAM drive.watch', 'Hot reloading'],
+      );
+      final ts = tester.terminalState;
+
+      final ruleRow = ts.findText('STREAM drive.watch').first.y - 1;
+      expect(ts.getTextAt(0, ruleRow, length: 1), '├');
+      expect(ts.getTextAt(199, ruleRow, length: 1), '┤');
+      // The pane divider ends above the rule rather than crossing it.
+      final dividerX = ts.findText('┬').first.x;
+      expect(ts.getTextAt(dividerX, ruleRow, length: 1), '─');
+      expect(ts.containsText('Hot reloading'), isTrue);
     },
   );
 }

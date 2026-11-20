@@ -8,13 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, depend_on_referenced_packages
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
     as _iubhvl5a;
@@ -143,7 +141,7 @@ abstract class Blocking
 
 class _Undefined {}
 
-class _UndefinedBlocking$blocked extends _issu.UndefinedSentinel
+class _UndefinedBlocking$blocked extends _is.UndefinedSentinel
     implements _iubhvl5a.Member {
   const _UndefinedBlocking$blocked();
 }
@@ -177,11 +175,11 @@ class _BlockingImpl extends Blocking {
     return Blocking(
       id: id is int? ? id : this.id,
       blockedId: blockedId ?? this.blockedId,
-      blocked: blocked is _issu.UndefinedSentinel
+      blocked: blocked is _is.UndefinedSentinel
           ? this.blocked?.copyWith()
           : blocked,
       blockedById: blockedById ?? this.blockedById,
-      blockedBy: blockedBy is _issu.UndefinedSentinel
+      blockedBy: blockedBy is _is.UndefinedSentinel
           ? this.blockedBy?.copyWith()
           : blockedBy,
     );

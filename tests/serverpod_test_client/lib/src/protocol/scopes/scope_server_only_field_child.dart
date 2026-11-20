@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../protocol.dart' as _iv35mfmj;
 import '../scopes/scope_server_only_field.dart' as _ijcqyoxk;
@@ -90,12 +88,12 @@ abstract class ScopeServerOnlyFieldChild extends _iv35mfmj.ScopeServerOnlyField
 }
 
 class _UndefinedScopeServerOnlyFieldChild$allScope
-    extends _issu.UndefinedSentinel
+    extends _isc.UndefinedSentinel
     implements _ih2vh47j.Types {
   const _UndefinedScopeServerOnlyFieldChild$allScope();
 }
 
-class _UndefinedScopeServerOnlyFieldChild$nested extends _issu.UndefinedSentinel
+class _UndefinedScopeServerOnlyFieldChild$nested extends _isc.UndefinedSentinel
     implements _ijcqyoxk.ScopeServerOnlyField {
   const _UndefinedScopeServerOnlyFieldChild$nested();
 }
@@ -123,10 +121,10 @@ class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
     String? childFoo,
   }) {
     return ScopeServerOnlyFieldChild(
-      allScope: allScope is _issu.UndefinedSentinel
+      allScope: allScope is _isc.UndefinedSentinel
           ? this.allScope?.copyWith()
           : allScope,
-      nested: nested is _issu.UndefinedSentinel
+      nested: nested is _isc.UndefinedSentinel
           ? this.nested?.copyWith()
           : nested,
       childFoo: childFoo ?? this.childFoo,

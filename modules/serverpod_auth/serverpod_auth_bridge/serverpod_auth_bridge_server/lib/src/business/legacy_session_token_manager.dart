@@ -11,14 +11,14 @@ class LegacySessionTokenManager extends TokenManager
   const LegacySessionTokenManager();
 
   @override
-  LegacySessionTokenManager build({required final AuthUsers authUsers}) {
+  LegacySessionTokenManager build({required AuthUsers authUsers}) {
     return const LegacySessionTokenManager();
   }
 
   @override
   Future<AuthenticationInfo?> validateToken(
-    final Session session,
-    final String token,
+    Session session,
+    String token,
   ) async {
     final legacySession = await resolveLegacySession(session, token);
     if (legacySession == null) return null;
@@ -32,56 +32,56 @@ class LegacySessionTokenManager extends TokenManager
 
   @override
   Future<void> revokeToken(
-    final Session session, {
-    required final String tokenId,
-    final Transaction? transaction,
-    final String? tokenIssuer,
+    Session session, {
+    required String tokenId,
+    Transaction? transaction,
+    String? tokenIssuer,
   }) async {
     final id = int.tryParse(tokenId);
     if (id == null) return;
 
     await LegacySession.db.deleteWhere(
       session,
-      where: (final t) => t.id.equals(id),
+      where: (t) => t.id.equals(id),
       transaction: transaction,
     );
   }
 
   @override
   Future<void> revokeAllTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
-    final String? tokenIssuer,
+    Session session, {
+    required UuidValue? authUserId,
+    Transaction? transaction,
+    String? method,
+    String? tokenIssuer,
   }) async {
     if (authUserId == null) return;
 
     await LegacySession.db.deleteWhere(
       session,
-      where: (final t) => t.authUserId.equals(authUserId),
+      where: (t) => t.authUserId.equals(authUserId),
       transaction: transaction,
     );
   }
 
   @override
   Future<List<TokenInfo>> listTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final String? method,
-    final String? tokenIssuer,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue? authUserId,
+    String? method,
+    String? tokenIssuer,
+    Transaction? transaction,
   }) async {
     return [];
   }
 
   @override
   Future<AuthSuccess> createToken(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
-    final Set<Scope>? scopes,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
+    Set<Scope>? scopes,
+    Transaction? transaction,
   }) {
     throw UnsupportedError(
       'LegacySessionTokenManager does not support issuing tokens. '

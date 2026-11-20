@@ -56,7 +56,7 @@ void main() {
           password: password,
         ),
         isA<AuthSuccess>().having(
-          (final s) => s.authUserId,
+          (s) => s.authUserId,
           'authUserId',
           newAuthUserId,
         ),
@@ -66,7 +66,7 @@ void main() {
       expect(
         await client.emailAccount.login(email: email, password: password),
         isA<AuthSuccess>().having(
-          (final s) => s.authUserId,
+          (s) => s.authUserId,
           'authUserId',
           newAuthUserId,
         ),

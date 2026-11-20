@@ -9,9 +9,9 @@ class PasswordImportingEmailAccountEndpoint extends EmailIdpBaseEndpoint {
   /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
   @override
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String email,
-    required final String password,
+    Session session, {
+    required String email,
+    required String password,
   }) async {
     await AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
       session,

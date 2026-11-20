@@ -10,7 +10,7 @@ final class AnonymousIdpTestFixture {
 
   AnonymousIdpTestFixture({
     AnonymousIdpConfig? config,
-    final TokenManager? tokenManager,
+    TokenManager? tokenManager,
     AuthUsersConfig? authUsersConfig,
   }) {
     config ??= const AnonymousIdpConfig();
@@ -34,22 +34,22 @@ final class AnonymousIdpTestFixture {
     );
   }
 
-  Future<void> tearDown(final Session session) async {
-    await session.db.transaction((final transaction) async {
+  Future<void> tearDown(Session session) async {
+    await session.db.transaction((transaction) async {
       await Future.wait([
         AnonymousAccount.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
           transaction: transaction,
         ),
         RateLimitedRequestAttempt.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
           transaction: transaction,
         ),
         AuthUser.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
           transaction: transaction,
         ),
       ]);

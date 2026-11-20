@@ -8,8 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, depend_on_referenced_packages
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -19,7 +18,6 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
 import 'package:serverpod_auth_migration_server/src/generated/protocol.dart'
     as _i5lht1r8;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class MigratedUser
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -142,12 +140,12 @@ abstract class MigratedUser
 
 class _Undefined {}
 
-class _UndefinedMigratedUser$oldUser extends _issu.UndefinedSentinel
+class _UndefinedMigratedUser$oldUser extends _is.UndefinedSentinel
     implements _i1n3uhu0.UserInfo {
   const _UndefinedMigratedUser$oldUser();
 }
 
-class _UndefinedMigratedUser$newAuthUser extends _issu.UndefinedSentinel
+class _UndefinedMigratedUser$newAuthUser extends _is.UndefinedSentinel
     implements _iacs.AuthUser {
   const _UndefinedMigratedUser$newAuthUser();
 }
@@ -181,11 +179,11 @@ class _MigratedUserImpl extends MigratedUser {
     return MigratedUser(
       id: id is int? ? id : this.id,
       oldUserId: oldUserId ?? this.oldUserId,
-      oldUser: oldUser is _issu.UndefinedSentinel
+      oldUser: oldUser is _is.UndefinedSentinel
           ? this.oldUser?.copyWith()
           : oldUser,
       newAuthUserId: newAuthUserId ?? this.newAuthUserId,
-      newAuthUser: newAuthUser is _issu.UndefinedSentinel
+      newAuthUser: newAuthUser is _is.UndefinedSentinel
           ? this.newAuthUser?.copyWith()
           : newAuthUser,
     );

@@ -13,6 +13,8 @@ import 'package:uuid/uuid.dart';
 
 final resourceManager = ResourceManager();
 
+const _cliVersionKey = 'cli_version';
+
 class ResourceManager {
   static int? _runCount;
 
@@ -150,7 +152,7 @@ class ResourceManager {
     try {
       await LocalStorageManager.storeJsonFile(
         fileName: ResourceManagerConstants.latestVersionFilePath,
-        json: cliVersionData.toJson(),
+        json: {...cliVersionData.toJson(), _cliVersionKey: templateVersion},
         localStoragePath: localStoragePath,
       );
     } catch (e) {
@@ -174,10 +176,16 @@ class ResourceManager {
     }
 
     try {
-      return await LocalStorageManager.tryFetchAndDeserializeJsonFile(
+      return await LocalStorageManager.tryFetchAndDeserializeJsonFile<
+        PackageVersionData?
+      >(
         fileName: ResourceManagerConstants.latestVersionFilePath,
         localStoragePath: localStoragePath,
-        fromJson: PackageVersionData.fromJson,
+        // The cached recommendation was resolved for the CLI that wrote it, so
+        // another installed version must look it up again.
+        fromJson: (json) => json[_cliVersionKey] == templateVersion
+            ? PackageVersionData.fromJson(json)
+            : null,
       );
     } on ReadException catch (e) {
       deleteFile(e.file);

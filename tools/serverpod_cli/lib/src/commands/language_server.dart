@@ -32,7 +32,7 @@ class LanguageServerCommand extends ServerpodCommand<LanguageServerOption> {
 
   @override
   Future<void> runWithConfig(
-    final Configuration<LanguageServerOption> commandConfig,
+    Configuration<LanguageServerOption> commandConfig,
   ) async {
     await runLanguageServer();
   }

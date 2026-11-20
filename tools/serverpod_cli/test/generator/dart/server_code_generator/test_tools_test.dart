@@ -739,6 +739,176 @@ void main() {
   );
 
   group(
+    'Given an endpoint returning a record, '
+    'when generating test tools,',
+    () {
+      late String testToolsFile;
+
+      setUpAll(() {
+        final recordType = TypeDefinitionBuilder().withRecordOf([
+          TypeDefinitionBuilder().withClassName('int').build(),
+        ]).build();
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [
+            EndpointDefinitionBuilder()
+                .withClassName('TestingEndpoint')
+                .withName('testing')
+                .withMethods([
+                  MethodDefinitionBuilder()
+                      .withName('returnRecord')
+                      .withReturnType(
+                        TypeDefinitionBuilder()
+                            .withClassName('Future')
+                            .withGenerics([recordType])
+                            .build(),
+                      )
+                      .buildMethodCallDefinition(),
+                ])
+                .build(),
+          ],
+          models: [],
+          futureCalls: [],
+        );
+
+        testToolsFile = generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        )[expectedFileName]!;
+      });
+
+      test(
+        'then the return value is protocol-encoded before deserialization.',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'\(record\) => _i[a-z0-9]+\.Protocol\(\)\s*'
+              r'\.deserialize<\(int,\)>\(\s*'
+              r'_idc\.jsonDecode\(\s*'
+              r'_is\.SerializationManager\.encodeForProtocol\(record\),?\s*'
+              r'\),?\s*\)',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning a list of records, '
+    'when generating test tools,',
+    () {
+      late String testToolsFile;
+
+      setUpAll(() {
+        final recordType = TypeDefinitionBuilder().withRecordOf([
+          TypeDefinitionBuilder().withClassName('int').build(),
+        ]).build();
+        final listType = TypeDefinitionBuilder()
+            .withClassName('List')
+            .withGenerics([recordType])
+            .build();
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [
+            EndpointDefinitionBuilder()
+                .withClassName('TestingEndpoint')
+                .withName('testing')
+                .withMethods([
+                  MethodDefinitionBuilder()
+                      .withName('returnRecords')
+                      .withReturnType(
+                        TypeDefinitionBuilder()
+                            .withClassName('Future')
+                            .withGenerics([listType])
+                            .build(),
+                      )
+                      .buildMethodCallDefinition(),
+                ])
+                .build(),
+          ],
+          models: [],
+          futureCalls: [],
+        );
+
+        testToolsFile = generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        )[expectedFileName]!;
+      });
+
+      test(
+        'then the return value is protocol-encoded before deserialization.',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'\(record\) => _i[a-z0-9]+\.Protocol\(\)\s*'
+              r'\.deserialize<List<\(int,\)>>\(\s*'
+              r'_idc\.jsonDecode\(\s*'
+              r'_is\.SerializationManager\.encodeForProtocol\(record\),?\s*'
+              r'\),?\s*\)',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning an integer-keyed map, '
+    'when generating test tools,',
+    () {
+      late String testToolsFile;
+
+      setUpAll(() {
+        final mapType = TypeDefinitionBuilder().withMapOf('int', 'int').build();
+        final protocolDefinition = ProtocolDefinition(
+          endpoints: [
+            EndpointDefinitionBuilder()
+                .withClassName('TestingEndpoint')
+                .withName('testing')
+                .withMethods([
+                  MethodDefinitionBuilder()
+                      .withName('returnMap')
+                      .withReturnType(
+                        TypeDefinitionBuilder()
+                            .withClassName('Future')
+                            .withGenerics([mapType])
+                            .build(),
+                      )
+                      .buildMethodCallDefinition(),
+                ])
+                .build(),
+          ],
+          models: [],
+          futureCalls: [],
+        );
+
+        testToolsFile = generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        )[expectedFileName]!;
+      });
+
+      test(
+        'then the return value is protocol-encoded before deserialization.',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'\(map\) => _i[a-z0-9]+\.Protocol\(\)\s*'
+              r'\.deserialize<Map<int, int>>\(\s*'
+              r'_idc\.jsonDecode\(\s*'
+              r'_is\.SerializationManager\.encodeForProtocol\(map\),?\s*'
+              r'\),?\s*\)',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given a protocol definition with a method with Stream return value when generating test tools file',
     () {
       var endpointName = 'testing';

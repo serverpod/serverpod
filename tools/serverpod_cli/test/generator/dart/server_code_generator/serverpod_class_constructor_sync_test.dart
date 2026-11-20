@@ -67,8 +67,10 @@ void main() {
           .single
           .argumentList
           .arguments
-          .whereType<NamedExpression>()
-          .map((argument) => argument.name.label.name)
+          // Named arguments are recognized by their `name:` tokens, since
+          // their node type differs across the supported analyzer versions.
+          .where((argument) => argument.beginToken.next?.lexeme == ':')
+          .map((argument) => argument.beginToken.lexeme)
           .toSet();
 
       const outOfSyncReason =
@@ -87,14 +89,13 @@ ConstructorDeclaration _unnamedConstructorOfClass(
   CompilationUnit unit,
   String className,
 ) {
-  // The replacements (namePart, body) only exist in analyzer 10+, and the
-  // pubspec range starts at 8.1.0 (exercised by the CI downgrade legs).
-  return unit.declarations
+  var classDeclaration = unit.declarations
       .whereType<ClassDeclaration>()
-      // ignore: deprecated_member_use
-      .singleWhere((declaration) => declaration.name.lexeme == className)
-      // ignore: deprecated_member_use
-      .members
+      .singleWhere(
+        (declaration) => declaration.namePart.typeName.lexeme == className,
+      );
+
+  return classDeclaration.body.childEntities
       .whereType<ConstructorDeclaration>()
       .singleWhere((constructor) => constructor.name == null);
 }

@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class UriDefaultPersist
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
@@ -49,7 +47,7 @@ abstract class UriDefaultPersist
   @_isc.useResult
   UriDefaultPersist copyWith({
     int? id,
-    Uri? uriDefaultPersist = const _issu.$UndefinedUri(),
+    Uri? uriDefaultPersist = const _isc.$UndefinedUri(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -94,11 +92,11 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
   @override
   UriDefaultPersist copyWith({
     Object? id = _Undefined,
-    Uri? uriDefaultPersist = const _issu.$UndefinedUri(),
+    Uri? uriDefaultPersist = const _isc.$UndefinedUri(),
   }) {
     return UriDefaultPersist(
       id: id is int? ? id : this.id,
-      uriDefaultPersist: uriDefaultPersist is _issu.UndefinedSentinel
+      uriDefaultPersist: uriDefaultPersist is _isc.UndefinedSentinel
           ? this.uriDefaultPersist
           : uriDefaultPersist,
     );

@@ -40,7 +40,15 @@ class AvailableIdps {
   bool get hasAnonymous => has<EndpointAnonymousIdpBase>();
 
   /// Whether the email authentication provider is available.
+  ///
+  /// This is also `true` when the server exposes the passwordless email
+  /// login, see [hasEmailOtp].
   bool get hasEmail => has<EndpointEmailIdpBase>();
+
+  /// Whether the email authentication provider supports passwordless logins
+  /// with one-time passwords, through an endpoint extending
+  /// `EmailOtpIdpBaseEndpoint` on the server.
+  bool get hasEmailOtp => has<EndpointEmailOtpIdpBase>();
 
   /// Whether the Google authentication provider is available.
   bool get hasGoogle => has<EndpointGoogleIdpBase>();

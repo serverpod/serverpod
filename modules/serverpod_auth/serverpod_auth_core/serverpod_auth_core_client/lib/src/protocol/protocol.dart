@@ -66,7 +66,8 @@ export 'profile/models/user_profile_model.dart';
 export 'session/models/server_side_session_info.dart';
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _isc.SerializationManager
+    implements _isc.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -75,6 +76,94 @@ class Protocol extends _isc.SerializationManager {
 
   final Set<_isc.SerializationManager> _hostProtocols = {};
 
+  @override
+  _isc.ProtocolDeserialization get deserializationMetadata =>
+      _isc.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _isc.getType<_icr3dozn.AccountAlreadyLinkedException>,
+          _isc.getType<_i6fa6f87.AccountLinkConflict>,
+          _isc.getType<_i7xs5pmh.AccountLinkRequestNotFoundException>,
+          _isc.getType<_iyrwiokw.AccountLinkResult>,
+          _isc.getType<_ihnh8hzn.AccountLinkStatus>,
+          _isc.getType<_ilyubg10.AccountMergeFailedException>,
+          _isc.getType<_ig2rugwn.AccountMergeNotConfiguredException>,
+          _isc.getType<_iwlenhk6.AuthUser>,
+          _isc.getType<_idjlnenv.AuthUserBlockedException>,
+          _isc.getType<_ievhec41.AuthUserModel>,
+          _isc.getType<_ihi15zs1.AuthUserNotFoundException>,
+          _isc.getType<_i52qy4mw.AuthStrategy>,
+          _isc.getType<_ioaqzt9u.AuthSuccess>,
+          _isc.getType<_iymqi1d6.SignInWhileAuthenticatedException>,
+          _isc.getType<_i8d4wdsw.JwtTokenInfo>,
+          _isc.getType<_i35co9vj.RefreshTokenExpiredException>,
+          _isc.getType<_ik27atqz.RefreshTokenInvalidSecretException>,
+          _isc.getType<_i20y3j39.RefreshTokenMalformedException>,
+          _isc.getType<_in48f3pc.RefreshTokenNotFoundException>,
+          _isc.getType<_i6w0tdii.TokenPair>,
+          _isc.getType<_ichiyqlu.UserProfile>,
+          _isc.getType<_isbbac0p.UserProfileData>,
+          _isc.getType<_iu5nhigv.UserProfileImage>,
+          _isc.getType<_iw6ug6lb.UserProfileModel>,
+          _isc.getType<_izgso6n0.ServerSideSessionInfo>,
+          _isc.getType<_icr3dozn.AccountAlreadyLinkedException?>,
+          _isc.getType<_i6fa6f87.AccountLinkConflict?>,
+          _isc.getType<_i7xs5pmh.AccountLinkRequestNotFoundException?>,
+          _isc.getType<_iyrwiokw.AccountLinkResult?>,
+          _isc.getType<_ihnh8hzn.AccountLinkStatus?>,
+          _isc.getType<_ilyubg10.AccountMergeFailedException?>,
+          _isc.getType<_ig2rugwn.AccountMergeNotConfiguredException?>,
+          _isc.getType<_iwlenhk6.AuthUser?>,
+          _isc.getType<_idjlnenv.AuthUserBlockedException?>,
+          _isc.getType<_ievhec41.AuthUserModel?>,
+          _isc.getType<_ihi15zs1.AuthUserNotFoundException?>,
+          _isc.getType<_i52qy4mw.AuthStrategy?>,
+          _isc.getType<_ioaqzt9u.AuthSuccess?>,
+          _isc.getType<_iymqi1d6.SignInWhileAuthenticatedException?>,
+          _isc.getType<_i8d4wdsw.JwtTokenInfo?>,
+          _isc.getType<_i35co9vj.RefreshTokenExpiredException?>,
+          _isc.getType<_ik27atqz.RefreshTokenInvalidSecretException?>,
+          _isc.getType<_i20y3j39.RefreshTokenMalformedException?>,
+          _isc.getType<_in48f3pc.RefreshTokenNotFoundException?>,
+          _isc.getType<_i6w0tdii.TokenPair?>,
+          _isc.getType<_ichiyqlu.UserProfile?>,
+          _isc.getType<_isbbac0p.UserProfileData?>,
+          _isc.getType<_iu5nhigv.UserProfileImage?>,
+          _isc.getType<_iw6ug6lb.UserProfileModel?>,
+          _isc.getType<_izgso6n0.ServerSideSessionInfo?>,
+          _isc.getType<Set<String>>,
+        ],
+        modules: const [],
+        classNames: const [
+          'AccountAlreadyLinkedException',
+          'AccountLinkConflict',
+          'AccountLinkRequestNotFoundException',
+          'AccountLinkResult',
+          'AccountLinkStatus',
+          'AccountMergeFailedException',
+          'AccountMergeNotConfiguredException',
+          'AuthUser',
+          'AuthUserBlockedException',
+          'AuthUserModel',
+          'AuthUserNotFoundException',
+          'AuthStrategy',
+          'AuthSuccess',
+          'SignInWhileAuthenticatedException',
+          'JwtTokenInfo',
+          'RefreshTokenExpiredException',
+          'RefreshTokenInvalidSecretException',
+          'RefreshTokenMalformedException',
+          'RefreshTokenNotFoundException',
+          'TokenPair',
+          'UserProfile',
+          'UserProfileData',
+          'UserProfileImage',
+          'UserProfileModel',
+          'ServerSideSessionInfo',
+        ],
+        classNamePrefix: 'serverpod_auth_core.',
+      );
+
   void registerHostProtocol(
     String projectName,
     _isc.SerializationManager protocol,
@@ -82,13 +171,11 @@ class Protocol extends _isc.SerializationManager {
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth_core.')) return className;
-    return className.substring(20);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth_core.',
+      );
 
   @override
   T deserialize<T>(
@@ -96,8 +183,11 @@ class Protocol extends _isc.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth_core.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({

@@ -24,6 +24,14 @@ abstract class CodeGenerator {
     required GeneratorConfig config,
   });
 
+  /// The paths [generateSerializableModelsCode] writes for [models], without
+  /// generating their content. Generators that write no model files keep the
+  /// default.
+  Set<String> serializableModelPaths({
+    required List<SerializableModelDefinition> models,
+    required GeneratorConfig config,
+  }) => const {};
+
   /// Generate the content of files that depend on the entire
   /// [ProtocolDefinition].
   ///

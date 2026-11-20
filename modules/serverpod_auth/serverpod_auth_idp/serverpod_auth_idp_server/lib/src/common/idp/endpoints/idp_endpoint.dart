@@ -5,5 +5,5 @@ abstract class IdpBaseEndpoint extends Endpoint {
   /// Returns the `method` value for each connected [Idp] subclass if the
   /// current session is authenticated and if the user has an account connected
   /// to the [Idp].
-  Future<bool> hasAccount(final Session session);
+  Future<bool> hasAccount(Session session);
 }

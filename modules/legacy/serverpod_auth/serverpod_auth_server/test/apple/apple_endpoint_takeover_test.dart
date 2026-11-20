@@ -19,8 +19,8 @@ void main() {
   const attackerAppleSubject = '000999.attacker.0001';
 
   withServerpod('Given an existing email/password account,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     setUp(configureAppleTestAuth);
     tearDown(resetAppleTestAuth);
@@ -184,8 +184,8 @@ void main() {
   });
 
   withServerpod('Given no existing account,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     setUp(configureAppleTestAuth);
     tearDown(resetAppleTestAuth);
@@ -216,12 +216,12 @@ void main() {
 
 /// Calls the Apple endpoint with Apple's JWKS endpoint served locally.
 Future<AuthenticationResponse> _authenticate(
-  final TestEndpoints endpoints,
-  final TestSessionBuilder sessionBuilder, {
-  required final String identityToken,
-  required final String userIdentifier,
-  required final String? email,
-  final http.Client Function()? client,
+  TestEndpoints endpoints,
+  TestSessionBuilder sessionBuilder, {
+  required String identityToken,
+  required String userIdentifier,
+  required String? email,
+  http.Client Function()? client,
 }) {
   return http.runWithClient(
     () => endpoints.apple.authenticate(

@@ -1,7 +1,7 @@
 # TEMPLATE
 
 name: serverpod_lints
-description: Lints used by internal Serverpod packages.
+description: Lints used by internal Serverpod framework packages.
 version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 

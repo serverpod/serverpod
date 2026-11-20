@@ -144,6 +144,21 @@ class MapParametersEndpoint extends Endpoint {
     return map;
   }
 
+  Future<Map<int, SimpleData>> returnIntSimpleDataMap(
+    Session session,
+    Map<int, SimpleData> map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<int, SimpleData?>?>
+  returnNullableIntSimpleDataMapNullableSimpleData(
+    Session session,
+    Map<int, SimpleData?>? map,
+  ) async {
+    return map;
+  }
+
   Future<Map<String, SimpleData?>> returnSimpleDataMapNullableSimpleData(
     Session session,
     Map<String, SimpleData?> map,

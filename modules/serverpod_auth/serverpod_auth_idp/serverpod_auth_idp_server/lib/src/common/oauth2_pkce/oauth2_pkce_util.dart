@@ -76,10 +76,10 @@ class OAuth2PkceUtil {
   /// - [OAuth2NetworkErrorException] if a network error occurs
   /// - [OAuth2UnknownException] for other unexpected errors
   Future<OAuth2PkceTokenResponse> exchangeCodeForToken({
-    required final String code,
-    final String? codeVerifier,
-    required final String redirectUri,
-    final bool includeClientSecret = true,
+    required String code,
+    String? codeVerifier,
+    required String redirectUri,
+    bool includeClientSecret = true,
     http.Client? httpClient,
   }) async {
     final clientProvidedByUser = httpClient != null;
@@ -121,7 +121,7 @@ class OAuth2PkceUtil {
 
       final body = bodyParams.entries
           .map(
-            (final e) =>
+            (e) =>
                 '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent(e.value.toString())}',
           )
           .join('&');

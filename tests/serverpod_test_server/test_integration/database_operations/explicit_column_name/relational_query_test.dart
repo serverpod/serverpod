@@ -33,8 +33,8 @@ void main() async {
   withServerpod(
     'Given a model wih an explicit column name on the foreign key field',
     (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       late pod.Session session;
 

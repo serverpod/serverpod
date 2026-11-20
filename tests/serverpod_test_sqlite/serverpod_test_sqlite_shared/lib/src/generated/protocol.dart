@@ -22,7 +22,8 @@ export 'shared/subclass.dart';
 export 'shared/model.dart';
 export 'shared/shared_table_record.dart';
 
-class Protocol extends _isd.DatabaseSerializationManager {
+class Protocol extends _isd.DatabaseSerializationManager
+    implements _isd.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -31,7 +32,33 @@ class Protocol extends _isd.DatabaseSerializationManager {
 
   final Set<_iss.SerializationManager> _hostProtocols = {};
 
-  static List<_isd.TableDefinition> get targetTableDefinitions => [
+  @override
+  _iss.ProtocolDeserialization get deserializationMetadata =>
+      _iss.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _iss.getType<_i1mrs6ww.SharedEnum>,
+          _iss.getType<_iuvt222f.SharedSubclass>,
+          _iss.getType<_iwajn61k.SharedModel>,
+          _iss.getType<_itms6rpy.SharedTableRecord>,
+          _iss.getType<_i1mrs6ww.SharedEnum?>,
+          _iss.getType<_iuvt222f.SharedSubclass?>,
+          _iss.getType<_iwajn61k.SharedModel?>,
+          _iss.getType<_itms6rpy.SharedTableRecord?>,
+        ],
+        modules: const [_isd.Protocol.new],
+        classNames: const [
+          'SharedEnum',
+          'SharedSubclass',
+          'SharedModel',
+          'SharedTableRecord',
+        ],
+      );
+
+  static List<_isd.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isd.TableDefinition> get _ownTableDefinitions => [
     _isd.TableDefinition(
       name: 'shared_table_record',
       dartName: 'SharedTableRecord',
@@ -84,11 +111,8 @@ class Protocol extends _isd.DatabaseSerializationManager {
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _iss.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -96,8 +120,8 @@ class Protocol extends _isd.DatabaseSerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _iss.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -137,9 +161,16 @@ class Protocol extends _isd.DatabaseSerializationManager {
       return (data != null ? _itms6rpy.SharedTableRecord.fromJson(data) : null)
           as T;
     }
-    try {
-      return _isd.Protocol().deserialize<T>(data, t);
-    } on _iss.DeserializationTypeNotFoundException catch (_) {}
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _iss.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 
@@ -270,6 +301,9 @@ class Protocol extends _isd.DatabaseSerializationManager {
   @override
   List<_isd.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isd.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test_sqlite';

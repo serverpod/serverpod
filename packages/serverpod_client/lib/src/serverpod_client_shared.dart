@@ -105,7 +105,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Timeout when opening a web socket connection for a streaming method
   /// call. If the connection has not been established within the timeout
-  /// duration the socket will be closed.
+  /// duration the socket will be closed. Defaults to 20 seconds.
   final Duration streamingConnectionTimeout;
 
   /// Timeout when calling a server endpoint. If no response has been received, defaults to 20 seconds.
@@ -162,7 +162,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }) : host = host.endsWith('/') ? host : '$host/',
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
        streamingConnectionTimeout =
-           streamingConnectionTimeout ?? const Duration(seconds: 5) {
+           streamingConnectionTimeout ?? const Duration(seconds: 20) {
     assert(
       this.host.startsWith('http://') || this.host.startsWith('https://'),
       'host must include protocol, eg: https://example.com/',

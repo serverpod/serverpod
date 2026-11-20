@@ -330,11 +330,12 @@ extension PostgresForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
   }) {
     var out = '';
 
+    var columnsFmt = columns.map((e) => '"$e"');
     var refColumnsFmt = referenceColumns.map((e) => '"$e"');
 
     out += 'ALTER TABLE ONLY "$tableName"\n';
     out += '    ADD CONSTRAINT "$constraintName"\n';
-    out += '    FOREIGN KEY("${columns.join(', ')}")\n';
+    out += '    FOREIGN KEY(${columnsFmt.join(', ')})\n';
     out += '    REFERENCES "$referenceTable"(${refColumnsFmt.join(', ')})';
 
     String? delete = onDelete?.toPgSqlAction();

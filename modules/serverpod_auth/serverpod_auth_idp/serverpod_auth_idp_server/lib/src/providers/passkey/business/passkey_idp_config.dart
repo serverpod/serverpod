@@ -24,9 +24,9 @@ class PasskeyIdpConfig extends IdentityProviderBuilder<PasskeyIdp> {
 
   @override
   PasskeyIdp build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   }) {
     return PasskeyIdp(
       this,

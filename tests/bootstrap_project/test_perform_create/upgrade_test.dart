@@ -116,7 +116,7 @@ void main() {
       test(
         'then CreateConfigState requires IDE selection',
         () {
-          expect(result.state.requireIde, isTrue);
+          expect(result.state.form.canAdvance, isFalse);
         },
       );
 

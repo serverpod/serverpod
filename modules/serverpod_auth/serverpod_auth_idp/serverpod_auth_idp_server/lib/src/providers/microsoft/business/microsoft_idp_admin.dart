@@ -13,8 +13,8 @@ class MicrosoftIdpAdmin {
 
   /// Returns the account details for the given [accessToken].
   Future<MicrosoftAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String accessToken,
+    Session session, {
+    required String accessToken,
   }) async {
     return utils.fetchAccountDetails(
       session,
@@ -26,10 +26,10 @@ class MicrosoftIdpAdmin {
   ///
   /// Returns the newly created Microsoft account.
   Future<MicrosoftAccount> linkMicrosoftAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final MicrosoftAccountDetails accountDetails,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required MicrosoftAccountDetails accountDetails,
+    Transaction? transaction,
   }) async {
     return utils.linkMicrosoftAuthentication(
       session,
@@ -41,13 +41,13 @@ class MicrosoftIdpAdmin {
 
   /// Return the `AuthUser` id for the Microsoft user id, if any.
   static Future<UuidValue?> findUserByMicrosoftUserId(
-    final Session session, {
-    required final String userIdentifier,
-    final Transaction? transaction,
+    Session session, {
+    required String userIdentifier,
+    Transaction? transaction,
   }) async {
     final account = await MicrosoftAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(userIdentifier),
+      where: (t) => t.userIdentifier.equals(userIdentifier),
       transaction: transaction,
     );
 

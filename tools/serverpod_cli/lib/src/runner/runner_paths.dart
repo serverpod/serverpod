@@ -22,6 +22,9 @@ const serverpodMcpSocketName = 'mcp.sock';
 String serverpodTuiSocketPath(String serverDir) =>
     p.join(serverpodToolDirPath(serverDir), serverpodTuiSocketName);
 
+/// The log file's name.
+const serverpodRunnerLogName = 'runner.log';
+
 /// The file a detached runner writes its output to.
 String serverpodRunnerLogPath(String serverDir) =>
-    p.join(serverpodToolDirPath(serverDir), 'runner.log');
+    p.join(serverpodToolDirPath(serverDir), serverpodRunnerLogName);

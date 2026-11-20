@@ -8,13 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
     as _i8reeoob;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../../auth_user/models/account_link_conflict.dart' as _ij0lqicu;
 import '../../auth_user/models/account_link_status.dart' as _i5gmp6jk;
 
@@ -87,7 +85,7 @@ abstract class AccountLinkResult
   }
 }
 
-class _UndefinedAccountLinkResult$conflict extends _issu.UndefinedSentinel
+class _UndefinedAccountLinkResult$conflict extends _is.UndefinedSentinel
     implements _ij0lqicu.AccountLinkConflict {
   const _UndefinedAccountLinkResult$conflict();
 }
@@ -112,7 +110,7 @@ class _AccountLinkResultImpl extends AccountLinkResult {
   }) {
     return AccountLinkResult(
       status: status ?? this.status,
-      conflict: conflict is _issu.UndefinedSentinel
+      conflict: conflict is _is.UndefinedSentinel
           ? this.conflict?.copyWith()
           : conflict,
     );

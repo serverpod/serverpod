@@ -22,12 +22,12 @@ abstract class AuthBackwardsCompatibility {
   /// In case the latter doesn't have a password set, it can look up the
   /// previous one as a fallback here using [isLegacyPasswordValid].
   static Future<void> storeLegacyPassword(
-    final Session session, {
-    required final UuidValue emailAccountId,
+    Session session, {
+    required UuidValue emailAccountId,
 
     /// The legacy password hash
-    required final String passwordHash,
-    final Transaction? transaction,
+    required String passwordHash,
+    Transaction? transaction,
   }) async {
     await LegacyEmailPassword.db.insertRow(
       session,
@@ -39,15 +39,15 @@ abstract class AuthBackwardsCompatibility {
   /// Checks whether the password was valid for the email account in the legacy
   /// `serverpod_auth` module.
   static Future<bool> isLegacyPasswordValid(
-    final Session session, {
-    required final UuidValue emailAccountId,
-    required final String email,
-    required final String password,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue emailAccountId,
+    required String email,
+    required String password,
+    Transaction? transaction,
   }) async {
     final legacyPassword = await LegacyEmailPassword.db.findFirstRow(
       session,
-      where: (final t) => t.emailAccountId.equals(emailAccountId),
+      where: (t) => t.emailAccountId.equals(emailAccountId),
       transaction: transaction,
     );
     if (legacyPassword == null) {
@@ -65,13 +65,13 @@ abstract class AuthBackwardsCompatibility {
   /// Checks whether an account for the given [email] exists without a password,
   /// and if not it attempts to import the legacy password if its valid.
   static Future<void> importLegacyPasswordIfNeeded(
-    final Session session, {
-    required final String email,
-    required final String password,
-    final Transaction? transaction,
+    Session session, {
+    required String email,
+    required String password,
+    Transaction? transaction,
   }) async {
     await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       final emailAccount = await config.emailIdp.admin.findAccount(
         session,
@@ -116,13 +116,13 @@ abstract class AuthBackwardsCompatibility {
 
   /// Removes the legacy password from the database.
   static Future<void> clearLegacyPassword(
-    final Session session, {
-    required final UuidValue emailAccountId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue emailAccountId,
+    Transaction? transaction,
   }) async {
     await LegacyEmailPassword.db.deleteWhere(
       session,
-      where: (final t) => t.emailAccountId.equals(emailAccountId),
+      where: (t) => t.emailAccountId.equals(emailAccountId),
       transaction: transaction,
     );
   }
@@ -132,15 +132,15 @@ abstract class AuthBackwardsCompatibility {
   ///
   /// This can later be checked using [authenticationHandler].
   static Future<void> storeLegacySession(
-    final Session session, {
-    required final int legacySessionId,
-    required final UuidValue authUserId,
+    Session session, {
+    required int legacySessionId,
+    required UuidValue authUserId,
 
     /// The legacy session key hash
-    required final String sessionKeyHash,
-    required final String method,
-    required final Iterable<String> scopeNames,
-    final Transaction? transaction,
+    required String sessionKeyHash,
+    required String method,
+    required Iterable<String> scopeNames,
+    Transaction? transaction,
   }) async {
     await LegacySession.db.insertRow(
       session,
@@ -157,10 +157,10 @@ abstract class AuthBackwardsCompatibility {
 
   /// Imports a legacy (external) "user identifier".
   static Future<void> storeLegacyExternalUserIdentifier(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String userIdentifier,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String userIdentifier,
+    Transaction? transaction,
   }) async {
     await LegacyExternalUserIdentifier.db.insertRow(
       session,
@@ -177,13 +177,13 @@ abstract class AuthBackwardsCompatibility {
   /// The identifier could be from previous social logins via Apple, Firebase,
   /// or Google, which were stored without a provider association.
   static Future<UuidValue?> lookUpLegacyExternalUserIdentifier(
-    final Session session, {
-    required final String userIdentifier,
-    final Transaction? transaction,
+    Session session, {
+    required String userIdentifier,
+    Transaction? transaction,
   }) async {
     final row = await LegacyExternalUserIdentifier.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(userIdentifier),
+      where: (t) => t.userIdentifier.equals(userIdentifier),
       transaction: transaction,
     );
 
@@ -192,13 +192,13 @@ abstract class AuthBackwardsCompatibility {
 
   /// Removes the legacy user identifier mapping.
   static Future<void> clearLegacyExternalUserIdentifier(
-    final Session session, {
-    required final String userIdentifier,
-    final Transaction? transaction,
+    Session session, {
+    required String userIdentifier,
+    Transaction? transaction,
   }) async {
     await LegacyExternalUserIdentifier.db.deleteWhere(
       session,
-      where: (final t) => t.userIdentifier.equals(userIdentifier),
+      where: (t) => t.userIdentifier.equals(userIdentifier),
       transaction: transaction,
     );
   }
@@ -208,10 +208,10 @@ abstract class AuthBackwardsCompatibility {
   ///
   /// Else it does nothing.
   static Future<void> importGoogleAccount(
-    final Session session, {
-    required final String idToken,
-    required final String? accessToken,
-    final Transaction? transaction,
+    Session session, {
+    required String idToken,
+    required String? accessToken,
+    Transaction? transaction,
   }) async {
     final accountDetails = await AuthServices.instance.googleIdp.admin
         .fetchAccountDetails(
@@ -223,14 +223,13 @@ abstract class AuthBackwardsCompatibility {
     final legacyUserIdentifier = await LegacyExternalUserIdentifier.db
         .findFirstRow(
           session,
-          where: (final t) =>
-              t.userIdentifier.equals(accountDetails.userIdentifier),
+          where: (t) => t.userIdentifier.equals(accountDetails.userIdentifier),
           transaction: transaction,
         );
 
     if (legacyUserIdentifier != null) {
       await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-        final transaction,
+        transaction,
       ) async {
         await AuthServices.instance.googleIdp.admin.linkGoogleAuthentication(
           session,

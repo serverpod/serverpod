@@ -7,6 +7,21 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 /// for the `serverpod create` command, typically held by [TemplateContext].
 enum ServerpodCreateConfig<T extends FormConfigOption>
     implements FormSelectionConfig<T> {
+  // First and without a default, so the first screen teaches Space/Enter.
+  ide<IdeOption>(
+    label: 'Code editors & AI agents',
+    options: IdeOption.values,
+    multiSelect: true,
+    defaultOptions: <IdeOption>{},
+    exclusiveOptions: {IdeOption.none},
+    selectionRequired: true,
+    description: FormDescription(
+      label:
+          'Select the editors and agents you are planning to use. We will '
+          'install skills and MCP servers for your selected editors.',
+      spacing: 2,
+    ),
+  ),
   template<TemplateTypeOption>(
     label: 'Project Type',
     options: TemplateTypeOption.values,
@@ -92,18 +107,6 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
         configOptions: {DatabaseConfigOption.database},
       ),
     ],
-  ),
-  ide<IdeOption>(
-    label: 'Code editors & AI agents',
-    options: IdeOption.values,
-    multiSelect: true,
-    defaultOptions: <IdeOption>{},
-    description: FormDescription(
-      label:
-          'Select the editors and agents you are planning to use. We will '
-          'install skills and MCP servers for your selected editors.',
-      spacing: 2,
-    ),
   );
 
   const ServerpodCreateConfig({
@@ -112,6 +115,8 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
     required this.defaultOptions,
     this.requirements = const [],
     this.multiSelect = false,
+    this.exclusiveOptions = const {},
+    this.selectionRequired = false,
     this.description,
   });
 
@@ -129,6 +134,12 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
 
   @override
   final bool multiSelect;
+
+  @override
+  final Set<T> exclusiveOptions;
+
+  @override
+  final bool selectionRequired;
 
   @override
   final FormDescription? description;
@@ -177,7 +188,8 @@ enum IdeOption implements FormConfigOption {
   claude('Claude'),
   cursor('Cursor'),
   openCode('OpenCode'),
-  vsCode('VS Code');
+  vsCode('VS Code'),
+  none('None');
 
   const IdeOption(this.label);
 
@@ -211,7 +223,8 @@ extension IdeOptionsExtension on Set<IdeOption> {
         IdeOption.cursor => TemplateIde.cursor,
         IdeOption.openCode => TemplateIde.openCode,
         IdeOption.vsCode => TemplateIde.vscode,
+        IdeOption.none => null,
       };
-    }).toList();
+    }).nonNulls.toList();
   }
 }

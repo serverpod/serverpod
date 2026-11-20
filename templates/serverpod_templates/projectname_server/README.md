@@ -7,4 +7,4 @@ Start your server by running:
     cd projectname
     serverpod start
 
-Press `Q` to detach, leaving the server running, or `Shift+Q` to stop it.
+Press `Q` to stop the server and quit.

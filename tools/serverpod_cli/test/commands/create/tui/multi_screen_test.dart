@@ -1,5 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 import 'package:serverpod_cli/src/commands/create/tui/app.dart';
+import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
 import 'package:serverpod_cli/src/create/create.dart';
@@ -8,6 +9,17 @@ import 'package:test/test.dart';
 Future<void> _sendKeyAndPump(NoctermTester tester, LogicalKey key) async {
   await tester.sendKey(key);
   await tester.pump();
+}
+
+/// Selects an editor first, since the first screen requires one.
+Future<void> _navigateToSummary(
+  NoctermTester tester,
+  CreateConfigState state,
+) async {
+  await _sendKeyAndPump(tester, LogicalKey.space);
+  for (var i = 0; i < state.form.configScreenCount; i++) {
+    await _sendKeyAndPump(tester, LogicalKey.enter);
+  }
 }
 
 void main() {
@@ -37,11 +49,69 @@ void main() {
     });
 
     test(
-      'when navigating through all config screens, '
+      'when the first screen is shown, '
+      'then it is the editor selection with the step counter',
+      () {
+        expect(
+          tester.terminalState.containsText('Code editors & AI agents'),
+          isTrue,
+        );
+        expect(
+          tester.terminalState.containsText(
+            'Step 1 of ${state.form.configScreenCount}',
+          ),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'when Enter is pressed without selecting an editor, '
+      'then the editor selection is still shown',
+      () async {
+        await _sendKeyAndPump(tester, LogicalKey.enter);
+
+        expect(state.form.currentScreenIndex, 0);
+      },
+    );
+
+    test(
+      'when the None option is selected and Enter is pressed, '
+      'then the next screen is shown',
+      () async {
+        // None is the last option, one step up from the first.
+        await _sendKeyAndPump(tester, LogicalKey.arrowUp);
+        await _sendKeyAndPump(tester, LogicalKey.space);
+        // Rebuilds are throttled, wait for the selection to be rendered.
+        await tester.pump(const Duration(milliseconds: 100));
+        await _sendKeyAndPump(tester, LogicalKey.enter);
+
+        expect(state.form.currentScreenIndex, 1);
+      },
+    );
+
+    test(
+      'when the cursor is moved on the project type screen and Enter is pressed, '
+      'then the project type under the cursor is selected',
+      () async {
+        await _sendKeyAndPump(tester, LogicalKey.space);
+        await _sendKeyAndPump(tester, LogicalKey.enter);
+        expect(state.form.currentConfig, ServerpodCreateConfig.template);
+
+        await _sendKeyAndPump(tester, LogicalKey.arrowDown);
+        await _sendKeyAndPump(tester, LogicalKey.enter);
+
+        expect(state.template, ServerpodTemplateType.module);
+      },
+    );
+
+    test(
+      'when an editor is selected and all config screens are navigated, '
       'then the summary screen is reached',
       () async {
         final configCount = state.form.configScreenCount;
 
+        await _sendKeyAndPump(tester, LogicalKey.space);
         for (var i = 0; i < configCount; i++) {
           expect(state.form.isSummary, isFalse);
           expect(state.form.currentScreenIndex, i);
@@ -53,30 +123,16 @@ void main() {
     );
 
     test(
-      'when a config screen is shown, '
-      'then the click-to-select hint is shown',
-      () {
-        expect(
-          tester.terminalState.containsText('💡 Click to select'),
-          isTrue,
-        );
-      },
-    );
-
-    test(
       'when the summary screen is shown, '
-      'then the click-to-select hint is not shown',
+      'then every answer is listed and the step counter is not shown',
       () async {
-        for (var i = 0; i < state.form.configScreenCount; i++) {
-          await _sendKeyAndPump(tester, LogicalKey.enter);
-        }
+        await _navigateToSummary(tester, state);
         await tester.pump(const Duration(milliseconds: 100));
 
         expect(state.form.isSummary, isTrue);
-        expect(
-          tester.terminalState.containsText('💡 Click to select'),
-          isFalse,
-        );
+        expect(tester.terminalState.containsText('Antigravity'), isTrue);
+        expect(tester.terminalState.containsText('Server only'), isTrue);
+        expect(tester.terminalState.containsText('Step '), isFalse);
       },
     );
 
@@ -84,9 +140,7 @@ void main() {
       'when Enter is pressed on the summary screen, '
       'then the state transitions to creating mode and onCreate is called',
       () async {
-        for (var i = 0; i < state.form.configScreenCount; i++) {
-          await _sendKeyAndPump(tester, LogicalKey.enter);
-        }
+        await _navigateToSummary(tester, state);
         expect(state.form.isSummary, isTrue);
         expect(state.creatingProject, isFalse);
 
@@ -99,18 +153,14 @@ void main() {
 
     test(
       'when project creation starts, '
-      'then the click-to-select hint is not shown',
+      'then the step counter is not shown',
       () async {
-        for (var i = 0; i < state.form.configScreenCount + 1; i++) {
-          await _sendKeyAndPump(tester, LogicalKey.enter);
-        }
+        await _navigateToSummary(tester, state);
+        await _sendKeyAndPump(tester, LogicalKey.enter);
         await tester.pump(const Duration(milliseconds: 100));
 
         expect(state.creatingProject, isTrue);
-        expect(
-          tester.terminalState.containsText('💡 Click to select'),
-          isFalse,
-        );
+        expect(tester.terminalState.containsText('Step '), isFalse);
       },
     );
   });

@@ -21,16 +21,16 @@ class EmailIdpAccountUtils {
   ///
   /// Returns the list of deleted accounts.
   Future<List<EmailAccount>> deleteAccount(
-    final Session session, {
-    final String? email,
-    final UuidValue? authUserId,
-    required final Transaction transaction,
+    Session session, {
+    String? email,
+    UuidValue? authUserId,
+    required Transaction transaction,
   }) async {
     final normalizedEmail = email?.normalizedEmail;
 
     final deletedAccounts = await EmailAccount.db.deleteWhere(
       session,
-      where: (final t) {
+      where: (t) {
         Expression expression = Constant.bool(true);
 
         if (normalizedEmail != null) {
@@ -60,16 +60,16 @@ class EmailIdpAccountUtils {
   ///
   /// Returns the list of email accounts.
   Future<List<EmailAccount>> listAccounts(
-    final Session session, {
-    final String? email,
-    final UuidValue? authUserId,
-    required final Transaction transaction,
+    Session session, {
+    String? email,
+    UuidValue? authUserId,
+    required Transaction transaction,
   }) async {
     final normalizedEmail = email?.normalizedEmail;
 
     return EmailAccount.db.find(
       session,
-      where: (final t) {
+      where: (t) {
         Expression expression = Constant.bool(true);
 
         if (normalizedEmail != null) {

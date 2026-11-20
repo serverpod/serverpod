@@ -18,8 +18,8 @@ void main() {
   const newEmailIdpConfig = EmailIdpConfig(secretHashPepper: 'test');
 
   withServerpod('Given no legacy passwords,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
 
@@ -58,7 +58,7 @@ void main() {
   withServerpod(
     'Given a migrated account whose password only exists in the legacy system,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue emailAccountId;
 
@@ -108,11 +108,11 @@ void main() {
         // that in turn to the legacy password hanging off it.
         await AuthUser.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
         );
         await RateLimitedRequestAttempt.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
         );
       });
 
@@ -156,7 +156,7 @@ void main() {
             // the rate limit was supposed to refuse.
             final legacyPassword = await LegacyEmailPassword.db.findFirstRow(
               session,
-              where: (final t) => t.emailAccountId.equals(emailAccountId),
+              where: (t) => t.emailAccountId.equals(emailAccountId),
             );
 
             expect(
@@ -180,8 +180,8 @@ void main() {
 /// Mirrors the plain `legacy` hash type: `sha256(password + salt)`, with the
 /// email appended to the salt because `extraSaltyHash` defaults to true.
 String _legacyPasswordHash({
-  required final String password,
-  required final String email,
+  required String password,
+  required String email,
 }) {
   const legacySalt = 'serverpod password salt';
 

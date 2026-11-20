@@ -22,11 +22,11 @@ void main() {
   const attackerUid = 'attacker-firebase-uid';
 
   withServerpod('Given an existing email/password account,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     Future<AuthenticationResponse> signIn({
-      required final Object? emailVerified,
+      required Object? emailVerified,
     }) => endpoints.firebase.authenticate(
       sessionBuilder,
       generateMockIdToken(
@@ -130,7 +130,7 @@ void main() {
 
 /// Points [FirebaseAuth] at a manager whose Firebase and OpenID backends are
 /// served locally, so tokens from [generateMockIdToken] verify.
-void _installFirebaseAuthManager({required final String uid}) {
+void _installFirebaseAuthManager({required String uid}) {
   FirebaseAuth.authManagerOverride = FirebaseAuthManager(
     testAccountServiceJson,
     authClient: MockClient(

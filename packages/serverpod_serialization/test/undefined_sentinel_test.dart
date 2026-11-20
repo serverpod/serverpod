@@ -1,5 +1,4 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:serverpod_serialization/undefined_sentinel.dart';
 import 'package:test/test.dart';
 
 void main() {

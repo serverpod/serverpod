@@ -16,6 +16,13 @@ final List<Story> signInStories = [
     builder: (context) => _signInWidgetStory(context),
   ),
   Story(
+    name: 'Sign In/Passwordless Email Widget',
+    description:
+        'Sign in flow using the passwordless email sign-in widget. The '
+        'one-time password is 123456.',
+    builder: (context) => _signInWidgetStory(context, passwordlessEmail: true),
+  ),
+  Story(
     name: 'Sign In/Disabled Anonymous Widget',
     description: 'Sign in flow suppressing the anonymous sign-in widget.',
     builder: (context) =>
@@ -80,6 +87,7 @@ Widget _signInWidgetStory(
   bool disableGitHubSignInWidget = false,
   bool disableMicrosoftSignInWidget = false,
   bool disableFacebookSignInWidget = false,
+  bool passwordlessEmail = false,
 }) {
   final width = context.knobs.sliderInt(
     label: 'Column width',
@@ -88,16 +96,25 @@ Widget _signInWidgetStory(
     max: 400,
   );
 
+  final client = context.read<Client>();
+  void onAuthenticated() => context.showSuccessSnackBar('Authenticated!');
+  void onError(Object error) => context.showErrorSnackBar(error.toString());
+
   return SizedBox(
     width: width.toDouble(),
     child: SignInWidget(
-      client: context.read<Client>(),
-      onAuthenticated: () {
-        context.showSuccessSnackBar('Authenticated!');
-      },
-      onError: (error) {
-        context.showErrorSnackBar(error.toString());
-      },
+      client: client,
+      onAuthenticated: onAuthenticated,
+      onError: onError,
+      // The mock server exposes the passwordless email endpoint, so the
+      // password based widget is passed explicitly.
+      emailSignInWidget: passwordlessEmail
+          ? null
+          : EmailSignInWidget(
+              client: client,
+              onAuthenticated: onAuthenticated,
+              onError: onError,
+            ),
       buttonStyle: _signInButtonStyleFromKnobs(context),
       disableAnonymousSignInWidget: disableAnonymousSignInWidget,
       disableEmailSignInWidget: disableEmailSignInWidget,

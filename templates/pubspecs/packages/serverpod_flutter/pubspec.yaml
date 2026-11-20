@@ -1,7 +1,7 @@
 # TEMPLATE
 
 name: serverpod_flutter
-description: Flutter specific utilities for Serverpod.
+description: Flutter specific utilities for the Serverpod client.
 version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev

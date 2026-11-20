@@ -8,8 +8,8 @@ void main() {
   const authUsers = AuthUsers();
 
   withServerpod('Given an auth user created without parameters,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late AuthUserModel authUser;
@@ -57,8 +57,8 @@ void main() {
   });
 
   withServerpod('Given no auth users,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
 
@@ -99,7 +99,7 @@ void main() {
 
   withServerpod(
     'Given an auth user creation hook that adds admin scope and blocked,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUsers authUsers;
 
@@ -110,10 +110,10 @@ void main() {
           config: AuthUsersConfig(
             onBeforeAuthUserCreated:
                 (
-                  final session,
-                  final scopes,
-                  final blocked, {
-                  required final transaction,
+                  session,
+                  scopes,
+                  blocked, {
+                  required transaction,
                 }) => (scopes: {...scopes, Scope.admin}, blocked: true),
           ),
         );
@@ -152,7 +152,7 @@ void main() {
 
   withServerpod(
     'Given an auth user creation hook that captures the created user,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUsers authUsers;
       late AuthUserModel? createdAuthUserFromCallback;
@@ -165,9 +165,9 @@ void main() {
           config: AuthUsersConfig(
             onAfterAuthUserCreated:
                 (
-                  final session,
-                  final authUser, {
-                  required final transaction,
+                  session,
+                  authUser, {
+                  required transaction,
                 }) {
                   createdAuthUserFromCallback = authUser;
                 },

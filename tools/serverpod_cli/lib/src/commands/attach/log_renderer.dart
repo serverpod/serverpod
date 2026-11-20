@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:async/async.dart' show StreamGroup;
 import 'package:serverpod_cli/src/runner/log_codec.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
@@ -11,9 +12,12 @@ import 'package:serverpod_tui/serverpod_tui.dart' show CompletedOperation;
 /// Streams the runner at [socketPath] as plain text, and returns the exit code.
 ///
 /// The runner's own code when it stops, 1 when nothing will rebuild it or it
-/// goes silent past [reconnectDeadline], and 0 on Ctrl+C, which only detaches.
+/// goes silent past [reconnectDeadline], and 0 on detaching.
+///
+/// SIGINT and SIGTERM stop the runner when [ownsRunner], and otherwise detach.
 Future<int> attachWithLogStream(
   String socketPath, {
+  bool ownsRunner = false,
   IOSink? out,
   Stream<ProcessSignal>? interrupts,
   Duration? waitForRunner,
@@ -65,9 +69,27 @@ Future<int> attachWithLogStream(
     }),
   );
 
-  final signals = interrupts ?? ProcessSignal.sigint.watch();
+  final signals =
+      interrupts ??
+      StreamGroup.merge([
+        ProcessSignal.sigint.watch(),
+        if (!Platform.isWindows) ProcessSignal.sigterm.watch(),
+      ]);
+  var owned = ownsRunner;
+  var stopRequested = false;
   final signalSub = signals.listen((_) {
-    if (!done.isCompleted) done.complete(0);
+    if (done.isCompleted) return;
+    // A starting runner stops only at its next checkpoint, so a second signal
+    // leaves without waiting for it.
+    if (!owned || stopRequested) return done.complete(0);
+    stopRequested = true;
+    unawaited(
+      client.stop().catchError((Object e) {
+        if (done.isCompleted) return;
+        sink.writeln('--- stopping the runner failed: $e ---');
+        done.complete(1);
+      }),
+    );
   });
 
   final eventSub = client.events.listen((event) {
@@ -83,6 +105,9 @@ Future<int> attachWithLogStream(
   });
 
   final connectionSub = client.connectionChanges.listen((connected) {
+    // A runner that drops without announcing is gone, so a reconnect reaches
+    // another one.
+    if (!connected) owned = false;
     sink.writeln(
       connected
           ? '--- reattached to the runner ---'

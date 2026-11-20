@@ -6,7 +6,7 @@ import 'password_not_found_exception.dart';
 extension GetPasswordsExtension on Serverpod {
   /// Returns the password for [key] or throws a [PasswordNotFoundException]
   /// if it is missing.
-  String getPasswordOrThrow(final String key) {
+  String getPasswordOrThrow(String key) {
     final password = getPassword(key);
     if (password == null) {
       throw PasswordNotFoundException(key);

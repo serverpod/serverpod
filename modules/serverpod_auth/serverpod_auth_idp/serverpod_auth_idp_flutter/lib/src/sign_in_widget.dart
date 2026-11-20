@@ -14,6 +14,7 @@ import 'common/widgets/column.dart';
 import 'common/sign_in_flow_coordinator.dart';
 import 'common/widgets/divider.dart';
 import 'common/widgets/gaps.dart';
+import 'email/email_otp_sign_in_widget.dart';
 import 'email/email_sign_in_widget.dart';
 import 'github/github_sign_in_widget.dart';
 import 'google/google_sign_in_widget.dart';
@@ -28,7 +29,8 @@ import 'providers.dart';
 /// and displays the appropriate sign-in options.
 ///
 /// Currently supports:
-/// - Email authentication (via [EndpointEmailIdpBase])
+/// - Email authentication (via [EndpointEmailIdpBase]), with the passwordless
+///   [EmailOtpSignInWidget] when the server exposes [EndpointEmailOtpIdpBase]
 /// - Google Sign-In (via [EndpointGoogleIdpBase])
 /// - Apple Sign-In (via [EndpointAppleIdpBase])
 /// - GitHub Sign-In (via [EndpointGitHubIdpBase])
@@ -91,6 +93,12 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for email sign-in.
   final EmailSignInWidget? emailSignInWidget;
 
+  /// Customized widget to use for the passwordless email sign-in, shown when
+  /// the server exposes [EndpointEmailOtpIdpBase].
+  ///
+  /// Must not be provided together with [emailSignInWidget].
+  final EmailOtpSignInWidget? emailOtpSignInWidget;
+
   /// Customized widget to use for Google sign-in.
   final GoogleSignInWidget? googleSignInWidget;
 
@@ -133,6 +141,7 @@ class SignInWidget extends StatefulWidget {
     this.disableFacebookSignInWidget = false,
     this.anonymousSignInWidget,
     this.emailSignInWidget,
+    this.emailOtpSignInWidget,
     this.googleSignInWidget,
     this.appleSignInWidget,
     this.githubSignInWidget,
@@ -140,7 +149,10 @@ class SignInWidget extends StatefulWidget {
     this.buttonStyle,
     this.accountLinking,
     super.key,
-  });
+  }) : assert(
+         emailSignInWidget == null || emailOtpSignInWidget == null,
+         'Provide either emailSignInWidget or emailOtpSignInWidget, not both.',
+       );
 
   @override
   State<SignInWidget> createState() => _SignInWidgetState();
@@ -159,6 +171,8 @@ class _SignInWidgetState extends State<SignInWidget> {
       accountLinking == null;
 
   bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
+
+  bool get hasEmailOtp => auth.idp.hasEmailOtp;
 
   bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
 
@@ -269,13 +283,21 @@ class _SignInWidgetState extends State<SignInWidget> {
           spacing: 12,
           children: [
             if (hasEmail)
-              widget.emailSignInWidget ??
-                  EmailSignInWidget(
-                    client: widget.client,
-                    onAuthenticated: widget.onAuthenticated,
-                    onError: widget.onError,
-                    accountLinking: accountLinking,
-                  ),
+              widget.emailOtpSignInWidget ??
+                  widget.emailSignInWidget ??
+                  (hasEmailOtp
+                      ? EmailOtpSignInWidget(
+                          client: widget.client,
+                          onAuthenticated: widget.onAuthenticated,
+                          onError: widget.onError,
+                          accountLinking: accountLinking,
+                        )
+                      : EmailSignInWidget(
+                          client: widget.client,
+                          onAuthenticated: widget.onAuthenticated,
+                          onError: widget.onError,
+                          accountLinking: accountLinking,
+                        )),
             if (socialProviders.isNotEmpty && hasEmail)
               const _SignInSeparator(),
             ...socialProviders,

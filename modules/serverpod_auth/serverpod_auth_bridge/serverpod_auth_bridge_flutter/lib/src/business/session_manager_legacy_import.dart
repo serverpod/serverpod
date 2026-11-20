@@ -9,7 +9,7 @@ extension SessionManagerLegacyImport on auth_flutter.FlutterAuthSessionManager {
 
   Future<void> initAndImportLegacySessionIfNeeded(
     backward_compatibility_client.Caller caller, {
-    final Future<String?> Function(String key)? legacyStringGetter,
+    Future<String?> Function(String key)? legacyStringGetter,
   }) async {
     await initialize();
     if (isAuthenticated) return;

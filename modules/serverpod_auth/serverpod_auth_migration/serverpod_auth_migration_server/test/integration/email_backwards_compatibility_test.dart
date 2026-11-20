@@ -38,7 +38,7 @@ void main() {
 
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account migrated with just `migrateUsers`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'User@serverpod.DEV';
       const password = 'Somepassword123!';
 
@@ -92,7 +92,7 @@ void main() {
 
   withServerpod(
     'Given a migrated legacy `serverpod_auth` email-based user account which was fully imported `migrateUsers` and `importLegacyPasswordIfNeeded` with the correct password,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'User@serverpod.DEV';
       const password = 'Somepassword123!';
 
@@ -161,7 +161,7 @@ void main() {
 
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account and a throwing `userMigrationHook`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'User@serverpod.DEV';
       const password = 'Somepassword123!';
 
@@ -181,10 +181,10 @@ void main() {
               session,
               userMigration:
                   (
-                    final session, {
-                    required final newAuthUserId,
-                    required final oldUserId,
-                    final transaction,
+                    session, {
+                    required newAuthUserId,
+                    required oldUserId,
+                    transaction,
                   }) {
                     throw UnimplementedError();
                   },
@@ -200,7 +200,7 @@ void main() {
 
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account that has been migrated using `migrateUsers` and `importLegacyPasswordIfNeeded`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'User@serverpod.DEV';
       const password = 'Somepassword123!';
 
@@ -222,10 +222,10 @@ void main() {
           session,
           userMigration:
               (
-                final session, {
-                required final newAuthUserId,
-                required final oldUserId,
-                final transaction,
+                session, {
+                required newAuthUserId,
+                required oldUserId,
+                transaction,
               }) async {
                 migratedUser = (
                   oldUserId: oldUserId,
@@ -308,7 +308,7 @@ void main() {
 
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account that has been migrated using just `migrateUsers` and `importProfile: false`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'foo@serverpod.dev';
       const password = 'Somepassword123!';
 
@@ -355,7 +355,7 @@ void main() {
 
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account that has been migrated using just `migrateUsers`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'User@serverpod.DEV';
       const password = 'Somepassword123!';
 
@@ -378,10 +378,10 @@ void main() {
           session,
           userMigration:
               (
-                final session, {
-                required final newAuthUserId,
-                required final oldUserId,
-                final transaction,
+                session, {
+                required newAuthUserId,
+                required oldUserId,
+                transaction,
               }) async {
                 migratedUser = (
                   oldUserId: oldUserId,
@@ -538,10 +538,10 @@ void main() {
 }
 
 Future<legacy_auth.UserInfo> _createLegacyUser(
-  final Session session, {
-  required final String email,
-  required final String password,
-  final String userName = 'user name',
+  Session session, {
+  required String email,
+  required String password,
+  String userName = 'user name',
 }) async {
   return (await legacy_auth.Emails.createUser(
     session,

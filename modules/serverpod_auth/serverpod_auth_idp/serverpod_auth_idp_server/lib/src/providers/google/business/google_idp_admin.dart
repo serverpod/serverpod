@@ -13,9 +13,9 @@ class GoogleIdpAdmin {
 
   /// Returns the account details for the given [idToken] and [accessToken].
   Future<GoogleAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String idToken,
-    required final String? accessToken,
+    Session session, {
+    required String idToken,
+    required String? accessToken,
   }) async {
     return utils.fetchAccountDetails(
       session,
@@ -28,10 +28,10 @@ class GoogleIdpAdmin {
   ///
   /// Returns the newly created Google account.
   Future<GoogleAccount> linkGoogleAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final GoogleAccountDetails accountDetails,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required GoogleAccountDetails accountDetails,
+    Transaction? transaction,
   }) async {
     return utils.linkGoogleAuthentication(
       session,
@@ -43,13 +43,13 @@ class GoogleIdpAdmin {
 
   /// Return the `AuthUser` id for the Google user id, if any.
   static Future<UuidValue?> findUserByGoogleUserId(
-    final Session session, {
-    required final String userIdentifier,
-    final Transaction? transaction,
+    Session session, {
+    required String userIdentifier,
+    Transaction? transaction,
   }) async {
     final account = await GoogleAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(userIdentifier),
+      where: (t) => t.userIdentifier.equals(userIdentifier),
       transaction: transaction,
     );
 

@@ -8,13 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, depend_on_referenced_packages
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'package:serverpod/serverpod.dart' as _is;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/fk_relation/fk_relation_company.dart'
     as _ikyus01r;
@@ -154,7 +152,7 @@ abstract class FkRelationEmployee
 
 class _Undefined {}
 
-class _UndefinedFkRelationEmployee$company extends _issu.UndefinedSentinel
+class _UndefinedFkRelationEmployee$company extends _is.UndefinedSentinel
     implements _ikyus01r.FkRelationCompany {
   const _UndefinedFkRelationEmployee$company();
 }
@@ -194,13 +192,13 @@ class _FkRelationEmployeeImpl extends FkRelationEmployee {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       companyId: companyId ?? this.companyId,
-      company: company is _issu.UndefinedSentinel
+      company: company is _is.UndefinedSentinel
           ? this.company?.copyWith()
           : company,
       previousCompanyId: previousCompanyId is int?
           ? previousCompanyId
           : this.previousCompanyId,
-      previousCompany: previousCompany is _issu.UndefinedSentinel
+      previousCompany: previousCompany is _is.UndefinedSentinel
           ? this.previousCompany?.copyWith()
           : previousCompany,
     );

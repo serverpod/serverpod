@@ -15,8 +15,8 @@ void main() {
     ),
   );
   withServerpod('Given no active JWT sessions,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
 
@@ -52,8 +52,8 @@ void main() {
   withServerpod(
     'Given a valid `TokenPair` for a refresh token with scopes and extra claims,',
     (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const String scopeName = 'test scope';
       late Session session;
@@ -141,8 +141,8 @@ void main() {
   withServerpod(
     'Given a valid `TokenPair` for a refresh token with scopes and extra claims,',
     (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const String scopeName = 'test scope';
       late Session session;

@@ -510,7 +510,13 @@ void main() {
         () {
           expect(
             serviceClientProtocolSource,
-            contains('Protocol().deserialize<T>(data, t)'),
+            contains('module.deserialize<T>(data, t)'),
+          );
+          expect(
+            serviceClientProtocolSource,
+            matches(
+              RegExp(r'modules: const \[\s*_i[a-z0-9]+\.Protocol\.new,?\s*\]'),
+            ),
           );
           expect(
             CompilationUnitHelpers.hasImportDirective(

@@ -95,7 +95,7 @@ class _FakeMcpSocket extends Fake implements McpSocketServer {
 WatchSession _buildSession(_FakeCompiler compiler, _FakeServer server) {
   return WatchSession(
     compiler: compiler,
-    generate: (_, _) async => (
+    generate: (_) async => (
       success: true,
       generatedFiles: const <String>{},
       protocolAnalyticsSnapshot: null,

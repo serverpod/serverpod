@@ -34,9 +34,9 @@ final class ServerSideSessionKeyHash {
   final String _sessionKeyHashPepper;
   final List<String> _fallbackSessionKeyHashPeppers;
   ServerSideSessionKeyHash({
-    required final int sessionKeyHashSaltLength,
-    required final String sessionKeyHashPepper,
-    required final List<String> fallbackSessionKeyHashPeppers,
+    required int sessionKeyHashSaltLength,
+    required String sessionKeyHashPepper,
+    required List<String> fallbackSessionKeyHashPeppers,
   }) : _sessionKeyHashSaltLength = sessionKeyHashSaltLength,
        _sessionKeyHashPepper = sessionKeyHashPepper,
        _fallbackSessionKeyHashPeppers = fallbackSessionKeyHashPeppers;
@@ -50,8 +50,8 @@ final class ServerSideSessionKeyHash {
   /// salt has to be stored next to the hash and handed back to
   /// [validateSessionKeyHash], which cannot verify the hash without it.
   ({Uint8List hash, Uint8List salt}) createSessionKeyHash({
-    required final Uint8List secret,
-    @protected final Uint8List? salt,
+    required Uint8List secret,
+    @protected Uint8List? salt,
   }) {
     final actualSalt = salt ?? generateRandomBytes(_sessionKeyHashSaltLength);
     return (
@@ -66,8 +66,8 @@ final class ServerSideSessionKeyHash {
   /// Used to upgrade a row whose hash used a superseded scheme; the salt does
   /// not change, so only the hash column needs to be written.
   Uint8List rehashSessionKeyHash({
-    required final Uint8List secret,
-    required final Uint8List salt,
+    required Uint8List secret,
+    required Uint8List salt,
   }) {
     final digest = _saltedDigest(
       secret: secret,
@@ -88,9 +88,9 @@ final class ServerSideSessionKeyHash {
   /// in the first byte. Returns [SessionKeyHashValidation.validButOutdated] when
   /// the match came from a superseded scheme, so the caller can upgrade the row.
   SessionKeyHashValidation validateSessionKeyHash({
-    required final Uint8List secret,
-    required final Uint8List hash,
-    required final Uint8List salt,
+    required Uint8List secret,
+    required Uint8List hash,
+    required Uint8List salt,
   }) {
     // Pre-versioning rows are the released saltless digest, sha512(secret +
     // pepper), stored as a bare 64-byte value. A match is genuine but
@@ -98,8 +98,7 @@ final class ServerSideSessionKeyHash {
     if (hash.length == _digestLength) {
       return _matchesAnyPepper(
             hash,
-            (final pepper) =>
-                _legacySaltlessDigest(secret: secret, pepper: pepper),
+            (pepper) => _legacySaltlessDigest(secret: secret, pepper: pepper),
           )
           ? SessionKeyHashValidation.validButOutdated
           : SessionKeyHashValidation.invalid;
@@ -117,7 +116,7 @@ final class ServerSideSessionKeyHash {
         final storedDigest = Uint8List.sublistView(hash, 1);
         return _matchesAnyPepper(
               storedDigest,
-              (final pepper) =>
+              (pepper) =>
                   _saltedDigest(secret: secret, salt: salt, pepper: pepper),
             )
             ? SessionKeyHashValidation.valid
@@ -129,8 +128,8 @@ final class ServerSideSessionKeyHash {
   }
 
   bool _matchesAnyPepper(
-    final Uint8List expectedDigest,
-    final Uint8List Function(String pepper) computeDigest,
+    Uint8List expectedDigest,
+    Uint8List Function(String pepper) computeDigest,
   ) {
     if (uint8ListAreEqual(
       expectedDigest,
@@ -153,9 +152,9 @@ final class ServerSideSessionKeyHash {
   /// precomputation is good against every row at once. Both lengths are fixed
   /// by configuration, so the concatenation is unambiguous.
   Uint8List _saltedDigest({
-    required final Uint8List secret,
-    required final Uint8List salt,
-    required final String pepper,
+    required Uint8List secret,
+    required Uint8List salt,
+    required String pepper,
   }) {
     return Uint8List.fromList(
       sha512.convert(secret + salt + utf8.encode(pepper)).bytes,
@@ -169,8 +168,8 @@ final class ServerSideSessionKeyHash {
   /// next use. It can be removed after a deprecation window, at which point any
   /// remaining pre-fix sessions simply require a fresh sign-in.
   Uint8List _legacySaltlessDigest({
-    required final Uint8List secret,
-    required final String pepper,
+    required Uint8List secret,
+    required String pepper,
   }) {
     return Uint8List.fromList(
       sha512.convert(secret + utf8.encode(pepper)).bytes,
@@ -178,7 +177,7 @@ final class ServerSideSessionKeyHash {
   }
 
   factory ServerSideSessionKeyHash.fromConfig(
-    final ServerSideSessionsConfig config,
+    ServerSideSessionsConfig config,
   ) {
     return ServerSideSessionKeyHash(
       sessionKeyHashSaltLength: config.sessionKeyHashSaltLength,

@@ -17,7 +17,7 @@ class _VersionParser extends ValueParser<Version> {
   const _VersionParser();
 
   @override
-  Version parse(final String value) => Version.parse(value);
+  Version parse(String value) => Version.parse(value);
 }
 
 enum UpgradeOption<V> implements OptionDefinition<V> {
@@ -77,7 +77,7 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
 
   @override
   Future<void> runWithConfig(
-    final Configuration commandConfig,
+    Configuration commandConfig,
   ) async {
     final force = commandConfig.value(UpgradeOption.force);
     final requested = commandConfig.optionalValue(UpgradeOption.version);
@@ -149,8 +149,8 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
   /// Refuses to install when the CLI being run is not the one an upgrade
   /// replaces.
   void _verifyInstallationIsUpgradable(
-    final CliInstallation installation, {
-    required final bool force,
+    CliInstallation installation, {
+    required bool force,
   }) {
     final message = switch (installation.kind) {
       CliInstallationKind.managed => null,
@@ -183,9 +183,9 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
 
   /// Reports what was installed, and nothing about what `serverpod` runs.
   void _reportInstalled({
-    required final CliInstallation installation,
-    required final Version from,
-    required final Version installed,
+    required CliInstallation installation,
+    required Version from,
+    required Version installed,
   }) {
     if (!installation.upgradesRunningExecutable) {
       log.info(
@@ -210,7 +210,7 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
 
   /// Warns when `serverpod` resolves to an executable this command did not
   /// install.
-  void _warnAboutPathMismatch(final CliInstallation installation) {
+  void _warnAboutPathMismatch(CliInstallation installation) {
     final executableOnPath = installation.executableOnPath;
     if (executableOnPath == null) {
       log.warning(
@@ -230,7 +230,7 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
     );
   }
 
-  Future<void> _install(final String descriptor) async {
+  Future<void> _install(String descriptor) async {
     final result = await runDartInstall(
       descriptor,
       message: 'Installing $descriptor',

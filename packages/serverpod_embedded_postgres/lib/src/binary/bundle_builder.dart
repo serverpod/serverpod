@@ -82,6 +82,7 @@ class BundleBuilder {
       );
       var code = await proc.exitCode;
       if (code != 0) {
+        _dumpFailingLog(scratch);
         throw BinaryBuildException('local bundle build failed (exit $code).');
       }
       var bundle = File(
@@ -104,6 +105,30 @@ class BundleBuilder {
         scratch.deleteSync(recursive: true);
       } catch (_) {} // Best effort
     }
+  }
+
+  /// Prints the tail of the build log that was being written when the build
+  /// failed. The scripts redirect each step's output to `logs/*.log` in the
+  /// scratch dir, which is deleted on exit - so this is the only chance to
+  /// surface the actual error.
+  void _dumpFailingLog(Directory scratch) {
+    const tailLines = 80;
+    try {
+      var logDir = Directory(p.join(scratch.path, 'logs'));
+      if (!logDir.existsSync()) return;
+      var logs = logDir.listSync().whereType<File>().toList()
+        ..sort((a, b) => a.lastModifiedSync().compareTo(b.lastModifiedSync()));
+      if (logs.isEmpty) return;
+      var lines = logs.last.readAsStringSync().split('\n');
+      if (lines.isNotEmpty && lines.last.isEmpty) lines.removeLast();
+      var tail = lines.length > tailLines
+          ? lines.sublist(lines.length - tailLines)
+          : lines;
+      stderr.writeln(
+        '----- ${p.basename(logs.last.path)} (last ${tail.length} lines) -----',
+      );
+      tail.forEach(stderr.writeln);
+    } catch (_) {} // Best effort
   }
 
   Future<Directory> _toolDir() async {

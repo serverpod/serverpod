@@ -5,6 +5,7 @@ import '../../../../../core.dart';
 import '../../util/email_string_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
+import 'secret_challenge_exception_mapping.dart';
 
 /// {@template email_idp_password_reset_util}
 /// Class for handling password reset operations in the email account module.
@@ -24,10 +25,10 @@ class EmailIdpPasswordResetUtil {
 
   /// Creates a new [EmailIdpPasswordResetUtil] instance.
   EmailIdpPasswordResetUtil({
-    required final EmailIdpPasswordResetUtilsConfig config,
-    required final Argon2HashUtil passwordHashUtils,
-    final Argon2HashUtil? verificationCodeHash,
-    final Argon2HashUtil? completionTokenHash,
+    required EmailIdpPasswordResetUtilsConfig config,
+    required Argon2HashUtil passwordHashUtils,
+    Argon2HashUtil? verificationCodeHash,
+    Argon2HashUtil? completionTokenHash,
   }) : _config = config,
        _passwordHashUtil = passwordHashUtils,
        _rateLimitUtil = DatabaseRateLimiter(
@@ -62,9 +63,9 @@ class EmailIdpPasswordResetUtil {
   /// the client, so that this method can not be misused to check which emails
   /// are registered.
   Future<UuidValue> startPasswordReset(
-    final Session session, {
+    Session session, {
     required String email,
-    required final Transaction transaction,
+    required Transaction transaction,
   }) async {
     email = email.normalizedEmail;
 
@@ -74,7 +75,7 @@ class EmailIdpPasswordResetUtil {
 
     final account = await EmailAccount.db.findFirstRow(
       session,
-      where: (final t) => t.email.equals(email),
+      where: (t) => t.email.equals(email),
       transaction: transaction,
     );
 
@@ -143,10 +144,10 @@ class EmailIdpPasswordResetUtil {
   /// failed password reset completion will be logged to the database outside
   /// of the [transaction] and can not be rolled back.
   Future<String> verifyPasswordResetCode(
-    final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue passwordResetRequestId,
+    required String verificationCode,
+    required Transaction transaction,
   }) async {
     return await withReplacedSecretChallengeException(
       () => _challengeUtil.verifyChallenge(
@@ -180,10 +181,10 @@ class EmailIdpPasswordResetUtil {
   /// - [EmailPasswordResetInvalidVerificationCodeException] if the provided
   ///   [verificationCode] is not valid.
   Future<UuidValue> completePasswordReset(
-    final Session session, {
-    required final String completePasswordResetToken,
-    required final String newPassword,
-    required final Transaction transaction,
+    Session session, {
+    required String completePasswordResetToken,
+    required String newPassword,
+    required Transaction transaction,
   }) async {
     if (!_config.passwordValidationFunction(newPassword)) {
       throw EmailPasswordResetPasswordPolicyViolationException();
@@ -229,53 +230,73 @@ class EmailIdpPasswordResetUtil {
     return account.authUserId;
   }
 
-  /// Deletes password reset requests older than [olderThan].
+  /// Deletes password reset requests according to [olderThan].
+  ///
+  /// If [olderThan] is [Duration.zero], this removes all matching requests,
+  /// including those timestamped at or after the current time.
   ///
   /// If [olderThan] is `null`, this will remove all expired password reset
   /// requests, as configured by the
   /// [EmailIdpConfig.passwordResetVerificationCodeLifetime].
   ///
+  /// Other durations remove only requests strictly older than [olderThan].
+  ///
   /// If [emailAccountId] is provided, only requests for the given email account
   /// will be deleted.
   Future<void> deletePasswordResetRequests(
-    final Session session, {
+    Session session, {
     required Duration? olderThan,
-    required final UuidValue? emailAccountId,
-    required final Transaction transaction,
+    required UuidValue? emailAccountId,
+    required Transaction transaction,
   }) async {
-    olderThan ??= _config.passwordResetVerificationCodeLifetime;
-
-    final lastValidDateTime = clock.now().subtract(olderThan);
+    final lastValidDateTime = olderThan == Duration.zero
+        ? null
+        : clock.now().subtract(
+            olderThan ?? _config.passwordResetVerificationCodeLifetime,
+          );
 
     await EmailAccountPasswordResetRequest.db.deleteWhere(
       session,
-      where: (final t) {
-        var expression = t.createdAt < lastValidDateTime;
+      where: (t) {
+        Expression expression = Constant.bool(true);
+
+        if (lastValidDateTime != null) {
+          expression &= t.createdAt < lastValidDateTime;
+        }
+
         if (emailAccountId != null) {
           expression &= t.emailAccountId.equals(emailAccountId);
         }
+
         return expression;
       },
       transaction: transaction,
     );
   }
 
-  /// Deletes password reset request attempts older than [olderThan].
+  /// Deletes password reset request attempts according to [olderThan].
+  ///
+  /// If [olderThan] is [Duration.zero], this removes all matching attempts,
+  /// including those timestamped at or after the current time.
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
   /// window that is checked upon password reset requests, as configured in
   /// [EmailIdpConfig.maxPasswordResetAttempts].timeframe.
   ///
+  /// Other durations remove only attempts strictly older than [olderThan].
+  ///
   /// If [email] is provided, only attempts for the given email will be deleted.
   Future<void> deletePasswordResetRequestAttempts(
-    final Session session, {
-    required final Duration? olderThan,
-    required final String? email,
-    required final Transaction transaction,
+    Session session, {
+    required Duration? olderThan,
+    required String? email,
+    required Transaction transaction,
   }) async {
     await _rateLimitUtil.deleteAttempts(
       session,
-      olderThan: olderThan ?? _rateLimitUtil.config.timeframe,
+      olderThan: olderThan == Duration.zero
+          ? null
+          : olderThan ?? _rateLimitUtil.config.timeframe,
       key: email,
       transaction: transaction,
     );
@@ -290,10 +311,10 @@ class EmailIdpPasswordResetUtil {
   /// If [password] is `null`, an empty password hash will be set making it
   /// impossible to login with the email account.
   Future<void> setPassword(
-    final Session session, {
-    required final EmailAccount emailAccount,
-    required final String? password,
-    required final Transaction transaction,
+    Session session, {
+    required EmailAccount emailAccount,
+    required String? password,
+    required Transaction transaction,
   }) async {
     final passwordHash = switch (password) {
       null => '',
@@ -319,13 +340,13 @@ class EmailIdpPasswordResetUtil {
           domain: 'email',
           source: 'password_reset_complete',
           maxAttempts: _config.passwordResetVerificationCodeAllowedAttempts,
-          onRateLimitExceeded: (final session, final key) =>
+          onRateLimitExceeded: (session, key) =>
               _onRateLimitExceeded(session, UuidValue.withValidation(key)),
         ),
       ),
       getRequest: _getPasswordResetRequest,
-      isAlreadyUsed: (final request) => request.isVerificationCodeUsed,
-      getChallenge: (final request) => request.getChallenge,
+      isAlreadyUsed: (request) => request.isVerificationCodeUsed,
+      getChallenge: (request) => request.getChallenge,
       isExpired: _isRequestExpired,
       onExpired: EmailAccountPasswordResetRequest.db.deleteRow,
       linkCompletionToken: _linkSetPasswordChallenge,
@@ -336,31 +357,31 @@ class EmailIdpPasswordResetUtil {
   _getCompletionConfig() {
     return SecretChallengeCompletionConfig<EmailAccountPasswordResetRequest>(
       getRequest: _getPasswordResetRequest,
-      getCompletionChallenge: (final request) => request.setPasswordChallenge,
+      getCompletionChallenge: (request) => request.setPasswordChallenge,
       isExpired: _isRequestExpired,
       onExpired: EmailAccountPasswordResetRequest.db.deleteRow,
     );
   }
 
   Future<void> _onRateLimitExceeded(
-    final Session session,
-    final UuidValue requestId,
+    Session session,
+    UuidValue requestId,
   ) async {
     await EmailAccountPasswordResetRequest.db.deleteWhere(
       session,
       // Only delete requests that have not been verified yet.
       // This ensures we don't delete requests if verifyPasswordResetCode is
       // accidentally called again.
-      where: (final t) =>
+      where: (t) =>
           t.id.equals(requestId) & t.setPasswordChallengeId.equals(null),
       // passing no transaction, so this will not be rolled back
     );
   }
 
   Future<EmailAccountPasswordResetRequest?> _getPasswordResetRequest(
-    final Session session,
-    final UuidValue requestId, {
-    required final Transaction? transaction,
+    Session session,
+    UuidValue requestId, {
+    required Transaction? transaction,
   }) async {
     return await EmailAccountPasswordResetRequest.db.findById(
       session,
@@ -373,7 +394,7 @@ class EmailIdpPasswordResetUtil {
     );
   }
 
-  bool _isRequestExpired(final EmailAccountPasswordResetRequest request) {
+  bool _isRequestExpired(EmailAccountPasswordResetRequest request) {
     final requestExpiresAt = request.createdAt.add(
       _config.passwordResetVerificationCodeLifetime,
     );
@@ -385,17 +406,17 @@ class EmailIdpPasswordResetUtil {
   /// Will throw [EmailPasswordResetVerificationCodeAlreadyUsedException]
   /// if the challenge has already been linked.
   Future<void> _linkSetPasswordChallenge(
-    final Session session,
-    final EmailAccountPasswordResetRequest request,
-    final SecretChallenge setPasswordChallenge, {
-    required final Transaction? transaction,
+    Session session,
+    EmailAccountPasswordResetRequest request,
+    SecretChallenge setPasswordChallenge, {
+    required Transaction? transaction,
   }) async {
     final updated = await EmailAccountPasswordResetRequest.db.updateWhere(
       session,
-      columnValues: (final t) => [
+      columnValues: (t) => [
         t.setPasswordChallengeId(setPasswordChallenge.id!),
       ],
-      where: (final t) =>
+      where: (t) =>
           t.id.equals(request.id!) & t.setPasswordChallengeId.equals(null),
       transaction: transaction,
     );
@@ -407,29 +428,8 @@ class EmailIdpPasswordResetUtil {
 
   /// Replaces challenge-related exceptions by email-specific exceptions.
   Future<T> withReplacedSecretChallengeException<T>(
-    final Future<T> Function() fn,
-  ) async {
-    try {
-      return await fn();
-    } on SecretChallengeException catch (e) {
-      throw switch (e) {
-        ChallengeRequestNotFoundException() =>
-          EmailPasswordResetRequestNotFoundException(),
-        ChallengeAlreadyUsedException() =>
-          EmailPasswordResetVerificationCodeAlreadyUsedException(),
-        ChallengeInvalidVerificationCodeException() =>
-          EmailPasswordResetInvalidVerificationCodeException(),
-        ChallengeExpiredException() =>
-          EmailPasswordResetRequestExpiredException(),
-        ChallengeNotVerifiedException() =>
-          EmailPasswordResetNotVerifiedException(),
-        ChallengeInvalidCompletionTokenException() =>
-          EmailPasswordResetInvalidVerificationCodeException(),
-        ChallengeRateLimitExceededException() =>
-          EmailPasswordResetTooManyVerificationAttemptsException(),
-      };
-    }
-  }
+    Future<T> Function() fn,
+  ) => withEmailPasswordResetExceptions(fn);
 }
 
 /// Configuration options for the [EmailIdpPasswordResetUtil] class.
@@ -470,7 +470,7 @@ class EmailIdpPasswordResetUtilsConfig {
   /// Creates a new [EmailIdpPasswordResetUtilsConfig] instance from an
   /// [EmailIdpConfig] instance.
   factory EmailIdpPasswordResetUtilsConfig.fromEmailIdpConfig(
-    final EmailIdpConfig config,
+    EmailIdpConfig config,
   ) {
     return EmailIdpPasswordResetUtilsConfig(
       passwordValidationFunction: config.passwordValidationFunction,

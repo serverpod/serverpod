@@ -35,7 +35,7 @@ class MockHttpClient extends http.BaseClient {
   String? capturedBody;
 
   @override
-  Future<http.StreamedResponse> send(final http.BaseRequest request) async {
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
     if (throwError) {
       throw const SocketException('No Internet');
     }

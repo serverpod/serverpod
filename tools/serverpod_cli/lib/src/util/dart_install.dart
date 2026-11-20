@@ -32,7 +32,7 @@ String? get pubCacheDirectory {
 }
 
 /// The executable `dart install` writes for the package executable [name].
-String dartInstalledExecutable(final String name) =>
+String dartInstalledExecutable(String name) =>
     p.join(dartInstallBinDirectory, Platform.isWindows ? '$name.bat' : name);
 
 /// The outcome of a `dart install` run.
@@ -41,8 +41,8 @@ typedef DartInstallResult = ({bool success, String errorOutput});
 /// Runs `dart install <descriptor>` behind a progress spinner labeled
 /// [message], leaving the reporting of both outcomes to the caller.
 Future<DartInstallResult> runDartInstall(
-  final String descriptor, {
-  required final String message,
+  String descriptor, {
+  required String message,
 }) async {
   final errorOutput = StringBuffer();
 

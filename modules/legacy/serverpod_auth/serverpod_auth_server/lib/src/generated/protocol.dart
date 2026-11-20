@@ -42,7 +42,8 @@ export 'user_info.dart';
 export 'user_info_public.dart';
 export 'user_settings_config.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -51,7 +52,65 @@ class Protocol extends _is.DatabaseSerializationManager {
 
   final Set<_is.SerializationManager> _hostProtocols = {};
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_iy492fk4.AppleAuthInfo>,
+          _is.getType<_i8lzboul.AuthKey>,
+          _is.getType<_ika0ufek.AuthenticationFailReason>,
+          _is.getType<_i6gspdjt.AuthenticationResponse>,
+          _is.getType<_il95bqq6.EmailAuth>,
+          _is.getType<_ilnsxyj8.EmailCreateAccountRequest>,
+          _is.getType<_iaz0raab.EmailFailedSignIn>,
+          _is.getType<_iiusgova.EmailPasswordReset>,
+          _is.getType<_ifm8n60r.EmailReset>,
+          _is.getType<_is585jau.GoogleRefreshToken>,
+          _is.getType<_i0mx5j5p.UserImage>,
+          _is.getType<_iliwsvmu.UserInfo>,
+          _is.getType<_iabwsxht.UserInfoPublic>,
+          _is.getType<_i5rdiffu.UserSettingsConfig>,
+          _is.getType<_iy492fk4.AppleAuthInfo?>,
+          _is.getType<_i8lzboul.AuthKey?>,
+          _is.getType<_ika0ufek.AuthenticationFailReason?>,
+          _is.getType<_i6gspdjt.AuthenticationResponse?>,
+          _is.getType<_il95bqq6.EmailAuth?>,
+          _is.getType<_ilnsxyj8.EmailCreateAccountRequest?>,
+          _is.getType<_iaz0raab.EmailFailedSignIn?>,
+          _is.getType<_iiusgova.EmailPasswordReset?>,
+          _is.getType<_ifm8n60r.EmailReset?>,
+          _is.getType<_is585jau.GoogleRefreshToken?>,
+          _is.getType<_i0mx5j5p.UserImage?>,
+          _is.getType<_iliwsvmu.UserInfo?>,
+          _is.getType<_iabwsxht.UserInfoPublic?>,
+          _is.getType<_i5rdiffu.UserSettingsConfig?>,
+          _is.getType<List<String>>,
+        ],
+        modules: const [_isp.Protocol.new],
+        classNames: const [
+          'AppleAuthInfo',
+          'AuthKey',
+          'AuthenticationFailReason',
+          'AuthenticationResponse',
+          'EmailAuth',
+          'EmailCreateAccountRequest',
+          'EmailFailedSignIn',
+          'EmailPasswordReset',
+          'EmailReset',
+          'GoogleRefreshToken',
+          'UserImage',
+          'UserInfo',
+          'UserInfoPublic',
+          'UserSettingsConfig',
+        ],
+        classNamePrefix: 'serverpod_auth.',
+      );
+
+  static List<_isp.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'serverpod_auth_key',
       dartName: 'AuthKey',
@@ -527,13 +586,11 @@ class Protocol extends _is.DatabaseSerializationManager {
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth.')) return className;
-    return className.substring(15);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth.',
+      );
 
   @override
   T deserialize<T>(
@@ -541,8 +598,11 @@ class Protocol extends _is.DatabaseSerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -658,9 +718,16 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 
@@ -782,8 +849,10 @@ class Protocol extends _is.DatabaseSerializationManager {
       return deserialize<_i5rdiffu.UserSettingsConfig>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     return super.deserializeByClassName(data);
   }
@@ -879,6 +948,9 @@ class Protocol extends _is.DatabaseSerializationManager {
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_auth';

@@ -43,4 +43,27 @@ void main() {
       expect(client.connectionTimeout, const Duration(seconds: 20));
     },
   );
+
+  test(
+    'Given a ServerpodClient when streamingConnectionTimeout is provided in constructor then it is set correctly.',
+    () {
+      final client = TestServerpodClient(
+        host: Uri.parse('http://localhost:8080'),
+        streamingConnectionTimeout: const Duration(minutes: 10),
+      );
+
+      expect(client.streamingConnectionTimeout, const Duration(minutes: 10));
+    },
+  );
+
+  test(
+    'Given a ServerpodClient when streamingConnectionTimeout is not provided then it defaults to 20 seconds.',
+    () {
+      final client = TestServerpodClient(
+        host: Uri.parse('http://localhost:8080'),
+      );
+
+      expect(client.streamingConnectionTimeout, const Duration(seconds: 20));
+    },
+  );
 }

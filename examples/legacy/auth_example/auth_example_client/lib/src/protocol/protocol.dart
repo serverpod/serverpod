@@ -17,18 +17,28 @@ import 'example.dart' as _itx02h2p;
 export 'example.dart';
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _isc.SerializationManager
+    implements _isc.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  @override
+  _isc.ProtocolDeserialization get deserializationMetadata =>
+      _isc.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _isc.getType<_itx02h2p.Example>,
+          _isc.getType<_itx02h2p.Example?>,
+        ],
+        modules: const [_i312scxx.Protocol.new],
+        classNames: const ['Example'],
+      );
+
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -36,8 +46,8 @@ class Protocol extends _isc.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -57,9 +67,16 @@ class Protocol extends _isc.SerializationManager {
     if (t == _isc.getType<_itx02h2p.Example?>()) {
       return (data != null ? _itx02h2p.Example.fromJson(data) : null) as T;
     }
-    try {
-      return _i312scxx.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _isc.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 
@@ -103,8 +120,10 @@ class Protocol extends _isc.SerializationManager {
       return deserialize<_itx02h2p.Example>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
-      data['className'] = dataClassName.substring(15);
-      return _i312scxx.Protocol().deserializeByClassName(data);
+      return _i312scxx.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(15),
+      });
     }
     return super.deserializeByClassName(data);
   }

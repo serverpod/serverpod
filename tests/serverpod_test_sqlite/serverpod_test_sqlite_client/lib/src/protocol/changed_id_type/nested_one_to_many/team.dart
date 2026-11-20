@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
     as _i0ntutnq;
 import '../../changed_id_type/nested_one_to_many/arena.dart' as _izqzqdtt;
@@ -75,10 +73,10 @@ abstract class TeamInt
   TeamInt copyWith({
     int? id,
     String? name,
-    _isc.UuidValue? arenaId = const _issu.$UndefinedUuidValue(),
+    _isc.UuidValue? arenaId = const _isc.$UndefinedUuidValue(),
     _izqzqdtt.ArenaUuid? arena = const _UndefinedTeamInt$arena(),
     List<_igtph8zx.PlayerUuid>? players =
-        const _issu.$UndefinedList<_igtph8zx.PlayerUuid>(),
+        const _isc.$UndefinedList<_igtph8zx.PlayerUuid>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -114,7 +112,7 @@ abstract class TeamInt
 
 class _Undefined {}
 
-class _UndefinedTeamInt$arena extends _issu.UndefinedSentinel
+class _UndefinedTeamInt$arena extends _isc.UndefinedSentinel
     implements _izqzqdtt.ArenaUuid {
   const _UndefinedTeamInt$arena();
 }
@@ -141,17 +139,17 @@ class _TeamIntImpl extends TeamInt {
   TeamInt copyWith({
     Object? id = _Undefined,
     String? name,
-    _isc.UuidValue? arenaId = const _issu.$UndefinedUuidValue(),
+    _isc.UuidValue? arenaId = const _isc.$UndefinedUuidValue(),
     _izqzqdtt.ArenaUuid? arena = const _UndefinedTeamInt$arena(),
     List<_igtph8zx.PlayerUuid>? players =
-        const _issu.$UndefinedList<_igtph8zx.PlayerUuid>(),
+        const _isc.$UndefinedList<_igtph8zx.PlayerUuid>(),
   }) {
     return TeamInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      arenaId: arenaId is _issu.UndefinedSentinel ? this.arenaId : arenaId,
-      arena: arena is _issu.UndefinedSentinel ? this.arena?.copyWith() : arena,
-      players: players is _issu.UndefinedSentinel
+      arenaId: arenaId is _isc.UndefinedSentinel ? this.arenaId : arenaId,
+      arena: arena is _isc.UndefinedSentinel ? this.arena?.copyWith() : arena,
+      players: players is _isc.UndefinedSentinel
           ? this.players?.map((e0) => e0.copyWith()).toList()
           : players,
     );

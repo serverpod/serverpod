@@ -80,7 +80,7 @@ class FirebaseIdpConfig extends IdentityProviderBuilder<FirebaseIdp> {
   ///
   /// To require a verified email, use [requireVerifiedEmail] instead.
   static void validateFirebaseAccountDetails(
-    final FirebaseAccountDetails accountDetails,
+    FirebaseAccountDetails accountDetails,
   ) {}
 
   /// Validation function that requires the email to be verified when present.
@@ -93,7 +93,7 @@ class FirebaseIdpConfig extends IdentityProviderBuilder<FirebaseIdp> {
   /// signing in between signup and clicking the verification link Firebase
   /// emails them.
   static void requireVerifiedEmail(
-    final FirebaseAccountDetails accountDetails,
+    FirebaseAccountDetails accountDetails,
   ) {
     if (accountDetails.email != null && accountDetails.verifiedEmail != true) {
       throw FirebaseEmailNotVerifiedException();
@@ -102,9 +102,9 @@ class FirebaseIdpConfig extends IdentityProviderBuilder<FirebaseIdp> {
 
   @override
   FirebaseIdp build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   }) {
     return FirebaseIdp(
       this,

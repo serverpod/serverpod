@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
@@ -489,7 +491,7 @@ Future<_FileServer> _createFileServer() async {
   return _FileServer(pod, directory);
 }
 
-/// Reruns the test named [testName] in a nested `dart test` process that has
+/// Reruns the test named [testName] in a nested test runner process that has
 /// the [variable] environment variable set to [value], since the environment
 /// of a running process cannot be changed.
 ///
@@ -505,18 +507,42 @@ Future<bool> _rerunWithCacheControlEnvironment({
     return false;
   }
 
-  final result = await Process.run(
+  final packageConfig = (await Isolate.packageConfig)!;
+  final testLibrary = (await Isolate.resolvePackageUri(
+    Uri.parse('package:test/test.dart'),
+  ))!;
+
+  // Invoke the runner directly so the child reuses the parent's native assets.
+  // `dart test` rebuilds them and tries to replace sqlite3.dll, which Windows
+  // keeps locked once SQLite has been loaded, even after the pod shuts down.
+  final process = await Process.start(
     Platform.resolvedExecutable,
-    ['test', '--plain-name', testName, _testFilePath],
+    [
+      '--disable-dart-dev',
+      '--packages=${packageConfig.toFilePath()}',
+      testLibrary.resolve('../bin/test.dart').toFilePath(),
+      '--plain-name',
+      testName,
+      _testFilePath,
+    ],
     workingDirectory: Directory.current.path,
     environment: {variable: value},
   );
+  addTearDown(() async {
+    // Also stop the nested runner and its servers if the test times out.
+    process.kill(ProcessSignal.sigkill);
+    await process.exitCode;
+  });
+
+  final stdout = process.stdout.transform(utf8.decoder).join();
+  final stderr = process.stderr.transform(utf8.decoder).join();
+  final exitCode = await process.exitCode;
 
   expect(
-    result.exitCode,
+    exitCode,
     0,
     reason:
-        'Nested test failed.\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}',
+        'Nested test failed.\nstdout:\n${await stdout}\nstderr:\n${await stderr}',
   );
   return true;
 }

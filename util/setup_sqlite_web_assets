@@ -7,12 +7,12 @@
 # page opening a database has to serve:
 #
 #   sqlite3.wasm  - released by the `sqlite3` package
-#   db_worker.js  - released by the `sqlite_async` package
+#   db_worker.js  - compiled from the `sqlite_async` package
 #
-# Both are downloaded at the version the package resolved to, since neither
-# carries a version negotiation. This is the setup applications follow too, as
-# documented in https://pub.dev/packages/sqlite_async#web - the only difference
-# is that an application puts the files in `web/` by hand.
+# Download WASM at the resolved sqlite3 version and compile the standard worker
+# with the same workspace dependencies. A precompiled sqlite_async release
+# embeds sqlite3 bindings from its build, which may be incompatible with the
+# workspace's newer WASM even when the sqlite_async versions match.
 #
 # `SqlitePoolManager` leaves `WebSqliteOptions` at its defaults, which name both
 # files relative to the page. `dart test` serves a browser suite from the
@@ -36,7 +36,6 @@ PACKAGES=(
 )
 
 WASM_RELEASES="https://github.com/simolus3/sqlite3.dart/releases/download"
-WORKER_RELEASES="https://github.com/powersync-ja/sqlite_async.dart/releases/download"
 CACHE_DIR="$(pwd)/.serverpod/web_assets"
 
 mkdir -p "$CACHE_DIR"
@@ -83,22 +82,28 @@ link_or_copy() {
     ln "$source" "$target" 2>/dev/null || cp "$source" "$target"
 }
 
+sqlite3_version="$(resolved_version sqlite3)"
+sqlite_async_version="$(resolved_version sqlite_async)"
+if [ -z "$sqlite3_version" ] || [ -z "$sqlite_async_version" ]; then
+    echo "### No resolved sqlite3/sqlite_async version in workspace pubspec.lock" >&2
+    exit 1
+fi
+
+wasm="sqlite3-$sqlite3_version.wasm"
+download_asset "$wasm" \
+    "$WASM_RELEASES/sqlite3-$sqlite3_version/sqlite3.wasm"
+
+# Rebuild on every setup so changes to any worker dependency or the Dart SDK
+# cannot leave stale bindings in the cache.
+worker="db_worker.js"
+echo "### Compiling sqlite_async ($sqlite_async_version) web worker with sqlite3 ($sqlite3_version)"
+dart compile js --packages=.dart_tool/package_config.json \
+    -O4 -Dsqlite3.dartbigints=false --no-source-maps \
+    -o "$CACHE_DIR/$worker" \
+    package:sqlite_async/src/web/worker/worker.dart
+
 for package in "${PACKAGES[@]}"; do
     echo "### Provisioning SQLite web assets for $package"
-
-    sqlite3_version="$(resolved_version sqlite3)"
-    sqlite_async_version="$(resolved_version sqlite_async)"
-    if [ -z "$sqlite3_version" ] || [ -z "$sqlite_async_version" ]; then
-        echo "### No resolved sqlite3/sqlite_async version in workspace pubspec.lock" >&2
-        exit 1
-    fi
-
-    wasm="sqlite3-$sqlite3_version.wasm"
-    worker="db_worker-$sqlite_async_version.js"
-    download_asset "$wasm" \
-        "$WASM_RELEASES/sqlite3-$sqlite3_version/sqlite3.wasm"
-    download_asset "$worker" \
-        "$WORKER_RELEASES/sqlite_async-v$sqlite_async_version/db_worker.js"
 
     # Both files go next to every test file, since that is where the browser
     # resolves them from.

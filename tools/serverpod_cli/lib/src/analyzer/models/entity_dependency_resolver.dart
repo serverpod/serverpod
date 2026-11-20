@@ -103,10 +103,9 @@ class ModelDependencyResolver {
     }
     var parentClassName = extendedClass.className;
 
-    var parentClass = modelDefinitions
-        .whereType<ClassDefinition>()
-        .where((element) => element.className == parentClassName)
-        .firstOrNull;
+    var parentClass = modelsByClassName(
+      modelDefinitions,
+    )[parentClassName]?.whereType<ClassDefinition>().firstOrNull;
 
     if (parentClass == null ||
         parentClass.runtimeType != classDefinition.runtimeType) {
@@ -213,18 +212,19 @@ class ModelDependencyResolver {
       return;
     }
 
-    var enumDefinitionList = modelDefinitions.whereType<EnumDefinition>().where(
-      (e) =>
-          e.className == typeDefinition.className &&
-          e.type.moduleAlias == typeDefinition.moduleAlias,
+    var namedEnums =
+        modelsByClassName(
+          modelDefinitions,
+        )[typeDefinition.className]?.whereType<EnumDefinition>() ??
+        const <EnumDefinition>[];
+
+    var enumDefinitionList = namedEnums.where(
+      (e) => e.type.moduleAlias == typeDefinition.moduleAlias,
     );
 
     // If no enum in same module (e.g. protocol), allow reference from shared package
     if (enumDefinitionList.isEmpty) {
-      enumDefinitionList = modelDefinitions
-          .whereType<EnumDefinition>()
-          .where((e) => e.className == typeDefinition.className)
-          .toList();
+      enumDefinitionList = namedEnums;
     }
 
     if (enumDefinitionList.isEmpty) return;
@@ -240,14 +240,13 @@ class ModelDependencyResolver {
     var relation = fieldDefinition.relation;
     if (relation is! UnresolvedObjectRelationDefinition) return;
 
-    var referenceClass = modelDefinitions
-        .cast<SerializableModelDefinition?>()
-        .firstWhere(
-          (model) =>
-              model?.className == fieldDefinition.type.className &&
-              model?.type.moduleAlias == fieldDefinition.type.moduleAlias,
-          orElse: () => null,
-        );
+    var referenceClass =
+        modelsByClassName(modelDefinitions)[fieldDefinition.type.className]
+            ?.where(
+              (model) =>
+                  model.type.moduleAlias == fieldDefinition.type.moduleAlias,
+            )
+            .firstOrNull;
 
     if (referenceClass is! ModelClassDefinition) return;
 
@@ -544,12 +543,9 @@ class ModelDependencyResolver {
     var type = fieldDefinition.type;
     var referenceClassName = type.generics.first.className;
 
-    var referenceClass = modelDefinitions
-        .cast<SerializableModelDefinition?>()
-        .firstWhere(
-          (model) => model?.className == referenceClassName,
-          orElse: () => null,
-        );
+    var referenceClass = modelsByClassName(
+      modelDefinitions,
+    )[referenceClassName]?.firstOrNull;
 
     if (referenceClass is! ModelClassDefinition) return;
 

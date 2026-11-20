@@ -27,7 +27,12 @@ class KernelCompiler {
   /// so changes require a [restart] to take effect.
   String? nativeAssetsPath;
 
-  late final String _sdkRoot = getSdkPath();
+  /// Explicit Dart SDK root, or `null` to use the SDK running this CLI.
+  final String? sdkRoot;
+
+  /// SDK the Frontend Server compiles against.
+  /// Defaults to the SDK running this CLI.
+  late final String _sdkRoot = sdkRoot ?? getSdkPath();
   late final String _platformDill = p.join(
     _sdkRoot,
     'lib',
@@ -41,6 +46,7 @@ class KernelCompiler {
 
   KernelCompiler({
     required this.entryPoint,
+    this.sdkRoot,
     this.outputDill = '.dart_tool/serverpod/server.dill',
     this.packagesPath,
     this.nativeAssetsPath,

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Build the C dependencies of PostGIS as static libs into $DEPS, using zig cc.
-# (sqlite3 - needed by PROJ; libxml2 - GML/KML; json-c - GeoJSON)
+# Build the C dependencies of PostgreSQL/contrib and PostGIS into $DEPS.
+# OpenSSL is shared; the remaining libraries are static and position independent.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=versions.env
@@ -14,10 +14,77 @@ J="$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || e
 # then names the lib MSVC-style (json-c.lib, not libjson-c.a). The wrapper is a
 # pass-through to gcc there, so let cmake use native gcc; zig wrapper elsewhere.
 # (sqlite/libxml2 use autoconf, which needs no compiler-ID table, so they're ok.)
+# libxslt's configure searches --with-libxml-prefix as a ':'-separated path
+# list, so a drive-letter prefix (D:/...) splits at the colon and xml2-config
+# is never found. Hand it the POSIX form (/d/...) on Windows.
 case "$(uname -s)" in
-  MINGW*|MSYS*|CYGWIN*) CMAKE_CC=gcc ;;
-  *)                    CMAKE_CC="$WCC" ;;
+  MINGW*|MSYS*|CYGWIN*) CMAKE_CC=gcc;     XML_PREFIX="$(cygpath -u "$DEPS")" ;;
+  *)                    CMAKE_CC="$WCC"; XML_PREFIX="$DEPS" ;;
 esac
+
+echo "=== zlib ($(date +%H:%M:%S)) ==="
+cd "$SRC/zlib-$ZLIB_VERSION"
+cmake -S . -B build -G "Unix Makefiles" \
+  -DCMAKE_INSTALL_PREFIX="$DEPS" -DCMAKE_INSTALL_LIBDIR=lib \
+  -DCMAKE_C_COMPILER="$CMAKE_CC" -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+  -DZLIB_BUILD_SHARED=OFF -DZLIB_BUILD_STATIC=ON -DZLIB_BUILD_TESTING=OFF \
+  >"$LOG/dep-zlib.log" 2>&1
+cmake --build build -j"$J" >>"$LOG/dep-zlib.log" 2>&1
+cmake --install build >>"$LOG/dep-zlib.log" 2>&1
+
+# Upstream names its Windows static library libzs.a; PostgreSQL uses -lz.
+if [ -f "$DEPS/lib/libzs.a" ]; then
+  cp "$DEPS/lib/libzs.a" "$DEPS/lib/libz.a"
+fi
+
+echo "=== OpenSSL ($(date +%H:%M:%S)) ==="
+cd "$SRC/openssl-$OPENSSL_VERSION"
+case "$(uname -s)-$(uname -m)" in
+  Linux-x86_64) OPENSSL_TARGET=linux-x86_64 ;;
+  Linux-aarch64) OPENSSL_TARGET=linux-aarch64 ;;
+  Darwin-x86_64) OPENSSL_TARGET=darwin64-x86_64-cc ;;
+  Darwin-arm64) OPENSSL_TARGET=darwin64-arm64-cc ;;
+  MINGW*|MSYS*|CYGWIN*) OPENSSL_TARGET=mingw64 ;;
+  *) echo "Unsupported OpenSSL target" >&2; exit 1 ;;
+esac
+# libcrypto compiles in the directories it reads openssl.cnf, default CA
+# certs, engines and provider modules from. Left alone they derive from
+# --prefix, i.e. the build scratch dir - a path an unprivileged local user can
+# recreate on the target machine (/tmp/..., D:/...) to feed the bundle config
+# or trusted certs. Pin them to a fixed location only root/admin can create.
+# Nothing is installed there: the bundle runs on OpenSSL's built-in defaults,
+# with providers built into libcrypto (no-module).
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*) OPENSSL_DIR="C:/Program Files/Common Files/serverpod-postgres/ssl" ;;
+  *)                    OPENSSL_DIR="/etc/serverpod-postgres/ssl" ;;
+esac
+CC="$WCC" perl ./Configure "$OPENSSL_TARGET" --prefix="$DEPS" --libdir=lib \
+  --openssldir="$OPENSSL_DIR" shared no-module no-tests >"$LOG/dep-openssl.log" 2>&1
+# ENGINESDIR/MODULESDIR have no Configure switch; override them for the build
+# only (install_sw must keep installing under $DEPS).
+make -j"$J" ENGINESDIR="$OPENSSL_DIR/engines" MODULESDIR="$OPENSSL_DIR/modules" \
+  >>"$LOG/dep-openssl.log" 2>&1
+make install_sw >>"$LOG/dep-openssl.log" 2>&1
+
+# macOS uses the UUID API in libc; Linux and Windows need a bundled provider.
+if [ "$(uname -s)" != Darwin ]; then
+  echo "=== OSSP UUID ($(date +%H:%M:%S)) ==="
+  cd "$SRC/uuid-$OSSP_UUID_VERSION"
+  # OSSP predates ARM64. Use the platform detection scripts from the pinned
+  # PostgreSQL source so its configure recognizes every bundle target.
+  cp "$SRC/postgresql-$PG_UPSTREAM_VERSION/config/config.guess" .
+  cp "$SRC/postgresql-$PG_UPSTREAM_VERSION/config/config.sub" .
+  CC="$WCC" CFLAGS="-O2 -fPIC" ./configure --prefix="$DEPS" \
+    --disable-shared --enable-static --without-cxx --without-perl \
+    --without-php --without-pgsql >"$LOG/dep-uuid.log" 2>&1
+
+  # Only PostgreSQL's library dependency is needed. OSSP's CLI installer predates
+  # MinGW's .exe handling and fails while stripping its temporary executable.
+  make -j"$J" libuuid.la >>"$LOG/dep-uuid.log" 2>&1
+  install -d "$DEPS/lib" "$DEPS/include/ossp"
+  install -m 644 .libs/libuuid.a "$DEPS/lib/libossp-uuid.a"
+  install -m 644 uuid.h "$DEPS/include/ossp/uuid.h"
+fi
 
 echo "=== sqlite ($(date +%H:%M:%S)) ==="
 cd "$SRC/sqlite-autoconf-$SQLITE_AUTOCONF"
@@ -30,11 +97,20 @@ echo "sqlite: $("$DEPS/bin/sqlite3" --version | awk '{print $1}')"
 echo "=== libxml2 ($(date +%H:%M:%S)) ==="
 cd "$SRC/libxml2-$LIBXML2_VERSION"
 make distclean >/dev/null 2>&1 || true
-CC="$WCC" ./configure --prefix="$DEPS" --disable-shared --enable-static \
+CC="$WCC" CFLAGS="-O2 -fPIC" ./configure --prefix="$DEPS" --disable-shared --enable-static \
   --without-python --without-lzma --without-zlib --without-iconv >"$LOG/dep-libxml2.log" 2>&1
 make -j"$J" >>"$LOG/dep-libxml2.log" 2>&1
 make install >>"$LOG/dep-libxml2.log" 2>&1
 echo "libxml2: $("$DEPS/bin/xml2-config" --version)"
+
+echo "=== libxslt ($(date +%H:%M:%S)) ==="
+cd "$SRC/libxslt-$LIBXSLT_VERSION"
+CC="$WCC" CFLAGS="-O2 -fPIC" CPPFLAGS="-DLIBXML_STATIC" \
+  PKG_CONFIG_PATH="$DEPS/lib/pkgconfig" ./configure --prefix="$DEPS" \
+  --disable-shared --enable-static --without-python --without-crypto \
+  --with-libxml-prefix="$XML_PREFIX" >"$LOG/dep-libxslt.log" 2>&1
+make -j"$J" >>"$LOG/dep-libxslt.log" 2>&1
+make install >>"$LOG/dep-libxslt.log" 2>&1
 
 echo "=== json-c ($(date +%H:%M:%S)) ==="
 cd "$SRC/json-c-$JSONC_VERSION"

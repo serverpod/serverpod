@@ -13,20 +13,17 @@ class TestTokenIssuer extends TokenIssuer {
 
   @override
   Future<AuthSuccess> createToken(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
-    final Set<Scope>? scopes,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
+    Set<Scope>? scopes,
+    Transaction? transaction,
   }) async {
     return AuthSuccess(
       authStrategy: method,
       token: 'test-token',
       authUserId: authUserId,
-      scopeNames: (scopes ?? {})
-          .map((final scope) => scope.name)
-          .nonNulls
-          .toSet(),
+      scopeNames: (scopes ?? {}).map((scope) => scope.name).nonNulls.toSet(),
     );
   }
 }
@@ -36,46 +33,46 @@ class TestTokenManager extends TestTokenIssuer implements TokenManager {
 
   @override
   Future<List<TokenInfo>> listTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final String? method,
-    final String? tokenIssuer,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue? authUserId,
+    String? method,
+    String? tokenIssuer,
+    Transaction? transaction,
   }) async {
     return [];
   }
 
   @override
   Future<void> revokeAllTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
-    final String? tokenIssuer,
+    Session session, {
+    required UuidValue? authUserId,
+    Transaction? transaction,
+    String? method,
+    String? tokenIssuer,
   }) async {}
 
   @override
   Future<void> revokeToken(
-    final Session session, {
-    required final String tokenId,
-    final Transaction? transaction,
-    final String? tokenIssuer,
+    Session session, {
+    required String tokenId,
+    Transaction? transaction,
+    String? tokenIssuer,
   }) async {}
 
   @override
   Future<AuthenticationInfo?> validateToken(
-    final Session session,
-    final String token,
+    Session session,
+    String token,
   ) async {
     return null;
   }
 }
 
 String createSignedIdToken({
-  required final String subject,
-  required final String issuer,
-  required final String audience,
-  required final Map<String, dynamic> claims,
+  required String subject,
+  required String issuer,
+  required String audience,
+  required Map<String, dynamic> claims,
 }) {
   final jwt = JWT(
     {
@@ -106,15 +103,15 @@ String createSignedIdToken({
 /// called. [onUserInfoRequested] is invoked with the bearer token userinfo was
 /// called with, if at all.
 http.Client googleApisClient({
-  final Map<String, dynamic>? userInfo,
-  final Map<String, dynamic>? tokenResponse,
-  final void Function(String? bearer)? onUserInfoRequested,
+  Map<String, dynamic>? userInfo,
+  Map<String, dynamic>? tokenResponse,
+  void Function(String? bearer)? onUserInfoRequested,
 }) {
   final certsUrl = Uri.https('www.googleapis.com', '/oauth2/v3/certs');
   final userInfoUrl = Uri.https('www.googleapis.com', '/oauth2/v3/userinfo');
   final tokenUrl = Uri.https('oauth2.googleapis.com', '/token');
 
-  return MockClient((final request) async {
+  return MockClient((request) async {
     if (request.url == certsUrl) {
       expect(request.method, 'GET');
 
@@ -170,7 +167,7 @@ GoogleIdpConfig googleIdpConfig() {
 }
 
 http.Client firebaseCertificatesClient() {
-  return MockClient((final request) async {
+  return MockClient((request) async {
     expect(request.method, 'GET');
     expect(
       request.url,

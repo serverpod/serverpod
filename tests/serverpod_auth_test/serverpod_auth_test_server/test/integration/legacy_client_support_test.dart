@@ -24,7 +24,7 @@ void main() {
   withServerpod(
     'Given a migrated legacy user,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       // Must run before withServerpod boots the server so legacy middleware is
       // active for all requests in this group.
       _configurePublicLegacySupport(sessionBuilder);
@@ -130,7 +130,7 @@ void main() {
   withServerpod(
     'Given a migrated legacy user and a successful legacy authentication,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
 
       const email = 'legacy-session-test@serverpod.dev';
@@ -267,7 +267,7 @@ void main() {
   withServerpod(
     'Given a migrated user with multiple legacy sessions,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
 
       const email = 'legacy-multi-session@serverpod.dev';
@@ -357,7 +357,7 @@ void main() {
   withServerpod(
     'Given a post-migration user (no legacy record),',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
 
       const email = 'post-migration@serverpod.dev';
@@ -369,11 +369,11 @@ void main() {
           secretHashPepper: 'test',
           sendRegistrationVerificationCode:
               (
-                final session, {
-                required final email,
-                required final accountRequestId,
-                required final transaction,
-                required final verificationCode,
+                session, {
+                required email,
+                required accountRequestId,
+                required transaction,
+                required verificationCode,
               }) {
                 receivedVerificationCode = verificationCode;
               },
@@ -434,7 +434,7 @@ void main() {
   withServerpod(
     'Given unsupported legacy email methods,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
 
       test(
@@ -484,7 +484,7 @@ void main() {
   withServerpod(
     'Given legacy auth endpoints the bridge cannot forward, with blocking on,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       _configurePublicLegacySupport(
         sessionBuilder,
         blockUnbridgedAuthEndpoints: true,
@@ -521,7 +521,7 @@ void main() {
   withServerpod(
     'Given legacy auth endpoints the bridge cannot forward, with blocking off,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       _configurePublicLegacySupport(
         sessionBuilder,
         blockUnbridgedAuthEndpoints: false,
@@ -565,7 +565,7 @@ void main() {
   withServerpod(
     'Given migrated legacy users and an authenticated admin session,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
 
       const adminEmail = 'legacy-admin@serverpod.dev';
@@ -723,8 +723,8 @@ void main() {
 }
 
 _LegacyClient _createLegacyClient(
-  final TestSessionBuilder sessionBuilder, {
-  final ClientAuthKeyProvider? authKeyProvider,
+  TestSessionBuilder sessionBuilder, {
+  ClientAuthKeyProvider? authKeyProvider,
 }) {
   final session = sessionBuilder.build();
   final baseUrl = 'http://localhost:${session.server.port}/';
@@ -732,7 +732,7 @@ _LegacyClient _createLegacyClient(
 }
 
 class _LegacyClient extends ServerpodClientShared {
-  _LegacyClient(final String host)
+  _LegacyClient(String host)
     : super(
         host,
         legacy_auth.Protocol(),
@@ -754,7 +754,7 @@ class _LegacyClient extends ServerpodClientShared {
 }
 
 class _LegacyModules {
-  _LegacyModules(final _LegacyClient client) {
+  _LegacyModules(_LegacyClient client) {
     auth = legacy_auth.Caller(client);
   }
 
@@ -762,8 +762,8 @@ class _LegacyModules {
 }
 
 Client _createClient(
-  final TestSessionBuilder sessionBuilder, {
-  final ClientAuthKeyProvider? authKeyProvider,
+  TestSessionBuilder sessionBuilder, {
+  ClientAuthKeyProvider? authKeyProvider,
 }) {
   final session = sessionBuilder.build();
   final baseUrl = 'http://localhost:${session.server.port}/';
@@ -771,11 +771,11 @@ Client _createClient(
 }
 
 void _configurePublicLegacySupport(
-  final TestSessionBuilder sessionBuilder, {
-  final bool blockUnbridgedAuthEndpoints = false,
+  TestSessionBuilder sessionBuilder, {
+  bool blockUnbridgedAuthEndpoints = false,
 }) {
   final pod = sessionBuilder.build().server.serverpod;
-  pod.authenticationHandler = (final session, final authKey) =>
+  pod.authenticationHandler = (session, authKey) =>
       AuthServices.instance.authenticationHandler(session, authKey);
   pod.enableLegacyClientSupport(
     blockUnbridgedAuthEndpoints: blockUnbridgedAuthEndpoints,
@@ -791,19 +791,19 @@ class MutableAuthKeyProvider implements ClientAuthKeyProvider {
     return wrapAsBearerAuthHeaderValue(_token!);
   }
 
-  void setToken(final String token) {
+  void setToken(String token) {
     _token = token;
   }
 }
 
-Future<void> _cleanUpDatabase(final Session session) async {
+Future<void> _cleanUpDatabase(Session session) async {
   await AuthUser.db.deleteWhere(
     session,
-    where: (final _) => Constant.bool(true),
+    where: (_) => Constant.bool(true),
   );
 
   await RateLimitedRequestAttempt.db.deleteWhere(
     session,
-    where: (final t) => t.domain.equals('email'),
+    where: (t) => t.domain.equals('email'),
   );
 }

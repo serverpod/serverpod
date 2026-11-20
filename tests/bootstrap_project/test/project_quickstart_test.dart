@@ -717,6 +717,21 @@ void main() async {
                 isTrue,
               );
             });
+
+            test('has deploy workflow', () {
+              expect(
+                File(
+                  path.join(
+                    tempPath,
+                    projectName,
+                    '.github',
+                    'workflows',
+                    'deploy.yml',
+                  ),
+                ).existsSync(),
+                isTrue,
+              );
+            });
           });
 
           group(

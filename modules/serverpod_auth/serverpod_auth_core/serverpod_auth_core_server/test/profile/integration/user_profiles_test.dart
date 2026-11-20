@@ -10,7 +10,7 @@ void main() {
   const authUsers = AuthUsers();
   withServerpod(
     'Given an existing `AuthUser`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late UserProfiles userProfiles;
@@ -51,10 +51,10 @@ void main() {
             config: UserProfileConfig(
               onBeforeUserProfileCreated:
                   (
-                    final session,
-                    final authUserId,
-                    final userProfile, {
-                    required final transaction,
+                    session,
+                    authUserId,
+                    userProfile, {
+                    required transaction,
                   }) => userProfile.copyWith(fullName: 'overwritten full name'),
             ),
           );
@@ -80,9 +80,9 @@ void main() {
             config: UserProfileConfig(
               onAfterUserProfileCreated:
                   (
-                    final session,
-                    final userProfile, {
-                    required final transaction,
+                    session,
+                    userProfile, {
+                    required transaction,
                   }) {
                     createdProfileFromCallback = userProfile;
                   },
@@ -109,10 +109,10 @@ void main() {
             config: UserProfileConfig(
               onBeforeUserProfileCreated:
                   (
-                    final session,
-                    final authUserId,
-                    final userProfile, {
-                    required final transaction,
+                    session,
+                    authUserId,
+                    userProfile, {
+                    required transaction,
                   }) {
                     throw UnimplementedError();
                   },
@@ -139,9 +139,9 @@ void main() {
             config: UserProfileConfig(
               onAfterUserProfileCreated:
                   (
-                    final session,
-                    final userProfile, {
-                    required final transaction,
+                    session,
+                    userProfile, {
+                    required transaction,
                   }) {
                     throw UnimplementedError();
                   },
@@ -196,7 +196,7 @@ void main() {
           final userProfiles = UserProfiles(
             config: UserProfileConfig(
               /// Mock image fetch function that returns a 1x1 pixel PNG.
-              imageFetchFunc: (final _) => onePixelPng,
+              imageFetchFunc: (_) => onePixelPng,
             ),
           );
           late UserProfileModel createdProfile;
@@ -273,7 +273,7 @@ void main() {
         () async {
           userProfiles = UserProfiles(
             config: UserProfileConfig(
-              imageFetchFunc: (final _) {
+              imageFetchFunc: (_) {
                 throw Exception('Failed to download profile image');
               },
             ),
@@ -307,8 +307,8 @@ void main() {
   );
 
   withServerpod('Given an `AuthUser` with an empty profile,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -339,7 +339,7 @@ void main() {
           ),
           throwsA(
             isA<Exception>().having(
-              (final e) => e.toString(),
+              (e) => e.toString(),
               'message',
               contains(
                 'duplicate key value violates unique constraint',
@@ -358,10 +358,10 @@ void main() {
           config: UserProfileConfig(
             onBeforeUserProfileUpdated:
                 (
-                  final session,
-                  final authUserId,
-                  final userProfile, {
-                  required final transaction,
+                  session,
+                  authUserId,
+                  userProfile, {
+                  required transaction,
                 }) {
                   updatedProfileFromCallback = userProfile;
                   return userProfile.copyWith(
@@ -395,10 +395,10 @@ void main() {
           config: UserProfileConfig(
             onBeforeUserProfileUpdated:
                 (
-                  final session,
-                  final authUserId,
-                  final userProfile, {
-                  required final transaction,
+                  session,
+                  authUserId,
+                  userProfile, {
+                  required transaction,
                 }) {
                   throw UnimplementedError();
                 },
@@ -432,9 +432,9 @@ void main() {
           config: UserProfileConfig(
             onAfterUserProfileUpdated:
                 (
-                  final session,
-                  final userProfile, {
-                  required final transaction,
+                  session,
+                  userProfile, {
+                  required transaction,
                 }) {
                   throw UnimplementedError();
                 },
@@ -469,9 +469,9 @@ void main() {
           config: UserProfileConfig(
             onAfterUserProfileUpdated:
                 (
-                  final session,
-                  final userProfile, {
-                  required final transaction,
+                  session,
+                  userProfile, {
+                  required transaction,
                 }) {
                   updatedProfileFromCallback = userProfile;
                 },
@@ -561,7 +561,7 @@ void main() {
       () async {
         final userProfiles = UserProfiles(
           config: UserProfileConfig(
-            imageFetchFunc: (final _) => onePixelPng,
+            imageFetchFunc: (_) => onePixelPng,
           ),
         );
         final updatedResult = await userProfiles.setUserImageFromUrl(
@@ -622,11 +622,11 @@ void main() {
       () async {
         final profile = await UserProfile.db.findFirstRow(
           session,
-          where: (final t) => t.authUserId.equals(authUserId),
+          where: (t) => t.authUserId.equals(authUserId),
         );
         final imageId = const Uuid().v4obj();
 
-        await session.db.transaction((final transaction) async {
+        await session.db.transaction((transaction) async {
           await UserProfile.db.updateRow(
             session,
             profile!.copyWith(imageId: imageId),
@@ -659,8 +659,8 @@ void main() {
   });
 
   withServerpod('Given an `AuthUser` with a profile with an image,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -843,7 +843,7 @@ void main() {
 
   withServerpod(
     'Given an existing `AuthUser`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
 
@@ -864,7 +864,7 @@ void main() {
         () async {
           expect(session.transaction, isNull);
 
-          await session.db.transaction<void>((final transaction) async {
+          await session.db.transaction<void>((transaction) async {
             const userProfiles = UserProfiles();
             await userProfiles.createUserProfile(
               session,

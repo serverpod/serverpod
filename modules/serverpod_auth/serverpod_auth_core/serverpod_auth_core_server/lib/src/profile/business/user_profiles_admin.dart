@@ -10,15 +10,15 @@ class UserProfilesAdmin {
   ///
   /// For a direct look-up by auth user ID use [findUserProfileByUserId].
   Future<List<UserProfileModel>> listUserProfiles(
-    final Session session, {
-    final String? email,
-    final String? userName,
-    final String? fullName,
+    Session session, {
+    String? email,
+    String? userName,
+    String? fullName,
 
     /// How many items to return at most. Must be <= 1000.
-    final int limit = 100,
-    final int offset = 0,
-    final Transaction? transaction,
+    int limit = 100,
+    int offset = 0,
+    Transaction? transaction,
   }) async {
     if (limit <= 0 || limit > 1000) {
       throw ArgumentError.value(limit, 'limit', 'Must be between 1 and 1000');
@@ -29,7 +29,7 @@ class UserProfilesAdmin {
 
     final profiles = await UserProfile.db.find(
       session,
-      where: (final t) {
+      where: (t) {
         Expression<dynamic> expression = Constant.bool(true);
 
         if (email != null) {
@@ -48,10 +48,10 @@ class UserProfilesAdmin {
       },
       limit: limit,
       offset: offset,
-      orderBy: (final t) => t.id,
+      orderBy: (t) => t.id,
       transaction: transaction,
     );
 
-    return profiles.map((final p) => p.toModel()).toList();
+    return profiles.map((p) => p.toModel()).toList();
   }
 }

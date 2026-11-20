@@ -26,8 +26,8 @@ Argon2HashUtil _hashUtil() {
   );
 }
 
-Uint8List _sequentialSalt(final int length) {
-  return Uint8List.fromList(List.generate(length, (final i) => i + 1));
+Uint8List _sequentialSalt(int length) {
+  return Uint8List.fromList(List.generate(length, (i) => i + 1));
 }
 
 void main() {

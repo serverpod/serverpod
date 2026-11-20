@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
@@ -283,8 +284,14 @@ class MethodCallSession extends Session {
   /// The uri that was used to call the server.
   final Uri uri;
 
+  final Uint8List _bodyBytes;
+
   /// The body of the server call.
-  final String body;
+  @Deprecated(
+    'Use queryParameters for the decoded arguments, or request for the raw '
+    'request. Will be removed in a future release.',
+  )
+  late final String body = utf8.decode(_bodyBytes);
 
   /// Query parameters of the server call.
   final Map<String, dynamic> queryParameters;
@@ -305,7 +312,7 @@ class MethodCallSession extends Session {
   MethodCallSession._({
     required super.server,
     required this.uri,
-    required this.body,
+    required Uint8List bodyBytes,
     required String path,
     required Request request,
     required super.endpoint,
@@ -313,7 +320,8 @@ class MethodCallSession extends Session {
     required this.queryParameters,
     required super.authenticationKey,
     super.enableLogging = true,
-  }) : _method = method,
+  }) : _bodyBytes = bodyBytes,
+       _method = method,
        _request = request,
        super(method: method, request: request);
 }
@@ -628,7 +636,7 @@ extension SessionInternalMethods on Session {
   static Future<MethodCallSession> createMethodCallSession({
     required Server server,
     required Uri uri,
-    required String body,
+    required Uint8List bodyBytes,
     required String path,
     required Request request,
     required String method,
@@ -640,7 +648,7 @@ extension SessionInternalMethods on Session {
     final session = MethodCallSession._(
       server: server,
       uri: uri,
-      body: body,
+      bodyBytes: bodyBytes,
       path: path,
       request: request,
       method: method,

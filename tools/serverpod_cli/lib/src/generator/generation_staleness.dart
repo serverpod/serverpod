@@ -44,6 +44,20 @@ String _fingerprint(Map<String, FileStamp?> entries) {
   return hash.toRadixString(16);
 }
 
+/// Stats [paths] in bounded-concurrency batches, preserving their order.
+Future<List<FileStamp?>> _stampAll(List<String> paths) async {
+  const concurrency = 32;
+  final stamps = <FileStamp?>[];
+
+  for (var start = 0; start < paths.length; start += concurrency) {
+    stamps.addAll(
+      await Future.wait(paths.skip(start).take(concurrency).map(FileStamp.of)),
+    );
+  }
+
+  return stamps;
+}
+
 /// Computes the fingerprint for a generation over
 /// - [sourceStats] (inputs stat'd before generation), and
 /// - [generatedFiles]
@@ -53,11 +67,14 @@ Future<String> _computeFingerprint(
   required Set<String> generatedFiles,
 }) async {
   final entries = <String, FileStamp?>{...sourceStats};
-  for (final path in config.auxiliaryInputPaths) {
-    entries[path] = await FileStamp.of(path);
-  }
-  for (final path in generatedFiles) {
-    entries[path] = await FileStamp.of(path);
+
+  // One stat per path with nothing to order them against each other, and a
+  // project contributes one per generated file, so they are issued together
+  // rather than a round trip at a time.
+  final paths = [...config.auxiliaryInputPaths, ...generatedFiles];
+  final stamps = await _stampAll(paths);
+  for (var i = 0; i < paths.length; i++) {
+    entries[paths[i]] = stamps[i];
   }
 
   return _fingerprint(entries);
@@ -150,12 +167,24 @@ Future<Map<String, FileStamp>> enumerateSourceFiles(
   final sources = <String, FileStamp>{};
   Future<void> walk(Directory dir) async {
     if (!await dir.exists()) return;
+    // Collect the directory's own source files first and stat them together:
+    // the walk visits every file under lib/, and statting one at a time makes
+    // the enumeration a chain of round trips.
+    final files = <File>[];
+    final subDirectories = <Directory>[];
     await for (final entity in dir.list()) {
       if (entity is Directory) {
-        if (!isOutputDir(entity)) await walk(entity);
+        if (!isOutputDir(entity)) subDirectories.add(entity);
       } else if (entity is File && isSource(entity.path)) {
-        sources[entity.path] = FileStamp(await entity.stat());
+        files.add(entity);
       }
+    }
+    final stats = await Future.wait(files.map((file) => file.stat()));
+    for (var i = 0; i < files.length; i++) {
+      sources[files[i].path] = FileStamp(stats[i]);
+    }
+    for (final subDirectory in subDirectories) {
+      await walk(subDirectory);
     }
   }
 

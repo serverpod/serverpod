@@ -51,11 +51,11 @@ class AuthServices {
   /// These are passed to the [AuthServices] constructor to create the instance.
   /// {@endtemplate}
   static void set({
-    required final List<TokenManagerBuilder> tokenManagerBuilders,
-    final List<IdentityProviderBuilder> identityProviderBuilders = const [],
-    final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
-    final UserProfileConfig userProfileConfig = const UserProfileConfig(),
-    final AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
+    required List<TokenManagerBuilder> tokenManagerBuilders,
+    List<IdentityProviderBuilder> identityProviderBuilders = const [],
+    AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
+    UserProfileConfig userProfileConfig = const UserProfileConfig(),
+    AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
   }) {
     final instance = AuthServices(
       primaryTokenManagerBuilder: tokenManagerBuilders.first,
@@ -93,9 +93,9 @@ class AuthServices {
   ///
   /// [userProfiles] is the default manager for managing user profiles.
   AuthServices({
-    required final TokenManagerBuilder primaryTokenManagerBuilder,
-    final List<IdentityProviderBuilder> identityProviderBuilders = const [],
-    final List<TokenManagerBuilder> additionalTokenManagerBuilders = const [],
+    required TokenManagerBuilder primaryTokenManagerBuilder,
+    List<IdentityProviderBuilder> identityProviderBuilders = const [],
+    List<TokenManagerBuilder> additionalTokenManagerBuilders = const [],
     this.authUsers = const AuthUsers(),
     this.userProfiles = const UserProfiles(),
     this.accountMerger = const AccountMerger(),
@@ -106,7 +106,7 @@ class AuthServices {
         authUsers: authUsers,
       ),
       additionalTokenManagers: additionalTokenManagerBuilders
-          .map((final factory) => factory.build(authUsers: authUsers))
+          .map((factory) => factory.build(authUsers: authUsers))
           .toList(),
     );
 
@@ -174,8 +174,8 @@ class AuthServices {
   /// against all registered token managers. Returns [AuthenticationInfo] if the
   /// token is valid, or `null` if validation fails.
   Future<AuthenticationInfo?> authenticationHandler(
-    final Session session,
-    final String key,
+    Session session,
+    String key,
   ) async {
     return tokenManager.validateToken(session, key);
   }
@@ -190,11 +190,11 @@ class AuthServices {
 extension AuthServicesInit on Serverpod {
   /// {@macro auth_services_set}
   void initializeAuthServices({
-    required final List<TokenManagerBuilder> tokenManagerBuilders,
-    final List<IdentityProviderBuilder> identityProviderBuilders = const [],
-    final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
-    final AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
-    final UserProfileConfig userProfileConfig = const UserProfileConfig(),
+    required List<TokenManagerBuilder> tokenManagerBuilders,
+    List<IdentityProviderBuilder> identityProviderBuilders = const [],
+    AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
+    AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
+    UserProfileConfig userProfileConfig = const UserProfileConfig(),
   }) {
     AuthServices.set(
       tokenManagerBuilders: tokenManagerBuilders,

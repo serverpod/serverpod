@@ -21,7 +21,7 @@ class VersionCommand extends ServerpodCommand {
   final description = usageDescription;
 
   @override
-  FutureOr<void>? runWithConfig(final Configuration commandConfig) {
+  FutureOr<void>? runWithConfig(Configuration commandConfig) {
     // The format that the version is printed in is important, as it is used by
     // the Serverpod Language Server to determine if the CLI is compatible.
     log.info('Serverpod version: $_cliVersion');

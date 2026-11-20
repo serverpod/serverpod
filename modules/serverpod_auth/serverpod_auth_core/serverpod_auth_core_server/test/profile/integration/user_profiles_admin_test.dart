@@ -9,7 +9,7 @@ void main() {
   const userProfiles = UserProfiles();
   withServerpod(
     'Given an `AuthUser` with a `UserProfile`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       final profileData = UserProfileData(
         userName: 'username',
         fullName: 'Full Name',
@@ -108,7 +108,7 @@ void main() {
 
   withServerpod(
     'Given two `AuthUser`s with identical `UserProfile`s,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       final profileData = UserProfileData(
         userName: 'username',
         fullName: 'Full Name',
@@ -150,7 +150,7 @@ void main() {
 
   withServerpod(
     'Given two `AuthUser`s with unique `UserProfile`s,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       final profileData1 = UserProfileData(
         userName: 'user1',
         fullName: 'Full Name One',
@@ -221,5 +221,5 @@ void main() {
 }
 
 extension on Iterable<UserProfileModel> {
-  Set<UuidValue> get authUserIds => {...map((final p) => p.authUserId)};
+  Set<UuidValue> get authUserIds => {...map((p) => p.authUserId)};
 }

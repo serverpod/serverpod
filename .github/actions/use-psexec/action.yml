@@ -1,0 +1,34 @@
+name: Use PsExec
+description: Installs Sysinternals PsExec on Windows after verifying its Microsoft Authenticode signature.
+
+runs:
+  using: composite
+  steps:
+    # Microsoft republishes PSTools.zip in place at an unversioned URL, so a
+    # pinned content hash breaks on every release. The binary's Authenticode
+    # signature identifies the publisher without going stale.
+    - name: Install PsExec
+      shell: pwsh
+      run: |
+        $installDirectory = Join-Path $env:RUNNER_TEMP 'psexec'
+        $zipPath = Join-Path $env:RUNNER_TEMP 'PSTools.zip'
+        Invoke-WebRequest `
+          -Uri 'https://download.sysinternals.com/files/PSTools.zip' `
+          -OutFile $zipPath `
+          -MaximumRetryCount 3 `
+          -RetryIntervalSec 5
+        Expand-Archive -Path $zipPath -DestinationPath $installDirectory -Force
+
+        $psexec = Join-Path $installDirectory 'PsExec.exe'
+        $signature = Get-AuthenticodeSignature -FilePath $psexec
+        $signer = $signature.SignerCertificate
+        if ($signature.Status -ne 'Valid') {
+          throw "PsExec.exe signature is not valid: $($signature.Status) $($signature.StatusMessage)"
+        }
+        if ($signer.Subject -notmatch '(^|, )O=Microsoft Corporation(,|$)' -or
+            $signer.Issuer -notmatch '(^|, )O=Microsoft Corporation(,|$)') {
+          throw "PsExec.exe is not signed by Microsoft: subject '$($signer.Subject)', issuer '$($signer.Issuer)'"
+        }
+        Write-Host "Verified PsExec.exe signed by '$($signer.Subject)' via '$($signer.Issuer)'"
+
+        Add-Content -Path $env:GITHUB_PATH -Value $installDirectory

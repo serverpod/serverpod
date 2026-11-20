@@ -268,4 +268,144 @@ class ExampleFutureCall extends FutureCall {
       );
     },
   );
+
+  group(
+    'Given a tracked and analyzed directory with a base class extending FutureCall',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        var baseFile = File(path.join(trackedDirectory.path, 'base.dart'));
+        baseFile.createSync(recursive: true);
+        baseFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+abstract class BaseCall extends FutureCall {}
+''');
+        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        await analyzer.analyze(
+          collector: CodeGenerationCollector(),
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test(
+        'when the file context is updated with a new file whose class only extends the base class '
+        'then true is returned.',
+        () async {
+          var futureCallFile = File(
+            path.join(trackedDirectory.path, 'indirect_future_call.dart'),
+          );
+          futureCallFile.createSync(recursive: true);
+          futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+import 'base.dart';
+
+class IndirectFutureCall extends BaseCall {
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+          await expectLater(
+            analyzer.updateFileContexts({futureCallFile.path}),
+            completion(true),
+          );
+        },
+      );
+
+      test(
+        'when the file context is updated with a new file that only mentions extending the base class in a comment '
+        'then false is returned.',
+        () async {
+          var commentFile = File(
+            path.join(trackedDirectory.path, 'base_comment.dart'),
+          );
+          commentFile.createSync(recursive: true);
+          commentFile.writeAsStringSync('''
+import 'base.dart';
+
+// class CommentedFutureCall extends BaseCall {}
+
+/// Helper for a class that extends BaseCall, see [BaseCall].
+class HelperClass {}
+''');
+
+          await expectLater(
+            analyzer.updateFileContexts({commentFile.path}),
+            completion(false),
+          );
+        },
+      );
+
+      test(
+        'when the file context is updated with a new file that only mentions extending FutureCall in a comment '
+        'then false is returned.',
+        () async {
+          var commentFile = File(
+            path.join(trackedDirectory.path, 'comment.dart'),
+          );
+          commentFile.createSync(recursive: true);
+          commentFile.writeAsStringSync('''
+/// Helper for a class that extends FutureCall.
+class HelperClass {}
+''');
+
+          await expectLater(
+            analyzer.updateFileContexts({commentFile.path}),
+            completion(false),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an analyzed directory with a future call file and a plain file',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        File(path.join(trackedDirectory.path, 'declaring.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, String name) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+        File(path.join(trackedDirectory.path, 'plain.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+class HelperClass {}
+''');
+        analyzer = FutureCallsAnalyzer(directory: trackedDirectory);
+        await analyzer.analyze(
+          collector: CodeGenerationCollector(),
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test(
+        'when asked for its future call files '
+        'then only the declaring file is reported.',
+        () {
+          expect(analyzer.futureCallFiles, [
+            path.join(trackedDirectory.path, 'declaring.dart'),
+          ]);
+        },
+      );
+    },
+  );
 }

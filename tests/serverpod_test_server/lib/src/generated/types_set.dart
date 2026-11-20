@@ -8,12 +8,10 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:typed_data' as _idt;
 import 'package:serverpod/serverpod.dart' as _is;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import 'test_enum.dart' as _ionapfu9;
 import 'test_enum_stringified.dart' as _i7liykk2;
@@ -181,27 +179,26 @@ abstract class TypesSet
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   TypesSet copyWith({
-    Set<int>? anInt = const _issu.$UndefinedSet<int>(),
-    Set<bool>? aBool = const _issu.$UndefinedSet<bool>(),
-    Set<double>? aDouble = const _issu.$UndefinedSet<double>(),
-    Set<DateTime>? aDateTime = const _issu.$UndefinedSet<DateTime>(),
-    Set<String>? aString = const _issu.$UndefinedSet<String>(),
-    Set<_idt.ByteData>? aByteData = const _issu.$UndefinedSet<_idt.ByteData>(),
-    Set<Duration>? aDuration = const _issu.$UndefinedSet<Duration>(),
-    Set<_is.UuidValue>? aUuid = const _issu.$UndefinedSet<_is.UuidValue>(),
-    Set<BigInt>? aBigInt = const _issu.$UndefinedSet<BigInt>(),
+    Set<int>? anInt = const _is.$UndefinedSet<int>(),
+    Set<bool>? aBool = const _is.$UndefinedSet<bool>(),
+    Set<double>? aDouble = const _is.$UndefinedSet<double>(),
+    Set<DateTime>? aDateTime = const _is.$UndefinedSet<DateTime>(),
+    Set<String>? aString = const _is.$UndefinedSet<String>(),
+    Set<_idt.ByteData>? aByteData = const _is.$UndefinedSet<_idt.ByteData>(),
+    Set<Duration>? aDuration = const _is.$UndefinedSet<Duration>(),
+    Set<_is.UuidValue>? aUuid = const _is.$UndefinedSet<_is.UuidValue>(),
+    Set<BigInt>? aBigInt = const _is.$UndefinedSet<BigInt>(),
     Set<_ionapfu9.TestEnum>? anEnum =
-        const _issu.$UndefinedSet<_ionapfu9.TestEnum>(),
+        const _is.$UndefinedSet<_ionapfu9.TestEnum>(),
     Set<_i7liykk2.TestEnumStringified>? aStringifiedEnum =
-        const _issu.$UndefinedSet<_i7liykk2.TestEnumStringified>(),
-    Set<_iwxwszsz.Types>? anObject =
-        const _issu.$UndefinedSet<_iwxwszsz.Types>(),
+        const _is.$UndefinedSet<_i7liykk2.TestEnumStringified>(),
+    Set<_iwxwszsz.Types>? anObject = const _is.$UndefinedSet<_iwxwszsz.Types>(),
     Set<Map<String, _iwxwszsz.Types>>? aMap =
-        const _issu.$UndefinedSet<Map<String, _iwxwszsz.Types>>(),
+        const _is.$UndefinedSet<Map<String, _iwxwszsz.Types>>(),
     Set<List<_iwxwszsz.Types>>? aList =
-        const _issu.$UndefinedSet<List<_iwxwszsz.Types>>(),
-    Set<(int,)>? aRecord = const _issu.$UndefinedSet<(int,)>(),
-    Set<(int,)?>? aNullableRecord = const _issu.$UndefinedSet<(int,)?>(),
+        const _is.$UndefinedSet<List<_iwxwszsz.Types>>(),
+    Set<(int,)>? aRecord = const _is.$UndefinedSet<(int,)>(),
+    Set<(int,)?>? aNullableRecord = const _is.$UndefinedSet<(int,)?>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -337,66 +334,65 @@ class _TypesSetImpl extends TypesSet {
   @_is.useResult
   @override
   TypesSet copyWith({
-    Set<int>? anInt = const _issu.$UndefinedSet<int>(),
-    Set<bool>? aBool = const _issu.$UndefinedSet<bool>(),
-    Set<double>? aDouble = const _issu.$UndefinedSet<double>(),
-    Set<DateTime>? aDateTime = const _issu.$UndefinedSet<DateTime>(),
-    Set<String>? aString = const _issu.$UndefinedSet<String>(),
-    Set<_idt.ByteData>? aByteData = const _issu.$UndefinedSet<_idt.ByteData>(),
-    Set<Duration>? aDuration = const _issu.$UndefinedSet<Duration>(),
-    Set<_is.UuidValue>? aUuid = const _issu.$UndefinedSet<_is.UuidValue>(),
-    Set<BigInt>? aBigInt = const _issu.$UndefinedSet<BigInt>(),
+    Set<int>? anInt = const _is.$UndefinedSet<int>(),
+    Set<bool>? aBool = const _is.$UndefinedSet<bool>(),
+    Set<double>? aDouble = const _is.$UndefinedSet<double>(),
+    Set<DateTime>? aDateTime = const _is.$UndefinedSet<DateTime>(),
+    Set<String>? aString = const _is.$UndefinedSet<String>(),
+    Set<_idt.ByteData>? aByteData = const _is.$UndefinedSet<_idt.ByteData>(),
+    Set<Duration>? aDuration = const _is.$UndefinedSet<Duration>(),
+    Set<_is.UuidValue>? aUuid = const _is.$UndefinedSet<_is.UuidValue>(),
+    Set<BigInt>? aBigInt = const _is.$UndefinedSet<BigInt>(),
     Set<_ionapfu9.TestEnum>? anEnum =
-        const _issu.$UndefinedSet<_ionapfu9.TestEnum>(),
+        const _is.$UndefinedSet<_ionapfu9.TestEnum>(),
     Set<_i7liykk2.TestEnumStringified>? aStringifiedEnum =
-        const _issu.$UndefinedSet<_i7liykk2.TestEnumStringified>(),
-    Set<_iwxwszsz.Types>? anObject =
-        const _issu.$UndefinedSet<_iwxwszsz.Types>(),
+        const _is.$UndefinedSet<_i7liykk2.TestEnumStringified>(),
+    Set<_iwxwszsz.Types>? anObject = const _is.$UndefinedSet<_iwxwszsz.Types>(),
     Set<Map<String, _iwxwszsz.Types>>? aMap =
-        const _issu.$UndefinedSet<Map<String, _iwxwszsz.Types>>(),
+        const _is.$UndefinedSet<Map<String, _iwxwszsz.Types>>(),
     Set<List<_iwxwszsz.Types>>? aList =
-        const _issu.$UndefinedSet<List<_iwxwszsz.Types>>(),
-    Set<(int,)>? aRecord = const _issu.$UndefinedSet<(int,)>(),
-    Set<(int,)?>? aNullableRecord = const _issu.$UndefinedSet<(int,)?>(),
+        const _is.$UndefinedSet<List<_iwxwszsz.Types>>(),
+    Set<(int,)>? aRecord = const _is.$UndefinedSet<(int,)>(),
+    Set<(int,)?>? aNullableRecord = const _is.$UndefinedSet<(int,)?>(),
   }) {
     return TypesSet(
-      anInt: anInt is _issu.UndefinedSentinel
+      anInt: anInt is _is.UndefinedSentinel
           ? this.anInt?.map((e0) => e0).toSet()
           : anInt,
-      aBool: aBool is _issu.UndefinedSentinel
+      aBool: aBool is _is.UndefinedSentinel
           ? this.aBool?.map((e0) => e0).toSet()
           : aBool,
-      aDouble: aDouble is _issu.UndefinedSentinel
+      aDouble: aDouble is _is.UndefinedSentinel
           ? this.aDouble?.map((e0) => e0).toSet()
           : aDouble,
-      aDateTime: aDateTime is _issu.UndefinedSentinel
+      aDateTime: aDateTime is _is.UndefinedSentinel
           ? this.aDateTime?.map((e0) => e0).toSet()
           : aDateTime,
-      aString: aString is _issu.UndefinedSentinel
+      aString: aString is _is.UndefinedSentinel
           ? this.aString?.map((e0) => e0).toSet()
           : aString,
-      aByteData: aByteData is _issu.UndefinedSentinel
+      aByteData: aByteData is _is.UndefinedSentinel
           ? this.aByteData?.map((e0) => e0.clone()).toSet()
           : aByteData,
-      aDuration: aDuration is _issu.UndefinedSentinel
+      aDuration: aDuration is _is.UndefinedSentinel
           ? this.aDuration?.map((e0) => e0).toSet()
           : aDuration,
-      aUuid: aUuid is _issu.UndefinedSentinel
+      aUuid: aUuid is _is.UndefinedSentinel
           ? this.aUuid?.map((e0) => e0).toSet()
           : aUuid,
-      aBigInt: aBigInt is _issu.UndefinedSentinel
+      aBigInt: aBigInt is _is.UndefinedSentinel
           ? this.aBigInt?.map((e0) => e0).toSet()
           : aBigInt,
-      anEnum: anEnum is _issu.UndefinedSentinel
+      anEnum: anEnum is _is.UndefinedSentinel
           ? this.anEnum?.map((e0) => e0).toSet()
           : anEnum,
-      aStringifiedEnum: aStringifiedEnum is _issu.UndefinedSentinel
+      aStringifiedEnum: aStringifiedEnum is _is.UndefinedSentinel
           ? this.aStringifiedEnum?.map((e0) => e0).toSet()
           : aStringifiedEnum,
-      anObject: anObject is _issu.UndefinedSentinel
+      anObject: anObject is _is.UndefinedSentinel
           ? this.anObject?.map((e0) => e0.copyWith()).toSet()
           : anObject,
-      aMap: aMap is _issu.UndefinedSentinel
+      aMap: aMap is _is.UndefinedSentinel
           ? this.aMap
                 ?.map(
                   (e0) => e0.map(
@@ -411,15 +407,15 @@ class _TypesSetImpl extends TypesSet {
                 )
                 .toSet()
           : aMap,
-      aList: aList is _issu.UndefinedSentinel
+      aList: aList is _is.UndefinedSentinel
           ? this.aList
                 ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
                 .toSet()
           : aList,
-      aRecord: aRecord is _issu.UndefinedSentinel
+      aRecord: aRecord is _is.UndefinedSentinel
           ? this.aRecord?.map((e0) => (e0.$1,)).toSet()
           : aRecord,
-      aNullableRecord: aNullableRecord is _issu.UndefinedSentinel
+      aNullableRecord: aNullableRecord is _is.UndefinedSentinel
           ? this.aNullableRecord
                 ?.map((e0) => e0 == null ? null : (e0.$1,))
                 .toSet()

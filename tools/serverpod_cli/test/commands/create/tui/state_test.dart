@@ -323,7 +323,7 @@ void main() {
   );
 
   group(
-    'Given a CreateConfigState that requires an ide selection',
+    'Given a CreateConfigState exposing only the ide config',
     () {
       late CreateConfigState state;
 
@@ -331,14 +331,13 @@ void main() {
         state = CreateConfigState(
           ServerpodTemplateType.server,
           configs: const [ServerpodCreateConfig.ide],
-          requireIde: true,
         );
       });
 
       test(
         'when no ide is selected then the project can not be created',
         () {
-          expect(state.canCreate, isFalse);
+          expect(state.form.canAdvance, isFalse);
         },
       );
 
@@ -350,7 +349,7 @@ void main() {
             IdeOption.vsCode,
           );
 
-          expect(state.canCreate, isTrue);
+          expect(state.form.canAdvance, isTrue);
         },
       );
 
@@ -367,25 +366,25 @@ void main() {
             IdeOption.vsCode,
           );
 
-          expect(state.canCreate, isFalse);
+          expect(state.form.canAdvance, isFalse);
         },
       );
-    },
-  );
-
-  group(
-    'Given a CreateConfigState that does not require an ide selection',
-    () {
-      late CreateConfigState state;
-
-      setUp(() {
-        state = CreateConfigState(ServerpodTemplateType.server);
-      });
 
       test(
-        'when no ide is selected then the project can be created',
+        'when the none option is selected after an ide '
+        'then the project can be created without any ides',
         () {
-          expect(state.canCreate, isTrue);
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.ide,
+            IdeOption.vsCode,
+          );
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.ide,
+            IdeOption.none,
+          );
+
+          expect(state.form.canAdvance, isTrue);
+          expect(state.toTemplateContext().ides, isEmpty);
         },
       );
     },

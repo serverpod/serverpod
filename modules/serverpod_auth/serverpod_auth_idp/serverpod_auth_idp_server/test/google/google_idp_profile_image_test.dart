@@ -10,7 +10,7 @@ import '../test_utils/profile_image_idp_test_utils.dart';
 void main() {
   withServerpod(
     'Given a Google-backed user profile with an image,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late UserProfile userProfile;
@@ -24,7 +24,7 @@ void main() {
         session = sessionBuilder.build();
         final userProfiles = UserProfiles(
           config: UserProfileConfig(
-            imageFetchFunc: (final _) => onePixelPng,
+            imageFetchFunc: (_) => onePixelPng,
           ),
         );
         googleIdp = GoogleIdp(
@@ -57,7 +57,7 @@ void main() {
 
         userProfile = (await UserProfile.db.findFirstRow(
           session,
-          where: (final t) => t.authUserId.equals(authUserId),
+          where: (t) => t.authUserId.equals(authUserId),
         ))!;
       });
 
@@ -67,7 +67,7 @@ void main() {
         () async {
           final imagesBeforeSignIn = await UserProfileImage.db.find(
             session,
-            where: (final t) => t.userProfileId.equals(userProfile.id!),
+            where: (t) => t.userProfileId.equals(userProfile.id!),
           );
           expect(imagesBeforeSignIn, hasLength(1));
 
@@ -87,7 +87,7 @@ void main() {
 
           final imagesAfterSignIn = await UserProfileImage.db.find(
             session,
-            where: (final t) => t.userProfileId.equals(userProfile.id!),
+            where: (t) => t.userProfileId.equals(userProfile.id!),
           );
           expect(imagesAfterSignIn, hasLength(1));
         },
@@ -97,8 +97,8 @@ void main() {
 }
 
 String _createGoogleIdToken({
-  required final String googleUserIdentifier,
-  required final String profileImageUrl,
+  required String googleUserIdentifier,
+  required String profileImageUrl,
 }) {
   return createSignedIdToken(
     subject: googleUserIdentifier,

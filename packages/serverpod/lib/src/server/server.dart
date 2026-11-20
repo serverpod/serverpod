@@ -291,9 +291,9 @@ class Server implements RouterInjectable {
       final isOptions = req.method == Method.options;
       final headers = isOptions
           ? httpResponseHeaders.transform((mh) {
-              for (final h in httpOptionsResponseHeaders.entries) {
-                mh[h.key] = h.value;
-              }
+              httpOptionsResponseHeaders.forEach((key, value) {
+                mh[key] = [value];
+              });
               if (serverpod.config.authCookie != null) {
                 ensureCookieAuthAllowedHeaders(
                   mh,
@@ -319,9 +319,9 @@ class Server implements RouterInjectable {
       var merged = result.headers.isEmpty
           ? headers
           : result.headers.transform((mh) {
-              for (final h in headers.entries) {
-                mh[h.key] ??= h.value;
-              }
+              headers.forEach((key, value) {
+                mh[key] ??= [value];
+              });
             });
       return result.copyWith(
         headers: _applyCredentialedCorsHeaders(merged, req),
@@ -332,7 +332,7 @@ class Server implements RouterInjectable {
   /// The `Origin` header of [req] normalized to lowercase with any trailing
   /// slash dropped, or null if absent.
   String? _requestOrigin(Request req) => req
-      .headers[Headers.originHeader]
+      .headers[HeaderName.origin]
       ?.firstOrNull
       ?.trim()
       .toLowerCase()
@@ -398,11 +398,11 @@ class Server implements RouterInjectable {
       // names to lowercase; a wildcard Vary already covers Origin.
       var vary = mh.vary;
       if (vary == null) {
-        mh.vary = VaryHeader.headers(fields: const [Headers.originHeader]);
+        mh.vary = VaryHeader.headers(fields: [HeaderName.origin.lower]);
       } else if (!vary.isWildcard &&
-          !vary.fields.contains(Headers.originHeader)) {
+          !vary.fields.contains(HeaderName.origin.lower)) {
         mh.vary = VaryHeader.headers(
-          fields: [...vary.fields, Headers.originHeader],
+          fields: [...vary.fields, HeaderName.origin.lower],
         );
       }
     });
@@ -411,14 +411,24 @@ class Server implements RouterInjectable {
   FutureOr<Result> _cloudStorage(Request req) async {
     final uri = req.url;
     assert(uri.path == '/serverpod_cloud_storage');
-    return await _handleEndpointCall(uri, '', req);
+    return await _handleEndpointCall(uri, Uint8List(0), req);
   }
 
   Future<Response> _endpoints(Request req) async {
     var maxRequestSize = serverpod.config.maxRequestSize;
-    final body = await req.readAsString(maxLength: maxRequestSize);
+    final body = await _collectBytes(req.read(maxLength: maxRequestSize));
     return await _handleEndpointCall(req.url, body, req);
   }
+
+  static Future<Uint8List> _collectBytes(Stream<Uint8List> stream) async {
+    final builder = BytesBuilder(copy: false);
+    await for (final chunk in stream) {
+      builder.add(chunk);
+    }
+    return builder.takeBytes();
+  }
+
+  static final _jsonUtf8Decoder = utf8.decoder.fuse(json.decoder);
 
   Handler _dispatchWebSocket(
     Future<void> Function(
@@ -471,7 +481,7 @@ class Server implements RouterInjectable {
 
   Future<Response> _handleEndpointCall(
     Uri uri,
-    String body,
+    Uint8List body,
     Request request,
   ) async {
     var path = uri.pathSegments.join('/');
@@ -482,10 +492,12 @@ class Server implements RouterInjectable {
 
     // Read query parameters
     var queryParameters = <String, dynamic>{};
-    var isValidBody = body != 'null' && body.isNotEmpty;
-    if (isValidBody) {
+    if (body.isNotEmpty) {
       try {
-        queryParameters = jsonDecode(body);
+        final decoded = _jsonUtf8Decoder.convert(body);
+        if (decoded != null) {
+          queryParameters = decoded as Map<String, dynamic>;
+        }
       } catch (_) {
         throw InvalidParametersException('Invalid JSON in body');
       }
@@ -554,7 +566,7 @@ class Server implements RouterInjectable {
           maybeSession = await SessionInternalMethods.createMethodCallSession(
             server: this,
             uri: uri,
-            body: body,
+            bodyBytes: body,
             path: path,
             request: request,
             method: methodName,
@@ -592,8 +604,9 @@ class Server implements RouterInjectable {
         var response = methodCallContext.endpoint.sendAsRaw
             ? _toResponse(result)
             : Response.ok(
-                body: Body.fromString(
-                  SerializationManager.encodeForProtocol(result),
+                body: Body.fromData(
+                  SerializationManager.encodeForProtocolToUtf8(result),
+                  encoding: utf8,
                   mimeType: MimeType.json,
                 ),
               );
@@ -603,8 +616,6 @@ class Server implements RouterInjectable {
           cookies: session.responseCookies,
         );
       } catch (e, stackTrace) {
-        // Note: In case of malformed argument, the method connector may throw,
-        // which may be argued is not an "application space" exception.
         serverpod.internalSubmitEvent(
           ExceptionEvent(e, stackTrace),
           space: OriginSpace.application,

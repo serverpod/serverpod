@@ -42,6 +42,26 @@ void main() {
       );
     });
 
+    test('when the stored file was written by another cli version.', () async {
+      var file = File(
+        p.join(
+          testCacheFolderPath,
+          ResourceManagerConstants.latestVersionFilePath,
+        ),
+      );
+      file.createSync(recursive: true);
+      file.writeAsStringSync(
+        '{"version": "4.1.0-beta.1", "valid_until": 4102444800000, '
+        '"cli_version": "4.0.4"}',
+      );
+
+      var fetchedArtefact = await resourceManager.tryFetchLatestCliVersion(
+        localStoragePath: testCacheFolderPath,
+      );
+
+      expect(fetchedArtefact, isNull);
+    });
+
     test('when corrupted file is stored on disk.', () async {
       var file = File(
         p.join(

@@ -8,8 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, depend_on_referenced_packages
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -17,7 +16,6 @@ import 'dart:typed_data' as _idt;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
     as _i8reeoob;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../../auth_user/models/auth_user.dart' as _ivyervu7;
 
 /// Refresh token for JWT-based authentication.
@@ -149,7 +147,7 @@ abstract class RefreshToken
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   RefreshToken copyWith({
-    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
     _ivyervu7.AuthUser? authUser = const _UndefinedRefreshToken$authUser(),
     Set<String>? scopeNames,
@@ -212,7 +210,7 @@ abstract class RefreshToken
 
 class _Undefined {}
 
-class _UndefinedRefreshToken$authUser extends _issu.UndefinedSentinel
+class _UndefinedRefreshToken$authUser extends _is.UndefinedSentinel
     implements _ivyervu7.AuthUser {
   const _UndefinedRefreshToken$authUser();
 }
@@ -247,7 +245,7 @@ class _RefreshTokenImpl extends RefreshToken {
   @_is.useResult
   @override
   RefreshToken copyWith({
-    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
     _ivyervu7.AuthUser? authUser = const _UndefinedRefreshToken$authUser(),
     Set<String>? scopeNames,
@@ -259,9 +257,9 @@ class _RefreshTokenImpl extends RefreshToken {
     DateTime? createdAt,
   }) {
     return RefreshToken(
-      id: id is _issu.UndefinedSentinel ? this.id : id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _issu.UndefinedSentinel
+      authUser: authUser is _is.UndefinedSentinel
           ? this.authUser?.copyWith()
           : authUser,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),

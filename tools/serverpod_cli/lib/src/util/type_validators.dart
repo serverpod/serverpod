@@ -1,5 +1,19 @@
 import 'package:serverpod_cli/analyzer.dart';
 
+/// Class names of a model list, derived on first use and cached against the
+/// list itself.
+///
+/// [TypeValidators.isModelType] is called for every parameter and return type
+/// of every endpoint and future call method, against the same model list for
+/// the whole analysis pass. Scanning the list each time is
+/// `O(methods * parameters * models)`; this turns the lookup into a set
+/// membership test instead.
+///
+/// The model lists handed to validation are rebuilt for each pass, so an entry
+/// here is only ever read by the pass that created the list it is keyed on, and
+/// is collected with it.
+final _modelClassNames = Expando<Set<String>>('modelClassNames');
+
 /// Utility class for validating [TypeDefinition]s.
 class TypeValidators {
   /// Returns true if the [type] is a valid type that can be serialized.
@@ -55,8 +69,14 @@ class TypeValidators {
     TypeDefinition type,
     TypeValidationOptions options,
   ) {
-    return options.models?.any((model) => model.className == type.className) ??
-        false;
+    var models = options.models;
+    if (models == null) return false;
+
+    var classNames = _modelClassNames[models] ??= {
+      for (var model in models) model.className,
+    };
+
+    return classNames.contains(type.className);
   }
 
   /// Returns true if the [type] is the base 'SerializableModel' type.

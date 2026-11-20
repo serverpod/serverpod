@@ -8,8 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, depend_on_referenced_packages
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -18,7 +17,6 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
     as _ik2mg1i3;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class TokenMetadata
     implements _is.TableRow<int?>, _is.ProtocolSerialization {
@@ -151,7 +149,7 @@ abstract class TokenMetadata
 
 class _Undefined {}
 
-class _UndefinedTokenMetadata$refreshToken extends _issu.UndefinedSentinel
+class _UndefinedTokenMetadata$refreshToken extends _is.UndefinedSentinel
     implements _iacs.RefreshToken {
   const _UndefinedTokenMetadata$refreshToken();
 }
@@ -192,7 +190,7 @@ class _TokenMetadataImpl extends TokenMetadata {
     return TokenMetadata(
       id: id is int? ? id : this.id,
       refreshTokenId: refreshTokenId ?? this.refreshTokenId,
-      refreshToken: refreshToken is _issu.UndefinedSentinel
+      refreshToken: refreshToken is _is.UndefinedSentinel
           ? this.refreshToken?.copyWith()
           : refreshToken,
       deviceName: deviceName ?? this.deviceName,

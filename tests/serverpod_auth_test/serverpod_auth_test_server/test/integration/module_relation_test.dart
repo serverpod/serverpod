@@ -8,7 +8,7 @@ import 'test_tools/serverpod_test_tools.dart';
 void main() {
   withServerpod(
     'Given UserData model with relation to AuthUser from the auth core module',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       test(
         'when creating a UserData with AuthUser relation '
         'then the relation is correctly established',
@@ -111,7 +111,7 @@ void main() {
 
   withServerpod(
     'Given ChallengeTracker model with relation to SecretChallenge from the IDP module',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       test(
         'when creating a ChallengeTracker with SecretChallenge relation '
         'then the relation is correctly established',

@@ -178,17 +178,17 @@ class MethodStreamManager {
     _outputStreamContexts.clear();
 
     var closeSubscriptionFutures = outboundStreamContexts.map(
-      (c) => c.subscription.cancel().timeout(
-        _closeTimeout,
-        onTimeout:
-            () async {
-                  await c.controller.onCancel?.call();
-                  return null;
-                  // This type case is needed to avoid a runtime exception
-                  // Filed as bug on dart-lang/sdk: https://github.com/dart-lang/sdk/issues/56846
-                }
-                as Future<Null> Function()?,
-      ),
+      // cancel() may return a Future with a narrower runtime type, such as
+      // Future<List<void>>. Normalize it before supplying a void timeout handler.
+      (c) => c.subscription
+          .cancel()
+          .then<void>((_) {})
+          .timeout(
+            _closeTimeout,
+            onTimeout: () async {
+              await c.controller.onCancel?.call();
+            },
+          ),
     );
 
     await Future.wait([
@@ -375,6 +375,10 @@ class MethodStreamManager {
     late StreamSubscription subscription;
     subscription = outputController.stream.listen(
       (value) async {
+        // The subscription outlives the close callback while the close
+        // cleanup is awaited, so drop anything that arrives after it.
+        if (!_outputStreamContexts.containsKey(streamKey)) return;
+
         _onOutputStreamValue?.call(
           methodStreamId,
           value,

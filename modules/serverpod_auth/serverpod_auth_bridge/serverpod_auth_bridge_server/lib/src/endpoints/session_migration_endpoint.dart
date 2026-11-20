@@ -13,8 +13,8 @@ class SessionMigrationEndpoint extends Endpoint {
 
   /// Converts a legacy session into a new token from the token manager.
   Future<AuthSuccess?> convertSession(
-    final Session session, {
-    required final String sessionKey,
+    Session session, {
+    required String sessionKey,
   }) async {
     final legacySession = await resolveLegacySession(session, sessionKey);
 
@@ -23,7 +23,7 @@ class SessionMigrationEndpoint extends Endpoint {
     }
 
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, null, (
-      final transaction,
+      transaction,
     ) async {
       await LegacySession.db.deleteRow(
         session,

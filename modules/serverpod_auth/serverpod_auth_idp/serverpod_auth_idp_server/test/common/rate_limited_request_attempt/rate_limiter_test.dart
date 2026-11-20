@@ -21,7 +21,7 @@ void main() {
   withServerpod(
     '[DatabaseRateLimiter]',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       buildSession = sessionBuilder.build;
 
       late List<String> rateLimitExceededKeys;
@@ -37,7 +37,7 @@ void main() {
               domain: _testDomain,
               source: _testSource,
               maxAttempts: 2,
-              onRateLimitExceeded: (final session, final key) async {
+              onRateLimitExceeded: (session, key) async {
                 rateLimitExceededKeys.add(key);
               },
             ),
@@ -126,7 +126,7 @@ void main() {
             });
 
             test('then it allows exactly two of the checks.', () async {
-              expect(admitted.where((final limited) => limited), hasLength(2));
+              expect(admitted.where((limited) => limited), hasLength(2));
             });
 
             test('then it records exactly two attempts.', () async {
@@ -151,7 +151,7 @@ void main() {
             );
 
             try {
-              await session.db.transaction((final transaction) async {
+              await session.db.transaction((transaction) async {
                 await rateLimitUtil.tryRecordAttempt(
                   session,
                   key: 'request',
@@ -497,7 +497,7 @@ void main() {
               () {
                 expect(deleted, 0);
 
-                expect(remaining.map((final attempt) => attempt.attemptedAt), [
+                expect(remaining.map((attempt) => attempt.attemptedAt), [
                   now.subtract(const Duration(hours: 2)),
                   now,
                 ]);
@@ -514,7 +514,7 @@ void main() {
 
               setUp(() async {
                 try {
-                  await session.db.transaction((final transaction) async {
+                  await session.db.transaction((transaction) async {
                     deleted = await withClock(
                       Clock.fixed(now),
                       () => rateLimitUtil.deleteAttempts(
@@ -541,7 +541,7 @@ void main() {
                   expect(deleted, 1);
 
                   expect(
-                    remaining.map((final attempt) => attempt.attemptedAt),
+                    remaining.map((attempt) => attempt.attemptedAt),
                     [
                       now.subtract(const Duration(hours: 2)),
                       now,
@@ -719,7 +719,7 @@ void main() {
                 source: _testSource,
                 maxAttempts: 2,
                 timeframe: const Duration(hours: 1),
-                onRateLimitExceeded: (final session, final key) async {
+                onRateLimitExceeded: (session, key) async {
                   rateLimitExceededKeys.add(key);
                 },
               ),
@@ -1047,7 +1047,7 @@ void main() {
               domain: _testDomain,
               source: _testSource,
               maxAttempts: 1,
-              onRateLimitExceeded: (final session, final key) async {
+              onRateLimitExceeded: (session, key) async {
                 throw _ExpectedRollbackException();
               },
             ),
@@ -1093,7 +1093,7 @@ void main() {
                 domain: _testDomain,
                 source: _testSource,
                 maxAttempts: 1,
-                onRateLimitExceeded: (final session, final key) async {
+                onRateLimitExceeded: (session, key) async {
                   await limiter.deleteAttempts(session, key: key);
 
                   throw _ExpectedRollbackException();
@@ -1117,7 +1117,7 @@ void main() {
               setUpAll(() async {
                 try {
                   await session.db.transaction(
-                    (final transaction) =>
+                    (transaction) =>
                         limiter.tryRecordAttempt(session, key: 'request'),
                   );
                 } catch (caughtError) {
@@ -1265,7 +1265,7 @@ void main() {
               () async {
                 expect(deleted, 1);
 
-                expect(remaining.map((final attempt) => attempt.attemptedAt), [
+                expect(remaining.map((attempt) => attempt.attemptedAt), [
                   now.subtract(const Duration(hours: 1)),
                   now.subtract(const Duration(minutes: 59)),
                 ]);
@@ -1490,7 +1490,7 @@ void main() {
               expect(deletedAttempts, 0);
 
               expect(
-                remaining.map((final attempt) => attempt.key),
+                remaining.map((attempt) => attempt.key),
                 unorderedEquals(['first', 'second']),
               );
             },
@@ -1522,7 +1522,7 @@ void main() {
 
           setUpAll(() async {
             try {
-              await session.db.transaction((final transaction) async {
+              await session.db.transaction((transaction) async {
                 await limiter.deleteAttempts(
                   session,
                   key: 'request',
@@ -1550,23 +1550,22 @@ void main() {
   );
 }
 
-Future<void> _deleteTestAttempts(final Session session) async {
+Future<void> _deleteTestAttempts(Session session) async {
   await RateLimitedRequestAttempt.db.deleteWhere(
     session,
-    where: (final t) =>
-        t.domain.equals(_testDomain) | t.domain.equals(_otherDomain),
+    where: (t) => t.domain.equals(_testDomain) | t.domain.equals(_otherDomain),
   );
 }
 
 Future<List<RateLimitedRequestAttempt>> _findAttempts(
-  final Session session, {
-  final String domain = _testDomain,
-  final String source = _testSource,
-  final String? key,
+  Session session, {
+  String domain = _testDomain,
+  String source = _testSource,
+  String? key,
 }) async {
   return RateLimitedRequestAttempt.db.find(
     session,
-    where: (final t) {
+    where: (t) {
       var expression = t.domain.equals(domain) & t.source.equals(source);
 
       if (key != null) {
@@ -1575,7 +1574,7 @@ Future<List<RateLimitedRequestAttempt>> _findAttempts(
 
       return expression;
     },
-    orderBy: (final t) => t.attemptedAt,
+    orderBy: (t) => t.attemptedAt,
   );
 }
 

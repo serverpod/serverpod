@@ -11,8 +11,8 @@ void main() {
   );
 
   withServerpod('Given an auth session,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -149,7 +149,7 @@ void main() {
 
   withServerpod(
     'Given an auth session expiring in 1 day,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       final expiresAt = DateTime.now().add(const Duration(days: 1));
       late Session session;
 
@@ -186,7 +186,7 @@ void main() {
 
   withServerpod(
     'Given an expired auth session,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       final expiresAt = DateTime.now().subtract(const Duration(days: 1));
       late Session session;
 
@@ -238,7 +238,7 @@ void main() {
 
   withServerpod(
     'Given an auth session expiring after 10 minutes of inactivity,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const expireAfterUnusedFor = Duration(minutes: 10);
       late Session session;
 
@@ -272,7 +272,7 @@ void main() {
 
   withServerpod(
     'Given an auth session which expired due to more than 10 minutes of inactivity,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const expireAfterUnusedFor = Duration(minutes: 10);
       late Session session;
 

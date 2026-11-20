@@ -6,7 +6,12 @@ const serverpodAddressesEvent = 'ext.serverpod.addresses';
 /// The public listener URLs a [serverpodAddressesEvent] carries.
 class ServerpodAddresses {
   /// Creates addresses for the given listeners.
-  const ServerpodAddresses({this.api, this.insights, this.web});
+  const ServerpodAddresses({
+    this.api,
+    this.insights,
+    this.web,
+    this.database,
+  });
 
   /// The URL of the API server, or null when it is not running.
   final String? api;
@@ -17,11 +22,16 @@ class ServerpodAddresses {
   /// The URL of the web server, or null when it is not running.
   final String? web;
 
+  /// The loopback TCP URI of the embedded database, without its password, or
+  /// null when the pod serves no database over TCP.
+  final String? database;
+
   /// Encodes these addresses as the event payload.
   Map<String, Object?> toJson() => {
     if (api != null) 'api': api,
     if (insights != null) 'insights': insights,
     if (web != null) 'web': web,
+    if (database != null) 'database': database,
   };
 
   /// Decodes what [toJson] produced.
@@ -30,5 +40,6 @@ class ServerpodAddresses {
         api: json['api'] as String?,
         insights: json['insights'] as String?,
         web: json['web'] as String?,
+        database: json['database'] as String?,
       );
 }

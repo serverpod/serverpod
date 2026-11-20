@@ -699,6 +699,22 @@ void main() async {
             );
           });
 
+          test('then the .github directory has deploy workflow', () {
+            expect(
+              File(
+                path.join(
+                  tempPath,
+                  projectName,
+                  '.github',
+                  'workflows',
+                  'deploy.yml',
+                ),
+              ).existsSync(),
+              isTrue,
+              reason: 'deploy.yml workflow does not exist.',
+            );
+          });
+
           test('then the .vscode directory has launch.json', () {
             expect(
               File(

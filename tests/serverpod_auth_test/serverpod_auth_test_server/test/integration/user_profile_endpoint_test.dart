@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod('Given no users,', (final sessionBuilder, final endpoints) {
+  withServerpod('Given no users,', (sessionBuilder, endpoints) {
     test(
       'when calling `UserProfile.get` with an unauthenticated user, then an error is thrown.',
       () async {
@@ -36,7 +36,7 @@ void main() {
 
   withServerpod(
     'Given a session for a user without a profile,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late UuidValue authUserId;
       late TestSessionBuilder session;
 
@@ -66,7 +66,7 @@ void main() {
 
   withServerpod(
     'Given a session for a user with a profile,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late UuidValue authUserId;
       late TestSessionBuilder session;
 
@@ -148,7 +148,7 @@ void main() {
 
   withServerpod(
     'Given a session for a user with a profile and an image,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late UuidValue authUserId;
       late TestSessionBuilder session;
 

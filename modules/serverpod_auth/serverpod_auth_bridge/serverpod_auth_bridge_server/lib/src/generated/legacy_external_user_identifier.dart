@@ -8,8 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, depend_on_referenced_packages
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
@@ -18,7 +17,6 @@ import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
     as _isg9n5v0;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 
 abstract class LegacyExternalUserIdentifier
     implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
@@ -80,7 +78,7 @@ abstract class LegacyExternalUserIdentifier
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   LegacyExternalUserIdentifier copyWith({
-    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
     _iacs.AuthUser? authUser =
         const _UndefinedLegacyExternalUserIdentifier$authUser(),
@@ -133,7 +131,7 @@ abstract class LegacyExternalUserIdentifier
 }
 
 class _UndefinedLegacyExternalUserIdentifier$authUser
-    extends _issu.UndefinedSentinel
+    extends _is.UndefinedSentinel
     implements _iacs.AuthUser {
   const _UndefinedLegacyExternalUserIdentifier$authUser();
 }
@@ -156,16 +154,16 @@ class _LegacyExternalUserIdentifierImpl extends LegacyExternalUserIdentifier {
   @_is.useResult
   @override
   LegacyExternalUserIdentifier copyWith({
-    _is.UuidValue? id = const _issu.$UndefinedUuidValue(),
+    _is.UuidValue? id = const _is.$UndefinedUuidValue(),
     _is.UuidValue? authUserId,
     _iacs.AuthUser? authUser =
         const _UndefinedLegacyExternalUserIdentifier$authUser(),
     String? userIdentifier,
   }) {
     return LegacyExternalUserIdentifier(
-      id: id is _issu.UndefinedSentinel ? this.id : id,
+      id: id is _is.UndefinedSentinel ? this.id : id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _issu.UndefinedSentinel
+      authUser: authUser is _is.UndefinedSentinel
           ? this.authUser?.copyWith()
           : authUser,
       userIdentifier: userIdentifier ?? this.userIdentifier,

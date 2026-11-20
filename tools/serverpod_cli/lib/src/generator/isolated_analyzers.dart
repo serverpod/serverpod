@@ -58,11 +58,15 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
   /// sources before returning. Pass `false` to only spawn the isolate and defer
   /// priming to the first [update] call.
   ///
+  /// [dartSdkPath] is the resolved Dart SDK the worker should analyse
+  /// against.
+  ///
   /// Log messages from the worker are forwarded to the main isolate's
   /// [log] singleton via a [SendPort].
   static Future<IsolatedAnalyzers> create(
     GeneratorConfig config, {
     bool prime = true,
+    required String dartSdkPath,
   }) async {
     final logPort = ReceivePort();
     logPort.listen((message) {
@@ -86,8 +90,8 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
         // Install a logger on the worker isolate that forwards to main.
         initializeLoggerWith(_PortForwardingLogger(logSendPort));
         return prime
-            ? Analyzers.createAndUpdate(config)
-            : Analyzers.create(config);
+            ? Analyzers.createAndUpdate(config, dartSdkPath: dartSdkPath)
+            : Analyzers.create(config, dartSdkPath: dartSdkPath);
       },
       logPort,
     );
@@ -97,16 +101,17 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
   }
 
   @override
-  Future<bool> update({
+  Future<bool> get isFresh => evaluate((analyzers) => analyzers.isFresh);
+
+  @override
+  Future<GenerationRequirements> update({
     required GeneratorConfig config,
     required Set<String> affectedPaths,
-    GenerationRequirements requirements = GenerationRequirements.full,
   }) {
     return evaluate(
       (analyzers) => analyzers.update(
         config: config,
         affectedPaths: affectedPaths,
-        requirements: requirements,
       ),
     );
   }

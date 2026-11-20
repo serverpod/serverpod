@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:path/path.dart' as path;
+import 'package:pub_semver/pub_semver.dart';
 
 /// Resolves the absolute path to the serverpod monorepo root via the test
 /// isolate's package config. The previous `Directory('../..')` approach
@@ -23,6 +24,16 @@ Future<String> resolveServerpodRoot() async {
 Future<String> resolveServerpodCliEntrypoint() async {
   final root = await resolveServerpodRoot();
   return path.join(root, 'tools', 'serverpod_cli', 'bin', 'serverpod_cli.dart');
+}
+
+/// Skip reason for tests that analyze primary constructors, which are only
+/// available from language version 3.13. Is `null` when the running Dart SDK
+/// supports them.
+String? get skipUnlessPrimaryConstructorsSupported {
+  var sdkVersion = Version.parse(Platform.version.split(' ').first);
+  if (sdkVersion >= Version(3, 13, 0)) return null;
+
+  return 'Primary constructors require Dart 3.13.0 or later.';
 }
 
 Future createTestEnvironment(

@@ -15,7 +15,7 @@ resolution: workspace
 dependencies:
   clock: ^1.1.1
   http: '>=1.1.0 <2.0.0'
-  relic: ^2.0.0-rc.1
+  relic: 2.0.0-rc.4
   serverpod: SERVERPOD_VERSION
   serverpod_auth_server: SERVERPOD_VERSION
   serverpod_cloud_storage_s3: SERVERPOD_VERSION

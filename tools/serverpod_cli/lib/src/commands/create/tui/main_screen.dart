@@ -29,15 +29,13 @@ class MainScreen extends StatelessComponent {
     final summaryAction = isUpgrade ? 'Upgrade' : 'Create';
 
     void onSubmit() {
-      final canCreate =
-          (state.form.hasSingleScreen || state.form.isSummary) &&
-          state.canCreate;
-
-      if (canCreate) {
+      if (state.form.hasSingleScreen || state.form.isSummary) {
+        if (!state.form.canAdvance) return;
         state.markCreatingProject();
         holder.markDirty();
         onCreate();
       } else {
+        state.form.confirmFocusedOption();
         state.form.nextScreen();
         holder.markDirty();
       }
@@ -52,7 +50,7 @@ class MainScreen extends StatelessComponent {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(theme, state),
+                _buildHeader(state),
                 const SizedBox(height: 1),
                 Expanded(
                   child: creatingProject
@@ -68,29 +66,24 @@ class MainScreen extends StatelessComponent {
                           summaryDescription:
                               'Press Enter to ${summaryAction.toLowerCase()} the project.',
                           onSubmit: onSubmit,
-                          submitButtonLabel: summaryAction,
                         ),
                 ),
               ],
             ),
           ),
         ),
-        _buildButtonBar(theme, state, isUpgrade: isUpgrade),
+        _buildButtonBar(theme, state, onSubmit: onSubmit),
       ],
     );
   }
 
-  Component _buildHeader(ServerpodThemeData theme, CreateConfigState state) {
-    final showingSummary = state.form.isSummary;
-    final creatingProject = state.creatingProject;
-    final showHint = !showingSummary && !creatingProject;
+  Component _buildHeader(CreateConfigState state) {
+    final form = state.form;
+    final showStep = !form.isSummary && !state.creatingProject;
 
-    final title = switch (creatingProject) {
+    final title = switch (state.creatingProject) {
       true => isUpgrade ? 'Upgrading project' : 'Creating project',
-      false => switch (showingSummary) {
-        true => 'Summary',
-        false => isUpgrade ? 'Upgrade project' : 'Create new project',
-      },
+      false => isUpgrade ? 'Upgrade project' : 'Create new project',
     };
 
     return Container(
@@ -105,12 +98,12 @@ class MainScreen extends StatelessComponent {
             ),
           ),
           const Spacer(),
-          if (showHint)
+          if (showStep)
             Text(
-              '💡 Click to select',
-              style: TextStyle(
-                color: theme.brightText,
-                fontWeight: FontWeight.bold,
+              'Step ${form.currentScreenIndex + 1} of ${form.configScreenCount}',
+              style: const TextStyle(
+                color: Color.defaultColor,
+                fontWeight: FontWeight.dim,
               ),
             ),
         ],
@@ -121,16 +114,19 @@ class MainScreen extends StatelessComponent {
   Component _buildButtonBar(
     ServerpodThemeData theme,
     CreateConfigState state, {
-    required bool isUpgrade,
+    required VoidCallback onSubmit,
   }) {
+    final form = state.form;
     final creatingProject = state.creatingProject;
-    final isFirstScreen = state.form.currentScreenIndex == 0;
-    final isSummary = state.form.isSummary;
-    final hasSingleScreen = state.form.hasSingleScreen;
-    final createEnabled = !isSummary || state.canCreate;
+    final isFirstScreen = form.currentScreenIndex == 0;
+    final isSummary = form.isSummary;
+    final hasSingleScreen = form.hasSingleScreen;
+    final currentConfig = form.currentConfig;
+    final isMultiSelect =
+        currentConfig is FormSelectionConfig && currentConfig.multiSelect;
     final enterButtonLabel = switch (hasSingleScreen || isSummary) {
       true => isUpgrade ? 'Upgrade Project' : 'Create Project',
-      false => 'Next',
+      false => 'Continue',
     };
 
     return ButtonBar(
@@ -139,19 +135,8 @@ class MainScreen extends StatelessComponent {
           name: enterButtonLabel,
           activationChar: 'Enter',
           activationKeys: const [LogicalKey.enter],
-          onActivate: (_) {
-            if (hasSingleScreen || state.form.isSummary) {
-              state.markCreatingProject();
-              holder.markDirty();
-              onCreate();
-            } else {
-              state.form.nextScreen();
-              holder.markDirty();
-            }
-          },
-          enabled:
-              (hasSingleScreen ? state.canCreate : createEnabled) &&
-              !creatingProject,
+          onActivate: (_) => onSubmit(),
+          enabled: form.canAdvance && !creatingProject,
         ),
         if (!hasSingleScreen)
           Button(
@@ -159,56 +144,37 @@ class MainScreen extends StatelessComponent {
             activationChar: 'Esc',
             activationKeys: const [LogicalKey.escape],
             onActivate: (_) {
-              state.form.previousScreen();
+              form.previousScreen();
               holder.markDirty();
             },
             enabled: !isFirstScreen && !creatingProject,
           ),
         Button(
-          name: 'Navigate',
-          activationChar: '←↑↓→',
-          activationKeys: const [
-            LogicalKey.arrowLeft,
-            LogicalKey.arrowRight,
-            LogicalKey.arrowUp,
-            LogicalKey.arrowDown,
-          ],
+          name: 'Move',
+          activationChar: '↑↓',
+          activationKeys: const [LogicalKey.arrowUp, LogicalKey.arrowDown],
           onActivate: (key) {
-            switch (key) {
-              case LogicalKey.arrowLeft:
-                state.form.focusLeft();
-                break;
-              case LogicalKey.arrowRight:
-                state.form.focusRight();
-                break;
-              case LogicalKey.arrowUp:
-                if (isSummary) {
-                  scrollController.scrollUp(3);
-                } else {
-                  state.form.focusUp();
-                }
-                break;
-              case LogicalKey.arrowDown:
-                if (isSummary) {
-                  scrollController.scrollDown(3);
-                } else {
-                  state.form.focusDown();
-                }
-                break;
+            final up = key == LogicalKey.arrowUp;
+            if (isSummary) {
+              up
+                  ? scrollController.scrollUp(3)
+                  : scrollController.scrollDown(3);
+            } else {
+              up ? form.focusUp() : form.focusDown();
             }
             holder.markDirty();
           },
           enabled: !creatingProject,
         ),
         Button(
-          name: 'Select',
+          name: isMultiSelect ? 'Toggle' : 'Select',
           activationChar: 'Space',
           activationKeys: const [LogicalKey.space],
           onActivate: (_) {
-            state.form.onSelect();
+            form.onSelect();
             holder.markDirty();
           },
-          enabled: !creatingProject,
+          enabled: !isSummary && !creatingProject,
         ),
         Button(
           name: 'Quit',

@@ -153,6 +153,43 @@ class SqliteValueEncoder implements ValueEncoder {
         : encoded;
   }
 
+  /// Converts a model column value to a SQLite bound parameter. Structured
+  /// columns must use `jsonb(?)` as their SQL placeholder.
+  Object? encodeColumnParameter(Column column, dynamic value) {
+    if (value == null) return null;
+    if (column is ColumnSerializable || column is ColumnStructured) {
+      return SerializationManager.encode(value);
+    }
+    final coerced = coerceColumnValue(column, value);
+    return switch (coerced) {
+      null => null,
+      bool() => coerced ? 1 : 0,
+      int() || String() => coerced,
+      double() => coerced.isNaN ? null : coerced,
+      ByteData() => Uint8List.view(
+        coerced.buffer,
+        coerced.offsetInBytes,
+        coerced.lengthInBytes,
+      ),
+      UuidValue() => coerced.toBytes(),
+      DateTime() => coerced.millisecondsSinceEpoch,
+      Duration() => coerced.inMilliseconds,
+      Uri() || BigInt() => coerced.toString(),
+      Geography() => coerced.toEwkt(),
+      Vector() ||
+      HalfVector() ||
+      SparseVector() ||
+      Bit() => coerced.toString().replaceAll(' ', ''),
+      SerializableModel() && Enum() => switch ((coerced as SerializableModel)
+          .toJson()) {
+        String s => s,
+        int i => i,
+        dynamic v => throw Exception('Unexpected value from Enum.toJson(): $v'),
+      },
+      _ => SerializationManager.encode(coerced),
+    };
+  }
+
   static dynamic _decodeJsonbValue(dynamic value) {
     if (value is Uint8List) {
       return _normalizeDecodedJson(sqlite3.jsonb.decode(value));

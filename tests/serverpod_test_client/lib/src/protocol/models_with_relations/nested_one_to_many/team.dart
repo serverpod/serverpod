@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/nested_one_to_many/arena.dart' as _iv085ahk;
 import '../../models_with_relations/nested_one_to_many/player.dart'
@@ -76,7 +74,7 @@ abstract class Team
     int? arenaId,
     _iv085ahk.Arena? arena = const _UndefinedTeam$arena(),
     List<_i9mhudyy.Player>? players =
-        const _issu.$UndefinedList<_i9mhudyy.Player>(),
+        const _isc.$UndefinedList<_i9mhudyy.Player>(),
   });
   @override
   Map<String, dynamic> toJson() {
@@ -112,7 +110,7 @@ abstract class Team
 
 class _Undefined {}
 
-class _UndefinedTeam$arena extends _issu.UndefinedSentinel
+class _UndefinedTeam$arena extends _isc.UndefinedSentinel
     implements _iv085ahk.Arena {
   const _UndefinedTeam$arena();
 }
@@ -142,14 +140,14 @@ class _TeamImpl extends Team {
     Object? arenaId = _Undefined,
     _iv085ahk.Arena? arena = const _UndefinedTeam$arena(),
     List<_i9mhudyy.Player>? players =
-        const _issu.$UndefinedList<_i9mhudyy.Player>(),
+        const _isc.$UndefinedList<_i9mhudyy.Player>(),
   }) {
     return Team(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       arenaId: arenaId is int? ? arenaId : this.arenaId,
-      arena: arena is _issu.UndefinedSentinel ? this.arena?.copyWith() : arena,
-      players: players is _issu.UndefinedSentinel
+      arena: arena is _isc.UndefinedSentinel ? this.arena?.copyWith() : arena,
+      players: players is _isc.UndefinedSentinel
           ? this.players?.map((e0) => e0.copyWith()).toList()
           : players,
     );

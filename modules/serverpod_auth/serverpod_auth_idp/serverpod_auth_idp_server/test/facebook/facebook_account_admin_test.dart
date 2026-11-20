@@ -25,7 +25,7 @@ void main() {
 
   withServerpod(
     'Given an existing Facebook account,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late Session session;
       late UuidValue authUserId;
       const userIdentifier = '12345';
@@ -75,7 +75,7 @@ void main() {
 
   withServerpod(
     'Given an auth user without Facebook authentication,',
-    (final sessionBuilder, final _) {
+    (sessionBuilder, _) {
       late Session session;
       late UuidValue authUserId;
       late FacebookIdpAdmin admin;
@@ -116,7 +116,7 @@ void main() {
 
           final foundAccount = await FacebookAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('54321'),
+            where: (t) => t.userIdentifier.equals('54321'),
           );
 
           expect(foundAccount, isNotNull);

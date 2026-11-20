@@ -13,7 +13,7 @@ void main() {
   withServerpod(
     'Given an auth sessions for a user,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late String sessionKey;
@@ -34,7 +34,7 @@ void main() {
       tearDown(() async {
         await ServerSideSession.db.deleteWhere(
           session,
-          where: (final _) => Constant.bool(true),
+          where: (_) => Constant.bool(true),
         );
       });
 
@@ -70,7 +70,7 @@ void main() {
         () async {
           final newAuthSuccesses = await List.generate(
             3,
-            (final _) async => serverSideSessions.createSession(
+            (_) async => serverSideSessions.createSession(
               session,
               authUserId: authUserId,
               method: 'test',
@@ -122,7 +122,7 @@ void main() {
 
           expect(revocationMessages, [
             isA<RevokedAuthenticationAuthId>().having(
-              (final m) => m.authId,
+              (m) => m.authId,
               'authId',
               authInfoABeforeRevocation.authId,
             ),
@@ -162,7 +162,7 @@ void main() {
 
   withServerpod(
     'Given a user with 2 auth sessions where 1 was invalidated by `destroySession`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late String destroyedSessionKey;
@@ -230,7 +230,7 @@ void main() {
 
   withServerpod(
     'Given a user with 2 sessions which were invalidated using `destroyAllSessions`,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late String sessionKey1;
@@ -294,8 +294,8 @@ void main() {
 }
 
 UuidValue _extractServerSideSessionId(
-  final Session session,
-  final String serverSideSessionToken,
+  Session session,
+  String serverSideSessionToken,
 ) {
   return tryParseServerSideSessionToken(
     session,

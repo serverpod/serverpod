@@ -33,6 +33,7 @@ class MainScreen extends StatelessComponent {
     required this.onStopOrCloseAppTab,
     required this.onToggleStackTrace,
     required this.onOpenAppUrl,
+    required this.onTogglePinnedOperations,
   });
 
   final ServerWatchState state;
@@ -51,7 +52,7 @@ class MainScreen extends StatelessComponent {
   final VoidCallback? onTabSelected;
   final VoidCallback? onQuit;
 
-  /// Stops the whole stack, as opposed to [onQuit], which only leaves the UI.
+  /// Stops the whole stack, as opposed to [onQuit], which may only leave the UI.
   final VoidCallback? onStopStack;
 
   /// Copies the pinned alert's segment (also bound to the `C` key).
@@ -70,6 +71,10 @@ class MainScreen extends StatelessComponent {
   /// Opens the running app's published URL in the browser, invoked by
   /// clicking the URL in the app tab's status line.
   final void Function(AppLogTab tab) onOpenAppUrl;
+
+  /// Shows or hides the pinned operation groups beyond the first few,
+  /// invoked by clicking the fold row below them.
+  final VoidCallback onTogglePinnedOperations;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
     (
@@ -94,8 +99,12 @@ class MainScreen extends StatelessComponent {
         ('Shift+P', 'Force Repair migration'),
         ('E', 'Expand / collapse stack traces'),
         ('S', 'Show raw server logs'),
-        ('Q', 'Detach, leaving the stack running'),
-        ('Shift+Q', 'Stop the stack'),
+        if (state.ownsRunner)
+          ('Q', 'Stop the stack')
+        else ...[
+          ('Q', 'Leave, asking whether to stop the stack'),
+          ('Shift+Q', 'Stop the stack'),
+        ],
       ],
     ),
   ];
@@ -127,15 +136,7 @@ class MainScreen extends StatelessComponent {
                                         : _buildMergedColumn(st),
                                   ),
                                   if (state.activeOperations.isNotEmpty)
-                                    ...state.activeOperations.values.map(
-                                      (op) => Padding(
-                                        padding: const EdgeInsets.only(left: 1),
-                                        child: TrackedOperationWidget(
-                                          key: ValueKey(op.id),
-                                          operation: op,
-                                        ),
-                                      ),
-                                    ),
+                                    _buildPinnedOperations(st),
                                   if (state.alert case final alert?) ...[
                                     const SizedBox(height: 1),
                                     Divider(
@@ -181,7 +182,70 @@ class MainScreen extends StatelessComponent {
             closeKey: 'Esc',
             controller: helpScrollController,
           ),
+        if (state.showQuitDialog) _buildQuitDialog(context, st),
       ],
+    );
+  }
+
+  /// Asks whether to leave or stop a runner this session did not spawn.
+  Component _buildQuitDialog(BuildContext context, ServerpodThemeData st) {
+    final theme = TuiTheme.of(context);
+
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+        decoration: BoxDecoration(
+          color: theme.surface,
+          border: BoxBorder.all(
+            style: BoxBorderStyle.rounded,
+            color: st.activationKey,
+          ),
+          title: BorderTitle(
+            text: 'Quit',
+            style: TextStyle(
+              color: st.activationKey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'The server was already running when `serverpod start` was '
+              'called.',
+              style: TextStyle(color: theme.onSurface),
+            ),
+            Text(
+              'What would you like to do?',
+              style: TextStyle(color: theme.onSurface),
+            ),
+            const SizedBox(height: 1),
+            for (final (key, desc) in const [
+              ('Q', 'Quit and leave the server running'),
+              ('Shift+Q', 'Stop the server and quit'),
+              ('Esc', 'Cancel'),
+            ])
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 10,
+                    child: Text(
+                      key,
+                      style: TextStyle(
+                        color: st.activationKey,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(desc, style: TextStyle(color: theme.onSurface)),
+                ],
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -239,6 +303,93 @@ class MainScreen extends StatelessComponent {
           children: paneLayer,
         ),
       ],
+    );
+  }
+
+  /// Pinned rows shown before the fold row takes the last slot.
+  static const _visibleOperationGroups = 2;
+
+  /// One row per distinct operation label under a rule, with a muted count
+  /// of how many share it. Past three groups the rest fold into a clickable
+  /// row so the pane above keeps its height.
+  Component _buildPinnedOperations(ServerpodThemeData st) {
+    final groups = <String, (TrackedOperation, int)>{};
+    for (final op in state.activeOperations.values) {
+      final (first, count) = groups[op.label] ?? (op, 0);
+      groups[op.label] = (first, count + 1);
+    }
+
+    final foldable = groups.length > _visibleOperationGroups + 1;
+    final folded = foldable && !state.expandPinnedOperations;
+    final shown = folded
+        ? groups.values.take(_visibleOperationGroups)
+        : groups.values;
+    final hidden = groups.values.skip(_visibleOperationGroups);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Divider(color: st.subtleDivider, indent: -1, endIndent: -1),
+        for (final (first, count) in shown)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TrackedOperationWidget(
+                    key: ValueKey(first.label),
+                    operation: first,
+                  ),
+                ),
+                if (count > 1)
+                  Text(
+                    '×$count',
+                    style: const TextStyle(fontWeight: FontWeight.dim),
+                  ),
+              ],
+            ),
+          ),
+        if (foldable)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1),
+            child: _buildOperationsFold(
+              st,
+              folded: folded,
+              hiddenGroups: hidden.length,
+              hiddenOperations: hidden.fold(0, (sum, g) => sum + g.$2),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Component _buildOperationsFold(
+    ServerpodThemeData st, {
+    required bool folded,
+    required int hiddenGroups,
+    required int hiddenOperations,
+  }) {
+    return GestureDetector(
+      onTap: onTogglePinnedOperations,
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: folded
+                  ? '▸ + $hiddenGroups more ($hiddenOperations running) '
+                  : '▾ ',
+              style: TextStyle(
+                color: st.debugLevel,
+                fontWeight: FontWeight.dim,
+              ),
+            ),
+            TextSpan(
+              text: folded ? 'Expand' : 'Collapse',
+              style: TextStyle(color: st.brightText),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -793,7 +944,9 @@ class MainScreen extends StatelessComponent {
   }
 
   Component _buildButtonBar() {
-    final actionsEnabled = state.serverReady && !state.actionBusy;
+    // The quit dialog takes every key but its own.
+    final modal = state.showQuitDialog;
+    final actionsEnabled = state.serverReady && !state.actionBusy && !modal;
 
     return ButtonBar(
       buttons: [
@@ -807,7 +960,7 @@ class MainScreen extends StatelessComponent {
             activationChar: 'R',
             activationKeys: const [LogicalKey.keyR],
             onActivate: (_) => onHotRestart?.call(),
-            enabled: !state.actionBusy && onHotRestart != null,
+            enabled: !state.actionBusy && !modal && onHotRestart != null,
           )
         // In watch mode the incremental compiler already hot reloads on file
         // changes, so the manual action is a hot restart (with no shift
@@ -843,14 +996,14 @@ class MainScreen extends StatelessComponent {
           activationChar: 'L',
           activationKeys: const [LogicalKey.keyL],
           onActivate: (_) => onClearLogs?.call(),
-          enabled: onClearLogs != null,
+          enabled: !modal && onClearLogs != null,
         ),
         Button(
           name: 'Help',
           activationChar: 'H',
           activationKeys: const [LogicalKey.keyH],
           onActivate: (_) => onToggleHelp?.call(),
-          enabled: onToggleHelp != null,
+          enabled: !modal && onToggleHelp != null,
         ),
         Button(
           name: 'Quit',

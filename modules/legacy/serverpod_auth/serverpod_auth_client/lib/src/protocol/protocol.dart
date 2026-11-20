@@ -42,7 +42,8 @@ export 'user_info_public.dart';
 export 'user_settings_config.dart';
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _isc.SerializationManager
+    implements _isc.ProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -51,6 +52,61 @@ class Protocol extends _isc.SerializationManager {
 
   final Set<_isc.SerializationManager> _hostProtocols = {};
 
+  @override
+  _isc.ProtocolDeserialization get deserializationMetadata =>
+      _isc.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _isc.getType<_iy492fk4.AppleAuthInfo>,
+          _isc.getType<_i8lzboul.AuthKey>,
+          _isc.getType<_ika0ufek.AuthenticationFailReason>,
+          _isc.getType<_i6gspdjt.AuthenticationResponse>,
+          _isc.getType<_il95bqq6.EmailAuth>,
+          _isc.getType<_ilnsxyj8.EmailCreateAccountRequest>,
+          _isc.getType<_iaz0raab.EmailFailedSignIn>,
+          _isc.getType<_iiusgova.EmailPasswordReset>,
+          _isc.getType<_ifm8n60r.EmailReset>,
+          _isc.getType<_is585jau.GoogleRefreshToken>,
+          _isc.getType<_i0mx5j5p.UserImage>,
+          _isc.getType<_iliwsvmu.UserInfo>,
+          _isc.getType<_iabwsxht.UserInfoPublic>,
+          _isc.getType<_i5rdiffu.UserSettingsConfig>,
+          _isc.getType<_iy492fk4.AppleAuthInfo?>,
+          _isc.getType<_i8lzboul.AuthKey?>,
+          _isc.getType<_ika0ufek.AuthenticationFailReason?>,
+          _isc.getType<_i6gspdjt.AuthenticationResponse?>,
+          _isc.getType<_il95bqq6.EmailAuth?>,
+          _isc.getType<_ilnsxyj8.EmailCreateAccountRequest?>,
+          _isc.getType<_iaz0raab.EmailFailedSignIn?>,
+          _isc.getType<_iiusgova.EmailPasswordReset?>,
+          _isc.getType<_ifm8n60r.EmailReset?>,
+          _isc.getType<_is585jau.GoogleRefreshToken?>,
+          _isc.getType<_i0mx5j5p.UserImage?>,
+          _isc.getType<_iliwsvmu.UserInfo?>,
+          _isc.getType<_iabwsxht.UserInfoPublic?>,
+          _isc.getType<_i5rdiffu.UserSettingsConfig?>,
+          _isc.getType<List<String>>,
+        ],
+        modules: const [],
+        classNames: const [
+          'AppleAuthInfo',
+          'AuthKey',
+          'AuthenticationFailReason',
+          'AuthenticationResponse',
+          'EmailAuth',
+          'EmailCreateAccountRequest',
+          'EmailFailedSignIn',
+          'EmailPasswordReset',
+          'EmailReset',
+          'GoogleRefreshToken',
+          'UserImage',
+          'UserInfo',
+          'UserInfoPublic',
+          'UserSettingsConfig',
+        ],
+        classNamePrefix: 'serverpod_auth.',
+      );
+
   void registerHostProtocol(
     String projectName,
     _isc.SerializationManager protocol,
@@ -58,13 +114,11 @@ class Protocol extends _isc.SerializationManager {
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth.')) return className;
-    return className.substring(15);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth.',
+      );
 
   @override
   T deserialize<T>(
@@ -72,8 +126,11 @@ class Protocol extends _isc.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({

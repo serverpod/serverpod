@@ -13,6 +13,7 @@ void main() {
           api: 'http://localhost:8080',
           insights: 'http://localhost:8081',
           web: 'http://localhost:8082',
+          database: 'postgres://postgres@127.0.0.1:8090/my_project',
         );
 
         final decoded = ServerpodAddresses.fromJson(
@@ -22,6 +23,7 @@ void main() {
         expect(decoded.api, addresses.api);
         expect(decoded.insights, addresses.insights);
         expect(decoded.web, addresses.web);
+        expect(decoded.database, addresses.database);
         expect(decoded.toJson(), addresses.toJson());
       },
     );
@@ -34,12 +36,14 @@ void main() {
           api: 'http://localhost:8080',
           insights: 'http://localhost:8081',
           web: 'http://localhost:8082',
+          database: 'postgres://postgres@127.0.0.1:8090/my_project',
         );
 
         expect(addresses.toJson(), {
           'api': 'http://localhost:8080',
           'insights': 'http://localhost:8081',
           'web': 'http://localhost:8082',
+          'database': 'postgres://postgres@127.0.0.1:8090/my_project',
         });
       },
     );

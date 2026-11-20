@@ -12,7 +12,7 @@ void main() {
 
   withServerpod(
     'Given MicrosoftIdpAdmin',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       setUp(() {
         utils = _createUtils();
         admin = MicrosoftIdpAdmin(utils: utils);

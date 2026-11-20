@@ -13,7 +13,7 @@ class AccountMerger {
 
   /// Creates a new [AccountMerger] instance.
   const AccountMerger({
-    final AccountMergeConfig config = const AccountMergeConfig(),
+    AccountMergeConfig config = const AccountMergeConfig(),
   }) : _config = config;
 
   /// Whether the application has supplied its own merge logic.
@@ -35,11 +35,11 @@ class AccountMerger {
   /// Throws an [AuthUserNotFoundException] if either user is not found.
   /// Throws an [ArgumentError] if [userToKeepId] and [userToRemoveId] are equal.
   Future<void> merge(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    final bool userToRemoveIsNewlyCreated = false,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    bool userToRemoveIsNewlyCreated = false,
+    Transaction? transaction,
   }) async {
     if (userToKeepId == userToRemoveId) {
       throw ArgumentError.value(
@@ -50,7 +50,7 @@ class AccountMerger {
     }
 
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       final users = await Future.wait([
         AuthUser.db.findById(

@@ -72,7 +72,8 @@ export 'profile/models/user_profile_model.dart';
 export 'session/models/server_side_session.dart';
 export 'session/models/server_side_session_info.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -81,7 +82,107 @@ class Protocol extends _is.DatabaseSerializationManager {
 
   final Set<_is.SerializationManager> _hostProtocols = {};
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_icr3dozn.AccountAlreadyLinkedException>,
+          _is.getType<_i6fa6f87.AccountLinkConflict>,
+          _is.getType<_i51mbyak.AccountLinkRequest>,
+          _is.getType<_i7xs5pmh.AccountLinkRequestNotFoundException>,
+          _is.getType<_iyrwiokw.AccountLinkResult>,
+          _is.getType<_ihnh8hzn.AccountLinkStatus>,
+          _is.getType<_ilyubg10.AccountMergeFailedException>,
+          _is.getType<_ig2rugwn.AccountMergeNotConfiguredException>,
+          _is.getType<_iwlenhk6.AuthUser>,
+          _is.getType<_idjlnenv.AuthUserBlockedException>,
+          _is.getType<_ievhec41.AuthUserModel>,
+          _is.getType<_ihi15zs1.AuthUserNotFoundException>,
+          _is.getType<_i52qy4mw.AuthStrategy>,
+          _is.getType<_ioaqzt9u.AuthSuccess>,
+          _is.getType<_iymqi1d6.SignInWhileAuthenticatedException>,
+          _is.getType<_i8d4wdsw.JwtTokenInfo>,
+          _is.getType<_i3ujynqb.RefreshToken>,
+          _is.getType<_i35co9vj.RefreshTokenExpiredException>,
+          _is.getType<_ik27atqz.RefreshTokenInvalidSecretException>,
+          _is.getType<_i20y3j39.RefreshTokenMalformedException>,
+          _is.getType<_in48f3pc.RefreshTokenNotFoundException>,
+          _is.getType<_i6w0tdii.TokenPair>,
+          _is.getType<_ichiyqlu.UserProfile>,
+          _is.getType<_isbbac0p.UserProfileData>,
+          _is.getType<_iu5nhigv.UserProfileImage>,
+          _is.getType<_iw6ug6lb.UserProfileModel>,
+          _is.getType<_ioukntxo.ServerSideSession>,
+          _is.getType<_izgso6n0.ServerSideSessionInfo>,
+          _is.getType<_icr3dozn.AccountAlreadyLinkedException?>,
+          _is.getType<_i6fa6f87.AccountLinkConflict?>,
+          _is.getType<_i51mbyak.AccountLinkRequest?>,
+          _is.getType<_i7xs5pmh.AccountLinkRequestNotFoundException?>,
+          _is.getType<_iyrwiokw.AccountLinkResult?>,
+          _is.getType<_ihnh8hzn.AccountLinkStatus?>,
+          _is.getType<_ilyubg10.AccountMergeFailedException?>,
+          _is.getType<_ig2rugwn.AccountMergeNotConfiguredException?>,
+          _is.getType<_iwlenhk6.AuthUser?>,
+          _is.getType<_idjlnenv.AuthUserBlockedException?>,
+          _is.getType<_ievhec41.AuthUserModel?>,
+          _is.getType<_ihi15zs1.AuthUserNotFoundException?>,
+          _is.getType<_i52qy4mw.AuthStrategy?>,
+          _is.getType<_ioaqzt9u.AuthSuccess?>,
+          _is.getType<_iymqi1d6.SignInWhileAuthenticatedException?>,
+          _is.getType<_i8d4wdsw.JwtTokenInfo?>,
+          _is.getType<_i3ujynqb.RefreshToken?>,
+          _is.getType<_i35co9vj.RefreshTokenExpiredException?>,
+          _is.getType<_ik27atqz.RefreshTokenInvalidSecretException?>,
+          _is.getType<_i20y3j39.RefreshTokenMalformedException?>,
+          _is.getType<_in48f3pc.RefreshTokenNotFoundException?>,
+          _is.getType<_i6w0tdii.TokenPair?>,
+          _is.getType<_ichiyqlu.UserProfile?>,
+          _is.getType<_isbbac0p.UserProfileData?>,
+          _is.getType<_iu5nhigv.UserProfileImage?>,
+          _is.getType<_iw6ug6lb.UserProfileModel?>,
+          _is.getType<_ioukntxo.ServerSideSession?>,
+          _is.getType<_izgso6n0.ServerSideSessionInfo?>,
+          _is.getType<Set<String>>,
+        ],
+        modules: const [_isp.Protocol.new],
+        classNames: const [
+          'AccountAlreadyLinkedException',
+          'AccountLinkConflict',
+          'AccountLinkRequest',
+          'AccountLinkRequestNotFoundException',
+          'AccountLinkResult',
+          'AccountLinkStatus',
+          'AccountMergeFailedException',
+          'AccountMergeNotConfiguredException',
+          'AuthUser',
+          'AuthUserBlockedException',
+          'AuthUserModel',
+          'AuthUserNotFoundException',
+          'AuthStrategy',
+          'AuthSuccess',
+          'SignInWhileAuthenticatedException',
+          'JwtTokenInfo',
+          'RefreshToken',
+          'RefreshTokenExpiredException',
+          'RefreshTokenInvalidSecretException',
+          'RefreshTokenMalformedException',
+          'RefreshTokenNotFoundException',
+          'TokenPair',
+          'UserProfile',
+          'UserProfileData',
+          'UserProfileImage',
+          'UserProfileModel',
+          'ServerSideSession',
+          'ServerSideSessionInfo',
+        ],
+        classNamePrefix: 'serverpod_auth_core.',
+      );
+
+  static List<_isp.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'serverpod_auth_core_account_link_request',
       dartName: 'AccountLinkRequest',
@@ -542,13 +643,11 @@ class Protocol extends _is.DatabaseSerializationManager {
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth_core.')) return className;
-    return className.substring(20);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth_core.',
+      );
 
   @override
   T deserialize<T>(
@@ -556,8 +655,11 @@ class Protocol extends _is.DatabaseSerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth_core.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -789,9 +891,16 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 
@@ -1014,8 +1123,10 @@ class Protocol extends _is.DatabaseSerializationManager {
       return deserialize<_izgso6n0.ServerSideSessionInfo>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     return super.deserializeByClassName(data);
   }
@@ -1107,6 +1218,9 @@ class Protocol extends _is.DatabaseSerializationManager {
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_auth_core';

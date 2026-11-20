@@ -7,7 +7,7 @@ description: Define Serverpod data models in YAML (.spy.yaml) — fields, defaul
 
 Models are defined in `.spy.yaml` files anywhere under server `lib/`. They generate Dart classes for server and client, and optionally database tables.
 
-After each change to models, ensure that the code is generated (automatically when a `serverpod start` is running or manually with `serverpod generate`). If models with `table` have changed, the database schema must be updated following the [migration workflow](../serverpod-migrations/SKILL.md).
+After each change to models, ensure that the code is generated (automatically when the Serverpod runner is running or manually with `serverpod generate`). If models with `table` have changed, the database schema must be updated following the [migration workflow](../serverpod-migrations/SKILL.md).
 
 ## Basic class
 

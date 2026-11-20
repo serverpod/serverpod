@@ -17,7 +17,7 @@ class AnonymousIdpUtils {
   /// Creates a new instance of [AnonymousIdpUtils].
   AnonymousIdpUtils({
     required this.config,
-    final AuthUsers authUsers = const AuthUsers(),
+    AuthUsers authUsers = const AuthUsers(),
   }) : _authUsers = authUsers,
        _rateLimitUtil = config.perIpAddressRateLimit != null
            ? DatabaseRateLimiter(
@@ -34,8 +34,8 @@ class AnonymousIdpUtils {
   ///
   /// The optional [RateLimit] is enforced here if non-null.
   Future<AnonymousIdpAccountCreationResult> createAnonymousAccount(
-    final Session session, {
-    final Transaction? transaction,
+    Session session, {
+    Transaction? transaction,
   }) async {
     if (_rateLimitUtil != null &&
         !await _rateLimitUtil.tryRecordAttempt(

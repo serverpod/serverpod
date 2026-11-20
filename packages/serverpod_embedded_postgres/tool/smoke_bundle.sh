@@ -37,15 +37,17 @@ if [ "$(uname -s)" = Linux ]; then
       echo "$out" | grep 'not found' >&2
       return 1
     fi
-    if echo "$out" | grep -E 'libpq|libgeos|libproj' | grep -qv "$BUNDLE"; then
+    if echo "$out" | grep -E 'libpq|libgeos|libproj|libssl|libcrypto' | grep -qv "$BUNDLE"; then
       echo "smoke: $1 resolves bundled libs outside the bundle:" >&2
-      echo "$out" | grep -E 'libpq|libgeos|libproj' | grep -v "$BUNDLE" >&2
+      echo "$out" | grep -E 'libpq|libgeos|libproj|libssl|libcrypto' | grep -v "$BUNDLE" >&2
       return 1
     fi
   }
   check_reloc "$BIN/initdb"
   check_reloc "$BIN/postgres"
   check_reloc "$BUNDLE/lib/postgresql/postgis-3.so"
+  check_reloc "$BUNDLE/lib/postgresql/pgcrypto.so"
+  check_reloc "$BUNDLE/lib/postgresql/pgxml.so"
 fi
 
 WORK="$(mktemp -d)"

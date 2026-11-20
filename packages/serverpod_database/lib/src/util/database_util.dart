@@ -35,12 +35,12 @@ abstract class DatabaseUtil {
   ///   Changes made in this mode will only be visible on the outside database (without access to the same transaction)
   ///   once the given `transaction` is committed.
   static Future<R> runInTransactionOrSavepoint<R>(
-    final Database database,
-    final Transaction? transaction,
-    final TransactionFunction<R> f, {
+    Database database,
+    Transaction? transaction,
+    TransactionFunction<R> f, {
 
     /// Settings to be applied in case a new transaction is created.
-    final TransactionSettings? settings,
+    TransactionSettings? settings,
   }) async {
     if (transaction == null) {
       return database.transaction(f, settings: settings);

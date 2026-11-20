@@ -11,26 +11,25 @@ class PasskeyIdpAdmin {
 
   /// Creates a new instance of [PasskeyIdpAdmin].
   PasskeyIdpAdmin({
-    required final Duration challengeLifetime,
-    required final PasskeyIdpUtils utils,
+    required Duration challengeLifetime,
+    required PasskeyIdpUtils utils,
   }) : _challengeLifetime = challengeLifetime,
        _utils = utils;
 
   /// Removes all challenges from the database which are older than the
   /// challenge lifetime.
-  Future<void> deleteExpiredChallenges(final Session session) async {
+  Future<void> deleteExpiredChallenges(Session session) async {
     await PasskeyChallenge.db.deleteWhere(
       session,
-      where: (final t) =>
-          t.createdAt < clock.now().subtract(_challengeLifetime),
+      where: (t) => t.createdAt < clock.now().subtract(_challengeLifetime),
     );
   }
 
   /// Deletes the passkey account with the given ID.
   Future<void> deletePasskeyAccountById(
-    final Session session, {
-    required final UuidValue passkeyAccountId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue passkeyAccountId,
+    Transaction? transaction,
   }) async {
     await _utils.deletePasskeyAccounts(
       session,
@@ -42,9 +41,9 @@ class PasskeyIdpAdmin {
 
   /// Deletes all passkey accounts for the given [authUserId].
   Future<List<DeletedPasskeyAccount>> deletePasskeyAccountsByAuthUserId(
-    final Session session, {
-    required final UuidValue authUserId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    Transaction? transaction,
   }) async {
     return _utils.deletePasskeyAccounts(
       session,

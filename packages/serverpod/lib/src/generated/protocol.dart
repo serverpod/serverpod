@@ -85,14 +85,153 @@ export 'session_log_filter.dart';
 export 'session_log_info.dart';
 export 'session_log_result.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_i0ntvx71.RevokedAuthenticationAuthId>,
+          _is.getType<_ivj17zej.RevokedAuthenticationScope>,
+          _is.getType<_iubydmqj.RevokedAuthenticationUser>,
+          _is.getType<_ihncus9g.CacheInfo>,
+          _is.getType<_iuu4tkmh.CachesInfo>,
+          _is.getType<_il44s43u.CloudStorageEntry>,
+          _is.getType<_i97jjzdk.CloudStorageDirectDownloadEntry>,
+          _is.getType<_ihrv9246.CloudStorageDirectUploadEntry>,
+          _is.getType<_ix58cu06.ClusterInfo>,
+          _is.getType<_i0iseagh.ClusterServerInfo>,
+          _is.getType<_is8pd350.CronFutureCallScheduling>,
+          _is.getType<_i2x83mx1.DatabaseMigrationVersion>,
+          _is.getType<_imsb8zuu.DistributedCacheEntry>,
+          _is.getType<_ier2zjtm.AccessDeniedException>,
+          _is.getType<_icej9e0v.FileNotFoundException>,
+          _is.getType<_iil91lk2.FutureCallClaimEntry>,
+          _is.getType<_ipstj2hb.FutureCallEntry>,
+          _is.getType<_is8pd350.IntervalFutureCallScheduling>,
+          _is.getType<_iv7ld46g.LogEntry>,
+          _is.getType<_iavjjqw5.LogLevel>,
+          _is.getType<_i6wf5evp.LogResult>,
+          _is.getType<_illv0ea4.LogSettings>,
+          _is.getType<_i5sjxqb6.LogSettingsOverride>,
+          _is.getType<_iky1nb92.MessageLogEntry>,
+          _is.getType<_iphoy7x3.MethodInfo>,
+          _is.getType<_inqjskye.QueryLogEntry>,
+          _is.getType<_i2c0cuss.ReadWriteTestEntry>,
+          _is.getType<_im7ye3v2.RuntimeSettings>,
+          _is.getType<_igb3a02z.ServerHealthConnectionInfo>,
+          _is.getType<_i8823art.ServerHealthMetric>,
+          _is.getType<_ife0uun1.ServerHealthResult>,
+          _is.getType<_i641wcmx.ServerpodSqlException>,
+          _is.getType<_i3jtimpl.SessionLogEntry>,
+          _is.getType<_i2jy9zag.SessionLogFilter>,
+          _is.getType<_i783h20h.SessionLogInfo>,
+          _is.getType<_idz92mnt.SessionLogResult>,
+          _is.getType<_i0ntvx71.RevokedAuthenticationAuthId?>,
+          _is.getType<_ivj17zej.RevokedAuthenticationScope?>,
+          _is.getType<_iubydmqj.RevokedAuthenticationUser?>,
+          _is.getType<_ihncus9g.CacheInfo?>,
+          _is.getType<_iuu4tkmh.CachesInfo?>,
+          _is.getType<_il44s43u.CloudStorageEntry?>,
+          _is.getType<_i97jjzdk.CloudStorageDirectDownloadEntry?>,
+          _is.getType<_ihrv9246.CloudStorageDirectUploadEntry?>,
+          _is.getType<_ix58cu06.ClusterInfo?>,
+          _is.getType<_i0iseagh.ClusterServerInfo?>,
+          _is.getType<_is8pd350.CronFutureCallScheduling?>,
+          _is.getType<_i2x83mx1.DatabaseMigrationVersion?>,
+          _is.getType<_imsb8zuu.DistributedCacheEntry?>,
+          _is.getType<_ier2zjtm.AccessDeniedException?>,
+          _is.getType<_icej9e0v.FileNotFoundException?>,
+          _is.getType<_iil91lk2.FutureCallClaimEntry?>,
+          _is.getType<_ipstj2hb.FutureCallEntry?>,
+          _is.getType<_is8pd350.IntervalFutureCallScheduling?>,
+          _is.getType<_iv7ld46g.LogEntry?>,
+          _is.getType<_iavjjqw5.LogLevel?>,
+          _is.getType<_i6wf5evp.LogResult?>,
+          _is.getType<_illv0ea4.LogSettings?>,
+          _is.getType<_i5sjxqb6.LogSettingsOverride?>,
+          _is.getType<_iky1nb92.MessageLogEntry?>,
+          _is.getType<_iphoy7x3.MethodInfo?>,
+          _is.getType<_inqjskye.QueryLogEntry?>,
+          _is.getType<_i2c0cuss.ReadWriteTestEntry?>,
+          _is.getType<_im7ye3v2.RuntimeSettings?>,
+          _is.getType<_igb3a02z.ServerHealthConnectionInfo?>,
+          _is.getType<_i8823art.ServerHealthMetric?>,
+          _is.getType<_ife0uun1.ServerHealthResult?>,
+          _is.getType<_i641wcmx.ServerpodSqlException?>,
+          _is.getType<_i3jtimpl.SessionLogEntry?>,
+          _is.getType<_i2jy9zag.SessionLogFilter?>,
+          _is.getType<_i783h20h.SessionLogInfo?>,
+          _is.getType<_idz92mnt.SessionLogResult?>,
+          _is.getType<List<String>>,
+          _is.getType<List<String>?>,
+          _is.getType<List<_i0iseagh.ClusterServerInfo>>,
+          _is.getType<List<_iv7ld46g.LogEntry>>,
+          _is.getType<List<_i5sjxqb6.LogSettingsOverride>>,
+          _is.getType<List<_i8823art.ServerHealthMetric>>,
+          _is.getType<List<_igb3a02z.ServerHealthConnectionInfo>>,
+          _is.getType<List<_iv7ld46g.LogEntry>?>,
+          _is.getType<List<_inqjskye.QueryLogEntry>>,
+          _is.getType<List<_inqjskye.QueryLogEntry>?>,
+          _is.getType<List<_iky1nb92.MessageLogEntry>>,
+          _is.getType<List<_iky1nb92.MessageLogEntry>?>,
+          _is.getType<List<_i783h20h.SessionLogInfo>>,
+          _is.getType<List<_isd.TableDefinition>>,
+          _is.getType<List<String>>,
+        ],
+        modules: const [_isd.Protocol.new],
+        classNames: const [
+          'RevokedAuthenticationAuthId',
+          'RevokedAuthenticationScope',
+          'RevokedAuthenticationUser',
+          'CacheInfo',
+          'CachesInfo',
+          'CloudStorageEntry',
+          'CloudStorageDirectDownloadEntry',
+          'CloudStorageDirectUploadEntry',
+          'ClusterInfo',
+          'ClusterServerInfo',
+          'CronFutureCallScheduling',
+          'DatabaseMigrationVersion',
+          'DistributedCacheEntry',
+          'AccessDeniedException',
+          'FileNotFoundException',
+          'FutureCallClaimEntry',
+          'FutureCallEntry',
+          'IntervalFutureCallScheduling',
+          'LogEntry',
+          'LogLevel',
+          'LogResult',
+          'LogSettings',
+          'LogSettingsOverride',
+          'MessageLogEntry',
+          'MethodInfo',
+          'QueryLogEntry',
+          'ReadWriteTestEntry',
+          'RuntimeSettings',
+          'ServerHealthConnectionInfo',
+          'ServerHealthMetric',
+          'ServerHealthResult',
+          'ServerpodSqlException',
+          'SessionLogEntry',
+          'SessionLogFilter',
+          'SessionLogInfo',
+          'SessionLogResult',
+        ],
+        classNamePrefix: 'serverpod.',
+      );
+
+  static List<_isp.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'serverpod_cloud_storage',
       dartName: 'CloudStorageEntry',
@@ -1346,17 +1485,15 @@ class Protocol extends _is.DatabaseSerializationManager {
     ),
     ..._isd.Protocol() is _is.DatabaseSerializationManager
         ? (_isd.Protocol() as _is.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
+              .getOwnTableDefinitions()
         : [],
   ];
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod.')) return className;
-    return className.substring(10);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod.',
+      );
 
   @override
   T deserialize<T>(
@@ -1364,8 +1501,11 @@ class Protocol extends _is.DatabaseSerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -1743,9 +1883,16 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    try {
-      return _isd.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 
@@ -2002,9 +2149,14 @@ class Protocol extends _is.DatabaseSerializationManager {
       return deserialize<_idz92mnt.SessionLogResult>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_database.')) {
-      data['className'] = dataClassName.substring(19);
-      return _isd.Protocol().deserializeByClassName(data);
+      return _isd.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(19),
+      });
     }
+    try {
+      return _isd.Protocol().deserializeByClassName(data);
+    } on _is.DeserializationClassNameNotFoundException catch (_) {}
     return super.deserializeByClassName(data);
   }
 
@@ -2061,6 +2213,9 @@ class Protocol extends _is.DatabaseSerializationManager {
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod';

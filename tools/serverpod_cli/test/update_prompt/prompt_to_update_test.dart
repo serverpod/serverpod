@@ -4,6 +4,46 @@ import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('Given a stable installation,', () {
+    test(
+      'when a newer prerelease is the newest published version, '
+      'then the newest stable release is prompted',
+      () {
+        final current = Version.parse('4.0.4');
+        final published = [
+          Version.parse('4.0.3'),
+          Version.parse('4.0.5'),
+          Version.parse('4.1.0-beta.3'),
+        ];
+
+        final prompted = latestVersionToPrompt(current, published);
+
+        expect(prompted, Version.parse('4.0.5'));
+      },
+    );
+  });
+
+  group('Given a beta installation,', () {
+    test(
+      'when several betas are published, '
+      'then the newest beta by numeric suffix is prompted',
+      () {
+        final current = Version.parse('4.1.0-beta.1');
+        final published = [
+          Version.parse('4.0.4'),
+          Version.parse('4.1.0-beta.10'),
+          Version.parse('4.1.0-beta.3'),
+          Version.parse('4.1.0-beta.9'),
+          current,
+        ];
+
+        final prompted = latestVersionToPrompt(current, published);
+
+        expect(prompted, Version.parse('4.1.0-beta.10'));
+      },
+    );
+  });
+
   group('Given a prerelease installation and a newer stable release,', () {
     test(
       'when the prompt names a version, '

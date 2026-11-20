@@ -450,7 +450,7 @@ fields:
     const projectName = 'vscode_test_app';
     late String sandboxDir;
     late String serverDir;
-    late String fakeFlutterBinDir;
+    late String fakeFlutterSdk;
     late File debugPortGate;
     late File flutterVmServiceInfoFile;
     Process? serverProcess;
@@ -484,30 +484,9 @@ fields:
         ),
       );
 
-      fakeFlutterBinDir = path.join(projectRoot, 'fake_flutter_bin');
-      Directory(fakeFlutterBinDir).createSync(recursive: true);
       debugPortGate = File(path.join(projectRoot, 'publish_debug_port.gate'));
-      final fakeFlutterExecutable = path.join(
-        fakeFlutterBinDir,
-        Platform.isWindows ? 'flutter.exe' : 'flutter',
-      );
-      final fakeFlutterSource = path.join(
-        Directory.current.path,
-        'test',
-        'test_assets',
-        'fake_flutter_vm_service.dart',
-      );
-      final compileResult = await Process.run(
-        Platform.resolvedExecutable,
-        ['compile', 'exe', fakeFlutterSource, '-o', fakeFlutterExecutable],
-      );
-      expect(
-        compileResult.exitCode,
-        0,
-        reason:
-            'Could not compile fake Flutter executable:\n'
-            '${compileResult.stdout}\n${compileResult.stderr}',
-      );
+      fakeFlutterSdk = path.join(projectRoot, 'fake_flutter_sdk');
+      await _createFakeFlutterSdk(fakeFlutterSdk);
     });
 
     tearDown(() async {
@@ -533,7 +512,7 @@ fields:
         workingDirectory: serverDir,
         environment: {
           'PATH':
-              '$fakeFlutterBinDir$pathSeparator'
+              '${path.join(fakeFlutterSdk, 'bin')}$pathSeparator'
               '${Platform.environment['PATH'] ?? ''}',
           ...fakeFlutterEnvironment,
         },
@@ -704,5 +683,67 @@ extension on Process {
         return this.exitCode;
       },
     );
+  }
+}
+
+/// Lays out a fake Flutter SDK at [root] that serverpod resolves like a real
+/// one: the `flutter` it puts on PATH reports [root] as its `flutterRoot`, and
+/// launching takes the SDK fast path - `flutter_tools.dart` on the embedded
+/// Dart - where `flutter_tools.dart` is the fake VM-service Flutter.
+///
+/// The fast path spawns no shell on any platform, so stopping the app reaches
+/// the fake itself rather than a `cmd.exe` wrapper on Windows.
+Future<void> _createFakeFlutterSdk(String root) async {
+  // The embedded Dart is the SDK running these tests.
+  final dartSdk = path.dirname(path.dirname(Platform.resolvedExecutable));
+  final dartSdkLink = path.join(root, 'bin', 'cache', 'dart-sdk');
+  Directory(path.dirname(dartSdkLink)).createSync(recursive: true);
+  if (Platform.isWindows) {
+    // A junction, because a symbolic link on Windows needs Developer Mode or
+    // an elevated process.
+    final result = await Process.run(
+      'cmd',
+      ['/c', 'mklink', '/J', dartSdkLink, dartSdk],
+    );
+    expect(
+      result.exitCode,
+      0,
+      reason: 'Could not link the fake Flutter SDK\'s Dart:\n${result.stderr}',
+    );
+  } else {
+    Link(dartSdkLink).createSync(dartSdk);
+  }
+
+  final flutterTools = path.join(root, 'packages', 'flutter_tools');
+  Directory(path.join(flutterTools, 'bin')).createSync(recursive: true);
+  File(
+    path.join(
+      Directory.current.path,
+      'test',
+      'test_assets',
+      'fake_flutter_vm_service.dart',
+    ),
+  ).copySync(path.join(flutterTools, 'bin', 'flutter_tools.dart'));
+  // The fake imports only `dart:` libraries.
+  File(path.join(flutterTools, '.dart_tool', 'package_config.json'))
+    ..createSync(recursive: true)
+    ..writeAsStringSync(jsonEncode({'configVersion': 2, 'packages': []}));
+
+  // The `flutter` on PATH only has to answer `--version --machine`.
+  final bin = path.join(root, 'bin');
+  File(
+    path.join(bin, 'version.json'),
+  ).writeAsStringSync(jsonEncode({'flutterRoot': root}));
+  if (Platform.isWindows) {
+    File(
+      path.join(bin, 'flutter.bat'),
+    ).writeAsStringSync('@type "%~dp0version.json"\r\n');
+  } else {
+    final flutter = path.join(bin, 'flutter');
+    File(
+      flutter,
+    ).writeAsStringSync('#!/bin/sh\ncat "\$(dirname "\$0")/version.json"\n');
+    final chmod = await Process.run('chmod', ['+x', flutter]);
+    expect(chmod.exitCode, 0, reason: 'Could not make $flutter executable.');
   }
 }

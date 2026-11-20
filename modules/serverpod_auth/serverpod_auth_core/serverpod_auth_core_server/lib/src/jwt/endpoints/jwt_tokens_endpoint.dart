@@ -39,8 +39,8 @@ abstract class RefreshJwtTokensEndpoint extends Endpoint {
   /// authentication information with the call.
   @unauthenticatedClientCall
   Future<AuthSuccess> refreshAccessToken(
-    final Session session, {
-    final String? refreshToken,
+    Session session, {
+    String? refreshToken,
   }) async {
     final resolvedRefreshToken =
         refreshToken ?? session.readWebAuthRefreshCookie();

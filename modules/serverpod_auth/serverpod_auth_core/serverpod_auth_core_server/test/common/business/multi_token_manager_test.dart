@@ -8,7 +8,7 @@ import 'fakes/fakes.dart';
 void main() {
   withServerpod(
     'Given a MultiTokenManager with multiple fake managers',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late FakeTokenStorage defaultStorage;
       late FakeTokenStorage additionalStorage1;
@@ -126,7 +126,7 @@ void main() {
 
   withServerpod(
     'Given tokens in multiple managers',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late FakeTokenStorage defaultStorage;
       late FakeTokenStorage additionalStorage1;
@@ -228,7 +228,7 @@ void main() {
         });
 
         test('then tokens should have correct providers', () {
-          final providers = tokens.map((final t) => t.tokenIssuer).toSet();
+          final providers = tokens.map((t) => t.tokenIssuer).toSet();
           expect(
             providers,
             containsAllInOrder(['default', 'additional1', 'additional2']),
@@ -257,7 +257,7 @@ void main() {
         test('then only tokens for the specified user should be returned', () {
           expect(user1Tokens, hasLength(3));
           expect(
-            user1Tokens.every((final t) => t.userId == user1Id.toString()),
+            user1Tokens.every((t) => t.userId == user1Id.toString()),
             isTrue,
           );
 
@@ -266,7 +266,7 @@ void main() {
         });
 
         test('then user1 tokens should come from different managers', () {
-          final providers = user1Tokens.map((final t) => t.tokenIssuer).toSet();
+          final providers = user1Tokens.map((t) => t.tokenIssuer).toSet();
           expect(
             providers,
             containsAllInOrder(['default', 'additional1', 'additional2']),
@@ -288,13 +288,13 @@ void main() {
         test('then only tokens with specified method should be returned', () {
           expect(emailTokens, hasLength(3));
           expect(
-            emailTokens.every((final t) => t.method == 'email'),
+            emailTokens.every((t) => t.method == 'email'),
             isTrue,
           );
         });
 
         test('then tokens should come from different managers', () {
-          final providers = emailTokens.map((final t) => t.tokenIssuer).toSet();
+          final providers = emailTokens.map((t) => t.tokenIssuer).toSet();
           expect(providers, containsAllInOrder(['default', 'additional2']));
         });
       });
@@ -313,10 +313,10 @@ void main() {
         test('then only matching tokens should be returned', () {
           expect(tokens, hasLength(2));
           expect(
-            tokens.every((final t) => t.userId == user1Id.toString()),
+            tokens.every((t) => t.userId == user1Id.toString()),
             isTrue,
           );
-          expect(tokens.every((final t) => t.method == 'email'), isTrue);
+          expect(tokens.every((t) => t.method == 'email'), isTrue);
         });
       });
 
@@ -337,7 +337,7 @@ void main() {
 
           expect(tokens, hasLength(3));
           expect(
-            tokens.any((final t) => t.tokenId == additionalManager1TokenId),
+            tokens.any((t) => t.tokenId == additionalManager1TokenId),
             isFalse,
             reason: 'Token should not be found',
           );
@@ -432,8 +432,7 @@ void main() {
           expect(remainingTokens, hasLength(2));
           expect(
             remainingTokens.any(
-              (final t) =>
-                  t.userId == user1Id.toString() && t.method == 'email',
+              (t) => t.userId == user1Id.toString() && t.method == 'email',
             ),
             isFalse,
             reason: 'Tokens matching combined filters should be removed',
@@ -486,7 +485,7 @@ void main() {
 
         test('then the scopes should match', () {
           expect(
-            authInfo!.scopes.map((final s) => s.name),
+            authInfo!.scopes.map((s) => s.name),
             contains('read'),
           );
         });
@@ -503,7 +502,7 @@ void main() {
           expect(authInfo, isNotNull);
           expect(authInfo!.userIdentifier, equals(user1Id.toString()));
           expect(
-            authInfo.scopes.map((final s) => s.name),
+            authInfo.scopes.map((s) => s.name),
             contains('write'),
           );
         },
@@ -520,7 +519,7 @@ void main() {
           expect(authInfo, isNotNull);
           expect(authInfo!.userIdentifier, equals(user2Id.toString()));
           expect(
-            authInfo.scopes.map((final s) => s.name),
+            authInfo.scopes.map((s) => s.name),
             contains('admin'),
           );
         },
@@ -551,7 +550,7 @@ void main() {
 
   withServerpod(
     'Given same token is valid in in primary and additional token manager',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late MultiTokenManager multiTokenManager;
       const String primaryTokenManagerUser = 'primary-token-manager-user';
@@ -559,7 +558,7 @@ void main() {
       setUp(() {
         session = sessionBuilder.build();
         final primaryTokenManager = MockedTokenManager(
-          onValidateToken: (final session, final token) async {
+          onValidateToken: (session, token) async {
             return AuthenticationInfo(
               primaryTokenManagerUser,
               {const Scope('read')},
@@ -568,7 +567,7 @@ void main() {
           },
         );
         final additionalTokenManager = MockedTokenManager(
-          onValidateToken: (final session, final token) async {
+          onValidateToken: (session, token) async {
             return AuthenticationInfo(
               'additional-token-manager-user',
               {const Scope('write')},
@@ -600,7 +599,7 @@ void main() {
 
   withServerpod(
     'Given same token is valid in multiple additional token managers',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late MultiTokenManager multiTokenManager;
       const String firstAdditionalTokenManagerUser =
@@ -609,12 +608,12 @@ void main() {
       setUp(() {
         session = sessionBuilder.build();
         final primaryTokenManager = MockedTokenManager(
-          onValidateToken: (final session, final token) async {
+          onValidateToken: (session, token) async {
             return null;
           },
         );
         final firstAdditionalTokenManager = MockedTokenManager(
-          onValidateToken: (final session, final token) async {
+          onValidateToken: (session, token) async {
             return AuthenticationInfo(
               firstAdditionalTokenManagerUser,
               {const Scope('write')},
@@ -623,7 +622,7 @@ void main() {
           },
         );
         final secondAdditionalTokenManager = MockedTokenManager(
-          onValidateToken: (final session, final token) async {
+          onValidateToken: (session, token) async {
             return AuthenticationInfo(
               'second-additional-token-manager-user',
               {const Scope('read')},
@@ -659,7 +658,7 @@ void main() {
 
   withServerpod(
     'Given a MultiTokenManager with only a default manager',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late FakeTokenStorage storage;
       late MultiTokenManager multiTokenManager;
@@ -733,7 +732,7 @@ void main() {
 
   withServerpod(
     'Given a MultiTokenManager with many additional managers',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late MultiTokenManager multiTokenManager;
       late List<FakeTokenStorage> storages;
@@ -754,11 +753,10 @@ void main() {
         session = sessionBuilder.build();
         const authUsers = AuthUsers();
         final userId = (await authUsers.create(session)).id;
-        storages = List.generate(5, (final _) => FakeTokenStorage());
+        storages = List.generate(5, (_) => FakeTokenStorage());
         final tokenManagers = List.generate(
           5,
-          (final i) =>
-              FakeTokenManager(storages[i], tokenIssuer: tokenIssuers[i]),
+          (i) => FakeTokenManager(storages[i], tokenIssuer: tokenIssuers[i]),
         );
 
         multiTokenManager = MultiTokenManager(
@@ -791,7 +789,7 @@ void main() {
 
         expect(tokens, hasLength(5));
         expect(
-          tokens.map((final t) => t.tokenIssuer).toSet(),
+          tokens.map((t) => t.tokenIssuer).toSet(),
           containsAll(tokenIssuers),
         );
       });
@@ -813,7 +811,7 @@ void main() {
 
   withServerpod(
     'Given a MultiTokenManager with kind-aware managers',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late FakeTokenStorage defaultStorage;
       late FakeTokenStorage storage1;
@@ -935,7 +933,7 @@ void main() {
 
           expect(allTokens, hasLength(3));
           expect(
-            allTokens.map((final t) => t.tokenIssuer).toSet(),
+            allTokens.map((t) => t.tokenIssuer).toSet(),
             containsAll(['jwt', 'session', 'refresh']),
           );
         });
@@ -1058,11 +1056,11 @@ class MockedTokenManager extends TokenManager {
 
   @override
   Future<List<TokenInfo>> listTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final String? method,
-    final String? tokenIssuer,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue? authUserId,
+    String? method,
+    String? tokenIssuer,
+    Transaction? transaction,
   }) async {
     return onListTokens!(
       session,
@@ -1075,11 +1073,11 @@ class MockedTokenManager extends TokenManager {
 
   @override
   Future<void> revokeAllTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
-    final String? tokenIssuer,
+    Session session, {
+    required UuidValue? authUserId,
+    Transaction? transaction,
+    String? method,
+    String? tokenIssuer,
   }) async {
     return onRevokeAllTokens!(
       session,
@@ -1092,10 +1090,10 @@ class MockedTokenManager extends TokenManager {
 
   @override
   Future<void> revokeToken(
-    final Session session, {
-    required final String tokenId,
-    final Transaction? transaction,
-    final String? tokenIssuer,
+    Session session, {
+    required String tokenId,
+    Transaction? transaction,
+    String? tokenIssuer,
   }) async {
     return onRevokeToken!(
       session,
@@ -1107,19 +1105,19 @@ class MockedTokenManager extends TokenManager {
 
   @override
   Future<AuthenticationInfo?> validateToken(
-    final Session session,
-    final String token,
+    Session session,
+    String token,
   ) async {
     return onValidateToken!(session, token);
   }
 
   @override
   Future<AuthSuccess> createToken(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
-    final Set<Scope>? scopes,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
+    Set<Scope>? scopes,
+    Transaction? transaction,
   }) async {
     return onCreateToken!(
       session,

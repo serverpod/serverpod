@@ -8,13 +8,11 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
     as _i8reeoob;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import '../../profile/models/user_profile_model.dart' as _ifks8d43;
 
 /// Describes the pre-existing account that owns the sign-in method a user is
@@ -105,7 +103,7 @@ abstract class AccountLinkConflict
   }
 }
 
-class _UndefinedAccountLinkConflict$profile extends _issu.UndefinedSentinel
+class _UndefinedAccountLinkConflict$profile extends _is.UndefinedSentinel
     implements _ifks8d43.UserProfileModel {
   const _UndefinedAccountLinkConflict$profile();
 }
@@ -136,7 +134,7 @@ class _AccountLinkConflictImpl extends AccountLinkConflict {
   }) {
     return AccountLinkConflict(
       authUserId: authUserId ?? this.authUserId,
-      profile: profile is _issu.UndefinedSentinel
+      profile: profile is _is.UndefinedSentinel
           ? this.profile?.copyWith()
           : profile,
       createdAt: createdAt ?? this.createdAt,

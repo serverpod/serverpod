@@ -16,6 +16,8 @@ import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_module_server/src/generated/module_streaming_class.dart'
     as _irv1xa50;
 import 'dynamic_on_module.dart' as _ircaal6o;
+import 'future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _ifspsmem;
 import 'generated/polymorphism/child.dart' as _in13ph1t;
 import 'generated/polymorphism/grandchild.dart' as _i3gtzugh;
 import 'generated/polymorphism/parent.dart' as _is5pt2rl;
@@ -32,7 +34,8 @@ export 'module_feature/models/my_feature_model.dart';
 export 'module_streaming_class.dart';
 export 'project_streaming_class.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager
+    implements _is.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -41,7 +44,55 @@ class Protocol extends _is.DatabaseSerializationManager {
 
   final Set<_is.SerializationManager> _hostProtocols = {};
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [];
+  @override
+  _is.ProtocolDeserialization get deserializationMetadata =>
+      _is.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _is.getType<_ircaal6o.DynamicOnModule>,
+          _is.getType<_ifspsmem.TestGeneratedCallHelloModel>,
+          _is.getType<_i3gtzugh.ModulePolymorphicGrandChild>,
+          _is.getType<_in13ph1t.ModulePolymorphicChild>,
+          _is.getType<_is5pt2rl.ModulePolymorphicParent>,
+          _is.getType<_izah8b1s.ModuleClass>,
+          _is.getType<_iya6t7ee.MyModuleFeatureModel>,
+          _is.getType<_idp5674x.ModuleStreamingClass>,
+          _is.getType<_iqrw583n.ProjectStreamingClass>,
+          _is.getType<_ircaal6o.DynamicOnModule?>,
+          _is.getType<_ifspsmem.TestGeneratedCallHelloModel?>,
+          _is.getType<_i3gtzugh.ModulePolymorphicGrandChild?>,
+          _is.getType<_in13ph1t.ModulePolymorphicChild?>,
+          _is.getType<_is5pt2rl.ModulePolymorphicParent?>,
+          _is.getType<_izah8b1s.ModuleClass?>,
+          _is.getType<_iya6t7ee.MyModuleFeatureModel?>,
+          _is.getType<_idp5674x.ModuleStreamingClass?>,
+          _is.getType<_iqrw583n.ProjectStreamingClass?>,
+          _is.getType<dynamic>,
+          _is.getType<(bool,)?>,
+          _is.getType<(int?, _irv1xa50.ModuleStreamingClass?)>,
+          _is.getType<(bool,)?>,
+          _is.getType<(int?, _irv1xa50.ModuleStreamingClass?)>,
+        ],
+        modules: const [_isp.Protocol.new],
+        classNames: const [
+          'DynamicOnModule',
+          'TestGeneratedCallHelloModel',
+          'ModulePolymorphicGrandChild',
+          'ModulePolymorphicChild',
+          'ModulePolymorphicParent',
+          'ModuleClass',
+          'MyModuleFeatureModel',
+          'ModuleStreamingClass',
+          'ProjectStreamingClass',
+          '(int?,ModuleStreamingClass?)',
+        ],
+        classNamePrefix: 'serverpod_test_module.',
+      );
+
+  static List<_isp.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [];
 
   void registerHostProtocol(
     String projectName,
@@ -50,13 +101,11 @@ class Protocol extends _is.DatabaseSerializationManager {
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_test_module.')) return className;
-    return className.substring(22);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_test_module.',
+      );
 
   @override
   T deserialize<T>(
@@ -64,8 +113,11 @@ class Protocol extends _is.DatabaseSerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_test_module.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -81,6 +133,9 @@ class Protocol extends _is.DatabaseSerializationManager {
 
     if (t == _ircaal6o.DynamicOnModule) {
       return _ircaal6o.DynamicOnModule.fromJson(data) as T;
+    }
+    if (t == _ifspsmem.TestGeneratedCallHelloModel) {
+      return _ifspsmem.TestGeneratedCallHelloModel.fromJson(data) as T;
     }
     if (t == _i3gtzugh.ModulePolymorphicGrandChild) {
       return _i3gtzugh.ModulePolymorphicGrandChild.fromJson(data) as T;
@@ -105,6 +160,12 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (t == _is.getType<_ircaal6o.DynamicOnModule?>()) {
       return (data != null ? _ircaal6o.DynamicOnModule.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_ifspsmem.TestGeneratedCallHelloModel?>()) {
+      return (data != null
+              ? _ifspsmem.TestGeneratedCallHelloModel.fromJson(data)
+              : null)
           as T;
     }
     if (t == _is.getType<_i3gtzugh.ModulePolymorphicGrandChild?>()) {
@@ -181,15 +242,23 @@ class Protocol extends _is.DatabaseSerializationManager {
           )
           as T;
     }
-    try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
+    for (final module in modules) {
+      try {
+        return module.deserialize<T>(data, t);
+      } on _is.DeserializationTypeNotFoundException catch (_) {}
+    }
+
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
       _ircaal6o.DynamicOnModule => 'DynamicOnModule',
+      _ifspsmem.TestGeneratedCallHelloModel => 'TestGeneratedCallHelloModel',
       _i3gtzugh.ModulePolymorphicGrandChild => 'ModulePolymorphicGrandChild',
       _in13ph1t.ModulePolymorphicChild => 'ModulePolymorphicChild',
       _is5pt2rl.ModulePolymorphicParent => 'ModulePolymorphicParent',
@@ -216,6 +285,8 @@ class Protocol extends _is.DatabaseSerializationManager {
     switch (data) {
       case _ircaal6o.DynamicOnModule():
         return 'DynamicOnModule';
+      case _ifspsmem.TestGeneratedCallHelloModel():
+        return 'TestGeneratedCallHelloModel';
       case _i3gtzugh.ModulePolymorphicGrandChild():
         return 'ModulePolymorphicGrandChild';
       case _in13ph1t.ModulePolymorphicChild():
@@ -250,6 +321,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (dataClassName == 'DynamicOnModule') {
       return deserialize<_ircaal6o.DynamicOnModule>(data['data']);
     }
+    if (dataClassName == 'TestGeneratedCallHelloModel') {
+      return deserialize<_ifspsmem.TestGeneratedCallHelloModel>(data['data']);
+    }
     if (dataClassName == 'ModulePolymorphicGrandChild') {
       return deserialize<_i3gtzugh.ModulePolymorphicGrandChild>(data['data']);
     }
@@ -272,8 +346,10 @@ class Protocol extends _is.DatabaseSerializationManager {
       return deserialize<_iqrw583n.ProjectStreamingClass>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     if (dataClassName == '(int?,ModuleStreamingClass?)') {
       return deserialize<(int?, _irv1xa50.ModuleStreamingClass?)>(data['data']);
@@ -354,6 +430,9 @@ class Protocol extends _is.DatabaseSerializationManager {
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test_module';

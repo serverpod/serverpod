@@ -12,7 +12,7 @@ import 'src/generated/protocol.dart';
 // only need to make additions to this file if you add future calls,  are
 // configuring Relic (Serverpod's web-server), or need custom setup work.
 
-void run(final List<String> args) async {
+void run(List<String> args) async {
   // Initialize Serverpod and connect it with your generated code.
   final pod = Serverpod(
     args,

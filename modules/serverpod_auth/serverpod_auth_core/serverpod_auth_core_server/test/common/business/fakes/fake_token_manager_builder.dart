@@ -11,7 +11,7 @@ class FakeTokenManagerBuilder implements TokenManagerBuilder<FakeTokenManager> {
   final FakeTokenStorage tokenStorage;
 
   @override
-  FakeTokenManager build({required final AuthUsers authUsers}) {
+  FakeTokenManager build({required AuthUsers authUsers}) {
     return FakeTokenManager(
       tokenStorage,
       authUsers: authUsers,

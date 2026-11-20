@@ -39,7 +39,8 @@ export 'shared/sealed/parent.dart';
 export 'shared/shared_object_with_sealed_exception.dart';
 export 'shared/shared_table_record.dart';
 
-class Protocol extends _isd.DatabaseSerializationManager {
+class Protocol extends _isd.DatabaseSerializationManager
+    implements _isd.DatabaseProtocolDeserializationProvider {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -48,7 +49,62 @@ class Protocol extends _isd.DatabaseSerializationManager {
 
   final Set<_iss.SerializationManager> _hostProtocols = {};
 
-  static List<_isd.TableDefinition> get targetTableDefinitions => [
+  @override
+  _iss.ProtocolDeserialization get deserializationMetadata =>
+      _iss.ProtocolDeserialization.cached(
+        this,
+        types: const [
+          _iss.getType<_is2cqpjk.SharedContainer>,
+          _iss.getType<_ifwqhlpv.DynamicOnShared>,
+          _iss.getType<_i1mrs6ww.SharedEnum>,
+          _iss.getType<_i20a36el.SharedException>,
+          _iss.getType<_iw04p5m5.SharedExtendedAppException>,
+          _iss.getType<_ir5o94j1.SharedBaseAppException>,
+          _iss.getType<_iuvt222f.SharedSubclass>,
+          _iss.getType<_iwajn61k.SharedModel>,
+          _iss.getType<_iag9521n.SharedSealedChild>,
+          _iss.getType<_ieg0jtrp.SharedNotFoundException>,
+          _iss.getType<_ieg0jtrp.SharedValidationException>,
+          _iss.getType<_i4mzuyso.SharedObjectWithSealedException>,
+          _iss.getType<_itms6rpy.SharedTableRecord>,
+          _iss.getType<_is2cqpjk.SharedContainer?>,
+          _iss.getType<_ifwqhlpv.DynamicOnShared?>,
+          _iss.getType<_i1mrs6ww.SharedEnum?>,
+          _iss.getType<_i20a36el.SharedException?>,
+          _iss.getType<_iw04p5m5.SharedExtendedAppException?>,
+          _iss.getType<_ir5o94j1.SharedBaseAppException?>,
+          _iss.getType<_iuvt222f.SharedSubclass?>,
+          _iss.getType<_iwajn61k.SharedModel?>,
+          _iss.getType<_iag9521n.SharedSealedChild?>,
+          _iss.getType<_ieg0jtrp.SharedNotFoundException?>,
+          _iss.getType<_ieg0jtrp.SharedValidationException?>,
+          _iss.getType<_i4mzuyso.SharedObjectWithSealedException?>,
+          _iss.getType<_itms6rpy.SharedTableRecord?>,
+          _iss.getType<dynamic>,
+          _iss.getType<List<_ilwf0zl1.SharedSealedAppException>>,
+        ],
+        modules: const [],
+        classNames: const [
+          'SharedContainer',
+          'DynamicOnShared',
+          'SharedEnum',
+          'SharedException',
+          'SharedExtendedAppException',
+          'SharedBaseAppException',
+          'SharedSubclass',
+          'SharedModel',
+          'SharedSealedChild',
+          'SharedNotFoundException',
+          'SharedValidationException',
+          'SharedObjectWithSealedException',
+          'SharedTableRecord',
+        ],
+      );
+
+  static List<_isd.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isd.TableDefinition> get _ownTableDefinitions => [
     _isd.TableDefinition(
       name: 'shared_table_record',
       dartName: 'SharedTableRecord',
@@ -101,11 +157,8 @@ class Protocol extends _isd.DatabaseSerializationManager {
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _iss.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -113,8 +166,8 @@ class Protocol extends _isd.DatabaseSerializationManager {
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _iss.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -423,6 +476,9 @@ class Protocol extends _isd.DatabaseSerializationManager {
   @override
   List<_isd.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isd.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test';

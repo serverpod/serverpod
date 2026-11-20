@@ -33,8 +33,8 @@ Argon2HashUtil _randomSecretsHash() {
 
 void main() {
   withServerpod('[SecretChallengeUtil completion token hash],', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
 
@@ -56,7 +56,7 @@ void main() {
           );
           request = _Request(
             verificationChallenge: await session.db.transaction(
-              (final transaction) => challengeUtil.createChallenge(
+              (transaction) => challengeUtil.createChallenge(
                 session,
                 verificationCode: _verificationCode,
                 transaction: transaction,
@@ -68,7 +68,7 @@ void main() {
         group('when verifying the challenge,', () {
           setUp(() async {
             await session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: request.id,
                 verificationCode: _verificationCode,
@@ -115,7 +115,7 @@ void main() {
           );
           request = _Request(
             verificationChallenge: await session.db.transaction(
-              (final transaction) => challengeUtil.createChallenge(
+              (transaction) => challengeUtil.createChallenge(
                 session,
                 verificationCode: _verificationCode,
                 transaction: transaction,
@@ -123,7 +123,7 @@ void main() {
             ),
           );
           completionToken = await session.db.transaction(
-            (final transaction) => challengeUtil.verifyChallenge(
+            (transaction) => challengeUtil.verifyChallenge(
               session,
               requestId: request.id,
               verificationCode: _verificationCode,
@@ -137,7 +137,7 @@ void main() {
           'then the request is returned',
           () async {
             final completed = await session.db.transaction(
-              (final transaction) => challengeUtil.completeChallenge(
+              (transaction) => challengeUtil.completeChallenge(
                 session,
                 completionToken: completionToken,
                 transaction: transaction,
@@ -154,7 +154,7 @@ void main() {
           () async {
             await expectLater(
               session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: _encodeToken(request.id, 'another-token'),
                   transaction: transaction,
@@ -187,7 +187,7 @@ void main() {
         );
 
         final completed = await session.db.transaction(
-          (final transaction) => challengeUtil.completeChallenge(
+          (transaction) => challengeUtil.completeChallenge(
             session,
             completionToken: _encodeToken(request.id, 'higher-cost-token'),
             transaction: transaction,
@@ -211,7 +211,7 @@ void main() {
         );
         request = _Request(
           verificationChallenge: await session.db.transaction(
-            (final transaction) => challengeUtil.createChallenge(
+            (transaction) => challengeUtil.createChallenge(
               session,
               verificationCode: _verificationCode,
               transaction: transaction,
@@ -220,7 +220,7 @@ void main() {
         );
 
         await session.db.transaction(
-          (final transaction) => challengeUtil.verifyChallenge(
+          (transaction) => challengeUtil.verifyChallenge(
             session,
             requestId: request.id,
             verificationCode: _verificationCode,
@@ -238,9 +238,9 @@ void main() {
 }
 
 SecretChallengeUtil<_Request> _buildChallengeUtil({
-  required final Argon2HashUtil hashUtil,
-  required final Argon2HashUtil? completionTokenHash,
-  required final _Request Function() getRequest,
+  required Argon2HashUtil hashUtil,
+  required Argon2HashUtil? completionTokenHash,
+  required _Request Function() getRequest,
 }) {
   return SecretChallengeUtil<_Request>(
     hashUtil: hashUtil,
@@ -248,20 +248,20 @@ SecretChallengeUtil<_Request> _buildChallengeUtil({
     verificationConfig: SecretChallengeVerificationConfig(
       getRequest:
           (
-            final session,
-            final requestId, {
-            required final Transaction? transaction,
+            session,
+            requestId, {
+            required Transaction? transaction,
           }) async => getRequest(),
-      isAlreadyUsed: (final request) => false,
-      getChallenge: (final request) => request.verificationChallenge,
-      isExpired: (final request) => false,
-      onExpired: (final session, final request) async {},
+      isAlreadyUsed: (request) => false,
+      getChallenge: (request) => request.verificationChallenge,
+      isExpired: (request) => false,
+      onExpired: (session, request) async {},
       linkCompletionToken:
           (
-            final session,
-            final request,
-            final completionChallenge, {
-            required final Transaction? transaction,
+            session,
+            request,
+            completionChallenge, {
+            required Transaction? transaction,
           }) async {
             request.completionChallenge = completionChallenge;
           },
@@ -270,19 +270,19 @@ SecretChallengeUtil<_Request> _buildChallengeUtil({
     completionConfig: SecretChallengeCompletionConfig(
       getRequest:
           (
-            final session,
-            final requestId, {
-            required final Transaction? transaction,
+            session,
+            requestId, {
+            required Transaction? transaction,
           }) async => getRequest(),
-      getCompletionChallenge: (final request) => request.completionChallenge,
-      isExpired: (final request) => false,
-      onExpired: (final session, final request) async {},
+      getCompletionChallenge: (request) => request.completionChallenge,
+      isExpired: (request) => false,
+      onExpired: (session, request) async {},
       rateLimiter: null,
     ),
   );
 }
 
-String _encodeToken(final UuidValue requestId, final String token) {
+String _encodeToken(UuidValue requestId, String token) {
   return base64Encode(utf8.encode('$requestId:$token'));
 }
 

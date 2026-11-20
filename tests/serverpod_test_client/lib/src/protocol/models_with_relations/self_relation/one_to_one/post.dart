@@ -8,11 +8,9 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: depend_on_referenced_packages
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'package:serverpod_serialization/undefined_sentinel.dart' as _issu;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _ittc76ec;
@@ -108,7 +106,7 @@ abstract class Post
 
 class _Undefined {}
 
-class _UndefinedPost$previous extends _issu.UndefinedSentinel
+class _UndefinedPost$previous extends _isc.UndefinedSentinel
     implements _ittc76ec.Post {
   const _UndefinedPost$previous();
 }
@@ -142,11 +140,11 @@ class _PostImpl extends Post {
     return Post(
       id: id is int? ? id : this.id,
       content: content ?? this.content,
-      previous: previous is _issu.UndefinedSentinel
+      previous: previous is _isc.UndefinedSentinel
           ? this.previous?.copyWith()
           : previous,
       nextId: nextId is int? ? nextId : this.nextId,
-      next: next is _issu.UndefinedSentinel ? this.next?.copyWith() : next,
+      next: next is _isc.UndefinedSentinel ? this.next?.copyWith() : next,
     );
   }
 }

@@ -1,4 +1,4 @@
-name: serverpod_templates
+name: pubspec_parse_test_asset
 version: '1.0.0'
 description: Templates for Serverpod.
 repository: https://github.com/serverpod/serverpod

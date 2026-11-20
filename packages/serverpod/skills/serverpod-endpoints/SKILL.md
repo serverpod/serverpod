@@ -5,7 +5,7 @@ description: Define Serverpod endpoints, use Session, pass parameters, and call 
 
 # Serverpod Endpoints
 
-Extend `Endpoint` with instance methods; first parameter is `Session`, return `Future<T>` (or `Stream<T>` for real-time data streaming). Place anywhere under server `lib/`. If `serverpod start` is not running with hot-reload, run `serverpod generate` to update the client.
+Extend `Endpoint` with instance methods; first parameter is `Session`, return `Future<T>` (or `Stream<T>` for real-time data streaming). Place anywhere under server `lib/`. The Serverpod runner regenerates the client on save; without one, run `serverpod generate`.
 
 ## Defining an endpoint
 
