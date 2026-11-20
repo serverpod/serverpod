@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/commands/upgrade/cli_installation.dart'
 import 'package:serverpod_cli/src/doctor/doctor_check.dart';
 import 'package:serverpod_cli/src/doctor/probe.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart' show isFlutterSdk;
 
 /// What `flutter --version --machine` reports.
 typedef FlutterVersionInfo = ({
@@ -21,15 +22,28 @@ typedef FlutterVersionInfo = ({
 class FlutterCheck {
   static const id = 'flutter';
 
+  /// [managedRoot] is where the installer puts the Flutter it manages, so a
+  /// shell that has not sourced the env file is told to fix PATH rather than
+  /// to install Flutter again.
+  ///
   /// [environment] stands in for the process environment in tests.
   static Future<DoctorCheckResult> probe({
+    String? managedRoot,
     Map<String, String>? environment,
   }) async {
     final executable = findExecutableOnPath(
       'flutter',
       environment: environment,
     );
-    if (executable == null) return evaluate(executable: null, output: null);
+    if (executable == null) {
+      return evaluate(
+        executable: null,
+        output: null,
+        installedOffPath: managedRoot != null && isFlutterSdk(managedRoot)
+            ? managedRoot
+            : null,
+      );
+    }
 
     // Flutter may populate its cache on first run, which takes a while.
     final result = await runProbe(
@@ -68,12 +82,28 @@ class FlutterCheck {
     );
   }
 
+  /// [installedOffPath] is the root of a Serverpod-managed SDK that exists
+  /// while no `flutter` is on PATH.
   static DoctorCheckResult evaluate({
     required String? executable,
     required String? output,
+    String? installedOffPath,
     String constraint = requiredFlutterSdk,
   }) {
     const title = 'Flutter';
+
+    if (executable == null && installedOffPath != null) {
+      return DoctorCheckResult(
+        id: id,
+        title: title,
+        status: DoctorStatus.misconfigured,
+        path: installedOffPath,
+        message:
+            'Flutter is installed at $installedOffPath, but its bin '
+            'directory is not on PATH.',
+        remedy: 'Run `serverpod doctor --fix` to put it on PATH.',
+      );
+    }
 
     if (executable == null) {
       return const DoctorCheckResult(
