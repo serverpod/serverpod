@@ -53,15 +53,22 @@ class AuthIdpTheme extends ThemeExtension<AuthIdpTheme> {
     const borderWidth = 2.0;
     final borderRadius = BorderRadius.circular(8);
 
+    final fillColor = colorScheme == null
+        ? const Color.fromRGBO(222, 231, 240, .57)
+        : colorScheme.surfaceContainerHighest != colorScheme.surface
+        ? colorScheme.surfaceContainerHighest
+        : colorScheme.onSurface.withValues(alpha: 0.08);
+
     defaultPinTheme =
         defaultPinTheme ??
         PinTheme(
           decoration: BoxDecoration(
-            color:
-                colorScheme?.surfaceContainerHighest ??
-                const Color.fromRGBO(222, 231, 240, .57),
+            color: fillColor,
             borderRadius: borderRadius,
-            border: Border.all(color: Colors.transparent, width: borderWidth),
+            border: Border.all(
+              color: colorScheme?.outlineVariant ?? Colors.transparent,
+              width: borderWidth,
+            ),
           ),
         );
 
