@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
-// import 'firebase.dart';
+import 'firebase.dart';
 import 'widgets/link_account_sheet.dart';
 import 'widgets/profile_info.dart';
 
@@ -20,7 +20,7 @@ late String serverUrl;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await initializeFirebase();
+  await initializeFirebase();
 
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
