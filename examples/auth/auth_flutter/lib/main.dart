@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
-import 'firebase.dart';
+// import 'firebase.dart';
 import 'widgets/link_account_sheet.dart';
 import 'widgets/profile_info.dart';
 
@@ -20,7 +20,7 @@ late String serverUrl;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeFirebase();
+  // await initializeFirebase();
 
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
@@ -193,20 +193,41 @@ class ConnectedScreen extends StatefulWidget {
 
 class _ConnectedScreenState extends State<ConnectedScreen> {
   ConnectedIdps? connectedIdps;
+  int? clickCount;
 
   @override
   void initState() {
-    client.auth.idp.getConnectedIdps().then((c) {
-      setState(() {
-        connectedIdps = c;
-      });
-    });
     super.initState();
+    _loadAccountData();
+  }
+
+  Future<void> _loadAccountData() async {
+    final results = await Future.wait([
+      client.auth.idp.getConnectedIdps(),
+      client.click.getCount(),
+    ]);
+    if (!mounted) return;
+    setState(() {
+      connectedIdps = results[0] as ConnectedIdps;
+      clickCount = results[1] as int;
+    });
+  }
+
+  Future<void> _incrementCounter() async {
+    await client.click.create();
+    final count = await client.click.getCount();
+    if (!mounted) return;
+    setState(() => clickCount = count);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
       body: Center(
         child: Column(
           spacing: 16,
@@ -214,6 +235,13 @@ class _ConnectedScreenState extends State<ConnectedScreen> {
           children: [
             ProfileWidget(client: client),
             const Text('You are connected'),
+            const Text('You have pushed the button this many times:'),
+            clickCount == null
+                ? const CircularProgressIndicator.adaptive()
+                : Text(
+                    '$clickCount',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
             FilledButton(
               onPressed: () async {
                 await client.auth.signOutDevice();
@@ -223,9 +251,7 @@ class _ConnectedScreenState extends State<ConnectedScreen> {
             OutlinedButton(
               onPressed: () async {
                 await showLinkAccountSheet(context, client: client);
-                final idps = await client.auth.idp.getConnectedIdps();
-                if (!mounted) return;
-                setState(() => connectedIdps = idps);
+                await _loadAccountData();
               },
               child: const Text('Link another sign-in method'),
             ),

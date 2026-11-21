@@ -17,7 +17,9 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _iaic;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'click.dart' as _ivejn2uu;
 import 'greeting.dart' as _ig8bxnp5;
+export 'click.dart';
 export 'greeting.dart';
 export 'client.dart';
 
@@ -34,7 +36,9 @@ class Protocol extends _isc.SerializationManager
       _isc.ProtocolDeserialization.cached(
         this,
         types: const [
+          _isc.getType<_ivejn2uu.Click>,
           _isc.getType<_ig8bxnp5.Greeting>,
+          _isc.getType<_ivejn2uu.Click?>,
           _isc.getType<_ig8bxnp5.Greeting?>,
           _isc.getType<({_idt.ByteData challenge, _isc.UuidValue id})>,
         ],
@@ -42,7 +46,10 @@ class Protocol extends _isc.SerializationManager
           _iaic.Protocol.new,
           _iacc.Protocol.new,
         ],
-        classNames: const ['Greeting'],
+        classNames: const [
+          'Click',
+          'Greeting',
+        ],
       );
 
   static String? getClassNameFromObjectJson(dynamic data) =>
@@ -69,8 +76,14 @@ class Protocol extends _isc.SerializationManager
       }
     }
 
+    if (t == _ivejn2uu.Click) {
+      return _ivejn2uu.Click.fromJson(data) as T;
+    }
     if (t == _ig8bxnp5.Greeting) {
       return _ig8bxnp5.Greeting.fromJson(data) as T;
+    }
+    if (t == _isc.getType<_ivejn2uu.Click?>()) {
+      return (data != null ? _ivejn2uu.Click.fromJson(data) : null) as T;
     }
     if (t == _isc.getType<_ig8bxnp5.Greeting?>()) {
       return (data != null ? _ig8bxnp5.Greeting.fromJson(data) : null) as T;
@@ -99,6 +112,7 @@ class Protocol extends _isc.SerializationManager
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
+      _ivejn2uu.Click => 'Click',
       _ig8bxnp5.Greeting => 'Greeting',
       _ => null,
     };
@@ -114,6 +128,8 @@ class Protocol extends _isc.SerializationManager
     }
 
     switch (data) {
+      case _ivejn2uu.Click():
+        return 'Click';
       case _ig8bxnp5.Greeting():
         return 'Greeting';
     }
@@ -137,6 +153,9 @@ class Protocol extends _isc.SerializationManager
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'Click') {
+      return deserialize<_ivejn2uu.Click>(data['data']);
     }
     if (dataClassName == 'Greeting') {
       return deserialize<_ig8bxnp5.Greeting>(data['data']);
