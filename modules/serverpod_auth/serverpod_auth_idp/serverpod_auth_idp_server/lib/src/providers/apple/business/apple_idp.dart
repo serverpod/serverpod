@@ -125,7 +125,8 @@ class AppleIdp implements IdentityProvider {
           authUserId: account.authUserId,
           method: method,
           transaction: transaction,
-          scopes: account.scopes,
+          // New-account callbacks may have changed the user's scopes.
+          scopes: account.newAccount ? null : account.scopes,
         );
       },
     );
