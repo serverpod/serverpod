@@ -35,46 +35,6 @@ class MethodWebsocketRequestHandler {
       server,
     );
 
-    void reportError(Object error, StackTrace stackTrace) {
-      server.serverpod.internalSubmitEvent(
-        ExceptionEvent(
-          error,
-          stackTrace,
-          message: 'Method stream websocket error',
-        ),
-        space: OriginSpace.framework,
-        context: contextFromRequest(server, request, OperationType.stream),
-      );
-      if (error is! UnknownMessageException ||
-          server.serverpod.runtimeSettings.logMalformedCalls) {
-        log.error(
-          'Method stream websocket error: $error',
-          error: error,
-          stackTrace: stackTrace,
-        );
-      }
-    }
-
-    final streamClosures = <Future<void>>{};
-
-    void closeStream(CloseMethodStreamCommand message) {
-      late final Future<void> closing;
-      closing = methodStreamManager
-          .closeStream(
-            endpoint: message.endpoint,
-            method: message.method,
-            methodStreamId: message.connectionId,
-            parameter: message.parameter,
-            reason: message.reason,
-          )
-          .catchError((Object error, StackTrace stackTrace) {
-            reportError(error, stackTrace);
-            unawaited(webSocket.tryClose());
-          })
-          .whenComplete(() => streamClosures.remove(closing));
-      streamClosures.add(closing);
-    }
-
     try {
       server.serverpod.logVerbose('Method websocket connection established.');
       await for (final event in webSocket.events) {
@@ -142,7 +102,12 @@ class MethodWebsocketRequestHandler {
             );
             // A paused input may need a later output-close command to release
             // it. Keep processing the shared socket while this stream drains.
-            closeStream(message);
+            unawaited(
+              webSocketIntermediary.closeMethodStream(
+                methodStreamManager,
+                message,
+              ),
+            );
             break;
           case MethodStreamSerializableException():
             methodStreamManager.dispatchError(
@@ -166,7 +131,7 @@ class MethodWebsocketRequestHandler {
         }
       }
     } catch (e, stackTrace) {
-      reportError(e, stackTrace);
+      webSocketIntermediary.reportError(e, stackTrace);
     } finally {
       server.serverpod.logVerbose(
         'Closing method stream websocket while '
@@ -174,10 +139,7 @@ class MethodWebsocketRequestHandler {
         '${methodStreamManager.openInputStreamCount} in-streams still open.',
       );
       try {
-        await Future.wait([
-          methodStreamManager.closeAllStreams(),
-          ...streamClosures,
-        ]);
+        await webSocketIntermediary.closeAllMethodStreams(methodStreamManager);
       } finally {
         await webSocket.tryClose();
         onClosed();
@@ -569,12 +531,60 @@ class _WebSocketIntermediary {
   final Server server;
   final RelicWebSocket _webSocket;
   final Request request;
+  final _streamClosures = <Future<void>>{};
 
   _WebSocketIntermediary({
     required this.server,
     required RelicWebSocket webSocket,
     required this.request,
   }) : _webSocket = webSocket;
+
+  Future<void> closeMethodStream(
+    MethodStreamManager manager,
+    CloseMethodStreamCommand message,
+  ) async {
+    final closing = Completer<void>();
+    _streamClosures.add(closing.future);
+    try {
+      await manager.closeStream(
+        endpoint: message.endpoint,
+        method: message.method,
+        methodStreamId: message.connectionId,
+        parameter: message.parameter,
+        reason: message.reason,
+      );
+    } catch (error, stackTrace) {
+      reportError(error, stackTrace);
+      unawaited(_webSocket.tryClose());
+    } finally {
+      _streamClosures.remove(closing.future);
+      closing.complete();
+    }
+  }
+
+  Future<void> closeAllMethodStreams(MethodStreamManager manager) async {
+    await Future.wait([manager.closeAllStreams(), ..._streamClosures]);
+  }
+
+  void reportError(Object error, StackTrace stackTrace) {
+    server.serverpod.internalSubmitEvent(
+      ExceptionEvent(
+        error,
+        stackTrace,
+        message: 'Method stream websocket error',
+      ),
+      space: OriginSpace.framework,
+      context: contextFromRequest(server, request, OperationType.stream),
+    );
+    if (error is! UnknownMessageException ||
+        server.serverpod.runtimeSettings.logMalformedCalls) {
+      log.error(
+        'Method stream websocket error: $error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
 
   void tryAdd(dynamic data) {
     try {
