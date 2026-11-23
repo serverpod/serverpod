@@ -107,7 +107,7 @@ class AccountLinkingController extends ChangeNotifier {
   /// Pass this as the sign-in completion callback of the provider widgets, so
   /// that [authSuccess] is used as proof of ownership instead of signing the
   /// user in with it.
-  Future<void> handleAuthSuccess(final AuthSuccess authSuccess) async {
+  Future<void> handleAuthSuccess(AuthSuccess authSuccess) async {
     _setState(AccountLinkingState.busy);
     try {
       // A first pass without approval, which reports back rather than merging
@@ -178,13 +178,13 @@ class AccountLinkingController extends ChangeNotifier {
     super.dispose();
   }
 
-  void _setState(final AccountLinkingState state) {
+  void _setState(AccountLinkingState state) {
     if (_disposed || _state == state) return;
     _state = state;
     notifyListeners();
   }
 
-  void _reportError(final Object error) {
+  void _reportError(Object error) {
     if (onError case final onError?) {
       onError(error);
       return;

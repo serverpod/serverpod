@@ -17,10 +17,10 @@ typedef OnAuthSuccessCallback = Future<void> Function(AuthSuccess authSuccess);
 /// [ClientAuthSessionManager.updateSignedInUser] directly, so that a linking
 /// flow can hold on to the result without changing who is signed in.
 Future<bool> completeSignIn(
-  final ServerpodClientShared client,
-  final AuthSuccess authSuccess, {
-  final AccountLinkingController? accountLinking,
-  final OnAuthSuccessCallback? onAuthSuccess,
+  ServerpodClientShared client,
+  AuthSuccess authSuccess, {
+  AccountLinkingController? accountLinking,
+  OnAuthSuccessCallback? onAuthSuccess,
 }) async {
   if (accountLinking != null) {
     await accountLinking.handleAuthSuccess(authSuccess);

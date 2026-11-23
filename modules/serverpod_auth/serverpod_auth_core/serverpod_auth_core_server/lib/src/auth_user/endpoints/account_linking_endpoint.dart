@@ -33,7 +33,7 @@ class AccountLinkingEndpoint extends Endpoint {
   /// restarted at any point.
   ///
   /// See [AccountLinkRequests.createLinkRequest].
-  Future<void> createLinkRequest(final Session session) async {
+  Future<void> createLinkRequest(Session session) async {
     return accountLinkRequests.createLinkRequest(session);
   }
 
@@ -44,7 +44,7 @@ class AccountLinkingEndpoint extends Endpoint {
   /// again without waiting for the request to expire.
   ///
   /// See [AccountLinkRequests.cancelLinkRequest].
-  Future<void> cancelLinkRequest(final Session session) async {
+  Future<void> cancelLinkRequest(Session session) async {
     return accountLinkRequests.cancelLinkRequest(session);
   }
 
@@ -60,9 +60,9 @@ class AccountLinkingEndpoint extends Endpoint {
   ///
   /// See [AccountLinkRequests.executeLinkRequest].
   Future<AccountLinkResult> executeLinkRequest(
-    final Session session, {
-    required final String proofToken,
-    final bool approveMerge = false,
+    Session session, {
+    required String proofToken,
+    bool approveMerge = false,
   }) async {
     return accountLinkRequests.executeLinkRequest(
       session,

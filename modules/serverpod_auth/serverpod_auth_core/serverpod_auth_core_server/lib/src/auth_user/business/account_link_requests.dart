@@ -30,7 +30,7 @@ class AccountLinkRequests {
 
   /// Creates a new [AccountLinkRequests] instance.
   const AccountLinkRequests({
-    final AccountMergeConfig config = const AccountMergeConfig(),
+    AccountMergeConfig config = const AccountMergeConfig(),
   }) : _config = config;
 
   /// Starts an account link flow for the calling user and session.
@@ -42,13 +42,13 @@ class AccountLinkRequests {
   ///
   /// Throws a [StateError] if the caller is not authenticated.
   Future<void> createLinkRequest(
-    final Session session, {
-    final Transaction? transaction,
+    Session session, {
+    Transaction? transaction,
   }) async {
     final authentication = _requireAuthentication(session);
 
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       await _discardExistingRequest(
         session,
@@ -77,13 +77,13 @@ class AccountLinkRequests {
   ///
   /// Throws a [StateError] if the caller is not authenticated.
   Future<void> cancelLinkRequest(
-    final Session session, {
-    final Transaction? transaction,
+    Session session, {
+    Transaction? transaction,
   }) async {
     final authentication = _requireAuthentication(session);
 
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
-      final transaction,
+      transaction,
     ) async {
       await _discardExistingRequest(
         session,
@@ -114,9 +114,9 @@ class AccountLinkRequests {
   /// Throws an [AccountMergeFailedException] if the merge itself fails, in
   /// which case both accounts are left untouched.
   Future<AccountLinkResult> executeLinkRequest(
-    final Session session, {
-    required final String proofToken,
-    final bool approveMerge = false,
+    Session session, {
+    required String proofToken,
+    bool approveMerge = false,
   }) async {
     final authentication = _requireAuthentication(session);
     final authServices = AuthServices.instance;
@@ -134,7 +134,7 @@ class AccountLinkRequests {
     final result = await DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       null,
-      (final transaction) async {
+      (transaction) async {
         final request = await _findActiveRequest(
           session,
           authUserId: authentication.authUserId,
@@ -238,11 +238,11 @@ class AccountLinkRequests {
   /// Throws an [AccountAlreadyLinkedException] if the sign-in resolved to the
   /// account the caller is already signed in to.
   static Future<void> attachToActiveLinkRequest(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
-    required final bool newAccount,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
+    required bool newAccount,
+    required Transaction transaction,
   }) async {
     final authentication = session.authenticated;
     if (authentication == null) {
@@ -273,7 +273,7 @@ class AccountLinkRequests {
         (request.linkedAccountWasCreated ?? false)) {
       await AuthUser.db.deleteWhere(
         session,
-        where: (final t) => t.id.equals(previousLinkedAuthUserId),
+        where: (t) => t.id.equals(previousLinkedAuthUserId),
         transaction: transaction,
       );
     }
@@ -295,15 +295,15 @@ class AccountLinkRequests {
   /// Used by [TokenIssuer.issueToken] to decide whether a signed-in caller is
   /// allowed to be issued a token for a different user.
   static Future<bool> hasActiveAttachedRequest(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String authId,
-    required final UuidValue linkedAuthUserId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String authId,
+    required UuidValue linkedAuthUserId,
+    Transaction? transaction,
   }) async {
     final request = await AccountLinkRequest.db.findFirstRow(
       session,
-      where: (final t) =>
+      where: (t) =>
           t.authUserId.equals(authUserId) &
           t.authId.equals(authId) &
           t.linkedAuthUserId.equals(linkedAuthUserId) &
@@ -314,7 +314,7 @@ class AccountLinkRequests {
     return request != null;
   }
 
-  static AuthenticationInfo _requireAuthentication(final Session session) {
+  static AuthenticationInfo _requireAuthentication(Session session) {
     final authentication = session.authenticated;
     if (authentication == null) {
       throw StateError(
@@ -326,14 +326,14 @@ class AccountLinkRequests {
   }
 
   static Future<AccountLinkRequest?> _findActiveRequest(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String authId,
-    required final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String authId,
+    required Transaction? transaction,
   }) async {
     return AccountLinkRequest.db.findFirstRow(
       session,
-      where: (final t) =>
+      where: (t) =>
           t.authUserId.equals(authUserId) &
           t.authId.equals(authId) &
           (t.expiresAt > clock.now()),
@@ -344,13 +344,13 @@ class AccountLinkRequests {
   /// Removes the caller's request, along with an attached account that only
   /// exists because of this flow.
   Future<void> _discardExistingRequest(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required Transaction transaction,
   }) async {
     final request = await AccountLinkRequest.db.findFirstRow(
       session,
-      where: (final t) => t.authUserId.equals(authUserId),
+      where: (t) => t.authUserId.equals(authUserId),
       transaction: transaction,
     );
     if (request == null) {
@@ -365,7 +365,7 @@ class AccountLinkRequests {
       // look like it belongs to a separate account on the next attempt.
       await AuthUser.db.deleteWhere(
         session,
-        where: (final t) => t.id.equals(linkedAuthUserId),
+        where: (t) => t.id.equals(linkedAuthUserId),
         transaction: transaction,
       );
     }
@@ -378,10 +378,10 @@ class AccountLinkRequests {
   }
 
   Future<AccountLinkConflict> _describeAccount(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String? method,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String? method,
+    required Transaction transaction,
   }) async {
     final authUser = await AuthUser.db.findById(
       session,
@@ -394,7 +394,7 @@ class AccountLinkRequests {
 
     final profile = await UserProfile.db.findFirstRow(
       session,
-      where: (final t) => t.authUserId.equals(authUserId),
+      where: (t) => t.authUserId.equals(authUserId),
       include: UserProfile.include(image: UserProfileImage.include()),
       transaction: transaction,
     );
@@ -408,11 +408,11 @@ class AccountLinkRequests {
   }
 
   Future<void> _merge(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final bool isNewlyCreated,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required bool isNewlyCreated,
+    required Transaction transaction,
   }) async {
     try {
       await AuthServices.instance.accountMerger.merge(

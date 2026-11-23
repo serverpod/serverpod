@@ -788,7 +788,7 @@ void main() {
   withServerpod(
     'Given a user that was created moments ago by the sign-in that is being '
     'linked, and a merge config left at its defaults,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;

@@ -7,14 +7,14 @@ import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 /// provider they pick is linked to it, and if that sign-in method already
 /// belongs to a separate account they are asked whether to merge the two.
 Future<void> showLinkAccountSheet(
-  final BuildContext context, {
-  required final ServerpodClientShared client,
+  BuildContext context, {
+  required ServerpodClientShared client,
 }) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (final sheetContext) => _LinkAccountSheet(client: client),
+    builder: (sheetContext) => _LinkAccountSheet(client: client),
   );
 }
 
@@ -42,7 +42,7 @@ class _LinkAccountSheetState extends State<_LinkAccountSheet> {
     super.dispose();
   }
 
-  Future<bool> _confirmMerge(final AccountLinkConflict conflict) async {
+  Future<bool> _confirmMerge(AccountLinkConflict conflict) async {
     final describedAs =
         conflict.profile?.email ??
         conflict.profile?.userName ??
@@ -51,7 +51,7 @@ class _LinkAccountSheetState extends State<_LinkAccountSheet> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (final dialogContext) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Combine accounts?'),
         content: Text(
           'You already have an account for $describedAs, created on '
@@ -90,7 +90,7 @@ class _LinkAccountSheetState extends State<_LinkAccountSheet> {
     Navigator.of(context).pop();
   }
 
-  void _onError(final Object error) {
+  void _onError(Object error) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -100,12 +100,12 @@ class _LinkAccountSheetState extends State<_LinkAccountSheet> {
     );
   }
 
-  static String _formatDate(final DateTime date) =>
+  static String _formatDate(DateTime date) =>
       '${date.year}-${date.month.toString().padLeft(2, '0')}-'
       '${date.day.toString().padLeft(2, '0')}';
 
   @override
-  Widget build(final BuildContext context) {
+  Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
         left: 24,

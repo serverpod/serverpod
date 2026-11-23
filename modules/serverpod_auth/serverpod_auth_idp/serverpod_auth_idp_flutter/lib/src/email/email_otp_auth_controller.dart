@@ -1,4 +1,3 @@
-import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
 import '../common/account_linking_controller.dart';

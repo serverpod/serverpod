@@ -22,9 +22,9 @@ void main() {
   }
 
   Session sessionFor(
-    final TestSessionBuilder sessionBuilder, {
-    required final UuidValue authUserId,
-    required final String authId,
+    TestSessionBuilder sessionBuilder, {
+    required UuidValue authUserId,
+    required String authId,
   }) {
     return sessionBuilder
         .copyWith(
@@ -38,11 +38,11 @@ void main() {
   }
 
   Future<void> attachSignIn(
-    final Session session, {
-    required final UuidValue authUserId,
+    Session session, {
+    required UuidValue authUserId,
   }) {
     return session.db.transaction(
-      (final transaction) => AccountLinkRequests.attachToActiveLinkRequest(
+      (transaction) => AccountLinkRequests.attachToActiveLinkRequest(
         session,
         authUserId: authUserId,
         method: 'google',
@@ -53,8 +53,8 @@ void main() {
   }
 
   Future<AuthSuccess> issueTokenFor(
-    final Session session, {
-    required final UuidValue authUserId,
+    Session session, {
+    required UuidValue authUserId,
   }) {
     return AuthServices.instance.tokenManager.issueToken(
       session,
@@ -64,8 +64,8 @@ void main() {
   }
 
   withServerpod('Given two auth users,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late AuthUserModel user;
     late AuthUserModel otherUser;

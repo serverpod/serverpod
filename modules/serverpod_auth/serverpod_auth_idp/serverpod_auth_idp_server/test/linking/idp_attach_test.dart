@@ -14,9 +14,9 @@ void main() {
   const accountLinkRequests = AccountLinkRequests();
 
   Session sessionFor(
-    final TestSessionBuilder sessionBuilder, {
-    required final UuidValue authUserId,
-    required final String authId,
+    TestSessionBuilder sessionBuilder, {
+    required UuidValue authUserId,
+    required String authId,
   }) {
     return sessionBuilder
         .copyWith(
@@ -30,19 +30,19 @@ void main() {
   }
 
   Future<AccountLinkRequest?> requestFor(
-    final Session session,
-    final UuidValue authUserId,
+    Session session,
+    UuidValue authUserId,
   ) {
     return AccountLinkRequest.db.findFirstRow(
       session,
-      where: (final t) => t.authUserId.equals(authUserId),
+      where: (t) => t.authUserId.equals(authUserId),
     );
   }
 
   withServerpod(
     'Given a signed-in user linking an existing email account,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late EmailIdpTestFixture fixture;
       late Session linkingSession;
       late AuthUserModel user;
@@ -80,7 +80,7 @@ void main() {
         await fixture.tearDown(sessionBuilder.build());
         await AccountLinkRequest.db.deleteWhere(
           sessionBuilder.build(),
-          where: (final t) => Constant.bool(true),
+          where: (t) => Constant.bool(true),
         );
       });
 
@@ -185,7 +185,7 @@ void main() {
   withServerpod(
     'Given a signed-in user with an active link request,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session linkingSession;
       late AuthUserModel user;
       late AnonymousIdp anonymousIdp;
@@ -215,7 +215,7 @@ void main() {
       tearDown(() async {
         await AccountLinkRequest.db.deleteWhere(
           sessionBuilder.build(),
-          where: (final t) => Constant.bool(true),
+          where: (t) => Constant.bool(true),
         );
       });
 

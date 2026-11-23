@@ -13,10 +13,10 @@ class _MergeRecorder {
   var invoked = false;
 
   Future<void> call(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     invoked = true;
     this.userToKeepId = userToKeepId;
@@ -31,7 +31,7 @@ void main() {
 
   /// Configures [AuthServices] with a fake token manager, so that proof tokens
   /// can be issued and validated.
-  void setUpAuthServices({final AccountMergeConfig? accountMergeConfig}) {
+  void setUpAuthServices({AccountMergeConfig? accountMergeConfig}) {
     tokenStorage = FakeTokenStorage();
     AuthServices.set(
       tokenManagerBuilders: [
@@ -44,9 +44,9 @@ void main() {
 
   /// Builds a session authenticated as [authUserId] with the given [authId].
   Session sessionFor(
-    final TestSessionBuilder sessionBuilder, {
-    required final UuidValue authUserId,
-    required final String authId,
+    TestSessionBuilder sessionBuilder, {
+    required UuidValue authUserId,
+    required String authId,
   }) {
     return sessionBuilder
         .copyWith(
@@ -62,13 +62,13 @@ void main() {
   /// Runs the identity provider's attach call in a real transaction, the way an
   /// actual sign-in would.
   Future<void> attachSignIn(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
-    required final bool newAccount,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
+    required bool newAccount,
   }) {
     return session.db.transaction(
-      (final transaction) => AccountLinkRequests.attachToActiveLinkRequest(
+      (transaction) => AccountLinkRequests.attachToActiveLinkRequest(
         session,
         authUserId: authUserId,
         method: method,
@@ -80,9 +80,9 @@ void main() {
 
   /// Issues a token for [authUserId] without going through the sign-in policy.
   Future<String> issueProofToken(
-    final Session session, {
-    required final UuidValue authUserId,
-    final String method = 'google',
+    Session session, {
+    required UuidValue authUserId,
+    String method = 'google',
   }) async {
     final authSuccess = await AuthServices.instance.tokenManager.createToken(
       session,
@@ -94,10 +94,7 @@ void main() {
   }
 
   group('Given a link request lifecycle,', () {
-    withServerpod('with an authenticated user,', (
-      final sessionBuilder,
-      final endpoints,
-    ) {
+    withServerpod('with an authenticated user,', (sessionBuilder, endpoints) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
       late AuthUserModel user;
@@ -120,7 +117,7 @@ void main() {
 
           final request = await AccountLinkRequest.db.findFirstRow(
             session,
-            where: (final t) => t.authUserId.equals(user.id),
+            where: (t) => t.authUserId.equals(user.id),
           );
           expect(request, isNotNull);
           expect(request!.authId, authId);
@@ -135,13 +132,13 @@ void main() {
           await accountLinkRequests.createLinkRequest(session);
           final first = await AccountLinkRequest.db.findFirstRow(
             session,
-            where: (final t) => t.authUserId.equals(user.id),
+            where: (t) => t.authUserId.equals(user.id),
           );
 
           await accountLinkRequests.createLinkRequest(session);
           final all = await AccountLinkRequest.db.find(
             session,
-            where: (final t) => t.authUserId.equals(user.id),
+            where: (t) => t.authUserId.equals(user.id),
           );
 
           expect(all, hasLength(1));
@@ -155,7 +152,7 @@ void main() {
 
         final all = await AccountLinkRequest.db.find(
           session,
-          where: (final t) => t.authUserId.equals(user.id),
+          where: (t) => t.authUserId.equals(user.id),
         );
         expect(all, isEmpty);
       });
@@ -172,8 +169,8 @@ void main() {
     });
 
     withServerpod('with an unauthenticated caller,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
 
@@ -193,8 +190,8 @@ void main() {
 
   group('Given an abandoned link request,', () {
     withServerpod('that attached a newly created account,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
@@ -253,8 +250,8 @@ void main() {
     });
 
     withServerpod('that attached a pre-existing account,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
@@ -291,8 +288,8 @@ void main() {
 
   group('Given a sign-in that may attach to a link request,', () {
     withServerpod('with an active request,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
@@ -323,7 +320,7 @@ void main() {
 
         final request = await AccountLinkRequest.db.findFirstRow(
           session,
-          where: (final t) => t.authUserId.equals(user.id),
+          where: (t) => t.authUserId.equals(user.id),
         );
         expect(request!.linkedAuthUserId, otherUser.id);
         expect(request.linkedMethod, 'google');
@@ -350,7 +347,7 @@ void main() {
 
           final request = await AccountLinkRequest.db.findFirstRow(
             session,
-            where: (final t) => t.authUserId.equals(user.id),
+            where: (t) => t.authUserId.equals(user.id),
           );
           expect(request!.linkedAuthUserId, thirdUser.id);
           expect(request.linkedMethod, 'github');
@@ -388,15 +385,15 @@ void main() {
 
         final request = await AccountLinkRequest.db.findFirstRow(
           session,
-          where: (final t) => t.authUserId.equals(user.id),
+          where: (t) => t.authUserId.equals(user.id),
         );
         expect(request!.linkedAuthUserId, isNull);
       });
     });
 
     withServerpod('without an active request,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       late AuthUserModel user;
       late AuthUserModel otherUser;
@@ -448,8 +445,8 @@ void main() {
 
   group('Given a link request that is being executed,', () {
     withServerpod('with a newly created account attached,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
@@ -510,8 +507,8 @@ void main() {
     });
 
     withServerpod('with a pre-existing account attached,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
@@ -705,8 +702,8 @@ void main() {
     });
 
     withServerpod('with a pre-existing account but no merge configuration,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
@@ -750,8 +747,8 @@ void main() {
     });
 
     withServerpod('with an application merge handler that fails,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
@@ -764,10 +761,10 @@ void main() {
           accountMergeConfig: AccountMergeConfig(
             applicationMergeHandler:
                 (
-                  final session, {
-                  required final userToKeepId,
-                  required final userToRemoveId,
-                  required final transaction,
+                  session, {
+                  required userToKeepId,
+                  required userToRemoveId,
+                  required transaction,
                 }) => throw Exception('Application merge failed.'),
           ),
         );
@@ -824,8 +821,8 @@ void main() {
     });
 
     withServerpod('with no sign-in attached,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
@@ -859,8 +856,8 @@ void main() {
     });
 
     withServerpod('with no request at all,', (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const accountLinkRequests = AccountLinkRequests();
       late Session session;
