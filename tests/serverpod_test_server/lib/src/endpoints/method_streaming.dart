@@ -90,6 +90,15 @@ class MethodStreaming extends Endpoint {
     }
   }
 
+  static final streamCancellationFixtures =
+      <String, MethodStreamCancellationFixture>{};
+
+  Stream<int> streamWithPausedInput(
+    Session session,
+    String name,
+    Stream<int> input,
+  ) => streamCancellationFixtures[name]!.stream(session, input);
+
   Stream<int> intEchoStream(Session session, Stream<int> stream) async* {
     await for (var value in stream) {
       yield value;
@@ -499,5 +508,38 @@ class AuthenticatedMethodStreaming extends Endpoint {
     await for (var value in stream) {
       yield value;
     }
+  }
+}
+
+class MethodStreamCancellationFixture {
+  MethodStreamCancellationFixture({required this.holdCancellation});
+
+  final bool holdCancellation;
+  final entered = Completer<void>();
+  final cancelled = Completer<void>();
+  final sessionClosed = Completer<void>();
+  final releaseCancellation = Completer<void>();
+  int sessionCloseCount = 0;
+  late final StreamController<int> output;
+
+  Stream<int> stream(Session session, Stream<int> input) {
+    session.addWillCloseListener((_) {
+      sessionCloseCount++;
+      if (!sessionClosed.isCompleted) sessionClosed.complete();
+    });
+    // StreamIterator pauses its input subscription after receiving a value.
+    final iterator = StreamIterator(input);
+    output = StreamController<int>(
+      onListen: () async {
+        await iterator.moveNext();
+        entered.complete();
+      },
+      onCancel: () async {
+        cancelled.complete();
+        await iterator.cancel();
+        if (holdCancellation) await releaseCancellation.future;
+      },
+    );
+    return output.stream;
   }
 }
