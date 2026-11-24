@@ -38,34 +38,52 @@ AND NOT EXISTS (
 ''',
     );
 
-    return await Future.wait(
-      tableSchemas.map((tableSchema) async {
-        var schemaName = tableSchema.first;
-        var tableName = tableSchema.last;
+    // Bound queued metadata work independently of the schema size. Each
+    // table starts three queries, so three workers start at most nine queries.
+    var tables = tableSchemas.toList();
+    var definitions = List<TableDefinition?>.filled(tables.length, null);
+    var next = 0;
+    var failed = false;
 
-        var columns = getColumnDefinitions(
-          schemaName: schemaName,
-          tableName: tableName,
-        );
+    Future<void> worker() async {
+      while (!failed && next < tables.length) {
+        var index = next++;
+        var table = tables[index];
+        try {
+          definitions[index] = await _getTableDefinition(
+            table.first as String,
+            table.last as String,
+          );
+        } catch (_) {
+          failed = true;
+          rethrow;
+        }
+      }
+    }
 
-        var foreignKeys = getForeignKeyDefinitions(
-          schemaName: schemaName,
-          tableName: tableName,
-        );
+    await Future.wait([
+      for (var i = 0; i < 3 && i < tables.length; i++) worker(),
+    ]);
+    return [for (var definition in definitions) definition!];
+  }
 
-        var indexes = getIndexDefinitions(
-          schemaName: schemaName,
-          tableName: tableName,
-        );
-
-        return TableDefinition(
-          name: tableName,
-          schema: schemaName,
-          columns: await columns,
-          foreignKeys: await foreignKeys,
-          indexes: await indexes,
-        );
-      }),
+  Future<TableDefinition> _getTableDefinition(
+    String schemaName,
+    String tableName,
+  ) async {
+    // Attach error handlers to all three futures immediately. Awaiting them
+    // separately can leave sibling errors unhandled if an earlier query fails.
+    var parts = await Future.wait<Object>([
+      getColumnDefinitions(schemaName: schemaName, tableName: tableName),
+      getForeignKeyDefinitions(schemaName: schemaName, tableName: tableName),
+      getIndexDefinitions(schemaName: schemaName, tableName: tableName),
+    ]);
+    return TableDefinition(
+      name: tableName,
+      schema: schemaName,
+      columns: parts[0] as List<ColumnDefinition>,
+      foreignKeys: parts[1] as List<ForeignKeyDefinition>,
+      indexes: parts[2] as List<IndexDefinition>,
     );
   }
 
