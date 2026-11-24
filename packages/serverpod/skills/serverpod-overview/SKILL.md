@@ -19,7 +19,7 @@ The server exposes endpoint classes that the client calls via generated RPC clie
 
 Serverpod projects use a PostgreSQL database for persistence (SQLite is also supported) and include an ORM, caching, real-time streaming (using Dart streams), file uploads, scheduling (called future calls), logging, and a built-in web server (Relic).
 
-Each of these feature areas has its own `serverpod-*` skill; use the one that matches the task. The Insights companion app is not covered by a skill and is documented at https://docs.serverpod.dev.
+Each of these feature areas has its own `serverpod-*` skill; use the one that matches the task. Deploying the server and publishing the Flutter app are covered by [Serverpod Deployment](../serverpod-deployment/SKILL.md) and [Serverpod App Publishing](../serverpod-app-publishing/SKILL.md). The Insights companion app is not covered by a skill and is documented at https://docs.serverpod.dev.
 
 ## Running the server
 
