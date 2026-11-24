@@ -136,5 +136,17 @@ void main() {
         expect(expression.toString(), "$column IN ('$first')");
       },
     );
+
+    test(
+      'when checking if the id is NOT in a set literal then output is NOT IN expression.',
+      () {
+        var expression = column.notInSet({first});
+
+        expect(
+          expression.toString(),
+          "($column NOT IN ('$first') OR $column IS NULL)",
+        );
+      },
+    );
   });
 }
