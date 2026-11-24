@@ -152,7 +152,12 @@ final class ClientMethodStreamManager {
     );
 
     if (_webSocket == null) {
-      await openState.wait(_connectSynchronized(openState));
+      openState.isAcquiringConnection = true;
+      try {
+        await openState.wait(_connectSynchronized(openState));
+      } finally {
+        openState.isAcquiringConnection = false;
+      }
     }
     openState.throwIfClosed();
     final webSocket = _webSocket;
@@ -257,10 +262,15 @@ final class ClientMethodStreamManager {
     );
   }
 
+  bool get _hasConnectionUsers =>
+      _inboundStreams.isNotEmpty ||
+      _outboundStreams.isNotEmpty ||
+      _pendingOpens.any(
+        (opening) => opening.isAcquiringConnection && !opening.isClosed,
+      );
+
   void _tryCloseConnection() {
-    if (_inboundStreams.isEmpty &&
-        _outboundStreams.isEmpty &&
-        !_pendingOpens.any((opening) => !opening.isClosed)) {
+    if (!_hasConnectionUsers) {
       unawaited(_closeConnectionIfUnused());
     }
   }
@@ -272,11 +282,7 @@ final class ClientMethodStreamManager {
   /// the lock. In that case the connection must be kept open.
   Future<void> _closeConnectionIfUnused() async {
     await _lock.synchronized(() async {
-      if (_inboundStreams.isNotEmpty ||
-          _outboundStreams.isNotEmpty ||
-          _pendingOpens.any((opening) => !opening.isClosed)) {
-        return;
-      }
+      if (_hasConnectionUsers) return;
       _cancelKeepAlive();
       var webSocket = _webSocket;
       _webSocket = null;
@@ -778,6 +784,9 @@ final class ClientMethodStreamManager {
 class _MethodStreamOpenState {
   final _closed = Completer<void>();
   Object? _closeError;
+
+  /// Holds the connection open until the attempt can register its streams.
+  bool isAcquiringConnection = false;
 
   bool get isClosed => _closed.isCompleted;
 
