@@ -56,9 +56,7 @@ void main() async {
       () async {
         var session = await IntegrationTestServer(
           config: config,
-          runtimeParametersBuilder: (params) => const [
-            _RecordSearchPathParameters(),
-          ],
+          runtimeParametersBuilder: (params) => const [],
         ).session();
 
         var checkQuery = SearchPathsConfig().buildCheckValues();
