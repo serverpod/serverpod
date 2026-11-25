@@ -3,8 +3,8 @@ import 'package:serverpod_cli/src/create/copier.dart';
 enum TemplateIde {
   antigravity(
     filePath: '$_antigravityPluginDir/mcp_config.json',
-    config: _genericConfig,
-    moduleConfig: _genericModuleConfig,
+    config: _antigravityConfig,
+    moduleConfig: _antigravityModuleConfig,
     replacements: [
       // The Antigravity ecosystem names the Dart MCP server "dart-mcp-server",
       // so reuse key to avoid duplicates.
@@ -109,6 +109,43 @@ const _antigravityPluginName = 'serverpod-local';
 const _antigravityPluginManifest =
     '''{
   "name": "$_antigravityPluginName"
+}
+''';
+
+/// The project root as seen from [_antigravityPluginDir].
+///
+/// Antigravity starts the MCP servers of a plugin in the plugin folder, while
+/// `--server-dir` is relative to the project root.
+const _antigravityProjectRoot = '../../..';
+
+/// MCP server config for Antigravity.
+const _antigravityConfig =
+    '''{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "{serverDirRelative}"],
+      "cwd": "$_antigravityProjectRoot"
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"],
+      "cwd": "$_antigravityProjectRoot"
+    }
+  }
+}
+''';
+
+/// MCP server config for Antigravity in a module project.
+const _antigravityModuleConfig =
+    '''{
+  "mcpServers": {
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"],
+      "cwd": "$_antigravityProjectRoot"
+    }
+  }
 }
 ''';
 

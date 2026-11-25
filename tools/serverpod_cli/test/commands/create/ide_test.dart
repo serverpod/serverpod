@@ -44,7 +44,27 @@ void main() {
         expect(config, contains('"dart-mcp-server":'));
         expect(config, isNot(contains('"dart":')));
       });
+
+      test('then every MCP server starts in the project root', () {
+        expect(
+          _serverStartDirs(ide, config),
+          allOf(hasLength(2), everyElement('.')),
+        );
+      });
     });
+
+    test(
+      'when rendering the config for a module '
+      'then the Dart MCP server starts in the project root',
+      () {
+        final config = ide.effectiveConfig(
+          serverDirRelative: 'my_module_server',
+          isModule: true,
+        );
+
+        expect(_serverStartDirs(ide, config), ['.']);
+      },
+    );
 
     test(
       'when rendering a companion file that uses slots '
@@ -130,4 +150,20 @@ void main() {
       },
     );
   });
+}
+
+/// The folders the MCP servers of [config] start in, relative to the project
+/// root, when the IDE resolves each `cwd` against the folder of the config.
+Iterable<String> _serverStartDirs(TemplateIde ide, String config) {
+  final servers =
+      (jsonDecode(config) as Map<String, dynamic>)['mcpServers']
+          as Map<String, dynamic>;
+  return servers.values.map(
+    (server) => p.posix.normalize(
+      p.posix.join(
+        p.posix.dirname(ide.filePath),
+        (server as Map<String, dynamic>)['cwd'] as String,
+      ),
+    ),
+  );
 }
