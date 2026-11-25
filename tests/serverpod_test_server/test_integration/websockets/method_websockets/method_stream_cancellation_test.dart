@@ -88,104 +88,76 @@ void main() {
     );
   }
 
-  group('Given two method streams with paused inputs on one socket,', () {
-    late _PausedStreamPair streams;
-
-    setUpAll(() async {
-      streams = await openPausedStreamPair();
-    });
-
-    group(
-      'when the input closes before the output,',
-      () {
-        late int firstSessionCloseCount;
-        late bool secondProducerCancelled;
-        late Object? secondValue;
-
-        setUpAll(() async {
-          final (:connection, :first, :second, :firstFixture, :secondFixture) =
-              streams;
-          connection.closeStream(first, parameter: 'input');
-          connection.closeStream(first);
-          await firstFixture.cancelled.future.timeout(
-            const Duration(seconds: 2),
-          );
-          await firstFixture.sessionClosed.future.timeout(
-            const Duration(seconds: 2),
-          );
-          final secondMessage = connection.receive<MethodStreamMessage>(
-            (message) => message.connectionId == second,
-          );
-          secondFixture.output.add(2);
-          secondValue = (await secondMessage).object;
-          await connection.ping();
-          firstSessionCloseCount = firstFixture.sessionCloseCount;
-          secondProducerCancelled = secondFixture.cancelled.isCompleted;
-        });
-
-        test("then the first stream's session closes once.", () {
-          expect(firstSessionCloseCount, 1);
-        });
-
-        test("then the second stream's producer stays active.", () {
-          expect(secondProducerCancelled, isFalse);
-        });
-
-        test('then the second stream delivers another value.', () {
-          expect(secondValue, 2);
-        });
-      },
+  Future<_CloseOrderResult> closeFirstStream(
+    _PausedStreamPair streams,
+    List<String?> closeOrder,
+  ) async {
+    final (:connection, :first, :second, :firstFixture, :secondFixture) =
+        streams;
+    for (final parameter in closeOrder) {
+      connection.closeStream(first, parameter: parameter);
+    }
+    await firstFixture.cancelled.future.timeout(const Duration(seconds: 2));
+    await firstFixture.sessionClosed.future.timeout(const Duration(seconds: 2));
+    final secondMessage = connection.receive<MethodStreamMessage>(
+      (message) => message.connectionId == second,
     );
-  });
+    secondFixture.output.add(2);
+    final secondValue = (await secondMessage).object;
+    await connection.ping();
+    return (
+      firstSessionCloseCount: firstFixture.sessionCloseCount,
+      secondProducerCancelled: secondFixture.cancelled.isCompleted,
+      secondValue: secondValue,
+    );
+  }
 
   group('Given two method streams with paused inputs on one socket,', () {
     late _PausedStreamPair streams;
 
-    setUpAll(() async {
+    setUp(() async {
       streams = await openPausedStreamPair();
     });
 
-    group(
-      'when the output closes before the input,',
-      () {
-        late int firstSessionCloseCount;
-        late bool secondProducerCancelled;
-        late Object? secondValue;
+    group('when the input closes before the output,', () {
+      late _CloseOrderResult result;
 
-        setUpAll(() async {
-          final (:connection, :first, :second, :firstFixture, :secondFixture) =
-              streams;
-          connection.closeStream(first);
-          connection.closeStream(first, parameter: 'input');
-          await firstFixture.cancelled.future.timeout(
-            const Duration(seconds: 2),
-          );
-          await firstFixture.sessionClosed.future.timeout(
-            const Duration(seconds: 2),
-          );
-          final secondMessage = connection.receive<MethodStreamMessage>(
-            (message) => message.connectionId == second,
-          );
-          secondFixture.output.add(2);
-          secondValue = (await secondMessage).object;
-          await connection.ping();
-          firstSessionCloseCount = firstFixture.sessionCloseCount;
-          secondProducerCancelled = secondFixture.cancelled.isCompleted;
-        });
+      setUp(() async {
+        result = await closeFirstStream(streams, ['input', null]);
+      });
 
-        test("then the first stream's session closes once.", () {
-          expect(firstSessionCloseCount, 1);
-        });
+      test("then the first stream's session closes once.", () {
+        expect(result.firstSessionCloseCount, 1);
+      });
 
-        test("then the second stream's producer stays active.", () {
-          expect(secondProducerCancelled, isFalse);
-        });
+      test("then the second stream's producer stays active.", () {
+        expect(result.secondProducerCancelled, isFalse);
+      });
 
-        test('then the second stream delivers another value.', () {
-          expect(secondValue, 2);
-        });
-      },
-    );
+      test('then the second stream delivers another value.', () {
+        expect(result.secondValue, 2);
+      });
+    });
+
+    group('when the output closes before the input,', () {
+      late _CloseOrderResult result;
+
+      setUp(() async {
+        result = await closeFirstStream(streams, [null, 'input']);
+      });
+
+      test("then the first stream's session closes once.", () {
+        expect(result.firstSessionCloseCount, 1);
+      });
+
+      test("then the second stream's producer stays active.", () {
+        expect(result.secondProducerCancelled, isFalse);
+      });
+
+      test('then the second stream delivers another value.', () {
+        expect(result.secondValue, 2);
+      });
+    });
   });
 
   group(
@@ -305,6 +277,12 @@ void main() {
     },
   );
 }
+
+typedef _CloseOrderResult = ({
+  int firstSessionCloseCount,
+  bool secondProducerCancelled,
+  Object? secondValue,
+});
 
 typedef _PausedStreamPair = ({
   _Connection connection,
