@@ -108,6 +108,10 @@ class ServerProcess {
   /// URI and connects. Never completes if the URI never resolves.
   Future<void> get vmServiceReady => _vmServiceReady.future;
 
+  /// Whether [vmServiceReady] has completed: the VM got as far as running an
+  /// isolate. Stays true after the process exits.
+  bool get reachedVmService => _vmServiceReady.isCompleted;
+
   /// Completes with the process exit code when the server exits.
   Future<int> get exitCode => _exitCodeCompleter.future;
 
