@@ -74,6 +74,9 @@ class FutureCallsAnalyzer {
   /// policies must not share.
   final Set<String> _extraClassNames;
 
+  /// The configured extra classes, which must not include retry policies.
+  final List<TypeDefinition> _extraClasses;
+
   /// Create a new [FutureCallsAnalyzer] for [directory].
   ///
   /// When [collection] is provided it is reused (e.g. shared with
@@ -83,7 +86,7 @@ class FutureCallsAnalyzer {
   /// calls.
   ///
   /// Pass the configured [extraClasses] so that future call retry policies
-  /// with the same name as one of them are reported.
+  /// listed among them, or with the same name as one of them, are reported.
   FutureCallsAnalyzer({
     required Directory directory,
     AnalysisContextCollection? collection,
@@ -95,6 +98,7 @@ class FutureCallsAnalyzer {
          for (var extraClass in extraClasses ?? const <TypeDefinition>[])
            extraClass.className,
        },
+       _extraClasses = extraClasses ?? const [],
        absoluteIncludedPaths = directory.absolute.path;
 
   /// Cached per-file analysis results for future call files.
@@ -634,6 +638,7 @@ class FutureCallsAnalyzer {
     var errors = FutureCallRetryPolicyAnalyzer.validate(
       element,
       takenClassNames,
+      _extraClasses,
     );
     collector.addErrors(errors);
     return errors.isEmpty;

@@ -582,6 +582,72 @@ fields:
     },
   );
 
+  group(
+    'Given a retry policy class that is listed in extraClasses,'
+    'when analyzed,',
+    () {
+      var collector = CodeGenerationCollector();
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        // The directory is in lib, so that the policy has the same package URL
+        // as the extra class that lists it.
+        var directoryName = const Uuid().v4();
+        var directory = Directory(
+          path.join(testProjectDirectory.path, 'lib', directoryName),
+        );
+        File(path.join(directory.path, 'retry_policies.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ListedPolicy extends FutureCallRetryPolicy {
+  ListedPolicy();
+  factory ListedPolicy.fromJson(Map<String, dynamic> json) => ListedPolicy();
+
+  @override
+  Duration? nextDelay(FutureCallRetryContext context) => null;
+
+  @override
+  Map<String, dynamic> toJson() => {};
+}
+''');
+
+        analyzer = FutureCallsAnalyzer(
+          directory: directory,
+          extraClasses: [
+            TypeDefinitionBuilder()
+                .withClassName('ListedPolicy')
+                .withUrl(
+                  'package:test_server/$directoryName/retry_policies.dart',
+                )
+                .build(),
+          ],
+        );
+        await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test('then an error says the policy must be removed from extraClasses.', () {
+        expect(
+          collector.errors.map((e) => e.message),
+          [
+            'The retry policy class ListedPolicy is listed in extraClasses in '
+                'config/generator.yaml. Retry policies are server-only and are '
+                'registered in the server protocol automatically, so remove it '
+                'from extraClasses.',
+          ],
+        );
+      });
+
+      test('then the policy is not registered.', () {
+        expect(analyzer.retryPolicies, isEmpty);
+      });
+    },
+  );
+
   group('Given an analyzed directory without retry policies,', () {
     late Directory directory;
     late FutureCallsAnalyzer analyzer;

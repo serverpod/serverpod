@@ -21,15 +21,47 @@ abstract class FutureCallRetryPolicyAnalyzer {
     );
   }
 
+  /// Returns the name of the first future call retry policy class that [type]
+  /// is or contains in its type arguments or record fields, or null if there
+  /// is none.
+  ///
+  /// The base class itself and abstract policy classes are included, since
+  /// none of them can be sent to or from the client.
+  static String? findRetryPolicyClassName(DartType type) {
+    if (type is InterfaceType) {
+      var element = type.element;
+      if (element.name == _retryPolicyBaseClassName ||
+          element.allSupertypes.any(
+            (supertype) => supertype.element.name == _retryPolicyBaseClassName,
+          )) {
+        return element.displayName;
+      }
+      for (var typeArgument in type.typeArguments) {
+        var className = findRetryPolicyClassName(typeArgument);
+        if (className != null) return className;
+      }
+    } else if (type is RecordType) {
+      for (var field in [...type.positionalFields, ...type.namedFields]) {
+        var className = findRetryPolicyClassName(field.type);
+        if (className != null) return className;
+      }
+    }
+    return null;
+  }
+
   /// Validates that [element] can be registered in the protocol and loaded
   /// again, and returns the errors found.
   ///
   /// [takenClassNames] are the names of the other classes and models in the
   /// protocol. The protocol identifies classes by name, so a retry policy must
   /// not share its name with any of them.
+  ///
+  /// [extraClasses] are the configured extra classes. Retry policies are
+  /// server-only, so a retry policy must not be one of them.
   static List<SourceSpanSeverityException> validate(
     ClassElement element,
     Set<String> takenClassNames,
+    List<TypeDefinition> extraClasses,
   ) {
     var className = element.displayName;
     var errors = <SourceSpanSeverityException>[];
@@ -45,7 +77,24 @@ abstract class FutureCallRetryPolicyAnalyzer {
       );
     }
 
-    if (takenClassNames.contains(className)) {
+    var type = typeDefinition(element);
+    var isExtraClass = extraClasses.any(
+      (extraClass) =>
+          extraClass.className == type.className && extraClass.url == type.url,
+    );
+
+    if (isExtraClass) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The retry policy class $className is listed in extraClasses in '
+          'config/generator.yaml. Retry policies are server-only and are '
+          'registered in the server protocol automatically, so remove it from '
+          'extraClasses.',
+          element.span,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+    } else if (takenClassNames.contains(className)) {
       errors.add(
         SourceSpanSeverityException(
           'The retry policy class $className has the same name as another '
