@@ -175,7 +175,10 @@ class StatefulAnalyzer {
     state.model = doc;
 
     // Can be optimized to only resolve the model we know has changed.
-    SerializableModelAnalyzer.resolveModelDependencies(models);
+    SerializableModelAnalyzer.resolveModelDependencies(
+      models,
+      defaultSchema: config.defaultSchema,
+    );
 
     // This can be optimized to only validate the files we know have related errors.
     _validateAllModels(reportIssuesForPaths: null);
@@ -191,7 +194,10 @@ class StatefulAnalyzer {
       state.model = model;
     }
 
-    SerializableModelAnalyzer.resolveModelDependencies(models);
+    SerializableModelAnalyzer.resolveModelDependencies(
+      models,
+      defaultSchema: config.defaultSchema,
+    );
   }
 
   void _validateAllModels({Set<String>? reportIssuesForPaths}) {

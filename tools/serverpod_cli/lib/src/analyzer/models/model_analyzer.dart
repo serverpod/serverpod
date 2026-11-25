@@ -82,10 +82,12 @@ class SerializableModelAnalyzer {
 
   /// Resolves dependencies between models, this method mutates the input.
   static void resolveModelDependencies(
-    List<SerializableModelDefinition> modelDefinitions,
-  ) {
+    List<SerializableModelDefinition> modelDefinitions, {
+    String? defaultSchema,
+  }) {
     return ModelDependencyResolver.resolveModelDependencies(
       modelDefinitions,
+      defaultSchema: defaultSchema,
     );
   }
 
