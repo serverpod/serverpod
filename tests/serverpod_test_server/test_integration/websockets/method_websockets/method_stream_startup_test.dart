@@ -41,8 +41,13 @@ void main() {
 
   Future<_WebSocketRelay> openWire({
     bool Function(WebSocketMessage)? hold,
+    Future<void> Function()? beforeUpgrade,
   }) async {
-    final wire = await _WebSocketRelay.start(server, hold: hold);
+    final wire = await _WebSocketRelay.start(
+      server,
+      hold: hold,
+      beforeUpgrade: beforeUpgrade,
+    );
     addTearDown(wire.close);
     return wire;
   }
@@ -80,6 +85,131 @@ void main() {
 
         test('then the client sends no startup ping.', () {
           expect(pings, 0);
+        });
+      },
+    );
+  });
+
+  group('Given a streaming call waiting for the WebSocket upgrade,', () {
+    late _UpgradeGate upgrade;
+    late _WebSocketRelay wire;
+    late Client client;
+    late _Input input;
+    late StreamSubscription<int> subscription;
+
+    setUpAll(() async {
+      upgrade = _UpgradeGate();
+      wire = await openWire(beforeUpgrade: upgrade.wait);
+      client = _client(wire, openTimeout: const Duration(seconds: 10));
+      input = _Input(42);
+      subscription = client.methodStreaming
+          .intEchoStream(input.stream)
+          .listen(
+            (_) {},
+          );
+      addTearDown(subscription.cancel);
+      addTearDown(upgrade.release);
+      await upgrade.requested;
+    });
+
+    group('when the caller cancels and the upgrade later completes,', () {
+      late bool socketClosed;
+      late List<Object> newEvents;
+      late List<String> methods;
+      late bool subscribed;
+
+      setUpAll(() async {
+        await subscription.cancel().timeout(_deadline);
+        upgrade.release();
+        socketClosed = await wire.firstSocketClosesWithin(_socketCloseTimeout);
+        newEvents = await _events(client.methodStreaming.intStreamFromValue(1));
+        methods = wire.methods;
+        subscribed = input.listened;
+      });
+
+      test('then the unused socket closes.', () {
+        expect(socketClosed, isTrue);
+      });
+
+      test('then only the new call reaches the server.', () {
+        expect(methods, ['intStreamFromValue']);
+      });
+
+      test('then the cancelled input stays untouched.', () {
+        expect(subscribed, isFalse);
+      });
+
+      test('then the new call receives its result.', () {
+        expect(newEvents, [0]);
+      });
+    });
+  });
+
+  group('Given a streaming call waiting for the WebSocket upgrade,', () {
+    late _UpgradeGate upgrade;
+    late _WebSocketRelay wire;
+    late Client client;
+    late _Input input;
+    late Future<List<Object>> output;
+
+    setUpAll(() async {
+      upgrade = _UpgradeGate();
+      wire = await openWire(beforeUpgrade: upgrade.wait);
+      client = _client(wire, openTimeout: const Duration(seconds: 10));
+      addTearDown(upgrade.release);
+      input = _Input(42);
+      output = _events(client.methodStreaming.intEchoStream(input.stream));
+      await upgrade.requested;
+    });
+
+    group(
+      'when the caller shuts down connections before the upgrade completes,',
+      () {
+        late List<Object> failedEvents;
+        late bool socketClosed;
+        late List<Object> newEvents;
+        late List<String> methods;
+        late bool subscribed;
+
+        setUpAll(() async {
+          final shutdown = client.closeStreamingMethodConnections();
+          failedEvents = await output.timeout(
+            _socketCloseTimeout,
+            onTimeout: () => const <Object>[],
+          );
+          upgrade.release();
+          await shutdown.timeout(_deadline);
+          socketClosed = await wire.firstSocketClosesWithin(
+            _socketCloseTimeout,
+          );
+          newEvents = await _events(
+            client.methodStreaming.intStreamFromValue(1),
+          );
+          methods = wire.methods;
+          subscribed = input.listened;
+        });
+
+        test(
+          'then the output receives one connection error and ends before the upgrade completes.',
+          () {
+            expect(failedEvents, [isA<WebSocketClosedException>()]);
+          },
+        );
+
+        test('then the unused socket closes after the upgrade.', () {
+          expect(socketClosed, isTrue);
+        });
+
+        test('then only the new call reaches the server.', () {
+          expect(methods, ['intStreamFromValue']);
+        });
+
+        test('then the first input stays untouched.', () {
+          expect(subscribed, isFalse);
+        });
+
+        test('then the new call receives its result.', () {
+          expect(newEvents, [0]);
         });
       },
     );
@@ -672,7 +802,7 @@ void main() {
     );
   });
 
-  group('Given a streaming call with queued input waiting for credentials,', () {
+  group('Given a streaming call awaiting credentials with queued input,', () {
     late _WebSocketRelay wire;
     late Client client;
     late _DeferredCredentials credentials;
@@ -737,7 +867,7 @@ void main() {
   });
 
   group(
-    'Given a rejected streaming call whose credential refresh is pending,',
+    'Given a rejected streaming call awaiting credential refresh,',
     () {
       late _WebSocketRelay wire;
       late _RefreshingCredentials credentials;
@@ -892,7 +1022,7 @@ void main() {
     );
   });
 
-  group('Given a rejected streaming call with a pending refresh,', () {
+  group('Given a rejected streaming call awaiting credential refresh,', () {
     late _WebSocketRelay wire;
     late Client client;
     late _RefreshingCredentials credentials;
@@ -1132,27 +1262,46 @@ class _RefreshingCredentials extends _Credentials
   }
 }
 
+class _UpgradeGate {
+  final _requested = Completer<void>();
+  final _released = Completer<void>();
+
+  Future<void> get requested => _requested.future.timeout(_deadline);
+
+  Future<void> wait() {
+    if (!_requested.isCompleted) _requested.complete();
+    return _released.future;
+  }
+
+  void release() {
+    if (!_released.isCompleted) _released.complete();
+  }
+}
+
 /// Forwards real frames between the generated client and Serverpod. Tests can
 /// retain server frames and deliver them later to control their arrival order.
 class _WebSocketRelay {
-  _WebSocketRelay(this._http, this._server, this._hold) {
+  _WebSocketRelay(this._http, this._server, this._hold, this._beforeUpgrade) {
     _http.listen(_relay);
   }
 
   static Future<_WebSocketRelay> start(
     Serverpod server, {
     bool Function(WebSocketMessage)? hold,
+    Future<void> Function()? beforeUpgrade,
   }) async {
     return _WebSocketRelay(
       await HttpServer.bind(InternetAddress.loopbackIPv4, 0),
       server,
       hold,
+      beforeUpgrade,
     );
   }
 
   final HttpServer _http;
   final Serverpod _server;
   final bool Function(WebSocketMessage)? _hold;
+  final Future<void> Function()? _beforeUpgrade;
   final connections = <_SocketPair>[];
   final sent = <WebSocketMessage>[];
   final _received = <_Frame>[];
@@ -1173,6 +1322,7 @@ class _WebSocketRelay {
   List<String> get methods => opens.map((open) => open.method).toList();
 
   Future<void> _relay(HttpRequest request) async {
+    if (_beforeUpgrade case final wait?) await wait();
     final upstream = await WebSocket.connect(_server.methodWebSocketUrl);
     final downstream = await WebSocketTransformer.upgrade(request);
     final pair = _SocketPair(upstream, downstream);
