@@ -582,4 +582,63 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given a future call that always fails and is scheduled with a retry policy that can no longer be saved after it was asked for a delay,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late _RetryTestHarness harness;
+      late FailingTestCall testCall;
+
+      setUp(() async {
+        harness = _RetryTestHarness(sessionBuilder);
+        testCall = FailingTestCall(failures: 100);
+        await harness.schedule(retryPolicy: TestUnsavableRetryPolicy());
+      });
+
+      tearDown(() => harness.dispose());
+
+      group(
+        'when the due future calls are run twice,',
+        () {
+          setUp(() async {
+            await harness.runDueCalls(testCall);
+            await harness.runDueCalls(testCall);
+          });
+
+          test(
+            'then the call ran once.',
+            () {
+              expect(testCall.runs, 1);
+            },
+          );
+
+          test(
+            'then the entry is deleted.',
+            () async {
+              expect(await harness.findEntries(), isEmpty);
+            },
+          );
+
+          test(
+            'then the error of the call and the error of saving the policy are reported.',
+            () {
+              expect(harness.diagnostics.callExceptions, [
+                isA<Exception>().having(
+                  (e) => e.toString(),
+                  'toString',
+                  'Exception: FailingTestCall failed on run 1.',
+                ),
+                isA<StateError>().having(
+                  (e) => e.message,
+                  'message',
+                  'TestUnsavableRetryPolicy cannot be saved anymore.',
+                ),
+              ]);
+            },
+          );
+        },
+      );
+    },
+  );
 }

@@ -104,3 +104,31 @@ class TestThrowingRetryPolicy extends FutureCallRetryPolicy {
   @override
   Map<String, dynamic> toJson() => {};
 }
+
+/// A retry policy that can be saved when the call is scheduled, but not after
+/// it was asked for a delay, used to test that a policy that can no longer be
+/// saved stops the retries.
+class TestUnsavableRetryPolicy extends FutureCallRetryPolicy {
+  /// Whether [nextDelay] was called.
+  bool wasAsked = false;
+
+  TestUnsavableRetryPolicy();
+
+  factory TestUnsavableRetryPolicy.fromJson(Map<String, dynamic> json) {
+    return TestUnsavableRetryPolicy();
+  }
+
+  @override
+  Duration? nextDelay(FutureCallRetryContext context) {
+    wasAsked = true;
+    return Duration.zero;
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    if (wasAsked) {
+      throw StateError('TestUnsavableRetryPolicy cannot be saved anymore.');
+    }
+    return {};
+  }
+}

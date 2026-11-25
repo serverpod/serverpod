@@ -11,9 +11,9 @@ import 'future_call_retry_policy_serialization.dart';
 import 'future_call_scanner.dart';
 import 'serverpod_task_scheduler.dart';
 
-/// A retry of a failed future call: the delay before it and the retry policy
-/// to save with it.
-typedef _Retry = ({Duration delay, FutureCallRetryPolicy policy});
+/// A retry of a failed future call: the delay before it and the serialized
+/// retry policy to save with it.
+typedef _Retry = ({Duration delay, String serializedRetryPolicy});
 
 /// A function that builds a [Session] for a [FutureCall].
 ///
@@ -467,8 +467,8 @@ class FutureCallManager {
   /// [futureCallEntry] is retried.
   ///
   /// Returns the retry to save, or `null` when the call is not retried. An
-  /// error from `shouldRetry` or from the policy is reported and means the
-  /// call is not retried.
+  /// error from `shouldRetry` or from the policy, including one when saving
+  /// the policy's state, is reported and means the call is not retried.
   Future<_Retry?> _decideRetry({
     required FutureCallEntry futureCallEntry,
     required FutureCall futureCall,
@@ -497,7 +497,10 @@ class FutureCallManager {
         return null;
       }
 
-      return (delay: delay, policy: policy);
+      // Serialized here rather than when the retry is saved, so that a
+      // policy that can't be serialized stops the retries instead of failing
+      // the same attempt over and over.
+      return (delay: delay, serializedRetryPolicy: _encodeRetryPolicy(policy));
     } catch (policyError, policyStackTrace) {
       _diagnosticsService.submitCallException(
         policyError,
@@ -533,7 +536,7 @@ class FutureCallManager {
         futureCallEntry: futureCallEntry,
         nextTime: nextTime,
         retryAttempt: retryAttempt,
-        policy: retry.policy,
+        serializedRetryPolicy: retry.serializedRetryPolicy,
       );
 
       if (retried) {
@@ -558,8 +561,8 @@ class FutureCallManager {
   }
 
   /// Moves [futureCallEntry] to [nextTime] with [retryAttempt] failed
-  /// attempts and the current state of [policy], and releases its claim, in
-  /// one transaction.
+  /// attempts and [serializedRetryPolicy], and releases its claim, in one
+  /// transaction.
   ///
   /// Returns `false` if the entry no longer exists, because it was cancelled
   /// while the call ran.
@@ -567,7 +570,7 @@ class FutureCallManager {
     required FutureCallEntry futureCallEntry,
     required DateTime nextTime,
     required int retryAttempt,
-    required FutureCallRetryPolicy policy,
+    required String serializedRetryPolicy,
   }) {
     return _internalSession.db.transaction((transaction) async {
       final updated = await FutureCallEntry.db.updateWhere(
@@ -576,7 +579,7 @@ class FutureCallManager {
         columnValues: (t) => [
           t.time(nextTime),
           t.failedAttempts(retryAttempt),
-          t.serializedRetryPolicy(_encodeRetryPolicy(policy)),
+          t.serializedRetryPolicy(serializedRetryPolicy),
         ],
         transaction: transaction,
       );
