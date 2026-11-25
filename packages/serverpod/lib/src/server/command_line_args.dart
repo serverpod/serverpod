@@ -81,7 +81,7 @@ class CommandLineArgs {
           'apply-repair-migration',
           abbr: 'A',
         );
-      var results = argParser.parse(args);
+      var results = argParser.parse(_filterKnownArgs(argParser, args));
 
       _runMode = results['mode'];
       _serverId = results['server-id'];
@@ -146,6 +146,63 @@ class CommandLineArgs {
       CliArgsConstants.applyMigrations: _applyMigrations,
       CliArgsConstants.applyRepairMigration: _applyRepairMigration,
     };
+  }
+
+  // Strips tokens that the ArgParser does not know about so that user-defined
+  // custom flags (e.g. --myCustomFlag) are silently ignored instead of
+  // causing ArgParser.parse to throw and wipe out all known parsed values.
+  static List<String> _filterKnownArgs(ArgParser parser, List<String> args) {
+    final knownLong = <String>{};
+    final knownAbbr = <String>{};
+    final valueOptions = <String>{};
+
+    for (final entry in parser.options.entries) {
+      final longForm = '--${entry.key}';
+      knownLong.add(longForm);
+      final abbr = entry.value.abbr;
+      if (abbr != null) knownAbbr.add('-$abbr');
+      if (entry.value.type != OptionType.flag) {
+        valueOptions.add(longForm);
+        if (abbr != null) valueOptions.add('-$abbr');
+      }
+    }
+
+    final result = <String>[];
+    var i = 0;
+    while (i < args.length) {
+      final arg = args[i];
+      if (arg == '--') break;
+
+      String? name;
+      var hasEmbeddedValue = false;
+
+      if (arg.startsWith('--')) {
+        final eq = arg.indexOf('=');
+        if (eq >= 0) {
+          name = arg.substring(0, eq);
+          hasEmbeddedValue = true;
+        } else {
+          name = arg;
+        }
+      } else if (arg.startsWith('-') && arg.length == 2) {
+        name = arg;
+      }
+
+      if (name != null &&
+          (knownLong.contains(name) || knownAbbr.contains(name))) {
+        result.add(arg);
+        if (!hasEmbeddedValue &&
+            valueOptions.contains(name) &&
+            i + 1 < args.length &&
+            !args[i + 1].startsWith('-')) {
+          i++;
+          result.add(args[i]);
+        }
+      }
+
+      i++;
+    }
+    return result;
   }
 
   /// Returns a string representation of the command line arguments.
