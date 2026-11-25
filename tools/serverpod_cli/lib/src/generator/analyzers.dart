@@ -255,13 +255,15 @@ class Analyzers {
   /// [FileStamp] tokens of the generated model files as the analysis context
   /// was last told about them.
   ///
-  /// Seeded around the first [update] and kept up to date by the project
-  /// model generation in [performGenerate]. File stamps rather than content
-  /// fingerprints, as in the generation staleness check: every model
-  /// generation checks every model file, reading them all measurably slows it
-  /// down in a large project, and a pull or checkout that rewrites a file
-  /// gives it a new stamp. A rewrite that keeps both the size and the
-  /// modification time goes unnoticed until the file is next written.
+  /// Seeded around the first [update], then checked and kept up to date by
+  /// [performGenerate]. File stamps rather than content fingerprints, as in
+  /// the generation staleness check, because two of the places that check
+  /// them have no file content at hand: the seeding, which would otherwise
+  /// read every generated file at start-up, and runs that do not generate
+  /// models, which would otherwise read every model file on each endpoint
+  /// edit. A pull or checkout that rewrites a file gives it a new stamp. A
+  /// rewrite that keeps both the size and the modification time goes
+  /// unnoticed until the file is next written.
   ///
   /// Keyed by [_fingerprintKey].
   final Map<String, String> _modelFileStamps = {};
@@ -315,28 +317,69 @@ class Analyzers {
     GeneratorConfig config,
     GeneratedFilePaths modelFiles, {
     Iterable<String> alongWith = const [],
-  }) async {
+  }) => _refreshModelFilesChangedOnDisk(
+    _serverModelFiles(config, modelFiles.all),
+    alongWith: [...modelFiles.written, ...alongWith],
+  );
+
+  /// Refreshes the analysis context with the model files of [models] that
+  /// changed on disk since the context was last told about them, for a run
+  /// that does not generate models.
+  ///
+  /// Such a run still analyzes endpoints and future calls against the
+  /// generated models, and the files of a pull can reach it in an earlier
+  /// watcher batch than the model files they come with. Only files already in
+  /// [_modelFileStamps] are checked; the others are left to the next model
+  /// generation.
+  Future<void> _refreshRecordedModelFiles(
+    GeneratorConfig config,
+    List<SerializableModelDefinition> models,
+  ) => _refreshModelFilesChangedOnDisk(
+    _serverModelFiles(
+      config,
+      ServerpodCodeGenerator.serializableModelPaths(
+        models: models,
+        config: config,
+      ),
+    ).where((path) => _modelFileStamps.containsKey(_fingerprintKey(path))),
+  );
+
+  /// [modelFiles] without the client package's, which the server's analysis
+  /// context never reads.
+  static List<String> _serverModelFiles(
+    GeneratorConfig config,
+    Iterable<String> modelFiles,
+  ) {
     final clientPackageDir = p.absolute(
       p.joinAll(config.clientPackagePathParts),
     );
-    final serverModelFiles = modelFiles.all
+    return modelFiles
         .where((path) => !isWithinAnyDirectory(path, {clientPackageDir}))
         .toList();
-    final stamps = await _stampTokens(serverModelFiles);
-    final changedOnDisk = {
-      for (final MapEntry(key: path, value: stamp) in stamps.entries)
-        if (_modelFileStamps[_fingerprintKey(path)] != stamp) path,
-    };
+  }
 
-    await refreshAnalysisContext(_futureCalls.collection, [
-      ...modelFiles.written,
-      ...changedOnDisk,
-      ...alongWith,
-    ]);
+  /// Refreshes the analysis context with those of [paths] whose [FileStamp]
+  /// differs from [_modelFileStamps], together with [alongWith], and records
+  /// the stamps of [paths].
+  Future<void> _refreshModelFilesChangedOnDisk(
+    Iterable<String> paths, {
+    Iterable<String> alongWith = const [],
+  }) async {
+    final pathList = paths.toList();
+    final stamps = await _stampTokens(pathList);
+    final changedOnDisk = [
+      for (final path in pathList)
+        if (_modelFileStamps[_fingerprintKey(path)] != stamps[path]) path,
+    ];
+
+    final toRefresh = [...alongWith, ...changedOnDisk];
+    if (toRefresh.isNotEmpty) {
+      await refreshAnalysisContext(_futureCalls.collection, toRefresh);
+    }
 
     // Recorded only once the refresh went through, so a failed one leaves the
     // files to be refreshed next time.
-    for (final path in serverModelFiles) {
+    for (final path in pathList) {
       final stamp = stamps[path];
       if (stamp == null) {
         _modelFileStamps.remove(_fingerprintKey(path));
@@ -567,6 +610,8 @@ class Analyzers {
           modelFiles,
           alongWith: tempProtocolPaths,
         );
+      } else {
+        await _refreshRecordedModelFiles(config, models);
       }
 
       log.debug('Analyzing the future calls models.');

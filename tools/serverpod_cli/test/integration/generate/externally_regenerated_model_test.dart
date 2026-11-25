@@ -121,6 +121,33 @@ fields:
         });
       });
 
+      // The endpoint arriving in an earlier watcher batch than the model file.
+      // Only files the analyzers recorded are checked before the first model
+      // generation, so this also fails when the seeding stops working.
+      group(
+        'when incremental generation runs for the endpoint before the model,',
+        () {
+          late GenerateResult result;
+
+          setUp(() async {
+            result = await analyzeAndGenerate(
+              config: config,
+              analyzers: analyzers,
+              affectedPaths: {endpointFile.path},
+              incremental: true,
+            );
+          });
+
+          test('then generation succeeds.', () {
+            expect(result.success, isTrue);
+          });
+
+          test('then the endpoint stays in the generated endpoints.', () {
+            expect(generatedEndpoints(), contains('NoteEndpoint()'));
+          });
+        },
+      );
+
       group('when a full generation runs with the same analyzers,', () {
         late GenerateResult result;
 
