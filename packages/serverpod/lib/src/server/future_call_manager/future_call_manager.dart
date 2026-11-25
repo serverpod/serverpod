@@ -321,6 +321,21 @@ class FutureCallManager {
                 (t.lastHeartbeatTime < _staleClaimThreshold),
           );
 
+          // A retry moves the entry to a later time and releases its claim,
+          // so a copy of the entry scanned earlier and still queued could
+          // otherwise claim it and run it early, with outdated data. Only
+          // claim the entry if it is still due and has not failed since it
+          // was scanned.
+          final scannedEntry = await FutureCallEntry.db.findFirstRow(
+            _internalSession,
+            where: (t) =>
+                t.id.equals(futureCallEntry.id) &
+                (t.time <= DateTime.now().toUtc()) &
+                t.failedAttempts.equals(futureCallEntry.failedAttempts),
+            transaction: transaction,
+          );
+          if (scannedEntry == null) return <FutureCallClaimEntry>[];
+
           final claim = FutureCallClaimEntry(
             futureCallId: futureCallEntry.id,
             lastHeartbeatTime: DateTime.now().toUtc(),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/futureCalls/test_retry_policies.dart';
@@ -11,6 +13,7 @@ import '../utils/recording_future_call_diagnostics_service.dart';
 
 const _callName = 'retry-test-call';
 const _identifier = 'retry-test-call-identifier';
+const _blockingCallName = 'retry-test-blocking-call';
 
 /// A future call that fails a given number of times before it succeeds.
 class FailingTestCall extends FutureCall<test_server.SimpleData>
@@ -33,6 +36,24 @@ class FailingTestCall extends FutureCall<test_server.SimpleData>
     if (runs <= failures) {
       throw Exception('FailingTestCall failed on run $runs.');
     }
+  }
+}
+
+/// A future call that runs until it is released.
+class _BlockingTestCall extends FutureCall<test_server.SimpleData>
+    implements InvokableFutureCall<test_server.SimpleData> {
+  /// Completes when the call starts running.
+  final started = Completer<void>();
+
+  final _released = Completer<void>();
+
+  /// Lets the running call finish.
+  void release() => _released.complete();
+
+  @override
+  Future<void> invoke(Session session, test_server.SimpleData? object) async {
+    started.complete();
+    await _released.future;
   }
 }
 
@@ -61,10 +82,11 @@ class _RetryTestHarness {
     );
   }
 
-  /// Schedules the future call to run now.
+  /// Schedules the future call to run at [time], or now.
   Future<void> schedule({
     FutureCallRetryPolicy? retryPolicy,
     FutureCallScheduling? scheduling,
+    DateTime? time,
   }) async {
     var futureCallManager = FutureCallManagerBuilder.fromTestSessionBuilder(
       _sessionBuilder,
@@ -72,7 +94,7 @@ class _RetryTestHarness {
     await futureCallManager.scheduleFutureCall(
       _callName,
       null,
-      DateTime.now().toUtc(),
+      time ?? DateTime.now().toUtc(),
       'default',
       _identifier,
       scheduling: scheduling,
@@ -635,6 +657,99 @@ void main() {
                   'TestUnsavableRetryPolicy cannot be saved anymore.',
                 ),
               ]);
+            },
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a failing future call with a retry policy that one future call manager has queued behind a running future call,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late _RetryTestHarness harness;
+      late FailingTestCall testCall;
+      late _BlockingTestCall blockingCall;
+      late FutureCallManager queueingManager;
+      late DateTime retryTime;
+
+      setUp(() async {
+        harness = _RetryTestHarness(sessionBuilder);
+        testCall = FailingTestCall(failures: 100);
+        blockingCall = _BlockingTestCall();
+
+        var now = DateTime.now().toUtc();
+        queueingManager =
+            FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+                .withDiagnosticsService(harness.diagnostics)
+                .withConfig(
+                  FutureCallConfig(
+                    concurrencyLimit: 1,
+                    scanInterval: const Duration(milliseconds: 10),
+                  ),
+                )
+                .build();
+        queueingManager.registerFutureCall(blockingCall, _blockingCallName);
+        queueingManager.registerFutureCall(testCall, _callName);
+
+        // The blocking call is due first, so it runs first and the failing
+        // call waits in the queue of this manager.
+        await queueingManager.scheduleFutureCall(
+          _blockingCallName,
+          null,
+          now.subtract(const Duration(seconds: 2)),
+          'default',
+          null,
+        );
+        await harness.schedule(
+          retryPolicy: const FixedDelayRetryPolicy(
+            maxAttempts: 3,
+            delay: Duration(hours: 1),
+          ),
+          time: now.subtract(const Duration(seconds: 1)),
+        );
+
+        await queueingManager.start();
+        await blockingCall.started.future;
+      });
+
+      tearDown(() async {
+        await queueingManager.stop();
+        await FutureCallEntry.db.deleteWhere(
+          harness.session,
+          where: (entry) => entry.name.equals(_blockingCallName),
+        );
+        await harness.dispose();
+      });
+
+      group(
+        'when another future call manager runs the failing call and the first manager then runs its queued copy,',
+        () {
+          setUp(() async {
+            retryTime = DateTime.now().toUtc().add(const Duration(hours: 1));
+            await harness.runDueCalls(testCall);
+            blockingCall.release();
+            await queueingManager.stop();
+          });
+
+          test(
+            'then the call ran once.',
+            () {
+              expect(testCall.runs, 1);
+            },
+          );
+
+          test(
+            'then the entry keeps the retry with one failed attempt in an hour.',
+            () async {
+              var entries = await harness.findEntries();
+              expect(entries, hasLength(1));
+              expect(entries.single.failedAttempts, 1);
+              expect(
+                entries.single.time.difference(retryTime).abs(),
+                lessThan(const Duration(minutes: 1)),
+              );
             },
           );
         },
