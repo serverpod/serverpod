@@ -8,7 +8,7 @@ As a prerequisite for publishing, you need to:
 
 1. Open a branch for the release.
 2. Update the `version` in [SERVERPOD_VERSION](SERVERPOD_VERSION) to the new release version.
-3. Update the central [CHANGELOG.md](CHANGELOG.md) file with the changes for the new version.
+3. Run `dart run melos run changelog_collect` to move the pending entries from [changelog.d](changelog.d/README.md) into the central [CHANGELOG.md](CHANGELOG.md) file under the new version, then edit the new section as needed (grouping entries, adding highlights).
 4. Generate the pubspecs for all packages by running [util/update_pubspecs](util/update_pubspecs).
 5. Merge the changes into the main branch.
 
