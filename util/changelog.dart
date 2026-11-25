@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cli_tools/better_command_runner.dart';
+import 'package:config/command.dart' show CommandContext;
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 
@@ -50,8 +51,9 @@ Future<void> main(List<String> arguments) async {
 
   try {
     await runner.run(arguments);
-  } on UsageException catch (e) {
-    _fail('$e');
+  } on UsageException {
+    // The runner already printed the usage error.
+    exit(1);
   }
 }
 
@@ -97,13 +99,10 @@ class _AddCommand extends BetterCommand<_AddOption, void> {
       'Add changelog entries for a pull request to $_changelogDir.';
 
   @override
-  bool get takesArguments => false;
-
-  @override
-  Future<void> runWithConfig(Configuration<_AddOption> commandConfig) => _add(
-    pr: commandConfig.optionalValue(_AddOption.pr)?.toString(),
-    author: commandConfig.optionalValue(_AddOption.author),
-    entries: commandConfig.optionalValue(_AddOption.entry) ?? const [],
+  Future<void> run(CommandContext<_AddOption, void> context) => _add(
+    pr: context.config.optionalValue(_AddOption.pr)?.toString(),
+    author: context.config.optionalValue(_AddOption.author),
+    entries: context.config.optionalValue(_AddOption.entry) ?? const [],
   );
 }
 
@@ -134,11 +133,8 @@ class _CollectCommand extends BetterCommand<_CollectOption, void> {
       'files.';
 
   @override
-  bool get takesArguments => false;
-
-  @override
-  void runWithConfig(Configuration<_CollectOption> commandConfig) =>
-      _collect(version: commandConfig.optionalValue(_CollectOption.version));
+  void run(CommandContext<_CollectOption, void> context) =>
+      _collect(version: context.config.optionalValue(_CollectOption.version));
 }
 
 /// A command without options.
@@ -154,11 +150,7 @@ class _SimpleCommand extends BetterCommand<OptionDefinition, void> {
   final void Function() _action;
 
   @override
-  bool get takesArguments => false;
-
-  @override
-  void runWithConfig(Configuration<OptionDefinition> commandConfig) =>
-      _action();
+  void run(CommandContext<OptionDefinition, void> context) => _action();
 }
 
 const _changelogDir = 'changelog.d';
