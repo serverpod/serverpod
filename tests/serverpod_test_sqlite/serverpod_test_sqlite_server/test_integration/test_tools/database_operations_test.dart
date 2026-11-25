@@ -160,6 +160,10 @@ void main() {
         setUpAll(() async {
           endpointCall = endpoints.testTools
               .createSimpleDatasInParallelTransactionCalls(sessionBuilder);
+          // The test below awaits the call. Until it does, nothing listens to
+          // it, and an error that arrives first would be reported as
+          // unhandled, failing this setUpAll.
+          endpointCall.ignore();
         });
 
         test('then should enter invariant state and throw', () async {
