@@ -39,6 +39,12 @@ abstract class FutureCall<T extends SerializableModel> {
   ///
   /// [session] is the session of the run that failed. [context] describes the
   /// failure. Returns `true` by default.
+  ///
+  /// For future calls generated from the methods of a class, this is called on
+  /// a different instance of the class than the one that ran the method, so it
+  /// can't read state set on the instance during the run. Decide from the
+  /// [FutureCallRetryContext.error] instead. To pass details of the run, throw
+  /// an exception that carries them.
   FutureOr<bool> shouldRetry(Session session, FutureCallRetryContext context) {
     return true;
   }
