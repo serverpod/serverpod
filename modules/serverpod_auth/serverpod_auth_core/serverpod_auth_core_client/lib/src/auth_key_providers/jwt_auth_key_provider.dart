@@ -126,21 +126,6 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
   final Future<void> Function()? invalidateCachedAuthInfo;
   final CrossTabLock? Function() getCrossTabRefreshLock;
 
-  bool _warnedMissingCrossTabLock = false;
-
-  void _warnMissingCrossTabLock() {
-    if (_warnedMissingCrossTabLock) return;
-    _warnedMissingCrossTabLock = true;
-    developer.log(
-      'Header-based JWT refresh is running without cross-tab coordination: '
-      'the Web Locks API is unavailable (typically an insecure http:// '
-      'origin). Concurrent refreshes from multiple tabs may race and sign '
-      'the user out.',
-      name: 'serverpod_auth',
-      level: 900,
-    );
-  }
-
   _HeaderJwtRefreshDelegate({
     required super.getAuthInfo,
     required super.onRefreshAuthInfo,
@@ -167,7 +152,6 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
 
     final crossTabLock = getCrossTabRefreshLock();
     if (crossTabLock == null) {
-      _warnMissingCrossTabLock();
       return _refresh(refreshToken: refreshToken);
     }
 
