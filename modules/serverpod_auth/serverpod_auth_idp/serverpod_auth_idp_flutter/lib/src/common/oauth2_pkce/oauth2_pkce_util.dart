@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import '../utils.dart';
@@ -158,9 +159,22 @@ class OAuth2PkceUtil {
       return (code: code, codeVerifier: codeVerifier);
     } on OAuth2PkceException {
       rethrow;
-    } catch (e) {
+    } on PlatformException catch (e, s) {
+      if (e.code.toLowerCase() == 'canceled') {
+        throw OAuth2PkceUserCancelledException(
+          e.message ?? 'User canceled login',
+        );
+      }
       throw OAuth2PkceUnknownException(
         'Unexpected error during authorization: ${e.toString()}',
+        rawException: e,
+        rawStackTrace: s,
+      );
+    } catch (e, s) {
+      throw OAuth2PkceUnknownException(
+        'Unexpected error during authorization: ${e.toString()}',
+        rawException: e,
+        rawStackTrace: s,
       );
     }
   }

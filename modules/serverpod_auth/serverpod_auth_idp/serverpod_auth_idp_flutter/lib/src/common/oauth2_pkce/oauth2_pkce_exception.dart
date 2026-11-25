@@ -39,5 +39,15 @@ class OAuth2PkceProviderErrorException extends OAuth2PkceException {
 /// Thrown when a network or other unexpected error occurred.
 class OAuth2PkceUnknownException extends OAuth2PkceException {
   /// Creates a new [OAuth2PkceUnknownException] object
-  const OAuth2PkceUnknownException(super.message);
+  const OAuth2PkceUnknownException(
+    super.message, {
+    this.rawException,
+    this.rawStackTrace,
+  });
+
+  /// The original exception that was thrown.
+  final Object? rawException;
+
+  /// The stacktrace accompanying the original exception.
+  final StackTrace? rawStackTrace;
 }
