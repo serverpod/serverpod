@@ -324,7 +324,7 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
 
 bool _isRunningVersion(CommandContext<GlobalOption, void> rootContext) {
   if (rootContext.runMode != CommandRunMode.execution) return false;
-  if (rootContext.leaf().command is VersionCommand) return true;
+  // if (rootContext.leaf().command is VersionCommand) return true;
   if (rootContext.specifiedActionOptions().firstOrNull is VersionOption) {
     return true;
   }
