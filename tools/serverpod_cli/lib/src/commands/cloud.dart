@@ -43,6 +43,16 @@ typedef ScloudStarter =
 /// Installs the latest `scloud`, throwing [ExitException] on failure.
 typedef ScloudInstaller = Future<void> Function();
 
+/// Asks [executable] for the completion of [words].
+///
+/// [requestCompletionFrom] is the requester `scloud` is asked with.
+typedef ScloudCompletionRequester =
+    Future<CompletionResponse> Function(
+      String executable,
+      List<String> words, {
+      Map<String, String>? environment,
+    });
+
 /// Arguments of `serverpod cloud` that are forwarded to `scloud`.
 ///
 /// The framework parser rejects unknown options, and this command accepts any
@@ -107,8 +117,17 @@ const _globalOptionsWithValue = {'--experimental-features'};
 }
 
 /// Forwards to the Serverpod Cloud CLI (`scloud`).
+///
+/// Arguments after `cloud` are passed through. Shell completion of those
+/// arguments is answered by `scloud`.
 class CloudCommand extends ServerpodCommand<OptionDefinition> {
-  CloudCommand() : super(options: const []);
+  /// [requestCompletion] asks an executable for a completion response.
+  /// `scloud` is asked, unless a test supplies another requester.
+  CloudCommand({ScloudCompletionRequester? requestCompletion})
+    : _requestCompletion = requestCompletion ?? requestCompletionFrom,
+      super(options: const []);
+
+  final ScloudCompletionRequester _requestCompletion;
 
   @override
   final name = 'cloud';
@@ -119,6 +138,21 @@ class CloudCommand extends ServerpodCommand<OptionDefinition> {
 
   @override
   bool get ignoreUnexpectedPositionalArgs => true;
+
+  @override
+  bool get passThroughArgs => true;
+
+  @override
+  Future<CompletionResponse> completePassThroughArgs(
+    CommandContext<OptionDefinition, void> context,
+    List<String> words,
+  ) {
+    return _requestCompletion(
+      getScloudExecutablePath(),
+      words,
+      environment: {ScloudEnvironment.baseCommand: scloudBaseCommand},
+    );
+  }
 
   @override
   Future<void> run(CommandContext<OptionDefinition, void> context) async {
