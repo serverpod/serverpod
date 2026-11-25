@@ -8133,6 +8133,39 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
+  _ida.Stream<int> streamWithPausedInput(
+    _ist.TestSessionBuilder sessionBuilder,
+    String name,
+    _ida.Stream<int> input,
+  ) {
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'methodStreaming',
+              method: 'streamWithPausedInput',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'methodStreaming',
+              methodName: 'streamWithPausedInput',
+              arguments: {'name': name},
+              requestedInputStreams: ['input'],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'input': input},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
   _ida.Stream<int> intEchoStream(
     _ist.TestSessionBuilder sessionBuilder,
     _ida.Stream<int> stream,

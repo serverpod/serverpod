@@ -259,6 +259,7 @@ methodStreaming:
   - wasBroadcastStreamCanceled:
   - wasSessionWillCloseListenerCalled:
   - intStreamFromValue:
+  - streamWithPausedInput:
   - intEchoStream:
   - dynamicEchoStream:
   - nullableIntEchoStream:
