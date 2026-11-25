@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
@@ -94,9 +95,18 @@ Future<void> _main(List<String> args) async {
   initializeLogger();
   var runner = buildCommandRunner();
   try {
-    await runner.run(args);
-  } on UsageException catch (e) {
-    log.error(e.toString());
+    final provider = ContextProvider();
+    final split = splitCloudInvocation(args);
+    final runnerArgs = split == null ? args : split.runnerArgs;
+    if (split != null) {
+      provider.store<CloudArgs>(CloudArgs(split.cloudArgs));
+    }
+    await runner.run(
+      runnerArgs,
+      env: Platform.environment,
+      provider: provider,
+    );
+  } on UsageException {
     throw ExitException.error();
   }
 }

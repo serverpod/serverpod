@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
@@ -17,10 +17,21 @@ import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-import '../generated/completion_script_carapace.dart';
 import 'doctor.dart' show DoctorCommand;
+import 'serverpod_command.dart';
 import 'upgrade.dart' show UpgradeCommand;
-import 'version.dart' show VersionCommand;
+import 'version.dart' show VersionCommand, printServerpodCliVersion;
+
+typedef GlobalConfiguration = Configuration<GlobalOption>;
+
+/// Whether this CLI build is a release build.
+///
+/// Development builds skip the update prompt.
+class ProductionMode {
+  const ProductionMode(this.enabled);
+
+  final bool enabled;
+}
 
 Future<void> _preCommandEnvironmentChecks() async {
   try {
@@ -74,10 +85,13 @@ Uri? welcomePageUrl({
 /// If the user ID is not available, the welcome and check-in pages are
 /// skipped, to avoid invoking the webpage every time the CLI is run if any
 /// configuration prevents the CLI from writing to the user home directory.
-Future<void> _preCommandWelcome({required bool analyticsEnabled}) async {
+Future<void> _preCommandWelcome(CommandContext context) async {
   final runCount = resourceManager.runCount;
   final uuid = resourceManager.uniqueUserId;
   if (uuid == null) return;
+
+  final analyticsEnabled =
+      context.provider.maybeFetch<AnalyticsEnabled>()?.enabled ?? false;
 
   final url = welcomePageUrl(
     runCount: runCount,
@@ -134,120 +148,159 @@ String _fvmShimInstructions() {
       '`which flutter` should report your `~/.fvm_shim/flutter` shim.';
 }
 
-Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
-  if (!runner._productionMode) {
+Future<void> _preCommandPrints(
+  CommandContext<GlobalOption, void> context,
+  ServerpodCommandRunner runner,
+) async {
+  if (!context.provider.fetch<ProductionMode>().enabled) {
     log.debug('Development mode.');
     return;
   }
 
-  if (runner._invokedCommandName == UpgradeCommand.commandName) return;
+  if (context.next?.command is UpgradeCommand) {
+    return;
+  }
 
-  await promptToUpdateIfNeeded(runner._cliVersion);
+  await promptToUpdateIfNeeded(runner.cliVersion);
 }
 
-Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
-  runner as ServerpodCommandRunner;
+/// Runs before [setLogLevel].
+///
+/// Skips completion requests. Skips the experimental-feature announcement for
+/// the global `--version` action, which used to return before that code.
+void _prepareRun(CommandContext<GlobalOption, void> context) {
+  if (context.runMode == CommandRunMode.completion) return;
 
-  // Doctor reports on missing SDKs instead of refusing to run without them,
-  // and scripts need its stdout and the user's profile left untouched.
-  if (runner._invokedCommandName == DoctorCommand.commandName) return;
+  initializeSdkResolver();
+  context.provider.store<GlobalConfiguration>(context.globalConfiguration);
+
+  if (_isRunningVersion(context)) return;
+
+  final experimentalFeatures = context.config.value(
+    GlobalOption.experimentalFeatures,
+  );
+  for (final feature in experimentalFeatures) {
+    log.info('Enabling experimental feature: ${feature.name}.');
+  }
+  CommandLineExperimentalFeatures.initialize(experimentalFeatures);
+}
+
+/// Runs after the built-in analytics middleware and [setLogLevel].
+///
+/// The global `--version` action used to return before the invocation record
+/// and before [setLogLevel], so the version line is printed at the default
+/// log level.
+Future<void> _beforeCommand(CommandContext<GlobalOption, void> context) async {
+  if (context.runMode == CommandRunMode.completion) return;
+
+  final analyticsEnabled =
+      context.provider.maybeFetch<AnalyticsEnabled>()?.enabled ?? false;
+  cliAnalytics.enabled = analyticsEnabled;
+
+  if (_isRunningVersion(context)) {
+    log.logLevel = LogLevel.info;
+    return;
+  }
+
+  final command = context.next?.command;
+  if (command is ServerpodCommand && cliAnalytics.enabled) {
+    final serverDir = findServerDirectory(Directory.current);
+    if (serverDir != null) {
+      unawaited(
+        cliAnalytics.recordCommandInvocation(
+          serverDir: serverDir.path,
+          commandName: command.name,
+        ),
+      );
+    }
+  }
+}
+
+/// Environment checks, the welcome page, and the update prompt.
+///
+/// Runs after [setLogLevel], so `--quiet` and the language server suppress
+/// the checks. Skipped for completion and the global `--version` action, which
+/// return before this work, and for `doctor`, which reports missing SDKs
+/// itself and must leave stdout and the user profile untouched.
+Future<void> _runPreCommandHooks(
+  CommandContext<GlobalOption, void> context,
+  ServerpodCommandRunner runner,
+) async {
+  if (context.runMode == CommandRunMode.completion) return;
+  if (_isRunningVersion(context)) return;
+
+  if (context.next?.command is DoctorCommand) return;
 
   await _preCommandEnvironmentChecks();
-  // `BetterCommandRunner.run` resolves `--no-analytics` before it invokes this
-  // hook, so the state read here is final.
-  await _preCommandWelcome(analyticsEnabled: runner.analyticsEnabled());
-  await _preCommandPrints(runner);
+  await _preCommandWelcome(context);
+  await _preCommandPrints(context, runner);
 }
 
 class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
-  final bool _productionMode;
-  final Version _cliVersion;
-  String? _invokedCommandName;
+  /// The version of this CLI build. Fixed when the command tree is built.
+  final Version cliVersion;
 
-  ServerpodCommandRunner(
+  ServerpodCommandRunner._(
     super.executableName,
     super.description, {
     required bool productionMode,
-    required Version cliVersion,
-    super.messageOutput,
-    super.onBeforeRunCommand,
-    super.setLogLevel,
-    super.onAnalyticsEvent,
-    super.enableCompletionCommand,
-    super.embeddedCompletions,
-  }) : _productionMode = productionMode,
-       _cliVersion = cliVersion,
-       super(globalOptions: GlobalOption.values);
-
-  @override
-  Future<void> runCommand(ArgResults topLevelResults) async {
-    // `--no-analytics` is resolved by [BetterCommandRunner.run] before this
-    // point, so this is the one place the opt-out state is final. Every `cli.*`
-    // call site reads it from the singleton instead of taking a flag. Set
-    // before the `--version` early return so the state is never stale.
-    cliAnalytics.enabled = analyticsEnabled();
-
-    // Installed before any command runs so every call site reads one answer.
-    // Resolution itself is lazy, so a command that never touches an SDK never
-    // pays for looking one up.
-    initializeSdkResolver();
-
-    if (globalConfiguration.value(GlobalOption.version)) {
-      await commands['version']?.run();
-      return; // Exit early to prevent showing help text
-    }
-
-    var experimentalFeatures = globalConfiguration.value(
-      GlobalOption.experimentalFeatures,
+    required bool preCommandHooks,
+    required this.cliVersion,
+    required super.globalOptions,
+    required Analytics analytics,
+  }) : super(
+         parserSettings: const ParserSettings(
+           doubleDashHandling: DoubleDashHandling.passThroughRest,
+         ),
+         usageOutput: UsageOutputHandler(
+           sinks: OutputSinks(
+             out: _LogSink(
+               (message) => log.info(message, type: const RawLogType()),
+             ),
+             err: _LogSink(
+               (message) => log.error(message, type: const RawLogType()),
+             ),
+           ),
+           usageSettings: UsageSettings(usageLineLength: log.wrapTextColumn),
+         ),
+         setLogLevel: _configureLogLevel,
+         onAnalyticsEvent: (context, event, properties) => analytics.track(
+           event: event,
+           properties: properties,
+         ),
+         prependMiddlewares: [
+           Middlewares.onBeforeRun((context) {
+             context.provider.store(ProductionMode(productionMode));
+           }),
+           Middlewares.onBeforeRun(_prepareRun),
+         ],
+       ) {
+    addMiddleware(
+      Middlewares.onBeforeRun(_beforeCommand),
     );
-
-    for (var feature in experimentalFeatures) {
-      log.info('Enabling experimental feature: ${feature.name}.');
+    if (preCommandHooks) {
+      addMiddleware(
+        Middlewares.onBeforeRun(
+          (context) => _runPreCommandHooks(context, this),
+        ),
+      );
     }
-    CommandLineExperimentalFeatures.initialize(experimentalFeatures);
-
-    // Counted straight off the registered command list, so a renamed or newly
-    // added command is picked up without touching the analytics code.
-    final commandName = _invokedCommandName = topLevelResults.command?.name;
-    if (commandName != null &&
-        commands.containsKey(commandName) &&
-        cliAnalytics.enabled) {
-      final serverDir = findServerDirectory(Directory.current);
-      if (serverDir != null) {
-        unawaited(
-          cliAnalytics.recordCommandInvocation(
-            serverDir: serverDir.path,
-            commandName: commandName,
-          ),
-        );
-      }
-    }
-
-    await super.runCommand(topLevelResults);
   }
 
   static ServerpodCommandRunner createCommandRunner(
     Analytics analytics,
     bool productionMode,
     Version cliVersion, {
-    OnBeforeRunCommand onBeforeRunCommand = _serverpodOnBeforeRunCommand,
+    bool preCommandHooks = true,
   }) {
-    return ServerpodCommandRunner(
+    return ServerpodCommandRunner._(
       'serverpod',
       'Manage your serverpod app development',
-      enableCompletionCommand: true,
-      embeddedCompletions: [completionScriptCarapace],
-      messageOutput: MessageOutput(
-        usageLogger: log.info,
-      ),
-      setLogLevel: _configureLogLevel,
-      onBeforeRunCommand: onBeforeRunCommand,
-      onAnalyticsEvent: (event, properties) => analytics.track(
-        event: event,
-        properties: properties,
-      ),
       productionMode: productionMode,
+      preCommandHooks: preCommandHooks,
       cliVersion: cliVersion,
+      globalOptions: GlobalOption.values,
+      analytics: analytics,
     );
   }
 
@@ -269,6 +322,72 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
   }
 }
 
+bool _isRunningVersion(CommandContext<GlobalOption, void> rootContext) {
+  if (rootContext.runMode != CommandRunMode.execution) return false;
+  if (rootContext.leaf().command is VersionCommand) return true;
+  if (rootContext.specifiedActionOptions().firstOrNull is VersionOption) {
+    return true;
+  }
+  return false;
+}
+
+class _LogSink implements StringSink {
+  _LogSink(this._log);
+
+  final void Function(String message) _log;
+
+  @override
+  void write(Object? object) {
+    final text = object?.toString() ?? '';
+    if (text.isEmpty) return;
+    _log(text);
+  }
+
+  @override
+  void writeAll(Iterable<dynamic> objects, [String separator = '']) {
+    write(objects.join(separator));
+  }
+
+  @override
+  void writeCharCode(int charCode) {
+    write(String.fromCharCode(charCode));
+  }
+
+  @override
+  void writeln([Object? object = '']) {
+    write('$object\n');
+  }
+}
+
+extension ServerpodContext<O extends OptionDefinition, T>
+    on CommandContext<O, T> {
+  GlobalConfiguration get globalConfiguration =>
+      root().config as GlobalConfiguration;
+}
+
+/// Prints the CLI version wherever `--version` is used as the global action.
+class VersionOption extends FlagOption with ActionOptionMixin<bool> {
+  const VersionOption()
+    : super(
+        argName: 'version',
+        helpText: VersionCommand.usageDescription,
+        negatable: false,
+        defaultsTo: false,
+      );
+
+  @override
+  FutureOr<R?> run<O extends OptionDefinition, R>(
+    CommandContext<O, R> context,
+  ) {
+    final command = context.command;
+    if (command is! ServerpodCommandRunner) {
+      throw StateError('Version option is only defined on the runner.');
+    }
+    printServerpodCliVersion((command as ServerpodCommandRunner).cliVersion);
+    return null;
+  }
+}
+
 /// The options every command accepts.
 enum GlobalOption<V> implements OptionDefinition<V> {
   quiet(BetterCommandRunnerFlags.quietOption),
@@ -282,14 +401,7 @@ enum GlobalOption<V> implements OptionDefinition<V> {
           'Enable interactive prompts. Automatically disabled in CI environments.',
     ),
   ),
-  version(
-    FlagOption(
-      argName: 'version',
-      helpText: VersionCommand.usageDescription,
-      negatable: false,
-      defaultsTo: false,
-    ),
-  ),
+  version(VersionOption()),
   experimentalFeatures(
     MultiOption<ExperimentalFeature>(
       multiParser: MultiParser(EnumParser(ExperimentalFeature.values)),
