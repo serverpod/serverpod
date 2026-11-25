@@ -11,6 +11,10 @@ import 'future_call_retry_policy_serialization.dart';
 import 'future_call_scanner.dart';
 import 'serverpod_task_scheduler.dart';
 
+/// A retry of a failed future call: the delay before it and the retry policy
+/// to save with it.
+typedef _Retry = ({Duration delay, FutureCallRetryPolicy policy});
+
 /// A function that builds a [Session] for a [FutureCall].
 ///
 /// [retryAttempt] is how many retries of the call have already run: 0 for the
@@ -436,18 +440,42 @@ class FutureCallManager {
     required Object error,
     required StackTrace stackTrace,
   }) async {
-    var serializedRetryPolicy = futureCallEntry.serializedRetryPolicy;
+    final serializedRetryPolicy = futureCallEntry.serializedRetryPolicy;
     if (serializedRetryPolicy == null) return false;
 
-    var retryAttempt = futureCallEntry.failedAttempts;
-    var context = FutureCallRetryContext(
-      error: error,
-      stackTrace: stackTrace,
-      retryAttempt: retryAttempt,
+    final retry = await _decideRetry(
+      futureCallEntry: futureCallEntry,
+      futureCall: futureCall,
+      futureCallSession: futureCallSession,
+      serializedRetryPolicy: serializedRetryPolicy,
+      context: FutureCallRetryContext(
+        error: error,
+        stackTrace: stackTrace,
+        retryAttempt: futureCallEntry.failedAttempts,
+      ),
     );
+    if (retry == null) return false;
 
-    FutureCallRetryPolicy policy;
-    Duration? delay;
+    return _saveRetry(
+      futureCallEntry: futureCallEntry,
+      futureCallSession: futureCallSession,
+      retry: retry,
+    );
+  }
+
+  /// Asks [futureCall] and its retry policy whether the failed
+  /// [futureCallEntry] is retried.
+  ///
+  /// Returns the retry to save, or `null` when the call is not retried. An
+  /// error from `shouldRetry` or from the policy is reported and means the
+  /// call is not retried.
+  Future<_Retry?> _decideRetry({
+    required FutureCallEntry futureCallEntry,
+    required FutureCall futureCall,
+    required Session futureCallSession,
+    required String serializedRetryPolicy,
+    required FutureCallRetryContext context,
+  }) async {
     try {
       if (!await futureCall.shouldRetry(futureCallSession, context)) {
         futureCallSession.log(
@@ -455,11 +483,21 @@ class FutureCallManager {
           'because shouldRetry returned false.',
           level: LogLevel.info,
         );
-        return false;
+        return null;
       }
 
-      policy = _decodeRetryPolicy(serializedRetryPolicy);
-      delay = policy.nextDelay(context);
+      final policy = _decodeRetryPolicy(serializedRetryPolicy);
+      final delay = policy.nextDelay(context);
+      if (delay == null) {
+        futureCallSession.log(
+          'Future call ${futureCallEntry.name} failed and is not retried '
+          'again. It gave up after ${context.retryAttempt} retries.',
+          level: LogLevel.error,
+        );
+        return null;
+      }
+
+      return (delay: delay, policy: policy);
     } catch (policyError, policyStackTrace) {
       _diagnosticsService.submitCallException(
         policyError,
@@ -473,49 +511,35 @@ class FutureCallManager {
         exception: policyError,
         stackTrace: policyStackTrace,
       );
-      return false;
+      return null;
     }
+  }
 
-    if (delay == null) {
-      futureCallSession.log(
-        'Future call ${futureCallEntry.name} failed and is not retried '
-        'again. It gave up after $retryAttempt retries.',
-        level: LogLevel.error,
-      );
-      return false;
-    }
+  /// Saves [retry] for [futureCallEntry] and releases the entry's claim.
+  ///
+  /// Returns `true` when the entry must be kept, which is also the case when
+  /// saving fails: the claim then goes stale and the same attempt runs again
+  /// later. Returns `false` when the entry was cancelled while the call ran.
+  Future<bool> _saveRetry({
+    required FutureCallEntry futureCallEntry,
+    required Session futureCallSession,
+    required _Retry retry,
+  }) async {
+    final nextTime = clock.now().toUtc().add(retry.delay);
+    final retryAttempt = futureCallEntry.failedAttempts + 1;
 
-    var nextTime = clock.now().toUtc().add(delay);
     try {
-      var retried = await _internalSession.db.transaction((transaction) async {
-        var updated = await FutureCallEntry.db.updateWhere(
-          _internalSession,
-          where: (t) => t.id.equals(futureCallEntry.id),
-          columnValues: (t) => [
-            t.time(nextTime),
-            t.failedAttempts(retryAttempt + 1),
-            t.serializedRetryPolicy(
-              _encodeRetryPolicy(policy),
-            ),
-          ],
-          transaction: transaction,
-        );
-
-        // The entry was cancelled while the call was running.
-        if (updated.isEmpty) return false;
-
-        await FutureCallClaimEntry.db.deleteWhere(
-          _internalSession,
-          where: (t) => t.futureCallId.equals(futureCallEntry.id),
-          transaction: transaction,
-        );
-        return true;
-      });
+      final retried = await _rescheduleAndReleaseClaim(
+        futureCallEntry: futureCallEntry,
+        nextTime: nextTime,
+        retryAttempt: retryAttempt,
+        policy: retry.policy,
+      );
 
       if (retried) {
         futureCallSession.log(
           'Future call ${futureCallEntry.name} failed and is retried at '
-          '$nextTime (retry ${retryAttempt + 1}).',
+          '$nextTime (retry $retryAttempt).',
           level: LogLevel.warning,
         );
       }
@@ -531,6 +555,41 @@ class FutureCallManager {
       );
       return true;
     }
+  }
+
+  /// Moves [futureCallEntry] to [nextTime] with [retryAttempt] failed
+  /// attempts and the current state of [policy], and releases its claim, in
+  /// one transaction.
+  ///
+  /// Returns `false` if the entry no longer exists, because it was cancelled
+  /// while the call ran.
+  Future<bool> _rescheduleAndReleaseClaim({
+    required FutureCallEntry futureCallEntry,
+    required DateTime nextTime,
+    required int retryAttempt,
+    required FutureCallRetryPolicy policy,
+  }) {
+    return _internalSession.db.transaction((transaction) async {
+      final updated = await FutureCallEntry.db.updateWhere(
+        _internalSession,
+        where: (t) => t.id.equals(futureCallEntry.id),
+        columnValues: (t) => [
+          t.time(nextTime),
+          t.failedAttempts(retryAttempt),
+          t.serializedRetryPolicy(_encodeRetryPolicy(policy)),
+        ],
+        transaction: transaction,
+      );
+
+      if (updated.isEmpty) return false;
+
+      await FutureCallClaimEntry.db.deleteWhere(
+        _internalSession,
+        where: (t) => t.futureCallId.equals(futureCallEntry.id),
+        transaction: transaction,
+      );
+      return true;
+    });
   }
 
   /// Serializes [policy] with its class name, so that it can be loaded with
