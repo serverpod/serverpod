@@ -99,7 +99,22 @@ void main() {
               expect(config.existsSync(), isTrue);
               expect(
                 config.readAsStringSync(),
-                genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
+                '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"],
+      "cwd": "../../.."
+    },
+    "dart-mcp-server": {
+      "command": "dart",
+      "args": ["mcp-server"],
+      "cwd": "../../.."
+    }
+  }
+}
+''',
               );
             },
           );
