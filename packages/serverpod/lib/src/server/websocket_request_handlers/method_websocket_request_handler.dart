@@ -555,7 +555,6 @@ class _WebSocketIntermediary {
       );
     } catch (error, stackTrace) {
       reportError(error, stackTrace);
-      unawaited(_webSocket.tryClose());
     } finally {
       _streamClosures.remove(closing.future);
       closing.complete();

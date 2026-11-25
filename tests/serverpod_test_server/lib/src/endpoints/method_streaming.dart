@@ -512,9 +512,13 @@ class AuthenticatedMethodStreaming extends Endpoint {
 }
 
 class MethodStreamCancellationFixture {
-  MethodStreamCancellationFixture({required this.holdCancellation});
+  MethodStreamCancellationFixture({
+    required this.holdCancellation,
+    this.cancellationError,
+  });
 
   final bool holdCancellation;
+  final Object? cancellationError;
   final entered = Completer<void>();
   final cancelled = Completer<void>();
   final sessionClosed = Completer<void>();
@@ -538,6 +542,7 @@ class MethodStreamCancellationFixture {
         cancelled.complete();
         await iterator.cancel();
         if (holdCancellation) await releaseCancellation.future;
+        if (cancellationError case final error?) throw error;
       },
     );
     return output.stream;

@@ -6,17 +6,34 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:web_socket/web_socket.dart';
 
+import '../../diagnostics/test_exception_handler.dart';
 import '../websocket_extensions.dart';
 
 void main() {
   late Serverpod server;
+  late TestExceptionHandler exceptionHandler;
+  late Stream<DiagnosticEventRecord<ExceptionEvent>> diagnostics;
 
   setUpAll(() async {
-    server = IntegrationTestServer.create();
+    exceptionHandler = TestExceptionHandler();
+    diagnostics = exceptionHandler.events.asBroadcastStream();
+    server = IntegrationTestServer.create(
+      experimentalFeatures: ExperimentalFeatures(
+        diagnosticEventHandlers: [exceptionHandler],
+      ),
+    );
     await server.startWithDatabase();
   });
 
-  tearDownAll(() => server.shutdown(exitProcess: false));
+  tearDownAll(() async {
+    try {
+      await server.shutdown(exitProcess: false);
+    } finally {
+      final drained = diagnostics.drain<void>();
+      await exceptionHandler.eventsStreamController.close();
+      await drained;
+    }
+  });
 
   Future<_Connection> openConnection() async {
     final socket = await WebSocket.connect(
@@ -29,9 +46,11 @@ void main() {
   MethodStreamCancellationFixture registerFixture(
     String name, {
     bool holdCancellation = false,
+    Object? cancellationError,
   }) {
     final fixture = MethodStreamCancellationFixture(
       holdCancellation: holdCancellation,
+      cancellationError: cancellationError,
     );
     MethodStreaming.streamCancellationFixtures[name] = fixture;
     addTearDown(() {
@@ -43,9 +62,14 @@ void main() {
     return fixture;
   }
 
-  Future<_PausedStreamPair> openPausedStreamPair() async {
+  Future<_PausedStreamPair> openPausedStreamPair({
+    Object? firstCancellationError,
+  }) async {
     final connection = await openConnection();
-    final firstFixture = registerFixture('first');
+    final firstFixture = registerFixture(
+      'first',
+      cancellationError: firstCancellationError,
+    );
     final secondFixture = registerFixture('second');
     final first = await connection.open('first');
     final second = await connection.open('second');
@@ -163,6 +187,57 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given two streams on one socket and a producer that throws on cancellation,',
+    () {
+      late _PausedStreamPair streams;
+      late StateError error;
+
+      setUp(() async {
+        error = StateError('producer cancellation failed');
+        streams = await openPausedStreamPair(firstCancellationError: error);
+      });
+
+      group('when the client closes the failing producer,', () {
+        late Object reportedError;
+        late Object? secondValue;
+
+        setUp(() async {
+          final (:connection, :first, :second, :firstFixture, :secondFixture) =
+              streams;
+          final diagnostic = diagnostics.first.timeout(
+            const Duration(seconds: 2),
+          );
+          connection.closeStream(first);
+          reportedError = (await diagnostic).event.exception;
+          await firstFixture.sessionClosed.future.timeout(
+            const Duration(seconds: 2),
+          );
+
+          final secondMessage = connection.receive<MethodStreamMessage>(
+            (message) => message.connectionId == second,
+          );
+          secondFixture.output.add(2);
+          secondValue = await secondMessage.then<Object?>(
+            (message) => message.object,
+            onError: (Object error) => error,
+          );
+        });
+
+        test('then the server reports the original cancellation error.', () {
+          expect(reportedError, same(error));
+        });
+
+        test(
+          'then the sibling stream delivers another value on the socket.',
+          () {
+            expect(secondValue, 2);
+          },
+        );
+      });
+    },
+  );
 
   group(
     'Given a producer whose cancellation is held beyond the close timeout,',
