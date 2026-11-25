@@ -15,7 +15,7 @@ import 'session_metrics.dart';
 /// Rich lifecycle analytics sent to PostHog only (`cli.*` events).
 ///
 /// Call sites never pass an enabled flag: the singleton starts disabled and is
-/// switched on once, from [ServerpodCommandRunner.runCommand], after
+/// switched on once, from the runner's command middleware, after
 /// `BetterCommandRunner` has resolved `--no-analytics`. Every capture method is
 /// a no-op while disabled, so commands can call them unconditionally.
 class CliAnalytics {
@@ -58,8 +58,8 @@ class CliAnalytics {
     return pending;
   }
 
-  /// Whether rich `cli.*` events are being sent. Set once by
-  /// [ServerpodCommandRunner.runCommand] from the resolved `--no-analytics`
+  /// Whether rich `cli.*` events are being sent. Set once by the runner's
+  /// command middleware from the resolved `--no-analytics`
   /// state.
   bool enabled = false;
 
