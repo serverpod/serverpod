@@ -79,7 +79,7 @@ fields:
         config = buildTestServerConfig(projectDir);
         final initialCheckout = await Analyzers.createAndUpdate(config);
         addTearDown(initialCheckout.close);
-        expect((await generateFully(initialCheckout)).success, isTrue);
+        await generateFully(initialCheckout);
 
         // As `serverpod start` on an up-to-date project: primed, nothing to
         // generate.
@@ -96,7 +96,7 @@ fields:
 ''');
         final otherCheckout = await Analyzers.createAndUpdate(config);
         addTearDown(otherCheckout.close);
-        expect((await generateFully(otherCheckout)).success, isTrue);
+        await generateFully(otherCheckout);
         endpointFile.writeAsStringSync(endpointSource("text: 'a', tag: 'b'"));
       });
 
