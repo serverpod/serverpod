@@ -76,6 +76,17 @@ class FlutterRoute extends Route {
   /// not need cross-origin isolation. Defaults to `true`.
   final bool enableWasmHeaders;
 
+  /// The `Cross-Origin-Opener-Policy` header value to add when
+  /// [enableWasmHeaders] is `true`.
+  ///
+  /// Defaults to [CrossOriginOpenerPolicyHeader.sameOrigin], which is
+  /// required for `SharedArrayBuffer`/WASM multi-threading but blocks
+  /// popup-based sign-in flows (e.g. "Sign in with Google"). Set this to
+  /// [CrossOriginOpenerPolicyHeader.sameOriginAllowPopups] if your app needs
+  /// those flows and does not rely on WASM multi-threading. See
+  /// [WasmHeadersMiddleware] for details.
+  final CrossOriginOpenerPolicyHeader crossOriginOpenerPolicy;
+
   /// Creates a new FlutterRoute.
   ///
   /// The [directory] parameter specifies the root directory containing Flutter
@@ -89,13 +100,16 @@ class FlutterRoute extends Route {
   /// `SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL` environment variable.
   ///
   /// Set [enableWasmHeaders] to `false` when serving a non-WASM Flutter web
-  /// build that should not use cross-origin isolation.
+  /// build that should not use cross-origin isolation. Use
+  /// [crossOriginOpenerPolicy] to relax cross-origin isolation while keeping
+  /// the WASM headers, e.g. to support popup-based sign-in flows.
   FlutterRoute(
     this.directory, {
     File? indexFile,
     CacheControlFactory? cacheControlFactory,
     this.cacheBustingConfig,
     this.enableWasmHeaders = true,
+    this.crossOriginOpenerPolicy = CrossOriginOpenerPolicyHeader.sameOrigin,
     super.host,
   }) : indexFile = indexFile ?? File(path.join(directory.path, 'index.html')),
        cacheControlFactory =
@@ -111,7 +125,12 @@ class FlutterRoute extends Route {
     final subRouter = Router<Handler>();
 
     if (enableWasmHeaders) {
-      subRouter.use('/', const WasmHeadersMiddleware().call);
+      subRouter.use(
+        '/',
+        WasmHeadersMiddleware(
+          crossOriginOpenerPolicy: crossOriginOpenerPolicy,
+        ).call,
+      );
     }
 
     subRouter.use(
