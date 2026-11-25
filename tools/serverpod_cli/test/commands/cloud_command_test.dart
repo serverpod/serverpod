@@ -3,6 +3,8 @@ import 'package:serverpod_cli/src/commands/cloud.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
+import '../test_util/resolve_command_config.dart';
+
 typedef _Launch = ({List<String> args, Map<String, String> environment});
 
 /// Records each launch and exits with the next code from [exitCodes].
@@ -43,28 +45,34 @@ void main() {
       'when parsing configuration with no args, '
       'then there are no errors',
       () {
-        final argResults = command.argParser.parse([]);
-        final config = command.resolveConfiguration(argResults);
+        final config = resolveCommandConfig(command.options, []);
 
         expect(config.errors, isEmpty);
       },
     );
 
-    group('when parsing configuration with scloud args, ', () {
-      late final argResults = command.argParser.parse([
-        'deploy',
-        '--project',
-        'my-project',
-      ]);
+    group('when splitting a cloud invocation, ', () {
+      test('then the words after cloud are forwarded to scloud', () {
+        final split = splitCloudInvocation([
+          'cloud',
+          'deploy',
+          '--project',
+          'my-project',
+        ]);
 
-      test('then there are no errors', () {
-        final config = command.resolveConfiguration(argResults);
-
-        expect(config.errors, isEmpty);
+        expect(split?.cloudArgs, ['deploy', '--project', 'my-project']);
+        expect(split?.runnerArgs, ['cloud']);
       });
 
-      test('then args are forwarded via argResults.rest', () {
-        expect(argResults.rest, ['deploy', '--project', 'my-project']);
+      test('then global options before cloud stay on the runner', () {
+        final split = splitCloudInvocation([
+          '--verbose',
+          'cloud',
+          '--help',
+        ]);
+
+        expect(split?.runnerArgs, ['--verbose', 'cloud']);
+        expect(split?.cloudArgs, ['--help']);
       });
     });
   });
