@@ -1,3 +1,4 @@
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
@@ -31,9 +32,7 @@ class LanguageServerCommand extends ServerpodCommand<LanguageServerOption> {
   LanguageServerCommand() : super(options: LanguageServerOption.values);
 
   @override
-  Future<void> runWithConfig(
-    Configuration<LanguageServerOption> commandConfig,
-  ) async {
+  Future<void> run(CommandContext<LanguageServerOption, void> context) async {
     await runLanguageServer();
   }
 }

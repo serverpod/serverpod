@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod_cli/src/analytics/flush_analytics.dart';
@@ -51,15 +52,12 @@ class AttachCommand extends ServerpodCommand<AttachOption> {
   final description =
       'Attach to the development stack already running for this project.';
 
-  @override
-  String get invocation => 'serverpod runner attach';
-
   AttachCommand() : super(options: AttachOption.values);
 
   @override
-  Future<void> runWithConfig(Configuration<AttachOption> commandConfig) async {
+  Future<void> run(CommandContext<AttachOption, void> context) async {
     final serverDir = await resolveServerDirectory(
-      commandConfig.optionalValue(AttachOption.directory),
+      context.config.optionalValue(AttachOption.directory),
     );
 
     final resolution = await resolveRunnerOrExit(serverDir.path);
@@ -79,7 +77,8 @@ class AttachCommand extends ServerpodCommand<AttachOption> {
         socketPath = tuiSocket;
     }
 
-    final useTui = commandConfig.value(AttachOption.tui) && terminalSupportsTui;
+    final useTui =
+        context.config.value(AttachOption.tui) && terminalSupportsTui;
     final exitCode = await attachTo(socketPath, useTui: useTui);
     if (exitCode != 0) throw ExitException(exitCode);
   }

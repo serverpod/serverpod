@@ -1,4 +1,5 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/runner.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
@@ -168,13 +169,13 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
   CreateCommand() : super(options: CreateOption.values);
 
   @override
-  Future<void> runWithConfig(Configuration<CreateOption> commandConfig) async {
-    var template = commandConfig.value(CreateOption.template);
-    var force = commandConfig.value(CreateOption.force);
-    var name = commandConfig.value(CreateOption.name);
+  Future<void> run(CommandContext<CreateOption, void> context) async {
+    var template = context.config.value(CreateOption.template);
+    var force = context.config.value(CreateOption.force);
+    var name = context.config.value(CreateOption.name);
 
     // Get interactive flag from global configuration
-    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+    final interactive = context.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 
@@ -186,8 +187,9 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       throw ExitException.error();
     }
 
-    final database = commandConfig.optionalValue(CreateOption.database) ?? true;
-    final auth = commandConfig.optionalValue(CreateOption.auth);
+    final database =
+        context.config.optionalValue(CreateOption.database) ?? true;
+    final auth = context.config.optionalValue(CreateOption.auth);
 
     if (auth == true && !database) {
       log.error(
@@ -216,18 +218,18 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       }
     }
 
-    final context = TemplateContext(
+    final templateContext = TemplateContext(
       template: template,
       auth: (auth ?? true) && database,
-      redis: commandConfig.optionalValue(CreateOption.redis) ?? true,
+      redis: context.config.optionalValue(CreateOption.redis) ?? true,
       postgres: database,
       website:
-          commandConfig.optionalValue(CreateOption.website) ??
+          context.config.optionalValue(CreateOption.website) ??
           template == ServerpodTemplateType.server,
       webapp:
-          commandConfig.optionalValue(CreateOption.webapp) ??
+          context.config.optionalValue(CreateOption.webapp) ??
           template != ServerpodTemplateType.server,
-      ides: commandConfig
+      ides: context.config
           .value(CreateOption.ide)
           .map((option) => option.templateIde)
           .nonNulls
@@ -250,7 +252,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       name,
       force,
       interactive: interactive,
-      context: context,
+      context: templateContext,
       analyticsMethod: 'create',
     );
 

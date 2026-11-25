@@ -1,4 +1,5 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
@@ -44,9 +45,9 @@ class MigrateCommand extends ServerpodCommand<MigrateOption> {
   MigrateCommand() : super(options: MigrateOption.values);
 
   @override
-  Future<void> runWithConfig(Configuration<MigrateOption> commandConfig) async {
-    final runMode = commandConfig.value(MigrateOption.mode);
-    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+  Future<void> run(CommandContext<MigrateOption, void> context) async {
+    final runMode = context.config.value(MigrateOption.mode);
+    final interactive = context.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 

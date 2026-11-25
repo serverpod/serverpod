@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
@@ -61,19 +62,19 @@ class CreateRepairMigrationCommand
     : super(options: CreateRepairMigrationOption.values);
 
   @override
-  Future<void> runWithConfig(
-    Configuration<CreateRepairMigrationOption> commandConfig,
+  Future<void> run(
+    CommandContext<CreateRepairMigrationOption, void> context,
   ) async {
-    bool force = commandConfig.value(CreateRepairMigrationOption.force);
-    String? tag = commandConfig.optionalValue(CreateRepairMigrationOption.tag);
+    bool force = context.config.value(CreateRepairMigrationOption.force);
+    String? tag = context.config.optionalValue(CreateRepairMigrationOption.tag);
 
     // Get interactive flag from global configuration
-    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+    final interactive = context.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 
-    String mode = commandConfig.value(CreateRepairMigrationOption.mode);
-    String? targetVersion = commandConfig.optionalValue(
+    String mode = context.config.value(CreateRepairMigrationOption.mode);
+    String? targetVersion = context.config.optionalValue(
       CreateRepairMigrationOption.version,
     );
 

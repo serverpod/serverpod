@@ -1,5 +1,4 @@
-import 'dart:async';
-
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
@@ -51,15 +50,13 @@ class GeneratePubspecsCommand extends ServerpodCommand<GeneratePubspecsOption> {
   GeneratePubspecsCommand() : super(options: GeneratePubspecsOption.values);
 
   @override
-  FutureOr<void>? runWithConfig(
-    Configuration<GeneratePubspecsOption> commandConfig,
-  ) {
-    var version = commandConfig.value(GeneratePubspecsOption.version);
-    var dartVersion = commandConfig.value(GeneratePubspecsOption.dartVersion);
-    var flutterVersion = commandConfig.value(
+  void run(CommandContext<GeneratePubspecsOption, void> context) {
+    var version = context.config.value(GeneratePubspecsOption.version);
+    var dartVersion = context.config.value(GeneratePubspecsOption.dartVersion);
+    var flutterVersion = context.config.value(
       GeneratePubspecsOption.flutterVersion,
     );
-    var mode = commandConfig.value(GeneratePubspecsOption.mode);
+    var mode = context.config.value(GeneratePubspecsOption.mode);
 
     performGeneratePubspecs(
       version: version,

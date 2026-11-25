@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:cli_tools/execute.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
@@ -46,21 +47,16 @@ class RunCommand extends ServerpodCommand<RunOption> {
   final description =
       'Run a script defined in the "serverpod/scripts" section of pubspec.yaml.';
 
-  @override
-  String get invocation => 'serverpod run <script-name>';
-
   RunCommand() : super(options: RunOption.values);
 
   @override
-  Future<void> runWithConfig(
-    Configuration<RunOption> commandConfig,
-  ) async {
-    final listScripts = commandConfig.value(RunOption.list);
-    final scriptName = commandConfig.optionalValue(RunOption.scriptName);
+  Future<void> run(CommandContext<RunOption, void> context) async {
+    final listScripts = context.config.value(RunOption.list);
+    final scriptName = context.config.optionalValue(RunOption.scriptName);
 
     // Get interactive flag from global configuration
     final interactive =
-        serverpodRunner.globalConfiguration.optionalValue(
+        context.globalConfiguration.optionalValue(
           GlobalOption.interactive,
         ) ??
         !ci.isCI;

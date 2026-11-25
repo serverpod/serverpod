@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/runner_options.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
@@ -33,15 +34,12 @@ class StopCommand extends ServerpodCommand<StopOption> {
   @override
   final description = 'Stop the development stack running for this project.';
 
-  @override
-  String get invocation => 'serverpod runner stop';
-
   StopCommand() : super(options: StopOption.values);
 
   @override
-  Future<void> runWithConfig(Configuration<StopOption> commandConfig) async {
+  Future<void> run(CommandContext<StopOption, void> context) async {
     final serverDir = await resolveServerDirectory(
-      commandConfig.optionalValue(StopOption.directory),
+      context.config.optionalValue(StopOption.directory),
     );
 
     final resolution = await resolveRunnerOrExit(serverDir.path);

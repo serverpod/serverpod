@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/runner_options.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
@@ -35,15 +36,12 @@ class StatusCommand extends ServerpodCommand<StatusOption> {
   final description =
       "Print the development stack's state and addresses for this project.";
 
-  @override
-  String get invocation => 'serverpod runner status';
-
   StatusCommand() : super(options: StatusOption.values);
 
   @override
-  Future<void> runWithConfig(Configuration<StatusOption> commandConfig) async {
+  Future<void> run(CommandContext<StatusOption, void> context) async {
     final serverDir = await resolveServerDirectory(
-      commandConfig.optionalValue(StatusOption.directory),
+      context.config.optionalValue(StatusOption.directory),
     );
 
     final resolution = await resolveRunnerOrExit(serverDir.path);

@@ -1,4 +1,5 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
@@ -47,14 +48,12 @@ class AnalyzePubspecsCommand extends ServerpodCommand<AnalyzePubspecsOption> {
   AnalyzePubspecsCommand() : super(options: AnalyzePubspecsOption.values);
 
   @override
-  Future<void> runWithConfig(
-    Configuration<AnalyzePubspecsOption> commandConfig,
-  ) async {
-    final checkLatestVersion = commandConfig.value(
+  Future<void> run(CommandContext<AnalyzePubspecsOption, void> context) async {
+    final checkLatestVersion = context.config.value(
       AnalyzePubspecsOption.checkLatest,
     );
-    final onlyMajor = commandConfig.value(AnalyzePubspecsOption.onlyMajor);
-    final ignoreServerpod = commandConfig.value(
+    final onlyMajor = context.config.value(AnalyzePubspecsOption.onlyMajor);
+    final ignoreServerpod = context.config.value(
       AnalyzePubspecsOption.ignoreServerpod,
     );
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
@@ -10,6 +10,7 @@ import 'package:serverpod_cli/src/commands/attach.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/runner_options.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
@@ -38,9 +39,6 @@ class RunnerCommand extends ServerpodCommand<OptionDefinition> {
 
   @override
   final description = 'Manage the development stack for this project.';
-
-  @override
-  void runWithConfig(Configuration<OptionDefinition> commandConfig) {}
 }
 
 /// The options of `serverpod start` that shape the stack.
@@ -68,37 +66,26 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
       'running in the background.';
 
   @override
-  String get invocation => 'serverpod runner start [-- <server-args>]';
+  String get invocation => 'start [-- <server-args>]';
+
+  @override
+  bool get ignoreUnexpectedPositionalArgs => true;
 
   RunnerStartCommand() : super(options: RunnerStartOption.values);
 
   @override
-  Configuration<RunnerStartOption> resolveConfiguration(
-    ArgResults? argResults,
-  ) {
-    return Configuration.resolveNoExcept(
-      options: options,
-      argResults: argResults,
-      env: envVariables,
-      ignoreUnexpectedPositionalArgs: true,
-    );
-  }
-
-  @override
-  Future<void> runWithConfig(
-    Configuration<RunnerStartOption> commandConfig,
-  ) async {
+  Future<void> run(CommandContext<RunnerStartOption, void> context) async {
     final (:serverDir, :manifest, spawned: _) = await bringUpRunner(
-      directory: commandConfig.value(RunnerStartOption.directory),
+      directory: context.config.value(RunnerStartOption.directory),
       asked: RunnerConfig(
-        watch: commandConfig.value(RunnerStartOption.watch),
-        flutter: commandConfig.value(RunnerStartOption.flutter),
-        docker: commandConfig.optionalValue(RunnerStartOption.docker),
-        target: commandConfig.value(RunnerStartOption.target),
-        serverArgs: argResults?.rest ?? const [],
+        watch: context.config.value(RunnerStartOption.watch),
+        flutter: context.config.value(RunnerStartOption.flutter),
+        docker: context.config.optionalValue(RunnerStartOption.docker),
+        target: context.config.value(RunnerStartOption.target),
+        serverArgs: context.config.remainingPosArgs,
       ),
       useTui: false,
-      global: serverpodRunner.globalConfiguration,
+      global: context.globalConfiguration,
     );
 
     await reportStackUp(serverDir, manifest);
@@ -152,28 +139,17 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
   bool get hidden => true;
 
   @override
-  String get invocation => 'serverpod runner serve [-- <server-args>]';
+  String get invocation => 'serve [-- <server-args>]';
+
+  @override
+  bool get ignoreUnexpectedPositionalArgs => true;
 
   RunnerServeCommand() : super(options: RunnerServeOption.values);
 
   @override
-  Configuration<RunnerServeOption> resolveConfiguration(
-    ArgResults? argResults,
-  ) {
-    return Configuration.resolveNoExcept(
-      options: options,
-      argResults: argResults,
-      env: envVariables,
-      ignoreUnexpectedPositionalArgs: true,
-    );
-  }
-
-  @override
-  Future<void> runWithConfig(
-    Configuration<RunnerServeOption> commandConfig,
-  ) async {
-    final directory = commandConfig.value(RunnerServeOption.directory);
-    final detached = commandConfig.value(RunnerServeOption.detached);
+  Future<void> run(CommandContext<RunnerServeOption, void> context) async {
+    final directory = context.config.value(RunnerServeOption.directory);
+    final detached = context.config.value(RunnerServeOption.detached);
 
     // Resolved before the log opens. GeneratorConfig.load reports a failure.
     var serverRootDir = directory;
@@ -218,12 +194,12 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
       final result = await setupWatchLoop(
         config: config,
         serverDir: serverDir,
-        serverArgs: ServerArgsRef(argResults?.rest ?? []),
-        target: commandConfig.value(RunnerServeOption.target),
-        watch: commandConfig.value(RunnerServeOption.watch),
-        docker: commandConfig.optionalValue(RunnerServeOption.docker),
-        launchFlutterApp: commandConfig.value(RunnerServeOption.flutter),
-        spawnId: commandConfig.optionalValue(RunnerServeOption.spawnId),
+        serverArgs: ServerArgsRef(context.config.remainingPosArgs),
+        target: context.config.value(RunnerServeOption.target),
+        watch: context.config.value(RunnerServeOption.watch),
+        docker: context.config.optionalValue(RunnerServeOption.docker),
+        launchFlutterApp: context.config.value(RunnerServeOption.flutter),
+        spawnId: context.config.optionalValue(RunnerServeOption.spawnId),
         shutdown: shutdown,
         logHistory: logHistory,
         serverStdoutSink: logHistory.serverOutputSink(

@@ -1,4 +1,5 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
@@ -76,18 +77,16 @@ class UpgradeCommand extends ServerpodCommand<UpgradeOption> {
   final description = 'Upgrade the Serverpod CLI to the latest version.';
 
   @override
-  Future<void> runWithConfig(
-    Configuration commandConfig,
-  ) async {
-    final force = commandConfig.value(UpgradeOption.force);
-    final requested = commandConfig.optionalValue(UpgradeOption.version);
+  Future<void> run(CommandContext<UpgradeOption, void> context) async {
+    final force = context.config.value(UpgradeOption.force);
+    final requested = context.config.optionalValue(UpgradeOption.version);
 
     final installation = CliInstallation.resolve();
     _verifyInstallationIsUpgradable(installation, force: force);
 
     final currentVersion = Version.parse(templateVersion);
     final channel =
-        commandConfig.optionalValue(UpgradeOption.channel) ??
+        context.config.optionalValue(UpgradeOption.channel) ??
         UpgradeChannel.forVersion(currentVersion);
 
     final published = await _fetchPublishedVersions();
