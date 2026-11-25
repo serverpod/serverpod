@@ -13,7 +13,7 @@ import '../test_utils/profile_image_idp_test_utils.dart';
 void main() {
   withServerpod(
     'Given a Facebook-backed user profile with an image,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late UserProfile userProfile;
@@ -27,7 +27,7 @@ void main() {
         session = sessionBuilder.build();
         final userProfiles = UserProfiles(
           config: UserProfileConfig(
-            imageFetchFunc: (final _) => onePixelPng,
+            imageFetchFunc: (_) => onePixelPng,
           ),
         );
         facebookIdp = FacebookIdp(
@@ -63,7 +63,7 @@ void main() {
 
         userProfile = (await UserProfile.db.findFirstRow(
           session,
-          where: (final t) => t.authUserId.equals(authUserId),
+          where: (t) => t.authUserId.equals(authUserId),
         ))!;
       });
 
@@ -73,7 +73,7 @@ void main() {
         () async {
           final imagesBeforeSignIn = await UserProfileImage.db.find(
             session,
-            where: (final t) => t.userProfileId.equals(userProfile.id!),
+            where: (t) => t.userProfileId.equals(userProfile.id!),
           );
           expect(imagesBeforeSignIn, hasLength(1));
 
@@ -90,7 +90,7 @@ void main() {
 
           final imagesAfterSignIn = await UserProfileImage.db.find(
             session,
-            where: (final t) => t.userProfileId.equals(userProfile.id!),
+            where: (t) => t.userProfileId.equals(userProfile.id!),
           );
           expect(imagesAfterSignIn, hasLength(1));
         },
@@ -100,10 +100,10 @@ void main() {
 }
 
 http.Client _facebookClient({
-  required final String userIdentifier,
-  required final String profileImageUrl,
+  required String userIdentifier,
+  required String profileImageUrl,
 }) {
-  return MockClient((final request) async {
+  return MockClient((request) async {
     final debugTokenUrl = Uri.https(
       'graph.facebook.com',
       '/debug_token',

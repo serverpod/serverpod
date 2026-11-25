@@ -201,9 +201,57 @@ class Protocol extends _is.DatabaseSerializationManager
           _is.getType<_ibkzyeqm.ChainedRetryPolicies?>,
         ],
         modules: const [_isd.Protocol.new],
+        classNames: const [
+          'RevokedAuthenticationAuthId',
+          'RevokedAuthenticationScope',
+          'RevokedAuthenticationUser',
+          'CacheInfo',
+          'CachesInfo',
+          'CloudStorageEntry',
+          'CloudStorageDirectDownloadEntry',
+          'CloudStorageDirectUploadEntry',
+          'ClusterInfo',
+          'ClusterServerInfo',
+          'CronFutureCallScheduling',
+          'DatabaseMigrationVersion',
+          'DistributedCacheEntry',
+          'AccessDeniedException',
+          'FileNotFoundException',
+          'FutureCallClaimEntry',
+          'FutureCallEntry',
+          'IntervalFutureCallScheduling',
+          'LogEntry',
+          'LogLevel',
+          'LogResult',
+          'LogSettings',
+          'LogSettingsOverride',
+          'MessageLogEntry',
+          'MethodInfo',
+          'QueryLogEntry',
+          'ReadWriteTestEntry',
+          'RuntimeSettings',
+          'ServerHealthConnectionInfo',
+          'ServerHealthMetric',
+          'ServerHealthResult',
+          'ServerpodSqlException',
+          'SessionLogEntry',
+          'SessionLogFilter',
+          'SessionLogInfo',
+          'SessionLogResult',
+          'FixedDelayRetryPolicy',
+          'LinearBackoffRetryPolicy',
+          'ExponentialBackoffRetryPolicy',
+          'RandomDelayRetryPolicy',
+          'CustomDelaysRetryPolicy',
+          'ChainedRetryPolicies',
+        ],
+        classNamePrefix: 'serverpod.',
       );
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [
+  static List<_isp.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'serverpod_cloud_storage',
       dartName: 'CloudStorageEntry',
@@ -1470,17 +1518,15 @@ class Protocol extends _is.DatabaseSerializationManager
     ),
     ..._isd.Protocol() is _is.DatabaseSerializationManager
         ? (_isd.Protocol() as _is.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
+              .getOwnTableDefinitions()
         : [],
   ];
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod.')) return className;
-    return className.substring(10);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod.',
+      );
 
   @override
   T deserialize<T>(
@@ -1488,8 +1534,11 @@ class Protocol extends _is.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -1921,9 +1970,10 @@ class Protocol extends _is.DatabaseSerializationManager
               : null)
           as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -1935,13 +1985,6 @@ class Protocol extends _is.DatabaseSerializationManager
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _ibkzyeqm.FixedDelayRetryPolicy => 'FixedDelayRetryPolicy',
-      _ibkzyeqm.LinearBackoffRetryPolicy => 'LinearBackoffRetryPolicy',
-      _ibkzyeqm.ExponentialBackoffRetryPolicy =>
-        'ExponentialBackoffRetryPolicy',
-      _ibkzyeqm.RandomDelayRetryPolicy => 'RandomDelayRetryPolicy',
-      _ibkzyeqm.CustomDelaysRetryPolicy => 'CustomDelaysRetryPolicy',
-      _ibkzyeqm.ChainedRetryPolicies => 'ChainedRetryPolicies',
       _i0ntvx71.RevokedAuthenticationAuthId => 'RevokedAuthenticationAuthId',
       _ivj17zej.RevokedAuthenticationScope => 'RevokedAuthenticationScope',
       _iubydmqj.RevokedAuthenticationUser => 'RevokedAuthenticationUser',
@@ -1980,6 +2023,13 @@ class Protocol extends _is.DatabaseSerializationManager
       _i2jy9zag.SessionLogFilter => 'SessionLogFilter',
       _i783h20h.SessionLogInfo => 'SessionLogInfo',
       _idz92mnt.SessionLogResult => 'SessionLogResult',
+      _ibkzyeqm.FixedDelayRetryPolicy => 'FixedDelayRetryPolicy',
+      _ibkzyeqm.LinearBackoffRetryPolicy => 'LinearBackoffRetryPolicy',
+      _ibkzyeqm.ExponentialBackoffRetryPolicy =>
+        'ExponentialBackoffRetryPolicy',
+      _ibkzyeqm.RandomDelayRetryPolicy => 'RandomDelayRetryPolicy',
+      _ibkzyeqm.CustomDelaysRetryPolicy => 'CustomDelaysRetryPolicy',
+      _ibkzyeqm.ChainedRetryPolicies => 'ChainedRetryPolicies',
       _ => null,
     };
   }
@@ -2100,24 +2150,6 @@ class Protocol extends _is.DatabaseSerializationManager
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'FixedDelayRetryPolicy') {
-      return deserialize<_ibkzyeqm.FixedDelayRetryPolicy>(data['data']);
-    }
-    if (dataClassName == 'LinearBackoffRetryPolicy') {
-      return deserialize<_ibkzyeqm.LinearBackoffRetryPolicy>(data['data']);
-    }
-    if (dataClassName == 'ExponentialBackoffRetryPolicy') {
-      return deserialize<_ibkzyeqm.ExponentialBackoffRetryPolicy>(data['data']);
-    }
-    if (dataClassName == 'RandomDelayRetryPolicy') {
-      return deserialize<_ibkzyeqm.RandomDelayRetryPolicy>(data['data']);
-    }
-    if (dataClassName == 'CustomDelaysRetryPolicy') {
-      return deserialize<_ibkzyeqm.CustomDelaysRetryPolicy>(data['data']);
-    }
-    if (dataClassName == 'ChainedRetryPolicies') {
-      return deserialize<_ibkzyeqm.ChainedRetryPolicies>(data['data']);
-    }
     if (dataClassName == 'RevokedAuthenticationAuthId') {
       return deserialize<_i0ntvx71.RevokedAuthenticationAuthId>(data['data']);
     }
@@ -2228,10 +2260,33 @@ class Protocol extends _is.DatabaseSerializationManager
     if (dataClassName == 'SessionLogResult') {
       return deserialize<_idz92mnt.SessionLogResult>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod_database.')) {
-      data['className'] = dataClassName.substring(19);
-      return _isd.Protocol().deserializeByClassName(data);
+    if (dataClassName == 'FixedDelayRetryPolicy') {
+      return deserialize<_ibkzyeqm.FixedDelayRetryPolicy>(data['data']);
     }
+    if (dataClassName == 'LinearBackoffRetryPolicy') {
+      return deserialize<_ibkzyeqm.LinearBackoffRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'ExponentialBackoffRetryPolicy') {
+      return deserialize<_ibkzyeqm.ExponentialBackoffRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'RandomDelayRetryPolicy') {
+      return deserialize<_ibkzyeqm.RandomDelayRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'CustomDelaysRetryPolicy') {
+      return deserialize<_ibkzyeqm.CustomDelaysRetryPolicy>(data['data']);
+    }
+    if (dataClassName == 'ChainedRetryPolicies') {
+      return deserialize<_ibkzyeqm.ChainedRetryPolicies>(data['data']);
+    }
+    if (dataClassName.startsWith('serverpod_database.')) {
+      return _isd.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(19),
+      });
+    }
+    try {
+      return _isd.Protocol().deserializeByClassName(data);
+    } on _is.DeserializationClassNameNotFoundException catch (_) {}
     return super.deserializeByClassName(data);
   }
 
@@ -2288,6 +2343,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod';

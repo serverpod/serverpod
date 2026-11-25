@@ -19,13 +19,13 @@ import '../endpoints/jwt_tokens_endpoint.dart';
 /// stays correct behind a prefix-stripping reverse proxy the server cannot see
 /// through. When absent (older client), the configured `authCookie.path` is
 /// used instead, in which case it must reflect any URL prefix.
-String? jwtRefreshCookiePath(final Session session) {
+String? jwtRefreshCookiePath(Session session) {
   final authCookie = session.serverpod.config.authCookie;
   if (authCookie == null) return null;
 
   final matches = session.server.endpoints.connectors.values
       .where(
-        (final connector) => connector.endpoint is RefreshJwtTokensEndpoint,
+        (connector) => connector.endpoint is RefreshJwtTokensEndpoint,
       )
       .toList();
   if (matches.length != 1) return null;

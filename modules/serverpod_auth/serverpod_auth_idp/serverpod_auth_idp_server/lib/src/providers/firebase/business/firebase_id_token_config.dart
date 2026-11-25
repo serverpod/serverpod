@@ -24,7 +24,7 @@ class FirebaseIdTokenConfig implements IdTokenVerifierConfig {
       'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
 
   @override
-  Iterable<JWTKey> parseKeys(final String responseBody) {
+  Iterable<JWTKey> parseKeys(String responseBody) {
     final certsJson = jsonDecode(responseBody) as Map<String, dynamic>;
     final keys = <JWTKey>[];
 
@@ -42,7 +42,7 @@ class FirebaseIdTokenConfig implements IdTokenVerifierConfig {
   }
 
   @override
-  void validateIssuer(final Map<String, dynamic> claims) {
+  void validateIssuer(Map<String, dynamic> claims) {
     final expectedIssuer = 'https://securetoken.google.com/$projectId';
     final issuer = claims['iss'] as String?;
     if (issuer == null || issuer != expectedIssuer) {
@@ -54,8 +54,8 @@ class FirebaseIdTokenConfig implements IdTokenVerifierConfig {
 
   @override
   void validateAudience(
-    final Map<String, dynamic> claims,
-    final String? audience,
+    Map<String, dynamic> claims,
+    String? audience,
   ) {
     final aud = claims['aud'];
     final audienceMatches = aud is String
@@ -68,8 +68,8 @@ class FirebaseIdTokenConfig implements IdTokenVerifierConfig {
 
   @override
   void validateExtraClaims(
-    final Map<String, dynamic> claims,
-    final DateTime now,
+    Map<String, dynamic> claims,
+    DateTime now,
   ) {
     final sub = claims['sub'] as String?;
     if (sub != null && sub.length > 128) {
@@ -92,7 +92,7 @@ class FirebaseIdTokenConfig implements IdTokenVerifierConfig {
   }
 
   @override
-  Exception createException(final String message) {
+  Exception createException(String message) {
     return FirebaseIdTokenValidationServerException(message);
   }
 }

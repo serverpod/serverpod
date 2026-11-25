@@ -21,10 +21,10 @@ class JwtAdmin {
   /// Creates a new admin helper class instance.
   @internal
   JwtAdmin({
-    required final Duration refreshTokenLifetime,
-    required final JwtUtil jwtUtil,
-    required final Argon2HashUtil refreshTokenSecretHash,
-    required final int refreshTokenRotatingSecretLength,
+    required Duration refreshTokenLifetime,
+    required JwtUtil jwtUtil,
+    required Argon2HashUtil refreshTokenSecretHash,
+    required int refreshTokenRotatingSecretLength,
   }) : _refreshTokenLifetime = refreshTokenLifetime,
        _jwtUtil = jwtUtil,
        _refreshTokenSecretHash = refreshTokenSecretHash,
@@ -32,8 +32,8 @@ class JwtAdmin {
 
   /// Removes all expired refresh tokens from the database.
   Future<void> deleteExpiredRefreshTokens(
-    final Session session, {
-    final Transaction? transaction,
+    Session session, {
+    Transaction? transaction,
   }) async {
     final oldestValidRefreshTokenDate = clock.now().subtract(
       _refreshTokenLifetime,
@@ -41,7 +41,7 @@ class JwtAdmin {
 
     await RefreshToken.db.deleteWhere(
       session,
-      where: (final t) => t.lastUpdatedAt < oldestValidRefreshTokenDate,
+      where: (t) => t.lastUpdatedAt < oldestValidRefreshTokenDate,
       transaction: transaction,
     );
   }
@@ -54,15 +54,15 @@ class JwtAdmin {
   ///
   /// Returns a list with [DeletedRefreshToken]s.
   Future<List<DeletedRefreshToken>> deleteRefreshTokens(
-    final Session session, {
-    final UuidValue? refreshTokenId,
-    final UuidValue? authUserId,
-    final String? method,
-    final Transaction? transaction,
+    Session session, {
+    UuidValue? refreshTokenId,
+    UuidValue? authUserId,
+    String? method,
+    Transaction? transaction,
   }) async {
     final refreshTokens = await RefreshToken.db.deleteWhere(
       session,
-      where: (final row) {
+      where: (row) {
         Expression<dynamic> expression = Constant.bool(true);
 
         if (authUserId != null) {
@@ -84,7 +84,7 @@ class JwtAdmin {
 
     return refreshTokens
         .map(
-          (final refreshToken) => (
+          (refreshToken) => (
             authUserId: refreshToken.authUserId,
             refreshTokenId: refreshToken.id!,
           ),
@@ -99,9 +99,9 @@ class JwtAdmin {
   /// Previously created access tokens for this refresh token will continue to work until they expire.
   /// {@endtemplate}
   Future<TokenPair> rotateRefreshToken(
-    final Session session, {
-    required final String refreshToken,
-    final Transaction? transaction,
+    Session session, {
+    required String refreshToken,
+    Transaction? transaction,
   }) async {
     final RefreshTokenStringData refreshTokenData;
 
@@ -127,7 +127,7 @@ class JwtAdmin {
     // The reuse-revocation delete must survive the rotation failure, so
     // failures are returned from the transaction (committing the delete) and
     // thrown afterwards.
-    final Object outcome = await session.db.transaction((final tx) async {
+    final Object outcome = await session.db.transaction((tx) async {
       try {
         return await _rotateLockedRefreshToken(session, refreshTokenData, tx);
       } on RefreshTokenServerException catch (e) {
@@ -142,9 +142,9 @@ class JwtAdmin {
   /// rotations of the same token serialize and only the first one can match
   /// the current rotating secret.
   Future<TokenPair> _rotateLockedRefreshToken(
-    final Session session,
-    final RefreshTokenStringData refreshTokenData,
-    final Transaction transaction,
+    Session session,
+    RefreshTokenStringData refreshTokenData,
+    Transaction transaction,
   ) async {
     var refreshTokenRow = await RefreshToken.db.findById(
       session,
@@ -246,7 +246,7 @@ class JwtAdmin {
 }
 
 extension on RefreshToken {
-  bool isExpired(final Duration refreshTokenLifetime) {
+  bool isExpired(Duration refreshTokenLifetime) {
     final oldestAcceptedRefreshTokenDate = clock.now().subtract(
       refreshTokenLifetime,
     );

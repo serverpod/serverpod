@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../localization/sign_in_localization_provider.dart';
 import '../../email_auth_controller.dart';
-import '../../../common/widgets/buttons/text_button.dart';
+import '../shared/shared_back_to_sign_in_button.dart';
 
 /// A widget for displaying a "Back to sign in" button.
 class BackToSignInButton extends StatelessWidget {
@@ -16,15 +15,7 @@ class BackToSignInButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final texts = context.emailSignInTexts;
-
-    return Center(
-      child: HyperlinkTextButton(
-        onPressed: () => controller.navigateTo(EmailFlowScreen.login),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        label: texts.backToSignIn,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => SharedBackToSignInButton(
+    onPressed: () => controller.navigateTo(EmailFlowScreen.login),
+  );
 }

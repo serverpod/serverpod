@@ -142,7 +142,7 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
   /// fields (email, name) are intentionally optional for user privacy.
   /// Override this if you need to enforce specific requirements.
   static void validateMicrosoftAccountDetails(
-    final MicrosoftAccountDetails accountDetails,
+    MicrosoftAccountDetails accountDetails,
   ) {
     if (accountDetails.userIdentifier.isEmpty) {
       throw MicrosoftUserInfoMissingDataException();
@@ -151,7 +151,7 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
 
   /// Default Microsoft token response parser for OAuth2PkceServerConfig.
   static OAuth2PkceTokenResponse parseTokenResponse(
-    final Map<String, dynamic> responseBody,
+    Map<String, dynamic> responseBody,
   ) {
     final error = responseBody['error'] as String?;
     if (error != null) {
@@ -174,9 +174,9 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
 
   @override
   MicrosoftIdp build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   }) {
     return MicrosoftIdp(
       this,

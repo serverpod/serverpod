@@ -63,11 +63,11 @@ final class FlutterWebAuth2CallbackRoute extends Route {
   FlutterWebAuth2CallbackRoute({super.host}) : super(methods: {Method.get});
 
   @override
-  FutureOr<Result> handleCall(final Session session, final Request request) {
+  FutureOr<Result> handleCall(Session session, Request request) {
     return Response.ok(
       body: Body.fromString(_callbackHtml, mimeType: MimeType.html),
       headers: Headers.build(
-        (final mh) => mh.cacheControl = CacheControlHeader(noStore: true),
+        (mh) => mh.cacheControl = CacheControlHeader(noStore: true),
       ),
     );
   }

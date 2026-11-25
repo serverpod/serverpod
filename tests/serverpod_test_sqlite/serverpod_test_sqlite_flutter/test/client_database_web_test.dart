@@ -164,5 +164,8 @@ Future<void> _pumpUntilFound(
       .evaluate()
       .map((e) => (e.widget as Text).data)
       .join(' | ');
-  fail('Timed out waiting for $finder. On screen: $shown');
+  var message = 'Timed out waiting for $finder. On screen: $shown';
+  // Flutter web may only forward its generic failure message to the runner.
+  printOnFailure(message);
+  fail(message);
 }

@@ -9,7 +9,7 @@ void main() {
   withServerpod(
     'Given pending account request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -27,7 +27,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -43,7 +43,7 @@ void main() {
         'when delete email account request by id is called then attempting to verify registration code throws request not found exception',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.deleteEmailAccountRequestById(
                   session,
                   accountRequestId,
@@ -52,13 +52,12 @@ void main() {
           );
 
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: verificationCode,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -73,7 +72,7 @@ void main() {
   withServerpod(
     'Given account requests exist for multiple users',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue firstAccountRequestId;
@@ -94,7 +93,7 @@ void main() {
         );
 
         firstAccountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: firstEmail,
             transaction: transaction,
@@ -102,7 +101,7 @@ void main() {
         );
 
         secondAccountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: secondEmail,
             transaction: transaction,
@@ -118,7 +117,7 @@ void main() {
         'when delete email account request by id is called for one user then other user can still verify its registration code',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.deleteEmailAccountRequestById(
                   session,
                   firstAccountRequestId,
@@ -127,13 +126,12 @@ void main() {
           );
 
           final secondVerifyAccountRequestFuture = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: secondAccountRequestId,
-                  verificationCode: verificationCode,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: secondAccountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(secondVerifyAccountRequestFuture, completes);

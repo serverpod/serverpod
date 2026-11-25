@@ -6545,7 +6545,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) => _igqrxdcj.Protocol().deserialize<Map<int, int>>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<int, int>>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -6614,7 +6618,11 @@ class _MapParametersEndpoint {
             )
             .then(
               (map) => _igqrxdcj.Protocol()
-                  .deserialize<Map<_izdri23a.TestEnum, int>>(map),
+                  .deserialize<Map<_izdri23a.TestEnum, int>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(map),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -6995,6 +7003,89 @@ class _MapParametersEndpoint {
     });
   }
 
+  _ida.Future<Map<int, _i685tvwm.SimpleData>> returnIntSimpleDataMap(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<int, _i685tvwm.SimpleData> map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnIntSimpleDataMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnIntSimpleDataMap',
+          parameters: _ist.testObjectToJson({
+            'map': _igqrxdcj.Protocol().mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (map) => _igqrxdcj.Protocol()
+                  .deserialize<Map<int, _i685tvwm.SimpleData>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(map),
+                    ),
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<Map<int, _i685tvwm.SimpleData?>?>
+  returnNullableIntSimpleDataMapNullableSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
+    Map<int, _i685tvwm.SimpleData?>? map,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnNullableIntSimpleDataMapNullableSimpleData',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnNullableIntSimpleDataMapNullableSimpleData',
+          parameters: _ist.testObjectToJson({
+            'map': map == null
+                ? null
+                : _igqrxdcj.Protocol().mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (map) => _igqrxdcj.Protocol()
+                  .deserialize<Map<int, _i685tvwm.SimpleData?>?>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(map),
+                    ),
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _ida.Future<Map<String, _i685tvwm.SimpleData?>>
   returnSimpleDataMapNullableSimpleData(
     _ist.TestSessionBuilder sessionBuilder,
@@ -7180,7 +7271,11 @@ class _MapParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<Map<(Map<int, String>, String), String>>(record),
+                  .deserialize<Map<(Map<int, String>, String), String>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -7218,7 +7313,11 @@ class _MapParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<Map<String, (Map<int, int>,)>>(record),
+                  .deserialize<Map<String, (Map<int, int>,)>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -7253,8 +7352,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) =>
-                  _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -7291,8 +7393,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) =>
-                  _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>?>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<DateTime, bool>?>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -7327,7 +7432,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -7364,7 +7473,11 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>?>(map),
+              (map) => _igqrxdcj.Protocol().deserialize<Map<int, String>?>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(map),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -9467,8 +9580,11 @@ class _ModuleEndpointSubclass {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _igqrxdcj.Protocol().deserialize<(int, BigInt)>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(int, BigInt)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -9609,8 +9725,11 @@ class _ModuleEndpointAdaptation {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _igqrxdcj.Protocol().deserialize<(int, BigInt)>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(int, BigInt)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -9718,8 +9837,11 @@ class _ModuleEndpointReduction {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _igqrxdcj.Protocol().deserialize<(int, BigInt)>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(int, BigInt)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -9919,8 +10041,11 @@ class _ModuleEndpointExtension {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _igqrxdcj.Protocol().deserialize<(int, BigInt)>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(int, BigInt)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -10287,7 +10412,11 @@ class _InheritancePolymorphismTestEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<(String, _ieub4zqi.PolymorphicParent)>(record),
+                  .deserialize<(String, _ieub4zqi.PolymorphicParent)>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -10430,7 +10559,13 @@ class _RecordParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((record) => _igqrxdcj.Protocol().deserialize<(int,)>(record));
+            .then(
+              (record) => _igqrxdcj.Protocol().deserialize<(int,)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
+            );
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10464,7 +10599,11 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol().deserialize<(int,)?>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(int,)?>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -10499,7 +10638,11 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol().deserialize<(int?,)>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(int?,)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -10534,7 +10677,11 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol().deserialize<(int?,)?>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(int?,)?>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -10601,8 +10748,11 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _igqrxdcj.Protocol().deserialize<(int, String)>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(int, String)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -10637,8 +10787,11 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _igqrxdcj.Protocol().deserialize<(int, String)?>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(int, String)?>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -10673,8 +10826,12 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol()
-                  .deserialize<(int, _i685tvwm.SimpleData)>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(int, _i685tvwm.SimpleData)>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -10710,7 +10867,49 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<(int, _i685tvwm.SimpleData)?>(record),
+                  .deserialize<(int, _i685tvwm.SimpleData)?>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<(List<_i685tvwm.SimpleData>, int)> returnRecordOfSimpleDataList(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<_i685tvwm.SimpleData> rows,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'recordParameters',
+            method: 'returnRecordOfSimpleDataList',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnRecordOfSimpleDataList',
+          parameters: _ist.testObjectToJson({'rows': rows}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<(List<_i685tvwm.SimpleData>, int)>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -10745,8 +10944,11 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _igqrxdcj.Protocol().deserialize<(Map<String, int>,)>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(Map<String, int>,)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -10781,8 +10983,11 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _igqrxdcj.Protocol().deserialize<(Map<int, int>,)>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(Map<int, int>,)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -10817,8 +11022,11 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) =>
-                  _igqrxdcj.Protocol().deserialize<(Set<(int,)>,)>(record),
+              (record) => _igqrxdcj.Protocol().deserialize<(Set<(int,)>,)>(
+                _idc.jsonDecode(
+                  _is.SerializationManager.encodeForProtocol(record),
+                ),
+              ),
             );
         return _localReturnValue;
       } finally {
@@ -10853,8 +11061,12 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol()
-                  .deserialize<({int number, String text})>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<({int number, String text})>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -10890,7 +11102,11 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<({int number, String text})?>(record),
+                  .deserialize<({int number, String text})?>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -10928,7 +11144,9 @@ class _RecordParametersEndpoint {
             .then(
               (record) => _igqrxdcj.Protocol()
                   .deserialize<({_i685tvwm.SimpleData data, int number})>(
-                    record,
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
                   ),
             );
         return _localReturnValue;
@@ -10967,7 +11185,9 @@ class _RecordParametersEndpoint {
             .then(
               (record) => _igqrxdcj.Protocol()
                   .deserialize<({_i685tvwm.SimpleData data, int number})?>(
-                    record,
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
                   ),
             );
         return _localReturnValue;
@@ -11006,7 +11226,52 @@ class _RecordParametersEndpoint {
             .then(
               (record) => _igqrxdcj.Protocol()
                   .deserialize<({_i685tvwm.SimpleData? data, int? number})>(
-                    record,
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<({int count, List<_i685tvwm.SimpleData>? rows})?>
+  returnNullableNamedRecordOfSimpleDataList(
+    _ist.TestSessionBuilder sessionBuilder,
+    ({int count, List<_i685tvwm.SimpleData>? rows})? record,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'recordParameters',
+            method: 'returnNullableNamedRecordOfSimpleDataList',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnNullableNamedRecordOfSimpleDataList',
+          parameters: _ist.testObjectToJson({
+            'record': _igqrxdcj.Protocol().mapRecordToJson(record),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<
+                    ({int count, List<_i685tvwm.SimpleData>? rows})?
+                  >(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
                   ),
             );
         return _localReturnValue;
@@ -11042,8 +11307,12 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol()
-                  .deserialize<({Map<int, int> intIntMap})>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<({Map<int, int> intIntMap})>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11078,8 +11347,12 @@ class _RecordParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol()
-                  .deserialize<({Set<(bool,)> boolSet})>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<({Set<(bool,)> boolSet})>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11119,7 +11392,9 @@ class _RecordParametersEndpoint {
             .then(
               (record) => _igqrxdcj.Protocol()
                   .deserialize<(Map<(Map<int, String>, String), String>,)>(
-                    record,
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
                   ),
             );
         return _localReturnValue;
@@ -11156,7 +11431,11 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<(int, {_i685tvwm.SimpleData data})>(record),
+                  .deserialize<(int, {_i685tvwm.SimpleData data})>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11192,7 +11471,11 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<(int, {_i685tvwm.SimpleData data})?>(record),
+                  .deserialize<(int, {_i685tvwm.SimpleData data})?>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11229,7 +11512,11 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<List<(int, _i685tvwm.SimpleData)>>(record),
+                  .deserialize<List<(int, _i685tvwm.SimpleData)>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11266,7 +11553,54 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<List<(int, _i685tvwm.SimpleData)?>>(record),
+                  .deserialize<List<(int, _i685tvwm.SimpleData)?>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<List<(List<_i685tvwm.SimpleData>, int)?>?>
+  returnNullableListOfRecordOfSimpleDataList(
+    _ist.TestSessionBuilder sessionBuilder,
+    List<(List<_i685tvwm.SimpleData>, int)?>? records,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'recordParameters',
+            method: 'returnNullableListOfRecordOfSimpleDataList',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnNullableListOfRecordOfSimpleDataList',
+          parameters: _ist.testObjectToJson({
+            'records': records == null
+                ? null
+                : _igqrxdcj.Protocol().mapContainerToJson(records),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) => _igqrxdcj.Protocol()
+                  .deserialize<List<(List<_i685tvwm.SimpleData>, int)?>?>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11302,7 +11636,11 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<Set<(int, _i685tvwm.SimpleData)>>(record),
+                  .deserialize<Set<(int, _i685tvwm.SimpleData)>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11339,7 +11677,11 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<Set<(int, _i685tvwm.SimpleData)?>>(record),
+                  .deserialize<Set<(int, _i685tvwm.SimpleData)?>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11378,7 +11720,11 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<Set<(int, _i685tvwm.SimpleData)>?>(record),
+                  .deserialize<Set<(int, _i685tvwm.SimpleData)>?>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11416,7 +11762,9 @@ class _RecordParametersEndpoint {
             .then(
               (record) => _igqrxdcj.Protocol()
                   .deserialize<Map<String, (int, _i685tvwm.SimpleData)>>(
-                    record,
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
                   ),
             );
         return _localReturnValue;
@@ -11455,7 +11803,9 @@ class _RecordParametersEndpoint {
             .then(
               (record) => _igqrxdcj.Protocol()
                   .deserialize<Map<String, (int, _i685tvwm.SimpleData)?>>(
-                    record,
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
                   ),
             );
         return _localReturnValue;
@@ -11494,7 +11844,9 @@ class _RecordParametersEndpoint {
             .then(
               (record) => _igqrxdcj.Protocol()
                   .deserialize<Map<(String, int), (int, _i685tvwm.SimpleData)>>(
-                    record,
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
                   ),
             );
         return _localReturnValue;
@@ -11531,7 +11883,11 @@ class _RecordParametersEndpoint {
             )
             .then(
               (record) => _igqrxdcj.Protocol()
-                  .deserialize<Map<String, List<Set<(int,)>>>>(record),
+                  .deserialize<Map<String, List<Set<(int,)>>>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11570,7 +11926,11 @@ class _RecordParametersEndpoint {
               (record) =>
                   _igqrxdcj.Protocol().deserialize<
                     ({(_i685tvwm.SimpleData, double) namedSubRecord})
-                  >(record),
+                  >(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11609,7 +11969,11 @@ class _RecordParametersEndpoint {
               (record) =>
                   _igqrxdcj.Protocol().deserialize<
                     ({(_i685tvwm.SimpleData, double)? namedSubRecord})
-                  >(record),
+                  >(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11651,7 +12015,11 @@ class _RecordParametersEndpoint {
                       (int, String), {
                       (_i685tvwm.SimpleData, double) namedSubRecord,
                     })
-                  >(record),
+                  >(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -11698,7 +12066,11 @@ class _RecordParametersEndpoint {
                         (_i685tvwm.SimpleData, double) namedSubRecord,
                       })
                     >
-                  >(record),
+                  >(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -14523,8 +14895,12 @@ class _TestToolsEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol()
-                  .deserialize<(String, (int, bool))>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(String, (int, bool))>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -14559,8 +14935,12 @@ class _TestToolsEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol()
-                  .deserialize<List<(String, (int, bool))>>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<List<(String, (int, bool))>>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -14597,8 +14977,12 @@ class _TestToolsEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _igqrxdcj.Protocol()
-                  .deserialize<(int, _i685tvwm.SimpleData)>(record),
+              (record) =>
+                  _igqrxdcj.Protocol().deserialize<(int, _i685tvwm.SimpleData)>(
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
+                  ),
             );
         return _localReturnValue;
       } finally {
@@ -15290,6 +15674,35 @@ class _AuthenticatedTestToolsEndpoint {
           _localCallContext,
           _localUniqueSession,
           {'stream': stream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _ida.Stream<int> broadcastStream(_ist.TestSessionBuilder sessionBuilder) {
+    var _localTestStreamManager = _ist.TestStreamManager<int>();
+    _ist.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'authenticatedTestTools',
+              method: 'broadcastStream',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'authenticatedTestTools',
+              methodName: 'broadcastStream',
+              arguments: {},
+              requestedInputStreams: [],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
         );
       },
       _localTestStreamManager.outputStreamController,

@@ -63,11 +63,11 @@ abstract class TokenIssuer {
   /// Returns an [AuthSuccess] containing the token and user information.
   @nonVirtual
   Future<AuthSuccess> issueToken(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
-    final Set<Scope>? scopes,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
+    Set<Scope>? scopes,
+    Transaction? transaction,
   }) async {
     final callerIdentifier = session.authenticated?.userIdentifier;
     if (callerIdentifier != null && callerIdentifier != authUserId.toString()) {
@@ -108,11 +108,11 @@ abstract class TokenIssuer {
   /// Unlike [issueToken] this performs no sign-in policy check and no cookie
   /// delivery; the returned [AuthSuccess] always carries the secrets.
   Future<AuthSuccess> createToken(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
-    final Set<Scope>? scopes,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
+    Set<Scope>? scopes,
+    Transaction? transaction,
   });
 
   /// The expiry of a cookie-delivered refresh token, or null for a browser
@@ -121,9 +121,9 @@ abstract class TokenIssuer {
 
   /// The cookie `Path` for a cookie-delivered refresh token, or null for the
   /// configured auth cookie path.
-  String? refreshCookiePath(final Session session) => null;
+  String? refreshCookiePath(Session session) => null;
 
-  static int? _maxAgeSeconds(final DateTime? expiresAt) {
+  static int? _maxAgeSeconds(DateTime? expiresAt) {
     if (expiresAt == null) return null;
     final seconds = expiresAt.difference(clock.now()).inSeconds;
     return seconds > 0 ? seconds : null;
@@ -144,11 +144,11 @@ abstract class TokenManager extends TokenIssuer {
   /// If [method] is provided, only tokens created with that authentication method will be revoked.
   /// If [tokenIssuer] is provided, only tokens from that specific token manager will be revoked.
   Future<void> revokeAllTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
-    final String? tokenIssuer,
+    Session session, {
+    required UuidValue? authUserId,
+    Transaction? transaction,
+    String? method,
+    String? tokenIssuer,
   });
 
   /// Revokes a specific token by its ID.
@@ -156,10 +156,10 @@ abstract class TokenManager extends TokenIssuer {
   /// If the [tokenId] doesn't exist, the operation completes without error.
   /// If [tokenIssuer] is provided, only tokens from that specific token manager will be revoked.
   Future<void> revokeToken(
-    final Session session, {
-    required final String tokenId,
-    final Transaction? transaction,
-    final String? tokenIssuer,
+    Session session, {
+    required String tokenId,
+    Transaction? transaction,
+    String? tokenIssuer,
   });
 
   /// Lists all [TokenInfo]s matching the given criteria.
@@ -168,11 +168,11 @@ abstract class TokenManager extends TokenIssuer {
   /// If [method] is provided, only tokens created with that authentication method will be listed.
   /// If [tokenIssuer] is provided, only tokens from that specific token manager will be listed.
   Future<List<TokenInfo>> listTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final String? method,
-    final String? tokenIssuer,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue? authUserId,
+    String? method,
+    String? tokenIssuer,
+    Transaction? transaction,
   });
 
   /// Validates an authentication token and returns the associated authentication information.
@@ -180,7 +180,7 @@ abstract class TokenManager extends TokenIssuer {
   /// Returns [AuthenticationInfo] if the token is valid, or `null` if the token is invalid,
   /// expired, or revoked.
   Future<AuthenticationInfo?> validateToken(
-    final Session session,
-    final String token,
+    Session session,
+    String token,
   );
 }

@@ -12,7 +12,7 @@ void main() {
   withServerpod(
     'Given pending account request exists',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -35,7 +35,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -53,7 +53,7 @@ void main() {
           late Future<String> verifyAccountRequestFuture;
           setUp(() async {
             verifyAccountRequestFuture = session.db.transaction(
-              (final transaction) =>
+              (transaction) =>
                   fixture.accountCreationUtil.verifyRegistrationCode(
                     session,
                     accountRequestId: accountRequestId,
@@ -76,7 +76,7 @@ void main() {
               final verificationToken = await verifyAccountRequestFuture;
 
               final completeAccountRequestFuture = session.db.transaction(
-                (final transaction) =>
+                (transaction) =>
                     fixture.accountCreationUtil.completeAccountCreation(
                       session,
                       completeAccountCreationToken: verificationToken,
@@ -94,13 +94,12 @@ void main() {
         'when verify registration code is called with invalid verification code then it throws invalid verification code exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: '$verificationCode-invalid',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: '$verificationCode-invalid',
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -123,7 +122,7 @@ void main() {
             ),
             () async {
               final result = session.db.transaction(
-                (final transaction) =>
+                (transaction) =>
                     fixture.accountCreationUtil.verifyRegistrationCode(
                       session,
                       accountRequestId: accountRequestId,
@@ -150,8 +149,8 @@ void main() {
           setUp(() async {
             attempts = List.generate(
               numberOfAttempts,
-              (final _) => session.db.transaction(
-                (final transaction) =>
+              (_) => session.db.transaction(
+                (transaction) =>
                     fixture.accountCreationUtil.verifyRegistrationCode(
                       session,
                       accountRequestId: accountRequestId,
@@ -170,15 +169,14 @@ void main() {
                 throwsA(
                   isA<ParallelWaitError>()
                       .having(
-                        (final e) => (e.errors as List<AsyncError?>).nonNulls,
+                        (e) => (e.errors as List<AsyncError?>).nonNulls,
                         'errors',
                         hasLength(numberOfAttempts - 1),
                       )
                       .having(
-                        (final e) =>
-                            (e.errors as List<AsyncError?>).nonNulls.map(
-                              (final e) => e.error,
-                            ),
+                        (e) => (e.errors as List<AsyncError?>).nonNulls.map(
+                          (e) => e.error,
+                        ),
                         'errors',
                         everyElement(
                           isA<
@@ -196,7 +194,7 @@ void main() {
               attempts,
               throwsA(
                 isA<ParallelWaitError>().having(
-                  (final e) => (e.values as List<String?>).nonNulls,
+                  (e) => (e.values as List<String?>).nonNulls,
                   'values',
                   hasLength(1),
                 ),
@@ -211,7 +209,7 @@ void main() {
   withServerpod(
     'Given account request that has been verified already',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -230,7 +228,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -239,13 +237,12 @@ void main() {
 
         // Verify the request
         await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyRegistrationCode(
-                session,
-                accountRequestId: accountRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
-              ),
+          (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
         );
       });
 
@@ -257,13 +254,12 @@ void main() {
         'when verify registration code is called with valid verification code then throws verification code already used exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: verificationCode,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -280,7 +276,7 @@ void main() {
   withServerpod(
     'Given account request that has been completed',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -300,7 +296,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -309,23 +305,21 @@ void main() {
 
         // Verify and complete the request
         final verificationToken = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyRegistrationCode(
-                session,
-                accountRequestId: accountRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
-              ),
+          (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
         );
 
         await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
-                session,
-                completeAccountCreationToken: verificationToken,
-                password: password,
-                transaction: transaction,
-              ),
+          (transaction) => fixture.accountCreationUtil.completeAccountCreation(
+            session,
+            completeAccountCreationToken: verificationToken,
+            password: password,
+            transaction: transaction,
+          ),
         );
       });
 
@@ -337,13 +331,12 @@ void main() {
         'when verify registration code is called with valid verification code then it throws request not found exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: verificationCode,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -358,7 +351,7 @@ void main() {
   withServerpod(
     'Given account request that has failed verification and config allows multiple attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -378,7 +371,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -388,13 +381,12 @@ void main() {
         // Make one failed attempt
         try {
           await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: 'wrong-code',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: 'wrong-code',
+              transaction: transaction,
+            ),
           );
         } on EmailAccountRequestInvalidVerificationCodeException {
           // Expected
@@ -409,13 +401,12 @@ void main() {
         'when verify registration code is called with valid verification code then it succeeds and returns verification token',
         () async {
           final request = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: verificationCode,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(request, completion(isA<String>()));
@@ -427,7 +418,7 @@ void main() {
   withServerpod(
     'Given account request that has failed verification matching the allowed attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -447,7 +438,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -457,13 +448,12 @@ void main() {
         // Make one failed attempt
         try {
           await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: 'wrong-code',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: 'wrong-code',
+              transaction: transaction,
+            ),
           );
         } on EmailAccountRequestInvalidVerificationCodeException {
           // Expected
@@ -478,13 +468,12 @@ void main() {
         'when verify registration code is called with invalid verification code then it throws too many attempts exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: 'wrong-code',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: 'wrong-code',
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -501,7 +490,7 @@ void main() {
   withServerpod(
     'Given account request that has failed verification past the maximum number of allowed attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -521,7 +510,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -531,13 +520,12 @@ void main() {
         // Exhaust allowed attempts
         try {
           await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: 'wrong-code',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: 'wrong-code',
+              transaction: transaction,
+            ),
           );
         } on EmailAccountRequestInvalidVerificationCodeException {
           // Expected
@@ -546,13 +534,12 @@ void main() {
         // Go past the allowed attempts
         try {
           await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: 'wrong-code',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: 'wrong-code',
+              transaction: transaction,
+            ),
           );
         } on EmailAccountRequestVerificationTooManyAttemptsException {
           // Expected - this should delete the request
@@ -567,13 +554,12 @@ void main() {
         'when verify registration code is called with valid verification code then it throws too many attempts exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: verificationCode,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(
@@ -590,7 +576,7 @@ void main() {
   withServerpod(
     'Given account request was verified with expired credentials',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -611,7 +597,7 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.accountCreationUtil.startRegistration(
+          (transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
             transaction: transaction,
@@ -628,7 +614,7 @@ void main() {
           () async {
             try {
               await session.db.transaction(
-                (final transaction) =>
+                (transaction) =>
                     fixture.accountCreationUtil.verifyRegistrationCode(
                       session,
                       accountRequestId: accountRequestId,
@@ -651,13 +637,12 @@ void main() {
         'when verify registration code is called with valid verification code then it throws request not found exception',
         () async {
           final result = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: verificationCode,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
           );
 
           await expectLater(

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:dart_mcp/stdio.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/commands/status.dart'
     show resolveServerDirectory;
@@ -62,13 +63,14 @@ class McpCommand extends ServerpodCommand<McpOption> {
       commandConfig.optionalValue(McpOption.serverDir),
       flag: '--server-dir',
     );
+    final serverDirPath = p.canonicalize(serverDir.path);
 
     final String socketPath;
     try {
       socketPath = runnerSocketPath(
-        serverDir.path,
+        serverDirPath,
         serverpodMcpSocketName,
-        projectId: RunnerRegistry.idFor(serverDir.path),
+        projectId: RunnerRegistry.idFor(serverDirPath),
       );
     } on SocketException catch (e) {
       log.error(e.message);
@@ -78,7 +80,8 @@ class McpCommand extends ServerpodCommand<McpOption> {
     final server = BridgeMcpServer(
       channel,
       socketPath: socketPath,
-      logPath: serverpodRunnerLogPath(serverDir.path),
+      logPath: serverpodRunnerLogPath(serverDirPath),
+      serverDir: serverDirPath,
     );
     await server.done;
   }

@@ -8,6 +8,7 @@ class SignInLocalizationProvider extends InheritedWidget {
   const SignInLocalizationProvider({
     this.basic = BasicSignInTexts.defaults,
     this.email = EmailSignInTexts.defaults,
+    this.emailWithOtp = EmailWithOtpSignInTexts.defaults,
     this.apple = AppleSignInTexts.defaults,
     this.google = GoogleSignInTexts.defaults,
     this.github = GitHubSignInTexts.defaults,
@@ -15,6 +16,7 @@ class SignInLocalizationProvider extends InheritedWidget {
     this.facebook = FacebookSignInTexts.defaults,
     this.anonymous = AnonymousSignInTexts.defaults,
     this.passwordRequirementTexts = PasswordRequirementTexts.defaults,
+    this.verificationCodeTexts = VerificationCodeTexts.defaults,
     required super.child,
     super.key,
   });
@@ -23,7 +25,13 @@ class SignInLocalizationProvider extends InheritedWidget {
   final BasicSignInTexts basic;
 
   /// Texts for the email sign-in flow.
+  ///
+  /// Also used by the screens the passwordless email flow shares with it,
+  /// such as the email field and the password reset.
   final EmailSignInTexts email;
+
+  /// Texts for the passwordless email sign-in flow with one-time passwords.
+  final EmailWithOtpSignInTexts emailWithOtp;
 
   /// Texts for the Apple Sign-In button.
   final AppleSignInTexts apple;
@@ -46,6 +54,9 @@ class SignInLocalizationProvider extends InheritedWidget {
   /// Texts for password requirements.
   final PasswordRequirementTexts passwordRequirementTexts;
 
+  /// Texts for verification code controls shared by both email flows.
+  final VerificationCodeTexts verificationCodeTexts;
+
   /// Returns the nearest localization provider in the widget tree, if any.
   static SignInLocalizationProvider? maybeOf(BuildContext context) {
     return context
@@ -67,12 +78,14 @@ class SignInLocalizationProvider extends InheritedWidget {
   bool updateShouldNotify(SignInLocalizationProvider oldWidget) {
     return oldWidget.basic != basic ||
         oldWidget.email != email ||
+        oldWidget.emailWithOtp != emailWithOtp ||
         oldWidget.apple != apple ||
         oldWidget.google != google ||
         oldWidget.github != github ||
         oldWidget.microsoft != microsoft ||
         oldWidget.facebook != facebook ||
         oldWidget.anonymous != anonymous ||
-        oldWidget.passwordRequirementTexts != passwordRequirementTexts;
+        oldWidget.passwordRequirementTexts != passwordRequirementTexts ||
+        oldWidget.verificationCodeTexts != verificationCodeTexts;
   }
 }

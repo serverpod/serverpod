@@ -1,5 +1,6 @@
 linter:
   rules:
+    - avoid_final_parameters
     - depend_on_referenced_packages
 
 analyzer:

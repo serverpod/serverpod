@@ -42,7 +42,7 @@ final class FirebaseServiceAccountCredentials {
   /// }
   /// ```
   factory FirebaseServiceAccountCredentials.fromJson(
-    final Map<String, dynamic> json,
+    Map<String, dynamic> json,
   ) {
     final projectId = json['project_id'] as String?;
     if (projectId == null || projectId.isEmpty) {
@@ -63,7 +63,7 @@ final class FirebaseServiceAccountCredentials {
   /// The string is expected to follow the format described in
   /// [FirebaseServiceAccountCredentials.fromJson].
   factory FirebaseServiceAccountCredentials.fromJsonString(
-    final String jsonString,
+    String jsonString,
   ) {
     final data = jsonDecode(jsonString);
     if (data is! Map<String, dynamic>) {
@@ -78,7 +78,7 @@ final class FirebaseServiceAccountCredentials {
   ///
   /// The file is expected to follow the format described in
   /// [FirebaseServiceAccountCredentials.fromJson].
-  factory FirebaseServiceAccountCredentials.fromJsonFile(final File file) {
+  factory FirebaseServiceAccountCredentials.fromJsonFile(File file) {
     final jsonString = file.readAsStringSync();
     return FirebaseServiceAccountCredentials.fromJsonString(jsonString);
   }

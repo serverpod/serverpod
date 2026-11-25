@@ -66,7 +66,7 @@ void main() {
 
     setUp(() => command = UpgradeCommand());
 
-    Iterable<Object?> errorsFor(final String value) => command
+    Iterable<Object?> errorsFor(String value) => command
         .resolveConfiguration(command.argParser.parse(['--version', value]))
         .errors;
 

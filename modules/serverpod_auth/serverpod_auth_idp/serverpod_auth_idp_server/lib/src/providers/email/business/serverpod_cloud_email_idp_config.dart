@@ -16,7 +16,7 @@ const _scloudAuthEmailKey = 'scloudAuthEmailKey';
 /// A function sending a single verification [code] to [email].
 ///
 /// Used internally by [ServerpodCloudEmailIdpConfig] to share the
-/// registration- and password-reset sending logic.
+/// registration, password-reset and OTP login sending logic.
 typedef _SendCodeFunction =
     FutureOr<void> Function(
       Session session, {
@@ -57,29 +57,29 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
   /// lower-case alphanumeric characters). They must consist of 1–16 alphanumeric
   /// characters (`A-Z`, `a-z`, `0-9`) to be accepted by the email service.
   factory ServerpodCloudEmailIdpConfig({
-    required final String appDisplayName,
+    required String appDisplayName,
 
     /// The client used to send emails in staging/production. Defaults to a
     /// [ServerpodCloudEmailClient] targeting the hosted service; override it to
     /// target a different endpoint or for testing.
-    final ServerpodCloudEmailClient? emailClient,
+    ServerpodCloudEmailClient? emailClient,
 
     /// The run mode determining whether codes are logged (development/test) or
     /// emailed (staging/production). Defaults to `Serverpod.instance.runMode`;
     /// primarily an override for testing.
-    final String? runMode,
+    String? runMode,
 
     /// Callback to be invoked after a password reset is successfully completed.
     ///
     /// This can be used to perform additional cleanup tasks, such as clearing
     /// legacy passwords during migration scenarios.
-    final OnPasswordResetCompletedFunction? onPasswordResetCompleted,
+    OnPasswordResetCompletedFunction? onPasswordResetCompleted,
 
     /// Callback to be invoked after a new email account has been created.
     ///
     /// This can be used to perform additional setup tasks, such as creating a
     /// user profile or sending a welcome email.
-    final AfterAccountCreatedFunction? onAfterAccountCreated,
+    AfterAccountCreatedFunction? onAfterAccountCreated,
   }) {
     final resolvedRunMode = runMode ?? Serverpod.instance.runMode;
     final isDevelopment =
@@ -109,6 +109,14 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
           logLabel: 'Password reset',
         ),
       ),
+      sendOtpLoginVerificationCode: _otpLoginSender(
+        _coreSender(
+          appDisplayName: appDisplayName,
+          client: client,
+          emailType: ServerpodCloudEmailType.signup,
+          logLabel: 'Login',
+        ),
+      ),
       onPasswordResetCompleted: onPasswordResetCompleted,
       onAfterAccountCreated: onAfterAccountCreated,
     );
@@ -118,6 +126,7 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
   ServerpodCloudEmailIdpConfig._({
     required super.sendRegistrationVerificationCode,
     required super.sendPasswordResetVerificationCode,
+    required super.sendOtpLoginVerificationCode,
     super.onPasswordResetCompleted,
     super.onAfterAccountCreated,
   });
@@ -129,15 +138,15 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
   /// service. The `scloudAuthEmailKey` password is read lazily, and any failure
   /// is logged rather than thrown (see the class docs for why).
   static _SendCodeFunction _coreSender({
-    required final String appDisplayName,
-    required final ServerpodCloudEmailClient? client,
-    required final ServerpodCloudEmailType emailType,
-    required final String logLabel,
+    required String appDisplayName,
+    required ServerpodCloudEmailClient? client,
+    required ServerpodCloudEmailType emailType,
+    required String logLabel,
   }) {
     return (
-      final Session session, {
-      required final String email,
-      required final String code,
+      Session session, {
+      required String email,
+      required String code,
     }) async {
       if (client == null) {
         // `session.alert` shows this as a copyable alert in the `serverpod`
@@ -176,27 +185,40 @@ class ServerpodCloudEmailIdpConfig extends EmailIdpConfigFromPasswords {
 
   /// Adapts a shared [send] callback to the registration callback signature.
   static SendRegistrationVerificationCodeFunction _registrationSender(
-    final _SendCodeFunction send,
+    _SendCodeFunction send,
   ) {
     return (
-      final Session session, {
-      required final String email,
-      required final UuidValue accountRequestId,
-      required final String verificationCode,
-      required final Transaction? transaction,
+      Session session, {
+      required String email,
+      required UuidValue accountRequestId,
+      required String verificationCode,
+      required Transaction? transaction,
     }) => send(session, email: email, code: verificationCode);
   }
 
   /// Adapts a shared [send] callback to the password-reset callback signature.
   static SendPasswordResetVerificationCodeFunction _passwordResetSender(
-    final _SendCodeFunction send,
+    _SendCodeFunction send,
   ) {
     return (
-      final Session session, {
-      required final String email,
-      required final UuidValue passwordResetRequestId,
-      required final String verificationCode,
-      required final Transaction? transaction,
+      Session session, {
+      required String email,
+      required UuidValue passwordResetRequestId,
+      required String verificationCode,
+      required Transaction? transaction,
+    }) => send(session, email: email, code: verificationCode);
+  }
+
+  /// Adapts a shared [send] callback to the OTP login callback signature.
+  static SendOtpLoginVerificationCodeFunction _otpLoginSender(
+    _SendCodeFunction send,
+  ) {
+    return (
+      Session session, {
+      required String email,
+      required UuidValue otpLoginRequestId,
+      required String verificationCode,
+      required Transaction? transaction,
     }) => send(session, email: email, code: verificationCode);
   }
 }

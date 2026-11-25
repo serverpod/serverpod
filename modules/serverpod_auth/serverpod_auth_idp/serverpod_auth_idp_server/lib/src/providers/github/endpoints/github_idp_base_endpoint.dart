@@ -27,10 +27,10 @@ abstract class GitHubIdpBaseEndpoint extends IdpBaseEndpoint {
   /// If a new user is created an associated [UserProfile] is also created.
   /// {@endtemplate}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String code,
-    required final String codeVerifier,
-    required final String redirectUri,
+    Session session, {
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
   }) async {
     return githubIdp.login(
       session,
@@ -41,6 +41,6 @@ abstract class GitHubIdpBaseEndpoint extends IdpBaseEndpoint {
   }
 
   @override
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await githubIdp.hasAccount(session);
 }

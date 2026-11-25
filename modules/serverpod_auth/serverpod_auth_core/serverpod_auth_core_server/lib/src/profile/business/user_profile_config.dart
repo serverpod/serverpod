@@ -119,7 +119,7 @@ typedef AfterUserProfileUpdatedHandler =
       required Transaction transaction,
     });
 
-Future<Uint8List> _defaultImageFetch(final Uri url) async {
+Future<Uint8List> _defaultImageFetch(Uri url) async {
   final result = await http.get(url);
 
   return result.bodyBytes;

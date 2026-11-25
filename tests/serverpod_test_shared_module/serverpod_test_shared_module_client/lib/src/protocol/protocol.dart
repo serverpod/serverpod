@@ -35,12 +35,17 @@ class Protocol extends _isd.DatabaseSerializationManager
         this,
         types: const [],
         modules: const [_ivdm85cg.Protocol.new],
+        classNames: const [],
+        classNamePrefix: 'serverpod_test_shared_module.',
       );
 
-  static List<_isd.TableDefinition> get targetTableDefinitions => [
+  static List<_isd.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isd.TableDefinition> get _ownTableDefinitions => [
     ..._ivdm85cg.Protocol() is _isd.DatabaseSerializationManager
         ? (_ivdm85cg.Protocol() as _isd.DatabaseSerializationManager)
-              .getTargetTableDefinitions()
+              .getOwnTableDefinitions()
         : [],
   ];
 
@@ -52,14 +57,11 @@ class Protocol extends _isd.DatabaseSerializationManager
     _ivdm85cg.Protocol().registerHostProtocol(projectName, protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_test_shared_module.'))
-      return className;
-    return className.substring(29);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_test_shared_module.',
+      );
 
   @override
   T deserialize<T>(
@@ -67,8 +69,11 @@ class Protocol extends _isd.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_test_shared_module.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -82,9 +87,10 @@ class Protocol extends _isd.DatabaseSerializationManager
       }
     }
 
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -205,6 +211,9 @@ class Protocol extends _isd.DatabaseSerializationManager
   @override
   List<_isd.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isd.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_test_shared_module';

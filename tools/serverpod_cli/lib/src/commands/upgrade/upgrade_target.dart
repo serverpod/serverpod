@@ -13,7 +13,7 @@ enum UpgradeChannel {
   ///
   /// A prerelease installation follows prereleases, so upgrading a beta never
   /// moves back to an older stable release.
-  static UpgradeChannel forVersion(final Version version) =>
+  static UpgradeChannel forVersion(Version version) =>
       version.isPreRelease ? UpgradeChannel.any : UpgradeChannel.stable;
 }
 
@@ -46,12 +46,12 @@ class UpgradeTarget {
 /// [requested] wins when it was published. When nothing was requested, the
 /// newest version [channel] admits wins.
 UpgradeTarget? resolveUpgradeTarget({
-  required final Version current,
-  required final Iterable<Version> published,
-  required final UpgradeChannel channel,
-  final Version? requested,
+  required Version current,
+  required Iterable<Version> published,
+  required UpgradeChannel channel,
+  Version? requested,
 }) {
-  final candidates = published.where((final version) {
+  final candidates = published.where((version) {
     if (requested != null) return version == requested;
     return channel == UpgradeChannel.any || !version.isPreRelease;
   }).toList()..sort();

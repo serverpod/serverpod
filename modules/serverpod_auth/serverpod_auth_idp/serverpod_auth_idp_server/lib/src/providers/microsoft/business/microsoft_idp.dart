@@ -45,10 +45,10 @@ class MicrosoftIdp implements IdentityProvider {
 
   /// Creates a new instance of [MicrosoftIdp].
   factory MicrosoftIdp(
-    final MicrosoftIdpConfig config, {
-    required final TokenIssuer tokenIssuer,
-    final AuthUsers authUsers = const AuthUsers(),
-    final UserProfiles userProfiles = const UserProfiles(),
+    MicrosoftIdpConfig config, {
+    required TokenIssuer tokenIssuer,
+    AuthUsers authUsers = const AuthUsers(),
+    UserProfiles userProfiles = const UserProfiles(),
   }) {
     final utils = MicrosoftIdpUtils(
       config: config,
@@ -68,17 +68,17 @@ class MicrosoftIdp implements IdentityProvider {
 
   /// {@macro microsoft_idp_base_endpoint.login}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String code,
-    required final String codeVerifier,
-    required final String redirectUri,
-    required final bool isWebPlatform,
-    final Transaction? transaction,
+    Session session, {
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+    required bool isWebPlatform,
+    Transaction? transaction,
   }) async {
     return await DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final accessToken = await utils.exchangeCodeForToken(
           session,
           code: code,
@@ -111,7 +111,7 @@ class MicrosoftIdp implements IdentityProvider {
           try {
             final user = await UserProfile.db.findFirstRow(
               session,
-              where: (final t) => t.authUserId.equals(account.authUserId),
+              where: (t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
             if (user != null && user.imageId == null) {
@@ -144,21 +144,21 @@ class MicrosoftIdp implements IdentityProvider {
   }
 
   /// Determines whether the current session has an associated Microsoft account.
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await utils.getAccount(session) != null;
 
   /// Migrates [MicrosoftAccount]s from [userToRemoveId] to [userToKeepId].
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     await MicrosoftAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToRemoveId),
-      columnValues: (final t) => [
+      where: (t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (t) => [
         t.authUserId(userToKeepId),
       ],
       transaction: transaction,

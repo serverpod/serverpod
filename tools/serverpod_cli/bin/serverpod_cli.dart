@@ -51,8 +51,8 @@ class _LazyPostHogAnalytics extends Analytics {
 
   @override
   Future<void> sendEvent({
-    required final String event,
-    final Map<String, dynamic> properties = const {},
+    required String event,
+    Map<String, dynamic> properties = const {},
   }) => _postHog.sendEvent(event: event, properties: properties);
 
   @override

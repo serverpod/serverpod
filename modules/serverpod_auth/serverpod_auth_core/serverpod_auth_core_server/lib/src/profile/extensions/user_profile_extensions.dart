@@ -13,7 +13,7 @@ extension UserProfileMerge on UserProfile {
   /// - fullName
   /// - email
   /// - imageId
-  UserProfile merge(final UserProfile other) {
+  UserProfile merge(UserProfile other) {
     return copyWith(
       userName: _mergeString(userName, other.userName),
       fullName: _mergeString(fullName, other.fullName),
@@ -22,7 +22,7 @@ extension UserProfileMerge on UserProfile {
     );
   }
 
-  String? _mergeString(final String? original, final String? candidate) {
+  String? _mergeString(String? original, String? candidate) {
     if (original != null && original.isNotEmpty) {
       return original;
     }

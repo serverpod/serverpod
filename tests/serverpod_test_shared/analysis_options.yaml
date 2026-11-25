@@ -18,5 +18,9 @@ analyzer:
     invalid_annotation_target: ignore
     non_constant_identifier_names: ignore
 
+linter:
+  rules:
+    avoid_final_parameters: true
+
 formatter:
   trailing_commas: preserve

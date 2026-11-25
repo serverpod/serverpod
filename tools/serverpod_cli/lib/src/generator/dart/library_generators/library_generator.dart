@@ -180,9 +180,59 @@ class LibraryGenerator {
     final deserializationGenerator = ProtocolDeserializationGenerator(
       runtimeUrl: serverpodUrl(serverCode),
     );
+    final deserializationType = refer(
+      'ProtocolDeserialization',
+      serverpodUrl(serverCode),
+    );
+    final classNamePrefix = config.type != PackageType.server
+        ? '${config.name}.'
+        : null;
+
+    Expression normalizeClassName(Expression className) {
+      if (classNamePrefix == null) return className;
+
+      return deserializationType
+          .property('normalizeClassName')
+          .call(
+            [className],
+            {'prefix': literalString(classNamePrefix)},
+          );
+    }
 
     var nonModelStreamTypes = protocolDefinition
         .getNonModelOrPrimitiveStreamTypes(modules: config.modules);
+
+    final localClassDeserializers = [
+      for (var extraClass in config.extraClasses)
+        (
+          extraClass.className,
+          extraClass.reference(serverCode, config: config),
+        ),
+      for (var classInfo in unsealedModels)
+        (
+          classInfo.className,
+          refer(classInfo.className, TypeDefinition.getRef(classInfo)),
+        ),
+    ];
+    // Kept apart from the local classes, because retry policies are named by
+    // their exact type rather than matched by a type pattern.
+    final retryPolicyDeserializers = [
+      if (serverCode)
+        for (var retryPolicy in futureCallRetryPolicies)
+          (
+            retryPolicy.className,
+            retryPolicy.reference(serverCode, config: config),
+          ),
+    ];
+    final streamClassDeserializers = [
+      for (var containerType in nonModelStreamTypes)
+        (
+          containerType.classNameWithGenericsForProtocol(
+            modules: config.modules,
+          ),
+          containerType.reference(serverCode, config: config),
+        ),
+    ];
 
     final shouldExtendDatabaseSerializationManager =
         serverCode ||
@@ -249,8 +299,8 @@ class LibraryGenerator {
         ),
     ]);
 
-    final allFieldsToGenerateSerialization = unsealedModels
-        .whereType<ModelClassDefinition>()
+    final allFieldsToGenerateSerialization = allModels
+        .whereType<ClassDefinition>()
         .expand((m) => m.fields)
         .where((f) => f.shouldIncludeField(serverCode))
         .distinct();
@@ -328,21 +378,65 @@ class LibraryGenerator {
       deserializationGenerator.metadata(
         types: deserializers.keys,
         modules: deserializationModules,
+        classNames: [
+          for (var (name, _) in localClassDeserializers) name,
+          for (var (name, _) in retryPolicyDeserializers) name,
+          for (var (name, _) in streamClassDeserializers) name,
+        ],
+        classNamePrefix: classNamePrefix,
       ),
     );
 
+    // Modules are combined from their own tables. `config.modules` already
+    // holds every transitive module, so spreading each module's complete
+    // target tables would build a module once per dependency path to it.
+    final moduleTableDefinitions = [
+      for (var module in config.modules)
+        serverCode
+            ? refer(
+                'Protocol',
+                module.dartImportUrl(serverCode),
+              ).call([]).property('getOwnTableDefinitions').call([]).spread
+            : _protocolOwnTableDefinitionsSpread(
+                module.dartImportUrl(serverCode),
+                serverCode,
+              ),
+      if (serverCode &&
+          config.name != 'serverpod' &&
+          config.type != PackageType.module)
+        refer(
+          'Protocol.targetTableDefinitions',
+          serverpodProtocolUrl(serverCode),
+        ).spread,
+    ];
+
+    final tableDefinitionsType = TypeReference(
+      (t) => t
+        ..symbol = 'List'
+        ..types.add(_tableDefinitionReference(serverCode)),
+    );
+
     protocol.methods.addAll([
-      if (shouldExtendDatabaseSerializationManager)
+      if (shouldExtendDatabaseSerializationManager) ...[
         Method(
           (m) => m
             ..name = 'targetTableDefinitions'
             ..static = true
             ..type = MethodType.getter
-            ..returns = TypeReference(
-              (t) => t
-                ..symbol = 'List'
-                ..types.add(_tableDefinitionReference(serverCode)),
-            )
+            ..returns = tableDefinitionsType
+            ..body = moduleTableDefinitions.isEmpty
+                ? refer('_ownTableDefinitions').code
+                : literalList([
+                    refer('_ownTableDefinitions').spread,
+                    ...moduleTableDefinitions,
+                  ]).code,
+        ),
+        Method(
+          (m) => m
+            ..name = '_ownTableDefinitions'
+            ..static = true
+            ..type = MethodType.getter
+            ..returns = tableDefinitionsType
             ..body =
                 createDatabaseDefinitionFromModels(
                   allModels,
@@ -352,50 +446,24 @@ class LibraryGenerator {
                 ).toCode(
                   config: config,
                   serverCode: serverCode,
-                  additionalTables: serverCode
-                      ? [
-                          for (var module in config.modules)
-                            refer(
-                              'Protocol.targetTableDefinitions',
-                              module.dartImportUrl(serverCode),
-                            ).spread,
-                          for (var packageName
-                              in config.sharedModelsSourcePathsParts.keys)
-                            if (!sharedPackage)
-                              _protocolTargetTableDefinitionsSpread(
-                                'package:$packageName/$packageName.dart',
-                                serverCode,
-                              ),
-                          if (config.name != 'serverpod' &&
-                              config.type != PackageType.module)
-                            refer(
-                              'Protocol.targetTableDefinitions',
-                              serverpodProtocolUrl(serverCode),
-                            ).spread,
-                        ]
-                      : [
-                          for (var module in config.modules)
-                            _protocolTargetTableDefinitionsSpread(
-                              module.dartImportUrl(serverCode),
-                              serverCode,
-                            ),
-                          for (var packageName
-                              in config.sharedModelsSourcePathsParts.keys)
-                            if (!sharedPackage)
-                              _protocolTargetTableDefinitionsSpread(
-                                'package:$packageName/$packageName.dart',
-                                serverCode,
-                              ),
-                        ],
+                  additionalTables: [
+                    if (!sharedPackage)
+                      for (var packageName
+                          in config.sharedModelsSourcePathsParts.keys)
+                        _protocolOwnTableDefinitionsSpread(
+                          'package:$packageName/$packageName.dart',
+                          serverCode,
+                        ),
+                  ],
                 ),
         ),
+      ],
       if (_supportsHostProtocols) ..._buildModuleHostProtocolMethods(),
       Method(
         (m) => m
           ..static = true
           ..name = 'getClassNameFromObjectJson'
           ..returns = refer('String?')
-          ..lambda = false
           ..requiredParameters.add(
             Parameter(
               (p) => p
@@ -403,19 +471,10 @@ class LibraryGenerator {
                 ..type = refer('dynamic'),
             ),
           )
-          ..body = Block.of([
-            const Code(
-              'if (data is! Map) return null;'
-              "final className = data['__className__'] as String?;",
-            ),
-            (config.type != PackageType.server)
-                ? Code(
-                    'if (className == null) return null;'
-                    "if (!className.startsWith('${config.name}.')) return className;"
-                    'return className.substring(${config.name.length + 1});',
-                  )
-                : const Code('return className;'),
-          ]),
+          ..lambda = true
+          ..body = normalizeClassName(
+            deserializationType.property('readClassName').call([refer('data')]),
+          ).code,
       ),
       Method(
         (m) => m
@@ -438,12 +497,22 @@ class LibraryGenerator {
             ),
           )
           ..body = Block.of([
+            const Code('t ??= T;'),
+            declareFinal('rawDataClassName')
+                .assign(
+                  deserializationType.property('readClassName').call([
+                    refer('data'),
+                  ]),
+                )
+                .statement,
+            declareFinal('dataClassName')
+                .assign(
+                  normalizeClassName(refer('rawDataClassName')),
+                )
+                .statement,
             Code.scope(
               (a) =>
                   '''
-            t ??= T;
-
-            final dataClassName = getClassNameFromObjectJson(data);
             if (dataClassName != null && dataClassName != getClassNameForType(t)) {
               try {
                 return deserializeByClassName({
@@ -468,7 +537,9 @@ class LibraryGenerator {
               ]),
             ),
             if (deserializationModules.isNotEmpty)
-              deserializationGenerator.moduleFallback(),
+              deserializationGenerator.moduleFallback(
+                className: refer('rawDataClassName'),
+              ),
             const Code('return super.deserialize<T>(data,t);'),
           ]),
       ),
@@ -486,21 +557,10 @@ class LibraryGenerator {
           )
           ..body = Block.of([
             const Code('return switch (type) {'),
-            if (unsealedModels.isNotEmpty ||
-                _protocolExtraClasses.isNotEmpty) ...[
-              for (var extraClass in _protocolExtraClasses)
-                Code.scope(
-                  (a) =>
-                      '${a(extraClass.reference(serverCode, config: config))} => '
-                      '\'${extraClass.className}\',',
-                ),
-              for (var classInfo in unsealedModels)
-                Code.scope(
-                  (a) =>
-                      '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))} => '
-                      '\'${classInfo.className}\',',
-                ),
-            ],
+            for (var (name, type) in localClassDeserializers)
+              Code.scope((a) => "${a(type)} => '$name',"),
+            for (var (name, type) in retryPolicyDeserializers)
+              Code.scope((a) => "${a(type)} => '$name',"),
             const Code('_ => null };'),
           ]),
       ),
@@ -529,40 +589,24 @@ class LibraryGenerator {
           '''),
             // Retry policies are matched by their exact type, so that a policy
             // that extends another one is never named after its superclass.
-            if (serverCode)
-              for (var retryPolicy in futureCallRetryPolicies)
-                Code.scope(
-                  (a) =>
-                      'if (data.runtimeType == ${a(retryPolicy.reference(serverCode, config: config))}) {'
-                      '  return \'${retryPolicy.className}\';'
-                      '}',
-                ),
-            if (unsealedModels.isNotEmpty ||
-                config.extraClasses.isNotEmpty) ...[
+            for (var (name, type) in retryPolicyDeserializers)
+              Code.scope(
+                (a) =>
+                    'if (data.runtimeType == ${a(type)}) {'
+                    '  return \'$name\';'
+                    '}',
+              ),
+            if (localClassDeserializers.isNotEmpty) ...[
               const Code('switch (data) {'),
-              for (var extraClass in config.extraClasses)
-                Code.scope(
-                  (a) =>
-                      'case ${a(extraClass.reference(serverCode, config: config))}():'
-                      '  return \'${extraClass.className}\';',
-                ),
-              for (var classInfo in unsealedModels)
-                Code.scope(
-                  (a) =>
-                      'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}():'
-                      '  return \'${classInfo.className}\';',
-                ),
+              for (var (name, type) in localClassDeserializers)
+                Code.scope((a) => "case ${a(type)}():\nreturn '$name';"),
               const Code('}'),
             ],
-            for (var containerType in nonModelStreamTypes)
+            for (var (name, type) in streamClassDeserializers)
               Block.of([
-                const Code('if(data is '),
-                containerType.reference(serverCode, config: config).code,
-                const Code(') {'),
-                Code(
-                  'return \'${containerType.classNameWithGenericsForProtocol(modules: config.modules)}\';',
-                ),
-                const Code('}'),
+                const Code('if (data is '),
+                type.code,
+                Code(") {\nreturn '$name';\n}"),
               ]),
             if (config.type != PackageType.module)
               for (var module in config.modules)
@@ -610,26 +654,18 @@ class LibraryGenerator {
               'if (dataClassName is! String) {'
               'return super.deserializeByClassName(data);}',
             ),
-            for (var extraClass in _protocolExtraClasses)
-              Code.scope(
-                (a) =>
-                    'if(dataClassName == \'${extraClass.className}\'){'
-                    'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}',
+            for (var (name, type) in localClassDeserializers)
+              _buildDeserializeByLocalClassName(name, type),
+            for (var (name, type) in retryPolicyDeserializers)
+              _buildDeserializeByLocalClassName(name, type),
+            for (var module in config.modules)
+              _buildDeserializeByClassNameDelegation(
+                module.dartImportUrl(serverCode),
+                module.name,
               ),
-            for (var classInfo in unsealedModels)
-              Code.scope(
-                (a) =>
-                    'if(dataClassName == \'${classInfo.className}\'){'
-                    'return deserialize<${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}>(data[\'data\']);}',
-              ),
-            if (config.type != PackageType.module)
-              for (var module in config.modules)
-                _buildDeserializeByClassNameDelegation(
-                  module.dartImportUrl(serverCode),
-                  module.name,
-                ),
             if (!sharedPackage)
-              for (var packageName in config.sharedModelsSourcePathsParts.keys)
+              for (var packageName
+                  in config.sharedModelsSourcePathsParts.keys) ...[
                 if (config.type == PackageType.module)
                   _buildDeserializeByClassNameForwarding(
                     'package:$packageName/$packageName.dart',
@@ -642,20 +678,18 @@ class LibraryGenerator {
                         : 'package:$packageName/$packageName.dart',
                     packageName,
                   ),
+                if (config.type == PackageType.internal)
+                  _buildDeserializeByClassNameForwarding(
+                    'package:$packageName/$packageName.dart',
+                  ),
+              ],
             if (config.name != 'serverpod' && serverCode)
               _buildDeserializeByClassNameDelegation(
                 serverpodProtocolUrl(serverCode),
                 'serverpod',
               ),
-            for (final containerType in nonModelStreamTypes) ...[
-              Code(
-                "if (dataClassName == '${containerType.classNameWithGenericsForProtocol(modules: config.modules)}') {",
-              ),
-              const Code('return deserialize<'),
-              containerType.reference(serverCode, config: config).code,
-              const Code('>(data[\'data\']);'),
-              const Code('}'),
-            ],
+            for (var (name, type) in streamClassDeserializers)
+              _buildDeserializeByLocalClassName(name, type),
             const Code('return super.deserializeByClassName(data);'),
           ]),
       ),
@@ -718,18 +752,22 @@ class LibraryGenerator {
               const Code('return null;'),
             ]),
         ),
-      if (shouldExtendDatabaseSerializationManager)
+      if (shouldExtendDatabaseSerializationManager) ...[
         Method(
           (m) => m
             ..name = 'getTargetTableDefinitions'
             ..annotations.add(refer('override'))
-            ..returns = TypeReference(
-              (t) => t
-                ..symbol = 'List'
-                ..types.add(_tableDefinitionReference(serverCode)),
-            )
+            ..returns = tableDefinitionsType
             ..body = refer('targetTableDefinitions').code,
         ),
+        Method(
+          (m) => m
+            ..name = 'getOwnTableDefinitions'
+            ..annotations.add(refer('override'))
+            ..returns = tableDefinitionsType
+            ..body = refer('_ownTableDefinitions').code,
+        ),
+      ],
       Method(
         (m) => m
           ..name = 'getModuleName'
@@ -813,15 +851,23 @@ class LibraryGenerator {
     String projectName,
   ) {
     return Block.of([
-      Code(
-        'if(dataClassName.startsWith(\'$projectName.\')){'
-        'data[\'className\'] = dataClassName.substring(${projectName.length + 1});',
-      ),
       Code.scope(
         (a) =>
-            'return ${a(refer('Protocol', protocolImportPath))}().deserializeByClassName(data);',
+            '''if (dataClassName.startsWith('$projectName.')) {
+  return ${a(refer('Protocol', protocolImportPath))}().deserializeByClassName({
+    ...data,
+    'className': dataClassName.substring(${projectName.length + 1}),
+  });
+}''',
       ),
-      const Code('}'),
+    ]);
+  }
+
+  Block _buildDeserializeByLocalClassName(String name, Reference type) {
+    return Block.of([
+      Code("if (dataClassName == '$name') {\nreturn deserialize<"),
+      type.code,
+      const Code(">(data['data']);\n}"),
     ]);
   }
 
@@ -1031,7 +1077,7 @@ return deserializeByClassName(value);
       library.directives.add(
         Directive.export(
           'future_calls.dart',
-          show: const ['ServerpodFutureCallsGetter'],
+          show: [_futureCallsGetterExtensionName],
         ),
       );
     }
@@ -1040,6 +1086,12 @@ return deserializeByClassName(value);
       library.ignoreForFile.add('deprecated_member_use_from_same_package');
     }
 
+    final serverParameter = Parameter(
+      (p) => p
+        ..name = 'server'
+        ..type = refer('Server', serverpodUrl(true)),
+    );
+
     // Endpoint class
     library.body.add(
       Class(
@@ -1047,18 +1099,39 @@ return deserializeByClassName(value);
           ..name = 'Endpoints'
           ..extend = refer('EndpointDispatch', serverpodUrl(true))
           ..methods.addAll([
-            // Init method
             Method.returnsVoid(
               (m) => m
                 ..name = 'initializeEndpoints'
                 ..annotations.add(refer('override'))
-                ..requiredParameters.add(
-                  Parameter(
-                    ((p) => p
-                      ..name = 'server'
-                      ..type = refer('Server', serverpodUrl(true))),
-                  ),
-                )
+                ..requiredParameters.add(serverParameter)
+                ..body = Block.of([
+                  refer('initializeOwnEndpoints').call([
+                    refer('server'),
+                  ]).statement,
+                  // `config.modules` already holds every transitive module, so
+                  // modules only initialize their own endpoints. Otherwise
+                  // each module would be built once per dependency path.
+                  for (var module in config.modules)
+                    refer('modules')
+                        .index(literalString(module.name))
+                        .assign(
+                          refer(
+                            'Endpoints',
+                            'package:${module.serverPackage}/${module.serverPackage}.dart',
+                          ).call([]).cascade('initializeOwnEndpoints').call([
+                            refer('server'),
+                          ]),
+                        )
+                        .statement,
+                ]),
+            ),
+            // Always overridden, since the default implementation calls
+            // `initializeEndpoints`, which calls this method.
+            Method.returnsVoid(
+              (m) => m
+                ..name = 'initializeOwnEndpoints'
+                ..annotations.add(refer('override'))
+                ..requiredParameters.add(serverParameter)
                 ..body = Block.of([
                   if (protocolDefinition.endpoints.isNotEmpty &&
                       !protocolDefinition.endpoints.every(
@@ -1067,21 +1140,6 @@ return deserializeByClassName(value);
                     _buildEndpointLookupMap(protocolDefinition.endpoints),
                     _buildEndpointConnectors(protocolDefinition.endpoints),
                   ],
-
-                  // Connectors
-                  // Hook up modules
-                  for (var module in config.modules)
-                    refer('modules')
-                        .index(literalString(module.name))
-                        .assign(
-                          refer(
-                            'Endpoints',
-                            'package:${module.serverPackage}/${module.serverPackage}.dart',
-                          ).call([]).cascade('initializeEndpoints').call([
-                            refer('server'),
-                          ]),
-                        )
-                        .statement,
                 ]),
             ),
 
@@ -2837,7 +2895,7 @@ extension on List<SerializableModelDefinition> {
 Reference _tableDefinitionReference(bool serverCode) =>
     refer('TableDefinition', serverpodDatabaseUrl(serverCode));
 
-Expression _protocolTargetTableDefinitionsSpread(
+Expression _protocolOwnTableDefinitionsSpread(
   String protocolImportUrl,
   bool serverCode,
 ) {
@@ -2854,7 +2912,7 @@ Expression _protocolTargetTableDefinitionsSpread(
         protocol
             .call([])
             .asA(databaseSerializationManager)
-            .property('getTargetTableDefinitions')
+            .property('getOwnTableDefinitions')
             .call([]),
         literalList([]),
       )

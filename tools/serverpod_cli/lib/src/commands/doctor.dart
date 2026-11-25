@@ -49,14 +49,13 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
 
   /// [runChecks] stands in for the real probes in tests.
   DoctorCommand({
-    final Future<List<DoctorCheckResult>> Function() runChecks =
-        runDoctorChecks,
+    Future<List<DoctorCheckResult>> Function() runChecks = runDoctorChecks,
   }) : _runChecks = runChecks,
        super(options: DoctorOption.values);
 
   @override
   Future<void> runWithConfig(
-    final Configuration<DoctorOption> commandConfig,
+    Configuration<DoctorOption> commandConfig,
   ) async {
     final asJson = commandConfig.value(DoctorOption.json);
 
@@ -93,7 +92,7 @@ Future<List<DoctorCheckResult>> runDoctorChecks() async {
   ];
 }
 
-void _printReport(final List<DoctorCheckResult> results) {
+void _printReport(List<DoctorCheckResult> results) {
   for (final result in results) {
     final lines = [
       '[${result.status.marker}] ${result.title}: ${result.message}',

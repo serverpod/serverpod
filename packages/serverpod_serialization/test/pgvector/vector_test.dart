@@ -91,4 +91,15 @@ void main() {
       expect(const Vector([1.0, 2.0, 3.0]).every((v) => v > 0), isTrue);
     },
   );
+
+  test(
+    'Given two equal Vectors backed by different lists when getting their hashCodes then they match.',
+    () {
+      const a = Vector([1.0, 2.0, 3.0]);
+      final b = Vector.fromBinary(a.toBinary());
+
+      expect(a, equals(b));
+      expect(a.hashCode, equals(b.hashCode));
+    },
+  );
 }

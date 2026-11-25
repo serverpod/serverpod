@@ -18,8 +18,8 @@ void main() {
   final jwtAdmin = jwt.admin;
 
   withServerpod('Given an auth user with an authentication token,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -175,8 +175,8 @@ void main() {
   });
 
   withServerpod('Given an auth user with an expired JWT token,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late UuidValue authUserId;
@@ -231,7 +231,7 @@ void main() {
           ),
           throwsA(
             isA<RefreshTokenExpiredServerException>().having(
-              (final e) => e.refreshTokenId,
+              (e) => e.refreshTokenId,
               'refreshTokenId',
               tokenId,
             ),
@@ -243,7 +243,7 @@ void main() {
 
   withServerpod(
     'Given an auth user with multiple authentication tokens (two with method "test", one with method "google"),',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late UuidValue tokenId1;
@@ -292,7 +292,7 @@ void main() {
           );
           expect(remainingTokens, hasLength(2));
           expect(
-            remainingTokens.map((final t) => t.id),
+            remainingTokens.map((t) => t.id),
             isNot(contains(tokenId1)),
           );
         },
@@ -310,7 +310,7 @@ void main() {
         test('then returned tokens contains all matching tokens.', () async {
           expect(deletedTokens, hasLength(2));
           expect(
-            deletedTokens.map((final t) => t.refreshTokenId),
+            deletedTokens.map((t) => t.refreshTokenId),
             containsAll([tokenId1, tokenId2]),
           );
         });
@@ -321,7 +321,7 @@ void main() {
           );
           expect(remainingTokens, hasLength(1));
           expect(
-            remainingTokens.map((final t) => t.method),
+            remainingTokens.map((t) => t.method),
             isNot(contains('test')),
           );
         });
@@ -331,7 +331,7 @@ void main() {
 
   withServerpod(
     'Given two auth users, each with two authentication tokens (one with method "test" and one with method "google"),',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue firstUserAuthUserId;
       late UuidValue authUserId2;
@@ -392,7 +392,7 @@ void main() {
           );
           expect(remainingTokens, hasLength(2));
           expect(
-            remainingTokens.map((final t) => t.authUserId),
+            remainingTokens.map((t) => t.authUserId),
             everyElement(authUserId2),
           );
         },
@@ -436,7 +436,7 @@ void main() {
 
   withServerpod(
     'Given an auth user with a refresh token with scopes and extra claims,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const String scopeName = 'test scope';
       late Session session;
       late UuidValue authUserId;
@@ -579,7 +579,7 @@ void main() {
 
   withServerpod(
     'Given an auth user with tokens created using extraClaimsProvider,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
 
@@ -600,7 +600,7 @@ void main() {
                 SecretKey('test-private-key-for-HS512'),
               ),
               refreshTokenHashPepper: 'test-pepper',
-              extraClaimsProvider: (final session, final context) async {
+              extraClaimsProvider: (session, context) async {
                 return {'hookClaim': 'persistsAcrossRotation'};
               },
             ),
@@ -628,8 +628,8 @@ void main() {
   );
 
   withServerpod('Given an initial TokenPair and its refreshed successor,', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late Session session;
     late AuthSuccess initialAuthSuccess;
@@ -681,7 +681,7 @@ void main() {
   withServerpod(
     'Given an auth user with a refresh token and database rollbacks disabled,',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late UuidValue authUserId;
       late AuthSuccess authSuccess;
@@ -716,7 +716,7 @@ void main() {
               () => Future.wait<Object>(
                 List.generate(
                   3,
-                  (final _) async {
+                  (_) async {
                     try {
                       return await jwtAdmin.rotateRefreshToken(
                         session,
@@ -737,7 +737,7 @@ void main() {
 
           test('then the stale rotation attempts are rejected.', () {
             final errors = rotationResults.where(
-              (final result) => result is! TokenPair,
+              (result) => result is! TokenPair,
             );
 
             expect(errors, hasLength(2));
@@ -769,7 +769,7 @@ void main() {
   );
 }
 
-UuidValue _extractRefreshTokenId(final String accessToken) {
+UuidValue _extractRefreshTokenId(String accessToken) {
   final jwt = JWT.decode(accessToken);
   const claimName = 'dev.serverpod.refreshTokenId';
   final refreshTokenIdClaim = (jwt.payload as Map)[claimName] as String;

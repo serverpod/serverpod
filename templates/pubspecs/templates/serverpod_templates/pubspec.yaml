@@ -2,7 +2,7 @@
 
 name: serverpod_templates
 version: SERVERPOD_VERSION
-description: Templates for Serverpod.
+description: Templates for Serverpod projects and modules, used by the Serverpod CLI.
 repository: https://github.com/serverpod/serverpod
 
 environment:

@@ -43,19 +43,20 @@ class Protocol extends _is.DatabaseSerializationManager
           _iacs.Protocol.new,
           _isp.Protocol.new,
         ],
+        classNames: const ['Greeting'],
       );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
-    ..._iais.Protocol.targetTableDefinitions,
-    ..._iacs.Protocol.targetTableDefinitions,
+    ..._ownTableDefinitions,
+    ..._iais.Protocol().getOwnTableDefinitions(),
+    ..._iacs.Protocol().getOwnTableDefinitions(),
     ..._isp.Protocol.targetTableDefinitions,
   ];
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    return className;
-  }
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [];
+
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.readClassName(data);
 
   @override
   T deserialize<T>(
@@ -63,8 +64,8 @@ class Protocol extends _is.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = rawDataClassName;
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -93,9 +94,10 @@ class Protocol extends _is.DatabaseSerializationManager
           )
           as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -154,16 +156,22 @@ class Protocol extends _is.DatabaseSerializationManager
       return deserialize<_ig8bxnp5.Greeting>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
-      data['className'] = dataClassName.substring(19);
-      return _iais.Protocol().deserializeByClassName(data);
+      return _iais.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(19),
+      });
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
-      data['className'] = dataClassName.substring(20);
-      return _iacs.Protocol().deserializeByClassName(data);
+      return _iacs.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(20),
+      });
     }
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     return super.deserializeByClassName(data);
   }
@@ -199,6 +207,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'auth';

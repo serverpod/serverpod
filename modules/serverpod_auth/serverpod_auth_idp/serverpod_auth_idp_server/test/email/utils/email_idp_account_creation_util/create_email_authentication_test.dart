@@ -9,7 +9,7 @@ void main() {
   withServerpod(
     'Given auth user',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue authUserId;
@@ -31,7 +31,7 @@ void main() {
         late Future<UuidValue> createEmailAuthenticationFuture;
         setUp(() async {
           createEmailAuthenticationFuture = session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.createEmailAuthentication(
                   session,
                   authUserId: authUserId,
@@ -53,7 +53,7 @@ void main() {
           await createEmailAuthenticationFuture;
 
           final authResult = await session.db.transaction(
-            (final transaction) => fixture.authenticationUtil.authenticate(
+            (transaction) => fixture.authenticationUtil.authenticate(
               session,
               email: email,
               password: password,
@@ -69,7 +69,7 @@ void main() {
         'when create email authentication is called with null password then user cannot authenticate with empty password',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.createEmailAuthentication(
                   session,
                   authUserId: authUserId,
@@ -80,7 +80,7 @@ void main() {
           );
 
           final authResult = session.db.transaction(
-            (final transaction) => fixture.authenticationUtil.authenticate(
+            (transaction) => fixture.authenticationUtil.authenticate(
               session,
               email: email,
               password: '',
@@ -99,7 +99,7 @@ void main() {
         'when create email authentication is called with empty password then user can authenticate with empty password',
         () async {
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.createEmailAuthentication(
                   session,
                   authUserId: authUserId,
@@ -110,7 +110,7 @@ void main() {
           );
 
           final authResult = await session.db.transaction(
-            (final transaction) => fixture.authenticationUtil.authenticate(
+            (transaction) => fixture.authenticationUtil.authenticate(
               session,
               email: email,
               password: '',

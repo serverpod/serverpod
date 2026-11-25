@@ -19,6 +19,8 @@ class ProtocolDeserializationGenerator {
   Method metadata({
     required Iterable<Expression> types,
     required List<Reference> modules,
+    Iterable<String>? classNames,
+    String? classNamePrefix,
   }) {
     return Method(
       (m) => m
@@ -54,25 +56,45 @@ class ProtocolDeserializationGenerator {
                 'modules': literalConstList([
                   for (final module in modules) module.property('new'),
                 ]),
+                if (classNames != null)
+                  'classNames': literalConstList(classNames.toList()),
+                if (classNamePrefix != null)
+                  'classNamePrefix': literalString(classNamePrefix),
               },
             )
             .code,
     );
   }
 
-  Code moduleFallback() {
-    return Code.scope(
-      (a) =>
-          '''
-      final modules = dataClassName == null
-          ? deserializationMetadata.modulesForType(t)
-          : deserializationMetadata.modules;
+  Code moduleFallback({Expression? className}) {
+    return Block.of([
+      declareFinal('modules')
+          .assign(
+            refer('deserializationMetadata')
+                .property('modulesForDeserialization')
+                .call(
+                  [refer('t')],
+                  {
+                    'className':
+                        className ??
+                        refer(
+                          'ProtocolDeserialization',
+                          runtimeUrl,
+                        ).property('readClassName').call([refer('data')]),
+                  },
+                ),
+          )
+          .statement,
+      Code.scope(
+        (a) =>
+            '''
       for (final module in modules) {
         try {
           return module.deserialize<T>(data, t);
         } on ${a(refer('DeserializationTypeNotFoundException', runtimeUrl))} catch (_) {}
       }
       ''',
-    );
+      ),
+    ]);
   }
 }

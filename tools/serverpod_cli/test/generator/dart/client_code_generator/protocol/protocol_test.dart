@@ -3,10 +3,12 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
 import '../../../../test_util/builders/endpoint_definition_builder.dart';
+import '../../../../test_util/builders/exception_class_definition_builder.dart';
 import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/builders/method_definition_builder.dart';
 import '../../../../test_util/builders/model_class_definition_builder.dart';
@@ -159,7 +161,7 @@ void main() {
       );
 
       test(
-        'then targetTableDefinitions conditionally merges table definitions from module protocols that implement DatabaseSerializationManager.',
+        'then targetTableDefinitions conditionally merges the own table definitions of module protocols that implement DatabaseSerializationManager.',
         () {
           var protocol = codeMap[expectedFileName]!;
           expect(
@@ -168,7 +170,7 @@ void main() {
               RegExp(
                 r'    \.\.\._i([a-z0-9]+)\.Protocol\(\) is _i[a-z0-9]+\.DatabaseSerializationManager\n'
                 r'        \? \(_i\1\.Protocol\(\) as _i[a-z0-9]+\.DatabaseSerializationManager\)\n'
-                r'              \.getTargetTableDefinitions\(\)\n'
+                r'              \.getOwnTableDefinitions\(\)\n'
                 r'        : \[\],\n'
                 r'  \];',
               ),
@@ -291,7 +293,7 @@ void main() {
       );
 
       test(
-        'then targetTableDefinitions merges table definitions from the shared package protocol through DatabaseSerializationManager.',
+        'then the own table definitions merge the tables of the shared package protocol through DatabaseSerializationManager.',
         () {
           var protocol = codeMap[expectedFileName]!;
           expect(
@@ -300,7 +302,7 @@ void main() {
               RegExp(
                 r'\.\.\._i([a-z0-9]+)\.Protocol\(\) is _i([a-z0-9]+)\.DatabaseSerializationManager\n'
                 r'        \? \(_i\1\.Protocol\(\) as _i\2\.DatabaseSerializationManager\)\n'
-                r'              \.getTargetTableDefinitions\(\)\n'
+                r'              \.getOwnTableDefinitions\(\)\n'
                 r'        : \[\],',
               ),
             ),
@@ -494,7 +496,7 @@ void main() {
       );
 
       test(
-        'then targetTableDefinitions merges table definitions from each auth module protocol through DatabaseSerializationManager.',
+        'then targetTableDefinitions merges the own table definitions of each auth module protocol through DatabaseSerializationManager.',
         () {
           var protocol = codeMap[expectedFileName]!;
           expect(
@@ -504,7 +506,7 @@ void main() {
                 RegExp(
                   r'\.\.\._i([a-z0-9]+)\.Protocol\(\) is _i([a-z0-9]+)\.DatabaseSerializationManager\n'
                   r'        \? \(_i\1\.Protocol\(\) as _i\2\.DatabaseSerializationManager\)\n'
-                  r'              \.getTargetTableDefinitions\(\)\n'
+                  r'              \.getOwnTableDefinitions\(\)\n'
                   r'        : \[\],',
                 ),
               ),
@@ -1022,6 +1024,70 @@ void main() {
         () {
           var protocolContent = codeMap[expectedFileName]!;
           expect(protocolContent, isNot(contains('Article')));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an exception with a List field of a model when generating protocol files',
+    () {
+      var detailModel = ModelClassDefinitionBuilder()
+          .withClassName('ErrorDetail')
+          .withFileName('error_detail')
+          .withSimpleField('message', 'String')
+          .build();
+
+      var exception = ExceptionClassDefinitionBuilder()
+          .withClassName('ValidationException')
+          .withFileName('validation_exception')
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('details')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withListOf(
+                        'ErrorDetail',
+                        url: defaultModuleAlias,
+                        modelInfo: detailModel,
+                      )
+                      .withNullable(true)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: [detailModel, exception],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      var detailPrefix = importPrefixFor('error_detail.dart');
+
+      test(
+        'then the protocol.dart contains a deserializer for the List type.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('List<$detailPrefix.ErrorDetail>'),
+          );
+        },
+      );
+
+      test(
+        'then the protocol.dart contains a deserializer for the nullable List type.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('List<$detailPrefix.ErrorDetail>?'),
+          );
         },
       );
     },

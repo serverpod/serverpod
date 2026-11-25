@@ -31,6 +31,40 @@ void main() {
       expect(transition.fillColor, Colors.transparent);
     },
   );
+
+  test(
+    'Given an EmailAuthController with the default email validation, '
+    'when validating emails, '
+    'then email aliases are accepted and invalid emails are rejected.',
+    () {
+      final controller = EmailAuthController(client: _TestClient());
+      addTearDown(controller.dispose);
+
+      expect(
+        () => controller.emailValidation('user+alias@serverpod.dev'),
+        returnsNormally,
+      );
+      expect(
+        () => controller.emailValidation('not-an-email'),
+        throwsA(isA<InvalidEmailException>()),
+      );
+    },
+  );
+
+  test(
+    'Given the email validation with aliases disallowed, '
+    'when validating an email alias, '
+    'then it throws an InvalidEmailException.',
+    () {
+      expect(
+        () => EmailAuthController.validateEmail(
+          'user+alias@serverpod.dev',
+          allowEmailAliases: false,
+        ),
+        throwsA(isA<InvalidEmailException>()),
+      );
+    },
+  );
 }
 
 class _TestClient extends ServerpodClientShared {

@@ -10,7 +10,7 @@ void main() {
   withServerpod(
     'Given an existing email account with scopes',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -66,7 +66,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountLoginException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountLoginExceptionReason.invalidCredentials,
               ),
@@ -95,7 +95,7 @@ void main() {
   withServerpod(
     'Given blocked auth user with email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -145,7 +145,7 @@ void main() {
   withServerpod(
     'Given email account with invalid logins matching rate limit',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
@@ -203,7 +203,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountLoginException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountLoginExceptionReason.tooManyAttempts,
               ),
@@ -225,7 +225,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountLoginException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountLoginExceptionReason.tooManyAttempts,
               ),
@@ -239,7 +239,7 @@ void main() {
   withServerpod(
     'Given no email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -265,7 +265,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountLoginException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountLoginExceptionReason.invalidCredentials,
               ),
@@ -279,7 +279,7 @@ void main() {
   withServerpod(
     'Given maximum allowed invalid login attempts for non-existent email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       const maxLoginAttempts = RateLimit(
@@ -326,7 +326,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountLoginException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountLoginExceptionReason.tooManyAttempts,
               ),

@@ -112,9 +112,35 @@ class Protocol extends _is.DatabaseSerializationManager
           _is.getType<Set<String>>,
         ],
         modules: const [_isp.Protocol.new],
+        classNames: const [
+          'AuthUser',
+          'AuthUserBlockedException',
+          'AuthUserModel',
+          'AuthUserNotFoundException',
+          'AuthStrategy',
+          'AuthSuccess',
+          'SignInWhileAuthenticatedException',
+          'JwtTokenInfo',
+          'RefreshToken',
+          'RefreshTokenExpiredException',
+          'RefreshTokenInvalidSecretException',
+          'RefreshTokenMalformedException',
+          'RefreshTokenNotFoundException',
+          'TokenPair',
+          'UserProfile',
+          'UserProfileData',
+          'UserProfileImage',
+          'UserProfileModel',
+          'ServerSideSession',
+          'ServerSideSessionInfo',
+        ],
+        classNamePrefix: 'serverpod_auth_core.',
       );
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [
+  static List<_isp.TableDefinition> get targetTableDefinitions =>
+      _ownTableDefinitions;
+
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
     _isp.TableDefinition(
       name: 'serverpod_auth_core_jwt_refresh_token',
       dartName: 'RefreshToken',
@@ -489,13 +515,11 @@ class Protocol extends _is.DatabaseSerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth_core.')) return className;
-    return className.substring(20);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _is.ProtocolDeserialization.normalizeClassName(
+        _is.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth_core.',
+      );
 
   @override
   T deserialize<T>(
@@ -503,8 +527,11 @@ class Protocol extends _is.DatabaseSerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _is.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _is.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth_core.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -670,9 +697,10 @@ class Protocol extends _is.DatabaseSerializationManager
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -846,8 +874,10 @@ class Protocol extends _is.DatabaseSerializationManager
       return deserialize<_izgso6n0.ServerSideSessionInfo>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(10),
+      });
     }
     return super.deserializeByClassName(data);
   }
@@ -937,6 +967,9 @@ class Protocol extends _is.DatabaseSerializationManager
   @override
   List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
+
+  @override
+  List<_isp.TableDefinition> getOwnTableDefinitions() => _ownTableDefinitions;
 
   @override
   String getModuleName() => 'serverpod_auth_core';

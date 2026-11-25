@@ -80,7 +80,9 @@ class EmailSignInWidget extends StatefulWidget {
 
   /// The validation function to use for email validation.
   ///
-  /// This function should throw a [FormatException] if the email is invalid.
+  /// This function should throw an [InvalidEmailException] if the email is
+  /// invalid. If null, the default validation accepts email aliases, e.g.
+  /// email+alias@example.com.
   final void Function(String email)? emailValidation;
 
   /// Optional list of password requirements to display to the user.

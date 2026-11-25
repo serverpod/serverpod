@@ -13,8 +13,8 @@ class NetworkCheck {
 
   /// [client] and [timeout] stand in for the real network in tests.
   static Future<DoctorCheckResult> probe({
-    final http.Client? client,
-    final Duration timeout = const Duration(seconds: 5),
+    http.Client? client,
+    Duration timeout = const Duration(seconds: 5),
   }) async {
     final owned = client == null;
     final http = client ?? _newClient();
@@ -31,7 +31,7 @@ class NetworkCheck {
 
   static http.Client _newClient() => http.Client();
 
-  static DoctorCheckResult evaluate({required final bool reachable}) {
+  static DoctorCheckResult evaluate({required bool reachable}) {
     const title = 'Network';
 
     if (!reachable) {

@@ -122,7 +122,7 @@ void main() {
 
   withServerpod(
     'Given an EmailAccount for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -146,7 +146,7 @@ void main() {
         'when the auth users are merged through the email identity provider, '
         'then the EmailAccount is moved to userToKeep.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await emailIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
@@ -157,7 +157,7 @@ void main() {
 
           final movedAccount = await EmailAccount.db.findFirstRow(
             session,
-            where: (final t) => t.email.equals('test-merge@example.com'),
+            where: (t) => t.email.equals('test-merge@example.com'),
           );
           expect(movedAccount?.authUserId, userToKeep.id);
         },
@@ -167,7 +167,7 @@ void main() {
 
   withServerpod(
     'Given EmailAccounts for userToKeep and userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -200,7 +200,7 @@ void main() {
         'when the auth users are merged through the email identity provider,',
         () {
           setUp(() async {
-            await session.db.transaction((final transaction) async {
+            await session.db.transaction((transaction) async {
               await emailIdp.mergeAuthUsers(
                 session,
                 userToKeepId: userToKeep.id,
@@ -215,7 +215,7 @@ void main() {
             () async {
               final movedAccount = await EmailAccount.db.findFirstRow(
                 session,
-                where: (final t) => t.email.equals('remove@example.com'),
+                where: (t) => t.email.equals('remove@example.com'),
               );
 
               expect(movedAccount?.authUserId, userToKeep.id);
@@ -225,7 +225,7 @@ void main() {
           test('then the EmailAccount of userToKeep is retained.', () async {
             final keptAccount = await EmailAccount.db.findFirstRow(
               session,
-              where: (final t) => t.email.equals('keep@example.com'),
+              where: (t) => t.email.equals('keep@example.com'),
             );
 
             expect(keptAccount?.authUserId, userToKeep.id);
@@ -234,7 +234,7 @@ void main() {
           test('then no EmailAccount remains for userToRemove.', () async {
             final remainingAccounts = await EmailAccount.db.find(
               session,
-              where: (final t) => t.authUserId.equals(userToRemove.id),
+              where: (t) => t.authUserId.equals(userToRemove.id),
             );
 
             expect(remainingAccounts, isEmpty);
@@ -246,7 +246,7 @@ void main() {
 
   withServerpod(
     'Given a GoogleAccount for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -270,7 +270,7 @@ void main() {
         'when the auth users are merged through the Google identity provider, '
         'then the GoogleAccount is moved to userToKeep.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await googleIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
@@ -281,7 +281,7 @@ void main() {
 
           final movedAccount = await GoogleAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('google_123'),
+            where: (t) => t.userIdentifier.equals('google_123'),
           );
           expect(movedAccount?.authUserId, userToKeep.id);
         },
@@ -291,7 +291,7 @@ void main() {
 
   withServerpod(
     'Given GoogleAccounts for userToKeep and userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -324,7 +324,7 @@ void main() {
         'when the auth users are merged through the Google identity provider,',
         () {
           setUp(() async {
-            await session.db.transaction((final transaction) async {
+            await session.db.transaction((transaction) async {
               await googleIdp.mergeAuthUsers(
                 session,
                 userToKeepId: userToKeep.id,
@@ -339,7 +339,7 @@ void main() {
             () async {
               final movedAccount = await GoogleAccount.db.findFirstRow(
                 session,
-                where: (final t) => t.userIdentifier.equals('google_remove'),
+                where: (t) => t.userIdentifier.equals('google_remove'),
               );
 
               expect(movedAccount?.authUserId, userToKeep.id);
@@ -349,7 +349,7 @@ void main() {
           test('then the GoogleAccount of userToKeep is retained.', () async {
             final keptAccount = await GoogleAccount.db.findFirstRow(
               session,
-              where: (final t) => t.userIdentifier.equals('google_keep'),
+              where: (t) => t.userIdentifier.equals('google_keep'),
             );
 
             expect(keptAccount?.authUserId, userToKeep.id);
@@ -358,7 +358,7 @@ void main() {
           test('then no GoogleAccount remains for userToRemove.', () async {
             final remainingAccounts = await GoogleAccount.db.find(
               session,
-              where: (final t) => t.authUserId.equals(userToRemove.id),
+              where: (t) => t.authUserId.equals(userToRemove.id),
             );
 
             expect(remainingAccounts, isEmpty);
@@ -370,7 +370,7 @@ void main() {
 
   withServerpod(
     'Given an AppleAccount for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -395,7 +395,7 @@ void main() {
         'when the auth users are merged through the Apple identity provider, '
         'then the AppleAccount is moved to userToKeep.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await appleIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
@@ -406,7 +406,7 @@ void main() {
 
           final movedAccount = await AppleAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('apple_123'),
+            where: (t) => t.userIdentifier.equals('apple_123'),
           );
           expect(movedAccount?.authUserId, userToKeep.id);
         },
@@ -416,7 +416,7 @@ void main() {
 
   withServerpod(
     'Given AppleAccounts for userToKeep and userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -451,7 +451,7 @@ void main() {
         'when the auth users are merged through the Apple identity provider,',
         () {
           setUp(() async {
-            await session.db.transaction((final transaction) async {
+            await session.db.transaction((transaction) async {
               await appleIdp.mergeAuthUsers(
                 session,
                 userToKeepId: userToKeep.id,
@@ -466,7 +466,7 @@ void main() {
             () async {
               final movedAccount = await AppleAccount.db.findFirstRow(
                 session,
-                where: (final t) => t.userIdentifier.equals('apple_remove'),
+                where: (t) => t.userIdentifier.equals('apple_remove'),
               );
 
               expect(movedAccount?.authUserId, userToKeep.id);
@@ -476,7 +476,7 @@ void main() {
           test('then the AppleAccount of userToKeep is retained.', () async {
             final keptAccount = await AppleAccount.db.findFirstRow(
               session,
-              where: (final t) => t.userIdentifier.equals('apple_keep'),
+              where: (t) => t.userIdentifier.equals('apple_keep'),
             );
 
             expect(keptAccount?.authUserId, userToKeep.id);
@@ -485,7 +485,7 @@ void main() {
           test('then no AppleAccount remains for userToRemove.', () async {
             final remainingAccounts = await AppleAccount.db.find(
               session,
-              where: (final t) => t.authUserId.equals(userToRemove.id),
+              where: (t) => t.authUserId.equals(userToRemove.id),
             );
 
             expect(remainingAccounts, isEmpty);
@@ -497,7 +497,7 @@ void main() {
 
   withServerpod(
     'Given a FirebaseAccount for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -520,7 +520,7 @@ void main() {
         'when the auth users are merged through the Firebase identity provider, '
         'then the FirebaseAccount is moved to userToKeep.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await firebaseIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
@@ -531,7 +531,7 @@ void main() {
 
           final movedAccount = await FirebaseAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('firebase_123'),
+            where: (t) => t.userIdentifier.equals('firebase_123'),
           );
           expect(movedAccount?.authUserId, userToKeep.id);
         },
@@ -541,7 +541,7 @@ void main() {
 
   withServerpod(
     'Given FirebaseAccounts for userToKeep and userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -572,7 +572,7 @@ void main() {
         'when the auth users are merged through the Firebase identity provider,',
         () {
           setUp(() async {
-            await session.db.transaction((final transaction) async {
+            await session.db.transaction((transaction) async {
               await firebaseIdp.mergeAuthUsers(
                 session,
                 userToKeepId: userToKeep.id,
@@ -587,7 +587,7 @@ void main() {
             () async {
               final movedAccount = await FirebaseAccount.db.findFirstRow(
                 session,
-                where: (final t) => t.userIdentifier.equals('firebase_remove'),
+                where: (t) => t.userIdentifier.equals('firebase_remove'),
               );
 
               expect(movedAccount?.authUserId, userToKeep.id);
@@ -597,7 +597,7 @@ void main() {
           test('then the FirebaseAccount of userToKeep is retained.', () async {
             final keptAccount = await FirebaseAccount.db.findFirstRow(
               session,
-              where: (final t) => t.userIdentifier.equals('firebase_keep'),
+              where: (t) => t.userIdentifier.equals('firebase_keep'),
             );
 
             expect(keptAccount?.authUserId, userToKeep.id);
@@ -606,7 +606,7 @@ void main() {
           test('then no FirebaseAccount remains for userToRemove.', () async {
             final remainingAccounts = await FirebaseAccount.db.find(
               session,
-              where: (final t) => t.authUserId.equals(userToRemove.id),
+              where: (t) => t.authUserId.equals(userToRemove.id),
             );
 
             expect(remainingAccounts, isEmpty);
@@ -618,7 +618,7 @@ void main() {
 
   withServerpod(
     'Given a GitHubAccount for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -641,7 +641,7 @@ void main() {
         'when the auth users are merged through the GitHub identity provider, '
         'then the GitHubAccount is moved to userToKeep.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await githubIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
@@ -652,7 +652,7 @@ void main() {
 
           final movedAccount = await GitHubAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('github_123'),
+            where: (t) => t.userIdentifier.equals('github_123'),
           );
           expect(movedAccount?.authUserId, userToKeep.id);
         },
@@ -662,7 +662,7 @@ void main() {
 
   withServerpod(
     'Given GitHubAccounts for userToKeep and userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -693,7 +693,7 @@ void main() {
         'when the auth users are merged through the GitHub identity provider,',
         () {
           setUp(() async {
-            await session.db.transaction((final transaction) async {
+            await session.db.transaction((transaction) async {
               await githubIdp.mergeAuthUsers(
                 session,
                 userToKeepId: userToKeep.id,
@@ -708,7 +708,7 @@ void main() {
             () async {
               final movedAccount = await GitHubAccount.db.findFirstRow(
                 session,
-                where: (final t) => t.userIdentifier.equals('github_remove'),
+                where: (t) => t.userIdentifier.equals('github_remove'),
               );
 
               expect(movedAccount?.authUserId, userToKeep.id);
@@ -718,7 +718,7 @@ void main() {
           test('then the GitHubAccount of userToKeep is retained.', () async {
             final keptAccount = await GitHubAccount.db.findFirstRow(
               session,
-              where: (final t) => t.userIdentifier.equals('github_keep'),
+              where: (t) => t.userIdentifier.equals('github_keep'),
             );
 
             expect(keptAccount?.authUserId, userToKeep.id);
@@ -727,7 +727,7 @@ void main() {
           test('then no GitHubAccount remains for userToRemove.', () async {
             final remainingAccounts = await GitHubAccount.db.find(
               session,
-              where: (final t) => t.authUserId.equals(userToRemove.id),
+              where: (t) => t.authUserId.equals(userToRemove.id),
             );
 
             expect(remainingAccounts, isEmpty);
@@ -739,7 +739,7 @@ void main() {
 
   withServerpod(
     'Given a FacebookAccount for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -762,7 +762,7 @@ void main() {
         'when the auth users are merged through the Facebook identity provider, '
         'then the FacebookAccount is moved to userToKeep.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await facebookIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
@@ -773,7 +773,7 @@ void main() {
 
           final movedAccount = await FacebookAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('facebook_123'),
+            where: (t) => t.userIdentifier.equals('facebook_123'),
           );
           expect(movedAccount?.authUserId, userToKeep.id);
         },
@@ -783,7 +783,7 @@ void main() {
 
   withServerpod(
     'Given FacebookAccounts for userToKeep and userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -814,7 +814,7 @@ void main() {
         'when the auth users are merged through the Facebook identity provider,',
         () {
           setUp(() async {
-            await session.db.transaction((final transaction) async {
+            await session.db.transaction((transaction) async {
               await facebookIdp.mergeAuthUsers(
                 session,
                 userToKeepId: userToKeep.id,
@@ -829,7 +829,7 @@ void main() {
             () async {
               final movedAccount = await FacebookAccount.db.findFirstRow(
                 session,
-                where: (final t) => t.userIdentifier.equals('facebook_123'),
+                where: (t) => t.userIdentifier.equals('facebook_123'),
               );
 
               expect(movedAccount?.authUserId, userToKeep.id);
@@ -839,7 +839,7 @@ void main() {
           test('then the FacebookAccount of userToKeep is retained.', () async {
             final keptAccount = await FacebookAccount.db.findFirstRow(
               session,
-              where: (final t) => t.userIdentifier.equals('facebook_keep'),
+              where: (t) => t.userIdentifier.equals('facebook_keep'),
             );
 
             expect(keptAccount?.authUserId, userToKeep.id);
@@ -848,7 +848,7 @@ void main() {
           test('then no FacebookAccount remains for userToRemove.', () async {
             final remainingAccounts = await FacebookAccount.db.find(
               session,
-              where: (final t) => t.authUserId.equals(userToRemove.id),
+              where: (t) => t.authUserId.equals(userToRemove.id),
             );
 
             expect(remainingAccounts, isEmpty);
@@ -860,7 +860,7 @@ void main() {
 
   withServerpod(
     'Given a MicrosoftAccount for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -883,7 +883,7 @@ void main() {
         'when the auth users are merged through the Microsoft identity provider, '
         'then the MicrosoftAccount is moved to userToKeep.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await microsoftIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
@@ -894,7 +894,7 @@ void main() {
 
           final movedAccount = await MicrosoftAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('microsoft_123'),
+            where: (t) => t.userIdentifier.equals('microsoft_123'),
           );
           expect(movedAccount?.authUserId, userToKeep.id);
         },
@@ -904,7 +904,7 @@ void main() {
 
   withServerpod(
     'Given MicrosoftAccounts for userToKeep and userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -935,7 +935,7 @@ void main() {
         'when the auth users are merged through the Microsoft identity provider,',
         () {
           setUp(() async {
-            await session.db.transaction((final transaction) async {
+            await session.db.transaction((transaction) async {
               await microsoftIdp.mergeAuthUsers(
                 session,
                 userToKeepId: userToKeep.id,
@@ -950,7 +950,7 @@ void main() {
             () async {
               final movedAccount = await MicrosoftAccount.db.findFirstRow(
                 session,
-                where: (final t) => t.userIdentifier.equals('microsoft_123'),
+                where: (t) => t.userIdentifier.equals('microsoft_123'),
               );
 
               expect(movedAccount?.authUserId, userToKeep.id);
@@ -962,7 +962,7 @@ void main() {
             () async {
               final keptAccount = await MicrosoftAccount.db.findFirstRow(
                 session,
-                where: (final t) => t.userIdentifier.equals('microsoft_keep'),
+                where: (t) => t.userIdentifier.equals('microsoft_keep'),
               );
 
               expect(keptAccount?.authUserId, userToKeep.id);
@@ -972,7 +972,7 @@ void main() {
           test('then no MicrosoftAccount remains for userToRemove.', () async {
             final remainingAccounts = await MicrosoftAccount.db.find(
               session,
-              where: (final t) => t.authUserId.equals(userToRemove.id),
+              where: (t) => t.authUserId.equals(userToRemove.id),
             );
 
             expect(remainingAccounts, isEmpty);
@@ -984,7 +984,7 @@ void main() {
 
   withServerpod(
     'Given a PasskeyAccount for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -1011,7 +1011,7 @@ void main() {
         'when the auth users are merged through the passkey identity provider, '
         'then the PasskeyAccount is moved to userToKeep.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await passkeyIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
@@ -1022,7 +1022,7 @@ void main() {
 
           final movedAccount = await PasskeyAccount.db.findFirstRow(
             session,
-            where: (final t) => t.keyIdBase64.equals('base64'),
+            where: (t) => t.keyIdBase64.equals('base64'),
           );
           expect(movedAccount?.authUserId, userToKeep.id);
         },
@@ -1032,7 +1032,7 @@ void main() {
 
   withServerpod(
     'Given PasskeyAccounts for userToKeep and userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -1071,7 +1071,7 @@ void main() {
         'when the auth users are merged through the passkey identity provider,',
         () {
           setUp(() async {
-            await session.db.transaction((final transaction) async {
+            await session.db.transaction((transaction) async {
               await passkeyIdp.mergeAuthUsers(
                 session,
                 userToKeepId: userToKeep.id,
@@ -1086,7 +1086,7 @@ void main() {
             () async {
               final movedAccount = await PasskeyAccount.db.findFirstRow(
                 session,
-                where: (final t) => t.keyIdBase64.equals('base64_2'),
+                where: (t) => t.keyIdBase64.equals('base64_2'),
               );
 
               expect(movedAccount?.authUserId, userToKeep.id);
@@ -1096,7 +1096,7 @@ void main() {
           test('then the PasskeyAccount of userToKeep is retained.', () async {
             final keptAccount = await PasskeyAccount.db.findFirstRow(
               session,
-              where: (final t) => t.keyIdBase64.equals('base64'),
+              where: (t) => t.keyIdBase64.equals('base64'),
             );
 
             expect(keptAccount?.authUserId, userToKeep.id);
@@ -1105,7 +1105,7 @@ void main() {
           test('then no PasskeyAccount remains for userToRemove.', () async {
             final remainingAccounts = await PasskeyAccount.db.find(
               session,
-              where: (final t) => t.authUserId.equals(userToRemove.id),
+              where: (t) => t.authUserId.equals(userToRemove.id),
             );
 
             expect(remainingAccounts, isEmpty);
@@ -1117,7 +1117,7 @@ void main() {
 
   withServerpod(
     'Given an AnonymousAccount for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -1137,7 +1137,7 @@ void main() {
         'when the auth users are merged through the anonymous identity provider, '
         'then the AnonymousAccount is left with userToRemove.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await anonymousIdp.mergeAuthUsers(
               session,
               userToKeepId: userToKeep.id,
@@ -1157,7 +1157,7 @@ void main() {
 
   withServerpod(
     'Given an account merger with a no-op application merge handler, all identity providers registered, and account data for userToRemove,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AccountMerger accountMerger;
       late AuthUserModel userToKeep;
@@ -1280,7 +1280,7 @@ void main() {
 
       group('when the auth users are merged,', () {
         setUp(() async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await accountMerger.merge(
               session,
               userToKeepId: userToKeep.id,
@@ -1293,7 +1293,7 @@ void main() {
         test('then the AppleAccount is moved to userToKeep.', () async {
           final movedAccount = await AppleAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('apple_123'),
+            where: (t) => t.userIdentifier.equals('apple_123'),
           );
 
           expect(movedAccount?.authUserId, userToKeep.id);
@@ -1302,7 +1302,7 @@ void main() {
         test('then the GoogleAccount is moved to userToKeep.', () async {
           final movedAccount = await GoogleAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('google_123'),
+            where: (t) => t.userIdentifier.equals('google_123'),
           );
 
           expect(movedAccount?.authUserId, userToKeep.id);
@@ -1311,7 +1311,7 @@ void main() {
         test('then the EmailAccount is moved to userToKeep.', () async {
           final movedAccount = await EmailAccount.db.findFirstRow(
             session,
-            where: (final t) => t.email.equals('test-merge@example.com'),
+            where: (t) => t.email.equals('test-merge@example.com'),
           );
 
           expect(movedAccount?.authUserId, userToKeep.id);
@@ -1320,7 +1320,7 @@ void main() {
         test('then the FirebaseAccount is moved to userToKeep.', () async {
           final movedAccount = await FirebaseAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('firebase_123'),
+            where: (t) => t.userIdentifier.equals('firebase_123'),
           );
 
           expect(movedAccount?.authUserId, userToKeep.id);
@@ -1329,7 +1329,7 @@ void main() {
         test('then the GitHubAccount is moved to userToKeep.', () async {
           final movedAccount = await GitHubAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('github_123'),
+            where: (t) => t.userIdentifier.equals('github_123'),
           );
 
           expect(movedAccount?.authUserId, userToKeep.id);
@@ -1338,7 +1338,7 @@ void main() {
         test('then the FacebookAccount is moved to userToKeep.', () async {
           final movedAccount = await FacebookAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('facebook_123'),
+            where: (t) => t.userIdentifier.equals('facebook_123'),
           );
 
           expect(movedAccount?.authUserId, userToKeep.id);
@@ -1347,7 +1347,7 @@ void main() {
         test('then the MicrosoftAccount is moved to userToKeep.', () async {
           final movedAccount = await MicrosoftAccount.db.findFirstRow(
             session,
-            where: (final t) => t.userIdentifier.equals('microsoft_123'),
+            where: (t) => t.userIdentifier.equals('microsoft_123'),
           );
 
           expect(movedAccount?.authUserId, userToKeep.id);
@@ -1356,7 +1356,7 @@ void main() {
         test('then the PasskeyAccount is moved to userToKeep.', () async {
           final movedAccount = await PasskeyAccount.db.findFirstRow(
             session,
-            where: (final t) => t.keyIdBase64.equals('base64'),
+            where: (t) => t.keyIdBase64.equals('base64'),
           );
 
           expect(movedAccount?.authUserId, userToKeep.id);
@@ -1376,8 +1376,8 @@ void main() {
 /// Application merge handler which leaves the merged users untouched, so that
 /// only the identity provider merge hooks affect the outcome of a merge.
 void _noOpApplicationMergeHandler(
-  final Session session, {
-  required final UuidValue userToKeepId,
-  required final UuidValue userToRemoveId,
-  required final Transaction transaction,
+  Session session, {
+  required UuidValue userToKeepId,
+  required UuidValue userToRemoveId,
+  required Transaction transaction,
 }) {}

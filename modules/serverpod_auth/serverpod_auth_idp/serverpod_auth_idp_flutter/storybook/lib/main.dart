@@ -7,6 +7,7 @@ import 'package:storybook_toolkit/storybook_toolkit.dart';
 import 'stories/anonymous.dart';
 import 'stories/apple.dart';
 import 'stories/email.dart';
+import 'stories/email_otp.dart';
 import 'stories/facebook.dart';
 import 'stories/github.dart';
 import 'stories/google.dart';
@@ -54,6 +55,7 @@ class MainApp extends StatelessWidget {
         stories: [
           ...anonymousStories,
           ...emailStories,
+          ...emailOtpStories,
           ...googleStories,
           ...appleStories,
           ...facebookStories,

@@ -11,8 +11,8 @@ void main() {
     'Given an email IDP with default hash settings,',
     rollbackDatabase: RollbackDatabase.disabled,
     (
-      final sessionBuilder,
-      final endpoints,
+      sessionBuilder,
+      endpoints,
     ) {
       const verificationCode = '12345678';
       late Session session;
@@ -38,12 +38,11 @@ void main() {
         'then the stored verification code is hashed with 4 MiB of Argon2 memory',
         () async {
           final requestId = await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: 'hash-cost@serverpod.dev',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: 'hash-cost@serverpod.dev',
+              transaction: transaction,
+            ),
           );
 
           final request = await EmailAccountRequest.db.findById(
@@ -74,7 +73,7 @@ void main() {
           );
 
           final requestId = await session.db.transaction(
-            (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            (transaction) => fixture.passwordResetUtil.startPasswordReset(
               session,
               email: 'hash-cost@serverpod.dev',
               transaction: transaction,
@@ -101,25 +100,23 @@ void main() {
         'then the password is hashed at the OWASP Argon2 cost',
         () async {
           final requestId = await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: 'hash-cost@serverpod.dev',
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.startRegistration(
+              session,
+              email: 'hash-cost@serverpod.dev',
+              transaction: transaction,
+            ),
           );
           final completionToken = await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-                  session,
-                  accountRequestId: requestId,
-                  verificationCode: verificationCode,
-                  transaction: transaction,
-                ),
+            (transaction) => fixture.accountCreationUtil.verifyRegistrationCode(
+              session,
+              accountRequestId: requestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
           );
 
           await session.db.transaction(
-            (final transaction) =>
+            (transaction) =>
                 fixture.accountCreationUtil.completeAccountCreation(
                   session,
                   completeAccountCreationToken: completionToken,
@@ -130,7 +127,7 @@ void main() {
 
           final account = await EmailAccount.db.findFirstRow(
             session,
-            where: (final t) => t.email.equals('hash-cost@serverpod.dev'),
+            where: (t) => t.email.equals('hash-cost@serverpod.dev'),
           );
           expect(
             account?.passwordHash,

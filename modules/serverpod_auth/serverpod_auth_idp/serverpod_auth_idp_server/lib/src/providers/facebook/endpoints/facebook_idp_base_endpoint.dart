@@ -24,8 +24,8 @@ abstract class FacebookIdpBaseEndpoint extends IdpBaseEndpoint {
   /// [FacebookAccessTokenVerificationException] will be thrown.
   /// {@endtemplate}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String accessToken,
+    Session session, {
+    required String accessToken,
   }) async {
     return facebookIdp.login(
       session,
@@ -34,6 +34,6 @@ abstract class FacebookIdpBaseEndpoint extends IdpBaseEndpoint {
   }
 
   @override
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await facebookIdp.hasAccount(session);
 }

@@ -10,7 +10,7 @@ void main() {
   withServerpod(
     'Given account request created',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -29,7 +29,7 @@ void main() {
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:
                 accountRequestVerificationCodeLifetime,
-            passwordValidationFunction: (final password) =>
+            passwordValidationFunction: (password) =>
                 password == allowedPassword,
           ),
         );
@@ -69,7 +69,7 @@ void main() {
           await authSuccessFuture;
 
           final result = session.db.transaction(
-            (final transaction) => fixture.emailIdp.login(
+            (transaction) => fixture.emailIdp.login(
               session,
               email: email,
               password: allowedPassword,
@@ -112,7 +112,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -134,7 +134,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.policyViolation,
               ),
@@ -148,7 +148,7 @@ void main() {
   withServerpod(
     'Given verified expired account request',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
@@ -208,7 +208,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.expired,
               ),
@@ -230,7 +230,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),
@@ -244,7 +244,7 @@ void main() {
   withServerpod(
     'Given no account request created',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
 
@@ -270,7 +270,7 @@ void main() {
             result,
             throwsA(
               isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
+                (e) => e.reason,
                 'reason',
                 EmailAccountRequestExceptionReason.invalid,
               ),

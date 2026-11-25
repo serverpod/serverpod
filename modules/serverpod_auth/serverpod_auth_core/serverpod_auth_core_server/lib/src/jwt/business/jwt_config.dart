@@ -41,8 +41,8 @@ sealed class JwtAlgorithm {
 
   /// Create a new ECDSA SHA-512 authentication token algorithm configuration.
   static EcdsaSha512JwtAlgorithmConfiguration ecdsaSha512({
-    required final dart_jsonwebtoken.ECPrivateKey privateKey,
-    required final dart_jsonwebtoken.ECPublicKey publicKey,
+    required dart_jsonwebtoken.ECPrivateKey privateKey,
+    required dart_jsonwebtoken.ECPublicKey publicKey,
   }) {
     return EcdsaSha512JwtAlgorithmConfiguration(
       privateKey: privateKey,
@@ -52,14 +52,14 @@ sealed class JwtAlgorithm {
 
   /// Create a new HMAC SHA-256 authentication token algorithm configuration.
   static HmacSha256JwtAlgorithmConfiguration hmacSha256(
-    final SecretKey key,
+    SecretKey key,
   ) {
     return HmacSha256JwtAlgorithmConfiguration(key: key);
   }
 
   /// Create a new HMAC SHA-512 authentication token algorithm configuration.
   static HmacSha512JwtAlgorithmConfiguration hmacSha512(
-    final SecretKey key,
+    SecretKey key,
   ) {
     return HmacSha512JwtAlgorithmConfiguration(key: key);
   }
@@ -206,7 +206,7 @@ class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
 
   @override
   JwtTokenManager build({
-    required final AuthUsers authUsers,
+    required AuthUsers authUsers,
   }) => JwtTokenManager(
     config: this,
     authUsers: authUsers,
@@ -241,7 +241,7 @@ class JwtConfigFromPasswords extends JwtConfig {
        );
 }
 
-void _validateRefreshTokenHashPepper(final String refreshTokenHashPepper) {
+void _validateRefreshTokenHashPepper(String refreshTokenHashPepper) {
   if (refreshTokenHashPepper.isEmpty) {
     throw ArgumentError.value(
       refreshTokenHashPepper,

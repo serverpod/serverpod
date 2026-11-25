@@ -69,7 +69,7 @@ class BundleSpec {
 final List<BundleSpec> publishedBundleSpecs = [
   BundleSpec(
     postgresVersion: Version(16, 13, 0),
-    revision: 1,
+    revision: 2,
     postgisVersion: '3.5.4',
     pgvectorVersion: '0.8.3',
   ),

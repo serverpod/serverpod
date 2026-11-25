@@ -8,7 +8,13 @@ void postServerpodAddresses({
   required String? api,
   required String? insights,
   required String? web,
+  required String? database,
 }) => developer.postEvent(
   serverpodAddressesEvent,
-  ServerpodAddresses(api: api, insights: insights, web: web).toJson(),
+  ServerpodAddresses(
+    api: api,
+    insights: insights,
+    web: web,
+    database: database,
+  ).toJson(),
 );

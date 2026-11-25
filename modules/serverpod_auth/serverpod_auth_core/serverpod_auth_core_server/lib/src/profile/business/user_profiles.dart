@@ -33,16 +33,16 @@ class UserProfiles {
   /// still created without an image. Failures can be handled inside the
   /// [UserProfileConfig.onAfterUserProfileCreated] callback.
   Future<UserProfileModel> createUserProfile(
-    final Session session,
-    final UuidValue authUserId,
+    Session session,
+    UuidValue authUserId,
     UserProfileData userProfile, {
-    final Transaction? transaction,
-    final UserImageSource? imageSource,
+    Transaction? transaction,
+    UserImageSource? imageSource,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final onBeforeUserProfileCreated = config.onBeforeUserProfileCreated;
         if (onBeforeUserProfileCreated != null) {
           userProfile = await onBeforeUserProfileCreated(
@@ -103,9 +103,9 @@ class UserProfiles {
   ///
   /// Throws a [UserProfileNotFoundException] in case no profile exists for the given [authUserId].
   Future<UserProfileModel> findUserProfileByUserId(
-    final Session session,
-    final UuidValue authUserId, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId, {
+    Transaction? transaction,
   }) async {
     final profile = await maybeFindUserProfileByUserId(
       session,
@@ -122,9 +122,9 @@ class UserProfiles {
 
   /// Looks for a user profile by the `AuthUser`'s ID.
   Future<UserProfileModel?> maybeFindUserProfileByUserId(
-    final Session session,
-    final UuidValue authUserId, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId, {
+    Transaction? transaction,
   }) async {
     final userProfile = await _maybeFindUserProfile(
       session,
@@ -137,15 +137,15 @@ class UserProfiles {
 
   /// Updates a profiles's user name.
   Future<UserProfileModel> changeUserName(
-    final Session session,
-    final UuidValue authUserId,
-    final String? newUserName, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId,
+    String? newUserName, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final userProfile = await _findUserProfile(
           session,
           authUserId,
@@ -167,15 +167,15 @@ class UserProfiles {
 
   /// Updates a profile's full name.
   Future<UserProfileModel> changeFullName(
-    final Session session,
-    final UuidValue authUserId,
-    final String? newFullName, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId,
+    String? newFullName, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final userProfile = await _findUserProfile(
           session,
           authUserId,
@@ -205,17 +205,17 @@ class UserProfiles {
   /// In case the `transaction` is later rolled back, the deleted images will
   /// still be missing from the storage.
   Future<void> deleteProfileForUser(
-    final Session session,
-    final UuidValue authUserId, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final profile = await UserProfile.db.findFirstRow(
           session,
-          where: (final t) => t.authUserId.equals(authUserId),
+          where: (t) => t.authUserId.equals(authUserId),
           transaction: transaction,
         );
 
@@ -225,14 +225,14 @@ class UserProfiles {
 
         final images = await UserProfileImage.db.find(
           session,
-          where: (final t) => t.userProfileId.equals(profile.id!),
+          where: (t) => t.userProfileId.equals(profile.id!),
           transaction: transaction,
         );
 
         // This also deletes the user profile image entries from the database
         await UserProfile.db.deleteWhere(
           session,
-          where: (final t) => t.authUserId.equals(authUserId),
+          where: (t) => t.authUserId.equals(authUserId),
           transaction: transaction,
         );
 
@@ -258,11 +258,11 @@ class UserProfiles {
   // #region Profile images
 
   Future<UserProfileImage> _createImageFromUrl(
-    final Session session,
-    final UuidValue authUserId,
-    final Uri url, {
-    required final Transaction transaction,
-    required final UserProfile userProfile,
+    Session session,
+    UuidValue authUserId,
+    Uri url, {
+    required Transaction transaction,
+    required UserProfile userProfile,
   }) async {
     final bytes = await config.imageFetchFunc(url);
 
@@ -276,11 +276,11 @@ class UserProfiles {
   }
 
   Future<UserProfileImage> _createImageFromBytes(
-    final Session session,
-    final UuidValue authUserId,
-    final Uint8List imageBytes, {
-    required final Transaction transaction,
-    required final UserProfile userProfile,
+    Session session,
+    UuidValue authUserId,
+    Uint8List imageBytes, {
+    required Transaction transaction,
+    required UserProfile userProfile,
   }) async {
     final reEncodedImageBytes = await Isolate.run(() async {
       var image = decodeImage(imageBytes)!;
@@ -336,10 +336,10 @@ class UserProfiles {
   ///
   /// The image is downloaded, stored in the cloud and associated with the user.
   Future<UserProfileModel> setUserImageFromUrl(
-    final Session session,
-    final UuidValue authUserId,
-    final Uri url, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId,
+    Uri url, {
+    Transaction? transaction,
   }) async => _setUserImage(
     session,
     authUserId,
@@ -351,10 +351,10 @@ class UserProfiles {
   ///
   /// The image is resized before being stored in the cloud and associated with the user.
   Future<UserProfileModel> setUserImageFromBytes(
-    final Session session,
-    final UuidValue authUserId,
-    final Uint8List imageBytes, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId,
+    Uint8List imageBytes, {
+    Transaction? transaction,
   }) async => _setUserImage(
     session,
     authUserId,
@@ -364,14 +364,14 @@ class UserProfiles {
 
   /// Sets a user's image to the default image for that user.
   Future<UserProfileModel> setDefaultUserImage(
-    final Session session,
-    final UuidValue authUserId, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final userProfile = await findUserProfileByUserId(
           session,
           authUserId,
@@ -400,14 +400,14 @@ class UserProfiles {
   /// If the user had an existing image, it is deleted from storage.
   /// The user profile will have no image URL after this operation.
   Future<UserProfileModel> removeUserImage(
-    final Session session,
-    final UuidValue authUserId, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final userProfile = await _findUserProfile(
           session,
           authUserId,
@@ -457,15 +457,15 @@ class UserProfiles {
   }
 
   Future<UserProfileModel> _setUserImage(
-    final Session session,
-    final UuidValue authUserId,
-    final UserImageSource imageSource, {
-    final Transaction? transaction,
+    Session session,
+    UuidValue authUserId,
+    UserImageSource imageSource, {
+    Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final userProfile = await _findUserProfile(
           session,
           authUserId,
@@ -506,9 +506,9 @@ class UserProfiles {
   // #endregion
 
   Future<UserProfile> _updateProfile(
-    final Session session,
+    Session session,
     UserProfile userProfile, {
-    required final Transaction transaction,
+    required Transaction transaction,
   }) async {
     if (userProfile.imageId != userProfile.image?.id) {
       throw ArgumentError.value(
@@ -557,13 +557,13 @@ class UserProfiles {
   }
 
   Future<UserProfile?> _maybeFindUserProfile(
-    final Session session,
-    final UuidValue authUserId, {
-    required final Transaction? transaction,
+    Session session,
+    UuidValue authUserId, {
+    required Transaction? transaction,
   }) async {
     final userProfile = await UserProfile.db.findFirstRow(
       session,
-      where: (final t) => t.authUserId.equals(authUserId),
+      where: (t) => t.authUserId.equals(authUserId),
       include: UserProfile.include(
         image: UserProfileImage.include(),
       ),
@@ -574,9 +574,9 @@ class UserProfiles {
   }
 
   Future<UserProfile> _findUserProfile(
-    final Session session,
-    final UuidValue authUserId, {
-    required final Transaction transaction,
+    Session session,
+    UuidValue authUserId, {
+    required Transaction transaction,
   }) async {
     final userProfile = await _maybeFindUserProfile(
       session,
@@ -591,7 +591,7 @@ class UserProfiles {
     return userProfile;
   }
 
-  Future<Uint8List> _encodeImage(final Image image) {
+  Future<Uint8List> _encodeImage(Image image) {
     return Isolate.run(
       () => switch (config.userImageFormat) {
         UserProfileImageType.jpg => encodeJpg(
@@ -618,7 +618,7 @@ final class UserImageFromUrl extends UserImageSource {
   UserImageFromUrl(this.url);
 
   /// Creates a new [UserImageFromUrl] instance by parsing the given [url] string.
-  factory UserImageFromUrl.parse(final String url) {
+  factory UserImageFromUrl.parse(String url) {
     return UserImageFromUrl(Uri.parse(url));
   }
 }

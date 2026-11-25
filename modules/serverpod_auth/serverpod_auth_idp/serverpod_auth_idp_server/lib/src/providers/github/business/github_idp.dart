@@ -45,10 +45,10 @@ class GitHubIdp implements IdentityProvider {
 
   /// Creates a new instance of [GitHubIdp].
   factory GitHubIdp(
-    final GitHubIdpConfig config, {
-    required final TokenIssuer tokenIssuer,
-    final AuthUsers authUsers = const AuthUsers(),
-    final UserProfiles userProfiles = const UserProfiles(),
+    GitHubIdpConfig config, {
+    required TokenIssuer tokenIssuer,
+    AuthUsers authUsers = const AuthUsers(),
+    UserProfiles userProfiles = const UserProfiles(),
   }) {
     final utils = GitHubIdpUtils(
       config: config,
@@ -68,16 +68,16 @@ class GitHubIdp implements IdentityProvider {
 
   /// {@macro github_idp_base_endpoint.login}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String code,
-    required final String codeVerifier,
-    required final String redirectUri,
-    final Transaction? transaction,
+    Session session, {
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+    Transaction? transaction,
   }) async {
     return await DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final accessToken = await utils.exchangeCodeForToken(
           session,
           code: code,
@@ -107,7 +107,7 @@ class GitHubIdp implements IdentityProvider {
           try {
             final user = await UserProfile.db.findFirstRow(
               session,
-              where: (final t) => t.authUserId.equals(account.authUserId),
+              where: (t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
             if (user != null && user.imageId == null) {
@@ -140,21 +140,21 @@ class GitHubIdp implements IdentityProvider {
   }
 
   /// Determines whether the current session has an associated GitHub account.
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await utils.getAccount(session) != null;
 
   /// Migrates all [GitHubAccount]s from [userToRemoveId] to [userToKeepId].
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     await GitHubAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToRemoveId),
-      columnValues: (final t) => [
+      where: (t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (t) => [
         t.authUserId(userToKeepId),
       ],
       transaction: transaction,

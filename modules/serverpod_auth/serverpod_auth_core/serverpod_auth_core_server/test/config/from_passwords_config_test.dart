@@ -37,7 +37,7 @@ void main() {
           () => JwtConfigFromPasswords(),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'jwtRefreshTokenHashPepper',
             ),
@@ -53,7 +53,7 @@ void main() {
           () => ServerSideSessionsConfigFromPasswords(),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'serverSideSessionKeyHashPepper',
             ),
@@ -100,10 +100,10 @@ test:
         'when constructing JwtConfigFromPasswords with onRefreshTokenCreated then callback is stored correctly.',
         () {
           Future<void> onRefreshTokenCreated(
-            final Session session, {
-            required final UuidValue authUserId,
-            required final UuidValue refreshTokenId,
-            required final Transaction? transaction,
+            Session session, {
+            required UuidValue authUserId,
+            required UuidValue refreshTokenId,
+            required Transaction? transaction,
           }) async {}
 
           final config = JwtConfigFromPasswords(
@@ -151,10 +151,10 @@ test:
         'when constructing ServerSideSessionsConfigFromPasswords with onSessionCreated then callback is stored correctly.',
         () {
           Future<void> onSessionCreated(
-            final Session session, {
-            required final UuidValue authUserId,
-            required final UuidValue serverSideSessionId,
-            required final Transaction? transaction,
+            Session session, {
+            required UuidValue authUserId,
+            required UuidValue serverSideSessionId,
+            required Transaction? transaction,
           }) async {}
 
           final config = ServerSideSessionsConfigFromPasswords(

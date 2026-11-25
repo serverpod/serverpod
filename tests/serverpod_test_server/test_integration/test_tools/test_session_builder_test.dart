@@ -7,7 +7,7 @@ import 'serverpod_test_tools.dart';
 void main() {
   withServerpod(
     'Given an `AuthenticationInfo` created through the `TestSessionBuilder` for an `int` user ID, ',
-    (sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late AuthenticationInfo? authenticationInfo;
 
       setUp(() async {
@@ -41,7 +41,7 @@ void main() {
 
   withServerpod(
     'Given an `AuthenticationInfo` created through the `TestSessionBuilder` for a `UUID` user ID, ',
-    (sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const uuidString = '78da5669-e934-48a2-9f90-047cc0956b9e';
       late AuthenticationInfo? authenticationInfo;
 

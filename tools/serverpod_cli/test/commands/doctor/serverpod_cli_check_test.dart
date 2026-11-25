@@ -14,9 +14,9 @@ final _managed = p.join(
 final _binstub = p.join(p.separator, 'pub-cache', 'bin', 'serverpod');
 
 CliInstallation _installation({
-  required final CliInstallationKind kind,
-  required final String? onPath,
-  required final bool pathResolvesToManaged,
+  required CliInstallationKind kind,
+  required String? onPath,
+  required bool pathResolvesToManaged,
 }) => CliInstallation(
   kind: kind,
   runningExecutable: _managed,

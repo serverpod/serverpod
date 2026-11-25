@@ -67,7 +67,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
 
   @override
   Future<void> runWithConfig(
-    final Configuration<CreateMigrationOption> commandConfig,
+    Configuration<CreateMigrationOption> commandConfig,
   ) async {
     final empty = commandConfig.value(CreateMigrationOption.empty);
     final force = commandConfig.value(CreateMigrationOption.force);

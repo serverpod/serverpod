@@ -29,5 +29,9 @@ include: package:lints/recommended.yaml
 # For additional information about configuring this file, see
 # https://dart.dev/guides/language/analysis-options
 
+linter:
+  rules:
+    avoid_final_parameters: true
+
 formatter:
   trailing_commas: preserve

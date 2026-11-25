@@ -8,9 +8,9 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart'
 
 class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
   Future<int> createLegacyUser(
-    final Session session, {
-    required final String email,
-    required final String password,
+    Session session, {
+    required String email,
+    required String password,
   }) async {
     final user = await legacy_auth.Emails.createUser(
       session,
@@ -23,9 +23,9 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
   }
 
   Future<legacy_auth.AuthKey> createLegacySession(
-    final Session session, {
-    required final int userId,
-    required final Set<String> scopes,
+    Session session, {
+    required int userId,
+    required Set<String> scopes,
   }) async {
     return legacy_auth.UserAuthentication.signInUser(
       session,
@@ -37,9 +37,9 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
   }
 
   Future<void> migrateUser(
-    final Session session, {
-    required final int legacyUserId,
-    final String? password,
+    Session session, {
+    required int legacyUserId,
+    String? password,
   }) async {
     await AuthMigrations.migrateUsers(
       session,
@@ -51,30 +51,30 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
 
   /// Returns the new auth user ID.
   Future<UuidValue?> getNewAuthUserId(
-    final Session session, {
-    required final int userId,
+    Session session, {
+    required int userId,
   }) async {
     return await AuthMigrations.getNewAuthUserId(session, userId);
   }
 
   /// Delete `UserInfo`, `AuthKey` and `EmailAuth` entities for the user
   Future<void> deleteLegacyAuthData(
-    final Session session, {
-    required final int userId,
+    Session session, {
+    required int userId,
   }) async {
     await legacy_auth.AuthKey.db.deleteWhere(
       session,
-      where: (final t) => t.userId.equals(userId),
+      where: (t) => t.userId.equals(userId),
     );
 
     await legacy_auth.EmailAuth.db.deleteWhere(
       session,
-      where: (final t) => t.userId.equals(userId),
+      where: (t) => t.userId.equals(userId),
     );
 
     await legacy_auth.UserInfo.db.deleteWhere(
       session,
-      where: (final t) => t.id.equals(userId),
+      where: (t) => t.id.equals(userId),
     );
   }
 
@@ -82,15 +82,15 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
   ///
   /// Since the server runs with the backwards compatible auth handler, both
   /// old session keys will work post migration.
-  Future<String?> sessionUserIdentifier(final Session session) async {
+  Future<String?> sessionUserIdentifier(Session session) async {
     return session.authenticated?.userIdentifier;
   }
 
   /// Returns the user ID of associated with the session derived from the session key
   Future<bool> checkLegacyPassword(
-    final Session session, {
-    required final String email,
-    required final String password,
+    Session session, {
+    required String email,
+    required String password,
   }) async {
     final account = await AuthServices.instance.emailIdp.admin.findAccount(
       session,

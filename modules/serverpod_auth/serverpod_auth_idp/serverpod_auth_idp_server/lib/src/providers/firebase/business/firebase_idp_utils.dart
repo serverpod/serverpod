@@ -64,7 +64,7 @@ class FirebaseIdpUtils {
   /// Creates a new instance of [FirebaseIdpUtils].
   FirebaseIdpUtils({
     required this.config,
-    required final AuthUsers authUsers,
+    required AuthUsers authUsers,
   }) : _authUsers = authUsers;
 
   /// Authenticates a user using an ID token.
@@ -72,9 +72,9 @@ class FirebaseIdpUtils {
   /// If the external user ID is not yet known in the system, a new `AuthUser`
   /// is created for it.
   Future<FirebaseAuthSuccess> authenticate(
-    final Session session, {
-    required final String idToken,
-    required final Transaction? transaction,
+    Session session, {
+    required String idToken,
+    required Transaction? transaction,
   }) async {
     final accountDetails = await fetchAccountDetails(
       session,
@@ -83,7 +83,7 @@ class FirebaseIdpUtils {
 
     var firebaseAccount = await FirebaseAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(
+      where: (t) => t.userIdentifier.equals(
         accountDetails.userIdentifier,
       ),
       transaction: transaction,
@@ -130,8 +130,8 @@ class FirebaseIdpUtils {
 
   /// Returns the account details for the given [idToken].
   Future<FirebaseAccountDetails> fetchAccountDetails(
-    final Session session, {
-    required final String idToken,
+    Session session, {
+    required String idToken,
   }) async {
     final String projectId = config.credentials.projectId;
 
@@ -167,7 +167,7 @@ class FirebaseIdpUtils {
     return details;
   }
 
-  FirebaseAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
+  FirebaseAccountDetails _parseAccountDetails(Map<String, dynamic> data) {
     final userId = data['sub'] as String?;
     final email = data['email'] as String?;
     final fullName = data['name'] as String?;
@@ -203,10 +203,10 @@ class FirebaseIdpUtils {
   ///
   /// Returns the newly created Firebase account.
   Future<FirebaseAccount> linkFirebaseAuthentication(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final FirebaseAccountDetails accountDetails,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required FirebaseAccountDetails accountDetails,
+    Transaction? transaction,
   }) async {
     return await FirebaseAccount.db.insertRow(
       session,
@@ -221,12 +221,12 @@ class FirebaseIdpUtils {
   }
 
   /// Returns the possible [FirebaseAccount] associated with an session.
-  Future<FirebaseAccount?> getAccount(final Session session) {
+  Future<FirebaseAccount?> getAccount(Session session) {
     return switch (session.authenticated) {
       null => Future.value(null),
       _ => FirebaseAccount.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(
+        where: (t) => t.authUserId.equals(
           session.authenticated!.authUserId,
         ),
       ),
@@ -235,7 +235,7 @@ class FirebaseIdpUtils {
 }
 
 extension on Session {
-  Never logAndThrow(final String message) {
+  Never logAndThrow(String message) {
     log(message, level: LogLevel.debug);
     throw FirebaseIdTokenVerificationException();
   }

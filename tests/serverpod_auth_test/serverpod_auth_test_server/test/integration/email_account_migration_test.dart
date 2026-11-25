@@ -19,7 +19,7 @@ void main() {
 
   withServerpod(
     'Given a non-migrated user (legacy user),',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'test@serverpod.dev';
       const legacyPassword = 'LegacyPass123!';
 
@@ -53,11 +53,11 @@ void main() {
           secretHashPepper: 'test',
           sendPasswordResetVerificationCode:
               (
-                final session, {
-                required final email,
-                required final passwordResetRequestId,
-                required final transaction,
-                required final verificationCode,
+                session, {
+                required email,
+                required passwordResetRequestId,
+                required transaction,
+                required verificationCode,
               }) {
                 receivedVerificationCode = verificationCode;
               },
@@ -120,7 +120,7 @@ void main() {
 
   withServerpod(
     'Given a migrated user whose first action is password reset (after migration),',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const email = 'test@serverpod.dev';
       const legacyPassword = 'LegacyPass123!';
       const newPassword = 'NewPassword456!';
@@ -163,11 +163,11 @@ void main() {
           secretHashPepper: 'test',
           sendPasswordResetVerificationCode:
               (
-                final session, {
-                required final email,
-                required final passwordResetRequestId,
-                required final transaction,
-                required final verificationCode,
+                session, {
+                required email,
+                required passwordResetRequestId,
+                required transaction,
+                required verificationCode,
               }) {
                 receivedPasswordResetRequestId = passwordResetRequestId;
                 receivedVerificationCode = verificationCode;
@@ -371,14 +371,14 @@ void main() {
   );
 }
 
-Future<void> _cleanUpDatabase(final Session session) async {
+Future<void> _cleanUpDatabase(Session session) async {
   await AuthUser.db.deleteWhere(
     session,
-    where: (final _) => Constant.bool(true),
+    where: (_) => Constant.bool(true),
   );
 
   await RateLimitedRequestAttempt.db.deleteWhere(
     session,
-    where: (final t) => t.domain.equals('email'),
+    where: (t) => t.domain.equals('email'),
   );
 }

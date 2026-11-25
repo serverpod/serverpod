@@ -6,7 +6,7 @@ class AuthenticatedStreamingTestEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 
-  Stream<int> openAuthenticatedStream(final Session session) async* {
+  Stream<int> openAuthenticatedStream(Session session) async* {
     int counter = 0;
     while (true) {
       yield ++counter;
@@ -14,7 +14,7 @@ class AuthenticatedStreamingTestEndpoint extends Endpoint {
     }
   }
 
-  Stream<String> watchAuthenticatedUserId(final Session session) async* {
+  Stream<String> watchAuthenticatedUserId(Session session) async* {
     yield session.authenticated!.userIdentifier;
     await Completer<void>().future;
   }

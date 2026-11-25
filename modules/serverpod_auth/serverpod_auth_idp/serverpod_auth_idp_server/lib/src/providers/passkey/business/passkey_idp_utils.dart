@@ -15,8 +15,8 @@ class PasskeyIdpUtils {
 
   /// Creates a new instance of [PasskeyIdpUtils].
   PasskeyIdpUtils({
-    required final Duration challengeLifetime,
-    required final Passkeys passkeys,
+    required Duration challengeLifetime,
+    required Passkeys passkeys,
   }) : _challengeLifetime = challengeLifetime,
        _passkeys = passkeys;
 
@@ -26,13 +26,13 @@ class PasskeyIdpUtils {
   /// Throws a [PasskeyChallengeNotFoundException] if the challenge is not found.
   /// Throws a [PasskeyChallengeExpiredException] if the challenge has expired.
   Future<PasskeyChallenge> _consumeChallenge(
-    final Session session,
-    final UuidValue challengeId, {
-    required final Transaction? transaction,
+    Session session,
+    UuidValue challengeId, {
+    required Transaction? transaction,
   }) async {
     final challenge = await PasskeyChallenge.db.deleteWhere(
       session,
-      where: (final t) => t.id.equals(challengeId),
+      where: (t) => t.id.equals(challengeId),
       transaction: transaction,
     );
 
@@ -51,8 +51,8 @@ class PasskeyIdpUtils {
 
   /// Creates a new challenge to be used for a subsequent registration or login.
   Future<PasskeyChallenge> createChallenge(
-    final Session session, {
-    required final Transaction? transaction,
+    Session session, {
+    required Transaction? transaction,
   }) async {
     final challengeBytes = await _passkeys.createChallenge();
 
@@ -73,9 +73,9 @@ class PasskeyIdpUtils {
   /// Throws a [PasskeyChallengeExpiredException] if the challenge has expired.
   /// Throws a [PasskeyPublicKeyNotFoundException] if the public key is not found.
   Future<UuidValue> authenticate(
-    final Session session, {
-    required final PasskeyLoginRequest request,
-    required final Transaction? transaction,
+    Session session, {
+    required PasskeyLoginRequest request,
+    required Transaction? transaction,
   }) async {
     final challenge = await _consumeChallenge(
       session,
@@ -103,10 +103,10 @@ class PasskeyIdpUtils {
 
   /// Links the given passkey to the [authUserId].
   Future<void> registerPasskey(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final PasskeyRegistrationRequest request,
-    required final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    required PasskeyRegistrationRequest request,
+    required Transaction? transaction,
   }) async {
     final challenge = await _consumeChallenge(
       session,
@@ -136,13 +136,13 @@ class PasskeyIdpUtils {
   }
 
   Future<PasskeyAccount> _getAccount(
-    final Session session, {
-    required final ByteData keyId,
-    final Transaction? transaction,
+    Session session, {
+    required ByteData keyId,
+    Transaction? transaction,
   }) async {
     final account = await PasskeyAccount.db.findFirstRow(
       session,
-      where: (final t) => t.keyIdBase64.equals(base64Encode(keyId.asUint8List)),
+      where: (t) => t.keyIdBase64.equals(base64Encode(keyId.asUint8List)),
       transaction: transaction,
     );
 
@@ -158,14 +158,14 @@ class PasskeyIdpUtils {
   /// If [authUserId] is provided, only the passkey accounts for that user will be deleted.
   /// If [passkeyAccountId] is provided, only the passkey account with that ID will be deleted.
   Future<List<DeletedPasskeyAccount>> deletePasskeyAccounts(
-    final Session session, {
-    required final UuidValue? authUserId,
-    required final UuidValue? passkeyAccountId,
-    required final Transaction? transaction,
+    Session session, {
+    required UuidValue? authUserId,
+    required UuidValue? passkeyAccountId,
+    required Transaction? transaction,
   }) async {
     final removedAccounts = await PasskeyAccount.db.deleteWhere(
       session,
-      where: (final t) {
+      where: (t) {
         Expression expression = Constant.bool(true);
 
         if (authUserId != null) {
@@ -183,7 +183,7 @@ class PasskeyIdpUtils {
 
     return removedAccounts
         .map(
-          (final account) => (
+          (account) => (
             authUserId: account.authUserId,
             passkeyAccountId: account.id!,
           ),
@@ -192,12 +192,12 @@ class PasskeyIdpUtils {
   }
 
   /// Returns the possible [PasskeyAccount] associated with an session.
-  Future<PasskeyAccount?> getAccount(final Session session) {
+  Future<PasskeyAccount?> getAccount(Session session) {
     return switch (session.authenticated) {
       null => Future.value(null),
       _ => PasskeyAccount.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(
+        where: (t) => t.authUserId.equals(
           session.authenticated!.authUserId,
         ),
       ),

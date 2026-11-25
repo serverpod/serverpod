@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:web_socket/web_socket.dart' show WebSocketConnectionClosed;
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
@@ -552,6 +553,12 @@ class _WebSocketIntermediary {
         Uint8List b => _webSocket.sendBytes(b),
         _ => throw ArgumentError.notNull('data'),
       };
+    } on WebSocketConnectionClosed {
+      // The peer has already disconnected, so there is no one to deliver the
+      // message to. This is an expected race, not a framework error.
+      server.serverpod.logVerbose(
+        'Websocket already closed, dropping message: $data',
+      );
     } catch (e, stackTrace) {
       log.error(
         'Error "$e", when trying to send data over websocket: $data',

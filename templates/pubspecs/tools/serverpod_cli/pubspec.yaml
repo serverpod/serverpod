@@ -2,7 +2,7 @@
 
 name: serverpod_cli
 version: SERVERPOD_VERSION
-description: Command line tools for Serverpod.
+description: Command line tools for Serverpod, for creating projects and generating code.
 repository: https://github.com/serverpod/serverpod
 
 environment:

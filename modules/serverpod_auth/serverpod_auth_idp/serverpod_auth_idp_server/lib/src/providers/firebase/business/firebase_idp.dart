@@ -46,10 +46,10 @@ class FirebaseIdp implements IdentityProvider {
 
   /// Creates a new instance of [FirebaseIdp].
   factory FirebaseIdp(
-    final FirebaseIdpConfig config, {
-    required final TokenIssuer tokenIssuer,
-    final AuthUsers authUsers = const AuthUsers(),
-    final UserProfiles userProfiles = const UserProfiles(),
+    FirebaseIdpConfig config, {
+    required TokenIssuer tokenIssuer,
+    AuthUsers authUsers = const AuthUsers(),
+    UserProfiles userProfiles = const UserProfiles(),
   }) {
     final utils = FirebaseIdpUtils(
       config: config,
@@ -69,14 +69,14 @@ class FirebaseIdp implements IdentityProvider {
 
   /// {@macro firebase_idp_base_endpoint.login}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String idToken,
-    final Transaction? transaction,
+    Session session, {
+    required String idToken,
+    Transaction? transaction,
   }) async {
     return await DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final account = await utils.authenticate(
           session,
           idToken: idToken,
@@ -99,7 +99,7 @@ class FirebaseIdp implements IdentityProvider {
           try {
             final user = await UserProfile.db.findFirstRow(
               session,
-              where: (final t) => t.authUserId.equals(account.authUserId),
+              where: (t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
             if (user != null && user.imageId == null) {
@@ -132,21 +132,21 @@ class FirebaseIdp implements IdentityProvider {
   }
 
   /// Determines whether the current session has an associated Firebase account.
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await utils.getAccount(session) != null;
 
   /// Migrates all [FirebaseAccount]s from [userToRemoveId] to [userToKeepId].
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     await FirebaseAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToRemoveId),
-      columnValues: (final t) => [
+      where: (t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (t) => [
         t.authUserId(userToKeepId),
       ],
       transaction: transaction,

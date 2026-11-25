@@ -56,9 +56,9 @@ class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
 
   @override
   AnonymousIdp build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
+    required TokenManager tokenManager,
+    required AuthUsers authUsers,
+    required UserProfiles userProfiles,
   }) {
     return AnonymousIdp(
       this,

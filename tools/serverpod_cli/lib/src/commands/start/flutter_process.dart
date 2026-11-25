@@ -38,6 +38,10 @@ class FlutterNotInstalledException implements Exception {
   String toString() => 'FlutterNotInstalledException: $message';
 }
 
+/// Invocation for spawning the Flutter tool: the executable, and the
+/// arguments that precede the `flutter` command itself.
+typedef FlutterInvocation = ({String executable, List<String> baseArgs});
+
 /// Manages a `flutter run --machine` subprocess. Mirrors [ServerProcess].
 /// IDE attach flows through [flutterProxy] (which owns the stable
 /// vm-service URI and the per-app `flutter-vm-service-info-<appId>.json`
@@ -48,6 +52,10 @@ class FlutterProcess {
 
   final String _flutterPackageDir;
   final String _flutterExecutable;
+
+  /// Resolved Flutter SDK root. When set, the invocation is built from it
+  /// directly.
+  final String? _flutterSdkRoot;
   final String _device;
   final List<String> _extraArgs;
   final IOSink _stdout;
@@ -121,6 +129,7 @@ class FlutterProcess {
     required String flutterPackageDir,
     required String device,
     String flutterExecutable = 'flutter',
+    String? flutterSdkRoot,
     List<String> extraArgs = const [],
     VmServiceProxy? flutterProxy,
     void Function(String stage)? onProgress,
@@ -134,6 +143,7 @@ class FlutterProcess {
     @visibleForTesting Duration? heartbeatIntervalForTesting,
   }) : _flutterPackageDir = flutterPackageDir,
        _flutterExecutable = flutterExecutable,
+       _flutterSdkRoot = flutterSdkRoot,
        _device = device,
        _extraArgs = extraArgs,
        _flutterProxy = flutterProxy,
@@ -178,7 +188,8 @@ class FlutterProcess {
   /// Exit code of the `flutter run` subprocess.
   Future<int> get exitCode => _exitCodeCompleter.future;
 
-  /// Throws [FlutterNotInstalledException] when `flutter` isn't on PATH.
+  /// Throws [FlutterNotInstalledException] when the Flutter tool cannot be
+  /// located or cannot be spawned.
   Future<void> start() async {
     if (_process != null) {
       throw StateError('FlutterProcess is already running.');
@@ -190,18 +201,34 @@ class FlutterProcess {
         _machineArgsOverride ??
         <String>['run', '--machine', '-d', device, ..._extraArgs];
 
-    final invocation = await _resolveFlutterInvocation(_flutterExecutable);
+    final root = _flutterSdkRoot;
+    final invocation = root != null
+        ? invocationForSdkRoot(root)
+        : (executable: _flutterExecutable, baseArgs: <String>[]);
+
+    // A missing absolute executable is checked rather than left to the spawn:
+    // a Windows batch wrapper goes through `cmd.exe`, which starts whether or
+    // not the command exists, so a missing Flutter would otherwise surface as
+    // a daemon that dies immediately instead of as this exception.
+    final executable = invocation.executable;
+    if (p.isAbsolute(executable) && !File(executable).existsSync()) {
+      throw FlutterNotInstalledException(
+        'Failed to launch `$executable`: not found. '
+        'Install Flutter (https://flutter.dev) or pass `--no-flutter`.',
+      );
+    }
 
     Process process;
     try {
       process = await Process.start(
-        invocation.executable,
+        executable,
         [...invocation.baseArgs, ...args],
         workingDirectory: _flutterPackageDir,
+        runInShell: _needsShell(executable),
       );
     } on ProcessException catch (e) {
       throw FlutterNotInstalledException(
-        'Failed to launch `${invocation.executable}`: ${e.message}. '
+        'Failed to launch `$executable`: ${e.message}. '
         'Install Flutter (https://flutter.dev) or pass `--no-flutter`.',
         e,
       );
@@ -977,66 +1004,75 @@ class FlutterProcess {
     }
   }
 
-  static ({String executable, List<String> baseArgs})? _cachedInvocation;
+  /// Whether [executable] has to be launched through a shell.
+  /// Only Windows batch wrappers do.
+  static bool _needsShell(String executable) {
+    if (!Platform.isWindows) return false;
+    final lower = executable.toLowerCase();
+    return lower.endsWith('.bat') || lower.endsWith('.cmd');
+  }
 
-  /// Probe `flutter --version --machine` for `flutterRoot`, then return
-  /// `dart <flutterRoot>/.../flutter_tools.dart` so signals bypass
-  /// puro/fvm/asdf wrappers and reach the daemon. Falls back to
-  /// invoking [flutterExecutable] verbatim if the SDK paths are missing.
-  static Future<({String executable, List<String> baseArgs})>
-  _resolveFlutterInvocation(String flutterExecutable) async {
-    final cached = _cachedInvocation;
+  /// Fast-path invocations, keyed by the SDK root they were derived from.
+  ///
+  /// Keyed rather than a single slot: a workspace can hold apps pinned to
+  /// different Flutter versions, and one shared slot would hand the first
+  /// app's SDK to all of them.
+  static final Map<String, FlutterInvocation> _cachedInvocationsByRoot = {};
+
+  /// Builds the invocation for an already-resolved Flutter SDK [root].
+  ///
+  /// Prefers `flutter_tools.dart` on the SDK's embedded Dart so `kill` reaches
+  /// the daemon rather than a wrapper script. Falls back to the SDK's own
+  /// `bin/flutter` when `bin/cache` is cold or partially populated.
+  @visibleForTesting
+  static FlutterInvocation invocationForSdkRoot(String root) {
+    final cached = _cachedInvocationsByRoot[root];
     if (cached != null) return cached;
 
-    // Don't cache the fallback: a fake-executable test probe would
-    // poison the cache for later real callers.
-    final fallback = (executable: flutterExecutable, baseArgs: <String>[]);
-    try {
-      final result = await Process.run(
-        flutterExecutable,
-        ['--version', '--machine'],
-        runInShell: Platform.isWindows,
-      );
-      if (result.exitCode != 0) return fallback;
-      final decoded = jsonDecode(result.stdout as String);
-      if (decoded is! Map || decoded['flutterRoot'] is! String) {
-        return fallback;
-      }
-      final root = decoded['flutterRoot'] as String;
-      final dartBin = p.join(
+    final fallback = (
+      executable: p.join(
         root,
         'bin',
-        'cache',
-        'dart-sdk',
-        'bin',
-        Platform.isWindows ? 'dart.exe' : 'dart',
-      );
-      final packages = p.join(
-        root,
-        'packages',
-        'flutter_tools',
-        '.dart_tool',
-        'package_config.json',
-      );
-      final entry = p.join(
-        root,
-        'packages',
-        'flutter_tools',
-        'bin',
-        'flutter_tools.dart',
-      );
-      if (!File(dartBin).existsSync() ||
-          !File(packages).existsSync() ||
-          !File(entry).existsSync()) {
-        return fallback;
-      }
-      return _cachedInvocation = (
-        executable: dartBin,
-        baseArgs: ['--disable-dart-dev', '--packages=$packages', entry],
-      );
-    } catch (_) {
+        Platform.isWindows ? 'flutter.bat' : 'flutter',
+      ),
+      baseArgs: <String>[],
+    );
+
+    final dartBin = p.join(
+      root,
+      'bin',
+      'cache',
+      'dart-sdk',
+      'bin',
+      Platform.isWindows ? 'dart.exe' : 'dart',
+    );
+    final packages = p.join(
+      root,
+      'packages',
+      'flutter_tools',
+      '.dart_tool',
+      'package_config.json',
+    );
+    final entry = p.join(
+      root,
+      'packages',
+      'flutter_tools',
+      'bin',
+      'flutter_tools.dart',
+    );
+    if (!File(dartBin).existsSync() ||
+        !File(packages).existsSync() ||
+        !File(entry).existsSync()) {
+      // Deliberately not cached. The fallback is the answer for a cold or
+      // partially populated `bin/cache`; caching it would pin the app to the
+      // wrapper for the rest of the session even once the cache filled in.
       return fallback;
     }
+
+    return _cachedInvocationsByRoot[root] = (
+      executable: dartBin,
+      baseArgs: ['--disable-dart-dev', '--packages=$packages', entry],
+    );
   }
 
   /// `ws://host:port/ws` -> `http://host:port` (also wss -> https).

@@ -21,7 +21,7 @@ void main() {
   withServerpod(
     '[SecretChallengeUtil]',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       buildSession = sessionBuilder.build;
 
       late SecretChallengeUtil<_TestChallengeRequest> challengeUtil;
@@ -31,37 +31,36 @@ void main() {
       late DatabaseRateLimiter completionRateLimiter;
 
       SecretChallengeUtil<_TestChallengeRequest> buildChallengeUtil({
-        final RateLimiter? verificationRateLimiter,
-        final RateLimiter? completionRateLimiter,
-        final LinkCompletionTokenCallback<_TestChallengeRequest>?
-        linkCompletionToken,
+        RateLimiter? verificationRateLimiter,
+        RateLimiter? completionRateLimiter,
+        LinkCompletionTokenCallback<_TestChallengeRequest>? linkCompletionToken,
       }) {
         return SecretChallengeUtil<_TestChallengeRequest>(
           hashUtil: hashUtil,
           verificationConfig: SecretChallengeVerificationConfig(
             getRequest:
                 (
-                  final session,
-                  final requestId, {
-                  required final Transaction? transaction,
+                  session,
+                  requestId, {
+                  required Transaction? transaction,
                 }) async {
                   return requests[requestId.uuid];
                 },
-            isAlreadyUsed: (final request) => request.isAlreadyUsed,
-            getChallenge: (final request) => request.verificationChallenge,
-            isExpired: (final request) => request.expiresAt.isBefore(
+            isAlreadyUsed: (request) => request.isAlreadyUsed,
+            getChallenge: (request) => request.verificationChallenge,
+            isExpired: (request) => request.expiresAt.isBefore(
               DateTime.now(),
             ),
-            onExpired: (final session, final request) async {
+            onExpired: (session, request) async {
               expiredRequestIds.add(request.id);
             },
             linkCompletionToken:
                 linkCompletionToken ??
                 (
-                  final session,
-                  final request,
-                  final completionChallenge, {
-                  required final Transaction? transaction,
+                  session,
+                  request,
+                  completionChallenge, {
+                  required Transaction? transaction,
                 }) async {
                   request.completionChallenge = completionChallenge;
                 },
@@ -70,19 +69,19 @@ void main() {
           completionConfig: SecretChallengeCompletionConfig(
             getRequest:
                 (
-                  final session,
-                  final requestId, {
-                  required final Transaction? transaction,
+                  session,
+                  requestId, {
+                  required Transaction? transaction,
                 }) async {
                   return requests[requestId.uuid];
                 },
-            getCompletionChallenge: (final request) {
+            getCompletionChallenge: (request) {
               return request.completionChallenge;
             },
-            isExpired: (final request) => request.expiresAt.isBefore(
+            isExpired: (request) => request.expiresAt.isBefore(
               DateTime.now(),
             ),
-            onExpired: (final session, final request) async {
+            onExpired: (session, request) async {
               expiredRequestIds.add(request.id);
             },
             rateLimiter: completionRateLimiter,
@@ -91,8 +90,8 @@ void main() {
       }
 
       void arrangeChallengeUtil({
-        required final RateLimiter? verificationRateLimiter,
-        required final RateLimiter? completionRateLimiter,
+        required RateLimiter? verificationRateLimiter,
+        required RateLimiter? completionRateLimiter,
       }) {
         requests = {};
         expiredRequestIds = [];
@@ -104,12 +103,12 @@ void main() {
       }
 
       Future<_TestChallengeRequest> createRequest({
-        required final String verificationCode,
-        required final Duration lifetime,
-        required final bool isAlreadyUsed,
+        required String verificationCode,
+        required Duration lifetime,
+        required bool isAlreadyUsed,
       }) async {
         final verificationChallenge = await session.db.transaction(
-          (final transaction) => challengeUtil.createChallenge(
+          (transaction) => challengeUtil.createChallenge(
             session,
             verificationCode: verificationCode,
             transaction: transaction,
@@ -147,7 +146,7 @@ void main() {
 
           setUpAll(() async {
             challenge = await session.db.transaction(
-              (final transaction) => challengeUtil.createChallenge(
+              (transaction) => challengeUtil.createChallenge(
                 session,
                 verificationCode: _verificationCode,
                 transaction: transaction,
@@ -199,7 +198,7 @@ void main() {
         group('when verifying the request, ', () {
           setUpAll(() async {
             await session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: request.id,
                 verificationCode: _verificationCode,
@@ -246,7 +245,7 @@ void main() {
 
             setUpAll(() async {
               completionToken = await session.db.transaction(
-                (final transaction) => challengeUtil.verifyChallenge(
+                (transaction) => challengeUtil.verifyChallenge(
                   session,
                   requestId: request.id,
                   verificationCode: _verificationCode,
@@ -255,7 +254,7 @@ void main() {
               );
 
               result = session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: completionToken,
                   transaction: transaction,
@@ -300,7 +299,7 @@ void main() {
 
             setUpAll(() async {
               completionToken = await session.db.transaction(
-                (final transaction) => challengeUtil.verifyChallenge(
+                (transaction) => challengeUtil.verifyChallenge(
                   session,
                   requestId: request.id,
                   verificationCode: _verificationCode,
@@ -310,7 +309,7 @@ void main() {
 
               Future<_TestChallengeRequest> complete() =>
                   session.db.transaction(
-                    (final transaction) => challengeUtil.completeChallenge(
+                    (transaction) => challengeUtil.completeChallenge(
                       session,
                       completionToken: completionToken,
                       transaction: transaction,
@@ -360,7 +359,7 @@ void main() {
 
           setUpAll(() async {
             result = session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: request.id,
                 verificationCode: invalidVerificationCode,
@@ -416,7 +415,7 @@ void main() {
 
             setUpAll(() async {
               result = session.db.transaction(
-                (final transaction) => challengeUtil.verifyChallenge(
+                (transaction) => challengeUtil.verifyChallenge(
                   session,
                   requestId: request.id,
                   verificationCode: validVerificationCode,
@@ -470,7 +469,7 @@ void main() {
 
           setUpAll(() async {
             result = session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: request.id,
                 verificationCode: _verificationCode,
@@ -512,7 +511,7 @@ void main() {
 
           setUpAll(() async {
             result = session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: unknownRequestId,
                 verificationCode: _verificationCode,
@@ -577,7 +576,7 @@ void main() {
 
             setUpAll(() async {
               result = session.db.transaction(
-                (final transaction) => challengeUtil.verifyChallenge(
+                (transaction) => challengeUtil.verifyChallenge(
                   session,
                   requestId: request.id,
                   verificationCode: _verificationCode,
@@ -628,7 +627,7 @@ void main() {
 
           setUpAll(() async {
             result = session.db.transaction(
-              (final transaction) => challengeUtil.completeChallenge(
+              (transaction) => challengeUtil.completeChallenge(
                 session,
                 completionToken: invalidCompletionToken,
                 transaction: transaction,
@@ -684,7 +683,7 @@ void main() {
 
             setUpAll(() async {
               result = session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: completionToken,
                   transaction: transaction,
@@ -723,7 +722,7 @@ void main() {
             );
 
             await session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: request.id,
                 verificationCode: _verificationCode,
@@ -747,7 +746,7 @@ void main() {
 
             setUpAll(() async {
               result = session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: differentCompletionToken,
                   transaction: transaction,
@@ -787,7 +786,7 @@ void main() {
           );
 
           completionToken = await session.db.transaction(
-            (final transaction) => challengeUtil.verifyChallenge(
+            (transaction) => challengeUtil.verifyChallenge(
               session,
               requestId: request.id,
               verificationCode: _verificationCode,
@@ -810,7 +809,7 @@ void main() {
 
           setUpAll(() async {
             result = session.db.transaction(
-              (final transaction) => challengeUtil.completeChallenge(
+              (transaction) => challengeUtil.completeChallenge(
                 session,
                 completionToken: completionToken,
                 transaction: transaction,
@@ -853,7 +852,7 @@ void main() {
             );
 
             completionToken = await session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: request.id,
                 verificationCode: _verificationCode,
@@ -889,7 +888,7 @@ void main() {
 
             setUpAll(() async {
               result = session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: completionToken,
                   transaction: transaction,
@@ -948,7 +947,7 @@ void main() {
 
             setUpAll(() async {
               completionToken = await session.db.transaction(
-                (final transaction) => challengeUtil.verifyChallenge(
+                (transaction) => challengeUtil.verifyChallenge(
                   session,
                   requestId: request.id,
                   verificationCode: _verificationCode,
@@ -957,7 +956,7 @@ void main() {
               );
 
               result = session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: completionToken,
                   transaction: transaction,
@@ -1001,7 +1000,7 @@ void main() {
 
             setUpAll(() async {
               result = session.db.transaction(
-                (final transaction) => challengeUtil.verifyChallenge(
+                (transaction) => challengeUtil.verifyChallenge(
                   session,
                   requestId: request.id,
                   verificationCode: 'invalid-code',
@@ -1046,7 +1045,7 @@ void main() {
             );
 
             await session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: request.id,
                 verificationCode: _verificationCode,
@@ -1074,7 +1073,7 @@ void main() {
 
             setUpAll(() async {
               result = session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: differentCompletionToken,
                   transaction: transaction,
@@ -1121,7 +1120,7 @@ void main() {
 
           setUpAll(() async {
             result = session.db.transaction(
-              (final transaction) => challengeUtil.completeChallenge(
+              (transaction) => challengeUtil.completeChallenge(
                 session,
                 completionToken: completionToken,
                 transaction: transaction,
@@ -1169,7 +1168,7 @@ void main() {
 
             setUpAll(() async {
               result = session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: completionToken,
                   transaction: transaction,
@@ -1217,7 +1216,7 @@ void main() {
 
           setUpAll(() async {
             result = session.db.transaction(
-              (final transaction) => challengeUtil.completeChallenge(
+              (transaction) => challengeUtil.completeChallenge(
                 session,
                 completionToken: completionToken,
                 transaction: transaction,
@@ -1260,7 +1259,7 @@ void main() {
 
           setUpAll(() async {
             result = session.db.transaction(
-              (final transaction) => challengeUtil.completeChallenge(
+              (transaction) => challengeUtil.completeChallenge(
                 session,
                 completionToken: completionToken,
                 transaction: transaction,
@@ -1296,10 +1295,10 @@ void main() {
             challengeUtil = buildChallengeUtil(
               linkCompletionToken:
                   (
-                    final session,
-                    final request,
-                    final completionChallenge, {
-                    required final Transaction? transaction,
+                    session,
+                    request,
+                    completionChallenge, {
+                    required Transaction? transaction,
                   }) async {
                     throw ChallengeAlreadyUsedException();
                   },
@@ -1322,7 +1321,7 @@ void main() {
 
             setUpAll(() async {
               result = session.db.transaction(
-                (final transaction) => challengeUtil.verifyChallenge(
+                (transaction) => challengeUtil.verifyChallenge(
                   session,
                   requestId: request.id,
                   verificationCode: _verificationCode,
@@ -1362,7 +1361,7 @@ void main() {
 
             setUpAll(() async {
               try {
-                await session.db.transaction((final transaction) async {
+                await session.db.transaction((transaction) async {
                   await challengeUtil.createChallenge(
                     session,
                     verificationCode: _verificationCode,
@@ -1421,7 +1420,7 @@ void main() {
 
             setUpAll(() async {
               await session.db.transaction(
-                (final transaction) => challengeUtil.verifyChallenge(
+                (transaction) => challengeUtil.verifyChallenge(
                   session,
                   requestId: request.id,
                   verificationCode: _verificationCode,
@@ -1431,8 +1430,7 @@ void main() {
 
               attempts = await RateLimitedRequestAttempt.db.find(
                 session,
-                where: (final t) =>
-                    t.domain.equals('secret_challenge_util_test'),
+                where: (t) => t.domain.equals('secret_challenge_util_test'),
               );
             });
 
@@ -1474,7 +1472,7 @@ void main() {
             );
 
             token = await session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: request.id,
                 verificationCode: _verificationCode,
@@ -1492,7 +1490,7 @@ void main() {
 
             setUpAll(() async {
               await session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: token,
                   transaction: transaction,
@@ -1501,8 +1499,7 @@ void main() {
 
               attempts = await RateLimitedRequestAttempt.db.find(
                 session,
-                where: (final t) =>
-                    t.domain.equals('secret_challenge_util_test'),
+                where: (t) => t.domain.equals('secret_challenge_util_test'),
               );
             });
 
@@ -1554,7 +1551,7 @@ void main() {
             setUpAll(() async {
               try {
                 await session.db.transaction(
-                  (final transaction) => challengeUtil.verifyChallenge(
+                  (transaction) => challengeUtil.verifyChallenge(
                     session,
                     requestId: request.id,
                     verificationCode: 'wrong',
@@ -1567,7 +1564,7 @@ void main() {
 
               try {
                 await session.db.transaction(
-                  (final transaction) => challengeUtil.verifyChallenge(
+                  (transaction) => challengeUtil.verifyChallenge(
                     session,
                     requestId: request.id,
                     verificationCode: _verificationCode,
@@ -1618,7 +1615,7 @@ void main() {
           );
 
           token = await session.db.transaction(
-            (final transaction) => challengeUtil.verifyChallenge(
+            (transaction) => challengeUtil.verifyChallenge(
               session,
               requestId: request.id,
               verificationCode: _verificationCode,
@@ -1645,7 +1642,7 @@ void main() {
             setUpAll(() async {
               try {
                 await session.db.transaction(
-                  (final transaction) => challengeUtil.completeChallenge(
+                  (transaction) => challengeUtil.completeChallenge(
                     session,
                     completionToken: wrongToken,
                     transaction: transaction,
@@ -1657,7 +1654,7 @@ void main() {
 
               try {
                 await session.db.transaction(
-                  (final transaction) => challengeUtil.completeChallenge(
+                  (transaction) => challengeUtil.completeChallenge(
                     session,
                     completionToken: token,
                     transaction: transaction,
@@ -1707,7 +1704,7 @@ void main() {
 
           setUpAll(() async {
             token = await session.db.transaction(
-              (final transaction) => challengeUtil.verifyChallenge(
+              (transaction) => challengeUtil.verifyChallenge(
                 session,
                 requestId: request.id,
                 verificationCode: _verificationCode,
@@ -1755,10 +1752,10 @@ void main() {
             challengeUtil = buildChallengeUtil(
               linkCompletionToken:
                   (
-                    final session,
-                    final request,
-                    final challenge, {
-                    required final Transaction? transaction,
+                    session,
+                    request,
+                    challenge, {
+                    required Transaction? transaction,
                   }) async {
                     throw ChallengeAlreadyUsedException();
                   },
@@ -1782,7 +1779,7 @@ void main() {
             setUpAll(() async {
               try {
                 await session.db.transaction(
-                  (final transaction) => challengeUtil.verifyChallenge(
+                  (transaction) => challengeUtil.verifyChallenge(
                     session,
                     requestId: request.id,
                     verificationCode: _verificationCode,
@@ -1801,7 +1798,7 @@ void main() {
               () async {
                 expect(error, isA<ChallengeAlreadyUsedException>());
 
-                expect(challenges.map((final challenge) => challenge.id), [
+                expect(challenges.map((challenge) => challenge.id), [
                   request.verificationChallenge.id,
                 ]);
               },
@@ -1858,7 +1855,7 @@ void main() {
 
               setUpAll(() async {
                 token = await session.db.transaction(
-                  (final transaction) => challengeUtil.verifyChallenge(
+                  (transaction) => challengeUtil.verifyChallenge(
                     session,
                     requestId: request.id,
                     verificationCode: _verificationCode,
@@ -1867,7 +1864,7 @@ void main() {
                 );
 
                 result = await session.db.transaction(
-                  (final transaction) => challengeUtil.completeChallenge(
+                  (transaction) => challengeUtil.completeChallenge(
                     session,
                     completionToken: token,
                     transaction: transaction,
@@ -1937,7 +1934,7 @@ void main() {
               setUpAll(() async {
                 try {
                   await session.db.transaction(
-                    (final transaction) => challengeUtil.verifyChallenge(
+                    (transaction) => challengeUtil.verifyChallenge(
                       session,
                       requestId: requestId,
                       verificationCode: _verificationCode,
@@ -1950,7 +1947,7 @@ void main() {
 
                 try {
                   await session.db.transaction(
-                    (final transaction) => challengeUtil.verifyChallenge(
+                    (transaction) => challengeUtil.verifyChallenge(
                       session,
                       requestId: requestId,
                       verificationCode: _verificationCode,
@@ -2022,7 +2019,7 @@ void main() {
               setUpAll(() async {
                 try {
                   await session.db.transaction(
-                    (final transaction) => challengeUtil.completeChallenge(
+                    (transaction) => challengeUtil.completeChallenge(
                       session,
                       completionToken: token,
                       transaction: transaction,
@@ -2034,7 +2031,7 @@ void main() {
 
                 try {
                   await session.db.transaction(
-                    (final transaction) => challengeUtil.completeChallenge(
+                    (transaction) => challengeUtil.completeChallenge(
                       session,
                       completionToken: token,
                       transaction: transaction,
@@ -2098,7 +2095,7 @@ void main() {
             setUpAll(() async {
               try {
                 await session.db.transaction(
-                  (final transaction) => challengeUtil.verifyChallenge(
+                  (transaction) => challengeUtil.verifyChallenge(
                     session,
                     requestId: id,
                     verificationCode: _verificationCode,
@@ -2158,7 +2155,7 @@ void main() {
             setUpAll(() async {
               try {
                 await session.db.transaction(
-                  (final transaction) => challengeUtil.completeChallenge(
+                  (transaction) => challengeUtil.completeChallenge(
                     session,
                     completionToken: token,
                     transaction: transaction,
@@ -2207,7 +2204,7 @@ void main() {
             setUpAll(() async {
               try {
                 await session.db.transaction(
-                  (final transaction) => challengeUtil.verifyChallenge(
+                  (transaction) => challengeUtil.verifyChallenge(
                     session,
                     requestId: request.id,
                     verificationCode: 'wrong',
@@ -2260,7 +2257,7 @@ void main() {
           setUpAll(() async {
             try {
               await session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: token,
                   transaction: transaction,
@@ -2279,8 +2276,7 @@ void main() {
               expect(
                 await RateLimitedRequestAttempt.db.count(
                   session,
-                  where: (final t) =>
-                      t.domain.equals('secret_challenge_util_test'),
+                  where: (t) => t.domain.equals('secret_challenge_util_test'),
                 ),
                 0,
               );
@@ -2318,7 +2314,7 @@ void main() {
           setUpAll(() async {
             try {
               await session.db.transaction(
-                (final transaction) => challengeUtil.completeChallenge(
+                (transaction) => challengeUtil.completeChallenge(
                   session,
                   completionToken: token,
                   transaction: transaction,
@@ -2337,8 +2333,7 @@ void main() {
               expect(
                 await RateLimitedRequestAttempt.db.count(
                   session,
-                  where: (final t) =>
-                      t.domain.equals('secret_challenge_util_test'),
+                  where: (t) => t.domain.equals('secret_challenge_util_test'),
                 ),
                 0,
               );
@@ -2363,21 +2358,21 @@ Argon2HashUtil _createTestHashUtil() {
   );
 }
 
-Future<void> _deleteTestData(final Session session) async {
+Future<void> _deleteTestData(Session session) async {
   await SecretChallenge.db.deleteWhere(
     session,
-    where: (final _) => Constant.bool(true),
+    where: (_) => Constant.bool(true),
   );
 
   await RateLimitedRequestAttempt.db.deleteWhere(
     session,
-    where: (final t) => t.domain.equals('secret_challenge_util_test'),
+    where: (t) => t.domain.equals('secret_challenge_util_test'),
   );
 }
 
 String _completionTokenFor(
-  final UuidValue requestId, {
-  required final String verificationCode,
+  UuidValue requestId, {
+  required String verificationCode,
 }) {
   return base64Encode(utf8.encode('$requestId:$verificationCode'));
 }

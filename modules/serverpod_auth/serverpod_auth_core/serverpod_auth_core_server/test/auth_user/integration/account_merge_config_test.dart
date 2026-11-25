@@ -11,7 +11,7 @@ void main() {
 
   withServerpod(
     'Given userToKeep does not exist,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToRemove;
 
@@ -26,7 +26,7 @@ void main() {
         () async {
           await expectLater(
             () => session.db.transaction(
-              (final transaction) async =>
+              (transaction) async =>
                   AccountMergeConfig.defaultCoreDataMergeHandler(
                     session,
                     userToKeepId: const Uuid().v4obj(),
@@ -43,7 +43,7 @@ void main() {
 
   withServerpod(
     'Given userToRemove does not exist,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
 
@@ -58,7 +58,7 @@ void main() {
         () async {
           await expectLater(
             () => session.db.transaction(
-              (final transaction) async =>
+              (transaction) async =>
                   AccountMergeConfig.defaultCoreDataMergeHandler(
                     session,
                     userToKeepId: userToKeep.id,
@@ -75,7 +75,7 @@ void main() {
 
   withServerpod(
     'Given both users exist with different scopes,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -99,7 +99,7 @@ void main() {
         'then scopes are merged into userToKeep.',
         () async {
           await session.db.transaction(
-            (final transaction) async =>
+            (transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
                   session,
                   userToKeepId: userToKeep.id,
@@ -123,7 +123,7 @@ void main() {
 
   withServerpod(
     'Given userToRemove is blocked,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -139,7 +139,7 @@ void main() {
         'then userToKeep becomes blocked.',
         () async {
           await session.db.transaction(
-            (final transaction) async =>
+            (transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
                   session,
                   userToKeepId: userToKeep.id,
@@ -160,7 +160,7 @@ void main() {
 
   withServerpod(
     'Given userToKeep is blocked and userToRemove is not blocked,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -176,7 +176,7 @@ void main() {
         'then userToKeep remains blocked.',
         () async {
           await session.db.transaction(
-            (final transaction) async =>
+            (transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
                   session,
                   userToKeepId: userToKeep.id,
@@ -197,7 +197,7 @@ void main() {
 
   withServerpod(
     'Given userToRemove has refresh tokens,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -224,7 +224,7 @@ void main() {
         'then refresh tokens are moved to userToKeep.',
         () async {
           await session.db.transaction(
-            (final transaction) async =>
+            (transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
                   session,
                   userToKeepId: userToKeep.id,
@@ -242,7 +242,7 @@ void main() {
 
   withServerpod(
     'Given userToRemove has server side sessions,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -269,7 +269,7 @@ void main() {
         'then server side sessions are moved to userToKeep.',
         () async {
           await session.db.transaction(
-            (final transaction) async =>
+            (transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
                   session,
                   userToKeepId: userToKeep.id,
@@ -289,7 +289,7 @@ void main() {
 
   withServerpod(
     'Given userToRemove has a profile and userToKeep does not,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -310,7 +310,7 @@ void main() {
         'then the profile is moved to userToKeep.',
         () async {
           await session.db.transaction(
-            (final transaction) async =>
+            (transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
                   session,
                   userToKeepId: userToKeep.id,
@@ -330,7 +330,7 @@ void main() {
 
   withServerpod(
     'Given both users have profiles,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -364,7 +364,7 @@ void main() {
         'then fields are merged into userToKeep profile.',
         () async {
           await session.db.transaction(
-            (final transaction) async =>
+            (transaction) async =>
                 AccountMergeConfig.defaultCoreDataMergeHandler(
                   session,
                   userToKeepId: userToKeep.id,
@@ -375,7 +375,7 @@ void main() {
 
           final keepProfile = await UserProfile.db.findFirstRow(
             session,
-            where: (final t) => t.authUserId.equals(userToKeep.id),
+            where: (t) => t.authUserId.equals(userToKeep.id),
           );
 
           expect(keepProfile, isNotNull);
@@ -386,7 +386,7 @@ void main() {
           // Original profile should remain for UserToRemove initially until cleanup
           final removeProfile = await UserProfile.db.findFirstRow(
             session,
-            where: (final t) => t.authUserId.equals(userToRemove.id),
+            where: (t) => t.authUserId.equals(userToRemove.id),
           );
           expect(removeProfile, isNotNull);
         },
@@ -396,7 +396,7 @@ void main() {
 
   withServerpod(
     'Given only the userToRemove profile has an image,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       late AuthUserModel userToKeep;
       late AuthUserModel userToRemove;
@@ -432,7 +432,7 @@ void main() {
         await UserProfile.db.updateRow(
           session,
           removeProfile.copyWith(imageId: sourceImage.id),
-          columns: (final t) => [t.imageId],
+          columns: (t) => [t.imageId],
         );
       });
 
@@ -440,7 +440,7 @@ void main() {
         'when the default core data merge handler and cleanup handler are called, '
         'then the image is moved to the userToKeep profile and survives cleanup.',
         () async {
-          await session.db.transaction((final transaction) async {
+          await session.db.transaction((transaction) async {
             await AccountMergeConfig.defaultCoreDataMergeHandler(
               session,
               userToKeepId: userToKeep.id,

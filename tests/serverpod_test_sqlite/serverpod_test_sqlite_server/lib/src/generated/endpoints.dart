@@ -25,6 +25,17 @@ export 'future_calls.dart' show ServerpodFutureCallsGetter;
 class Endpoints extends _is.EndpointDispatch {
   @override
   void initializeEndpoints(_is.Server server) {
+    initializeOwnEndpoints(server);
+    modules['serverpod_auth_core'] = _iacs.Endpoints()
+      ..initializeOwnEndpoints(server);
+    modules['serverpod_auth_idp'] = _iais.Endpoints()
+      ..initializeOwnEndpoints(server);
+    modules['serverpod_test_shared_module'] = _iyx9etqn.Endpoints()
+      ..initializeOwnEndpoints(server);
+  }
+
+  @override
+  void initializeOwnEndpoints(_is.Server server) {
     var endpoints = <String, _is.Endpoint>{
       'testTools': _itdztv0y.TestToolsEndpoint()
         ..initialize(
@@ -116,12 +127,6 @@ class Endpoints extends _is.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_core'] = _iacs.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _iais.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_test_shared_module'] = _iyx9etqn.Endpoints()
-      ..initializeEndpoints(server);
   }
 
   @override

@@ -75,7 +75,7 @@ class DoctorCheckResult {
 }
 
 /// Parses [version] leniently, returning `null` for anything unparsable.
-Version? tryParseVersion(final String? version) {
+Version? tryParseVersion(String? version) {
   if (version == null) return null;
   try {
     return Version.parse(version.trim());

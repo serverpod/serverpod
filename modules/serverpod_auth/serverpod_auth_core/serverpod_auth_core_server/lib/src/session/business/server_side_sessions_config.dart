@@ -86,7 +86,7 @@ class ServerSideSessionsConfig
 
   @override
   ServerSideSessionsTokenManager build({
-    required final AuthUsers authUsers,
+    required AuthUsers authUsers,
   }) => ServerSideSessionsTokenManager(
     config: this,
     authUsers: authUsers,
@@ -112,7 +112,7 @@ class ServerSideSessionsConfigFromPasswords extends ServerSideSessionsConfig {
        );
 }
 
-void _validateSessionKeyHashPepper(final String sessionKeyHashPepper) {
+void _validateSessionKeyHashPepper(String sessionKeyHashPepper) {
   if (sessionKeyHashPepper.isEmpty) {
     throw ArgumentError.value(
       sessionKeyHashPepper,
@@ -130,7 +130,7 @@ void _validateSessionKeyHashPepper(final String sessionKeyHashPepper) {
   }
 }
 
-void _validateSessionLifetime(final Duration? sessionLifetime) {
+void _validateSessionLifetime(Duration? sessionLifetime) {
   if (sessionLifetime != null && sessionLifetime.isNegative) {
     throw ArgumentError.value(
       sessionLifetime,
@@ -141,7 +141,7 @@ void _validateSessionLifetime(final Duration? sessionLifetime) {
 }
 
 void _validateSessionInactivityTimeout(
-  final Duration? sessionInactivityTimeout,
+  Duration? sessionInactivityTimeout,
 ) {
   if (sessionInactivityTimeout != null && sessionInactivityTimeout.isNegative) {
     throw ArgumentError.value(

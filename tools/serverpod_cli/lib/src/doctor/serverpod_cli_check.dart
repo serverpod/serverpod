@@ -9,7 +9,7 @@ class ServerpodCliCheck {
 
   static DoctorCheckResult probe() => evaluate(CliInstallation.resolve());
 
-  static DoctorCheckResult evaluate(final CliInstallation installation) {
+  static DoctorCheckResult evaluate(CliInstallation installation) {
     const title = 'Serverpod CLI';
     final onPath = installation.executableOnPath;
 

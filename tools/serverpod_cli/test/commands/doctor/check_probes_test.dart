@@ -21,17 +21,17 @@ Directory _createTempDirectory() {
 }
 
 /// A fake PATH holding only [directory].
-Map<String, String> _pathWith(final Directory directory) => {
+Map<String, String> _pathWith(Directory directory) => {
   'PATH': directory.path,
 };
 
 /// Writes an executable [name] into [directory] that prints [lines] and
 /// exits with [exitCode]: a batch file on Windows, a shell script elsewhere.
 void _writeFakeExecutable(
-  final Directory directory, {
-  required final String name,
-  final List<String> lines = const [],
-  final int exitCode = 0,
+  Directory directory, {
+  required String name,
+  List<String> lines = const [],
+  int exitCode = 0,
 }) {
   if (Platform.isWindows) {
     File(p.join(directory.path, '$name.bat')).writeAsStringSync(
@@ -57,7 +57,7 @@ void _writeFakeExecutable(
 
 /// Writes a `dart` launcher into [directory] that hands over to [_realDart],
 /// the way version managers do from outside the SDK.
-void _writeDelegatingDartLauncher(final Directory directory) {
+void _writeDelegatingDartLauncher(Directory directory) {
   if (Platform.isWindows) {
     File(p.join(directory.path, 'dart.bat')).writeAsStringSync(
       ['@echo off', '"$_realDart" %*', 'exit /b %ERRORLEVEL%'].join('\r\n'),

@@ -162,6 +162,7 @@ void printServerUris(ServerpodAddresses servers) {
   _printIfSet('  API:       ', servers.api);
   _printIfSet('  Insights:  ', servers.insights);
   _printIfSet('  Web:       ', servers.web);
+  _printIfSet('  Database:  ', servers.database);
 }
 
 void _printIfSet(String label, String? value) {

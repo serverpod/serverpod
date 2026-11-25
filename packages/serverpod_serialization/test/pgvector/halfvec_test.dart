@@ -223,4 +223,15 @@ void main() {
       }
     },
   );
+
+  test(
+    'Given two equal HalfVectors backed by different lists when getting their hashCodes then they match.',
+    () {
+      const a = HalfVector([1.0, 2.0, 3.0]);
+      final b = HalfVector.fromBinary(a.toBinary());
+
+      expect(a, equals(b));
+      expect(a.hashCode, equals(b.hashCode));
+    },
+  );
 }

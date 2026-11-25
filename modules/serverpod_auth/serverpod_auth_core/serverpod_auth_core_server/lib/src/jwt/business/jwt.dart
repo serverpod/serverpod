@@ -73,8 +73,8 @@ class Jwt {
   ///
   /// Returns `null` in any case where no valid authentication could be derived from the input.
   Future<AuthenticationInfo?> authenticationHandler(
-    final Session session,
-    final String jwtAccessToken,
+    Session session,
+    String jwtAccessToken,
   ) async {
     try {
       final tokenData = jwtUtil.verifyJwt(jwtAccessToken);
@@ -101,9 +101,9 @@ class Jwt {
   ///
   /// This is akin to creating a new session, and should be used after a successful login or registration.
   Future<AuthSuccess> createTokens(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final String method,
+    Session session, {
+    required UuidValue authUserId,
+    required String method,
 
     /// The scopes to apply to the token.
     ///
@@ -116,15 +116,15 @@ class Jwt {
     /// as those will always overwrite any custom claims given here.
     ///
     /// These claims will be embedded in every access token (also across rotations) and then sent along with any request. This should be taken into account with regard to the total size of the added claims.
-    final Map<String, dynamic>? extraClaims,
+    Map<String, dynamic>? extraClaims,
 
     /// Whether to skip the check if the user is blocked (in which case a
     /// [AuthUserBlockedException] would be thrown).
     ///
     /// Should only to be used if the caller is sure that the user is not
     /// blocked.
-    final bool skipUserBlockedChecked = false,
-    final Transaction? transaction,
+    bool skipUserBlockedChecked = false,
+    Transaction? transaction,
   }) async {
     if (!skipUserBlockedChecked || scopes == null) {
       final authUser = await authUsers.get(
@@ -210,9 +210,9 @@ class Jwt {
   /// have invalid secrets. If this behavior is not desired, use
   /// [JwtAdmin.rotateRefreshToken] instead.
   Future<AuthSuccess> refreshAccessToken(
-    final Session session, {
-    required final String refreshToken,
-    final Transaction? transaction,
+    Session session, {
+    required String refreshToken,
+    Transaction? transaction,
   }) async {
     return _withReplacedServerJwtException(() async {
       try {
@@ -258,9 +258,9 @@ class Jwt {
   /// `session.messages.authenticationRevoked` when tokens are deleted. If this
   /// behavior is not desired, use [JwtAdmin.deleteRefreshTokens] instead.
   Future<List<UuidValue>> revokeAllRefreshTokens(
-    final Session session, {
-    required final UuidValue authUserId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue authUserId,
+    Transaction? transaction,
   }) async {
     final auths = await admin.deleteRefreshTokens(
       session,
@@ -275,7 +275,7 @@ class Jwt {
       RevokedAuthenticationUser(),
     );
 
-    return auths.map((final auth) => auth.refreshTokenId).toList();
+    return auths.map((auth) => auth.refreshTokenId).toList();
   }
 
   /// Revokes a specific refresh token.
@@ -291,9 +291,9 @@ class Jwt {
   /// behavior is not desired, use [JwtAdmin.deleteRefreshTokens]
   /// instead.
   Future<bool> revokeRefreshToken(
-    final Session session, {
-    required final UuidValue refreshTokenId,
-    final Transaction? transaction,
+    Session session, {
+    required UuidValue refreshTokenId,
+    Transaction? transaction,
   }) async {
     final refreshToken = (await admin.deleteRefreshTokens(
       session,
@@ -317,14 +317,14 @@ class Jwt {
 
   /// List all JWT tokens matching the given filters.
   Future<List<JwtTokenInfo>> listJwtTokens(
-    final Session session, {
-    final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
+    Session session, {
+    UuidValue? authUserId,
+    Transaction? transaction,
+    String? method,
 
     /// How many items to return at maximum. Must be <= 1000.
-    final int limit = 100,
-    final int offset = 0,
+    int limit = 100,
+    int offset = 0,
   }) async {
     if (limit <= 0 || limit > 1000) {
       throw ArgumentError.value(limit, 'limit', 'Must be between 1 and 1000');
@@ -335,7 +335,7 @@ class Jwt {
 
     final refreshTokens = await RefreshToken.db.find(
       session,
-      where: (final t) {
+      where: (t) {
         Expression<dynamic> expression = Constant.bool(true);
 
         if (authUserId != null) {
@@ -350,7 +350,7 @@ class Jwt {
       },
       limit: limit,
       offset: offset,
-      orderBy: (final t) => t.id,
+      orderBy: (t) => t.id,
       transaction: transaction,
     );
 
@@ -385,7 +385,7 @@ class Jwt {
   /// Replaces server-side exceptions by client-side exceptions, hiding details
   /// that could leak account information.
   static Future<T> _withReplacedServerJwtException<T>(
-    final Future<T> Function() fn,
+    Future<T> Function() fn,
   ) async {
     try {
       return await fn();

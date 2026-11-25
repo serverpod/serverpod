@@ -155,5 +155,5 @@ class HalfVector extends IterableBase<double> {
       other is HalfVector && other._vec.equals(_vec);
 
   @override
-  int get hashCode => _vec.hashCode;
+  int get hashCode => Object.hashAll(_vec);
 }

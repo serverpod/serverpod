@@ -5,8 +5,8 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 /// Fetches every version of [packageName] published to pub.dev, or `null`
 /// when pub.dev could not be reached.
 Future<List<Version>?> fetchPublishedVersions(
-  final String packageName, {
-  final Duration timeout = const Duration(seconds: 10),
+  String packageName, {
+  Duration timeout = const Duration(seconds: 10),
 }) async {
   final client = PubClient();
   try {
@@ -20,7 +20,7 @@ Future<List<Version>?> fetchPublishedVersions(
   }
 }
 
-Version? _tryParseVersion(final String version) {
+Version? _tryParseVersion(String version) {
   try {
     return Version.parse(version);
   } on FormatException catch (e) {

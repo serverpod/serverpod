@@ -50,7 +50,7 @@ void main() {
 
   withServerpod(
     'Given authentication information for a user with a profile,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       const authUsers = AuthUsers();
       late Session session;
       late AuthenticationInfo authenticationInfo;

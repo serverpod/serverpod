@@ -9,7 +9,7 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 
 /// The parent environment with PATH replaced by [path], so the CLI finds no
 /// tools at all. The key is matched case-insensitively for Windows.
-Map<String, String> _environmentWithPath(final String path) => {
+Map<String, String> _environmentWithPath(String path) => {
   for (final entry in Platform.environment.entries)
     if (entry.key.toUpperCase() != 'PATH') entry.key: entry.value,
   'PATH': path,

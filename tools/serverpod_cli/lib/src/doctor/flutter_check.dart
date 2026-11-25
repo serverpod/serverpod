@@ -23,7 +23,7 @@ class FlutterCheck {
 
   /// [environment] stands in for the process environment in tests.
   static Future<DoctorCheckResult> probe({
-    final Map<String, String>? environment,
+    Map<String, String>? environment,
   }) async {
     final executable = findExecutableOnPath(
       'flutter',
@@ -45,7 +45,7 @@ class FlutterCheck {
 
   /// Parses the JSON that `flutter --version --machine` prints, or `null` if
   /// the fields the check needs are not there.
-  static FlutterVersionInfo? parse(final String output) {
+  static FlutterVersionInfo? parse(String output) {
     // Flutter prints notices before the JSON on some first runs.
     final start = output.indexOf('{');
     if (start < 0) return null;
@@ -69,9 +69,9 @@ class FlutterCheck {
   }
 
   static DoctorCheckResult evaluate({
-    required final String? executable,
-    required final String? output,
-    final String constraint = requiredFlutterSdk,
+    required String? executable,
+    required String? output,
+    String constraint = requiredFlutterSdk,
   }) {
     const title = 'Flutter';
 

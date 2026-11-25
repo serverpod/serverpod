@@ -25,8 +25,8 @@ final _standaloneDart = p.join(
 
 /// What the probe script prints for the SDK at [executable].
 String _probeOutput(
-  final String executable, {
-  final String version = '3.13.5',
+  String executable, {
+  String version = '3.13.5',
 }) =>
     '$executable\n'
     '$version (stable) (Tue Sep 29 01:00:52 2026 -0700) on "linux_x64"\n';

@@ -12,6 +12,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
+import 'dart:convert' as _idc;
 import 'dart:io' as _idi;
 import 'dart:typed_data' as _idt;
 import 'package:serverpod/serverpod.dart' as _is;
@@ -1883,7 +1884,9 @@ class _PasskeyAccountEndpoint {
             .then(
               (record) => _ik2mg1i3.Protocol()
                   .deserialize<({_idt.ByteData challenge, _is.UuidValue id})>(
-                    record,
+                    _idc.jsonDecode(
+                      _is.SerializationManager.encodeForProtocol(record),
+                    ),
                   ),
             );
         return _localReturnValue;

@@ -32,7 +32,7 @@ class AccountMergeConfig {
   /// See [AccountMergeConfig] for more information about merge hooks and
   /// how they are ordered.
   const AccountMergeConfig.custom({
-    required final List<AccountMergeHandler> mergeHooks,
+    required List<AccountMergeHandler> mergeHooks,
   }) : _mergeHooks = mergeHooks,
        applicationMergeHandler = null;
 
@@ -81,10 +81,10 @@ class AccountMergeConfig {
   /// Default merge handler that throws an exception. This is only useful for
   /// applications which will never merge accounts.
   static FutureOr<void> defaultMergeHandler(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) => throw Exception(
     'Cannot safely merge users without a handler for application-specific '
     'logic. If your application supports account-merging, you must configure '
@@ -94,14 +94,14 @@ class AccountMergeConfig {
 
   /// Default merge handler that deletes the old account.
   static FutureOr<void> defaultMergeCleanupHandler(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     await AuthUser.db.deleteWhere(
       session,
-      where: (final t) => t.id.equals(userToRemoveId),
+      where: (t) => t.id.equals(userToRemoveId),
       transaction: transaction,
     );
   }
@@ -109,10 +109,10 @@ class AccountMergeConfig {
   /// Default merge handler that loops over Idps which support merging accounts
   /// and calls their individual merging functions.
   static FutureOr<void> defaultIdpMergeHandler(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     for (final provider in AuthServices.instance.providers) {
       await provider.mergeAuthUsers(
@@ -131,10 +131,10 @@ class AccountMergeConfig {
   /// - Moving access tokens and refresh tokens
   /// - Moving user profile (if userToKeep does not have one)
   static Future<void> defaultCoreDataMergeHandler(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     final users = await Future.wait([
       AuthUser.db.findById(
@@ -177,16 +177,16 @@ class AccountMergeConfig {
     // Move Refresh Tokens
     await RefreshToken.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToRemove.id),
-      columnValues: (final t) => [t.authUserId(userToKeep!.id!)],
+      where: (t) => t.authUserId.equals(userToRemove.id),
+      columnValues: (t) => [t.authUserId(userToKeep!.id!)],
       transaction: transaction,
     );
 
     // Move Server-Side Sessions
     await ServerSideSession.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToRemove.id),
-      columnValues: (final t) => [t.authUserId(userToKeep!.id!)],
+      where: (t) => t.authUserId.equals(userToRemove.id),
+      columnValues: (t) => [t.authUserId(userToKeep!.id!)],
       transaction: transaction,
     );
 
@@ -194,13 +194,13 @@ class AccountMergeConfig {
     final profiles = await Future.wait([
       UserProfile.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(userToKeep!.id!),
+        where: (t) => t.authUserId.equals(userToKeep!.id!),
         transaction: transaction,
       ),
 
       UserProfile.db.findFirstRow(
         session,
-        where: (final t) => t.authUserId.equals(userToRemove.id),
+        where: (t) => t.authUserId.equals(userToRemove.id),
         transaction: transaction,
       ),
     ]);
@@ -215,8 +215,8 @@ class AccountMergeConfig {
         if (keepProfile.imageId == null && removeProfile.imageId != null) {
           await UserProfileImage.db.updateWhere(
             session,
-            where: (final t) => t.id.equals(removeProfile.imageId),
-            columnValues: (final t) => [
+            where: (t) => t.id.equals(removeProfile.imageId),
+            columnValues: (t) => [
               t.userProfileId(keepProfile.id!),
             ],
             transaction: transaction,
@@ -242,7 +242,7 @@ class AccountMergeConfig {
         await UserProfile.db.updateRow(
           session,
           removeProfile.copyWith(authUserId: userToKeep.id),
-          columns: (final t) => [t.authUserId],
+          columns: (t) => [t.authUserId],
           transaction: transaction,
         );
       }

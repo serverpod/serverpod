@@ -37,8 +37,8 @@ Future<void> promptToUpdateIfNeeded(Version currentVersion) async {
 /// prompt names the version the command goes on to install.
 @visibleForTesting
 Version? latestVersionToPrompt(
-  final Version currentVersion,
-  final Iterable<Version> published,
+  Version currentVersion,
+  Iterable<Version> published,
 ) => resolveUpgradeTarget(
   current: currentVersion,
   published: published,

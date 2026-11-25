@@ -13,22 +13,20 @@ import 'package:test/test.dart';
 
 import '../../test_util/mock_std.dart';
 
-DoctorCheckResult _check(final String id, final DoctorStatus status) =>
-    DoctorCheckResult(
-      id: id,
-      title: id,
-      status: status,
-      message: '$id is ${status.name}',
-      remedy: status == DoctorStatus.ready ? null : 'fix $id',
-    );
+DoctorCheckResult _check(String id, DoctorStatus status) => DoctorCheckResult(
+  id: id,
+  title: id,
+  status: status,
+  message: '$id is ${status.name}',
+  remedy: status == DoctorStatus.ready ? null : 'fix $id',
+);
 
-ServerpodCommandRunner _runner(final DoctorCommand command) =>
-    ServerpodCommandRunner(
-      'serverpod',
-      'test',
-      productionMode: false,
-      cliVersion: Version(1, 1, 0),
-    )..addCommand(command);
+ServerpodCommandRunner _runner(DoctorCommand command) => ServerpodCommandRunner(
+  'serverpod',
+  'test',
+  productionMode: false,
+  cliVersion: Version(1, 1, 0),
+)..addCommand(command);
 
 void main() {
   group('Given a DoctorCommand,', () {

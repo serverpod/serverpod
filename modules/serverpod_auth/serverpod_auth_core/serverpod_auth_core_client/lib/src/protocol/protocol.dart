@@ -104,6 +104,27 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<Set<String>>,
         ],
         modules: const [],
+        classNames: const [
+          'AuthUser',
+          'AuthUserBlockedException',
+          'AuthUserModel',
+          'AuthUserNotFoundException',
+          'AuthStrategy',
+          'AuthSuccess',
+          'SignInWhileAuthenticatedException',
+          'JwtTokenInfo',
+          'RefreshTokenExpiredException',
+          'RefreshTokenInvalidSecretException',
+          'RefreshTokenMalformedException',
+          'RefreshTokenNotFoundException',
+          'TokenPair',
+          'UserProfile',
+          'UserProfileData',
+          'UserProfileImage',
+          'UserProfileModel',
+          'ServerSideSessionInfo',
+        ],
+        classNamePrefix: 'serverpod_auth_core.',
       );
 
   void registerHostProtocol(
@@ -113,13 +134,11 @@ class Protocol extends _isc.SerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth_core.')) return className;
-    return className.substring(20);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth_core.',
+      );
 
   @override
   T deserialize<T>(
@@ -127,8 +146,11 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth_core.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({

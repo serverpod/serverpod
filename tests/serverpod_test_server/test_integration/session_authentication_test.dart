@@ -18,7 +18,7 @@ void main() {
 
     setUpAll(() async {
       server = IntegrationTestServer.create(
-        authenticationHandler: (final session, final token) async {
+        authenticationHandler: (session, token) async {
           if (token == validTestToken) {
             return AuthenticationInfo(
               testUserId,

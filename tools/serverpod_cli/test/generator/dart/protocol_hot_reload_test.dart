@@ -109,6 +109,61 @@ void main() {
     return jsonDecode(result.valueAsString!) as Map<String, dynamic>;
   }
 
+  group(
+    'Given a cached transitive class-name miss and a replacement module declaring its handler,',
+    () {
+      late Map<String, dynamic> before;
+
+      setUp(() async {
+        await _writeProtocol(directory, 'owner', classNames: []);
+        await _writeProtocol(
+          directory,
+          'middle',
+          modules: ['owner'],
+          classNames: [],
+        );
+        await _writeProtocol(
+          directory,
+          'root',
+          modules: ['middle'],
+          classNames: [],
+        );
+        await start();
+        before = await readOutcome('className');
+
+        await _writeProtocol(
+          directory,
+          'owner',
+          classNames: ['Choice'],
+          decoder: "if (dataClassName == 'Choice') return Choice.first as T;",
+        );
+      });
+
+      group(
+        'when hot reload applies the replacement and the routes are resolved again,',
+        () {
+          late Map<String, dynamic> after;
+
+          setUp(() async {
+            await reload();
+            after = await readOutcome('className');
+          });
+
+          test('then broad requests discover the new handler.', () {
+            expect(before, {
+              'object': 'type not found',
+              'dynamic': 'type not found',
+            });
+            expect(after, {
+              'object': 'Choice.first',
+              'dynamic': 'Choice.first',
+            });
+          });
+        },
+      );
+    },
+  );
+
   group('Given cached misses and a later owner behind an unchanged parent,', () {
     late Map<String, dynamic> before;
     late Map<String, dynamic> after;
@@ -287,6 +342,7 @@ Future<void> _writeProtocol(
   String name, {
   List<Expression> types = const [],
   List<String> modules = const [],
+  List<String>? classNames,
   String decoder = '',
 }) async {
   final generator = ProtocolDeserializationGenerator(runtimeUrl: _runtime);
@@ -296,6 +352,7 @@ Future<void> _writeProtocol(
         modules: [
           for (final module in modules) refer('$module.Protocol'),
         ],
+        classNames: classNames,
       )
       .accept(DartEmitter());
   final fallback = generator.moduleFallback().accept(DartEmitter());
@@ -380,6 +437,10 @@ Map<String, String> run(String command) => switch (command) {
   'order' => {
     'typed': outcome<Choice>(),
     'tagged': outcome<Choice>(true),
+  },
+  'className' => {
+    'object': outcome<Object>(true),
+    'dynamic': outcome<dynamic>(true),
   },
   _ => throw ArgumentError.value(command),
 };

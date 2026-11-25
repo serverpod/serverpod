@@ -1924,6 +1924,23 @@ class EndpointMapParameters extends _isc.EndpointRef {
     {'map': map},
   );
 
+  _ida.Future<Map<int, _i68e2f8e.SimpleData>> returnIntSimpleDataMap(
+    Map<int, _i68e2f8e.SimpleData> map,
+  ) => caller.callServerEndpoint<Map<int, _i68e2f8e.SimpleData>>(
+    'mapParameters',
+    'returnIntSimpleDataMap',
+    {'map': _iza9lbb5.Protocol().mapContainerToJson(map)},
+  );
+
+  _ida.Future<Map<int, _i68e2f8e.SimpleData?>?>
+  returnNullableIntSimpleDataMapNullableSimpleData(
+    Map<int, _i68e2f8e.SimpleData?>? map,
+  ) => caller.callServerEndpoint<Map<int, _i68e2f8e.SimpleData?>?>(
+    'mapParameters',
+    'returnNullableIntSimpleDataMapNullableSimpleData',
+    {'map': map == null ? null : _iza9lbb5.Protocol().mapContainerToJson(map)},
+  );
+
   _ida.Future<Map<String, _i68e2f8e.SimpleData?>>
   returnSimpleDataMapNullableSimpleData(
     Map<String, _i68e2f8e.SimpleData?> map,
@@ -2992,6 +3009,14 @@ class EndpointRecordParameters extends _isc.EndpointRef {
     {'record': _iza9lbb5.Protocol().mapRecordToJson(record)},
   );
 
+  _ida.Future<(List<_i68e2f8e.SimpleData>, int)> returnRecordOfSimpleDataList(
+    List<_i68e2f8e.SimpleData> rows,
+  ) => caller.callServerEndpoint<(List<_i68e2f8e.SimpleData>, int)>(
+    'recordParameters',
+    'returnRecordOfSimpleDataList',
+    {'rows': rows},
+  );
+
   _ida.Future<(Map<String, int>,)> returnStringKeyedMapRecord(
     (Map<String, int>,) record,
   ) => caller.callServerEndpoint<(Map<String, int>,)>(
@@ -3059,6 +3084,16 @@ class EndpointRecordParameters extends _isc.EndpointRef {
     {'record': _iza9lbb5.Protocol().mapRecordToJson(record)},
   );
 
+  _ida.Future<({int count, List<_i68e2f8e.SimpleData>? rows})?>
+  returnNullableNamedRecordOfSimpleDataList(
+    ({int count, List<_i68e2f8e.SimpleData>? rows})? record,
+  ) => caller
+      .callServerEndpoint<({int count, List<_i68e2f8e.SimpleData>? rows})?>(
+        'recordParameters',
+        'returnNullableNamedRecordOfSimpleDataList',
+        {'record': _iza9lbb5.Protocol().mapRecordToJson(record)},
+      );
+
   _ida.Future<({Map<int, int> intIntMap})> returnNamedNonStringKeyedMapRecord(
     ({Map<int, int> intIntMap}) record,
   ) => caller.callServerEndpoint<({Map<int, int> intIntMap})>(
@@ -3116,6 +3151,19 @@ class EndpointRecordParameters extends _isc.EndpointRef {
     'recordParameters',
     'returnListOfNullableIntSimpleDataRecord',
     {'record': _iza9lbb5.Protocol().mapContainerToJson(record)},
+  );
+
+  _ida.Future<List<(List<_i68e2f8e.SimpleData>, int)?>?>
+  returnNullableListOfRecordOfSimpleDataList(
+    List<(List<_i68e2f8e.SimpleData>, int)?>? records,
+  ) => caller.callServerEndpoint<List<(List<_i68e2f8e.SimpleData>, int)?>?>(
+    'recordParameters',
+    'returnNullableListOfRecordOfSimpleDataList',
+    {
+      'records': records == null
+          ? null
+          : _iza9lbb5.Protocol().mapContainerToJson(records),
+    },
   );
 
   _ida.Future<Set<(int, _i68e2f8e.SimpleData)>> returnSetOfIntSimpleDataRecord(
@@ -4300,6 +4348,14 @@ class EndpointAuthenticatedTestTools extends _isc.EndpointRef {
         'intEchoStream',
         {},
         {'stream': stream},
+      );
+
+  _ida.Stream<int> broadcastStream() =>
+      caller.callStreamingServerEndpoint<_ida.Stream<int>, int>(
+        'authenticatedTestTools',
+        'broadcastStream',
+        {},
+        {},
       );
 }
 

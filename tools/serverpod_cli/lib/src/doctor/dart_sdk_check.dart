@@ -31,8 +31,8 @@ class DartSdkCheck {
   /// [flutterRoot] is the SDK root the Flutter check found, if any.
   /// [environment] stands in for the process environment in tests.
   static Future<DoctorCheckResult> probe({
-    final String? flutterRoot,
-    final Map<String, String>? environment,
+    String? flutterRoot,
+    Map<String, String>? environment,
   }) async {
     final launcher = findExecutableOnPath('dart', environment: environment);
     if (launcher == null) {
@@ -59,7 +59,7 @@ class DartSdkCheck {
     }
   }
 
-  static String _canonicalize(final String path) {
+  static String _canonicalize(String path) {
     try {
       return Directory(path).resolveSymbolicLinksSync();
     } on FileSystemException {
@@ -70,7 +70,7 @@ class DartSdkCheck {
   /// Reads the probe script's output, or `null` if it is not there.
   ///
   /// Launchers can print notices first, so only the last two lines count.
-  static DartSdkInfo? parse(final String output) {
+  static DartSdkInfo? parse(String output) {
     final lines = output
         .split('\n')
         .map((line) => line.trim())
@@ -85,10 +85,10 @@ class DartSdkCheck {
   }
 
   static DoctorCheckResult evaluate({
-    required final String? launcher,
-    required final String? output,
-    required final String? flutterRoot,
-    final String constraint = requiredDartSdk,
+    required String? launcher,
+    required String? output,
+    required String? flutterRoot,
+    String constraint = requiredDartSdk,
   }) {
     const title = 'Dart SDK';
 

@@ -9,7 +9,7 @@ import '../serverpod_test_tools.dart';
 void main() {
   withServerpod(
     'Given a session key based on a session secret which would result in `+` when base64 encoded,',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       late Session session;
       final secret = Uint8List.fromList([0, 0, 250]);
       final serverSideSessionId = const Uuid().v4obj();

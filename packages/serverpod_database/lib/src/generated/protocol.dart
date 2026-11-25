@@ -170,6 +170,40 @@ class Protocol extends _iss.SerializationManager
           _iss.getType<List<_isd.ColumnMigration>>,
         ],
         modules: const [],
+        classNames: const [
+          'BulkData',
+          'BulkDataException',
+          'BulkQueryColumnDescription',
+          'BulkQueryResult',
+          'ColumnDefinition',
+          'ColumnMigration',
+          'ColumnType',
+          'DatabaseDefinition',
+          'DatabaseDefinitions',
+          'DatabaseMigration',
+          'DatabaseMigrationAction',
+          'DatabaseMigrationActionType',
+          'DatabaseMigrationVersionModel',
+          'DatabaseMigrationWarning',
+          'DatabaseMigrationWarningType',
+          'DeferrableConstraint',
+          'EnumSerialization',
+          'Filter',
+          'FilterConstraint',
+          'FilterConstraintType',
+          'ForeignKeyAction',
+          'ForeignKeyDefinition',
+          'ForeignKeyMatchType',
+          'GinOperatorClass',
+          'IndexDefinition',
+          'IndexElementDefinition',
+          'IndexElementDefinitionType',
+          'MigrationsApplyResult',
+          'TableDefinition',
+          'TableMigration',
+          'VectorDistanceFunction',
+        ],
+        classNamePrefix: 'serverpod.',
       );
 
   void registerHostProtocol(
@@ -179,13 +213,11 @@ class Protocol extends _iss.SerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod.')) return className;
-    return className.substring(10);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _iss.ProtocolDeserialization.normalizeClassName(
+        _iss.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod.',
+      );
 
   @override
   T deserialize<T>(
@@ -193,8 +225,11 @@ class Protocol extends _iss.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _iss.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _iss.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({

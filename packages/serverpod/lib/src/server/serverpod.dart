@@ -10,7 +10,6 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/src/server/log_manager/session_log.dart';
 import 'package:serverpod/src/server/log_manager/serverpod_logging.dart';
-import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
@@ -503,8 +502,11 @@ class Serverpod {
     }
   }
 
-  /// Drains the framework log chain and flushes the OS-level stdio
-  /// buffers (not drained by [exit] on non-terminal pipes), then exits.
+  /// Drains the framework log chain, force-stops the database pool and flushes
+  /// stdio (not drained by [exit] on non-terminal pipes), then exits.
+  ///
+  /// Stopping the pool frees the port of an embedded database it launched.
+  /// Forcing it keeps a stuck query from blocking the exit.
   void _exitAfterFlush(int code, {String? message}) {
     () async {
       if (message != null && message.isNotEmpty) {
@@ -512,6 +514,12 @@ class Serverpod {
       }
       try {
         await _drainLogging();
+      } catch (_) {}
+      try {
+        final poolManager = _databasePoolManager;
+        if (poolManager != null) await forceStopDatabasePool(poolManager);
+      } catch (_) {}
+      try {
         await (stdout.flush(), stderr.flush()).wait;
       } catch (_) {}
       exit(code);
@@ -901,10 +909,21 @@ class Serverpod {
 
     if (_futureCallManager != null) {
       _internalLogVerbose('Initializing future calls.');
-      endpoints.futureCalls?.initialize(
-        _futureCallManager!,
-        serverId,
-      );
+      final initializedModules = <String>{};
+
+      void initializeFutureCalls(EndpointDispatch dispatch) {
+        dispatch.futureCalls?.initialize(_futureCallManager!, serverId);
+
+        for (final module in dispatch.modules.entries) {
+          // A transitive dependency can occur in more than one module's
+          // dispatch. Register its handlers only once with the shared manager.
+          if (initializedModules.add(module.key)) {
+            initializeFutureCalls(module.value);
+          }
+        }
+      }
+
+      initializeFutureCalls(endpoints);
     }
 
     // Start maintenance tasks. If we are running in maintenance mode, we
@@ -1293,10 +1312,14 @@ class Serverpod {
       webServer: web,
     );
 
+    final poolManager = _databasePoolManager;
     postServerpodAddresses(
       api: _publicUrl(api),
       insights: insights == null ? null : _publicUrl(insights),
       web: web == null ? null : _publicUrl(web),
+      database: poolManager == null
+          ? null
+          : embeddedPostgresTcpAddress(poolManager)?.toString(),
     );
   }
 

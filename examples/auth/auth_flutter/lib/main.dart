@@ -121,6 +121,13 @@ class SignInScreen extends StatelessWidget {
           signUpTitle: 'Sign up with email',
           continueAction: 'Continue',
         ),
+        emailWithOtp: EmailWithOtpSignInTexts.defaults.copyWith(
+          startTitle: 'Sign in with email',
+          sendCode: 'Send code',
+          signInWithPassword: 'Sign in with password',
+          verifyTitle: 'Check your email',
+          createAccountTitle: 'Create your account',
+        ),
         passwordRequirementTexts: PasswordRequirementTexts.defaults.copyWith(
           minLengthTemplate: 'At least {length} characters',
           maxLengthTemplate: 'At most {length} characters',
@@ -141,6 +148,14 @@ class SignInScreen extends StatelessWidget {
           // client.auth.authInfo listener.
           onAuthenticated: () => onAuthenticated(context),
           onError: (error) => onError(context, error),
+          // Lets users choose to sign in with their password instead of a
+          // one-time password, and reset a forgotten password.
+          emailOtpSignInWidget: EmailOtpSignInWidget(
+            client: client,
+            allowPasswordSignIn: true,
+            onAuthenticated: () => onAuthenticated(context),
+            onError: (error) => onError(context, error),
+          ),
           // NOTE: To customize widgets, pass the desired widget here.
           // googleSignInWidget: GoogleSignInWidget(
           //   client: client,

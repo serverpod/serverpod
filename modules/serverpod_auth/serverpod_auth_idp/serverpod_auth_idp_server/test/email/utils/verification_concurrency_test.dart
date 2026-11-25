@@ -20,7 +20,7 @@ void main() {
   withServerpod(
     '[Email verification concurrency]',
     rollbackDatabase: RollbackDatabase.disabled,
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       buildSession = sessionBuilder.build;
 
       group(
@@ -39,12 +39,11 @@ void main() {
             );
 
             requestId = await session.db.transaction(
-              (final transaction) =>
-                  fixture.accountCreationUtil.startRegistration(
-                    session,
-                    email: 'registration-race@serverpod.dev',
-                    transaction: transaction,
-                  ),
+              (transaction) => fixture.accountCreationUtil.startRegistration(
+                session,
+                email: 'registration-race@serverpod.dev',
+                transaction: transaction,
+              ),
             );
           });
 
@@ -65,7 +64,7 @@ void main() {
                   () async {
                     try {
                       return await attemptSession.db.transaction(
-                        (final transaction) =>
+                        (transaction) =>
                             fixture.accountCreationUtil.verifyRegistrationCode(
                               attemptSession,
                               accountRequestId: requestId,
@@ -87,8 +86,7 @@ void main() {
               challenges = await SecretChallenge.db.find(session);
 
               completionChallenge = challenges.singleWhere(
-                (final challenge) =>
-                    challenge.id == request.createAccountChallengeId,
+                (challenge) => challenge.id == request.createAccountChallengeId,
               );
 
               tokenParts = utf8
@@ -110,7 +108,7 @@ void main() {
                 );
 
                 expect(
-                  challenges.map((final challenge) => challenge.id),
+                  challenges.map((challenge) => challenge.id),
                   unorderedEquals([
                     request.challengeId,
                     request.createAccountChallengeId,
@@ -159,12 +157,11 @@ void main() {
             );
 
             requestId = await session.db.transaction(
-              (final transaction) =>
-                  fixture.passwordResetUtil.startPasswordReset(
-                    session,
-                    email: email,
-                    transaction: transaction,
-                  ),
+              (transaction) => fixture.passwordResetUtil.startPasswordReset(
+                session,
+                email: email,
+                transaction: transaction,
+              ),
             );
           });
 
@@ -185,7 +182,7 @@ void main() {
                   () async {
                     try {
                       return await attemptSession.db.transaction(
-                        (final transaction) =>
+                        (transaction) =>
                             fixture.passwordResetUtil.verifyPasswordResetCode(
                               attemptSession,
                               passwordResetRequestId: requestId,
@@ -207,8 +204,7 @@ void main() {
               challenges = await SecretChallenge.db.find(session);
 
               completionChallenge = challenges.singleWhere(
-                (final challenge) =>
-                    challenge.id == request.setPasswordChallengeId,
+                (challenge) => challenge.id == request.setPasswordChallengeId,
               );
 
               tokenParts = utf8
@@ -230,7 +226,7 @@ void main() {
                 );
 
                 expect(
-                  challenges.map((final challenge) => challenge.id),
+                  challenges.map((challenge) => challenge.id),
                   unorderedEquals([
                     request.challengeId,
                     request.setPasswordChallengeId,

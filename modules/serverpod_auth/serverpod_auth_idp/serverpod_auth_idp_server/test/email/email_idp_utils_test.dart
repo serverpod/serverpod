@@ -11,7 +11,7 @@ void main() {
 
   withServerpod(
     'Given an unauthenticated session',
-    (final sessionBuilder, final endpoints) {
+    (sessionBuilder, endpoints) {
       setUp(() {
         utils = _createUtils();
         session = sessionBuilder.build();
@@ -28,8 +28,8 @@ void main() {
   );
 
   withServerpod('Given an authenticated session but no email account', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     setUp(() {
       utils = _createUtils();
@@ -53,8 +53,8 @@ void main() {
   });
 
   withServerpod('Given an authenticated session with an email account', (
-    final sessionBuilder,
-    final endpoints,
+    sessionBuilder,
+    endpoints,
   ) {
     late EmailAccount emailAccount;
     late AuthUserModel authUser;

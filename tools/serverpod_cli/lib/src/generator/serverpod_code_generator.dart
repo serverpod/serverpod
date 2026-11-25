@@ -53,6 +53,16 @@ abstract class ServerpodCodeGenerator {
     return (all: allFiles.keys.toList(), written: written);
   }
 
+  /// The paths [generateSerializableModels] writes for [models], from every
+  /// [CodeGenerator], without generating their content.
+  static Set<String> serializableModelPaths({
+    required List<SerializableModelDefinition> models,
+    required GeneratorConfig config,
+  }) => {
+    for (var generator in _generators)
+      ...generator.serializableModelPaths(models: models, config: config),
+  };
+
   /// Generate from [CodeGenerator.generateProtocolCode] for all
   /// [CodeGenerator]s and save the files.
   ///

@@ -70,6 +70,18 @@ class Protocol extends _isc.SerializationManager
           _isc.getType<(int?, _ie8x2k8p.ModuleStreamingClass?)>,
         ],
         modules: const [],
+        classNames: const [
+          'DynamicOnModule',
+          'ModulePolymorphicGrandChild',
+          'ModulePolymorphicChild',
+          'ModulePolymorphicParent',
+          'ModuleClass',
+          'MyModuleFeatureModel',
+          'ModuleStreamingClass',
+          'ProjectStreamingClass',
+          '(int?,ModuleStreamingClass?)',
+        ],
+        classNamePrefix: 'serverpod_test_module.',
       );
 
   void registerHostProtocol(
@@ -79,13 +91,11 @@ class Protocol extends _isc.SerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_test_module.')) return className;
-    return className.substring(22);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_test_module.',
+      );
 
   @override
   T deserialize<T>(
@@ -93,8 +103,11 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_test_module.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({

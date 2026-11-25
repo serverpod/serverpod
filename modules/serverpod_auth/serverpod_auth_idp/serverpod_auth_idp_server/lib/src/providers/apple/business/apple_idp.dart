@@ -50,10 +50,10 @@ class AppleIdp implements IdentityProvider {
 
   /// Creates a new instance of [AppleIdp].
   factory AppleIdp(
-    final AppleIdpConfig config, {
-    required final TokenManager tokenManager,
-    final AuthUsers authUsers = const AuthUsers(),
-    final UserProfiles userProfiles = const UserProfiles(),
+    AppleIdpConfig config, {
+    required TokenManager tokenManager,
+    AuthUsers authUsers = const AuthUsers(),
+    UserProfiles userProfiles = const UserProfiles(),
   }) {
     final signInWithAppleConfig = config.toSignInWithAppleConfiguration();
 
@@ -76,22 +76,22 @@ class AppleIdp implements IdentityProvider {
 
   /// {@macro apple_idp_base_endpoint.login}
   Future<AuthSuccess> login(
-    final Session session, {
-    required final String identityToken,
-    required final String authorizationCode,
+    Session session, {
+    required String identityToken,
+    required String authorizationCode,
 
     /// Whether the sign-in was triggered from a native Apple platform app.
     ///
     /// Pass `false` for web sign-ins or 3rd party platforms like Android.
-    required final bool isNativeApplePlatformSignIn,
-    final String? firstName,
-    final String? lastName,
-    final Transaction? transaction,
+    required bool isNativeApplePlatformSignIn,
+    String? firstName,
+    String? lastName,
+    Transaction? transaction,
   }) async {
     return await DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (transaction) async {
         final account = await utils.authenticate(
           session,
           identityToken: identityToken,
@@ -109,8 +109,8 @@ class AppleIdp implements IdentityProvider {
             UserProfileData(
               fullName: [account.details.firstName, account.details.lastName]
                   .nonNulls
-                  .map((final n) => n.trim())
-                  .where((final n) => n.isNotEmpty)
+                  .map((n) => n.trim())
+                  .where((n) => n.isNotEmpty)
                   .join(' '),
               email: account.details.isVerifiedEmail == true
                   ? account.details.email
@@ -132,21 +132,21 @@ class AppleIdp implements IdentityProvider {
   }
 
   /// Determines whether the current session has an associated Apple account.
-  Future<bool> hasAccount(final Session session) async =>
+  Future<bool> hasAccount(Session session) async =>
       await utils.getAccount(session) != null;
 
   /// Migrates all [AppleAccount]s from [userToRemoveId] to [userToKeepId].
   @override
   Future<void> mergeAuthUsers(
-    final Session session, {
-    required final UuidValue userToKeepId,
-    required final UuidValue userToRemoveId,
-    required final Transaction transaction,
+    Session session, {
+    required UuidValue userToKeepId,
+    required UuidValue userToRemoveId,
+    required Transaction transaction,
   }) async {
     await AppleAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToRemoveId),
-      columnValues: (final t) => [
+      where: (t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (t) => [
         t.authUserId(userToKeepId),
       ],
       transaction: transaction,
@@ -177,8 +177,8 @@ extension AppleIdpConfigureRoutes on Serverpod {
   /// server is initialized. If any of the paths are not provided, its route
   /// will not be added.
   void configureAppleIdpRoutes({
-    final String? revokedNotificationRoutePath = '/hooks/apple-notification',
-    final String? webAuthenticationCallbackRoutePath = '/auth/apple/callback',
+    String? revokedNotificationRoutePath = '/hooks/apple-notification',
+    String? webAuthenticationCallbackRoutePath = '/auth/apple/callback',
   }) {
     final appleIdp = AuthServices.instance.appleIdp;
 

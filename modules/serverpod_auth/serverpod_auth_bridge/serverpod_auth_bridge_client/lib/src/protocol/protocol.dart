@@ -55,6 +55,13 @@ class Protocol extends _isc.SerializationManager
           _iacc.Protocol.new,
           _iaic.Protocol.new,
         ],
+        classNames: const [
+          'LegacyAuthenticationFailReason',
+          'LegacyAuthenticationResponse',
+          'LegacyUserInfo',
+          'LegacyUserSettingsConfig',
+        ],
+        classNamePrefix: 'serverpod_auth_bridge.',
       );
 
   void registerHostProtocol(
@@ -64,13 +71,11 @@ class Protocol extends _isc.SerializationManager
     _hostProtocols.add(protocol);
   }
 
-  static String? getClassNameFromObjectJson(dynamic data) {
-    if (data is! Map) return null;
-    final className = data['__className__'] as String?;
-    if (className == null) return null;
-    if (!className.startsWith('serverpod_auth_bridge.')) return className;
-    return className.substring(22);
-  }
+  static String? getClassNameFromObjectJson(dynamic data) =>
+      _isc.ProtocolDeserialization.normalizeClassName(
+        _isc.ProtocolDeserialization.readClassName(data),
+        prefix: 'serverpod_auth_bridge.',
+      );
 
   @override
   T deserialize<T>(
@@ -78,8 +83,11 @@ class Protocol extends _isc.SerializationManager
     Type? t,
   ]) {
     t ??= T;
-
-    final dataClassName = getClassNameFromObjectJson(data);
+    final rawDataClassName = _isc.ProtocolDeserialization.readClassName(data);
+    final dataClassName = _isc.ProtocolDeserialization.normalizeClassName(
+      rawDataClassName,
+      prefix: 'serverpod_auth_bridge.',
+    );
     if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
@@ -130,9 +138,10 @@ class Protocol extends _isc.SerializationManager
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    final modules = dataClassName == null
-        ? deserializationMetadata.modulesForType(t)
-        : deserializationMetadata.modules;
+    final modules = deserializationMetadata.modulesForDeserialization(
+      t,
+      className: rawDataClassName,
+    );
     for (final module in modules) {
       try {
         return module.deserialize<T>(data, t);
@@ -197,6 +206,18 @@ class Protocol extends _isc.SerializationManager
     }
     if (dataClassName == 'LegacyUserSettingsConfig') {
       return deserialize<_iivi3sn7.LegacyUserSettingsConfig>(data['data']);
+    }
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
+      return _iacc.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(20),
+      });
+    }
+    if (dataClassName.startsWith('serverpod_auth_idp.')) {
+      return _iaic.Protocol().deserializeByClassName({
+        ...data,
+        'className': dataClassName.substring(19),
+      });
     }
     return super.deserializeByClassName(data);
   }

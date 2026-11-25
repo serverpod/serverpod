@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import '../fakes/fakes.dart';
 
 void testSuite<T extends IdentityProvider>(
-  final IdentityProviderBuilder<T> Function() createIdpBuilder,
+  IdentityProviderBuilder<T> Function() createIdpBuilder,
 ) {
   group(
     'Given an identity provider builder,',

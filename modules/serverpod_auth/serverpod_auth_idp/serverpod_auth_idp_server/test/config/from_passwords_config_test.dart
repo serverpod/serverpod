@@ -45,7 +45,7 @@ void main() {
           () => EmailIdpConfigFromPasswords(),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'emailSecretHashPepper',
             ),
@@ -61,7 +61,7 @@ void main() {
           () => GoogleIdpConfigFromPasswords(),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'googleClientSecret',
             ),
@@ -77,7 +77,7 @@ void main() {
           () => FacebookIdpConfigFromPasswords(),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'facebookAppId',
             ),
@@ -93,7 +93,7 @@ void main() {
           () => GitHubIdpConfigFromPasswords(),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'githubClientId',
             ),
@@ -109,7 +109,7 @@ void main() {
           () => AppleIdpConfigFromPasswords(),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'appleServiceIdentifier',
             ),
@@ -125,7 +125,7 @@ void main() {
           () => MicrosoftIdpConfigFromPasswords(),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'microsoftClientId',
             ),
@@ -141,7 +141,7 @@ void main() {
           () => PasskeyIdpConfigFromPasswords(),
           throwsA(
             isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
+              (e) => e.key,
               'key',
               'passkeyHostname',
             ),
