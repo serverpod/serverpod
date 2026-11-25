@@ -492,6 +492,7 @@ class UserProfileRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserProfile>(
+      table: UserProfile.t,
       where: where?.call(UserProfile.t),
       orderBy: orderBy?.call(UserProfile.t),
       orderByList: orderByList?.call(UserProfile.t),
@@ -558,6 +559,7 @@ class UserProfileRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UserProfile>(
+      table: UserProfile.t,
       where: where?.call(UserProfile.t),
       orderBy: orderBy?.call(UserProfile.t),
       orderByList: orderByList?.call(UserProfile.t),
@@ -598,6 +600,7 @@ class UserProfileRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserProfile>(
+      table: UserProfile.t,
       where: where?.call(UserProfile.t),
       orderBy: orderBy?.call(UserProfile.t),
       orderByList: orderByList?.call(UserProfile.t),
@@ -620,6 +623,7 @@ class UserProfileRepository {
   }) async {
     return session.db.findById<UserProfile>(
       id,
+      table: UserProfile.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -789,6 +793,7 @@ class UserProfileRepository {
   }) async {
     return session.db.updateById<UserProfile>(
       id,
+      table: UserProfile.t,
       columnValues: columnValues(UserProfile.t.updateTable),
       transaction: transaction,
     );
@@ -812,6 +817,7 @@ class UserProfileRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserProfile>(
+      table: UserProfile.t,
       columnValues: columnValues(UserProfile.t.updateTable),
       where: where(UserProfile.t),
       limit: limit,
@@ -880,6 +886,7 @@ class UserProfileRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserProfile>(
+      table: UserProfile.t,
       where: where(UserProfile.t),
       orderBy: orderBy?.call(UserProfile.t),
       orderByList: orderByList?.call(UserProfile.t),
@@ -897,6 +904,7 @@ class UserProfileRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UserProfile>(
+      table: UserProfile.t,
       where: where?.call(UserProfile.t),
       limit: limit,
       transaction: transaction,
@@ -912,6 +920,7 @@ class UserProfileRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserProfile>(
+      table: UserProfile.t,
       where: where(UserProfile.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

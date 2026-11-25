@@ -251,6 +251,7 @@ class DoubleDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DoubleDefault>(
+      table: DoubleDefault.t,
       where: where?.call(DoubleDefault.t),
       orderBy: orderBy?.call(DoubleDefault.t),
       orderByList: orderByList?.call(DoubleDefault.t),
@@ -315,6 +316,7 @@ class DoubleDefaultRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<DoubleDefault>(
+      table: DoubleDefault.t,
       where: where?.call(DoubleDefault.t),
       orderBy: orderBy?.call(DoubleDefault.t),
       orderByList: orderByList?.call(DoubleDefault.t),
@@ -353,6 +355,7 @@ class DoubleDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DoubleDefault>(
+      table: DoubleDefault.t,
       where: where?.call(DoubleDefault.t),
       orderBy: orderBy?.call(DoubleDefault.t),
       orderByList: orderByList?.call(DoubleDefault.t),
@@ -373,6 +376,7 @@ class DoubleDefaultRepository {
   }) async {
     return session.db.findById<DoubleDefault>(
       id,
+      table: DoubleDefault.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -541,6 +545,7 @@ class DoubleDefaultRepository {
   }) async {
     return session.db.updateById<DoubleDefault>(
       id,
+      table: DoubleDefault.t,
       columnValues: columnValues(DoubleDefault.t.updateTable),
       transaction: transaction,
     );
@@ -564,6 +569,7 @@ class DoubleDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DoubleDefault>(
+      table: DoubleDefault.t,
       columnValues: columnValues(DoubleDefault.t.updateTable),
       where: where(DoubleDefault.t),
       limit: limit,
@@ -632,6 +638,7 @@ class DoubleDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DoubleDefault>(
+      table: DoubleDefault.t,
       where: where(DoubleDefault.t),
       orderBy: orderBy?.call(DoubleDefault.t),
       orderByList: orderByList?.call(DoubleDefault.t),
@@ -649,6 +656,7 @@ class DoubleDefaultRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<DoubleDefault>(
+      table: DoubleDefault.t,
       where: where?.call(DoubleDefault.t),
       limit: limit,
       transaction: transaction,
@@ -664,6 +672,7 @@ class DoubleDefaultRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DoubleDefault>(
+      table: DoubleDefault.t,
       where: where(DoubleDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

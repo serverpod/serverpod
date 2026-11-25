@@ -376,6 +376,7 @@ class OrderRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Order>(
+      table: Order.t,
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -442,6 +443,7 @@ class OrderRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Order>(
+      table: Order.t,
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -482,6 +484,7 @@ class OrderRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Order>(
+      table: Order.t,
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -504,6 +507,7 @@ class OrderRepository {
   }) async {
     return session.db.findById<Order>(
       id,
+      table: Order.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -673,6 +677,7 @@ class OrderRepository {
   }) async {
     return session.db.updateById<Order>(
       id,
+      table: Order.t,
       columnValues: columnValues(Order.t.updateTable),
       transaction: transaction,
     );
@@ -696,6 +701,7 @@ class OrderRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Order>(
+      table: Order.t,
       columnValues: columnValues(Order.t.updateTable),
       where: where(Order.t),
       limit: limit,
@@ -764,6 +770,7 @@ class OrderRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Order>(
+      table: Order.t,
       where: where(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -781,6 +788,7 @@ class OrderRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Order>(
+      table: Order.t,
       where: where?.call(Order.t),
       limit: limit,
       transaction: transaction,
@@ -796,6 +804,7 @@ class OrderRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Order>(
+      table: Order.t,
       where: where(Order.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -460,6 +460,7 @@ class MessageLogEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MessageLogEntry>(
+      table: MessageLogEntry.t,
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -524,6 +525,7 @@ class MessageLogEntryRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<MessageLogEntry>(
+      table: MessageLogEntry.t,
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -562,6 +564,7 @@ class MessageLogEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MessageLogEntry>(
+      table: MessageLogEntry.t,
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -582,6 +585,7 @@ class MessageLogEntryRepository {
   }) async {
     return session.db.findById<MessageLogEntry>(
       id,
+      table: MessageLogEntry.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -751,6 +755,7 @@ class MessageLogEntryRepository {
   }) async {
     return session.db.updateById<MessageLogEntry>(
       id,
+      table: MessageLogEntry.t,
       columnValues: columnValues(MessageLogEntry.t.updateTable),
       transaction: transaction,
     );
@@ -775,6 +780,7 @@ class MessageLogEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MessageLogEntry>(
+      table: MessageLogEntry.t,
       columnValues: columnValues(MessageLogEntry.t.updateTable),
       where: where(MessageLogEntry.t),
       limit: limit,
@@ -843,6 +849,7 @@ class MessageLogEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MessageLogEntry>(
+      table: MessageLogEntry.t,
       where: where(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -860,6 +867,7 @@ class MessageLogEntryRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<MessageLogEntry>(
+      table: MessageLogEntry.t,
       where: where?.call(MessageLogEntry.t),
       limit: limit,
       transaction: transaction,
@@ -875,6 +883,7 @@ class MessageLogEntryRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MessageLogEntry>(
+      table: MessageLogEntry.t,
       where: where(MessageLogEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -318,6 +318,7 @@ class AuthKeyRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<AuthKey>(
+      table: AuthKey.t,
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
@@ -382,6 +383,7 @@ class AuthKeyRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<AuthKey>(
+      table: AuthKey.t,
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
@@ -420,6 +422,7 @@ class AuthKeyRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<AuthKey>(
+      table: AuthKey.t,
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
@@ -440,6 +443,7 @@ class AuthKeyRepository {
   }) async {
     return session.db.findById<AuthKey>(
       id,
+      table: AuthKey.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -608,6 +612,7 @@ class AuthKeyRepository {
   }) async {
     return session.db.updateById<AuthKey>(
       id,
+      table: AuthKey.t,
       columnValues: columnValues(AuthKey.t.updateTable),
       transaction: transaction,
     );
@@ -631,6 +636,7 @@ class AuthKeyRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<AuthKey>(
+      table: AuthKey.t,
       columnValues: columnValues(AuthKey.t.updateTable),
       where: where(AuthKey.t),
       limit: limit,
@@ -699,6 +705,7 @@ class AuthKeyRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<AuthKey>(
+      table: AuthKey.t,
       where: where(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
@@ -716,6 +723,7 @@ class AuthKeyRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<AuthKey>(
+      table: AuthKey.t,
       where: where?.call(AuthKey.t),
       limit: limit,
       transaction: transaction,
@@ -731,6 +739,7 @@ class AuthKeyRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<AuthKey>(
+      table: AuthKey.t,
       where: where(AuthKey.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

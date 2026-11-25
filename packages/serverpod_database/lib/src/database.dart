@@ -69,7 +69,11 @@ class Database {
   ///
   /// [lockBehavior] controls what happens when a row is already locked.
   /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
+  ///
+  /// [table] is the table of [T]. Generated code passes it, which skips
+  /// looking the table up by type.
   Future<List<T>> find<T extends TableRow>({
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,
@@ -100,6 +104,7 @@ class Database {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+      table: table,
     );
   }
 
@@ -118,7 +123,11 @@ class Database {
   ///
   /// [lockBehavior] controls what happens when a row is already locked.
   /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
+  ///
+  /// [table] is the table of [T]. Generated code passes it, which skips
+  /// looking the table up by type.
   Future<T?> findFirstRow<T extends TableRow>({
+    Table? table,
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -147,6 +156,7 @@ class Database {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+      table: table,
     );
   }
 
@@ -162,8 +172,12 @@ class Database {
   ///
   /// [lockBehavior] controls what happens when a row is already locked.
   /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
+  ///
+  /// [table] is the table of [T]. Generated code passes it, which skips
+  /// looking the table up by type.
   Future<T?> findById<T extends TableRow>(
     Object id, {
+    Table? table,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -185,6 +199,7 @@ class Database {
       include: include,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
+      table: table,
     );
   }
 
@@ -201,7 +216,11 @@ class Database {
   /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   ///
   /// A [transaction] is required.
+  ///
+  /// [table] is the table of [T]. Generated code passes it, which skips
+  /// looking the table up by type.
   Future<void> lockRows<T extends TableRow>({
+    Table? table,
     required Expression where,
     required LockMode lockMode,
     required Transaction transaction,
@@ -213,6 +232,7 @@ class Database {
       lockMode: lockMode,
       lockBehavior: lockBehavior,
       transaction: transaction,
+      table: table,
     );
   }
 
@@ -260,8 +280,12 @@ class Database {
 
   /// Updates a single [TableRow] by its [id] with the specified column values.
   /// Returns the updated row or null if no row with the given id exists.
+  ///
+  /// [table] is the table of [T]. Generated code passes it, which skips
+  /// looking the table up by type.
   Future<T?> updateById<T extends TableRow>(
     Object id, {
+    Table? table,
     required List<ColumnValue> columnValues,
     Transaction? transaction,
   }) async {
@@ -271,6 +295,7 @@ class Database {
       columnValues: columnValues,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
+      table: table,
     );
   }
 
@@ -280,7 +305,11 @@ class Database {
   /// If [noReturn] is set to `true`, the updated rows are not read back from
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
+  ///
+  /// [table] is the table of [T]. Generated code passes it, which skips
+  /// looking the table up by type.
   Future<List<T>> updateWhere<T extends TableRow>({
+    Table? table,
     required List<ColumnValue> columnValues,
     required Expression where,
     int? limit,
@@ -301,6 +330,7 @@ class Database {
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
       noReturn: noReturn,
+      table: table,
     );
   }
 
@@ -459,7 +489,11 @@ class Database {
   /// transferring and deserializing the rows when the result is not needed.
   /// Any [orderBy]/[orderByList] is ignored in that case since there are no
   /// returned rows to order.
+  ///
+  /// [table] is the table of [T]. Generated code passes it, which skips
+  /// looking the table up by type.
   Future<List<T>> deleteWhere<T extends TableRow>({
+    Table? table,
     required Expression where,
     Column? orderBy,
     List<Column>? orderByList,
@@ -474,12 +508,17 @@ class Database {
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
       noReturn: noReturn,
+      table: table,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
+  ///
+  /// [table] is the table of [T]. Generated code passes it, which skips
+  /// looking the table up by type.
   Future<int> count<T extends TableRow>({
+    Table? table,
     Expression? where,
     int? limit,
     bool useCache = true,
@@ -491,6 +530,7 @@ class Database {
       limit: limit,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
+      table: table,
     );
   }
 
@@ -525,7 +565,11 @@ class Database {
   ///
   /// Currently only supported on SQLite. Calling this method on PostgreSQL
   /// throws an [UnsupportedError].
+  ///
+  /// [table] is the table of [T]. Generated code passes it, which skips
+  /// looking the table up by type.
   Stream<List<T>> watch<T extends TableRow>({
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,
@@ -545,6 +589,7 @@ class Database {
       include: include,
       throttle: throttle,
       alsoTriggerOnTables: alsoTriggerOnTables,
+      table: table,
     );
   }
 

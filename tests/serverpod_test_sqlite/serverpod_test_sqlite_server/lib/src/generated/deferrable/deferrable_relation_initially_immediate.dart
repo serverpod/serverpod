@@ -228,6 +228,7 @@ class DeferrableRelationInitiallyImmediateRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DeferrableRelationInitiallyImmediate>(
+      table: DeferrableRelationInitiallyImmediate.t,
       where: where?.call(DeferrableRelationInitiallyImmediate.t),
       orderBy: orderBy?.call(DeferrableRelationInitiallyImmediate.t),
       orderByList: orderByList?.call(DeferrableRelationInitiallyImmediate.t),
@@ -294,6 +295,7 @@ class DeferrableRelationInitiallyImmediateRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<DeferrableRelationInitiallyImmediate>(
+      table: DeferrableRelationInitiallyImmediate.t,
       where: where?.call(DeferrableRelationInitiallyImmediate.t),
       orderBy: orderBy?.call(DeferrableRelationInitiallyImmediate.t),
       orderByList: orderByList?.call(DeferrableRelationInitiallyImmediate.t),
@@ -334,6 +336,7 @@ class DeferrableRelationInitiallyImmediateRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DeferrableRelationInitiallyImmediate>(
+      table: DeferrableRelationInitiallyImmediate.t,
       where: where?.call(DeferrableRelationInitiallyImmediate.t),
       orderBy: orderBy?.call(DeferrableRelationInitiallyImmediate.t),
       orderByList: orderByList?.call(DeferrableRelationInitiallyImmediate.t),
@@ -354,6 +357,7 @@ class DeferrableRelationInitiallyImmediateRepository {
   }) async {
     return session.db.findById<DeferrableRelationInitiallyImmediate>(
       id,
+      table: DeferrableRelationInitiallyImmediate.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -535,6 +539,7 @@ class DeferrableRelationInitiallyImmediateRepository {
   }) async {
     return session.db.updateById<DeferrableRelationInitiallyImmediate>(
       id,
+      table: DeferrableRelationInitiallyImmediate.t,
       columnValues: columnValues(
         DeferrableRelationInitiallyImmediate.t.updateTable,
       ),
@@ -567,6 +572,7 @@ class DeferrableRelationInitiallyImmediateRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DeferrableRelationInitiallyImmediate>(
+      table: DeferrableRelationInitiallyImmediate.t,
       columnValues: columnValues(
         DeferrableRelationInitiallyImmediate.t.updateTable,
       ),
@@ -642,6 +648,7 @@ class DeferrableRelationInitiallyImmediateRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DeferrableRelationInitiallyImmediate>(
+      table: DeferrableRelationInitiallyImmediate.t,
       where: where(DeferrableRelationInitiallyImmediate.t),
       orderBy: orderBy?.call(DeferrableRelationInitiallyImmediate.t),
       orderByList: orderByList?.call(DeferrableRelationInitiallyImmediate.t),
@@ -660,6 +667,7 @@ class DeferrableRelationInitiallyImmediateRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<DeferrableRelationInitiallyImmediate>(
+      table: DeferrableRelationInitiallyImmediate.t,
       where: where?.call(DeferrableRelationInitiallyImmediate.t),
       limit: limit,
       transaction: transaction,
@@ -678,6 +686,7 @@ class DeferrableRelationInitiallyImmediateRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DeferrableRelationInitiallyImmediate>(
+      table: DeferrableRelationInitiallyImmediate.t,
       where: where(DeferrableRelationInitiallyImmediate.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

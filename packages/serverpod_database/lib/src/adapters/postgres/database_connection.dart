@@ -34,6 +34,7 @@ class PostgresDatabaseConnection
   @override
   Future<List<T>> find<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,
@@ -44,7 +45,7 @@ class PostgresDatabaseConnection
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'find');
+    table = resolveTable<T>(table, operation: 'find');
     var orderByCols = _resolveOrderBy(orderByList, orderBy);
 
     var query = SelectQueryBuilder(table: table)
@@ -70,6 +71,7 @@ class PostgresDatabaseConnection
   @override
   Future<T?> findFirstRow<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -79,9 +81,10 @@ class PostgresDatabaseConnection
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
-    _getTableOrAssert<T>(session, operation: 'findRow');
+    table = resolveTable<T>(table, operation: 'findRow');
     var rows = await find<T>(
       session,
+      table: table,
       where: where,
       offset: offset,
       orderBy: orderBy,
@@ -102,14 +105,16 @@ class PostgresDatabaseConnection
   Future<T?> findById<T extends TableRow>(
     DatabaseSession session,
     Object id, {
+    Table? table,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'findById');
+    table = resolveTable<T>(table, operation: 'findById');
     return await findFirstRow<T>(
       session,
+      table: table,
       where: table.id.equals(id),
       transaction: transaction,
       include: include,
@@ -121,12 +126,13 @@ class PostgresDatabaseConnection
   @override
   Future<void> lockRows<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     required Expression where,
     required LockMode lockMode,
     required Transaction transaction,
     LockBehavior lockBehavior = LockBehavior.wait,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'lockRows');
+    table = resolveTable<T>(table, operation: 'lockRows');
 
     var query = SelectQueryBuilder(table: table)
         .withSelectFields([table.id])
@@ -381,10 +387,11 @@ class PostgresDatabaseConnection
   Future<T> updateById<T extends TableRow>(
     DatabaseSession session,
     Object id, {
+    Table? table,
     required List<ColumnValue> columnValues,
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'updateById');
+    table = resolveTable<T>(table, operation: 'updateById');
 
     if (columnValues.isEmpty) {
       throw ArgumentError('columnValues cannot be empty');
@@ -427,6 +434,7 @@ class PostgresDatabaseConnection
   @override
   Future<List<T>> updateWhere<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     required List<ColumnValue> columnValues,
     required Expression where,
     int? limit,
@@ -436,7 +444,7 @@ class PostgresDatabaseConnection
     Transaction? transaction,
     bool noReturn = false,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
+    final resolvedTable = resolveTable<T>(table, operation: 'updateWhere');
 
     if (columnValues.isEmpty) {
       throw ArgumentError('columnValues cannot be empty');
@@ -459,23 +467,23 @@ class PostgresDatabaseConnection
 
     if (requiresFilteredSubquery) {
       var orders = _resolveOrderBy(orderByList, orderBy);
-      var subquery = SelectQueryBuilder(table: table)
-          .withSelectFields([table.id])
+      var subquery = SelectQueryBuilder(table: resolvedTable)
+          .withSelectFields([resolvedTable.id])
           .withWhere(where)
           .withOrderBy(orders)
           .withLimit(limit)
           .withOffset(offset)
           .build();
 
-      var idAlias = '${table.tableName}.${table.id.columnName}';
+      var idAlias = '${resolvedTable.tableName}.${resolvedTable.id.columnName}';
 
       if (noReturn) {
         // No rows are returned, so the wrapping SELECT and its ordering are
         // unnecessary: run the UPDATE directly against the selected ids.
         updateQuery =
             'WITH rows_to_update AS ($subquery) '
-            'UPDATE ${table.quotedTableName} SET $setClause '
-            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update)';
+            'UPDATE ${resolvedTable.quotedTableName} SET $setClause '
+            'WHERE "${resolvedTable.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update)';
       } else {
         const updatedAlias = 'updated';
 
@@ -484,28 +492,31 @@ class PostgresDatabaseConnection
         var orderByClause = switch (orders) {
           != null when orders.isNotEmpty =>
             ' ORDER BY '
-                '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '"$updatedAlias".')).join(', ')}',
+                '${orders.map((o) => o.toString().replaceAll('"${resolvedTable.tableName}".', '"$updatedAlias".')).join(', ')}',
           _ => '',
         };
 
-        var returning = buildReturningClause(table, tableAlias: updatedAlias);
+        var returning = buildReturningClause(
+          resolvedTable,
+          tableAlias: updatedAlias,
+        );
 
         updateQuery =
             'WITH rows_to_update AS ($subquery), '
             '$updatedAlias AS ('
-            'UPDATE ${table.quotedTableName} SET $setClause '
-            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
+            'UPDATE ${resolvedTable.quotedTableName} SET $setClause '
+            'WHERE "${resolvedTable.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
             'RETURNING *'
             ') '
             'SELECT $returning FROM $updatedAlias$orderByClause';
       }
     } else {
       updateQuery =
-          'UPDATE ${table.quotedTableName} SET $setClause WHERE $where';
+          'UPDATE ${resolvedTable.quotedTableName} SET $setClause WHERE $where';
       if (!noReturn) {
         var returning = buildReturningClause(
-          table,
-          tableAlias: table.unqualifiedTableName,
+          resolvedTable,
+          tableAlias: resolvedTable.unqualifiedTableName,
         );
         updateQuery += ' RETURNING $returning';
       }
@@ -571,12 +582,13 @@ class PostgresDatabaseConnection
   Future<List<T>> deleteWhere<T extends TableRow>(
     DatabaseSession session,
     Expression where, {
+    Table? table,
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
     bool noReturn = false,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
+    table = resolveTable<T>(table, operation: 'deleteWhere');
     // Ordering applies to the returned deleted rows, not to which rows are
     // deleted, so it is irrelevant when nothing is returned.
     var orderByCols = noReturn ? null : _resolveOrderBy(orderByList, orderBy);
@@ -598,11 +610,12 @@ class PostgresDatabaseConnection
   @override
   Future<int> count<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? limit,
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'count');
+    table = resolveTable<T>(table, operation: 'count');
 
     var query = CountQueryBuilder(
       table: table,
@@ -776,6 +789,7 @@ class PostgresDatabaseConnection
   @override
   Stream<List<T>> watch<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,
@@ -1171,18 +1185,6 @@ class PostgresDatabaseConnection
     }
 
     return hasNonPersisted;
-  }
-
-  Table _getTableOrAssert<T>(
-    DatabaseSession session, {
-    required String operation,
-  }) {
-    var table = poolManager.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
-Current type was $T''');
-    return table!;
   }
 }
 

@@ -366,6 +366,7 @@ class ObjectWithBitRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithBit>(
+      table: ObjectWithBit.t,
       where: where?.call(ObjectWithBit.t),
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
@@ -430,6 +431,7 @@ class ObjectWithBitRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithBit>(
+      table: ObjectWithBit.t,
       where: where?.call(ObjectWithBit.t),
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
@@ -468,6 +470,7 @@ class ObjectWithBitRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithBit>(
+      table: ObjectWithBit.t,
       where: where?.call(ObjectWithBit.t),
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
@@ -488,6 +491,7 @@ class ObjectWithBitRepository {
   }) async {
     return session.db.findById<ObjectWithBit>(
       id,
+      table: ObjectWithBit.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -656,6 +660,7 @@ class ObjectWithBitRepository {
   }) async {
     return session.db.updateById<ObjectWithBit>(
       id,
+      table: ObjectWithBit.t,
       columnValues: columnValues(ObjectWithBit.t.updateTable),
       transaction: transaction,
     );
@@ -679,6 +684,7 @@ class ObjectWithBitRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithBit>(
+      table: ObjectWithBit.t,
       columnValues: columnValues(ObjectWithBit.t.updateTable),
       where: where(ObjectWithBit.t),
       limit: limit,
@@ -747,6 +753,7 @@ class ObjectWithBitRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithBit>(
+      table: ObjectWithBit.t,
       where: where(ObjectWithBit.t),
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
@@ -764,6 +771,7 @@ class ObjectWithBitRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithBit>(
+      table: ObjectWithBit.t,
       where: where?.call(ObjectWithBit.t),
       limit: limit,
       transaction: transaction,
@@ -779,6 +787,7 @@ class ObjectWithBitRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithBit>(
+      table: ObjectWithBit.t,
       where: where(ObjectWithBit.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

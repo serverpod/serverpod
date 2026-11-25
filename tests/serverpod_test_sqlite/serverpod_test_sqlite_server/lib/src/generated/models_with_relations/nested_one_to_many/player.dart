@@ -298,6 +298,7 @@ class PlayerRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Player>(
+      table: Player.t,
       where: where?.call(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
@@ -364,6 +365,7 @@ class PlayerRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Player>(
+      table: Player.t,
       where: where?.call(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
@@ -404,6 +406,7 @@ class PlayerRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Player>(
+      table: Player.t,
       where: where?.call(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
@@ -426,6 +429,7 @@ class PlayerRepository {
   }) async {
     return session.db.findById<Player>(
       id,
+      table: Player.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -595,6 +599,7 @@ class PlayerRepository {
   }) async {
     return session.db.updateById<Player>(
       id,
+      table: Player.t,
       columnValues: columnValues(Player.t.updateTable),
       transaction: transaction,
     );
@@ -618,6 +623,7 @@ class PlayerRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Player>(
+      table: Player.t,
       columnValues: columnValues(Player.t.updateTable),
       where: where(Player.t),
       limit: limit,
@@ -686,6 +692,7 @@ class PlayerRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Player>(
+      table: Player.t,
       where: where(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
@@ -703,6 +710,7 @@ class PlayerRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Player>(
+      table: Player.t,
       where: where?.call(Player.t),
       limit: limit,
       transaction: transaction,
@@ -718,6 +726,7 @@ class PlayerRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Player>(
+      table: Player.t,
       where: where(Player.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

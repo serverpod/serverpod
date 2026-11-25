@@ -242,6 +242,7 @@ class ServiceRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Service>(
+      table: Service.t,
       where: where?.call(Service.t),
       orderBy: orderBy?.call(Service.t),
       orderByList: orderByList?.call(Service.t),
@@ -306,6 +307,7 @@ class ServiceRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Service>(
+      table: Service.t,
       where: where?.call(Service.t),
       orderBy: orderBy?.call(Service.t),
       orderByList: orderByList?.call(Service.t),
@@ -344,6 +346,7 @@ class ServiceRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Service>(
+      table: Service.t,
       where: where?.call(Service.t),
       orderBy: orderBy?.call(Service.t),
       orderByList: orderByList?.call(Service.t),
@@ -364,6 +367,7 @@ class ServiceRepository {
   }) async {
     return session.db.findById<Service>(
       id,
+      table: Service.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -532,6 +536,7 @@ class ServiceRepository {
   }) async {
     return session.db.updateById<Service>(
       id,
+      table: Service.t,
       columnValues: columnValues(Service.t.updateTable),
       transaction: transaction,
     );
@@ -555,6 +560,7 @@ class ServiceRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Service>(
+      table: Service.t,
       columnValues: columnValues(Service.t.updateTable),
       where: where(Service.t),
       limit: limit,
@@ -623,6 +629,7 @@ class ServiceRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Service>(
+      table: Service.t,
       where: where(Service.t),
       orderBy: orderBy?.call(Service.t),
       orderByList: orderByList?.call(Service.t),
@@ -640,6 +647,7 @@ class ServiceRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Service>(
+      table: Service.t,
       where: where?.call(Service.t),
       limit: limit,
       transaction: transaction,
@@ -655,6 +663,7 @@ class ServiceRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Service>(
+      table: Service.t,
       where: where(Service.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

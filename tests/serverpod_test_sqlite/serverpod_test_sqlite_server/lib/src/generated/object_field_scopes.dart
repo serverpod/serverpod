@@ -255,6 +255,7 @@ class ObjectFieldScopesRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectFieldScopes>(
+      table: ObjectFieldScopes.t,
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -319,6 +320,7 @@ class ObjectFieldScopesRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectFieldScopes>(
+      table: ObjectFieldScopes.t,
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -357,6 +359,7 @@ class ObjectFieldScopesRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectFieldScopes>(
+      table: ObjectFieldScopes.t,
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -377,6 +380,7 @@ class ObjectFieldScopesRepository {
   }) async {
     return session.db.findById<ObjectFieldScopes>(
       id,
+      table: ObjectFieldScopes.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -546,6 +550,7 @@ class ObjectFieldScopesRepository {
   }) async {
     return session.db.updateById<ObjectFieldScopes>(
       id,
+      table: ObjectFieldScopes.t,
       columnValues: columnValues(ObjectFieldScopes.t.updateTable),
       transaction: transaction,
     );
@@ -570,6 +575,7 @@ class ObjectFieldScopesRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectFieldScopes>(
+      table: ObjectFieldScopes.t,
       columnValues: columnValues(ObjectFieldScopes.t.updateTable),
       where: where(ObjectFieldScopes.t),
       limit: limit,
@@ -638,6 +644,7 @@ class ObjectFieldScopesRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectFieldScopes>(
+      table: ObjectFieldScopes.t,
       where: where(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -655,6 +662,7 @@ class ObjectFieldScopesRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectFieldScopes>(
+      table: ObjectFieldScopes.t,
       where: where?.call(ObjectFieldScopes.t),
       limit: limit,
       transaction: transaction,
@@ -670,6 +678,7 @@ class ObjectFieldScopesRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectFieldScopes>(
+      table: ObjectFieldScopes.t,
       where: where(ObjectFieldScopes.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

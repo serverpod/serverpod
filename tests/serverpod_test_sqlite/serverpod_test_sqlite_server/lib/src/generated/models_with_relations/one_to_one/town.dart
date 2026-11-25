@@ -298,6 +298,7 @@ class TownRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Town>(
+      table: Town.t,
       where: where?.call(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
@@ -364,6 +365,7 @@ class TownRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Town>(
+      table: Town.t,
       where: where?.call(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
@@ -404,6 +406,7 @@ class TownRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Town>(
+      table: Town.t,
       where: where?.call(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
@@ -426,6 +429,7 @@ class TownRepository {
   }) async {
     return session.db.findById<Town>(
       id,
+      table: Town.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -595,6 +599,7 @@ class TownRepository {
   }) async {
     return session.db.updateById<Town>(
       id,
+      table: Town.t,
       columnValues: columnValues(Town.t.updateTable),
       transaction: transaction,
     );
@@ -618,6 +623,7 @@ class TownRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Town>(
+      table: Town.t,
       columnValues: columnValues(Town.t.updateTable),
       where: where(Town.t),
       limit: limit,
@@ -686,6 +692,7 @@ class TownRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Town>(
+      table: Town.t,
       where: where(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
@@ -703,6 +710,7 @@ class TownRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Town>(
+      table: Town.t,
       where: where?.call(Town.t),
       limit: limit,
       transaction: transaction,
@@ -718,6 +726,7 @@ class TownRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Town>(
+      table: Town.t,
       where: where(Town.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

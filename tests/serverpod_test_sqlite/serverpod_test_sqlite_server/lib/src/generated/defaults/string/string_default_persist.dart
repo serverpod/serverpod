@@ -533,6 +533,7 @@ class StringDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<StringDefaultPersist>(
+      table: StringDefaultPersist.t,
       where: where?.call(StringDefaultPersist.t),
       orderBy: orderBy?.call(StringDefaultPersist.t),
       orderByList: orderByList?.call(StringDefaultPersist.t),
@@ -597,6 +598,7 @@ class StringDefaultPersistRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<StringDefaultPersist>(
+      table: StringDefaultPersist.t,
       where: where?.call(StringDefaultPersist.t),
       orderBy: orderBy?.call(StringDefaultPersist.t),
       orderByList: orderByList?.call(StringDefaultPersist.t),
@@ -635,6 +637,7 @@ class StringDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<StringDefaultPersist>(
+      table: StringDefaultPersist.t,
       where: where?.call(StringDefaultPersist.t),
       orderBy: orderBy?.call(StringDefaultPersist.t),
       orderByList: orderByList?.call(StringDefaultPersist.t),
@@ -655,6 +658,7 @@ class StringDefaultPersistRepository {
   }) async {
     return session.db.findById<StringDefaultPersist>(
       id,
+      table: StringDefaultPersist.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -824,6 +828,7 @@ class StringDefaultPersistRepository {
   }) async {
     return session.db.updateById<StringDefaultPersist>(
       id,
+      table: StringDefaultPersist.t,
       columnValues: columnValues(StringDefaultPersist.t.updateTable),
       transaction: transaction,
     );
@@ -848,6 +853,7 @@ class StringDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<StringDefaultPersist>(
+      table: StringDefaultPersist.t,
       columnValues: columnValues(StringDefaultPersist.t.updateTable),
       where: where(StringDefaultPersist.t),
       limit: limit,
@@ -916,6 +922,7 @@ class StringDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<StringDefaultPersist>(
+      table: StringDefaultPersist.t,
       where: where(StringDefaultPersist.t),
       orderBy: orderBy?.call(StringDefaultPersist.t),
       orderByList: orderByList?.call(StringDefaultPersist.t),
@@ -933,6 +940,7 @@ class StringDefaultPersistRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<StringDefaultPersist>(
+      table: StringDefaultPersist.t,
       where: where?.call(StringDefaultPersist.t),
       limit: limit,
       transaction: transaction,
@@ -948,6 +956,7 @@ class StringDefaultPersistRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<StringDefaultPersist>(
+      table: StringDefaultPersist.t,
       where: where(StringDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

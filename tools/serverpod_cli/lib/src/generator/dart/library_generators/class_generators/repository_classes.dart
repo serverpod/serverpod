@@ -396,6 +396,7 @@ class BuildRepositoryClass {
             .call(
               [],
               {
+                'table': refer(className).property('t'),
                 'where': refer('where').nullSafeProperty('call').call(
                   [refer(className).property('t')],
                 ),
@@ -585,6 +586,7 @@ class BuildRepositoryClass {
             .call(
               [],
               {
+                'table': refer(className).property('t'),
                 'where': refer('where').nullSafeProperty('call').call(
                   [refer(className).property('t')],
                 ),
@@ -737,6 +739,7 @@ class BuildRepositoryClass {
             .call(
               [],
               {
+                'table': refer(className).property('t'),
                 'where': refer('where').nullSafeProperty('call').call(
                   [refer(className).property('t')],
                 ),
@@ -849,6 +852,7 @@ class BuildRepositoryClass {
             .call(
               [refer('id')],
               {
+                'table': refer(className).property('t'),
                 'transaction': refer('transaction'),
                 if (objectRelationFields.isNotEmpty)
                   'include': refer('include'),
@@ -1436,6 +1440,7 @@ class BuildRepositoryClass {
                 refer('id'),
               ],
               {
+                'table': refer(className).property('t'),
                 'columnValues': refer('columnValues').call([
                   refer(className).property('t').property('updateTable'),
                 ]),
@@ -1549,6 +1554,7 @@ class BuildRepositoryClass {
             .call(
               [],
               {
+                'table': refer(className).property('t'),
                 'columnValues': refer('columnValues').call([
                   refer(className).property('t').property('updateTable'),
                 ]),
@@ -1813,6 +1819,7 @@ class BuildRepositoryClass {
             .call(
               [],
               {
+                'table': refer(className).property('t'),
                 'where': refer('where').call([refer(className).property('t')]),
                 'orderBy': refer('orderBy').nullSafeProperty('call').call(
                   [refer(className).property('t')],
@@ -1890,6 +1897,7 @@ class BuildRepositoryClass {
             .call(
               [],
               {
+                'table': refer(className).property('t'),
                 'where': refer('where').nullSafeProperty('call').call(
                   [refer(className).property('t')],
                 ),
@@ -1965,6 +1973,7 @@ class BuildRepositoryClass {
             .call(
               [],
               {
+                'table': refer(className).property('t'),
                 'where': refer('where').call([refer(className).property('t')]),
                 'lockMode': refer('lockMode'),
                 'lockBehavior': refer('lockBehavior'),

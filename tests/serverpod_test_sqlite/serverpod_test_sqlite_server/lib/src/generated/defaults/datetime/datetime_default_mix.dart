@@ -310,6 +310,7 @@ class DateTimeDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DateTimeDefaultMix>(
+      table: DateTimeDefaultMix.t,
       where: where?.call(DateTimeDefaultMix.t),
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
@@ -374,6 +375,7 @@ class DateTimeDefaultMixRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<DateTimeDefaultMix>(
+      table: DateTimeDefaultMix.t,
       where: where?.call(DateTimeDefaultMix.t),
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
@@ -412,6 +414,7 @@ class DateTimeDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DateTimeDefaultMix>(
+      table: DateTimeDefaultMix.t,
       where: where?.call(DateTimeDefaultMix.t),
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
@@ -432,6 +435,7 @@ class DateTimeDefaultMixRepository {
   }) async {
     return session.db.findById<DateTimeDefaultMix>(
       id,
+      table: DateTimeDefaultMix.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -601,6 +605,7 @@ class DateTimeDefaultMixRepository {
   }) async {
     return session.db.updateById<DateTimeDefaultMix>(
       id,
+      table: DateTimeDefaultMix.t,
       columnValues: columnValues(DateTimeDefaultMix.t.updateTable),
       transaction: transaction,
     );
@@ -625,6 +630,7 @@ class DateTimeDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DateTimeDefaultMix>(
+      table: DateTimeDefaultMix.t,
       columnValues: columnValues(DateTimeDefaultMix.t.updateTable),
       where: where(DateTimeDefaultMix.t),
       limit: limit,
@@ -693,6 +699,7 @@ class DateTimeDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DateTimeDefaultMix>(
+      table: DateTimeDefaultMix.t,
       where: where(DateTimeDefaultMix.t),
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
@@ -710,6 +717,7 @@ class DateTimeDefaultMixRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<DateTimeDefaultMix>(
+      table: DateTimeDefaultMix.t,
       where: where?.call(DateTimeDefaultMix.t),
       limit: limit,
       transaction: transaction,
@@ -725,6 +733,7 @@ class DateTimeDefaultMixRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DateTimeDefaultMix>(
+      table: DateTimeDefaultMix.t,
       where: where(DateTimeDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

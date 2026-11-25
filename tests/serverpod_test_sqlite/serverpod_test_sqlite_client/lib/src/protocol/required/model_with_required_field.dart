@@ -271,6 +271,7 @@ class ModelWithRequiredFieldRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ModelWithRequiredField>(
+      table: ModelWithRequiredField.t,
       where: where?.call(ModelWithRequiredField.t),
       orderBy: orderBy?.call(ModelWithRequiredField.t),
       orderByList: orderByList?.call(ModelWithRequiredField.t),
@@ -335,6 +336,7 @@ class ModelWithRequiredFieldRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ModelWithRequiredField>(
+      table: ModelWithRequiredField.t,
       where: where?.call(ModelWithRequiredField.t),
       orderBy: orderBy?.call(ModelWithRequiredField.t),
       orderByList: orderByList?.call(ModelWithRequiredField.t),
@@ -373,6 +375,7 @@ class ModelWithRequiredFieldRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ModelWithRequiredField>(
+      table: ModelWithRequiredField.t,
       where: where?.call(ModelWithRequiredField.t),
       orderBy: orderBy?.call(ModelWithRequiredField.t),
       orderByList: orderByList?.call(ModelWithRequiredField.t),
@@ -393,6 +396,7 @@ class ModelWithRequiredFieldRepository {
   }) async {
     return session.db.findById<ModelWithRequiredField>(
       id,
+      table: ModelWithRequiredField.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -562,6 +566,7 @@ class ModelWithRequiredFieldRepository {
   }) async {
     return session.db.updateById<ModelWithRequiredField>(
       id,
+      table: ModelWithRequiredField.t,
       columnValues: columnValues(ModelWithRequiredField.t.updateTable),
       transaction: transaction,
     );
@@ -586,6 +591,7 @@ class ModelWithRequiredFieldRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ModelWithRequiredField>(
+      table: ModelWithRequiredField.t,
       columnValues: columnValues(ModelWithRequiredField.t.updateTable),
       where: where(ModelWithRequiredField.t),
       limit: limit,
@@ -654,6 +660,7 @@ class ModelWithRequiredFieldRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ModelWithRequiredField>(
+      table: ModelWithRequiredField.t,
       where: where(ModelWithRequiredField.t),
       orderBy: orderBy?.call(ModelWithRequiredField.t),
       orderByList: orderByList?.call(ModelWithRequiredField.t),
@@ -671,6 +678,7 @@ class ModelWithRequiredFieldRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<ModelWithRequiredField>(
+      table: ModelWithRequiredField.t,
       where: where?.call(ModelWithRequiredField.t),
       limit: limit,
       transaction: transaction,
@@ -686,6 +694,7 @@ class ModelWithRequiredFieldRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ModelWithRequiredField>(
+      table: ModelWithRequiredField.t,
       where: where(ModelWithRequiredField.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

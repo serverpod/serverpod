@@ -274,6 +274,7 @@ class EmailAuthRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAuth>(
+      table: EmailAuth.t,
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
@@ -338,6 +339,7 @@ class EmailAuthRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EmailAuth>(
+      table: EmailAuth.t,
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
@@ -376,6 +378,7 @@ class EmailAuthRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAuth>(
+      table: EmailAuth.t,
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
@@ -396,6 +399,7 @@ class EmailAuthRepository {
   }) async {
     return session.db.findById<EmailAuth>(
       id,
+      table: EmailAuth.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -564,6 +568,7 @@ class EmailAuthRepository {
   }) async {
     return session.db.updateById<EmailAuth>(
       id,
+      table: EmailAuth.t,
       columnValues: columnValues(EmailAuth.t.updateTable),
       transaction: transaction,
     );
@@ -587,6 +592,7 @@ class EmailAuthRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAuth>(
+      table: EmailAuth.t,
       columnValues: columnValues(EmailAuth.t.updateTable),
       where: where(EmailAuth.t),
       limit: limit,
@@ -655,6 +661,7 @@ class EmailAuthRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAuth>(
+      table: EmailAuth.t,
       where: where(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
@@ -672,6 +679,7 @@ class EmailAuthRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailAuth>(
+      table: EmailAuth.t,
       where: where?.call(EmailAuth.t),
       limit: limit,
       transaction: transaction,
@@ -687,6 +695,7 @@ class EmailAuthRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailAuth>(
+      table: EmailAuth.t,
       where: where(EmailAuth.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -295,6 +295,7 @@ class BoolDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BoolDefaultMix>(
+      table: BoolDefaultMix.t,
       where: where?.call(BoolDefaultMix.t),
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
@@ -359,6 +360,7 @@ class BoolDefaultMixRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<BoolDefaultMix>(
+      table: BoolDefaultMix.t,
       where: where?.call(BoolDefaultMix.t),
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
@@ -397,6 +399,7 @@ class BoolDefaultMixRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BoolDefaultMix>(
+      table: BoolDefaultMix.t,
       where: where?.call(BoolDefaultMix.t),
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
@@ -417,6 +420,7 @@ class BoolDefaultMixRepository {
   }) async {
     return session.db.findById<BoolDefaultMix>(
       id,
+      table: BoolDefaultMix.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -585,6 +589,7 @@ class BoolDefaultMixRepository {
   }) async {
     return session.db.updateById<BoolDefaultMix>(
       id,
+      table: BoolDefaultMix.t,
       columnValues: columnValues(BoolDefaultMix.t.updateTable),
       transaction: transaction,
     );
@@ -608,6 +613,7 @@ class BoolDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BoolDefaultMix>(
+      table: BoolDefaultMix.t,
       columnValues: columnValues(BoolDefaultMix.t.updateTable),
       where: where(BoolDefaultMix.t),
       limit: limit,
@@ -676,6 +682,7 @@ class BoolDefaultMixRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BoolDefaultMix>(
+      table: BoolDefaultMix.t,
       where: where(BoolDefaultMix.t),
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
@@ -693,6 +700,7 @@ class BoolDefaultMixRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<BoolDefaultMix>(
+      table: BoolDefaultMix.t,
       where: where?.call(BoolDefaultMix.t),
       limit: limit,
       transaction: transaction,
@@ -708,6 +716,7 @@ class BoolDefaultMixRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BoolDefaultMix>(
+      table: BoolDefaultMix.t,
       where: where(BoolDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

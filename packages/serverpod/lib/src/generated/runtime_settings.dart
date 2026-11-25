@@ -327,6 +327,7 @@ class RuntimeSettingsRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RuntimeSettings>(
+      table: RuntimeSettings.t,
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -391,6 +392,7 @@ class RuntimeSettingsRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<RuntimeSettings>(
+      table: RuntimeSettings.t,
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -429,6 +431,7 @@ class RuntimeSettingsRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RuntimeSettings>(
+      table: RuntimeSettings.t,
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -449,6 +452,7 @@ class RuntimeSettingsRepository {
   }) async {
     return session.db.findById<RuntimeSettings>(
       id,
+      table: RuntimeSettings.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -618,6 +622,7 @@ class RuntimeSettingsRepository {
   }) async {
     return session.db.updateById<RuntimeSettings>(
       id,
+      table: RuntimeSettings.t,
       columnValues: columnValues(RuntimeSettings.t.updateTable),
       transaction: transaction,
     );
@@ -642,6 +647,7 @@ class RuntimeSettingsRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<RuntimeSettings>(
+      table: RuntimeSettings.t,
       columnValues: columnValues(RuntimeSettings.t.updateTable),
       where: where(RuntimeSettings.t),
       limit: limit,
@@ -710,6 +716,7 @@ class RuntimeSettingsRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RuntimeSettings>(
+      table: RuntimeSettings.t,
       where: where(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -727,6 +734,7 @@ class RuntimeSettingsRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<RuntimeSettings>(
+      table: RuntimeSettings.t,
       where: where?.call(RuntimeSettings.t),
       limit: limit,
       transaction: transaction,
@@ -742,6 +750,7 @@ class RuntimeSettingsRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<RuntimeSettings>(
+      table: RuntimeSettings.t,
       where: where(RuntimeSettings.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

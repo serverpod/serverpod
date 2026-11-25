@@ -338,6 +338,7 @@ class ChallengeTrackerRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChallengeTracker>(
+      table: ChallengeTracker.t,
       where: where?.call(ChallengeTracker.t),
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
@@ -404,6 +405,7 @@ class ChallengeTrackerRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ChallengeTracker>(
+      table: ChallengeTracker.t,
       where: where?.call(ChallengeTracker.t),
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
@@ -444,6 +446,7 @@ class ChallengeTrackerRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChallengeTracker>(
+      table: ChallengeTracker.t,
       where: where?.call(ChallengeTracker.t),
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
@@ -466,6 +469,7 @@ class ChallengeTrackerRepository {
   }) async {
     return session.db.findById<ChallengeTracker>(
       id,
+      table: ChallengeTracker.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -636,6 +640,7 @@ class ChallengeTrackerRepository {
   }) async {
     return session.db.updateById<ChallengeTracker>(
       id,
+      table: ChallengeTracker.t,
       columnValues: columnValues(ChallengeTracker.t.updateTable),
       transaction: transaction,
     );
@@ -660,6 +665,7 @@ class ChallengeTrackerRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChallengeTracker>(
+      table: ChallengeTracker.t,
       columnValues: columnValues(ChallengeTracker.t.updateTable),
       where: where(ChallengeTracker.t),
       limit: limit,
@@ -728,6 +734,7 @@ class ChallengeTrackerRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChallengeTracker>(
+      table: ChallengeTracker.t,
       where: where(ChallengeTracker.t),
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
@@ -745,6 +752,7 @@ class ChallengeTrackerRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ChallengeTracker>(
+      table: ChallengeTracker.t,
       where: where?.call(ChallengeTracker.t),
       limit: limit,
       transaction: transaction,
@@ -760,6 +768,7 @@ class ChallengeTrackerRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ChallengeTracker>(
+      table: ChallengeTracker.t,
       where: where(ChallengeTracker.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

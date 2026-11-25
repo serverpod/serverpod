@@ -312,6 +312,7 @@ class LegacyEmailPasswordRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LegacyEmailPassword>(
+      table: LegacyEmailPassword.t,
       where: where?.call(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
@@ -378,6 +379,7 @@ class LegacyEmailPasswordRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<LegacyEmailPassword>(
+      table: LegacyEmailPassword.t,
       where: where?.call(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
@@ -418,6 +420,7 @@ class LegacyEmailPasswordRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LegacyEmailPassword>(
+      table: LegacyEmailPassword.t,
       where: where?.call(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
@@ -440,6 +443,7 @@ class LegacyEmailPasswordRepository {
   }) async {
     return session.db.findById<LegacyEmailPassword>(
       id,
+      table: LegacyEmailPassword.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -610,6 +614,7 @@ class LegacyEmailPasswordRepository {
   }) async {
     return session.db.updateById<LegacyEmailPassword>(
       id,
+      table: LegacyEmailPassword.t,
       columnValues: columnValues(LegacyEmailPassword.t.updateTable),
       transaction: transaction,
     );
@@ -634,6 +639,7 @@ class LegacyEmailPasswordRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<LegacyEmailPassword>(
+      table: LegacyEmailPassword.t,
       columnValues: columnValues(LegacyEmailPassword.t.updateTable),
       where: where(LegacyEmailPassword.t),
       limit: limit,
@@ -702,6 +708,7 @@ class LegacyEmailPasswordRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LegacyEmailPassword>(
+      table: LegacyEmailPassword.t,
       where: where(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
@@ -719,6 +726,7 @@ class LegacyEmailPasswordRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<LegacyEmailPassword>(
+      table: LegacyEmailPassword.t,
       where: where?.call(LegacyEmailPassword.t),
       limit: limit,
       transaction: transaction,
@@ -734,6 +742,7 @@ class LegacyEmailPasswordRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<LegacyEmailPassword>(
+      table: LegacyEmailPassword.t,
       where: where(LegacyEmailPassword.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

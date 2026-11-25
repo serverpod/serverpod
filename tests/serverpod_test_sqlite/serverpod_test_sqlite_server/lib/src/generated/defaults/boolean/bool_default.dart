@@ -288,6 +288,7 @@ class BoolDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BoolDefault>(
+      table: BoolDefault.t,
       where: where?.call(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
@@ -352,6 +353,7 @@ class BoolDefaultRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<BoolDefault>(
+      table: BoolDefault.t,
       where: where?.call(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
@@ -390,6 +392,7 @@ class BoolDefaultRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BoolDefault>(
+      table: BoolDefault.t,
       where: where?.call(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
@@ -410,6 +413,7 @@ class BoolDefaultRepository {
   }) async {
     return session.db.findById<BoolDefault>(
       id,
+      table: BoolDefault.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -578,6 +582,7 @@ class BoolDefaultRepository {
   }) async {
     return session.db.updateById<BoolDefault>(
       id,
+      table: BoolDefault.t,
       columnValues: columnValues(BoolDefault.t.updateTable),
       transaction: transaction,
     );
@@ -601,6 +606,7 @@ class BoolDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BoolDefault>(
+      table: BoolDefault.t,
       columnValues: columnValues(BoolDefault.t.updateTable),
       where: where(BoolDefault.t),
       limit: limit,
@@ -669,6 +675,7 @@ class BoolDefaultRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BoolDefault>(
+      table: BoolDefault.t,
       where: where(BoolDefault.t),
       orderBy: orderBy?.call(BoolDefault.t),
       orderByList: orderByList?.call(BoolDefault.t),
@@ -686,6 +693,7 @@ class BoolDefaultRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<BoolDefault>(
+      table: BoolDefault.t,
       where: where?.call(BoolDefault.t),
       limit: limit,
       transaction: transaction,
@@ -701,6 +709,7 @@ class BoolDefaultRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BoolDefault>(
+      table: BoolDefault.t,
       where: where(BoolDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

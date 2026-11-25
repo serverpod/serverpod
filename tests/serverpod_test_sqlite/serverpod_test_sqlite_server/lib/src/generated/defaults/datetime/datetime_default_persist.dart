@@ -272,6 +272,7 @@ class DateTimeDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DateTimeDefaultPersist>(
+      table: DateTimeDefaultPersist.t,
       where: where?.call(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
@@ -336,6 +337,7 @@ class DateTimeDefaultPersistRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<DateTimeDefaultPersist>(
+      table: DateTimeDefaultPersist.t,
       where: where?.call(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
@@ -374,6 +376,7 @@ class DateTimeDefaultPersistRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DateTimeDefaultPersist>(
+      table: DateTimeDefaultPersist.t,
       where: where?.call(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
@@ -394,6 +397,7 @@ class DateTimeDefaultPersistRepository {
   }) async {
     return session.db.findById<DateTimeDefaultPersist>(
       id,
+      table: DateTimeDefaultPersist.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -563,6 +567,7 @@ class DateTimeDefaultPersistRepository {
   }) async {
     return session.db.updateById<DateTimeDefaultPersist>(
       id,
+      table: DateTimeDefaultPersist.t,
       columnValues: columnValues(DateTimeDefaultPersist.t.updateTable),
       transaction: transaction,
     );
@@ -587,6 +592,7 @@ class DateTimeDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DateTimeDefaultPersist>(
+      table: DateTimeDefaultPersist.t,
       columnValues: columnValues(DateTimeDefaultPersist.t.updateTable),
       where: where(DateTimeDefaultPersist.t),
       limit: limit,
@@ -655,6 +661,7 @@ class DateTimeDefaultPersistRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DateTimeDefaultPersist>(
+      table: DateTimeDefaultPersist.t,
       where: where(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
@@ -672,6 +679,7 @@ class DateTimeDefaultPersistRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<DateTimeDefaultPersist>(
+      table: DateTimeDefaultPersist.t,
       where: where?.call(DateTimeDefaultPersist.t),
       limit: limit,
       transaction: transaction,
@@ -687,6 +695,7 @@ class DateTimeDefaultPersistRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DateTimeDefaultPersist>(
+      table: DateTimeDefaultPersist.t,
       where: where(DateTimeDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

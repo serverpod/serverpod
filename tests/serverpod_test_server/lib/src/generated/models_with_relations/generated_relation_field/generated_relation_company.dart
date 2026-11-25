@@ -372,6 +372,7 @@ class GeneratedRelationCompanyRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GeneratedRelationCompany>(
+      table: GeneratedRelationCompany.t,
       where: where?.call(GeneratedRelationCompany.t),
       orderBy: orderBy?.call(GeneratedRelationCompany.t),
       orderByList: orderByList?.call(GeneratedRelationCompany.t),
@@ -438,6 +439,7 @@ class GeneratedRelationCompanyRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<GeneratedRelationCompany>(
+      table: GeneratedRelationCompany.t,
       where: where?.call(GeneratedRelationCompany.t),
       orderBy: orderBy?.call(GeneratedRelationCompany.t),
       orderByList: orderByList?.call(GeneratedRelationCompany.t),
@@ -478,6 +480,7 @@ class GeneratedRelationCompanyRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GeneratedRelationCompany>(
+      table: GeneratedRelationCompany.t,
       where: where?.call(GeneratedRelationCompany.t),
       orderBy: orderBy?.call(GeneratedRelationCompany.t),
       orderByList: orderByList?.call(GeneratedRelationCompany.t),
@@ -500,6 +503,7 @@ class GeneratedRelationCompanyRepository {
   }) async {
     return session.db.findById<GeneratedRelationCompany>(
       id,
+      table: GeneratedRelationCompany.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -672,6 +676,7 @@ class GeneratedRelationCompanyRepository {
   }) async {
     return session.db.updateById<GeneratedRelationCompany>(
       id,
+      table: GeneratedRelationCompany.t,
       columnValues: columnValues(GeneratedRelationCompany.t.updateTable),
       transaction: transaction,
     );
@@ -696,6 +701,7 @@ class GeneratedRelationCompanyRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GeneratedRelationCompany>(
+      table: GeneratedRelationCompany.t,
       columnValues: columnValues(GeneratedRelationCompany.t.updateTable),
       where: where(GeneratedRelationCompany.t),
       limit: limit,
@@ -764,6 +770,7 @@ class GeneratedRelationCompanyRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GeneratedRelationCompany>(
+      table: GeneratedRelationCompany.t,
       where: where(GeneratedRelationCompany.t),
       orderBy: orderBy?.call(GeneratedRelationCompany.t),
       orderByList: orderByList?.call(GeneratedRelationCompany.t),
@@ -781,6 +788,7 @@ class GeneratedRelationCompanyRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<GeneratedRelationCompany>(
+      table: GeneratedRelationCompany.t,
       where: where?.call(GeneratedRelationCompany.t),
       limit: limit,
       transaction: transaction,
@@ -796,6 +804,7 @@ class GeneratedRelationCompanyRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GeneratedRelationCompany>(
+      table: GeneratedRelationCompany.t,
       where: where(GeneratedRelationCompany.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

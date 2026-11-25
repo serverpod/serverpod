@@ -251,6 +251,7 @@ class StringDefaultModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<StringDefaultModel>(
+      table: StringDefaultModel.t,
       where: where?.call(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
@@ -315,6 +316,7 @@ class StringDefaultModelRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<StringDefaultModel>(
+      table: StringDefaultModel.t,
       where: where?.call(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
@@ -353,6 +355,7 @@ class StringDefaultModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<StringDefaultModel>(
+      table: StringDefaultModel.t,
       where: where?.call(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
@@ -373,6 +376,7 @@ class StringDefaultModelRepository {
   }) async {
     return session.db.findById<StringDefaultModel>(
       id,
+      table: StringDefaultModel.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -542,6 +546,7 @@ class StringDefaultModelRepository {
   }) async {
     return session.db.updateById<StringDefaultModel>(
       id,
+      table: StringDefaultModel.t,
       columnValues: columnValues(StringDefaultModel.t.updateTable),
       transaction: transaction,
     );
@@ -566,6 +571,7 @@ class StringDefaultModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<StringDefaultModel>(
+      table: StringDefaultModel.t,
       columnValues: columnValues(StringDefaultModel.t.updateTable),
       where: where(StringDefaultModel.t),
       limit: limit,
@@ -634,6 +640,7 @@ class StringDefaultModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<StringDefaultModel>(
+      table: StringDefaultModel.t,
       where: where(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
@@ -651,6 +658,7 @@ class StringDefaultModelRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<StringDefaultModel>(
+      table: StringDefaultModel.t,
       where: where?.call(StringDefaultModel.t),
       limit: limit,
       transaction: transaction,
@@ -666,6 +674,7 @@ class StringDefaultModelRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<StringDefaultModel>(
+      table: StringDefaultModel.t,
       where: where(StringDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

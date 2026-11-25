@@ -267,6 +267,7 @@ class ChildClassWithoutIdRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildClassWithoutId>(
+      table: ChildClassWithoutId.t,
       where: where?.call(ChildClassWithoutId.t),
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
@@ -331,6 +332,7 @@ class ChildClassWithoutIdRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ChildClassWithoutId>(
+      table: ChildClassWithoutId.t,
       where: where?.call(ChildClassWithoutId.t),
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
@@ -369,6 +371,7 @@ class ChildClassWithoutIdRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildClassWithoutId>(
+      table: ChildClassWithoutId.t,
       where: where?.call(ChildClassWithoutId.t),
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
@@ -389,6 +392,7 @@ class ChildClassWithoutIdRepository {
   }) async {
     return session.db.findById<ChildClassWithoutId>(
       id,
+      table: ChildClassWithoutId.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -558,6 +562,7 @@ class ChildClassWithoutIdRepository {
   }) async {
     return session.db.updateById<ChildClassWithoutId>(
       id,
+      table: ChildClassWithoutId.t,
       columnValues: columnValues(ChildClassWithoutId.t.updateTable),
       transaction: transaction,
     );
@@ -582,6 +587,7 @@ class ChildClassWithoutIdRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChildClassWithoutId>(
+      table: ChildClassWithoutId.t,
       columnValues: columnValues(ChildClassWithoutId.t.updateTable),
       where: where(ChildClassWithoutId.t),
       limit: limit,
@@ -650,6 +656,7 @@ class ChildClassWithoutIdRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChildClassWithoutId>(
+      table: ChildClassWithoutId.t,
       where: where(ChildClassWithoutId.t),
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
@@ -667,6 +674,7 @@ class ChildClassWithoutIdRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ChildClassWithoutId>(
+      table: ChildClassWithoutId.t,
       where: where?.call(ChildClassWithoutId.t),
       limit: limit,
       transaction: transaction,
@@ -682,6 +690,7 @@ class ChildClassWithoutIdRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ChildClassWithoutId>(
+      table: ChildClassWithoutId.t,
       where: where(ChildClassWithoutId.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

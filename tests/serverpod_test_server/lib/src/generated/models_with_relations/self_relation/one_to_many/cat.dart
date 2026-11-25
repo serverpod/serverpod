@@ -378,6 +378,7 @@ class CatRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Cat>(
+      table: Cat.t,
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
@@ -444,6 +445,7 @@ class CatRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Cat>(
+      table: Cat.t,
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
@@ -484,6 +486,7 @@ class CatRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Cat>(
+      table: Cat.t,
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
@@ -506,6 +509,7 @@ class CatRepository {
   }) async {
     return session.db.findById<Cat>(
       id,
+      table: Cat.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -675,6 +679,7 @@ class CatRepository {
   }) async {
     return session.db.updateById<Cat>(
       id,
+      table: Cat.t,
       columnValues: columnValues(Cat.t.updateTable),
       transaction: transaction,
     );
@@ -698,6 +703,7 @@ class CatRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Cat>(
+      table: Cat.t,
       columnValues: columnValues(Cat.t.updateTable),
       where: where(Cat.t),
       limit: limit,
@@ -766,6 +772,7 @@ class CatRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Cat>(
+      table: Cat.t,
       where: where(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
@@ -783,6 +790,7 @@ class CatRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<Cat>(
+      table: Cat.t,
       where: where?.call(Cat.t),
       limit: limit,
       transaction: transaction,
@@ -798,6 +806,7 @@ class CatRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Cat>(
+      table: Cat.t,
       where: where(Cat.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

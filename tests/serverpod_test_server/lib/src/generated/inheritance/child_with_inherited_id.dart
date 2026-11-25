@@ -364,6 +364,7 @@ class ChildWithInheritedIdRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildWithInheritedId>(
+      table: ChildWithInheritedId.t,
       where: where?.call(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
@@ -430,6 +431,7 @@ class ChildWithInheritedIdRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ChildWithInheritedId>(
+      table: ChildWithInheritedId.t,
       where: where?.call(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
@@ -470,6 +472,7 @@ class ChildWithInheritedIdRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildWithInheritedId>(
+      table: ChildWithInheritedId.t,
       where: where?.call(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
@@ -492,6 +495,7 @@ class ChildWithInheritedIdRepository {
   }) async {
     return session.db.findById<ChildWithInheritedId>(
       id,
+      table: ChildWithInheritedId.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -662,6 +666,7 @@ class ChildWithInheritedIdRepository {
   }) async {
     return session.db.updateById<ChildWithInheritedId>(
       id,
+      table: ChildWithInheritedId.t,
       columnValues: columnValues(ChildWithInheritedId.t.updateTable),
       transaction: transaction,
     );
@@ -686,6 +691,7 @@ class ChildWithInheritedIdRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChildWithInheritedId>(
+      table: ChildWithInheritedId.t,
       columnValues: columnValues(ChildWithInheritedId.t.updateTable),
       where: where(ChildWithInheritedId.t),
       limit: limit,
@@ -754,6 +760,7 @@ class ChildWithInheritedIdRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChildWithInheritedId>(
+      table: ChildWithInheritedId.t,
       where: where(ChildWithInheritedId.t),
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
@@ -771,6 +778,7 @@ class ChildWithInheritedIdRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ChildWithInheritedId>(
+      table: ChildWithInheritedId.t,
       where: where?.call(ChildWithInheritedId.t),
       limit: limit,
       transaction: transaction,
@@ -786,6 +794,7 @@ class ChildWithInheritedIdRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ChildWithInheritedId>(
+      table: ChildWithInheritedId.t,
       where: where(ChildWithInheritedId.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

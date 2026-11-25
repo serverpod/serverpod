@@ -284,6 +284,7 @@ class ObjectWithJsonbClassLevelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithJsonbClassLevel>(
+      table: ObjectWithJsonbClassLevel.t,
       where: where?.call(ObjectWithJsonbClassLevel.t),
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
@@ -348,6 +349,7 @@ class ObjectWithJsonbClassLevelRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ObjectWithJsonbClassLevel>(
+      table: ObjectWithJsonbClassLevel.t,
       where: where?.call(ObjectWithJsonbClassLevel.t),
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
@@ -386,6 +388,7 @@ class ObjectWithJsonbClassLevelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithJsonbClassLevel>(
+      table: ObjectWithJsonbClassLevel.t,
       where: where?.call(ObjectWithJsonbClassLevel.t),
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
@@ -406,6 +409,7 @@ class ObjectWithJsonbClassLevelRepository {
   }) async {
     return session.db.findById<ObjectWithJsonbClassLevel>(
       id,
+      table: ObjectWithJsonbClassLevel.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -577,6 +581,7 @@ class ObjectWithJsonbClassLevelRepository {
   }) async {
     return session.db.updateById<ObjectWithJsonbClassLevel>(
       id,
+      table: ObjectWithJsonbClassLevel.t,
       columnValues: columnValues(ObjectWithJsonbClassLevel.t.updateTable),
       transaction: transaction,
     );
@@ -601,6 +606,7 @@ class ObjectWithJsonbClassLevelRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithJsonbClassLevel>(
+      table: ObjectWithJsonbClassLevel.t,
       columnValues: columnValues(ObjectWithJsonbClassLevel.t.updateTable),
       where: where(ObjectWithJsonbClassLevel.t),
       limit: limit,
@@ -669,6 +675,7 @@ class ObjectWithJsonbClassLevelRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithJsonbClassLevel>(
+      table: ObjectWithJsonbClassLevel.t,
       where: where(ObjectWithJsonbClassLevel.t),
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
       orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
@@ -686,6 +693,7 @@ class ObjectWithJsonbClassLevelRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithJsonbClassLevel>(
+      table: ObjectWithJsonbClassLevel.t,
       where: where?.call(ObjectWithJsonbClassLevel.t),
       limit: limit,
       transaction: transaction,
@@ -701,6 +709,7 @@ class ObjectWithJsonbClassLevelRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithJsonbClassLevel>(
+      table: ObjectWithJsonbClassLevel.t,
       where: where(ObjectWithJsonbClassLevel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -279,6 +279,7 @@ class ParentEntityRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ParentEntity>(
+      table: ParentEntity.t,
       where: where?.call(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
@@ -345,6 +346,7 @@ class ParentEntityRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ParentEntity>(
+      table: ParentEntity.t,
       where: where?.call(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
@@ -385,6 +387,7 @@ class ParentEntityRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ParentEntity>(
+      table: ParentEntity.t,
       where: where?.call(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
@@ -407,6 +410,7 @@ class ParentEntityRepository {
   }) async {
     return session.db.findById<ParentEntity>(
       id,
+      table: ParentEntity.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -576,6 +580,7 @@ class ParentEntityRepository {
   }) async {
     return session.db.updateById<ParentEntity>(
       id,
+      table: ParentEntity.t,
       columnValues: columnValues(ParentEntity.t.updateTable),
       transaction: transaction,
     );
@@ -599,6 +604,7 @@ class ParentEntityRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ParentEntity>(
+      table: ParentEntity.t,
       columnValues: columnValues(ParentEntity.t.updateTable),
       where: where(ParentEntity.t),
       limit: limit,
@@ -667,6 +673,7 @@ class ParentEntityRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ParentEntity>(
+      table: ParentEntity.t,
       where: where(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
@@ -684,6 +691,7 @@ class ParentEntityRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ParentEntity>(
+      table: ParentEntity.t,
       where: where?.call(ParentEntity.t),
       limit: limit,
       transaction: transaction,
@@ -699,6 +707,7 @@ class ParentEntityRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ParentEntity>(
+      table: ParentEntity.t,
       where: where(ParentEntity.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

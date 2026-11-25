@@ -594,6 +594,7 @@ class AppleAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<AppleAccount>(
+      table: AppleAccount.t,
       where: where?.call(AppleAccount.t),
       orderBy: orderBy?.call(AppleAccount.t),
       orderByList: orderByList?.call(AppleAccount.t),
@@ -660,6 +661,7 @@ class AppleAccountRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<AppleAccount>(
+      table: AppleAccount.t,
       where: where?.call(AppleAccount.t),
       orderBy: orderBy?.call(AppleAccount.t),
       orderByList: orderByList?.call(AppleAccount.t),
@@ -700,6 +702,7 @@ class AppleAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<AppleAccount>(
+      table: AppleAccount.t,
       where: where?.call(AppleAccount.t),
       orderBy: orderBy?.call(AppleAccount.t),
       orderByList: orderByList?.call(AppleAccount.t),
@@ -722,6 +725,7 @@ class AppleAccountRepository {
   }) async {
     return session.db.findById<AppleAccount>(
       id,
+      table: AppleAccount.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -891,6 +895,7 @@ class AppleAccountRepository {
   }) async {
     return session.db.updateById<AppleAccount>(
       id,
+      table: AppleAccount.t,
       columnValues: columnValues(AppleAccount.t.updateTable),
       transaction: transaction,
     );
@@ -914,6 +919,7 @@ class AppleAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<AppleAccount>(
+      table: AppleAccount.t,
       columnValues: columnValues(AppleAccount.t.updateTable),
       where: where(AppleAccount.t),
       limit: limit,
@@ -982,6 +988,7 @@ class AppleAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<AppleAccount>(
+      table: AppleAccount.t,
       where: where(AppleAccount.t),
       orderBy: orderBy?.call(AppleAccount.t),
       orderByList: orderByList?.call(AppleAccount.t),
@@ -999,6 +1006,7 @@ class AppleAccountRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<AppleAccount>(
+      table: AppleAccount.t,
       where: where?.call(AppleAccount.t),
       limit: limit,
       transaction: transaction,
@@ -1014,6 +1022,7 @@ class AppleAccountRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<AppleAccount>(
+      table: AppleAccount.t,
       where: where(AppleAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

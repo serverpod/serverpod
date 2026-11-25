@@ -310,6 +310,7 @@ class AnonymousAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<AnonymousAccount>(
+      table: AnonymousAccount.t,
       where: where?.call(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
@@ -376,6 +377,7 @@ class AnonymousAccountRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<AnonymousAccount>(
+      table: AnonymousAccount.t,
       where: where?.call(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
@@ -416,6 +418,7 @@ class AnonymousAccountRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<AnonymousAccount>(
+      table: AnonymousAccount.t,
       where: where?.call(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
@@ -438,6 +441,7 @@ class AnonymousAccountRepository {
   }) async {
     return session.db.findById<AnonymousAccount>(
       id,
+      table: AnonymousAccount.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -608,6 +612,7 @@ class AnonymousAccountRepository {
   }) async {
     return session.db.updateById<AnonymousAccount>(
       id,
+      table: AnonymousAccount.t,
       columnValues: columnValues(AnonymousAccount.t.updateTable),
       transaction: transaction,
     );
@@ -632,6 +637,7 @@ class AnonymousAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<AnonymousAccount>(
+      table: AnonymousAccount.t,
       columnValues: columnValues(AnonymousAccount.t.updateTable),
       where: where(AnonymousAccount.t),
       limit: limit,
@@ -700,6 +706,7 @@ class AnonymousAccountRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<AnonymousAccount>(
+      table: AnonymousAccount.t,
       where: where(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
@@ -717,6 +724,7 @@ class AnonymousAccountRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<AnonymousAccount>(
+      table: AnonymousAccount.t,
       where: where?.call(AnonymousAccount.t),
       limit: limit,
       transaction: transaction,
@@ -732,6 +740,7 @@ class AnonymousAccountRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<AnonymousAccount>(
+      table: AnonymousAccount.t,
       where: where(AnonymousAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

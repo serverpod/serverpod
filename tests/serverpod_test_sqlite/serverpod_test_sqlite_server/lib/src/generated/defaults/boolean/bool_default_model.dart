@@ -288,6 +288,7 @@ class BoolDefaultModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BoolDefaultModel>(
+      table: BoolDefaultModel.t,
       where: where?.call(BoolDefaultModel.t),
       orderBy: orderBy?.call(BoolDefaultModel.t),
       orderByList: orderByList?.call(BoolDefaultModel.t),
@@ -352,6 +353,7 @@ class BoolDefaultModelRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<BoolDefaultModel>(
+      table: BoolDefaultModel.t,
       where: where?.call(BoolDefaultModel.t),
       orderBy: orderBy?.call(BoolDefaultModel.t),
       orderByList: orderByList?.call(BoolDefaultModel.t),
@@ -390,6 +392,7 @@ class BoolDefaultModelRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BoolDefaultModel>(
+      table: BoolDefaultModel.t,
       where: where?.call(BoolDefaultModel.t),
       orderBy: orderBy?.call(BoolDefaultModel.t),
       orderByList: orderByList?.call(BoolDefaultModel.t),
@@ -410,6 +413,7 @@ class BoolDefaultModelRepository {
   }) async {
     return session.db.findById<BoolDefaultModel>(
       id,
+      table: BoolDefaultModel.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -579,6 +583,7 @@ class BoolDefaultModelRepository {
   }) async {
     return session.db.updateById<BoolDefaultModel>(
       id,
+      table: BoolDefaultModel.t,
       columnValues: columnValues(BoolDefaultModel.t.updateTable),
       transaction: transaction,
     );
@@ -603,6 +608,7 @@ class BoolDefaultModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BoolDefaultModel>(
+      table: BoolDefaultModel.t,
       columnValues: columnValues(BoolDefaultModel.t.updateTable),
       where: where(BoolDefaultModel.t),
       limit: limit,
@@ -671,6 +677,7 @@ class BoolDefaultModelRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BoolDefaultModel>(
+      table: BoolDefaultModel.t,
       where: where(BoolDefaultModel.t),
       orderBy: orderBy?.call(BoolDefaultModel.t),
       orderByList: orderByList?.call(BoolDefaultModel.t),
@@ -688,6 +695,7 @@ class BoolDefaultModelRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<BoolDefaultModel>(
+      table: BoolDefaultModel.t,
       where: where?.call(BoolDefaultModel.t),
       limit: limit,
       transaction: transaction,
@@ -703,6 +711,7 @@ class BoolDefaultModelRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BoolDefaultModel>(
+      table: BoolDefaultModel.t,
       where: where(BoolDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

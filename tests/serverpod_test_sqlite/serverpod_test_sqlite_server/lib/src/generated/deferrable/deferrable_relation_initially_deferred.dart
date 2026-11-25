@@ -225,6 +225,7 @@ class DeferrableRelationInitiallyDeferredRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DeferrableRelationInitiallyDeferred>(
+      table: DeferrableRelationInitiallyDeferred.t,
       where: where?.call(DeferrableRelationInitiallyDeferred.t),
       orderBy: orderBy?.call(DeferrableRelationInitiallyDeferred.t),
       orderByList: orderByList?.call(DeferrableRelationInitiallyDeferred.t),
@@ -290,6 +291,7 @@ class DeferrableRelationInitiallyDeferredRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<DeferrableRelationInitiallyDeferred>(
+      table: DeferrableRelationInitiallyDeferred.t,
       where: where?.call(DeferrableRelationInitiallyDeferred.t),
       orderBy: orderBy?.call(DeferrableRelationInitiallyDeferred.t),
       orderByList: orderByList?.call(DeferrableRelationInitiallyDeferred.t),
@@ -329,6 +331,7 @@ class DeferrableRelationInitiallyDeferredRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DeferrableRelationInitiallyDeferred>(
+      table: DeferrableRelationInitiallyDeferred.t,
       where: where?.call(DeferrableRelationInitiallyDeferred.t),
       orderBy: orderBy?.call(DeferrableRelationInitiallyDeferred.t),
       orderByList: orderByList?.call(DeferrableRelationInitiallyDeferred.t),
@@ -349,6 +352,7 @@ class DeferrableRelationInitiallyDeferredRepository {
   }) async {
     return session.db.findById<DeferrableRelationInitiallyDeferred>(
       id,
+      table: DeferrableRelationInitiallyDeferred.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -526,6 +530,7 @@ class DeferrableRelationInitiallyDeferredRepository {
   }) async {
     return session.db.updateById<DeferrableRelationInitiallyDeferred>(
       id,
+      table: DeferrableRelationInitiallyDeferred.t,
       columnValues: columnValues(
         DeferrableRelationInitiallyDeferred.t.updateTable,
       ),
@@ -558,6 +563,7 @@ class DeferrableRelationInitiallyDeferredRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DeferrableRelationInitiallyDeferred>(
+      table: DeferrableRelationInitiallyDeferred.t,
       columnValues: columnValues(
         DeferrableRelationInitiallyDeferred.t.updateTable,
       ),
@@ -633,6 +639,7 @@ class DeferrableRelationInitiallyDeferredRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DeferrableRelationInitiallyDeferred>(
+      table: DeferrableRelationInitiallyDeferred.t,
       where: where(DeferrableRelationInitiallyDeferred.t),
       orderBy: orderBy?.call(DeferrableRelationInitiallyDeferred.t),
       orderByList: orderByList?.call(DeferrableRelationInitiallyDeferred.t),
@@ -650,6 +657,7 @@ class DeferrableRelationInitiallyDeferredRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<DeferrableRelationInitiallyDeferred>(
+      table: DeferrableRelationInitiallyDeferred.t,
       where: where?.call(DeferrableRelationInitiallyDeferred.t),
       limit: limit,
       transaction: transaction,
@@ -668,6 +676,7 @@ class DeferrableRelationInitiallyDeferredRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DeferrableRelationInitiallyDeferred>(
+      table: DeferrableRelationInitiallyDeferred.t,
       where: where(DeferrableRelationInitiallyDeferred.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

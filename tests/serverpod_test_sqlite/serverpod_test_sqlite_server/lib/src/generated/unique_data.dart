@@ -242,6 +242,7 @@ class UniqueDataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UniqueData>(
+      table: UniqueData.t,
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
@@ -306,6 +307,7 @@ class UniqueDataRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<UniqueData>(
+      table: UniqueData.t,
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
@@ -344,6 +346,7 @@ class UniqueDataRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UniqueData>(
+      table: UniqueData.t,
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
@@ -364,6 +367,7 @@ class UniqueDataRepository {
   }) async {
     return session.db.findById<UniqueData>(
       id,
+      table: UniqueData.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -532,6 +536,7 @@ class UniqueDataRepository {
   }) async {
     return session.db.updateById<UniqueData>(
       id,
+      table: UniqueData.t,
       columnValues: columnValues(UniqueData.t.updateTable),
       transaction: transaction,
     );
@@ -555,6 +560,7 @@ class UniqueDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UniqueData>(
+      table: UniqueData.t,
       columnValues: columnValues(UniqueData.t.updateTable),
       where: where(UniqueData.t),
       limit: limit,
@@ -623,6 +629,7 @@ class UniqueDataRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UniqueData>(
+      table: UniqueData.t,
       where: where(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
@@ -640,6 +647,7 @@ class UniqueDataRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<UniqueData>(
+      table: UniqueData.t,
       where: where?.call(UniqueData.t),
       limit: limit,
       transaction: transaction,
@@ -655,6 +663,7 @@ class UniqueDataRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UniqueData>(
+      table: UniqueData.t,
       where: where(UniqueData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

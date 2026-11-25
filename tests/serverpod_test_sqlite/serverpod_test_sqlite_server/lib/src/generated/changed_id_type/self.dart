@@ -504,6 +504,7 @@ class ChangedIdTypeSelfRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChangedIdTypeSelf>(
+      table: ChangedIdTypeSelf.t,
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
@@ -570,6 +571,7 @@ class ChangedIdTypeSelfRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ChangedIdTypeSelf>(
+      table: ChangedIdTypeSelf.t,
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
@@ -610,6 +612,7 @@ class ChangedIdTypeSelfRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChangedIdTypeSelf>(
+      table: ChangedIdTypeSelf.t,
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
@@ -632,6 +635,7 @@ class ChangedIdTypeSelfRepository {
   }) async {
     return session.db.findById<ChangedIdTypeSelf>(
       id,
+      table: ChangedIdTypeSelf.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -802,6 +806,7 @@ class ChangedIdTypeSelfRepository {
   }) async {
     return session.db.updateById<ChangedIdTypeSelf>(
       id,
+      table: ChangedIdTypeSelf.t,
       columnValues: columnValues(ChangedIdTypeSelf.t.updateTable),
       transaction: transaction,
     );
@@ -826,6 +831,7 @@ class ChangedIdTypeSelfRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChangedIdTypeSelf>(
+      table: ChangedIdTypeSelf.t,
       columnValues: columnValues(ChangedIdTypeSelf.t.updateTable),
       where: where(ChangedIdTypeSelf.t),
       limit: limit,
@@ -894,6 +900,7 @@ class ChangedIdTypeSelfRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChangedIdTypeSelf>(
+      table: ChangedIdTypeSelf.t,
       where: where(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
@@ -911,6 +918,7 @@ class ChangedIdTypeSelfRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ChangedIdTypeSelf>(
+      table: ChangedIdTypeSelf.t,
       where: where?.call(ChangedIdTypeSelf.t),
       limit: limit,
       transaction: transaction,
@@ -926,6 +934,7 @@ class ChangedIdTypeSelfRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ChangedIdTypeSelf>(
+      table: ChangedIdTypeSelf.t,
       where: where(ChangedIdTypeSelf.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

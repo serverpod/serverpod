@@ -396,6 +396,7 @@ class OrganizationWithLongTableNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<OrganizationWithLongTableName>(
+      table: OrganizationWithLongTableName.t,
       where: where?.call(OrganizationWithLongTableName.t),
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
@@ -462,6 +463,7 @@ class OrganizationWithLongTableNameRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<OrganizationWithLongTableName>(
+      table: OrganizationWithLongTableName.t,
       where: where?.call(OrganizationWithLongTableName.t),
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
@@ -502,6 +504,7 @@ class OrganizationWithLongTableNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<OrganizationWithLongTableName>(
+      table: OrganizationWithLongTableName.t,
       where: where?.call(OrganizationWithLongTableName.t),
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
@@ -524,6 +527,7 @@ class OrganizationWithLongTableNameRepository {
   }) async {
     return session.db.findById<OrganizationWithLongTableName>(
       id,
+      table: OrganizationWithLongTableName.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -698,6 +702,7 @@ class OrganizationWithLongTableNameRepository {
   }) async {
     return session.db.updateById<OrganizationWithLongTableName>(
       id,
+      table: OrganizationWithLongTableName.t,
       columnValues: columnValues(OrganizationWithLongTableName.t.updateTable),
       transaction: transaction,
     );
@@ -725,6 +730,7 @@ class OrganizationWithLongTableNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<OrganizationWithLongTableName>(
+      table: OrganizationWithLongTableName.t,
       columnValues: columnValues(OrganizationWithLongTableName.t.updateTable),
       where: where(OrganizationWithLongTableName.t),
       limit: limit,
@@ -794,6 +800,7 @@ class OrganizationWithLongTableNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<OrganizationWithLongTableName>(
+      table: OrganizationWithLongTableName.t,
       where: where(OrganizationWithLongTableName.t),
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
@@ -811,6 +818,7 @@ class OrganizationWithLongTableNameRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<OrganizationWithLongTableName>(
+      table: OrganizationWithLongTableName.t,
       where: where?.call(OrganizationWithLongTableName.t),
       limit: limit,
       transaction: transaction,
@@ -827,6 +835,7 @@ class OrganizationWithLongTableNameRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<OrganizationWithLongTableName>(
+      table: OrganizationWithLongTableName.t,
       where: where(OrganizationWithLongTableName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

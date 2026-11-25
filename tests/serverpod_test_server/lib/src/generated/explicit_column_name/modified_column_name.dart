@@ -247,6 +247,7 @@ class ModifiedColumnNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ModifiedColumnName>(
+      table: ModifiedColumnName.t,
       where: where?.call(ModifiedColumnName.t),
       orderBy: orderBy?.call(ModifiedColumnName.t),
       orderByList: orderByList?.call(ModifiedColumnName.t),
@@ -311,6 +312,7 @@ class ModifiedColumnNameRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<ModifiedColumnName>(
+      table: ModifiedColumnName.t,
       where: where?.call(ModifiedColumnName.t),
       orderBy: orderBy?.call(ModifiedColumnName.t),
       orderByList: orderByList?.call(ModifiedColumnName.t),
@@ -349,6 +351,7 @@ class ModifiedColumnNameRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ModifiedColumnName>(
+      table: ModifiedColumnName.t,
       where: where?.call(ModifiedColumnName.t),
       orderBy: orderBy?.call(ModifiedColumnName.t),
       orderByList: orderByList?.call(ModifiedColumnName.t),
@@ -369,6 +372,7 @@ class ModifiedColumnNameRepository {
   }) async {
     return session.db.findById<ModifiedColumnName>(
       id,
+      table: ModifiedColumnName.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -538,6 +542,7 @@ class ModifiedColumnNameRepository {
   }) async {
     return session.db.updateById<ModifiedColumnName>(
       id,
+      table: ModifiedColumnName.t,
       columnValues: columnValues(ModifiedColumnName.t.updateTable),
       transaction: transaction,
     );
@@ -562,6 +567,7 @@ class ModifiedColumnNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ModifiedColumnName>(
+      table: ModifiedColumnName.t,
       columnValues: columnValues(ModifiedColumnName.t.updateTable),
       where: where(ModifiedColumnName.t),
       limit: limit,
@@ -630,6 +636,7 @@ class ModifiedColumnNameRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ModifiedColumnName>(
+      table: ModifiedColumnName.t,
       where: where(ModifiedColumnName.t),
       orderBy: orderBy?.call(ModifiedColumnName.t),
       orderByList: orderByList?.call(ModifiedColumnName.t),
@@ -647,6 +654,7 @@ class ModifiedColumnNameRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<ModifiedColumnName>(
+      table: ModifiedColumnName.t,
       where: where?.call(ModifiedColumnName.t),
       limit: limit,
       transaction: transaction,
@@ -662,6 +670,7 @@ class ModifiedColumnNameRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ModifiedColumnName>(
+      table: ModifiedColumnName.t,
       where: where(ModifiedColumnName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

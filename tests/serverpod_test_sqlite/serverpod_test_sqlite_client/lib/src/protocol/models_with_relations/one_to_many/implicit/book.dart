@@ -302,6 +302,7 @@ class BookRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Book>(
+      table: Book.t,
       where: where?.call(Book.t),
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
@@ -368,6 +369,7 @@ class BookRepository {
     Iterable<_isd.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<Book>(
+      table: Book.t,
       where: where?.call(Book.t),
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
@@ -408,6 +410,7 @@ class BookRepository {
     _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Book>(
+      table: Book.t,
       where: where?.call(Book.t),
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
@@ -430,6 +433,7 @@ class BookRepository {
   }) async {
     return session.db.findById<Book>(
       id,
+      table: Book.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -599,6 +603,7 @@ class BookRepository {
   }) async {
     return session.db.updateById<Book>(
       id,
+      table: Book.t,
       columnValues: columnValues(Book.t.updateTable),
       transaction: transaction,
     );
@@ -622,6 +627,7 @@ class BookRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Book>(
+      table: Book.t,
       columnValues: columnValues(Book.t.updateTable),
       where: where(Book.t),
       limit: limit,
@@ -690,6 +696,7 @@ class BookRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Book>(
+      table: Book.t,
       where: where(Book.t),
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
@@ -707,6 +714,7 @@ class BookRepository {
     _isd.Transaction? transaction,
   }) async {
     return session.db.count<Book>(
+      table: Book.t,
       where: where?.call(Book.t),
       limit: limit,
       transaction: transaction,
@@ -722,6 +730,7 @@ class BookRepository {
     _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Book>(
+      table: Book.t,
       where: where(Book.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

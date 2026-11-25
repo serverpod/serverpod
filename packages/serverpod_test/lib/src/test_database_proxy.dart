@@ -34,6 +34,7 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<int> count<T extends TableRow>({
+    Table? table,
     Expression? where,
     int? limit,
     bool useCache = true,
@@ -45,6 +46,7 @@ class TestDatabaseProxy implements Database {
         limit: limit,
         useCache: useCache,
         transaction: transaction,
+        table: table,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -57,6 +59,7 @@ class TestDatabaseProxy implements Database {
   /// uncommitted writes from the rollback transaction.
   @override
   Stream<List<T>> watch<T extends TableRow>({
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,
@@ -76,6 +79,7 @@ class TestDatabaseProxy implements Database {
       include: include,
       throttle: throttle,
       alsoTriggerOnTables: alsoTriggerOnTables,
+      table: table,
     );
   }
 
@@ -115,6 +119,7 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<List<T>> deleteWhere<T extends TableRow>({
+    Table? table,
     required Expression where,
     Column? orderBy,
     List<Column>? orderByList,
@@ -128,6 +133,7 @@ class TestDatabaseProxy implements Database {
         orderByList: orderByList,
         transaction: transaction,
         noReturn: noReturn,
+        table: table,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -135,6 +141,7 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<List<T>> find<T extends TableRow>({
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,
@@ -156,6 +163,7 @@ class TestDatabaseProxy implements Database {
         include: include,
         lockMode: lockMode,
         lockBehavior: lockBehavior,
+        table: table,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -164,6 +172,7 @@ class TestDatabaseProxy implements Database {
   @override
   Future<T?> findById<T extends TableRow>(
     Object id, {
+    Table? table,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -176,6 +185,7 @@ class TestDatabaseProxy implements Database {
         include: include,
         lockMode: lockMode,
         lockBehavior: lockBehavior,
+        table: table,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -183,6 +193,7 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<T?> findFirstRow<T extends TableRow>({
+    Table? table,
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -202,6 +213,7 @@ class TestDatabaseProxy implements Database {
         include: include,
         lockMode: lockMode,
         lockBehavior: lockBehavior,
+        table: table,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -209,6 +221,7 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<void> lockRows<T extends TableRow>({
+    Table? table,
     required Expression where,
     required LockMode lockMode,
     LockBehavior lockBehavior = LockBehavior.wait,
@@ -220,6 +233,7 @@ class TestDatabaseProxy implements Database {
         lockMode: lockMode,
         lockBehavior: lockBehavior,
         transaction: transaction,
+        table: table,
       ),
       isPartOfUserTransaction: true,
     );
@@ -483,6 +497,7 @@ class TestDatabaseProxy implements Database {
   @override
   Future<T?> updateById<T extends TableRow>(
     Object id, {
+    Table? table,
     required List<ColumnValue> columnValues,
     Transaction? transaction,
   }) {
@@ -491,6 +506,7 @@ class TestDatabaseProxy implements Database {
         id,
         columnValues: columnValues,
         transaction: transaction,
+        table: table,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -498,6 +514,7 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<List<T>> updateWhere<T extends TableRow>({
+    Table? table,
     required List<ColumnValue> columnValues,
     required Expression where,
     int? limit,
@@ -517,6 +534,7 @@ class TestDatabaseProxy implements Database {
         orderByList: orderByList,
         transaction: transaction,
         noReturn: noReturn,
+        table: table,
       ),
       isPartOfUserTransaction: transaction != null,
     );

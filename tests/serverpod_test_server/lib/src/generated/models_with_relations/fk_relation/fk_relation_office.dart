@@ -305,6 +305,7 @@ class FkRelationOfficeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FkRelationOffice>(
+      table: FkRelationOffice.t,
       where: where?.call(FkRelationOffice.t),
       orderBy: orderBy?.call(FkRelationOffice.t),
       orderByList: orderByList?.call(FkRelationOffice.t),
@@ -371,6 +372,7 @@ class FkRelationOfficeRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<FkRelationOffice>(
+      table: FkRelationOffice.t,
       where: where?.call(FkRelationOffice.t),
       orderBy: orderBy?.call(FkRelationOffice.t),
       orderByList: orderByList?.call(FkRelationOffice.t),
@@ -411,6 +413,7 @@ class FkRelationOfficeRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FkRelationOffice>(
+      table: FkRelationOffice.t,
       where: where?.call(FkRelationOffice.t),
       orderBy: orderBy?.call(FkRelationOffice.t),
       orderByList: orderByList?.call(FkRelationOffice.t),
@@ -433,6 +436,7 @@ class FkRelationOfficeRepository {
   }) async {
     return session.db.findById<FkRelationOffice>(
       id,
+      table: FkRelationOffice.t,
       transaction: transaction,
       include: include,
       lockMode: lockMode,
@@ -603,6 +607,7 @@ class FkRelationOfficeRepository {
   }) async {
     return session.db.updateById<FkRelationOffice>(
       id,
+      table: FkRelationOffice.t,
       columnValues: columnValues(FkRelationOffice.t.updateTable),
       transaction: transaction,
     );
@@ -627,6 +632,7 @@ class FkRelationOfficeRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<FkRelationOffice>(
+      table: FkRelationOffice.t,
       columnValues: columnValues(FkRelationOffice.t.updateTable),
       where: where(FkRelationOffice.t),
       limit: limit,
@@ -695,6 +701,7 @@ class FkRelationOfficeRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<FkRelationOffice>(
+      table: FkRelationOffice.t,
       where: where(FkRelationOffice.t),
       orderBy: orderBy?.call(FkRelationOffice.t),
       orderByList: orderByList?.call(FkRelationOffice.t),
@@ -712,6 +719,7 @@ class FkRelationOfficeRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<FkRelationOffice>(
+      table: FkRelationOffice.t,
       where: where?.call(FkRelationOffice.t),
       limit: limit,
       transaction: transaction,
@@ -727,6 +735,7 @@ class FkRelationOfficeRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<FkRelationOffice>(
+      table: FkRelationOffice.t,
       where: where(FkRelationOffice.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

@@ -52,6 +52,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   @override
   Future<List<T>> find<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,
@@ -62,7 +63,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'find');
+    table = resolveTable<T>(table, operation: 'find');
     var orderByCols = _resolveOrderBy(orderByList, orderBy);
 
     await _warnIfSqliteIgnoresLockBehavior(
@@ -93,6 +94,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   @override
   Future<T?> findFirstRow<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -102,9 +104,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
-    _getTableOrAssert<T>(session, operation: 'findRow');
+    table = resolveTable<T>(table, operation: 'findRow');
     var rows = await find<T>(
       session,
+      table: table,
       where: where,
       offset: offset,
       orderBy: orderBy,
@@ -124,14 +127,16 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   Future<T?> findById<T extends TableRow>(
     DatabaseSession session,
     Object id, {
+    Table? table,
     Transaction? transaction,
     Include? include,
     LockBehavior? lockBehavior,
     LockMode? lockMode,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'findById');
+    table = resolveTable<T>(table, operation: 'findById');
     return await findFirstRow<T>(
       session,
+      table: table,
       where: table.id.equals(id),
       transaction: transaction,
       include: include,
@@ -151,6 +156,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   @override
   Future<void> lockRows<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     required Expression where,
     required LockMode lockMode,
     required Transaction transaction,
@@ -521,10 +527,11 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   Future<T> updateById<T extends TableRow>(
     DatabaseSession session,
     Object id, {
+    Table? table,
     required List<ColumnValue> columnValues,
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'updateById');
+    table = resolveTable<T>(table, operation: 'updateById');
 
     if (columnValues.isEmpty) {
       throw ArgumentError('columnValues cannot be empty');
@@ -556,6 +563,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   @override
   Future<List<T>> updateWhere<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     required List<ColumnValue> columnValues,
     required Expression where,
     int? limit,
@@ -565,7 +573,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Transaction? transaction,
     bool noReturn = false,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
+    table = resolveTable<T>(table, operation: 'updateWhere');
 
     if (columnValues.isEmpty) {
       throw ArgumentError('columnValues cannot be empty');
@@ -701,19 +709,20 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   Future<List<T>> deleteWhere<T extends TableRow>(
     DatabaseSession session,
     Expression where, {
+    Table? table,
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
     bool noReturn = false,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
+    final resolvedTable = resolveTable<T>(table, operation: 'deleteWhere');
     // Ordering applies to the returned deleted rows, so it is irrelevant when
     // nothing is returned.
     var orderByCols = noReturn ? null : _resolveOrderBy(orderByList, orderBy);
 
     // SQLite does not support DELETE ... USING. Use subquery to get ids first.
-    var selectIdsQuery = SelectQueryBuilder(table: table)
-        .withSelectFields([table.id])
+    var selectIdsQuery = SelectQueryBuilder(table: resolvedTable)
+        .withSelectFields([resolvedTable.id])
         .withWhere(where)
         .withOrderBy(orderByCols)
         .build();
@@ -736,7 +745,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
           return await _deleteWhereOrdered<T>(
             session,
-            table,
+            resolvedTable,
             selectIdsQuery,
             where,
             orderedIds: orderedIds,
@@ -748,7 +757,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
     return await _deleteWhereOrdered<T>(
       session,
-      table,
+      resolvedTable,
       selectIdsQuery,
       where,
       transaction: transaction,
@@ -778,7 +787,11 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     );
 
     if (orderedIds != null) {
-      result = _restoreOperationWhereSelectionOrder(result, table, orderedIds);
+      result = _restoreOperationWhereSelectionOrder(
+        result,
+        table,
+        orderedIds,
+      );
     }
 
     return result.map(poolManager.serializationManager.deserialize<T>).toList();
@@ -787,11 +800,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   @override
   Future<int> count<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? limit,
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'count');
+    table = resolveTable<T>(table, operation: 'count');
 
     var query = CountQueryBuilder(
       table: table,
@@ -924,6 +938,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   @override
   Stream<List<T>> watch<T extends TableRow>(
     DatabaseSession session, {
+    Table? table,
     Expression? where,
     int? limit,
     int? offset,
@@ -933,11 +948,11 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Duration? throttle = const Duration(milliseconds: 30),
     Iterable<Table>? alsoTriggerOnTables,
   }) {
-    var table = _getTableOrAssert<T>(session, operation: 'watch');
+    final resolvedTable = resolveTable<T>(table, operation: 'watch');
     var orderByCols = _resolveOrderBy(orderByList, orderBy);
 
-    var query = SelectQueryBuilder(table: table)
-        .withSelectFields(table.columns)
+    var query = SelectQueryBuilder(table: resolvedTable)
+        .withSelectFields(resolvedTable.columns)
         .withWhere(where)
         .withOrderBy(orderByCols)
         // SQLite requires LIMIT when OFFSET is used. LIMIT -1 means no cap.
@@ -952,7 +967,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             query,
             throttle: throttle,
             triggerOnTables: collectWatchTriggerTables(
-              table: table,
+              table: resolvedTable,
               where: where,
               orderBy: orderByCols,
               include: include,
@@ -962,7 +977,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             (result) => _deserializeMappedResultSet<T>(
               session,
               result,
-              table: table,
+              table: resolvedTable,
               include: include,
             ),
           ),
@@ -1857,18 +1872,6 @@ String _buildSqlUpdateWhereIdIn({
   return 'UPDATE "${table.tableName}" SET $setClause '
       'WHERE "${table.id.columnName}" IN ($idListSql)'
       '$returning';
-}
-
-Table _getTableOrAssert<T>(
-  DatabaseSession session, {
-  required String operation,
-}) {
-  var table = session.db.serializationManager.getTableForType(T);
-  assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
-Current type was $T''');
-  return table!;
 }
 
 _SqliteTransaction? _castToSqliteTransaction(Transaction? transaction) {

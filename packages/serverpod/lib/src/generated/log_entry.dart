@@ -461,6 +461,7 @@ class LogEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LogEntry>(
+      table: LogEntry.t,
       where: where?.call(LogEntry.t),
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
@@ -525,6 +526,7 @@ class LogEntryRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<LogEntry>(
+      table: LogEntry.t,
       where: where?.call(LogEntry.t),
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
@@ -563,6 +565,7 @@ class LogEntryRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LogEntry>(
+      table: LogEntry.t,
       where: where?.call(LogEntry.t),
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
@@ -583,6 +586,7 @@ class LogEntryRepository {
   }) async {
     return session.db.findById<LogEntry>(
       id,
+      table: LogEntry.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -751,6 +755,7 @@ class LogEntryRepository {
   }) async {
     return session.db.updateById<LogEntry>(
       id,
+      table: LogEntry.t,
       columnValues: columnValues(LogEntry.t.updateTable),
       transaction: transaction,
     );
@@ -774,6 +779,7 @@ class LogEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<LogEntry>(
+      table: LogEntry.t,
       columnValues: columnValues(LogEntry.t.updateTable),
       where: where(LogEntry.t),
       limit: limit,
@@ -842,6 +848,7 @@ class LogEntryRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LogEntry>(
+      table: LogEntry.t,
       where: where(LogEntry.t),
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
@@ -859,6 +866,7 @@ class LogEntryRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<LogEntry>(
+      table: LogEntry.t,
       where: where?.call(LogEntry.t),
       limit: limit,
       transaction: transaction,
@@ -874,6 +882,7 @@ class LogEntryRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<LogEntry>(
+      table: LogEntry.t,
       where: where(LogEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,

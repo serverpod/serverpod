@@ -276,6 +276,7 @@ class EmailFailedSignInRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailFailedSignIn>(
+      table: EmailFailedSignIn.t,
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
@@ -340,6 +341,7 @@ class EmailFailedSignInRepository {
     Iterable<_is.Table>? alsoTriggerOnTables,
   }) {
     return session.db.watch<EmailFailedSignIn>(
+      table: EmailFailedSignIn.t,
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
@@ -378,6 +380,7 @@ class EmailFailedSignInRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailFailedSignIn>(
+      table: EmailFailedSignIn.t,
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
@@ -398,6 +401,7 @@ class EmailFailedSignInRepository {
   }) async {
     return session.db.findById<EmailFailedSignIn>(
       id,
+      table: EmailFailedSignIn.t,
       transaction: transaction,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
@@ -567,6 +571,7 @@ class EmailFailedSignInRepository {
   }) async {
     return session.db.updateById<EmailFailedSignIn>(
       id,
+      table: EmailFailedSignIn.t,
       columnValues: columnValues(EmailFailedSignIn.t.updateTable),
       transaction: transaction,
     );
@@ -591,6 +596,7 @@ class EmailFailedSignInRepository {
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailFailedSignIn>(
+      table: EmailFailedSignIn.t,
       columnValues: columnValues(EmailFailedSignIn.t.updateTable),
       where: where(EmailFailedSignIn.t),
       limit: limit,
@@ -659,6 +665,7 @@ class EmailFailedSignInRepository {
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailFailedSignIn>(
+      table: EmailFailedSignIn.t,
       where: where(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
@@ -676,6 +683,7 @@ class EmailFailedSignInRepository {
     _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailFailedSignIn>(
+      table: EmailFailedSignIn.t,
       where: where?.call(EmailFailedSignIn.t),
       limit: limit,
       transaction: transaction,
@@ -691,6 +699,7 @@ class EmailFailedSignInRepository {
     _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailFailedSignIn>(
+      table: EmailFailedSignIn.t,
       where: where(EmailFailedSignIn.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
