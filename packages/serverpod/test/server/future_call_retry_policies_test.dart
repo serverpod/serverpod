@@ -1,6 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/protocol.dart' as core;
-import 'package:serverpod/src/server/future_call_manager/future_call_retry_policy_serialization.dart';
 import 'package:test/test.dart';
 
 FutureCallRetryContext _contextFor(int retryAttempt) {
@@ -402,35 +400,6 @@ void main() {
             const Duration(seconds: 4),
             const Duration(seconds: 8),
             const Duration(minutes: 1),
-            const Duration(minutes: 10),
-            const Duration(minutes: 20),
-            null,
-          ]);
-        },
-      );
-
-      test(
-        'when nextDelay is called for retry attempts 0 to 4 and the policy is then serialized and deserialized by the future call manager,'
-        'then the deserialized policy continues with the second policy.',
-        () {
-          for (var i = 0; i < 5; i++) {
-            policy.nextDelay(_contextFor(i));
-          }
-
-          var protocol = core.Protocol();
-          var restored = runWithRetryPolicySerialization(
-            protocol,
-            () => protocol.decodeWithType(protocol.encodeWithType(policy)),
-          );
-
-          expect(restored, isA<ChainedRetryPolicies>());
-          final delays = List.generate(
-            3,
-            (i) => (restored as ChainedRetryPolicies).nextDelay(
-              _contextFor(i + 5),
-            ),
-          );
-          expect(delays, [
             const Duration(minutes: 10),
             const Duration(minutes: 20),
             null,

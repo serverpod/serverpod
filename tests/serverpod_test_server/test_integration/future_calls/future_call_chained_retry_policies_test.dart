@@ -183,6 +183,68 @@ void main() {
   );
 
   withServerpod(
+    'Given a failing future call scheduled with a ChainedRetryPolicies of two policies without delay and a third policy with a delay of one hour,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (sessionBuilder, _) {
+      late _ChainTestHarness harness;
+      late AlwaysFailingTestCall testCall;
+
+      setUp(() async {
+        harness = _ChainTestHarness(sessionBuilder);
+        testCall = AlwaysFailingTestCall();
+        await harness.schedule(
+          ChainedRetryPolicies([
+            const FixedDelayRetryPolicy(maxAttempts: 1, delay: Duration.zero),
+            const FixedDelayRetryPolicy(maxAttempts: 1, delay: Duration.zero),
+            const FixedDelayRetryPolicy(
+              maxAttempts: 1,
+              delay: Duration(hours: 1),
+            ),
+          ]),
+        );
+      });
+
+      tearDown(() => harness.dispose());
+
+      group(
+        'when the due future calls are run three times,',
+        () {
+          late DateTime lastRunTime;
+
+          setUp(() async {
+            await harness.runDueCalls(testCall);
+            await harness.runDueCalls(testCall);
+            lastRunTime = DateTime.now().toUtc();
+            await harness.runDueCalls(testCall);
+          });
+
+          test(
+            'then the entry has three failed attempts.',
+            () async {
+              var entries = await harness.findEntries();
+              expect(entries.single.failedAttempts, 3);
+            },
+          );
+
+          test(
+            'then the entry is due one hour after the last run because the saved chain continued with its third policy.',
+            () async {
+              var entries = await harness.findEntries();
+              expect(
+                entries.single.time.difference(lastRunTime),
+                allOf(
+                  greaterThanOrEqualTo(const Duration(minutes: 59)),
+                  lessThanOrEqualTo(const Duration(minutes: 61)),
+                ),
+              );
+            },
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
     'Given a failing future call scheduled with a ChainedRetryPolicies of a policy that keeps state,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
