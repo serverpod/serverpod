@@ -95,20 +95,21 @@ void main() {
     late _WebSocketRelay wire;
     late Client client;
     late _Input input;
-    late StreamSubscription<int> subscription;
+    late _CallOutput output;
 
-    setUpAll(() async {
+    setUp(() async {
       upgrade = _UpgradeGate();
       wire = await openWire(beforeUpgrade: upgrade.wait);
       client = _client(wire, openTimeout: const Duration(seconds: 10));
       input = _Input(42);
-      subscription = client.methodStreaming
-          .intEchoStream(input.stream)
-          .listen(
-            (_) {},
-          );
-      addTearDown(subscription.cancel);
-      addTearDown(upgrade.release);
+      output = _CallOutput(client.methodStreaming.intEchoStream(input.stream));
+      addTearDown(() async {
+        try {
+          await output.cancel().timeout(_deadline);
+        } finally {
+          upgrade.release();
+        }
+      });
       await upgrade.requested;
     });
 
@@ -118,8 +119,8 @@ void main() {
       late List<String> methods;
       late bool subscribed;
 
-      setUpAll(() async {
-        await subscription.cancel().timeout(_deadline);
+      setUp(() async {
+        await output.cancel().timeout(_deadline);
         upgrade.release();
         socketClosed = await wire.firstSocketClosesWithin(_socketCloseTimeout);
         newEvents = await _events(client.methodStreaming.intStreamFromValue(1));
@@ -143,24 +144,6 @@ void main() {
         expect(newEvents, [0]);
       });
     });
-  });
-
-  group('Given a streaming call waiting for the WebSocket upgrade,', () {
-    late _UpgradeGate upgrade;
-    late _WebSocketRelay wire;
-    late Client client;
-    late _Input input;
-    late Future<List<Object>> output;
-
-    setUpAll(() async {
-      upgrade = _UpgradeGate();
-      wire = await openWire(beforeUpgrade: upgrade.wait);
-      client = _client(wire, openTimeout: const Duration(seconds: 10));
-      addTearDown(upgrade.release);
-      input = _Input(42);
-      output = _events(client.methodStreaming.intEchoStream(input.stream));
-      await upgrade.requested;
-    });
 
     group(
       'when the caller shuts down connections before the upgrade completes,',
@@ -171,9 +154,9 @@ void main() {
         late List<String> methods;
         late bool subscribed;
 
-        setUpAll(() async {
+        setUp(() async {
           final shutdown = client.closeStreamingMethodConnections();
-          failedEvents = await output.timeout(
+          failedEvents = await output.events.timeout(
             _socketCloseTimeout,
             onTimeout: () => const <Object>[],
           );
@@ -751,17 +734,15 @@ void main() {
     late Client client;
     late _DeferredCredentials credentials;
     late _Input input;
-    late StreamSubscription<int> subscription;
+    late _CallOutput output;
 
-    setUpAll(() async {
+    setUp(() async {
       wire = await openWire();
       credentials = _DeferredCredentials();
       client = _client(wire, token: credentials);
       input = _Input(42);
-      subscription = client.methodStreaming
-          .intEchoStream(input.stream)
-          .listen((_) {});
-      addTearDown(subscription.cancel);
+      output = _CallOutput(client.methodStreaming.intEchoStream(input.stream));
+      addTearDown(output.cancel);
       await credentials.requested.future.timeout(_deadline);
     });
 
@@ -773,8 +754,8 @@ void main() {
         late int sockets;
         late bool subscribed;
 
-        setUpAll(() async {
-          await subscription.cancel();
+        setUp(() async {
+          await output.cancel();
           credentials.result.complete('Bearer admin');
           values = await _events(client.methodStreaming.intStreamFromValue(1));
           await wire.firstClosed;
@@ -800,23 +781,6 @@ void main() {
         });
       },
     );
-  });
-
-  group('Given a streaming call awaiting credentials with queued input,', () {
-    late _WebSocketRelay wire;
-    late Client client;
-    late _DeferredCredentials credentials;
-    late _Input input;
-    late Future<List<Object>> output;
-
-    setUpAll(() async {
-      wire = await openWire();
-      credentials = _DeferredCredentials();
-      client = _client(wire, token: credentials);
-      input = _Input(42);
-      output = _events(client.methodStreaming.intEchoStream(input.stream));
-      await credentials.requested.future.timeout(_deadline);
-    });
 
     group(
       'when all connections close before credentials arrive and the client makes a new call,',
@@ -827,9 +791,9 @@ void main() {
         late int socketsBeforeRelease;
         late bool subscribed;
 
-        setUpAll(() async {
+        setUp(() async {
           await client.closeStreamingMethodConnections();
-          failedEvents = await output;
+          failedEvents = await output.events;
           socketsBeforeRelease = wire.connections.length;
           credentials.result.complete('Bearer admin');
           newEvents = await _events(
@@ -866,49 +830,111 @@ void main() {
     );
   });
 
-  group(
-    'Given a rejected streaming call awaiting credential refresh,',
-    () {
-      late _WebSocketRelay wire;
-      late _RefreshingCredentials credentials;
-      late Future<List<Object>> output;
+  group('Given a rejected streaming call awaiting credential refresh,', () {
+    late _WebSocketRelay wire;
+    late Client client;
+    late _RefreshingCredentials credentials;
+    late _CallOutput output;
 
-      setUpAll(() async {
-        wire = await openWire();
-        credentials = _RefreshingCredentials();
-        final client = _client(wire, token: credentials);
-        output = _events(client.authenticatedMethodStreaming.simpleStream());
-        await credentials.requested.future.timeout(_deadline);
-      });
+    setUp(() async {
+      wire = await openWire();
+      credentials = _RefreshingCredentials();
+      client = _client(wire, token: credentials);
+      output = _CallOutput(client.authenticatedMethodStreaming.simpleStream());
+      addTearDown(output.cancel);
+      await credentials.requested.future.timeout(_deadline);
+    });
 
-      group(
-        'when the caller waits for the socket to close before completing refresh,',
-        () {
-          late bool closedBeforeRefresh;
-          late List<Object> events;
+    group(
+      'when the caller waits for the socket to close before completing refresh,',
+      () {
+        late bool closedBeforeRefresh;
+        late List<Object> events;
 
-          setUpAll(() async {
-            closedBeforeRefresh = await wire.firstSocketClosesWithin(
-              _socketCloseTimeout,
-            );
-            credentials.result.complete(RefreshAuthKeyResult.failedOther);
-            events = await output;
-          });
-
-          test('then the client closes the unused socket during refresh.', () {
-            expect(closedBeforeRefresh, isTrue);
-          });
-
-          test(
-            'then the caller receives one unauthorized error and the output ends.',
-            () {
-              expect(events, [isA<ServerpodClientUnauthorized>()]);
-            },
+        setUp(() async {
+          closedBeforeRefresh = await wire.firstSocketClosesWithin(
+            _socketCloseTimeout,
           );
-        },
-      );
-    },
-  );
+          credentials.result.complete(RefreshAuthKeyResult.failedOther);
+          events = await output.events;
+        });
+
+        test('then the client closes the unused socket during refresh.', () {
+          expect(closedBeforeRefresh, isTrue);
+        });
+
+        test(
+          'then the caller receives one unauthorized error and the output ends.',
+          () {
+            expect(events, [isA<ServerpodClientUnauthorized>()]);
+          },
+        );
+      },
+    );
+
+    group(
+      'when the caller cancels before refresh succeeds and then makes a new call,',
+      () {
+        late List<Object> values;
+        late List<String> methods;
+        late int refreshes;
+
+        setUp(() async {
+          await output.cancel();
+          credentials.succeed();
+          values = await _events(client.methodStreaming.intStreamFromValue(1));
+          methods = wire.methods;
+          refreshes = credentials.refreshes;
+        });
+
+        test('then the cancelled call is never retried.', () {
+          expect(methods, ['simpleStream', 'intStreamFromValue']);
+        });
+
+        test('then there is only one refresh.', () {
+          expect(refreshes, 1);
+        });
+
+        test('then the new call receives its result.', () {
+          expect(values, [0]);
+        });
+      },
+    );
+
+    group(
+      'when the caller closes all connections before refresh succeeds and then makes a new call,',
+      () {
+        late List<Object> failedEvents;
+        late List<Object> newEvents;
+        late List<String> methods;
+
+        setUp(() async {
+          await client.closeStreamingMethodConnections();
+          failedEvents = await output.events;
+          credentials.succeed();
+          newEvents = await _events(
+            client.methodStreaming.intStreamFromValue(1),
+          );
+          methods = wire.methods;
+        });
+
+        test(
+          'then the first output receives one connection error and ends before refresh completes.',
+          () {
+            expect(failedEvents, [isA<WebSocketClosedException>()]);
+          },
+        );
+
+        test('then the first call is never retried.', () {
+          expect(methods, ['simpleStream', 'intStreamFromValue']);
+        });
+
+        test('then the new call receives its result.', () {
+          expect(newEvents, [0]);
+        });
+      },
+    );
+  });
 
   group(
     'Given a rejected streaming call with expired credentials and queued input,',
@@ -974,102 +1000,6 @@ void main() {
       });
     },
   );
-
-  group('Given a rejected streaming call awaiting credential refresh,', () {
-    late _WebSocketRelay wire;
-    late Client client;
-    late _RefreshingCredentials credentials;
-    late StreamSubscription<int> subscription;
-
-    setUpAll(() async {
-      wire = await openWire();
-      credentials = _RefreshingCredentials();
-      client = _client(wire, token: credentials);
-      subscription = client.authenticatedMethodStreaming.simpleStream().listen(
-        (_) {},
-      );
-      addTearDown(subscription.cancel);
-      await credentials.requested.future.timeout(_deadline);
-    });
-
-    group(
-      'when the caller cancels before refresh succeeds and then makes a new call,',
-      () {
-        late List<Object> values;
-        late List<String> methods;
-        late int refreshes;
-
-        setUpAll(() async {
-          await subscription.cancel();
-          credentials.succeed();
-          values = await _events(client.methodStreaming.intStreamFromValue(1));
-          methods = wire.methods;
-          refreshes = credentials.refreshes;
-        });
-
-        test('then the cancelled call is never retried.', () {
-          expect(methods, ['simpleStream', 'intStreamFromValue']);
-        });
-
-        test('then there is only one refresh.', () {
-          expect(refreshes, 1);
-        });
-
-        test('then the new call receives its result.', () {
-          expect(values, [0]);
-        });
-      },
-    );
-  });
-
-  group('Given a rejected streaming call awaiting credential refresh,', () {
-    late _WebSocketRelay wire;
-    late Client client;
-    late _RefreshingCredentials credentials;
-    late Future<List<Object>> output;
-
-    setUpAll(() async {
-      wire = await openWire();
-      credentials = _RefreshingCredentials();
-      client = _client(wire, token: credentials);
-      output = _events(client.authenticatedMethodStreaming.simpleStream());
-      await credentials.requested.future.timeout(_deadline);
-    });
-
-    group(
-      'when the caller closes all connections before refresh succeeds and then makes a new call,',
-      () {
-        late List<Object> failedEvents;
-        late List<Object> newEvents;
-        late List<String> methods;
-
-        setUpAll(() async {
-          await client.closeStreamingMethodConnections();
-          failedEvents = await output;
-          credentials.succeed();
-          newEvents = await _events(
-            client.methodStreaming.intStreamFromValue(1),
-          );
-          methods = wire.methods;
-        });
-
-        test(
-          'then the first output receives one connection error and ends before refresh completes.',
-          () {
-            expect(failedEvents, [isA<WebSocketClosedException>()]);
-          },
-        );
-
-        test('then the first call is never retried.', () {
-          expect(methods, ['simpleStream', 'intStreamFromValue']);
-        });
-
-        test('then the new call receives its result.', () {
-          expect(newEvents, [0]);
-        });
-      },
-    );
-  });
 
   group('Given a timed-out method and an accepted peer on the same socket,', () {
     late _WebSocketRelay wire;
@@ -1260,6 +1190,23 @@ class _RefreshingCredentials extends _Credentials
     token = 'admin';
     result.complete(RefreshAuthKeyResult.success);
   }
+}
+
+class _CallOutput {
+  _CallOutput(Stream<int> stream) {
+    final events = <Object>[];
+    _subscription = stream.listen(
+      events.add,
+      onError: events.add,
+      onDone: () => _done.complete(List.unmodifiable(events)),
+    );
+  }
+
+  final _done = Completer<List<Object>>();
+  late final StreamSubscription<int> _subscription;
+
+  Future<List<Object>> get events => _done.future.timeout(_deadline);
+  Future<void> cancel() => _subscription.cancel();
 }
 
 class _UpgradeGate {
