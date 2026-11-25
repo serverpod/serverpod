@@ -24,8 +24,6 @@ import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-import 'package:serverpod_shared/serverpod_shared.dart'
-    show hasUnixSocketSupport;
 import 'package:test/test.dart';
 
 import '../test_util/file_system_entity_helpers.dart';
@@ -501,7 +499,6 @@ database:
 
   group(
     'Given a running Serverpod project with a configured Flutter app started without a TUI,',
-    skip: !hasUnixSocketSupport(),
     () {
       late ServerConnection connection;
       late Directory serverDirectory;
@@ -623,7 +620,6 @@ database:
     'Given a runner spawned by serverpod start --no-tui,',
     // A child process cannot be sent SIGINT on Windows.
     testOn: '!windows',
-    skip: !hasUnixSocketSupport(),
     () {
       late Directory serverDirectory;
       late Process start;
@@ -668,7 +664,6 @@ database:
     'Given a runner started before serverpod start --no-tui attached to it,',
     // A child process cannot be sent SIGINT on Windows.
     testOn: '!windows',
-    skip: !hasUnixSocketSupport(),
     () {
       late Directory serverDirectory;
       late Process start;

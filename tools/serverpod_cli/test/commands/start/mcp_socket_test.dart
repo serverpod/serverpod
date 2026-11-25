@@ -6,14 +6,13 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 import 'package:vm_service/vm_service.dart';
 
 import '../../test_util/fake_runner_api.dart';
 
 void main() {
-  group('Given an McpSocketServer,', skip: !hasUnixSocketSupport(), () {
+  group('Given an McpSocketServer,', () {
     late Directory tempServerDir;
     late McpSocketServer server;
 
@@ -165,7 +164,6 @@ void main() {
 
   group(
     'Given an McpSocketServer with retained session logs and no TUI,',
-    skip: !hasUnixSocketSupport(),
     () {
       late Directory tempServerDir;
       late McpSocketServer server;
@@ -271,7 +269,6 @@ void main() {
 
   group(
     'Given a stale socket file left behind by a previous run',
-    skip: !hasUnixSocketSupport(),
     () {
       test(
         'when start is called, '
@@ -295,35 +292,6 @@ void main() {
           expect(
             FileSystemEntity.typeSync(stalePath),
             isNot(FileSystemEntityType.notFound),
-          );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given Windows with Dart < 3.11',
-    skip: hasUnixSocketSupport(),
-    () {
-      test(
-        'when starting an McpSocketServer, '
-        'then it throws a SocketException',
-        () async {
-          final tempServerDir = await Directory.systemTemp.createTemp('mst');
-          addTearDown(() => _safeDelete(tempServerDir));
-
-          final server = McpSocketServer(serverDir: tempServerDir.path);
-          expect(server.start(), throwsA(isA<SocketException>()));
-        },
-      );
-
-      test(
-        'when calling requireUnixSocketSupport, '
-        'then it throws a SocketException',
-        () {
-          expect(
-            requireUnixSocketSupport,
-            throwsA(isA<SocketException>()),
           );
         },
       );

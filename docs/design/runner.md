@@ -621,7 +621,7 @@ The split also makes the UI testable without a pty.
 
 ### Repository
 
-- The `hasUnixSocketSupport()` guard in `mcp-server` is dropped, along with the
+- The obsolete Unix socket SDK guard in `mcp-server` is dropped, along with the
   Windows caveat in [`mcp_server.md`](mcp_server.md). Unix sockets on Windows
   require Dart 3.11 and the repository floor is `^3.12.2` (`DART_VERSION`), so
   the split is unconditional and `serverpod mcp-server` works on Windows.
