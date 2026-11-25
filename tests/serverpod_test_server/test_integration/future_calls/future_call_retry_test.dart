@@ -379,7 +379,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a future call that is cancelled while it runs and then fails,',
+    'Given a future call that fails after it is cancelled while it runs,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late _RetryTestHarness harness;
@@ -724,7 +724,7 @@ void main() {
       });
 
       group(
-        'when another future call manager runs the failing call and the first manager then runs its queued copy,',
+        'when another future call manager runs the failing call before the first manager runs its queued copy,',
         () {
           setUp(() async {
             retryTime = DateTime.now().toUtc().add(const Duration(hours: 1));

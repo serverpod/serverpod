@@ -390,7 +390,7 @@ void main() {
 
       test(
         'when nextDelay is called 8 times with increasing retry attempts,'
-        'then it returns the delays of the first policy, then those of the second policy, before returning null.',
+        'then it returns the delays of the first policy followed by those of the second policy before returning null.',
         () {
           final delays = List.generate(
             8,
