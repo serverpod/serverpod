@@ -28,6 +28,7 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 import '../test_util/fake_runner_api.dart';
 import '../test_util/file_system_entity_helpers.dart';
 import '../test_util/hold_lock.dart';
+import '../test_util/resolve_command_config.dart';
 import '../test_util/short_temp_dir.dart';
 
 const _asked = RunnerConfig(watch: true, flutter: true, serverArgs: []);
@@ -1004,23 +1005,25 @@ void main() {
     });
 
     test('when --target is omitted, then bin/main.dart is selected', () {
-      final config = command.resolveConfiguration(command.argParser.parse([]));
+      final config = resolveCommandConfig(command.options, []);
 
       expect(config.value(StartOption.target), 'bin/main.dart');
     });
 
     test('when --target is given, then its path is selected', () {
-      final config = command.resolveConfiguration(
-        command.argParser.parse(['--target', 'bin/main_enterprise.dart']),
-      );
+      final config = resolveCommandConfig(command.options, [
+        '--target',
+        'bin/main_enterprise.dart',
+      ]);
 
       expect(config.value(StartOption.target), 'bin/main_enterprise.dart');
     });
 
     test('when -t is given, then its path is selected', () {
-      final config = command.resolveConfiguration(
-        command.argParser.parse(['-t', 'bin/main_enterprise.dart']),
-      );
+      final config = resolveCommandConfig(command.options, [
+        '-t',
+        'bin/main_enterprise.dart',
+      ]);
 
       expect(config.value(StartOption.target), 'bin/main_enterprise.dart');
     });
@@ -1029,11 +1032,11 @@ void main() {
       'when resolving configuration with passthrough args after --, '
       'then it succeeds without errors.',
       () {
-        final argResults = command.argParser.parse(
+        final config = resolveCommandConfig(
+          command.options,
           ['--', '--apply-migrations'],
+          passThroughRest: true,
         );
-
-        final config = command.resolveConfiguration(argResults);
 
         expect(config.errors, isEmpty);
       },
@@ -1041,13 +1044,19 @@ void main() {
 
     test(
       'when resolving configuration with passthrough args after --, '
-      'then passthrough args are in argResults.rest.',
+      'then passthrough args are in the remaining positional arguments.',
       () {
-        final argResults = command.argParser.parse(
+        final config = resolveCommandConfig(
+          command.options,
           ['--', '--apply-migrations', '--mode', 'production'],
+          passThroughRest: true,
         );
 
-        expect(argResults.rest, ['--apply-migrations', '--mode', 'production']);
+        expect(config.remainingPosArgs, [
+          '--apply-migrations',
+          '--mode',
+          'production',
+        ]);
       },
     );
 
@@ -1055,9 +1064,7 @@ void main() {
       'when resolving configuration without --docker, '
       'then the docker flag is unset.',
       () {
-        final config = command.resolveConfiguration(
-          command.argParser.parse([]),
-        );
+        final config = resolveCommandConfig(command.options, []);
 
         expect(config.optionalValue(StartOption.docker), isNull);
       },
@@ -1067,9 +1074,7 @@ void main() {
       'when resolving configuration without --attach, '
       'then attaching is on, so `serverpod start` still shows the stack',
       () {
-        final config = command.resolveConfiguration(
-          command.argParser.parse([]),
-        );
+        final config = resolveCommandConfig(command.options, []);
 
         expect(config.value(StartOption.attach), isTrue);
       },
@@ -1079,9 +1084,7 @@ void main() {
       'when resolving configuration with --no-attach, '
       'then attaching is off, which is the path an agent takes',
       () {
-        final config = command.resolveConfiguration(
-          command.argParser.parse(['--no-attach']),
-        );
+        final config = resolveCommandConfig(command.options, ['--no-attach']);
 
         expect(config.value(StartOption.attach), isFalse);
       },
@@ -1091,9 +1094,7 @@ void main() {
       'when resolving configuration with --docker, '
       'then the docker flag is true',
       () {
-        final config = command.resolveConfiguration(
-          command.argParser.parse(['--docker']),
-        );
+        final config = resolveCommandConfig(command.options, ['--docker']);
 
         expect(config.optionalValue(StartOption.docker), isTrue);
       },
@@ -1103,9 +1104,7 @@ void main() {
       'when resolving configuration with --no-docker, '
       'then the docker flag is false.',
       () {
-        final config = command.resolveConfiguration(
-          command.argParser.parse(['--no-docker']),
-        );
+        final config = resolveCommandConfig(command.options, ['--no-docker']);
 
         expect(config.optionalValue(StartOption.docker), isFalse);
       },

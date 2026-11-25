@@ -1,6 +1,8 @@
 import 'package:serverpod_cli/src/commands/database.dart';
 import 'package:test/test.dart';
 
+import '../test_util/resolve_command_config.dart';
+
 void main() {
   group('Given a DatabaseCommand,', () {
     late DatabaseCommand command;
@@ -8,14 +10,19 @@ void main() {
 
     setUp(() {
       command = DatabaseCommand();
-      startCommand = command.subcommands['start']! as DatabaseStartCommand;
+      startCommand =
+          command.subcommands.singleWhere((command) => command.name == 'start')
+              as DatabaseStartCommand;
     });
 
     test(
       'when reading its subcommands, '
       'then the start command is available.',
       () {
-        expect(command.subcommands, contains('start'));
+        expect(
+          command.subcommands.map((command) => command.name),
+          contains('start'),
+        );
       },
     );
 
@@ -23,8 +30,7 @@ void main() {
       'when parsing the start command without options, '
       'then development mode is selected and discovery overrides are unset.',
       () {
-        var argResults = startCommand.argParser.parse([]);
-        var config = startCommand.resolveConfiguration(argResults);
+        final config = resolveCommandConfig(startCommand.options, []);
 
         expect(config.errors, isEmpty);
         expect(config.optionalValue(DatabaseStartOption.serverDir), isNull);
@@ -37,7 +43,7 @@ void main() {
       'when parsing start command overrides, '
       'then the selected directory, mode, and port are used.',
       () {
-        var argResults = startCommand.argParser.parse([
+        final config = resolveCommandConfig(startCommand.options, [
           '--server-dir',
           'example_server',
           '--mode',
@@ -45,7 +51,6 @@ void main() {
           '--port',
           '55432',
         ]);
-        var config = startCommand.resolveConfiguration(argResults);
 
         expect(config.errors, isEmpty);
         expect(
@@ -61,11 +66,10 @@ void main() {
       'when parsing the -s shorthand, '
       'then the server directory is selected.',
       () {
-        var argResults = startCommand.argParser.parse([
+        final config = resolveCommandConfig(startCommand.options, [
           '-s',
           'example_server',
         ]);
-        var config = startCommand.resolveConfiguration(argResults);
 
         expect(config.errors, isEmpty);
         expect(

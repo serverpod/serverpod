@@ -11,18 +11,17 @@ Future<void> main(List<String> arguments) async {
   initializeLogger();
   try {
     final runner =
-        ServerpodCommandRunner(
-            'serverpod',
-            'Serverpod test runner',
-            productionMode: false,
-            cliVersion: Version(1, 0, 0),
-            onBeforeRunCommand: (_) async {},
+        ServerpodCommandRunner.createCommandRunner(
+            CompoundAnalytics([]),
+            false,
+            Version(1, 0, 0),
+            preCommandHooks: false,
           )
           ..addCommand(RunnerCommand())
           ..addCommand(StartCommand());
 
     try {
-      await runner.run(arguments);
+      await runner.run(arguments, env: const {});
     } on ExitException catch (exception) {
       exitCode = exception.exitCode;
     }

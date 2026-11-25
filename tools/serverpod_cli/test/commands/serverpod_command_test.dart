@@ -1,4 +1,5 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
@@ -15,7 +16,7 @@ class _TestCommand extends ServerpodCommand<OptionDefinition> {
   _TestCommand() : super(options: const []);
 
   @override
-  void runWithConfig(Configuration<OptionDefinition> commandConfig) {}
+  void run(CommandContext<OptionDefinition, void> context) {}
 }
 
 class _MockAnalytics implements Analytics {
@@ -40,35 +41,35 @@ class _MockAnalytics implements Analytics {
 
 void main() {
   group('Given a Serverpod command registered on the command runner,', () {
+    late ServerpodCommandRunner runner;
     late _TestCommand command;
 
     setUp(() {
-      var runner = ServerpodCommandRunner.createCommandRunner(
+      runner = ServerpodCommandRunner.createCommandRunner(
         _MockAnalytics(),
         false,
         Version(1, 1, 0),
-        onBeforeRunCommand: (_) async {},
+        preCommandHooks: false,
       );
       command = _TestCommand();
       runner.addCommand(command);
     });
 
-    test('when reading the usage, then the global options are listed', () {
-      expect(command.usage, contains('Global options:'));
-    });
-
     test(
-      'when reading the usage, then the interactive global option is listed',
+      'when reading the command usage, then it points at the global options',
       () {
-        expect(command.usage, contains('--[no-]interactive'));
+        expect(
+          command.usage,
+          contains('Run "serverpod help" to see global options.'),
+        );
+        expect(command.usage, isNot(contains('-h, --help')));
       },
     );
 
     test(
-      'when reading the usage, '
-      'then the command specific options are still listed',
+      'when reading the runner usage, then the interactive option is listed',
       () {
-        expect(command.usage, contains('-h, --help'));
+        expect(runner.usage, contains('--[no-]interactive'));
       },
     );
   });

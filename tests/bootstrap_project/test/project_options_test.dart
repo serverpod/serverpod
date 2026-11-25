@@ -482,7 +482,7 @@ void main() async {
             expect(
               output,
               contains(
-                'ERROR: Invalid value for option `ide`: '
+                'create: Invalid value for option "--ide": '
                 '"none" cannot be combined with other IDE options.',
               ),
             );
