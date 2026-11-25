@@ -190,7 +190,7 @@ class SubPolicy extends BasePolicy {
   );
 
   group(
-    'Given retry policy classes whose fromJson constructor is missing or has the wrong shape,'
+    'Given a retry policy class that extends another retry policy class but has no fromJson constructor of its own,'
     'when analyzed,',
     () {
       var collector = CodeGenerationCollector();
@@ -213,6 +213,65 @@ class BasePolicy extends FutureCallRetryPolicy {
 }
 
 class MissingFromJsonPolicy extends BasePolicy {}
+''',
+        });
+
+        analyzer = FutureCallsAnalyzer(directory: directory);
+        await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test(
+        'then an error says the fromJson constructor is missing and how to add it.',
+        () {
+          expect(
+            collector.errors.map((e) => e.message),
+            [
+              'MissingFromJsonPolicy extends FutureCallRetryPolicy but has no '
+                  'fromJson constructor. Add `factory MissingFromJsonPolicy.fromJson('
+                  'Map<String, dynamic> json)` so the policy can be loaded when a '
+                  'retry is due.',
+            ],
+          );
+        },
+      );
+
+      test(
+        'then only the class with a fromJson constructor is registered.',
+        () {
+          expect(
+            analyzer.retryPolicies.map((type) => type.className),
+            ['BasePolicy'],
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given retry policy classes whose fromJson constructor has the wrong shape,'
+    'when analyzed,',
+    () {
+      var collector = CodeGenerationCollector();
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        var directory = _createDirectoryWithFiles({
+          'retry_policies.dart': '''
+import 'package:serverpod/serverpod.dart';
+
+class BasePolicy extends FutureCallRetryPolicy {
+  BasePolicy();
+  factory BasePolicy.fromJson(Map<String, dynamic> json) => BasePolicy();
+
+  @override
+  Duration? nextDelay(FutureCallRetryContext context) => null;
+
+  @override
+  Map<String, dynamic> toJson() => {};
+}
 
 class NoParameterPolicy extends BasePolicy {
   NoParameterPolicy.fromJson();
@@ -274,23 +333,8 @@ class RequiredNamedParameterPolicy extends BasePolicy {
       });
 
       test('then an error is reported for each of them.', () {
-        expect(collector.errors, hasLength(12));
+        expect(collector.errors, hasLength(11));
       });
-
-      test(
-        'then the error for the class without fromJson says it is missing and how to add it.',
-        () {
-          expect(
-            collector.errors.map((e) => e.message),
-            contains(
-              'MissingFromJsonPolicy extends FutureCallRetryPolicy but has no '
-              'fromJson constructor. Add `factory MissingFromJsonPolicy.fromJson('
-              'Map<String, dynamic> json)` so the policy can be loaded when a '
-              'retry is due.',
-            ),
-          );
-        },
-      );
 
       test(
         'then the error for a fromJson without a positional parameter says so.',
