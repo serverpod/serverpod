@@ -1,3 +1,5 @@
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
 /// Information about a failed [FutureCall] attempt.
 class FutureCallRetryContext {
   /// The error thrown by the call.
@@ -22,7 +24,7 @@ class FutureCallRetryContext {
 ///
 /// Subclasses must provide a `fromJson(Map<String, dynamic> json)`
 /// constructor, so that the policy can be loaded when a retry is due.
-abstract class FutureCallRetryPolicy {
+abstract class FutureCallRetryPolicy implements SerializableModel {
   /// Creates a new [FutureCallRetryPolicy].
   const FutureCallRetryPolicy();
 
@@ -37,5 +39,6 @@ abstract class FutureCallRetryPolicy {
   void validate() {}
 
   /// Serializes the policy, including any state it keeps between attempts.
+  @override
   Map<String, dynamic> toJson();
 }

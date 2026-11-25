@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_retry_policy_serialization.dart';
@@ -350,15 +352,19 @@ void main() {
           });
 
           test(
-            'then an ArgumentError naming the policy class is thrown.',
+            'then an error caused by an ArgumentError naming the policy class is thrown.',
             () {
               expect(
                 error,
-                isA<ArgumentError>().having(
-                  (e) => e.message,
-                  'message',
-                  'Could not find class name for _UnregisteredRetryPolicy in '
-                      'serialization.',
+                isA<JsonUnsupportedObjectError>().having(
+                  (e) => e.cause,
+                  'cause',
+                  isA<ArgumentError>().having(
+                    (e) => e.message,
+                    'message',
+                    'Could not find class name for _UnregisteredRetryPolicy in '
+                        'serialization.',
+                  ),
                 ),
               );
             },

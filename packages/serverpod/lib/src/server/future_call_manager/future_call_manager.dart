@@ -613,15 +613,10 @@ class FutureCallManager {
   /// Serializes [policy] with its class name, so that it can be loaded with
   /// [_decodeRetryPolicy].
   String _encodeRetryPolicy(FutureCallRetryPolicy policy) {
-    return runWithRetryPolicySerialization(_serializationManager, () {
-      // The policy is converted to JSON before encoding, so that an error
-      // thrown by its toJson is thrown as it is, not wrapped by the encoder.
-      var withClassName = _serializationManager.wrapWithClassName(policy);
-      return SerializationManager.encode({
-        ...withClassName,
-        'data': policy.toJson(),
-      });
-    });
+    return runWithRetryPolicySerialization(
+      _serializationManager,
+      () => _serializationManager.encodeWithType(policy),
+    );
   }
 
   /// Loads a retry policy serialized by [_encodeRetryPolicy].

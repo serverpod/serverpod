@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -651,10 +652,14 @@ void main() {
                   'toString',
                   'Exception: FailingTestCall failed on run 1.',
                 ),
-                isA<StateError>().having(
-                  (e) => e.message,
-                  'message',
-                  'TestUnsavableRetryPolicy cannot be saved anymore.',
+                isA<JsonUnsupportedObjectError>().having(
+                  (e) => e.cause,
+                  'cause',
+                  isA<StateError>().having(
+                    (e) => e.message,
+                    'message',
+                    'TestUnsavableRetryPolicy cannot be saved anymore.',
+                  ),
                 ),
               ]);
             },
