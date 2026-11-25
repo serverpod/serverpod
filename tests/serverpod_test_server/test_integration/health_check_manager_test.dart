@@ -1,5 +1,9 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -93,6 +97,91 @@ void main() {
         skip: 'Test is flaky on the CI. Should be fixed with #4465.',
       );
     },
+  );
+
+  test(
+    'Given an existing health metric when a check contains the same metric '
+    'then it preserves the original and records the remaining results',
+    () async {
+      final handlerCalled = Completer<void>();
+      late DateTime timestamp;
+      final server = IntegrationTestServer.create(
+        config: ServerpodConfig(
+          serverId: Uuid().v4(),
+          apiServer: ServerConfig(
+            port: 0,
+            publicScheme: 'http',
+            publicHost: 'localhost',
+            publicPort: 0,
+          ),
+          database: DatabaseConfig(
+            host: 'postgres',
+            port: 5432,
+            user: 'postgres',
+            password: 'password',
+            name: 'serverpod_test',
+          ),
+          healthCheckInterval: Duration.zero,
+        ),
+        healthCheckHandler: (pod, time) async {
+          timestamp = time;
+          final metric = ServerHealthMetric(
+            serverId: pod.serverId,
+            name: 'custom_existing',
+            timestamp: time,
+            value: 1,
+            isHealthy: true,
+            granularity: 1,
+          );
+          final session = await pod.createSession();
+          try {
+            await ServerHealthMetric.db.insertRow(session, metric);
+          } finally {
+            await session.close();
+          }
+          handlerCalled.complete();
+          return [
+            metric.copyWith(id: null, value: 2),
+            metric.copyWith(id: null, name: 'custom_new', value: 3),
+          ];
+        },
+      );
+      addTearDown(() => server.shutdown(exitProcess: false));
+      await server.startWithDatabase();
+      final session = await server.createSession();
+      addTearDown(session.close);
+      final manager = HealthCheckManager(
+        server,
+        () {},
+        interval: const Duration(seconds: 1),
+      );
+      addTearDown(manager.stop);
+
+      await manager.start();
+      await handlerCalled.future;
+      // Await the pending check instead of relying on a fixed delay.
+      await manager.stop();
+
+      final metrics = await ServerHealthMetric.db.find(
+        session,
+        where: (t) => t.serverId.equals(server.serverId),
+      );
+      expect(
+        metrics.where((m) => m.name == 'custom_existing').map((m) => m.value),
+        [1],
+      );
+      expect(
+        metrics.where((m) => m.name == 'custom_new').map((m) => m.value),
+        [3],
+      );
+      final connections = await ServerHealthConnectionInfo.db.find(
+        session,
+        where: (t) => t.serverId.equals(server.serverId),
+      );
+      expect(connections, hasLength(1));
+      expect(connections.single.timestamp, timestamp);
+    },
+    skip: Platform.isWindows ? 'Health checks are disabled on Windows.' : false,
   );
 
   group('Given a running server with health check interval set to zero', () {

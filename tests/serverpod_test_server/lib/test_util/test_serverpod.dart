@@ -56,6 +56,7 @@ class IntegrationTestServer extends TestServerpod {
   static Serverpod create({
     ServerpodConfig? config,
     AuthenticationHandler? authenticationHandler,
+    HealthCheckHandler? healthCheckHandler,
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
@@ -69,6 +70,7 @@ class IntegrationTestServer extends TestServerpod {
       config: config,
       authenticationHandler:
           authenticationHandler ?? auth.authenticationHandler,
+      healthCheckHandler: healthCheckHandler,
       securityContextConfig: securityContextConfig,
       experimentalFeatures: experimentalFeatures,
       runtimeParametersBuilder: runtimeParametersBuilder,
