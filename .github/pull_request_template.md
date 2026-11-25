@@ -12,6 +12,7 @@ _List which issues are fixed by this PR. You must list at least one issue._
 - [ ] I added new tests to check the change I am making.
 - [ ] All existing and new tests are passing.
 - [ ] Any breaking changes are documented below.
+- [ ] I added a changelog entry to [changelog.d](https://github.com/serverpod/serverpod/tree/main/changelog.d) (`dart run melos run changelog_add`), or this change does not need one.
 
 If you need help, consider asking for advice on the [discussion board](https://github.com/serverpod/serverpod/discussions).
 
