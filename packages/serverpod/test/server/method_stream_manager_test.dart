@@ -448,136 +448,181 @@ void main() {
     );
   });
 
-  group(
-    'Given an output generator waiting for input with asynchronous final cleanup,',
-    () {
-      late UuidValue methodStreamId;
-      late Completer<void> producerFinished;
-      late Completer<void> releaseCleanup;
-      late Completer<void> sessionClosing;
-      late Completer<void> releaseSession;
+  Future<_GeneratorCleanup> openGeneratorWaitingForInput() async {
+    final cleanup = _GeneratorCleanup();
+    final waitingForInput = Completer<void>();
+    final session = await pod.createSession(enableLogging: false);
+    sessions.add(session);
+    session.addWillCloseListener((_) async {
+      cleanup.sessionsClosed++;
+      cleanup.sessionClosing.complete();
+      await cleanup.releaseSession.future;
+    });
+    final endpoint = _Endpoint()..initialize(pod.server, 'test', null);
+    final input = StreamParameterDescription<int>(
+      name: 'input',
+      nullable: false,
+    );
+    manager.createStream(
+      methodStreamCallContext: MethodStreamCallContext(
+        method: MethodStreamConnector(
+          name: 'stream',
+          params: {},
+          returnType: MethodStreamReturnType.streamType,
+          streamParams: {'input': input},
+          call: (_, _, streams) async* {
+            try {
+              waitingForInput.complete();
+              await for (final value in streams['input']!) {
+                yield value;
+              }
+            } finally {
+              cleanup.producerFinished.complete();
+              await cleanup.releaseCleanup.future;
+            }
+          },
+        ),
+        arguments: {},
+        inputStreams: [input],
+        endpoint: endpoint,
+        fullEndpointPath: 'test',
+      ),
+      methodStreamId: cleanup.methodStreamId,
+      session: session,
+    );
+    addTearDown(() async {
+      if (!cleanup.releaseCleanup.isCompleted) {
+        cleanup.releaseCleanup.complete();
+      }
+      if (!cleanup.releaseSession.isCompleted) {
+        cleanup.releaseSession.complete();
+      }
+      await manager.closeAllStreams();
+    });
+    await waitingForInput.future.timeout(const Duration(seconds: 5));
+    return cleanup;
+  }
+
+  Future<void> closeGeneratorOutput(
+    _GeneratorCleanup cleanup,
+    CloseReason reason,
+  ) => manager.closeStream(
+    endpoint: 'test',
+    method: 'stream',
+    methodStreamId: cleanup.methodStreamId,
+    reason: reason,
+  );
+
+  group('Given an output generator waiting for input,', () {
+    late _GeneratorCleanup cleanup;
+
+    setUp(() async {
+      cleanup = await openGeneratorWaitingForInput();
+    });
+
+    group('when its output closes,', () {
+      late bool producerUnblocked;
+      late List<String> reportedEvents;
+      late int openInputs;
+      late int openOutputs;
+
+      setUp(() async {
+        final closing = closeGeneratorOutput(cleanup, CloseReason.error);
+        producerUnblocked = await cleanup.producerFinished.future
+            .then((_) => true)
+            .timeout(const Duration(seconds: 5), onTimeout: () => false);
+        reportedEvents = List.of(events);
+        openInputs = manager.openInputStreamCount;
+        openOutputs = manager.openOutputStreamCount;
+
+        cleanup.releaseCleanup.complete();
+        cleanup.releaseSession.complete();
+        await closing.timeout(const Duration(seconds: 9));
+      });
+
+      test('then input closure unblocks the producer before the timeout.', () {
+        expect(producerUnblocked, isTrue);
+      });
+
+      test('then the manager reports the error close.', () {
+        expect(reportedEvents, ['closed:error']);
+      });
+
+      test('then the manager removes the input stream.', () {
+        expect(openInputs, 0);
+      });
+
+      test('then the manager removes the output stream.', () {
+        expect(openOutputs, 0);
+      });
+    });
+  });
+
+  group('Given an output close with producer cleanup still pending,', () {
+    late _GeneratorCleanup cleanup;
+    late Future<void> firstClose;
+    late List<String> completed;
+
+    setUp(() async {
+      cleanup = await openGeneratorWaitingForInput();
+      completed = [];
+      firstClose = closeGeneratorOutput(cleanup, CloseReason.error).then(
+        (_) => completed.add('first'),
+      );
+      await cleanup.producerFinished.future.timeout(const Duration(seconds: 5));
+    });
+
+    group('when a repeated close and a connection shutdown arrive,', () {
+      late List<String> completedBeforeRelease;
+      late List<String> completedBeforeSessionRelease;
+      late int sessionsClosedBeforeRelease;
+      late List<String> completedCloses;
       late int sessionsClosed;
 
       setUp(() async {
-        methodStreamId = const Uuid().v4obj();
-        producerFinished = Completer<void>();
-        releaseCleanup = Completer<void>();
-        sessionClosing = Completer<void>();
-        releaseSession = Completer<void>();
-        sessionsClosed = 0;
-        final waitingForInput = Completer<void>();
-        final session = await pod.createSession(enableLogging: false);
-        sessions.add(session);
-        session.addWillCloseListener((_) async {
-          sessionsClosed++;
-          sessionClosing.complete();
-          await releaseSession.future;
-        });
-        final endpoint = _Endpoint()..initialize(pod.server, 'test', null);
-        final input = StreamParameterDescription<int>(
-          name: 'input',
-          nullable: false,
+        final repeated = closeGeneratorOutput(cleanup, CloseReason.done).then(
+          (_) => completed.add('repeated'),
         );
-        manager.createStream(
-          methodStreamCallContext: MethodStreamCallContext(
-            method: MethodStreamConnector(
-              name: 'stream',
-              params: {},
-              returnType: MethodStreamReturnType.streamType,
-              streamParams: {'input': input},
-              call: (_, _, streams) async* {
-                try {
-                  waitingForInput.complete();
-                  await for (final value in streams['input']!) {
-                    yield value;
-                  }
-                } finally {
-                  producerFinished.complete();
-                  await releaseCleanup.future;
-                }
-              },
-            ),
-            arguments: {},
-            inputStreams: [input],
-            endpoint: endpoint,
-            fullEndpointPath: 'test',
-          ),
-          methodStreamId: methodStreamId,
-          session: session,
+        final disconnected = manager.closeAllStreams().then(
+          (_) => completed.add('all'),
         );
-        addTearDown(() async {
-          if (!releaseCleanup.isCompleted) releaseCleanup.complete();
-          if (!releaseSession.isCompleted) releaseSession.complete();
-          await manager.closeAllStreams();
-        });
-        await waitingForInput.future.timeout(const Duration(seconds: 5));
+        // Let a close that failed to join the cleanup settle before sampling.
+        await Future<void>.delayed(Duration.zero);
+        completedBeforeRelease = List.of(completed);
+        sessionsClosedBeforeRelease = cleanup.sessionsClosed;
+
+        cleanup.releaseCleanup.complete();
+        await cleanup.sessionClosing.future.timeout(const Duration(seconds: 5));
+        await Future<void>.delayed(Duration.zero);
+        completedBeforeSessionRelease = List.of(completed);
+
+        cleanup.releaseSession.complete();
+        await Future.wait([firstClose, repeated, disconnected]);
+        completedCloses = List.of(completed);
+        sessionsClosed = cleanup.sessionsClosed;
       });
 
-      group(
-        'when its output closes and concurrent closes join the cleanup,',
-        () {
-          late List<String> completedBeforeRelease;
-          late List<String> completedBeforeSessionRelease;
-          late int sessionsClosedBeforeRelease;
-          late List<String> completed;
+      test('then every close waits for producer cleanup.', () {
+        expect(completedBeforeRelease, isEmpty);
+      });
 
-          setUp(() async {
-            completed = [];
-            final closing = manager
-                .closeStream(
-                  endpoint: 'test',
-                  method: 'stream',
-                  methodStreamId: methodStreamId,
-                  reason: CloseReason.error,
-                )
-                .then((_) => completed.add('first'));
-            // Closing this output alone must unblock the generator's input.
-            // Do not let closeAllStreams supply that missing cleanup for it.
-            await producerFinished.future.timeout(const Duration(seconds: 5));
-            final repeated = manager
-                .closeStream(
-                  endpoint: 'test',
-                  method: 'stream',
-                  methodStreamId: methodStreamId,
-                  reason: CloseReason.done,
-                )
-                .then((_) => completed.add('repeated'));
-            final disconnected = manager.closeAllStreams().then(
-              (_) => completed.add('all'),
-            );
-            // Allow an incorrectly unjoined close to settle before observing it.
-            await Future<void>.delayed(Duration.zero);
-            completedBeforeRelease = [...completed];
-            sessionsClosedBeforeRelease = sessionsClosed;
-            releaseCleanup.complete();
-            await sessionClosing.future.timeout(const Duration(seconds: 5));
-            await Future<void>.delayed(Duration.zero);
-            completedBeforeSessionRelease = [...completed];
-            releaseSession.complete();
-            await Future.wait([closing, repeated, disconnected]);
-          });
+      test('then every close waits for session cleanup.', () {
+        expect(completedBeforeSessionRelease, isEmpty);
+      });
 
-          test(
-            'then input closure unblocks the producer before the timeout.',
-            () {
-              expect(producerFinished.isCompleted, isTrue);
-              expect(events, ['closed:error']);
-              expect(manager.openInputStreamCount, 0);
-              expect(manager.openOutputStreamCount, 0);
-            },
-          );
+      test('then session closure waits for producer cleanup.', () {
+        expect(sessionsClosedBeforeRelease, 0);
+      });
 
-          test('then every close awaits the producer and session cleanup.', () {
-            expect(completedBeforeRelease, isEmpty);
-            expect(completedBeforeSessionRelease, isEmpty);
-            expect(sessionsClosedBeforeRelease, 0);
-            expect(completed, unorderedEquals(['first', 'repeated', 'all']));
-            expect(sessionsClosed, 1);
-          });
-        },
-      );
-    },
-  );
+      test('then all three closes complete after cleanup.', () {
+        expect(completedCloses, unorderedEquals(['first', 'repeated', 'all']));
+      });
+
+      test('then the session closes once.', () {
+        expect(sessionsClosed, 1);
+      });
+    });
+  });
 
   group('Given an output stream whose cancellation never completes,', () {
     late UuidValue methodStreamId;
@@ -612,6 +657,15 @@ void main() {
       },
     );
   });
+}
+
+class _GeneratorCleanup {
+  final methodStreamId = const Uuid().v4obj();
+  final producerFinished = Completer<void>();
+  final releaseCleanup = Completer<void>();
+  final sessionClosing = Completer<void>();
+  final releaseSession = Completer<void>();
+  int sessionsClosed = 0;
 }
 
 class _Endpoint extends Endpoint {}
