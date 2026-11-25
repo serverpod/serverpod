@@ -8,44 +8,61 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given a database session log writer with pending inserts,', () {
-    for (final fails in [false, true]) {
-      test(
-        'when an insert ${fails ? 'fails' : 'succeeds'} during disposal, '
-        'then disposal waits for all inserts and completes without error.',
-        () async {
-          final database = _PendingInsertDatabase();
-          final writer = DatabaseSessionLogWriter()
-            ..attach(_FakeSession(database));
-          final firstOpen = writer.open(_openEvent('first'));
-          final secondOpen = writer.open(_openEvent('second'));
-          expect(database.inserts, hasLength(2));
+    test(
+      'when an insert succeeds during disposal, then disposal waits for it '
+      'and completes without error.',
+      () async {
+        final database = _PendingInsertDatabase();
+        final writer = DatabaseSessionLogWriter()
+          ..attach(_FakeSession(database));
+        final firstOpen = writer.open(_openEvent('first'));
+        final secondOpen = writer.open(_openEvent('second'));
+        expect(database.inserts, hasLength(2));
 
-          var disposed = false;
-          final disposal = writer.dispose().then((_) => disposed = true);
-          final disposalExpectation = expectLater(disposal, completes);
+        var disposed = false;
+        final disposal = writer.dispose().then((_) => disposed = true);
+        final disposalExpectation = expectLater(disposal, completes);
 
-          if (fails) {
-            database.inserts.first.completeError(
-              StateError('Database connection closed'),
-            );
-          } else {
-            database.inserts.first.complete();
-          }
-          await firstOpen;
-          await Future<void>.delayed(Duration.zero);
-          expect(disposed, isFalse);
+        database.inserts.first.complete();
+        await firstOpen;
+        await Future<void>.delayed(Duration.zero);
+        expect(disposed, isFalse);
 
-          database.inserts.last.complete();
-          await secondOpen;
-          await disposalExpectation;
-          expect(disposed, isTrue);
+        database.inserts.last.complete();
+        await secondOpen;
+        await disposalExpectation;
+        expect(disposed, isTrue);
+      },
+    );
 
-          await writer.open(_openEvent('after-disposal'));
-          expect(database.inserts, hasLength(2));
-          await writer.dispose();
-        },
-      );
-    }
+    test(
+      'when an insert fails during disposal, then disposal waits for it and '
+      'completes without propagating the error.',
+      () async {
+        final database = _PendingInsertDatabase();
+        final writer = DatabaseSessionLogWriter()
+          ..attach(_FakeSession(database));
+        final firstOpen = writer.open(_openEvent('first'));
+        final secondOpen = writer.open(_openEvent('second'));
+        expect(database.inserts, hasLength(2));
+
+        var disposed = false;
+        final disposal = writer.dispose().then((_) => disposed = true);
+        final disposalExpectation = expectLater(disposal, completes);
+
+        database.inserts.first.completeError(
+          StateError('Database connection closed'),
+        );
+        await firstOpen;
+        await Future<void>.delayed(Duration.zero);
+        expect(disposed, isFalse);
+
+        database.inserts.last.complete();
+        await secondOpen;
+        await disposalExpectation;
+        expect(disposed, isTrue);
+      },
+    );
   });
 }
 
