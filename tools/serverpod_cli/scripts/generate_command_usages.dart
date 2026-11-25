@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:args/command_runner.dart' show Command;
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
+import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
@@ -56,7 +57,7 @@ void main(List<String> args) {
         CompoundAnalytics([]),
         true,
         version,
-        onBeforeRunCommand: (_) async {},
+        preCommandHooks: false,
       )..addCommands([
         AnalyzePubspecsCommand(),
         CleanCommand(),
@@ -288,12 +289,12 @@ void _deleteRemovedCommandsFolders(
 }
 
 class _CommandDocumentationGenerator {
-  final BetterCommandRunner commandRunner;
+  final ServerpodCommandRunner commandRunner;
 
   _CommandDocumentationGenerator(this.commandRunner);
 
   Map<String, String> generateMarkdown() {
-    final commands = commandRunner.commands.values;
+    final commands = commandRunner.subcommands;
 
     final files = <String, String>{};
 
@@ -312,7 +313,7 @@ class _CommandDocumentationGenerator {
     final StringBuffer markdown = StringBuffer();
     markdown.writeln('## Usage\n');
 
-    if (commandRunner.argParser.options.isNotEmpty) {
+    if (commandRunner.allOptions().isNotEmpty) {
       markdown.writeln('```console');
       markdown.writeln(commandRunner.usage);
       markdown.writeln('```\n');
@@ -321,35 +322,42 @@ class _CommandDocumentationGenerator {
     return markdown;
   }
 
-  StringBuffer _generateCommandPage(Command command) {
+  StringBuffer _generateCommandPage(Command<OptionDefinition, void> command) {
     final StringBuffer markdown = StringBuffer();
 
-    final hasOptions = command.argParser.options.isNotEmpty;
-    final subcommands = command.subcommands.entries
-        .where((e) => !_excludeCommand(e.value))
+    // `options` is this command's own options. Persistent options (for example
+    // `completion --shell`) live in `persistentOptions` and are still part of
+    // the usage. Help is no longer an option, so a branch command is recognized
+    // by its subcommands: its usage is the subcommand index.
+    final hasOptions =
+        command.options.isNotEmpty || command.persistentOptions.isNotEmpty;
+    final subcommands = command.subcommands
+        .where((subcommand) => !_excludeCommand(subcommand))
         .toList();
 
     // Commands that forward raw arguments (e.g. `cloud`) expose no options or
     // subcommands, so there is nothing to document beyond the maintained intro.
-    if (!hasOptions && subcommands.isEmpty) {
+    // Every other command keeps a usage block. Help is no longer an option, so
+    // that block is what still documents a command such as `version`.
+    if (!hasOptions &&
+        subcommands.isEmpty &&
+        command.ignoreUnexpectedPositionalArgs) {
       return markdown;
     }
 
     markdown.writeln('## Usage\n');
 
-    if (hasOptions) {
-      markdown.writeln('```console');
-      markdown.writeln(_stripGlobalOptions(command.usage));
-      markdown.writeln('```\n');
-    }
+    markdown.writeln('```console');
+    markdown.writeln(_stripGlobalOptions(command.usage));
+    markdown.writeln('```\n');
 
     if (subcommands.isNotEmpty) {
       final numberOfSubcommands = subcommands.length;
       markdown.writeln('### Sub commands\n');
       for (final (i, subcommand) in subcommands.indexed) {
-        markdown.writeln('#### `${subcommand.key}`\n');
+        markdown.writeln('#### `${subcommand.name}`\n');
         markdown.writeln('```console');
-        markdown.writeln(_stripGlobalOptions(subcommand.value.usage));
+        markdown.writeln(_stripGlobalOptions(subcommand.usage));
         markdown.writeln('```');
         if (i < numberOfSubcommands - 1) {
           markdown.writeln();
@@ -368,7 +376,7 @@ class _CommandDocumentationGenerator {
     return usage.substring(0, index).trimRight();
   }
 
-  bool _excludeCommand(Command command) {
-    return command.hidden || command.name == 'help';
+  bool _excludeCommand(Command<OptionDefinition, void> command) {
+    return command.usageDefinition.hidden || command.name == 'help';
   }
 }
