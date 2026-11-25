@@ -537,13 +537,13 @@ class Analyzers {
         endpoints: endpoints,
         models: allModels,
         futureCalls: futureCalls,
-        futureCallRetryPolicies: _futureCalls.retryPolicies,
       );
 
       var generatedProtocolFiles =
           (await ServerpodCodeGenerator.generateProtocolDefinition(
             protocolDefinition: protocolDefinition,
             config: config,
+            futureCallRetryPolicies: _futureCalls.retryPolicies,
           )).all;
       wroteFullProtocol = true;
 

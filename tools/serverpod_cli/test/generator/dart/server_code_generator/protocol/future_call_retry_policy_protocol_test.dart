@@ -1,6 +1,5 @@
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -19,9 +18,9 @@ void main() {
   );
 
   group(
-    'Given a protocol definition with a retry policy and a subclass of it listed after it,',
+    'Given a retry policy and a subclass of it listed after it,',
     () {
-      late ProtocolDefinition protocolDefinition;
+      late List<TypeDefinition> futureCallRetryPolicies;
 
       setUp(() {
         TypeDefinition policy(String className) => TypeDefinitionBuilder()
@@ -30,27 +29,27 @@ void main() {
             .withCustomClass(true)
             .build();
 
-        protocolDefinition = ProtocolDefinition(
-          endpoints: [],
-          models: [],
-          futureCalls: [],
-          futureCallRetryPolicies: [
-            policy('BaseFutureCallRetryPolicy'),
-            policy('SubFutureCallRetryPolicy'),
-          ],
-        );
+        futureCallRetryPolicies = [
+          policy('BaseFutureCallRetryPolicy'),
+          policy('SubFutureCallRetryPolicy'),
+        ];
       });
 
       group(
-        'when the server protocol is generated,',
+        'when the server protocol is generated with them,',
         () {
           late String serverProtocol;
 
           setUp(() {
             serverProtocol = const DartServerCodeGenerator()
                 .generateProtocolCode(
-                  protocolDefinition: protocolDefinition,
+                  protocolDefinition: const ProtocolDefinition(
+                    endpoints: [],
+                    models: [],
+                    futureCalls: [],
+                  ),
                   config: config,
+                  futureCallRetryPolicies: futureCallRetryPolicies,
                 )[serverProtocolPath]!;
           });
 
@@ -95,22 +94,6 @@ void main() {
                 expect(serverProtocol, isNot(contains('$className():')));
               }
             },
-          );
-        },
-      );
-
-      test(
-        'when the client protocol is generated,'
-        'then it does not refer to the policies.',
-        () {
-          var clientCode = const DartClientCodeGenerator().generateProtocolCode(
-            protocolDefinition: protocolDefinition,
-            config: config,
-          );
-
-          expect(
-            clientCode.values,
-            everyElement(isNot(contains('FutureCallRetryPolicy'))),
           );
         },
       );

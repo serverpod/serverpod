@@ -29,11 +29,17 @@ class LibraryGenerator {
   final ProtocolDefinition protocolDefinition;
   final GeneratorConfig config;
 
+  /// The future call retry policy classes of the project.
+  ///
+  /// They are serialized by the server protocol only, like extra classes.
+  final List<TypeDefinition> futureCallRetryPolicies;
+
   LibraryGenerator({
     required this.serverCode,
     required this.sharedPackage,
     required this.protocolDefinition,
     required this.config,
+    this.futureCallRetryPolicies = const [],
   });
 
   /// Whether this package supports delegating serialization to a host protocol.
@@ -106,7 +112,7 @@ class LibraryGenerator {
   /// project and, in server code, the project's future call retry policies.
   List<TypeDefinition> get _protocolExtraClasses => [
     ...config.extraClasses,
-    if (serverCode) ...protocolDefinition.futureCallRetryPolicies,
+    if (serverCode) ...futureCallRetryPolicies,
   ];
 
   /// Generate the protocol library.
@@ -524,8 +530,7 @@ class LibraryGenerator {
             // Retry policies are matched by their exact type, so that a policy
             // that extends another one is never named after its superclass.
             if (serverCode)
-              for (var retryPolicy
-                  in protocolDefinition.futureCallRetryPolicies)
+              for (var retryPolicy in futureCallRetryPolicies)
                 Code.scope(
                   (a) =>
                       'if (data.runtimeType == ${a(retryPolicy.reference(serverCode, config: config))}) {'

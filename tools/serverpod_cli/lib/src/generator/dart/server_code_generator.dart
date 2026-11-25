@@ -36,16 +36,20 @@ class DartServerCodeGenerator extends CodeGenerator {
     return serverSideGenerator.generateCode(modelAllocatorContext);
   }
 
+  /// The server protocol also serializes the [futureCallRetryPolicies] of the
+  /// project.
   @override
   Map<String, String> generateProtocolCode({
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
+    List<TypeDefinition> futureCallRetryPolicies = const [],
   }) {
     var serverClassGenerator = LibraryGenerator(
       serverCode: true,
       sharedPackage: false,
       protocolDefinition: protocolDefinition,
       config: config,
+      futureCallRetryPolicies: futureCallRetryPolicies,
     );
 
     var protocolPath = p.joinAll(config.generatedServerProtocolFilePathParts);
