@@ -637,4 +637,77 @@ class RemovedPolicy extends FutureCallRetryPolicy {
       },
     );
   });
+
+  group(
+    'Given an analyzed directory with a retry policy that has no fromJson constructor,',
+    () {
+      late File policyFile;
+      late FutureCallsAnalyzer analyzer;
+
+      setUp(() async {
+        var directory = _createDirectoryWithFiles({
+          'retry_policy.dart': '''
+import 'package:serverpod/serverpod.dart';
+
+class FixedPolicy extends FutureCallRetryPolicy {
+  @override
+  Duration? nextDelay(FutureCallRetryContext context) => null;
+
+  @override
+  Map<String, dynamic> toJson() => {};
+}
+''',
+        });
+        policyFile = File(path.join(directory.path, 'retry_policy.dart'));
+
+        analyzer = FutureCallsAnalyzer(directory: directory);
+        await analyzer.analyze(
+          collector: CodeGenerationCollector(),
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      group(
+        'when the fromJson constructor is added and the file context is updated,',
+        () {
+          late bool result;
+
+          setUp(() async {
+            policyFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class FixedPolicy extends FutureCallRetryPolicy {
+  FixedPolicy();
+  factory FixedPolicy.fromJson(Map<String, dynamic> json) => FixedPolicy();
+
+  @override
+  Duration? nextDelay(FutureCallRetryContext context) => null;
+
+  @override
+  Map<String, dynamic> toJson() => {};
+}
+''');
+            result = await analyzer.updateFileContexts({policyFile.path});
+          });
+
+          test(
+            'then it returns true.',
+            () {
+              expect(result, isTrue);
+            },
+          );
+
+          test(
+            'then the policy is registered.',
+            () {
+              expect(
+                analyzer.retryPolicies.map((type) => type.className),
+                ['FixedPolicy'],
+              );
+            },
+          );
+        },
+      );
+    },
+  );
 }

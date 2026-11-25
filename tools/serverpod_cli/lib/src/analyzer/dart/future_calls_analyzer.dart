@@ -123,10 +123,11 @@ class FutureCallsAnalyzer {
   ];
 
   /// Identifies the future call retry policy classes found in the last
-  /// analysis, whether or not they passed validation.
+  /// analysis and whether each of them passed validation, which decides
+  /// whether it is registered in the protocol.
   String get _retryPolicySignature => [
     for (var cached in _retryPolicyCache.values.expand((e) => e))
-      '${cached.type.url}:${cached.type.className}',
+      '${cached.type.url}:${cached.type.className}:${cached.isValid}',
   ].join('\n');
 
   /// The future call files currently cached with errors.
