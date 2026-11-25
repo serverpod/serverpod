@@ -218,6 +218,79 @@ void main() {
     );
   });
 
+  group(
+    'Given an ExponentialBackoffRetryPolicy with maxAttempts 2000, an initialDelay of one second and a maxDelay of one second,',
+    () {
+      late ExponentialBackoffRetryPolicy policy;
+
+      setUp(() {
+        policy = const ExponentialBackoffRetryPolicy(
+          maxAttempts: 2000,
+          initialDelay: Duration(seconds: 1),
+          maxDelay: Duration(seconds: 1),
+        );
+      });
+
+      test(
+        'when nextDelay is called with retryAttempt 1005,'
+        'then maxDelay is returned.',
+        () {
+          expect(
+            policy.nextDelay(_contextFor(1005)),
+            const Duration(seconds: 1),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an ExponentialBackoffRetryPolicy with maxAttempts 2000 and without maxDelay,',
+    () {
+      late ExponentialBackoffRetryPolicy policy;
+
+      setUp(() {
+        policy = const ExponentialBackoffRetryPolicy(
+          maxAttempts: 2000,
+          initialDelay: Duration(seconds: 1),
+        );
+      });
+
+      test(
+        'when nextDelay is called with retryAttempt 1005,'
+        'then a delay of 100 years is returned.',
+        () {
+          expect(
+            policy.nextDelay(_contextFor(1005)),
+            const Duration(days: 365 * 100),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an ExponentialBackoffRetryPolicy with maxAttempts 2000 and an initialDelay of zero,',
+    () {
+      late ExponentialBackoffRetryPolicy policy;
+
+      setUp(() {
+        policy = const ExponentialBackoffRetryPolicy(
+          maxAttempts: 2000,
+          initialDelay: Duration.zero,
+        );
+      });
+
+      test(
+        'when nextDelay is called with retryAttempt 1005,'
+        'then a delay of zero is returned.',
+        () {
+          expect(policy.nextDelay(_contextFor(1005)), Duration.zero);
+        },
+      );
+    },
+  );
+
   group('Given a RandomDelayRetryPolicy with maxAttempts 3,', () {
     late RandomDelayRetryPolicy policy;
 

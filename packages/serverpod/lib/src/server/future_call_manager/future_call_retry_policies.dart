@@ -4,6 +4,10 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'future_call_retry_policy.dart';
 import 'future_call_retry_policy_serialization.dart';
 
+/// The longest delay an [ExponentialBackoffRetryPolicy] without a `maxDelay`
+/// returns, so that the time of the retry can still be represented.
+const _longestExponentialDelay = Duration(days: 365 * 100);
+
 bool _hasReachedMaxAttempts(int maxAttempts, FutureCallRetryContext context) {
   return context.retryAttempt >= maxAttempts;
 }
@@ -169,9 +173,16 @@ final class ExponentialBackoffRetryPolicy extends FutureCallRetryPolicy {
   Duration? nextDelay(FutureCallRetryContext context) {
     if (_hasReachedMaxAttempts(maxAttempts, context)) return null;
 
+    if (initialDelay == Duration.zero) return Duration.zero;
+
+    // Capped before the result is converted to a whole number of
+    // microseconds: after enough retries it is too large to convert, and can
+    // even be infinite.
+    var longest = maxDelay ?? _longestExponentialDelay;
     var microseconds =
         initialDelay.inMicroseconds * pow(multiplier, context.retryAttempt);
-    return _capDelay(Duration(microseconds: microseconds.round()), maxDelay);
+    if (microseconds >= longest.inMicroseconds) return longest;
+    return Duration(microseconds: microseconds.round());
   }
 
   @override
