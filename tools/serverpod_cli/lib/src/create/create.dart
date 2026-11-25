@@ -1,11 +1,10 @@
 // ignore_for_file: implementation_imports
 
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:logging/logging.dart' as logging;
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
@@ -29,8 +28,8 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:skills/skills.dart';
+import 'package:skills/src/agent/agent.dart';
 import 'package:skills/src/core/workspace_resolver.dart';
-import 'package:skills/src/ide/ide.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
@@ -69,15 +68,21 @@ extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
 }
 
 extension TemplateIdeExtension on List<TemplateIde> {
-  List<Ide> get toSkillIdes {
+  /// Agents [getSkills] should install for.
+  ///
+  /// Antigravity and Codex are aliases of [Agent.generic]. VS Code has no
+  /// dedicated agent, so it uses that same `.agents/skills` location.
+  List<Agent> get toSkillAgents {
     return map((templateIde) {
       return switch (templateIde) {
-        TemplateIde.claude => Ide.claude,
-        TemplateIde.cursor => Ide.cursor,
-        TemplateIde.openCode => Ide.opencode,
-        _ => Ide.generic,
+        TemplateIde.claude => Agent.claude,
+        TemplateIde.cursor => Agent.cursor,
+        TemplateIde.openCode => Agent.opencode,
+        TemplateIde.antigravity ||
+        TemplateIde.codex ||
+        TemplateIde.vscode => Agent.generic,
       };
-    }).toList();
+    }).toSet().toList();
   }
 }
 
@@ -366,90 +371,54 @@ Future<void> _configureAgentSkillsAndMcp({
     );
 
     await log.progress('Installing agent skills', () async {
+      final skillsLogger = logging.Logger.detached('skills')
+        ..level = logging.Level.ALL;
+      final subscription = skillsLogger.onRecord.listen(
+        _forwardSkillsLogRecord,
+      );
       try {
         final workspace = await const WorkspaceResolver().resolve(
           serverpodDirs.projectDir.path,
         );
 
-        final stdoutController = StreamController<List<int>>();
-        stdoutController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            .listen((data) => log.debug(data));
-        final toDebugLog = IOSink(stdoutController);
-        final stderrController = StreamController<List<int>>();
-        stderrController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            .listen((data) => _logError(data));
-        final toErrorLog = IOSink(stderrController);
-
+        // `allFlag` installs every skill without a selection dialog. Project
+        // creation is non-interactive, and skills 1.x no longer installs
+        // anything unless a selection, skill names, or `--all` is given.
         final success = await getSkills(
-          ides: context.ides.toSkillIdes,
+          agents: context.ides.toSkillAgents,
+          logger: skillsLogger,
           workspace: workspace,
-          stdout: toDebugLog,
-          stderr: toErrorLog,
+          allFlag: true,
         );
 
         if (!success) {
           _logError('Failed to install agent skills');
           return false;
         }
-
-        final agentDir = Directory(
-          p.join(serverpodDirs.projectDir.path, '.agent'),
-        );
-        if (await agentDir.exists()) {
-          final agentsDir = Directory(
-            p.join(serverpodDirs.projectDir.path, '.agents'),
-          );
-
-          try {
-            await _moveDirectoryContents(agentDir, agentsDir);
-            await agentDir.delete();
-          } on FileSystemException {
-            //
-          }
-        }
       } catch (_) {
         _logError('Failed to install agent skills');
         return false;
+      } finally {
+        await subscription.cancel();
       }
       return true;
     });
   }
 }
 
-Future<void> _moveDirectoryContents(
-  Directory source,
-  Directory destination,
-) async {
-  if (!await source.exists()) {
-    throw Exception('Source directory does not exist: ${source.path}');
-  }
-
-  // Ensure destination exists
-  if (!await destination.exists()) {
-    await destination.create(recursive: true);
-  }
-
-  await for (final entity in source.list()) {
-    final newPath = p.join(destination.path, p.basename(entity.path));
-
-    if (entity is File) {
-      // Never overwrite files already present at the destination, such as the
-      // Antigravity plugin config written under .agents/plugins/ before this
-      // move runs.
-      if (await File(newPath).exists()) {
-        log.debug('Skipped moving ${entity.path}: $newPath already exists.');
-        continue;
-      }
-      await entity.rename(newPath);
-    } else if (entity is Directory) {
-      final newDir = await Directory(newPath).create(recursive: true);
-      await _moveDirectoryContents(entity, newDir);
-      await entity.delete();
-    }
+/// Routes a `package:skills` log record into the CLI logger.
+///
+/// Info stays at debug so the create progress line is not flooded. Warnings
+/// and errors are surfaced; errors also land in the buffer flushed after the
+/// TUI exits.
+void _forwardSkillsLogRecord(logging.LogRecord record) {
+  final level = record.level.value;
+  if (level >= logging.Level.SEVERE.value) {
+    _logError(record.message);
+  } else if (level >= logging.Level.WARNING.value) {
+    log.warning(record.message);
+  } else if (record.message.isNotEmpty) {
+    log.debug(record.message);
   }
 }
 
