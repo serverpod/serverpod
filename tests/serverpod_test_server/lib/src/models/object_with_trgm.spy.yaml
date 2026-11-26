@@ -1,0 +1,15 @@
+class: ObjectWithTrgm
+table: object_with_trgm
+fields:
+  searchText: String
+  searchTextIndexed: String
+  nullableSearchTextIndexed: String?
+indexes:
+  search_text_trgm_idx:
+    fields: searchTextIndexed
+    type: gin
+    operatorClass: trgmOps
+  nullable_search_text_trgm_idx:
+    fields: nullableSearchTextIndexed
+    type: gin
+    operatorClass: trgmOps

@@ -744,6 +744,7 @@ END
           GinOperatorClass.jsonbOps: 'jsonb_ops',
           GinOperatorClass.jsonbPathOps: 'jsonb_path_ops',
           GinOperatorClass.tsvectorOps: 'tsvector_ops',
+          GinOperatorClass.trgmOps: 'gin_trgm_ops',
         };
 
         for (var entry in operatorClasses.entries) {
@@ -776,6 +777,140 @@ END
       },
     );
   });
+
+  test(
+    'Given a trigram index covering title and description, '
+    'when generating PostgreSQL SQL, '
+    'then gin_trgm_ops is applied to both columns.',
+    () {
+      var index = IndexDefinitionBuilder()
+          .withIndexName('catalog_item_search_trgm_idx')
+          .withElements([
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'title',
+            ),
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'description',
+            ),
+          ])
+          .withType('gin')
+          .withGinOperatorClass(GinOperatorClass.trgmOps)
+          .withIsUnique(false)
+          .withIsPrimary(false)
+          .build();
+
+      var sql = index.toPgSql(tableName: 'catalog_item');
+
+      expect(
+        sql,
+        'CREATE INDEX "catalog_item_search_trgm_idx" ON "catalog_item" '
+        'USING gin ("title" gin_trgm_ops, "description" gin_trgm_ops);\n',
+      );
+    },
+  );
+
+  test(
+    'Given a jsonbPathOps index covering tags and attributes, '
+    'when generating PostgreSQL SQL, '
+    'then jsonb_path_ops is applied to both columns.',
+    () {
+      var index = IndexDefinitionBuilder()
+          .withIndexName('catalog_item_jsonb_idx')
+          .withElements([
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'tags',
+            ),
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'attributes',
+            ),
+          ])
+          .withType('gin')
+          .withGinOperatorClass(GinOperatorClass.jsonbPathOps)
+          .withIsUnique(false)
+          .withIsPrimary(false)
+          .build();
+
+      var sql = index.toPgSql(tableName: 'catalog_item');
+
+      expect(
+        sql,
+        'CREATE INDEX "catalog_item_jsonb_idx" ON "catalog_item" '
+        'USING gin ("tags" jsonb_path_ops, "attributes" jsonb_path_ops);\n',
+      );
+    },
+  );
+
+  const createPgTrgmExtension = '''
+--
+-- CREATE PG_TRGM EXTENSION IF AVAILABLE
+--
+DO \$\$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'pg_trgm') THEN
+    EXECUTE 'CREATE EXTENSION IF NOT EXISTS pg_trgm';
+  ELSE
+    RAISE EXCEPTION 'Required extension "pg_trgm" is not available on this instance. Please install the PostgreSQL pg_trgm contrib module. For instructions, see https://www.postgresql.org/docs/current/pgtrgm.html.';
+  END IF;
+END
+\$\$;
+''';
+
+  test(
+    'Given a database definition with no trigram index, '
+    'when generating PostgreSQL SQL, '
+    'then code for creating the pg_trgm extension is not generated.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder().build();
+      var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(pgsql, isNot(contains(createPgTrgmExtension)));
+    },
+  );
+
+  test(
+    'Given a database definition with a gin trigram index, '
+    'when generating PostgreSQL SQL, '
+    'then code for creating the pg_trgm extension is generated.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('catalog_item')
+                .withIndex(
+                  IndexDefinitionBuilder()
+                      .withIndexName('catalog_item_search_trgm_idx')
+                      .withElements([
+                        IndexElementDefinition(
+                          type: IndexElementDefinitionType.column,
+                          definition: 'searchText',
+                        ),
+                      ])
+                      .withType('gin')
+                      .withGinOperatorClass(GinOperatorClass.trgmOps)
+                      .withIsUnique(false)
+                      .withIsPrimary(false)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(pgsql, contains(createPgTrgmExtension));
+      expect(
+        pgsql,
+        contains(
+          'CREATE INDEX "catalog_item_search_trgm_idx" ON "catalog_item" '
+          'USING gin ("searchText" gin_trgm_ops);\n',
+        ),
+      );
+    },
+  );
 
   test(
     'Given a column migration that sets a serial default, '
