@@ -157,8 +157,10 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
     'repair-migration',
   ];
 
+  static const String commandName = 'create';
+
   @override
-  final name = 'create';
+  final name = commandName;
 
   @override
   final description =

@@ -1,11 +1,21 @@
+import 'dart:io';
+
+import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/config.dart';
+import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/project_metadata_store.dart';
+import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
+import 'package:serverpod_cli/src/commands/quickstart.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 class MockLogOutput {
   List<String> messages = [];
@@ -148,6 +158,18 @@ class MockVersionCommand extends Command {
   void run() {
     numberOfRuns++;
   }
+}
+
+class NoopCreateCommand extends CreateCommand {
+  @override
+  Future<void> runWithConfig(Configuration<CreateOption> commandConfig) async {}
+}
+
+class NoopQuickstartCommand extends QuickstartCommand {
+  @override
+  Future<void> runWithConfig(
+    Configuration<QuickstartOption> commandConfig,
+  ) async {}
 }
 
 class TestFixture {
@@ -370,6 +392,172 @@ void main() {
       },
     );
   });
+
+  group('Given a project command,', () {
+    ArgResults parse(Command command, List<String> args) =>
+        (ArgParser()..addCommand(command.name, command.argParser)).parse([
+          command.name,
+          ...args,
+        ]).command!;
+
+    test('when create is given a project name, '
+        'then it creates a new project', () {
+      expect(createsNewProject(parse(CreateCommand(), ['my_app'])), isTrue);
+    });
+
+    test('when create is given a project name with --name, '
+        'then it creates a new project', () {
+      expect(
+        createsNewProject(parse(CreateCommand(), ['--name', 'my_app'])),
+        isTrue,
+      );
+    });
+
+    test('when quickstart is given a project name, '
+        'then it creates a new project', () {
+      expect(createsNewProject(parse(QuickstartCommand(), ['my_app'])), isTrue);
+    });
+
+    test('when create is given ".", '
+        'then it does not create a new project', () {
+      expect(createsNewProject(parse(CreateCommand(), ['.'])), isFalse);
+    });
+
+    test('when quickstart is given "." with --name, '
+        'then it does not create a new project', () {
+      expect(
+        createsNewProject(parse(QuickstartCommand(), ['--name', '.'])),
+        isFalse,
+      );
+    });
+
+    test('when a command that works in a project is checked, '
+        'then it does not create a new project', () {
+      expect(createsNewProject(parse(MockCommand(), [])), isFalse);
+    });
+  });
+
+  group(
+    'Given analytics is enabled and a folder holding a Serverpod server,',
+    () {
+      late ServerpodCommandRunner runner;
+      late String parentDir;
+      late String serverDir;
+
+      setUp(() async {
+        initializeCliAnalytics(CliAnalytics(analytics: MockAnalytics()));
+        runner =
+            ServerpodCommandRunner.createCommandRunner(
+              MockAnalytics(),
+              false,
+              version,
+              onBeforeRunCommand: (_) async {},
+            )..addCommands([
+              MockCommand(),
+              NoopCreateCommand(),
+              NoopQuickstartCommand(),
+            ]);
+
+        // Anchors git-dir resolution inside the sandbox so metadata never
+        // escapes to an ambient repo.
+        await d.dir('.git', [d.file('config', '')]).create();
+        await d.dir('projects', [
+          d.dir('other_app_server', [
+            d.file(
+              'pubspec.yaml',
+              'name: other_app_server\n'
+                  'dependencies:\n'
+                  '  serverpod: ^3.0.0\n',
+            ),
+          ]),
+        ]).create();
+        parentDir = p.join(d.sandbox, 'projects');
+        serverDir = p.join(parentDir, 'other_app_server');
+      });
+
+      tearDown(() => initializeCliAnalytics(CliAnalytics.disabled()));
+
+      Future<Map<String, int>> runFrom(
+        String directory,
+        List<String> args,
+      ) async {
+        await IOOverrides.runZoned(
+          () => runner.run(args),
+          getCurrentDirectory: () => Directory(directory),
+        );
+        await cliAnalytics.flush();
+        final metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
+        return metadata.commandInvocations;
+      }
+
+      test(
+        'when create is run with a new project name from that folder, '
+        'then the server does not count the invocation',
+        () async {
+          final invocations = await runFrom(parentDir, ['create', 'my_app']);
+
+          expect(invocations, isEmpty);
+        },
+      );
+
+      test(
+        'when quickstart is run with a new project name from that folder, '
+        'then the server does not count the invocation',
+        () async {
+          final invocations = await runFrom(parentDir, [
+            'quickstart',
+            'my_app',
+          ]);
+
+          expect(invocations, isEmpty);
+        },
+      );
+
+      test(
+        'when create is run with a new project name from the server directory, '
+        'then the server does not count the invocation',
+        () async {
+          final invocations = await runFrom(serverDir, ['create', 'my_app']);
+
+          expect(invocations, isEmpty);
+        },
+      );
+
+      test(
+        'when create is run with "." from that folder, '
+        'then the server counts the invocation',
+        () async {
+          final invocations = await runFrom(parentDir, ['create', '.']);
+
+          expect(invocations, {'create': 1});
+        },
+      );
+
+      test(
+        'when a command is run from the server directory, '
+        'then the server counts the invocation',
+        () async {
+          final invocations = await runFrom(serverDir, [
+            MockCommand.commandName,
+          ]);
+
+          expect(invocations, {MockCommand.commandName: 1});
+        },
+      );
+
+      test(
+        'when a command is run from that folder as the project root, '
+        'then the server counts the invocation',
+        () async {
+          final invocations = await runFrom(parentDir, [
+            MockCommand.commandName,
+          ]);
+
+          expect(invocations, {MockCommand.commandName: 1});
+        },
+      );
+    },
+  );
 
   group('Given analytics is enabled,', () {
     test(

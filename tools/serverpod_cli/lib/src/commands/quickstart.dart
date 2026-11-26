@@ -74,8 +74,10 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
     'repair-migration',
   ];
 
+  static const String commandName = 'quickstart';
+
   @override
-  final name = 'quickstart';
+  final name = commandName;
 
   @override
   final description =
