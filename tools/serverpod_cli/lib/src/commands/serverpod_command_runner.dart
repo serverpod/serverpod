@@ -212,7 +212,13 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     if (commandName != null &&
         commands.containsKey(commandName) &&
         cliAnalytics.enabled) {
-      final serverDir = findServerDirectory(Directory.current);
+      Directory? serverDir;
+      try {
+        serverDir = findServerDirectory(Directory.current);
+      } catch (_) {
+        // Analytics must never disrupt CLI execution, for instance when an
+        // unrelated folder next to the current one has a broken pubspec.yaml.
+      }
       if (serverDir != null) {
         unawaited(
           cliAnalytics.recordCommandInvocation(

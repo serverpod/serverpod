@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/project_metadata_store.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 class MockLogOutput {
   List<String> messages = [];
@@ -450,4 +455,63 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given analytics is enabled and a child directory of the current '
+    'directory has an unparsable pubspec.yaml,',
+    () {
+      setUp(() async {
+        await d.dir('broken', [
+          d.file(
+            'pubspec.yaml',
+            'name: broken\n'
+                'dev_dependencies:\n'
+                '  a: ^1.0.0test: ^1.0.0\n',
+          ),
+        ]).create();
+      });
+
+      test('when a command is run, then the command runs', () async {
+        await IOOverrides.runZoned(
+          () => fixture.runner.run([MockCommand.commandName]),
+          getCurrentDirectory: () => Directory(d.sandbox),
+        );
+
+        expect(fixture.mockCommand.numberOfRuns, 1);
+      });
+    },
+  );
+
+  group(
+    'Given analytics is enabled and the current directory is a Serverpod '
+    'server directory,',
+    () {
+      setUp(() async {
+        await d.dir('my_project_server', [
+          d.file(
+            'pubspec.yaml',
+            'name: my_project_server\n'
+                'dependencies:\n'
+                '  serverpod: ^4.0.0\n',
+          ),
+        ]).create();
+      });
+
+      test(
+        'when a command is run, then the invocation is counted for that server',
+        () async {
+          final serverDir = d.path('my_project_server');
+
+          await IOOverrides.runZoned(
+            () => fixture.runner.run([MockCommand.commandName]),
+            getCurrentDirectory: () => Directory(serverDir),
+          );
+          await cliAnalytics.flush();
+
+          final metadata = await ProjectMetadataStore.loadOrCreate(serverDir);
+          expect(metadata.commandInvocations, {MockCommand.commandName: 1});
+        },
+      );
+    },
+  );
 }
