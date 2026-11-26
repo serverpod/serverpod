@@ -4,6 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/cli_tools_select.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/yaml_util.dart';
 import 'package:source_span/source_span.dart';
@@ -61,6 +62,7 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
 
     var candidates = <Directory>[];
     var visited = <String>{};
+    var unparsableChildPubspecs = <PubspecParseException>[];
 
     // 1. Check current directory first (fast path)
     if (condition(start)) {
@@ -74,12 +76,13 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
         maxDepth: 2,
         visited: visited,
         condition: condition,
+        unparsableChildPubspecs: unparsableChildPubspecs,
       ),
     );
 
     // Early return if we found candidates in children
-    if (candidates.isNotEmpty) {
-      return _returnCandidates(candidates);
+    if (candidates.isNotEmpty || unparsableChildPubspecs.isNotEmpty) {
+      return _returnCandidates(candidates, unparsableChildPubspecs);
     }
 
     // Determine if we should search upward/outward
@@ -115,23 +118,38 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
             maxDepth: searchDepth,
             visited: visited,
             condition: condition,
+            unparsableChildPubspecs: unparsableChildPubspecs,
           ),
         );
 
-        if (isAtBoundary || candidates.isNotEmpty) break;
+        if (isAtBoundary ||
+            candidates.isNotEmpty ||
+            unparsableChildPubspecs.isNotEmpty) {
+          break;
+        }
 
         current = current.parent;
       }
     }
 
     // Remove duplicates and return result
-    return _returnCandidates(candidates);
+    return _returnCandidates(candidates, unparsableChildPubspecs);
   };
 }
 
 /// Helper function to handle candidate results.
 /// Returns single directory, throws exception for multiple, or returns null.
-Directory? _returnCandidates(List<Directory> candidates) {
+Directory? _returnCandidates(
+  List<Directory> candidates,
+  List<PubspecParseException> unparsableChildPubspecs,
+) {
+  if (candidates.isEmpty && unparsableChildPubspecs.isNotEmpty) {
+    throw unparsableChildPubspecs.first;
+  }
+  for (var e in unparsableChildPubspecs) {
+    log.debug('Skipped directory with an unparsable pubspec: $e');
+  }
+
   // Remove duplicates by normalized path
   var uniquePaths = <String>{};
   candidates = candidates.where((dir) {
@@ -244,6 +262,7 @@ class ServerDirectoryFinder {
     required int maxDepth,
     required Set<String> visited,
     required DirectoryContentCondition condition,
+    required List<PubspecParseException> unparsableChildPubspecs,
   }) {
     if (maxDepth < 0) return [];
 
@@ -258,7 +277,15 @@ class ServerDirectoryFinder {
       for (var entity in children) {
         if (entity is! Directory) continue;
 
-        if (condition(entity)) {
+        bool isMatch;
+        try {
+          isMatch = condition(entity);
+        } on PubspecParseException catch (e) {
+          unparsableChildPubspecs.add(e);
+          isMatch = false;
+        }
+
+        if (isMatch) {
           results.add(entity);
         } else if (maxDepth > 0) {
           results.addAll(
@@ -267,6 +294,7 @@ class ServerDirectoryFinder {
               maxDepth: maxDepth - 1,
               visited: visited,
               condition: condition,
+              unparsableChildPubspecs: unparsableChildPubspecs,
             ),
           );
         }

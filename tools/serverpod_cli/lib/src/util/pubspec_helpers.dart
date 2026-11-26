@@ -7,15 +7,23 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
+class PubspecParseException implements Exception {
+  final String path;
+  final Object cause;
+
+  PubspecParseException(this.path, this.cause);
+
+  @override
+  String toString() => 'Error while parsing pubspec file: $path: $cause';
+}
+
 Pubspec parsePubspec(File pubspecFile) {
   try {
     var yamlContent = pubspecFile.readAsStringSync();
     var pubspec = Pubspec.parse(yamlContent);
     return pubspec;
   } catch (e) {
-    throw Exception(
-      'Error while parsing pubspec file: ${pubspecFile.path}: $e',
-    );
+    throw PubspecParseException(pubspecFile.path, e);
   }
 }
 

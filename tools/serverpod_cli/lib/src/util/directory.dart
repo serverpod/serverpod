@@ -34,13 +34,16 @@ bool isServerDirectory(Directory directory) {
 Directory? findServerDirectory(Directory root) {
   if (isServerDirectory(root)) return root;
 
-  var childDirs = root.listSync().where(
-    (dir) => isServerDirectory(Directory.fromUri(dir.uri)),
-  );
-
-  if (childDirs.isNotEmpty) {
-    return Directory.fromUri(childDirs.first.uri);
+  PubspecParseException? firstChildParseError;
+  for (var entity in root.listSync()) {
+    var dir = Directory.fromUri(entity.uri);
+    try {
+      if (isServerDirectory(dir)) return dir;
+    } on PubspecParseException catch (e) {
+      firstChildParseError ??= e;
+    }
   }
 
+  if (firstChildParseError != null) throw firstChildParseError;
   return null;
 }

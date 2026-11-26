@@ -88,6 +88,30 @@ void main() {
     );
 
     test(
+      'Given an unrelated directory with an unparsable pubspec next to the project, '
+      'when GeneratorConfig.load is called without directory parameter from the parent, '
+      'then it finds the server directory',
+      () async {
+        await createMockServerpodProject(
+          projectName: 'myapp',
+        );
+        await d.dir('scratch', [
+          d.file('pubspec.yaml', 'name: scratch\ndependencies: [\n'),
+        ]).create();
+
+        var originalDir = Directory.current;
+        Directory.current = Directory(d.sandbox);
+
+        try {
+          var config = await GeneratorConfig.load(interactive: false);
+          expect(config.serverPackage, equals('myapp_server'));
+        } finally {
+          Directory.current = originalDir;
+        }
+      },
+    );
+
+    test(
       'Given explicit directory path provided, '
       'when GeneratorConfig.load is called with directory parameter, '
       'then it uses the explicit path (backward compatibility)',

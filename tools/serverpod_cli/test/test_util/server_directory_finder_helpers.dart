@@ -21,3 +21,16 @@ dependencies:
 '''),
   ]);
 }
+
+d.DirectoryDescriptor unparsablePubspecDir(
+  String name, [
+  Iterable<d.Descriptor> contents = const [],
+]) {
+  return d.dir(name, [
+    d.file('pubspec.yaml', '''
+name: $name
+dependencies: [
+'''),
+    ...contents,
+  ]);
+}
