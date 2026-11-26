@@ -297,6 +297,34 @@ fields:
         expect(result!.migration.isEmpty, isTrue);
       },
     );
+
+    test(
+      'when creating repair migration and nothing is listening on the address, '
+      'then MigrationLiveDatabaseDefinitionException with that address is thrown.',
+      () async {
+        var socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+        var insightsAddress = 'http://127.0.0.1:${socket.port}/';
+        await socket.close();
+
+        await expectLater(
+          generator.repairMigration(
+            runMode:
+                CreateRepairMigrationOption.runModes.first /* development */,
+            force: false,
+            dialect: DatabaseDialect.postgres,
+            targetMigrationVersion: _migrationVersion,
+            insightsAddress: insightsAddress,
+          ),
+          throwsA(
+            isA<MigrationLiveDatabaseDefinitionException>().having(
+              (e) => e.address,
+              'Matching address',
+              insightsAddress,
+            ),
+          ),
+        );
+      },
+    );
   });
 }
 
