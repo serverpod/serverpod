@@ -26,7 +26,9 @@ abstract class FutureCallEntry
     required this.serverId,
     this.identifier,
     this.scheduling,
-  });
+    this.serializedRetryPolicy,
+    int? failedAttempts,
+  }) : failedAttempts = failedAttempts ?? 0;
 
   factory FutureCallEntry({
     int? id,
@@ -36,6 +38,8 @@ abstract class FutureCallEntry
     required String serverId,
     String? identifier,
     _is8pd350.FutureCallScheduling? scheduling,
+    String? serializedRetryPolicy,
+    int? failedAttempts,
   }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -51,6 +55,9 @@ abstract class FutureCallEntry
           : _ian793c4.Protocol().deserialize<_is8pd350.FutureCallScheduling>(
               jsonSerialization['scheduling'],
             ),
+      serializedRetryPolicy:
+          jsonSerialization['serializedRetryPolicy'] as String?,
+      failedAttempts: jsonSerialization['failedAttempts'] as int?,
     );
   }
 
@@ -78,6 +85,13 @@ abstract class FutureCallEntry
   /// This field is null for one-off future calls.
   _is8pd350.FutureCallScheduling? scheduling;
 
+  /// The retry policy and its current state, serialized with its class name.
+  /// Null means the call is not retried.
+  String? serializedRetryPolicy;
+
+  /// Number of attempts of this entry that have already failed.
+  int failedAttempts;
+
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
@@ -89,6 +103,8 @@ abstract class FutureCallEntry
     String? serverId,
     String? identifier,
     _is8pd350.FutureCallScheduling? scheduling,
+    String? serializedRetryPolicy,
+    int? failedAttempts,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -101,6 +117,9 @@ abstract class FutureCallEntry
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
       if (scheduling != null) 'scheduling': scheduling?.toJson(),
+      if (serializedRetryPolicy != null)
+        'serializedRetryPolicy': serializedRetryPolicy,
+      'failedAttempts': failedAttempts,
     };
   }
 
@@ -115,6 +134,9 @@ abstract class FutureCallEntry
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
       if (scheduling != null) 'scheduling': scheduling?.toJsonForProtocol(),
+      if (serializedRetryPolicy != null)
+        'serializedRetryPolicy': serializedRetryPolicy,
+      'failedAttempts': failedAttempts,
     };
   }
 
@@ -135,6 +157,8 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     required String serverId,
     String? identifier,
     _is8pd350.FutureCallScheduling? scheduling,
+    String? serializedRetryPolicy,
+    int? failedAttempts,
   }) : super._(
          id: id,
          name: name,
@@ -143,6 +167,8 @@ class _FutureCallEntryImpl extends FutureCallEntry {
          serverId: serverId,
          identifier: identifier,
          scheduling: scheduling,
+         serializedRetryPolicy: serializedRetryPolicy,
+         failedAttempts: failedAttempts,
        );
 
   /// Returns a shallow copy of this [FutureCallEntry]
@@ -157,6 +183,8 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     String? serverId,
     Object? identifier = _Undefined,
     Object? scheduling = _Undefined,
+    Object? serializedRetryPolicy = _Undefined,
+    int? failedAttempts,
   }) {
     return FutureCallEntry(
       id: id is int? ? id : this.id,
@@ -170,6 +198,10 @@ class _FutureCallEntryImpl extends FutureCallEntry {
       scheduling: scheduling is _is8pd350.FutureCallScheduling?
           ? scheduling
           : this.scheduling?.copyWith(),
+      serializedRetryPolicy: serializedRetryPolicy is String?
+          ? serializedRetryPolicy
+          : this.serializedRetryPolicy,
+      failedAttempts: failedAttempts ?? this.failedAttempts,
     );
   }
 }

@@ -68,17 +68,28 @@ abstract class ServerpodCodeGenerator {
   /// Generate from [CodeGenerator.generateProtocolCode] for all
   /// [CodeGenerator]s and save the files.
   ///
+  /// The [futureCallRetryPolicies] are passed to the server code generator
+  /// only, since only the server protocol serializes them.
+  ///
   /// Returns the generated files, and which of them changed on disk.
   static Future<GeneratedFilePaths> generateProtocolDefinition({
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
+    List<TypeDefinition> futureCallRetryPolicies = const [],
   }) async {
     var allFiles = {
       for (var generator in _generators)
-        ...generator.generateProtocolCode(
-          protocolDefinition: protocolDefinition,
-          config: config,
-        ),
+        ...switch (generator) {
+          DartServerCodeGenerator() => generator.generateProtocolCode(
+            protocolDefinition: protocolDefinition,
+            config: config,
+            futureCallRetryPolicies: futureCallRetryPolicies,
+          ),
+          _ => generator.generateProtocolCode(
+            protocolDefinition: protocolDefinition,
+            config: config,
+          ),
+        },
     };
     var written = await _writeFiles(allFiles);
 

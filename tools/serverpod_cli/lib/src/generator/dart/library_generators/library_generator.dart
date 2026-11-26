@@ -29,11 +29,17 @@ class LibraryGenerator {
   final ProtocolDefinition protocolDefinition;
   final GeneratorConfig config;
 
+  /// The future call retry policy classes of the project.
+  ///
+  /// They are serialized by the server protocol only, like extra classes.
+  final List<TypeDefinition> futureCallRetryPolicies;
+
   LibraryGenerator({
     required this.serverCode,
     required this.sharedPackage,
     required this.protocolDefinition,
     required this.config,
+    this.futureCallRetryPolicies = const [],
   });
 
   /// Whether this package supports delegating serialization to a host protocol.
@@ -101,6 +107,13 @@ class LibraryGenerator {
     );
     return library.build();
   }
+
+  /// The extra classes the protocol serializes: the ones configured for the
+  /// project and, in server code, the project's future call retry policies.
+  List<TypeDefinition> get _protocolExtraClasses => [
+    ...config.extraClasses,
+    if (serverCode) ...futureCallRetryPolicies,
+  ];
 
   /// Generate the protocol library.
   Library generateProtocol() {
@@ -200,6 +213,16 @@ class LibraryGenerator {
           classInfo.className,
           refer(classInfo.className, TypeDefinition.getRef(classInfo)),
         ),
+    ];
+    // Kept apart from the local classes, because retry policies are named by
+    // their exact type rather than matched by a type pattern.
+    final retryPolicyDeserializers = [
+      if (serverCode)
+        for (var retryPolicy in futureCallRetryPolicies)
+          (
+            retryPolicy.className,
+            retryPolicy.reference(serverCode, config: config),
+          ),
     ];
     final streamClassDeserializers = [
       for (var containerType in nonModelStreamTypes)
@@ -320,13 +343,13 @@ class LibraryGenerator {
               config: config,
             ),
           // Generate deserialization for extra classes.
-          for (var extraClass in config.extraClasses)
+          for (var extraClass in _protocolExtraClasses)
             ...extraClass.generateDeserialization(
               serverCode,
               config: config,
             ),
           // Generate deserialization for extra classes as nullables.
-          for (var extraClass in config.extraClasses)
+          for (var extraClass in _protocolExtraClasses)
             ...extraClass.asNullable.generateDeserialization(
               serverCode,
               config: config,
@@ -357,6 +380,7 @@ class LibraryGenerator {
         modules: deserializationModules,
         classNames: [
           for (var (name, _) in localClassDeserializers) name,
+          for (var (name, _) in retryPolicyDeserializers) name,
           for (var (name, _) in streamClassDeserializers) name,
         ],
         classNamePrefix: classNamePrefix,
@@ -535,6 +559,8 @@ class LibraryGenerator {
             const Code('return switch (type) {'),
             for (var (name, type) in localClassDeserializers)
               Code.scope((a) => "${a(type)} => '$name',"),
+            for (var (name, type) in retryPolicyDeserializers)
+              Code.scope((a) => "${a(type)} => '$name',"),
             const Code('_ => null };'),
           ]),
       ),
@@ -561,6 +587,15 @@ class LibraryGenerator {
               return (data['__className__'] as String).replaceFirst('${config.name}.', '');
             }
           '''),
+            // Retry policies are matched by their exact type, so that a policy
+            // that extends another one is never named after its superclass.
+            for (var (name, type) in retryPolicyDeserializers)
+              Code.scope(
+                (a) =>
+                    'if (data.runtimeType == ${a(type)}) {'
+                    '  return \'$name\';'
+                    '}',
+              ),
             if (localClassDeserializers.isNotEmpty) ...[
               const Code('switch (data) {'),
               for (var (name, type) in localClassDeserializers)
@@ -620,6 +655,8 @@ class LibraryGenerator {
               'return super.deserializeByClassName(data);}',
             ),
             for (var (name, type) in localClassDeserializers)
+              _buildDeserializeByLocalClassName(name, type),
+            for (var (name, type) in retryPolicyDeserializers)
               _buildDeserializeByLocalClassName(name, type),
             for (var module in config.modules)
               _buildDeserializeByClassNameDelegation(

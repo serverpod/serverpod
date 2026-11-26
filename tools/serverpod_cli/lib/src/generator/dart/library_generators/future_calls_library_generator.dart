@@ -22,10 +22,17 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
         final serverpod = allocate(
           refer('Serverpod', serverpodUrl(true)),
         );
+        final retryPolicyType = allocate(
+          refer('FutureCallRetryPolicy', serverpodUrl(true)),
+        );
 
         return '''
   /// Invokes a future call.
-  typedef _InvokeFutureCall = Future<void> Function(String name, $modelType? object);
+  typedef _InvokeFutureCall = Future<void> Function(
+    String name,
+    $modelType? object, {
+    $retryPolicyType? retryPolicy,
+  });
 
   extension $_futureCallsGetterExtensionName on $serverpod {
   /// Generated future calls.
@@ -146,13 +153,14 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                 )
                 ..body = const Code('''
                     return _FutureCallRef(
-                      (name, object) {
+                      (name, object, {retryPolicy}) {
                         return _effectiveFutureCallManager.scheduleFutureCall(
                           name,
                           object,
                           time,
                           _effectiveServerId,
                           identifier,
+                          retryPolicy: retryPolicy,
                         );
                       },
                     );
@@ -181,13 +189,14 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                 )
                 ..body = const Code('''
                     return _FutureCallRef(
-                      (name, object) {
+                      (name, object, {retryPolicy}) {
                         return _effectiveFutureCallManager.scheduleFutureCall(
                           name,
                           object,
                           DateTime.now().toUtc().add(delay),
                           _effectiveServerId,
                           identifier,
+                          retryPolicy: retryPolicy,
                         );
                       },
                     );
@@ -366,7 +375,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
 
                   return '''
                     return _FutureCallRef(
-                      (name, object) {
+                      (name, object, {retryPolicy}) {
                         return _futureCallManager.scheduleFutureCall(
                           name,
                           object,
@@ -374,6 +383,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                           _serverId,
                           _identifier,
                           scheduling: $cronScheduling(cron: cronExpression),
+                          retryPolicy: retryPolicy,
                         );
                       },
                     );
@@ -412,7 +422,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                   return '''
                     final now = $clock.now().toUtc();
                     return _FutureCallRef(
-                      (name, object) {
+                      (name, object, {retryPolicy}) {
                         return _futureCallManager.scheduleFutureCall(
                           name,
                           object,
@@ -420,6 +430,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                           _serverId,
                           _identifier,
                           scheduling: $intervalScheduling(interval: interval, start: start),
+                          retryPolicy: retryPolicy,
                         );
                       },
                     );
@@ -433,11 +444,12 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
 
   /// Generates FutureCallRef for server side.
   void _generateFutureCallRef(LibraryBuilder libraryBuilder) {
-    // FutureCallRef class
+    // The future call callers, without a way to set a retry policy. It is
+    // what withRetryPolicy returns, so a retry policy can only be set once.
     libraryBuilder.body.add(
       Class(
         (c) => c
-          ..name = '_FutureCallRef'
+          ..name = '_FutureCallRefBase'
           ..fields.add(
             Field(
               (f) {
@@ -476,6 +488,58 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                     }),
                 ),
           ]),
+      ),
+    );
+
+    // FutureCallRef class
+    libraryBuilder.body.add(
+      Class(
+        (c) => c
+          ..name = '_FutureCallRef'
+          ..extend = refer('_FutureCallRefBase')
+          ..constructors.add(
+            Constructor(
+              (c) => c
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'invokeFutureCall'
+                      ..type = refer('_InvokeFutureCall'),
+                  ),
+                )
+                ..initializers.add(const Code('super(invokeFutureCall)')),
+            ),
+          )
+          ..methods.add(
+            Method(
+              (m) => m
+                ..docs.add(
+                  '/// Retries the future call according to [retryPolicy] when it fails.',
+                )
+                ..name = 'withRetryPolicy'
+                ..returns = refer('_FutureCallRefBase')
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'retryPolicy'
+                      ..type = refer(
+                        'FutureCallRetryPolicy',
+                        serverpodUrl(true),
+                      ),
+                  ),
+                )
+                ..body = const Code('''
+                    final policy = retryPolicy;
+                    return _FutureCallRefBase(
+                      (name, object, {retryPolicy}) => _invokeFutureCall(
+                        name,
+                        object,
+                        retryPolicy: policy,
+                      ),
+                    );
+                  '''),
+            ),
+          ),
       ),
     );
   }
@@ -761,6 +825,46 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                   ..body = futureCall.isAbstract
                       ? null
                       : _buildFutureCallMethodBody(futureCall, method),
+              ),
+            );
+
+            // Forwards the retry decision to the future call class, which may
+            // override shouldRetry.
+            c.methods.add(
+              Method(
+                (m) => m
+                  ..annotations.add(refer('override'))
+                  ..returns = TypeReference(
+                    (t) => t
+                      ..symbol = 'FutureOr'
+                      ..url = 'dart:async'
+                      ..types.add(refer('bool')),
+                  )
+                  ..name = 'shouldRetry'
+                  ..requiredParameters.addAll([
+                    Parameter(
+                      (p) => p
+                        ..name = 'session'
+                        ..type = refer('Session', serverpodUrl(true)),
+                    ),
+                    Parameter(
+                      (p) => p
+                        ..name = 'context'
+                        ..type = refer(
+                          'FutureCallRetryContext',
+                          serverpodUrl(true),
+                        ),
+                    ),
+                  ])
+                  ..lambda = true
+                  ..body =
+                      refer(
+                        futureCall.className,
+                        _futureCallPath(futureCall),
+                      ).call([]).property('shouldRetry').call([
+                        refer('session'),
+                        refer('context'),
+                      ]).code,
               ),
             );
           }),

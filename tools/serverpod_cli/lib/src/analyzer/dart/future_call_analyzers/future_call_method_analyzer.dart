@@ -88,6 +88,9 @@ abstract class FutureCallMethodAnalyzer {
   /// be validated and parsed.
   static bool isFutureCallMethod(MethodElement method) {
     if (method.isPrivate) return false;
+    // An override of FutureCall.shouldRetry, which decides whether a failed
+    // future call is retried, is not a future call.
+    if (method.name == 'shouldRetry') return false;
     if (method.formalParameters.isEmpty) return false;
     return method.returnType.isDartAsyncFuture;
   }

@@ -127,7 +127,7 @@ void main() {
           diagnosticsService: diagnostics,
           internalSession: sessionBuilder.build(),
           logSession: sessionBuilder.build(),
-          sessionProvider: (_) => sessionBuilder.build(),
+          sessionProvider: (_, _) => sessionBuilder.build(),
           initializeFutureCall: (_, _) {},
         );
 

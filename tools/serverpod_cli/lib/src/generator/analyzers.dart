@@ -101,6 +101,7 @@ class Analyzers {
       directory: libDirectory,
       collection: collection,
       generatedDirPaths: generatedDirPaths,
+      extraClasses: config.extraClasses,
     );
     return Analyzers(
       endpoints: endpointsAnalyzer,
@@ -716,6 +717,7 @@ class Analyzers {
           (await ServerpodCodeGenerator.generateProtocolDefinition(
             protocolDefinition: protocolDefinition,
             config: config,
+            futureCallRetryPolicies: _futureCalls.retryPolicies,
           )).all;
       wroteFullProtocol = true;
 

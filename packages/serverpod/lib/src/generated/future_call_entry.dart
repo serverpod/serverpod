@@ -26,7 +26,9 @@ abstract class FutureCallEntry
     required this.serverId,
     this.identifier,
     this.scheduling,
-  });
+    this.serializedRetryPolicy,
+    int? failedAttempts,
+  }) : failedAttempts = failedAttempts ?? 0;
 
   factory FutureCallEntry({
     int? id,
@@ -36,6 +38,8 @@ abstract class FutureCallEntry
     required String serverId,
     String? identifier,
     _is8pd350.FutureCallScheduling? scheduling,
+    String? serializedRetryPolicy,
+    int? failedAttempts,
   }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -51,6 +55,9 @@ abstract class FutureCallEntry
           : _ic00rqxb.Protocol().deserialize<_is8pd350.FutureCallScheduling>(
               jsonSerialization['scheduling'],
             ),
+      serializedRetryPolicy:
+          jsonSerialization['serializedRetryPolicy'] as String?,
+      failedAttempts: jsonSerialization['failedAttempts'] as int?,
     );
   }
 
@@ -80,6 +87,13 @@ abstract class FutureCallEntry
   /// This field is null for one-off future calls.
   _is8pd350.FutureCallScheduling? scheduling;
 
+  /// The retry policy and its current state, serialized with its class name.
+  /// Null means the call is not retried.
+  String? serializedRetryPolicy;
+
+  /// Number of attempts of this entry that have already failed.
+  int failedAttempts;
+
   @override
   _is.Table<int?> get table => t;
 
@@ -94,6 +108,8 @@ abstract class FutureCallEntry
     String? serverId,
     String? identifier,
     _is8pd350.FutureCallScheduling? scheduling,
+    String? serializedRetryPolicy,
+    int? failedAttempts,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -106,6 +122,9 @@ abstract class FutureCallEntry
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
       if (scheduling != null) 'scheduling': scheduling?.toJson(),
+      if (serializedRetryPolicy != null)
+        'serializedRetryPolicy': serializedRetryPolicy,
+      'failedAttempts': failedAttempts,
     };
   }
 
@@ -120,6 +139,9 @@ abstract class FutureCallEntry
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
       if (scheduling != null) 'scheduling': scheduling?.toJsonForProtocol(),
+      if (serializedRetryPolicy != null)
+        'serializedRetryPolicy': serializedRetryPolicy,
+      'failedAttempts': failedAttempts,
     };
   }
 
@@ -162,6 +184,8 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     required String serverId,
     String? identifier,
     _is8pd350.FutureCallScheduling? scheduling,
+    String? serializedRetryPolicy,
+    int? failedAttempts,
   }) : super._(
          id: id,
          name: name,
@@ -170,6 +194,8 @@ class _FutureCallEntryImpl extends FutureCallEntry {
          serverId: serverId,
          identifier: identifier,
          scheduling: scheduling,
+         serializedRetryPolicy: serializedRetryPolicy,
+         failedAttempts: failedAttempts,
        );
 
   /// Returns a shallow copy of this [FutureCallEntry]
@@ -184,6 +210,8 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     String? serverId,
     Object? identifier = _Undefined,
     Object? scheduling = _Undefined,
+    Object? serializedRetryPolicy = _Undefined,
+    int? failedAttempts,
   }) {
     return FutureCallEntry(
       id: id is int? ? id : this.id,
@@ -197,6 +225,10 @@ class _FutureCallEntryImpl extends FutureCallEntry {
       scheduling: scheduling is _is8pd350.FutureCallScheduling?
           ? scheduling
           : this.scheduling?.copyWith(),
+      serializedRetryPolicy: serializedRetryPolicy is String?
+          ? serializedRetryPolicy
+          : this.serializedRetryPolicy,
+      failedAttempts: failedAttempts ?? this.failedAttempts,
     );
   }
 }
@@ -238,6 +270,17 @@ class FutureCallEntryUpdateTable extends _is.UpdateTable<FutureCallEntryTable> {
     table.scheduling,
     value,
   );
+
+  _is.ColumnValue<String, String> serializedRetryPolicy(String? value) =>
+      _is.ColumnValue(
+        table.serializedRetryPolicy,
+        value,
+      );
+
+  _is.ColumnValue<int, int> failedAttempts(int value) => _is.ColumnValue(
+    table.failedAttempts,
+    value,
+  );
 }
 
 class FutureCallEntryTable extends _is.Table<int?> {
@@ -268,6 +311,15 @@ class FutureCallEntryTable extends _is.Table<int?> {
       'scheduling',
       this,
     );
+    serializedRetryPolicy = _is.ColumnString(
+      'serializedRetryPolicy',
+      this,
+    );
+    failedAttempts = _is.ColumnInt(
+      'failedAttempts',
+      this,
+      hasDefault: true,
+    );
   }
 
   late final FutureCallEntryUpdateTable updateTable;
@@ -291,6 +343,13 @@ class FutureCallEntryTable extends _is.Table<int?> {
   /// This field is null for one-off future calls.
   late final _is.ColumnSerializable<_is8pd350.FutureCallScheduling> scheduling;
 
+  /// The retry policy and its current state, serialized with its class name.
+  /// Null means the call is not retried.
+  late final _is.ColumnString serializedRetryPolicy;
+
+  /// Number of attempts of this entry that have already failed.
+  late final _is.ColumnInt failedAttempts;
+
   @override
   List<_is.Column> get columns => [
     id,
@@ -300,6 +359,8 @@ class FutureCallEntryTable extends _is.Table<int?> {
     serverId,
     identifier,
     scheduling,
+    serializedRetryPolicy,
+    failedAttempts,
   ];
 }
 

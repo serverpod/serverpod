@@ -378,10 +378,15 @@ class FutureCallSession extends Session {
   /// Name of the [FutureCall].
   final String futureCallName;
 
+  /// How many retries of the [FutureCall] have already run. It is 0 for the
+  /// first run, 1 for the first retry, and so on.
+  final int retryAttempt;
+
   /// Creates a new [Session] for a [FutureCall].
   FutureCallSession({
     required super.server,
     required this.futureCallName,
+    this.retryAttempt = 0,
     super.enableLogging = true,
   }) : super(endpoint: 'FutureCall', method: futureCallName);
 }

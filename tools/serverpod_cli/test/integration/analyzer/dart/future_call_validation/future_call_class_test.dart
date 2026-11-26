@@ -295,4 +295,99 @@ class ExampleFutureCall extends FutureCall {
       });
     },
   );
+
+  group(
+    'Given future call classes whose generated property would be named withRetryPolicy,'
+    'when analyzed,',
+    () {
+      var collector = CodeGenerationCollector();
+      late List<FutureCallDefinition> futureCallDefinitions;
+
+      setUpAll(() async {
+        var testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        File(path.join(testDirectory.path, 'future_calls.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class WithRetryPolicy extends FutureCall {
+  Future<void> run(Session session) async {}
+}
+
+class WithRetryPolicyFutureCall extends FutureCall {
+  Future<void> run(Session session) async {}
+}
+''');
+
+        var analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test(
+        'then a validation error is reported for each of them.',
+        () {
+          expect(
+            collector.errors.map((error) => error.message),
+            unorderedEquals([
+              'The future call WithRetryPolicy would be scheduled through a '
+                  'property named withRetryPolicy, which clashes with the '
+                  'method used to set a retry policy. Please rename the class.',
+              'The future call WithRetryPolicyFutureCall would be scheduled '
+                  'through a property named withRetryPolicy, which clashes '
+                  'with the method used to set a retry policy. Please rename '
+                  'the class.',
+            ]),
+          );
+        },
+      );
+
+      test(
+        'then no future call definition is created.',
+        () {
+          expect(futureCallDefinitions, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an abstract future call class whose name would give a property named withRetryPolicy,'
+    'when analyzed,',
+    () {
+      var collector = CodeGenerationCollector();
+
+      setUpAll(() async {
+        var testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
+        File(path.join(testDirectory.path, 'future_calls.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+abstract class WithRetryPolicy extends FutureCall {
+  Future<void> run(Session session) async {}
+}
+''');
+
+        var analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
+        );
+      });
+
+      test(
+        'then no validation error is reported.',
+        () {
+          expect(collector.errors, isEmpty);
+        },
+      );
+    },
+  );
 }

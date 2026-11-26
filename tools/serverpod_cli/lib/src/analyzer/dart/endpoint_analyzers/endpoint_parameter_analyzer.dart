@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_retry_policy_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
@@ -122,6 +123,17 @@ abstract class EndpointParameterAnalyzer {
 
         if (parameter.type.element?.displayName == Keyword.sessionClassName) {
           return null;
+        }
+
+        var retryPolicyClassName =
+            FutureCallRetryPolicyAnalyzer.findRetryPolicyClassName(type);
+        if (retryPolicyClassName != null) {
+          return SourceSpanSeverityException(
+            'The type "$retryPolicyClassName" is a future call retry policy. '
+            'Retry policies are server-only, so they can\'t be used as '
+            'endpoint parameters.',
+            parameter.span,
+          );
         }
 
         if (!TypeValidators.isValidType(

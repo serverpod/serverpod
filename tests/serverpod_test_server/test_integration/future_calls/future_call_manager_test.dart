@@ -752,7 +752,7 @@ void main() async {
         await LoggingUtil.clearAllLogs(session);
 
         futureCallManager = FutureCallManagerBuilder(
-          sessionProvider: (futureCallName) => session,
+          sessionProvider: (futureCallName, retryAttempt) => session,
           internalSession: session,
           logSession: logSession,
         ).build();

@@ -20,7 +20,11 @@ import '../futureCalls/insert_simple_data_call.dart' as _ini5cz4e;
 
 /// Invokes a future call.
 typedef _InvokeFutureCall =
-    Future<void> Function(String name, _is.SerializableModel? object);
+    Future<void> Function(
+      String name,
+      _is.SerializableModel? object, {
+      _is.FutureCallRetryPolicy? retryPolicy,
+    });
 
 extension ServerpodFutureCallsGetter on _is.Serverpod {
   /// Generated future calls.
@@ -76,13 +80,14 @@ class FutureCalls extends _is.FutureCallDispatch<_FutureCallRef> {
     String? identifier,
   }) {
     return _FutureCallRef(
-      (name, object) {
+      (name, object, {retryPolicy}) {
         return _effectiveFutureCallManager.scheduleFutureCall(
           name,
           object,
           time,
           _effectiveServerId,
           identifier,
+          retryPolicy: retryPolicy,
         );
       },
     );
@@ -94,13 +99,14 @@ class FutureCalls extends _is.FutureCallDispatch<_FutureCallRef> {
     String? identifier,
   }) {
     return _FutureCallRef(
-      (name, object) {
+      (name, object, {retryPolicy}) {
         return _effectiveFutureCallManager.scheduleFutureCall(
           name,
           object,
           DateTime.now().toUtc().add(delay),
           _effectiveServerId,
           identifier,
+          retryPolicy: retryPolicy,
         );
       },
     );
@@ -140,7 +146,7 @@ class _RecurringFutureCallDispatchImpl
   @override
   _FutureCallRef cron(String cronExpression) {
     return _FutureCallRef(
-      (name, object) {
+      (name, object, {retryPolicy}) {
         return _futureCallManager.scheduleFutureCall(
           name,
           object,
@@ -148,6 +154,7 @@ class _RecurringFutureCallDispatchImpl
           _serverId,
           _identifier,
           scheduling: _is.CronFutureCallScheduling(cron: cronExpression),
+          retryPolicy: retryPolicy,
         );
       },
     );
@@ -160,7 +167,7 @@ class _RecurringFutureCallDispatchImpl
   }) {
     final now = _io0w16m8.clock.now().toUtc();
     return _FutureCallRef(
-      (name, object) {
+      (name, object, {retryPolicy}) {
         return _futureCallManager.scheduleFutureCall(
           name,
           object,
@@ -171,20 +178,37 @@ class _RecurringFutureCallDispatchImpl
             interval: interval,
             start: start,
           ),
+          retryPolicy: retryPolicy,
         );
       },
     );
   }
 }
 
-class _FutureCallRef {
-  _FutureCallRef(this._invokeFutureCall);
+class _FutureCallRefBase {
+  _FutureCallRefBase(this._invokeFutureCall);
 
   final _InvokeFutureCall _invokeFutureCall;
 
   late final insertSimpleDataCall = _InsertSimpleDataCallFutureCallDispatcher(
     _invokeFutureCall,
   );
+}
+
+class _FutureCallRef extends _FutureCallRefBase {
+  _FutureCallRef(_InvokeFutureCall invokeFutureCall) : super(invokeFutureCall);
+
+  /// Retries the future call according to [retryPolicy] when it fails.
+  _FutureCallRefBase withRetryPolicy(_is.FutureCallRetryPolicy retryPolicy) {
+    final policy = retryPolicy;
+    return _FutureCallRefBase(
+      (name, object, {retryPolicy}) => _invokeFutureCall(
+        name,
+        object,
+        retryPolicy: policy,
+      ),
+    );
+  }
 }
 
 class _InsertSimpleDataCallFutureCallDispatcher {
@@ -213,4 +237,13 @@ class InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall
       data!,
     );
   }
+
+  @override
+  _ida.FutureOr<bool> shouldRetry(
+    _is.Session session,
+    _is.FutureCallRetryContext context,
+  ) => _ini5cz4e.InsertSimpleDataCall().shouldRetry(
+    session,
+    context,
+  );
 }

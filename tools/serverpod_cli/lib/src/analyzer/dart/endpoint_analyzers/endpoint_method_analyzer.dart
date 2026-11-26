@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_retry_policy_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -169,6 +170,17 @@ abstract class EndpointMethodAnalyzer {
     } on FromDartTypeClassNameException catch (e) {
       return SourceSpanSeverityException(
         'The type "${e.type}" is not a supported endpoint return type.',
+        dartElement.span,
+      );
+    }
+
+    var retryPolicyClassName =
+        FutureCallRetryPolicyAnalyzer.findRetryPolicyClassName(innerType);
+    if (retryPolicyClassName != null) {
+      return SourceSpanSeverityException(
+        'The type "$retryPolicyClassName" is a future call retry policy. '
+        'Retry policies are server-only, so they can\'t be returned from '
+        'endpoints.',
         dartElement.span,
       );
     }
