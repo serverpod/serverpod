@@ -74,6 +74,11 @@ extension PostgresDatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
       out += '\n';
     }
 
+    if (tables.any((t) => _usesPgTrgm(t.indexes))) {
+      out += _sqlCreatePgTrgmExtension();
+      out += '\n';
+    }
+
     // Must be declared at the beginning for the function to be available.
     if (tables.any(
       (t) => t.columns.any(
@@ -288,7 +293,6 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
       false => ' NULLS NOT DISTINCT',
       null => '',
     };
-    var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
     String ginOperatorClassStr = '';
@@ -296,6 +300,10 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
     if (type == 'gin' && ginOperatorClass != null) {
       ginOperatorClassStr = ' ${ginOperatorClass!.asOperator()}';
     }
+
+    var elementStrs = elements.map(
+      (e) => '"${e.definition}"$ginOperatorClassStr',
+    );
 
     String distanceStr = '';
     String pgvectorParams = '';
@@ -312,7 +320,7 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
     out +=
         'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$nullsDistinctStr$pgvectorParams;\n';
+        'USING $type (${elementStrs.join(', ')}$distanceStr)$nullsDistinctStr$pgvectorParams;\n';
 
     return out;
   }
@@ -320,6 +328,8 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
 extension GinIndexOperatorClass on GinOperatorClass {
   String asOperator() {
+    // pg_trgm names the class "gin_trgm_ops", not just "trgm_ops".
+    if (this == GinOperatorClass.trgmOps) return 'gin_trgm_ops';
     return name.snakeCase;
   }
 }
@@ -421,6 +431,15 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
               e.alterTable!.addColumns.any((c) => c.isGeographyColumn)),
     )) {
       out += _sqlCreatePostgisExtension();
+      out += '\n';
+    }
+
+    if (actions.any(
+      (e) =>
+          (e.createTable != null && _usesPgTrgm(e.createTable!.indexes)) ||
+          (e.alterTable != null && _usesPgTrgm(e.alterTable!.addIndexes)),
+    )) {
+      out += _sqlCreatePgTrgmExtension();
       out += '\n';
     }
 
@@ -759,6 +778,26 @@ String _sqlCreateVectorExtensionIfAvailable() {
       "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';"
       '\n  ELSE'
       '\n    RAISE EXCEPTION \'Required extension "vector" is not available on this instance. Please install pgvector. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-pgvector.\';'
+      '\n  END IF;'
+      '\nEND'
+      '\n\$\$;'
+      '\n';
+}
+
+bool _usesPgTrgm(Iterable<IndexDefinition> indexes) => indexes.any(
+  (index) => index.ginOperatorClass == GinOperatorClass.trgmOps,
+);
+
+String _sqlCreatePgTrgmExtension() {
+  return '--'
+      '\n-- CREATE PG_TRGM EXTENSION IF AVAILABLE'
+      '\n--'
+      '\nDO \$\$'
+      '\nBEGIN'
+      "\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'pg_trgm') THEN"
+      "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS pg_trgm';"
+      '\n  ELSE'
+      '\n    RAISE EXCEPTION \'Required extension "pg_trgm" is not available on this instance. Please install the PostgreSQL pg_trgm contrib module. For instructions, see https://www.postgresql.org/docs/current/pgtrgm.html.\';'
       '\n  END IF;'
       '\nEND'
       '\n\$\$;'

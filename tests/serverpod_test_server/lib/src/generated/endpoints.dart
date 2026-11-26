@@ -5138,6 +5138,34 @@ class Endpoints extends _is.EndpointDispatch {
                     params['value'],
                   ),
         ),
+        'streamWithPausedInput': _is.MethodStreamConnector(
+          name: 'streamWithPausedInput',
+          params: {
+            'name': _is.ParameterDescription(
+              name: 'name',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          streamParams: {
+            'input': _is.StreamParameterDescription<int>(
+              name: 'input',
+              nullable: false,
+            ),
+          },
+          returnType: _is.MethodStreamReturnType.streamType,
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['methodStreaming'] as _icmw7mkg.MethodStreaming)
+                  .streamWithPausedInput(
+                    session,
+                    params['name'],
+                    streamParams['input']!.cast<int>(),
+                  ),
+        ),
         'intEchoStream': _is.MethodStreamConnector(
           name: 'intEchoStream',
           params: {},

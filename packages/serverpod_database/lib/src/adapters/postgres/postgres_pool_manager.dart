@@ -74,16 +74,20 @@ class PostgresPoolManager implements DatabasePoolManager {
         sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
         typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
         onOpen: (connection) async {
-          var parameters =
-              runtimeParametersBuilder?.call(RuntimeParametersBuilder()) ?? [];
+          var builtParameters =
+              runtimeParametersBuilder?.call(RuntimeParametersBuilder()) ??
+              const <RuntimeParameters>[];
 
-          if (!parameters.any((p) => p is SearchPathsConfig) &&
-              config.searchPaths != null &&
-              config.searchPaths!.isNotEmpty) {
-            parameters.add(
+          // The configured search paths are applied first, so the builder's
+          // parameters resolve unqualified names against them. A new list is
+          // built, as the returned one may be unmodifiable or shared.
+          var parameters = [
+            if (!builtParameters.any((p) => p is SearchPathsConfig) &&
+                config.searchPaths != null &&
+                config.searchPaths!.isNotEmpty)
               SearchPathsConfig(searchPaths: config.searchPaths),
-            );
-          }
+            ...builtParameters,
+          ];
 
           var setParametersStatements = parameters
               .map((p) => p.buildStatements(isLocal: false))

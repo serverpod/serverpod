@@ -4,6 +4,7 @@ import 'package:test/test.dart';
 
 import '../../test_util/builders/database/column_definition_builder.dart';
 import '../../test_util/builders/database/database_definition_builder.dart';
+import '../../test_util/builders/database/index_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 import '../../test_util/builders/model_source_builder.dart';
 import '../../test_util/database_definition_helpers.dart';
@@ -1288,6 +1289,200 @@ fields:
         );
 
         expect(psql, isNot(contains(v7functionHeader)));
+      },
+    );
+  });
+
+  group('pg_trgm extension creation in migrations', () {
+    const createPgTrgmExtension = '''
+--
+-- CREATE PG_TRGM EXTENSION IF AVAILABLE
+--
+DO \$\$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'pg_trgm') THEN
+    EXECUTE 'CREATE EXTENSION IF NOT EXISTS pg_trgm';
+  ELSE
+    RAISE EXCEPTION 'Required extension "pg_trgm" is not available on this instance. Please install the PostgreSQL pg_trgm contrib module. For instructions, see https://www.postgresql.org/docs/current/pgtrgm.html.';
+  END IF;
+END
+\$\$;
+''';
+
+    IndexDefinition trgmIndex() {
+      return IndexDefinitionBuilder()
+          .withIndexName('catalog_item_search_trgm_idx')
+          .withElements([
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'searchText',
+            ),
+          ])
+          .withType('gin')
+          .withGinOperatorClass(GinOperatorClass.trgmOps)
+          .withIsUnique(false)
+          .withIsPrimary(false)
+          .build();
+    }
+
+    test(
+      'Given a migration with no trigram index, '
+      'when the migration SQL is generated, '
+      'then the code for creating the pg_trgm extension is not generated.',
+      () {
+        var migration = DatabaseMigration(
+          actions: [],
+          warnings: [],
+          migrationApiVersion: 1,
+        );
+        var pgsql = migration.toPgSql(
+          databaseDefinition: DatabaseDefinitionBuilder().build(),
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, isNot(contains(createPgTrgmExtension)));
+      },
+    );
+
+    test(
+      'Given a migration that adds a table with a gin trigram index, '
+      'when the migration SQL is generated, '
+      'then the code for creating the pg_trgm extension is generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder().build();
+        var targetDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('catalog_item')
+                  .withIndex(trgmIndex())
+                  .build(),
+            )
+            .build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, contains(createPgTrgmExtension));
+        expect(
+          pgsql,
+          contains(
+            'USING gin ("searchText" gin_trgm_ops);\n',
+          ),
+        );
+      },
+    );
+
+    test(
+      'Given a migration that adds a gin trigram index to an existing table, '
+      'when the migration SQL is generated, '
+      'then the code for creating the pg_trgm extension is generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder().withName('catalog_item').build(),
+            )
+            .build();
+        var targetDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('catalog_item')
+                  .withIndex(trgmIndex())
+                  .build(),
+            )
+            .build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, contains(createPgTrgmExtension));
+        expect(pgsql, contains('USING gin ("searchText" gin_trgm_ops);\n'));
+      },
+    );
+
+    test(
+      'Given a migration that adds a table with a jsonb gin index, '
+      'when the migration SQL is generated, '
+      'then the code for creating the pg_trgm extension is not generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder().build();
+        var targetDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('catalog_item')
+                  .withIndex(
+                    IndexDefinitionBuilder()
+                        .withIndexName('catalog_item_jsonb_idx')
+                        .withElements([
+                          IndexElementDefinition(
+                            type: IndexElementDefinitionType.column,
+                            definition: 'data',
+                          ),
+                        ])
+                        .withType('gin')
+                        .withGinOperatorClass(GinOperatorClass.jsonbOps)
+                        .withIsUnique(false)
+                        .withIsPrimary(false)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, isNot(contains(createPgTrgmExtension)));
+      },
+    );
+
+    test(
+      'Given a migration that removes a table with a gin trigram index, '
+      'when the migration SQL is generated, '
+      'then the code for creating the pg_trgm extension is not generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('catalog_item')
+                  .withIndex(trgmIndex())
+                  .build(),
+            )
+            .build();
+        var targetDefinition = DatabaseDefinitionBuilder().build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, isNot(contains(createPgTrgmExtension)));
       },
     );
   });

@@ -17,11 +17,13 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 ///
 /// [all] is every path the step owns; the generation stamp and the cleanup of
 /// stale output both need it in full. [written] is the subset whose content
-/// actually changed, and is what the analysis context has to be told about.
-/// The distinction matters because the generator rewrites every file on every
-/// run while almost none of them change: reporting the full set marks hundreds
-/// of unchanged files dirty, and each one then costs a full library resolve
-/// that can only arrive at what the analyzer already held.
+/// actually changed, and is what the analysis context has to be told about
+/// for this run's own output. The distinction matters because the generator
+/// rewrites every file on every run while almost none of them change:
+/// reporting the full set marks hundreds of unchanged files dirty, and each
+/// one then costs a full library resolve. A file this run did not write can
+/// still be new to the analysis context when something else put it on disk,
+/// such as a pull; the analyzers track that by file stamp.
 typedef GeneratedFilePaths = ({List<String> all, Set<String> written});
 
 abstract class ServerpodCodeGenerator {

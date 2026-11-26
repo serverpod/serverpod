@@ -27,6 +27,19 @@ END
 $$;
 
 --
+-- CREATE PG_TRGM EXTENSION IF AVAILABLE
+--
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'pg_trgm') THEN
+    EXECUTE 'CREATE EXTENSION IF NOT EXISTS pg_trgm';
+  ELSE
+    RAISE EXCEPTION 'Required extension "pg_trgm" is not available on this instance. Please install the PostgreSQL pg_trgm contrib module. For instructions, see https://www.postgresql.org/docs/current/pgtrgm.html.';
+  END IF;
+END
+$$;
+
+--
 -- Function: gen_random_uuid_v7()
 -- Source: https://gist.github.com/kjmph/5bd772b2c2df145aa645b837da7eca74
 -- License: MIT (copyright notice included on the generator source code).
@@ -1084,6 +1097,20 @@ CREATE INDEX "sparse_vector_index_hnsw" ON "object_with_sparse_vector" USING hns
 CREATE INDEX "sparse_vector_index_hnsw_with_params" ON "object_with_sparse_vector" USING hnsw ("sparseVectorIndexedHnswWithParams" sparsevec_l1_ops) WITH (m=64, ef_construction=200);
 
 --
+-- Class ObjectWithTrgm as table object_with_trgm
+--
+CREATE TABLE "object_with_trgm" (
+    "id" bigserial PRIMARY KEY,
+    "searchText" text NOT NULL,
+    "searchTextIndexed" text NOT NULL,
+    "nullableSearchTextIndexed" text
+);
+
+-- Indexes
+CREATE INDEX "search_text_trgm_idx" ON "object_with_trgm" USING gin ("searchTextIndexed" gin_trgm_ops);
+CREATE INDEX "nullable_search_text_trgm_idx" ON "object_with_trgm" USING gin ("nullableSearchTextIndexed" gin_trgm_ops);
+
+--
 -- Class ObjectWithUuid as table object_with_uuid
 --
 CREATE TABLE "object_with_uuid" (
@@ -1693,9 +1720,7 @@ CREATE TABLE "serverpod_future_call" (
     "serializedObject" text,
     "serverId" text NOT NULL,
     "identifier" text,
-    "scheduling" json,
-    "serializedRetryPolicy" text,
-    "failedAttempts" bigint NOT NULL DEFAULT 0
+    "scheduling" json
 );
 
 -- Indexes
@@ -2592,25 +2617,25 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20261016112231218', now())
+    VALUES ('serverpod_test', '20261112204438067', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20261016112231218', "timestamp" = now();
+    DO UPDATE SET "version" = '20261112204438067', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20261016112037532', now())
+    VALUES ('serverpod', '20260824182259319', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20261016112037532', "timestamp" = now();
+    DO UPDATE SET "version" = '20260824182259319', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20261016112127598', now())
+    VALUES ('serverpod_auth', '20260824182343939', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20261016112127598', "timestamp" = now();
+    DO UPDATE SET "version" = '20260824182343939', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_test_module

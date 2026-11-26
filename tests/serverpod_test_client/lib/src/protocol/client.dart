@@ -2217,6 +2217,16 @@ class EndpointMethodStreaming extends _isc.EndpointRef {
         {},
       );
 
+  _ida.Stream<int> streamWithPausedInput(
+    String name,
+    _ida.Stream<int> input,
+  ) => caller.callStreamingServerEndpoint<_ida.Stream<int>, int>(
+    'methodStreaming',
+    'streamWithPausedInput',
+    {'name': name},
+    {'input': input},
+  );
+
   _ida.Stream<int> intEchoStream(_ida.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_ida.Stream<int>, int>(
         'methodStreaming',
