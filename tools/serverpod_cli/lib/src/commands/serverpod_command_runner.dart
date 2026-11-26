@@ -18,7 +18,9 @@ import 'package:serverpod_cli/src/util/sdk_resolver.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../generated/completion_script_carapace.dart';
+import 'create.dart' show CreateCommand;
 import 'doctor.dart' show DoctorCommand;
+import 'quickstart.dart' show QuickstartCommand;
 import 'upgrade.dart' show UpgradeCommand;
 import 'version.dart' show VersionCommand;
 
@@ -67,6 +69,22 @@ Uri? welcomePageUrl({
     20 => Uri.parse('https://serverpod.dev/checkin$query'),
     _ => null,
   };
+}
+
+/// Whether [command] scaffolds a new project instead of working in an existing
+/// one, so a server found near the current directory is not the one it acts on.
+///
+/// `create` and `quickstart` given the name `.` upgrade the project found from
+/// the current directory instead, so that form is not a new project.
+bool createsNewProject(ArgResults command) {
+  if (command.name != CreateCommand.commandName &&
+      command.name != QuickstartCommand.commandName) {
+    return false;
+  }
+  final projectName = command.wasParsed('name')
+      ? command['name']
+      : command.rest.firstOrNull;
+  return projectName != '.';
 }
 
 /// Pops the web browser on the first and 20th run.
@@ -211,6 +229,7 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     final commandName = _invokedCommandName = topLevelResults.command?.name;
     if (commandName != null &&
         commands.containsKey(commandName) &&
+        !createsNewProject(topLevelResults.command!) &&
         cliAnalytics.enabled) {
       final serverDir = findServerDirectory(Directory.current);
       if (serverDir != null) {
