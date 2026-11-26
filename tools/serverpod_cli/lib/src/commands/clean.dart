@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
@@ -39,9 +40,9 @@ class CleanCommand extends ServerpodCommand<CleanOption> {
   CleanCommand() : super(options: CleanOption.values);
 
   @override
-  Future<void> runWithConfig(Configuration<CleanOption> commandConfig) async {
+  Future<void> run(CommandContext<CleanOption, void> context) async {
     final serverDir = await resolveServerDirectory(
-      commandConfig.optionalValue(CleanOption.directory),
+      context.config.optionalValue(CleanOption.directory),
     );
 
     final bool cleaned;

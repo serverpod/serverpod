@@ -59,7 +59,11 @@ void main() {
             UpgradeCommand(),
             VersionCommand(version),
           ]);
-      commandNames = runner.commands.keys;
+      commandNames = runner.subcommands
+          .map((command) => command.name)
+          .where(
+            (name) => !name.startsWith('_'),
+          );
     });
 
     test(

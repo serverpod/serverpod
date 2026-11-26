@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/doctor/dart_sdk_check.dart';
@@ -54,10 +55,8 @@ class DoctorCommand extends ServerpodCommand<DoctorOption> {
        super(options: DoctorOption.values);
 
   @override
-  Future<void> runWithConfig(
-    Configuration<DoctorOption> commandConfig,
-  ) async {
-    final asJson = commandConfig.value(DoctorOption.json);
+  Future<void> run(CommandContext<DoctorOption, void> context) async {
+    final asJson = context.config.value(DoctorOption.json);
 
     final results = await _runChecks();
 

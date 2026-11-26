@@ -4,6 +4,8 @@ import 'package:serverpod_cli/src/commands/upgrade/upgrade_target.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
+import '../../test_util/resolve_command_config.dart';
+
 void main() {
   group('Given an UpgradeCommand,', () {
     late UpgradeCommand command;
@@ -14,7 +16,7 @@ void main() {
 
     test('when parsing configuration without arguments, '
         'then no version is requested', () {
-      final config = command.resolveConfiguration(command.argParser.parse([]));
+      final config = resolveCommandConfig(command.options, []);
 
       expect(config.errors, isEmpty);
       expect(config.optionalValue(UpgradeOption.version), isNull);
@@ -25,9 +27,10 @@ void main() {
     test(
       'when parsing configuration with a channel, then the channel is set',
       () {
-        final config = command.resolveConfiguration(
-          command.argParser.parse(['--channel', 'any']),
-        );
+        final config = resolveCommandConfig(command.options, [
+          '--channel',
+          'any',
+        ]);
 
         expect(config.errors, isEmpty);
         expect(config.optionalValue(UpgradeOption.channel), UpgradeChannel.any);
@@ -37,19 +40,23 @@ void main() {
     test(
       'when parsing configuration with an unknown channel, then parsing fails',
       () {
-        expect(
-          () => command.argParser.parse(['--channel', 'nightly']),
-          throwsFormatException,
-        );
+        final config = resolveCommandConfig(command.options, [
+          '--channel',
+          'nightly',
+        ]);
+
+        expect(config.errors, isNotEmpty);
       },
     );
 
     test(
       'when parsing configuration with a version, then the version is set',
       () {
-        final config = command.resolveConfiguration(
-          command.argParser.parse(['--version', '4.0.0-beta.4', '--force']),
-        );
+        final config = resolveCommandConfig(command.options, [
+          '--version',
+          '4.0.0-beta.4',
+          '--force',
+        ]);
 
         expect(config.errors, isEmpty);
         expect(
@@ -66,9 +73,8 @@ void main() {
 
     setUp(() => command = UpgradeCommand());
 
-    Iterable<Object?> errorsFor(String value) => command
-        .resolveConfiguration(command.argParser.parse(['--version', value]))
-        .errors;
+    Iterable<Object?> errorsFor(String value) =>
+        resolveCommandConfig(command.options, ['--version', value]).errors;
 
     for (final value in const [
       '4.0.0',

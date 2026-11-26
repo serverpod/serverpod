@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
@@ -72,16 +73,14 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
   GenerateCommand() : super(options: GenerateOption.values);
 
   @override
-  Future<void> runWithConfig(
-    Configuration<GenerateOption> commandConfig,
-  ) async {
+  Future<void> run(CommandContext<GenerateOption, void> context) async {
     // Always do a full generate.
-    bool watch = commandConfig.value(GenerateOption.watch);
-    bool force = commandConfig.value(GenerateOption.force);
-    String directory = commandConfig.value(GenerateOption.directory);
+    bool watch = context.config.value(GenerateOption.watch);
+    bool force = context.config.value(GenerateOption.force);
+    String directory = context.config.value(GenerateOption.directory);
 
     // Get interactive flag from global configuration
-    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+    final interactive = context.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:async/async.dart';
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
@@ -43,14 +43,91 @@ typedef ScloudStarter =
 /// Installs the latest `scloud`, throwing [ExitException] on failure.
 typedef ScloudInstaller = Future<void> Function();
 
+/// Asks [executable] for the completion of [words].
+///
+/// [requestCompletionFrom] is the requester `scloud` is asked with.
+typedef ScloudCompletionRequester =
+    Future<CompletionResponse> Function(
+      String executable,
+      List<String> words, {
+      Map<String, String>? environment,
+    });
+
+/// Arguments of `serverpod cloud` that are forwarded to `scloud`.
+///
+/// The framework parser rejects unknown options, and this command accepts any
+/// trailing words. [splitCloudInvocation] removes them before `run`, and the
+/// command reads them back from the context provider.
+class CloudArgs {
+  final List<String> args;
+
+  const CloudArgs(this.args);
+}
+
+const _globalFlags = {
+  '--quiet',
+  '-q',
+  '--verbose',
+  '-v',
+  '--analytics',
+  '--no-analytics',
+  '-a',
+  '--interactive',
+  '--no-interactive',
+  '--version',
+  '--help',
+  '-h',
+};
+
+const _globalOptionsWithValue = {'--experimental-features'};
+
+/// Splits a `cloud` invocation into the words the runner parses and the words
+/// forwarded to `scloud`.
+///
+/// Returns null when [args] does not select the `cloud` command. Global
+/// options before `cloud` stay on the runner. Every word after `cloud` is
+/// forwarded, including options and `--help`.
+({List<String> runnerArgs, List<String> cloudArgs})? splitCloudInvocation(
+  List<String> args,
+) {
+  var index = 0;
+  while (index < args.length) {
+    final arg = args[index];
+    if (arg == '--') return null;
+    if (_globalFlags.contains(arg)) {
+      index++;
+      continue;
+    }
+    final name = arg.split('=').first;
+    if (_globalOptionsWithValue.contains(name)) {
+      if (index + 1 >= args.length && !arg.contains('=')) return null;
+      index += arg.contains('=') ? 1 : 2;
+      continue;
+    }
+    if (arg.startsWith('-')) return null;
+    if (arg == 'cloud') {
+      return (
+        runnerArgs: args.sublist(0, index + 1),
+        cloudArgs: args.sublist(index + 1),
+      );
+    }
+    return null;
+  }
+  return null;
+}
+
 /// Forwards to the Serverpod Cloud CLI (`scloud`).
-class CloudCommand extends ServerpodCommand {
-  CloudCommand() : super(options: []);
+///
+/// Arguments after `cloud` are passed through. Shell completion of those
+/// arguments is answered by `scloud`.
+class CloudCommand extends ServerpodCommand<OptionDefinition> {
+  /// [requestCompletion] asks an executable for a completion response.
+  /// `scloud` is asked, unless a test supplies another requester.
+  CloudCommand({ScloudCompletionRequester? requestCompletion})
+    : _requestCompletion = requestCompletion ?? requestCompletionFrom,
+      super(options: const []);
 
-  final ArgParser _cloudArgParser = ArgParser.allowAnything();
-
-  @override
-  ArgParser get argParser => _cloudArgParser;
+  final ScloudCompletionRequester _requestCompletion;
 
   @override
   final name = 'cloud';
@@ -60,21 +137,27 @@ class CloudCommand extends ServerpodCommand {
       'Manage Serverpod Cloud projects through the Serverpod Cloud.';
 
   @override
-  String get invocation => 'serverpod cloud <scloud-args>';
+  bool get ignoreUnexpectedPositionalArgs => true;
 
   @override
-  Configuration resolveConfiguration(ArgResults? argResults) {
-    return Configuration.resolveNoExcept(
-      options: options,
-      argResults: argResults,
-      env: envVariables,
-      ignoreUnexpectedPositionalArgs: true,
+  bool get passThroughArgs => true;
+
+  @override
+  Future<CompletionResponse> completePassThroughArgs(
+    CommandContext<OptionDefinition, void> context,
+    List<String> words,
+  ) {
+    return _requestCompletion(
+      getScloudExecutablePath(),
+      words,
+      environment: {ScloudEnvironment.baseCommand: scloudBaseCommand},
     );
   }
 
   @override
-  Future<void> runWithConfig(Configuration commandConfig) async {
-    final scloudArgs = argResults?.rest ?? [];
+  Future<void> run(CommandContext<OptionDefinition, void> context) async {
+    final forwarded = context.provider.maybeFetch<CloudArgs>();
+    final scloudArgs = forwarded?.args ?? context.config.remainingPosArgs;
 
     final exitCode = await runScloud(
       scloudArgs,

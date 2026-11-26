@@ -770,12 +770,11 @@ Future<void> _runStart({
   required Directory serverDirectory,
   String? dockerArgument,
 }) async {
-  final runner = ServerpodCommandRunner(
-    'serverpod',
-    'Serverpod test runner',
-    productionMode: false,
-    cliVersion: Version(1, 0, 0),
-    onBeforeRunCommand: (_) async {},
+  final runner = ServerpodCommandRunner.createCommandRunner(
+    CompoundAnalytics([]),
+    false,
+    Version(1, 0, 0),
+    preCommandHooks: false,
   )..addCommand(RunnerCommand());
 
   final arguments = [

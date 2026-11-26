@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
@@ -24,9 +25,6 @@ class DatabaseCommand extends ServerpodCommand<OptionDefinition> {
   @override
   final description =
       'Manage the embedded PostgreSQL database used by a Serverpod project.';
-
-  @override
-  void runWithConfig(Configuration<OptionDefinition> commandConfig) {}
 }
 
 /// Options for `serverpod database start`.
@@ -80,18 +78,16 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
       'connect to it.';
 
   @override
-  Future<void> runWithConfig(
-    Configuration<DatabaseStartOption> commandConfig,
-  ) async {
+  Future<void> run(CommandContext<DatabaseStartOption, void> context) async {
     var interactive =
-        serverpodRunner.globalConfiguration.optionalValue(
+        context.globalConfiguration.optionalValue(
           GlobalOption.interactive,
         ) ??
         !ci.isCI;
 
     final Directory serverDirectory;
     try {
-      var serverDir = commandConfig.optionalValue(
+      var serverDir = context.config.optionalValue(
         DatabaseStartOption.serverDir,
       );
       serverDirectory = await ServerDirectoryFinder.findOrPrompt(
@@ -104,11 +100,11 @@ class DatabaseStartCommand extends ServerpodCommand<DatabaseStartOption> {
     }
 
     try {
-      var runMode = commandConfig.value(DatabaseStartOption.mode);
+      var runMode = context.config.value(DatabaseStartOption.mode);
       var resolved = await _startFromServerpodConfig(
         serverDirectory: serverDirectory,
         runMode: runMode,
-        port: commandConfig.optionalValue(DatabaseStartOption.port),
+        port: context.config.optionalValue(DatabaseStartOption.port),
       );
       var postgres = resolved.handle;
 

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
@@ -112,40 +112,31 @@ class StartCommand extends ServerpodCommand<StartOption> {
       'interactive terminal UI.';
 
   @override
-  String get invocation => 'serverpod start [-- <server-args>]';
+  String get invocation => 'start [-- <server-args>]';
+
+  @override
+  bool get ignoreUnexpectedPositionalArgs => true;
 
   StartCommand() : super(options: StartOption.values);
 
   @override
-  Configuration<StartOption> resolveConfiguration(ArgResults? argResults) {
-    return Configuration.resolveNoExcept(
-      options: options,
-      argResults: argResults,
-      env: envVariables,
-      ignoreUnexpectedPositionalArgs: true,
-    );
-  }
-
-  @override
-  Future<void> runWithConfig(
-    Configuration<StartOption> commandConfig,
-  ) async {
-    final attaching = commandConfig.value(StartOption.attach);
-    final useTui = commandConfig.value(StartOption.tui) && terminalSupportsTui;
+  Future<void> run(CommandContext<StartOption, void> context) async {
+    final attaching = context.config.value(StartOption.attach);
+    final useTui = context.config.value(StartOption.tui) && terminalSupportsTui;
     // A signal while a spawned runner comes up is held until it can be
     // stopped, since leaving at once would orphan it.
     final shutdown = ShutdownSignal(listenForSignals: attaching);
     final (:serverDir, :manifest, :spawned) = await bringUpRunner(
-      directory: commandConfig.value(StartOption.directory),
+      directory: context.config.value(StartOption.directory),
       asked: RunnerConfig(
-        watch: commandConfig.value(StartOption.watch),
-        flutter: commandConfig.value(StartOption.flutter),
-        docker: commandConfig.optionalValue(StartOption.docker),
-        target: commandConfig.value(StartOption.target),
-        serverArgs: argResults?.rest ?? const [],
+        watch: context.config.value(StartOption.watch),
+        flutter: context.config.value(StartOption.flutter),
+        docker: context.config.optionalValue(StartOption.docker),
+        target: context.config.value(StartOption.target),
+        serverArgs: context.config.remainingPosArgs,
       ),
       useTui: useTui,
-      global: serverpodRunner.globalConfiguration,
+      global: context.globalConfiguration,
     ).whenComplete(shutdown.dispose);
 
     if (!attaching) {

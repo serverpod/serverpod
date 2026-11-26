@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
@@ -66,15 +67,13 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   CreateMigrationCommand() : super(options: CreateMigrationOption.values);
 
   @override
-  Future<void> runWithConfig(
-    Configuration<CreateMigrationOption> commandConfig,
-  ) async {
-    final empty = commandConfig.value(CreateMigrationOption.empty);
-    final force = commandConfig.value(CreateMigrationOption.force);
-    final tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+  Future<void> run(CommandContext<CreateMigrationOption, void> context) async {
+    final empty = context.config.value(CreateMigrationOption.empty);
+    final force = context.config.value(CreateMigrationOption.force);
+    final tag = context.config.optionalValue(CreateMigrationOption.tag);
 
     // Get interactive flag from global configuration
-    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+    final interactive = context.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 

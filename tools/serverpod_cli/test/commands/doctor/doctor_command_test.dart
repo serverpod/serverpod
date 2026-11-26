@@ -12,6 +12,7 @@ import 'package:serverpod_shared/log_io.dart' show TestLogWriter;
 import 'package:test/test.dart';
 
 import '../../test_util/mock_std.dart';
+import '../../test_util/resolve_command_config.dart';
 
 DoctorCheckResult _check(String id, DoctorStatus status) => DoctorCheckResult(
   id: id,
@@ -21,12 +22,13 @@ DoctorCheckResult _check(String id, DoctorStatus status) => DoctorCheckResult(
   remedy: status == DoctorStatus.ready ? null : 'fix $id',
 );
 
-ServerpodCommandRunner _runner(DoctorCommand command) => ServerpodCommandRunner(
-  'serverpod',
-  'test',
-  productionMode: false,
-  cliVersion: Version(1, 1, 0),
-)..addCommand(command);
+ServerpodCommandRunner _runner(DoctorCommand command) =>
+    ServerpodCommandRunner.createCommandRunner(
+      CompoundAnalytics([]),
+      false,
+      Version(1, 1, 0),
+      preCommandHooks: false,
+    )..addCommand(command);
 
 void main() {
   group('Given a DoctorCommand,', () {
@@ -38,16 +40,14 @@ void main() {
 
     test('when parsing configuration without arguments, '
         'then JSON output is off', () {
-      final config = command.resolveConfiguration(command.argParser.parse([]));
+      final config = resolveCommandConfig(command.options, []);
 
       expect(config.errors, isEmpty);
       expect(config.value(DoctorOption.json), isFalse);
     });
 
     test('when parsing configuration with --json, then JSON output is on', () {
-      final config = command.resolveConfiguration(
-        command.argParser.parse(['--json']),
-      );
+      final config = resolveCommandConfig(command.options, ['--json']);
 
       expect(config.errors, isEmpty);
       expect(config.value(DoctorOption.json), isTrue);
@@ -73,7 +73,7 @@ void main() {
         final out = MockStdout();
 
         await IOOverrides.runZoned(
-          () => _runner(command).run(['doctor', '--json']),
+          () => _runner(command).run(['doctor', '--json'], env: const {}),
           stdout: () => out,
         );
 
@@ -95,7 +95,7 @@ void main() {
         initializeLoggerWith(ServerpodCliLogger(writer));
         addTearDown(closeLogger);
 
-        await _runner(command).run(['doctor']);
+        await _runner(command).run(['doctor'], env: const {});
         // Entries reach the writer asynchronously.
         await log.flush();
 
@@ -127,7 +127,7 @@ void main() {
 
         await expectLater(
           IOOverrides.runZoned(
-            () => _runner(command).run(['doctor', '--json']),
+            () => _runner(command).run(['doctor', '--json'], env: const {}),
             stdout: () => out,
           ),
           throwsA(isA<ExitException>()),
@@ -147,7 +147,7 @@ void main() {
         addTearDown(closeLogger);
 
         await expectLater(
-          _runner(command).run(['doctor']),
+          _runner(command).run(['doctor'], env: const {}),
           throwsA(isA<ExitException>()),
         );
         await log.flush();

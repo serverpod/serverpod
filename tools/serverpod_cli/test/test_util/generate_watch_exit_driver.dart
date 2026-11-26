@@ -23,7 +23,7 @@ Future<void> main(List<String> args) async {
     analytics,
     false,
     Version.parse(templateVersion),
-    onBeforeRunCommand: (_) async {},
+    preCommandHooks: false,
   )..addCommand(GenerateCommand());
 
   await runner.run([
@@ -33,7 +33,7 @@ Future<void> main(List<String> args) async {
     '--watch',
     '--directory',
     args[1],
-  ]);
+  ], env: Platform.environment);
   await closeLogger();
   // Deliberately do not flush here: the watch command must finish its own
   // shutdown before returning, including sends still awaiting HTTP responses.

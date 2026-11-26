@@ -1,7 +1,13 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
+import 'package:config/config.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/cloud.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
+
+import '../test_util/resolve_command_config.dart';
 
 typedef _Launch = ({List<String> args, Map<String, String> environment});
 
@@ -29,6 +35,41 @@ class _FakeScloud {
   }
 }
 
+class _SilentAnalytics extends Analytics {
+  @override
+  Future<void> sendEvent({
+    required String event,
+    Map<String, dynamic> properties = const {},
+  }) async {}
+}
+
+typedef _CompletionCall = ({
+  String executable,
+  List<String> words,
+  Map<String, String>? environment,
+});
+
+/// Records each completion request and answers with a deploy candidate.
+class _RecordingCompletion {
+  final List<_CompletionCall> calls = [];
+
+  Future<CompletionResponse> call(
+    String executable,
+    List<String> words, {
+    Map<String, String>? environment,
+  }) async {
+    calls.add((
+      executable: executable,
+      words: words,
+      environment: environment,
+    ));
+    return const CompletionResponse(
+      [CompletionCandidate('deploy', description: 'Deploy a project')],
+      directive: CompletionDirective.noFileCompletion,
+    );
+  }
+}
+
 void main() {
   group('Given a CloudCommand', () {
     late CloudCommand command;
@@ -43,30 +84,129 @@ void main() {
       'when parsing configuration with no args, '
       'then there are no errors',
       () {
-        final argResults = command.argParser.parse([]);
-        final config = command.resolveConfiguration(argResults);
+        final config = resolveCommandConfig(command.options, []);
 
         expect(config.errors, isEmpty);
       },
     );
 
-    group('when parsing configuration with scloud args, ', () {
-      late final argResults = command.argParser.parse([
-        'deploy',
-        '--project',
-        'my-project',
-      ]);
+    group('when splitting a cloud invocation, ', () {
+      test('then the words after cloud are forwarded to scloud', () {
+        final split = splitCloudInvocation([
+          'cloud',
+          'deploy',
+          '--project',
+          'my-project',
+        ]);
 
-      test('then there are no errors', () {
-        final config = command.resolveConfiguration(argResults);
-
-        expect(config.errors, isEmpty);
+        expect(split?.cloudArgs, ['deploy', '--project', 'my-project']);
+        expect(split?.runnerArgs, ['cloud']);
       });
 
-      test('then args are forwarded via argResults.rest', () {
-        expect(argResults.rest, ['deploy', '--project', 'my-project']);
+      test('then global options before cloud stay on the runner', () {
+        final split = splitCloudInvocation([
+          '--verbose',
+          'cloud',
+          '--help',
+        ]);
+
+        expect(split?.runnerArgs, ['--verbose', 'cloud']);
+        expect(split?.cloudArgs, ['--help']);
+      });
+
+      test('then a completion request is left intact for the runner', () {
+        expect(
+          splitCloudInvocation(['__complete', '--verbose', 'cloud', 'deploy']),
+          isNull,
+        );
       });
     });
+  });
+
+  group('Given shell completion of serverpod cloud', () {
+    late _RecordingCompletion completion;
+    late ServerpodCommandRunner runner;
+
+    setUp(() {
+      completion = _RecordingCompletion();
+      runner =
+          ServerpodCommandRunner.createCommandRunner(
+            _SilentAnalytics(),
+            false,
+            Version(1, 1, 0),
+            preCommandHooks: false,
+          )..addCommand(
+            CloudCommand(requestCompletion: completion.call),
+          );
+    });
+
+    Future<CompletionResponse> complete(List<String> words) {
+      return CompletionEngine<GlobalOption, void>(
+        runner,
+        resolver: runner.resolver,
+        parserSettings: runner.parserSettings,
+      ).complete(words);
+    }
+
+    test(
+      'when a word after cloud is completed, '
+      'then scloud is asked for that word and its answer is returned',
+      () async {
+        final response = await complete(['cloud', 'de']);
+
+        expect(completion.calls, hasLength(1));
+        expect(completion.calls.single.executable, getScloudExecutablePath());
+        expect(completion.calls.single.words, ['de']);
+        expect(completion.calls.single.environment, {
+          ScloudEnvironment.baseCommand: scloudBaseCommand,
+        });
+        expect(response.candidates, [
+          const CompletionCandidate(
+            'deploy',
+            description: 'Deploy a project',
+          ),
+        ]);
+        expect(response.directive, CompletionDirective.noFileCompletion);
+      },
+    );
+
+    test(
+      'when words after cloud include options, '
+      'then those words are forwarded to scloud',
+      () async {
+        await complete(['cloud', 'deploy', '--project', 'my']);
+
+        expect(completion.calls.single.words, [
+          'deploy',
+          '--project',
+          'my',
+        ]);
+      },
+    );
+
+    test(
+      'when a global option precedes cloud, '
+      'then it is not forwarded to scloud',
+      () async {
+        await complete(['--verbose', 'cloud', '']);
+
+        expect(completion.calls.single.words, ['']);
+      },
+    );
+
+    test(
+      'when the cloud command name itself is completed, '
+      'then scloud is not asked',
+      () async {
+        final response = await complete(['clo']);
+
+        expect(completion.calls, isEmpty);
+        expect(
+          response.candidates.map((candidate) => candidate.value),
+          contains('cloud'),
+        );
+      },
+    );
   });
 
   group('Given scloud that exits successfully when run', () {

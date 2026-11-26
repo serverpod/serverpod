@@ -1,7 +1,10 @@
-import 'package:args/command_runner.dart';
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
+import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -98,10 +101,10 @@ class MockAnalytics implements Analytics {
   }) async {}
 }
 
-class MockCommand extends Command {
+class MockCommand extends ServerpodCommand<OptionDefinition> {
   static const String commandName = 'mock-command';
-  List<String> trackedOptions = [];
-  int numberOfRuns = 0;
+
+  MockCommand() : super(options: const []);
 
   @override
   final name = commandName;
@@ -110,21 +113,12 @@ class MockCommand extends Command {
   final description = 'Mock command used for testing.';
 
   @override
-  void run() {
-    trackedOptions.add(argResults!['name']);
-    numberOfRuns++;
-  }
-
-  MockCommand() {
-    argParser.addOption(
-      'name',
-      defaultsTo: 'alex',
-      allowed: <String>['alex', 'isak', 'viktor'],
-    );
-  }
+  void run(CommandContext<OptionDefinition, void> context) {}
 }
 
-class LanguageServerMockCommand extends Command {
+class LanguageServerMockCommand extends ServerpodCommand<OptionDefinition> {
+  LanguageServerMockCommand() : super(options: const []);
+
   @override
   final name = LanguageServerCommand.commandName;
 
@@ -132,36 +126,25 @@ class LanguageServerMockCommand extends Command {
   final description = 'Language Server Mock command used for testing.';
 
   @override
-  void run() {}
-}
-
-class MockVersionCommand extends Command {
-  int numberOfRuns = 0;
-
-  @override
-  final name = 'version';
-
-  @override
-  final description = 'Mock version command used for testing.';
-
-  @override
-  void run() {
-    numberOfRuns++;
-  }
+  void run(CommandContext<OptionDefinition, void> context) {}
 }
 
 class TestFixture {
   final MockAnalytics analytics;
-  final MockCommand mockCommand;
   final ServerpodCommandRunner runner;
   final MockLogOutput logOutput;
+  final ContextProvider provider;
 
   TestFixture(
     this.analytics,
-    this.mockCommand,
     this.runner,
     this.logOutput,
+    this.provider,
   );
+
+  Future<void> run(List<String> args) {
+    return runner.run(args, env: const {}, provider: provider);
+  }
 }
 
 TestFixture createTestFixture(MockLogger testLogger, Version version) {
@@ -170,13 +153,18 @@ TestFixture createTestFixture(MockLogger testLogger, Version version) {
     analytics,
     false,
     version,
-    onBeforeRunCommand: (_) => Future(() => {}),
+    preCommandHooks: false,
   );
-  var mockCommand = MockCommand();
-  runner.addCommand(mockCommand);
+  runner.addCommand(MockCommand());
   runner.addCommand(LanguageServerMockCommand());
   runner.addCommand(VersionCommand(version));
-  return TestFixture(analytics, mockCommand, runner, testLogger.output.reset());
+  runner.addCommand(CreateCommand());
+  return TestFixture(
+    analytics,
+    runner,
+    testLogger.output.reset(),
+    ContextProvider(),
+  );
 }
 
 void main() {
@@ -198,7 +186,7 @@ void main() {
     test('when no log level flag is provided', () async {
       List<String> args = [];
 
-      await fixture.runner.run(args);
+      await fixture.run(args);
 
       expect(log.logLevel, equals(LogLevel.info));
     });
@@ -210,7 +198,7 @@ void main() {
           '--${BetterCommandRunnerFlags.verbose}',
         ];
 
-        await fixture.runner.run(args);
+        await fixture.run(args);
 
         expect(log.logLevel, equals(LogLevel.debug));
       },
@@ -222,7 +210,7 @@ void main() {
           '--${BetterCommandRunnerFlags.quiet}',
         ];
 
-        await fixture.runner.run(args);
+        await fixture.run(args);
 
         expect(log.logLevel, equals(LogLevel.nothing));
       },
@@ -236,7 +224,7 @@ void main() {
           '--${BetterCommandRunnerFlags.quiet}',
         ];
 
-        await fixture.runner.run(args);
+        await fixture.run(args);
 
         expect(log.logLevel, equals(LogLevel.debug));
       },
@@ -247,7 +235,7 @@ void main() {
       () async {
         List<String> args = [LanguageServerCommand.commandName];
 
-        await fixture.runner.run(args);
+        await fixture.run(args);
 
         expect(log.logLevel, equals(LogLevel.nothing));
       },
@@ -257,7 +245,7 @@ void main() {
   test(
     'Given version subcommand, when run, then prints only version',
     () async {
-      await fixture.runner.run(['version']);
+      await fixture.run(['version']);
 
       var logOutput = fixture.logOutput;
       expect(logOutput.messages, hasLength(1));
@@ -268,7 +256,7 @@ void main() {
   test(
     'Given --version flag, when run, then should exit early and not show help',
     () async {
-      await fixture.runner.run(['--version']);
+      await fixture.run(['--version']);
 
       var logOutput = fixture.logOutput;
       expect(logOutput.messages, hasLength(1));
@@ -280,7 +268,12 @@ void main() {
     'Given command runner, when its commands are listed, '
     'then completion command is registered',
     () {
-      expect(fixture.runner.commands.containsKey('completion'), isTrue);
+      expect(
+        fixture.runner.subcommands.any(
+          (command) => command.name == 'completion',
+        ),
+        isTrue,
+      );
     },
   );
 
@@ -290,11 +283,11 @@ void main() {
       () async {
         List<String> args = [MockCommand.commandName];
 
-        await fixture.runner.run(args);
+        await fixture.run(args);
 
-        var interactiveValue = fixture.runner.globalConfiguration.optionalValue(
-          GlobalOption.interactive,
-        );
+        var interactiveValue = fixture.provider
+            .fetch<GlobalConfiguration>()
+            .optionalValue(GlobalOption.interactive);
         expect(interactiveValue, isNull);
       },
     );
@@ -307,11 +300,11 @@ void main() {
           MockCommand.commandName,
         ];
 
-        await fixture.runner.run(args);
+        await fixture.run(args);
 
-        var interactiveValue = fixture.runner.globalConfiguration.optionalValue(
-          GlobalOption.interactive,
-        );
+        var interactiveValue = fixture.provider
+            .fetch<GlobalConfiguration>()
+            .optionalValue(GlobalOption.interactive);
         expect(interactiveValue, isTrue);
       },
     );
@@ -324,49 +317,51 @@ void main() {
           MockCommand.commandName,
         ];
 
-        await fixture.runner.run(args);
+        await fixture.run(args);
 
-        var interactiveValue = fixture.runner.globalConfiguration.optionalValue(
-          GlobalOption.interactive,
-        );
+        var interactiveValue = fixture.provider
+            .fetch<GlobalConfiguration>()
+            .optionalValue(GlobalOption.interactive);
         expect(interactiveValue, isFalse);
       },
     );
   });
 
-  group('Given the command runner with a before-run hook,', () {
-    late bool? analyticsEnabledInHook;
+  group('Given the command runner,', () {
     late ServerpodCommandRunner runner;
+    late ContextProvider provider;
 
     setUp(() {
-      analyticsEnabledInHook = null;
+      provider = ContextProvider();
       runner = ServerpodCommandRunner.createCommandRunner(
         MockAnalytics(),
         false,
         version,
-        onBeforeRunCommand: (runner) async {
-          analyticsEnabledInHook = runner.analyticsEnabled();
-        },
+        preCommandHooks: false,
       )..addCommand(MockCommand());
     });
 
+    Future<void> run(List<String> args) {
+      return runner.run(args, env: const {}, provider: provider);
+    }
+
     test(
       'when run without --no-analytics, '
-      'then the hook sees analytics as enabled',
+      'then analytics is enabled for the run',
       () async {
-        await runner.run([MockCommand.commandName]);
+        await run([MockCommand.commandName]);
 
-        expect(analyticsEnabledInHook, isTrue);
+        expect(provider.fetch<AnalyticsEnabled>().enabled, isTrue);
       },
     );
 
     test(
       'when run with --no-analytics, '
-      'then the hook sees analytics as disabled',
+      'then analytics is disabled for the run',
       () async {
-        await runner.run(['--no-analytics', MockCommand.commandName]);
+        await run(['--no-analytics', MockCommand.commandName]);
 
-        expect(analyticsEnabledInHook, isFalse);
+        expect(provider.fetch<AnalyticsEnabled>().enabled, isFalse);
       },
     );
   });
@@ -447,6 +442,102 @@ void main() {
         );
 
         expect(url, Uri.parse('https://serverpod.dev/checkin'));
+      },
+    );
+  });
+
+  group('Given the global --version action,', () {
+    test(
+      'when it is used before a subcommand, then only the version is printed',
+      () async {
+        await fixture.run(['--version', MockCommand.commandName]);
+
+        expect(fixture.logOutput.messages, ['Serverpod version: 1.1.0']);
+      },
+    );
+
+    test(
+      'when it is used after a subcommand, then only the version is printed',
+      () async {
+        await fixture.run([MockCommand.commandName, '--version']);
+
+        expect(fixture.logOutput.messages, ['Serverpod version: 1.1.0']);
+      },
+    );
+
+    test(
+      'when a mandatory argument is missing, then the version is still printed',
+      () async {
+        await fixture.run(['create', '--version']);
+
+        expect(fixture.logOutput.messages, ['Serverpod version: 1.1.0']);
+      },
+    );
+  });
+
+  group('Given the run middlewares,', () {
+    const featureArgs = ['--experimental-features', 'databaseSync'];
+    const featureMessage = 'Enabling experimental feature: databaseSync.';
+
+    test(
+      'when a project command runs, then the feature announcement is printed',
+      () async {
+        await fixture.run([...featureArgs, MockCommand.commandName]);
+
+        expect(fixture.logOutput.messages, contains(featureMessage));
+        expect(fixture.provider.fetch<GlobalConfiguration>(), isNotNull);
+      },
+    );
+
+    test(
+      'when --help is requested, then the feature announcement is printed',
+      () async {
+        await fixture.run([...featureArgs, '--help']);
+
+        expect(fixture.logOutput.messages, contains(featureMessage));
+      },
+    );
+
+    test(
+      'when --version is requested, then the feature announcement is skipped',
+      () async {
+        await fixture.run([...featureArgs, '--version']);
+
+        expect(fixture.logOutput.messages, isNot(contains(featureMessage)));
+        expect(
+          fixture.logOutput.messages,
+          contains('Serverpod version: 1.1.0'),
+        );
+      },
+    );
+
+    test(
+      'when the command line is invalid, then no run middleware runs',
+      () async {
+        log.logLevel = LogLevel.error;
+
+        await expectLater(
+          fixture.run([...featureArgs, 'not-a-command']),
+          throwsA(isA<UsageException>()),
+        );
+
+        expect(log.logLevel, LogLevel.error);
+        expect(fixture.provider.maybeFetch<GlobalConfiguration>(), isNull);
+        expect(fixture.logOutput.messages, isNot(contains(featureMessage)));
+      },
+    );
+
+    test(
+      'when an option value is completed, then the run middleware does not act',
+      () async {
+        await fixture.run([
+          '__complete',
+          '--experimental-features',
+          '',
+        ]);
+
+        expect(fixture.provider.maybeFetch<GlobalConfiguration>(), isNull);
+        expect(fixture.logOutput.messages, isNot(contains(featureMessage)));
       },
     );
   });

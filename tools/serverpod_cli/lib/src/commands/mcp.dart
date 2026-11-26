@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:dart_mcp/stdio.dart';
 import 'package:path/path.dart' as p;
@@ -52,15 +53,12 @@ class McpCommand extends ServerpodCommand<McpOption> {
       'Start an MCP bridge to the `serverpod start` runner of one '
       'server project.';
 
-  @override
-  String get invocation => 'serverpod mcp-server';
-
   McpCommand() : super(options: McpOption.values);
 
   @override
-  Future<void> runWithConfig(Configuration<McpOption> commandConfig) async {
+  Future<void> run(CommandContext<McpOption, void> context) async {
     final serverDir = await resolveServerDirectory(
-      commandConfig.optionalValue(McpOption.serverDir),
+      context.config.optionalValue(McpOption.serverDir),
       flag: '--server-dir',
     );
     final serverDirPath = p.canonicalize(serverDir.path);

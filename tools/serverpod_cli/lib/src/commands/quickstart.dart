@@ -1,4 +1,5 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/command.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/runner.dart';
@@ -86,14 +87,12 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
   QuickstartCommand() : super(options: QuickstartOption.values);
 
   @override
-  Future<void> runWithConfig(
-    Configuration<QuickstartOption> commandConfig,
-  ) async {
-    var template = commandConfig.value(QuickstartOption.template);
-    var force = commandConfig.value(QuickstartOption.force);
-    var name = commandConfig.value(QuickstartOption.name);
+  Future<void> run(CommandContext<QuickstartOption, void> context) async {
+    var template = context.config.value(QuickstartOption.template);
+    var force = context.config.value(QuickstartOption.force);
+    var name = context.config.value(QuickstartOption.name);
 
-    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+    final interactive = context.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 
@@ -123,7 +122,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       }
     }
 
-    final context = TemplateContext(
+    final templateContext = TemplateContext(
       template: template,
       auth: true,
       redis: true,
@@ -156,7 +155,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       name,
       force,
       interactive: interactive,
-      context: context,
+      context: templateContext,
       analyticsMethod: 'quickstart',
     );
 

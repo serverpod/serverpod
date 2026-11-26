@@ -31,8 +31,8 @@ class AnalyticsPayloadBuilder {
 
   /// Shape a `command_invocations` key must have to be sent.
   ///
-  /// Keys are subcommand names the CLI itself registered (see
-  /// [ServerpodCommandRunner.runCommand], which is what gates the write side),
+  /// Keys are subcommand names the CLI itself registered (the runner's
+  /// command middleware gates the write side),
   /// so this is a defensive bound rather than a vocabulary: a hand-maintained
   /// list of command names silently stops counting whenever a command is
   /// renamed or added.
