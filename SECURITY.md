@@ -32,6 +32,8 @@ You can write to us in English.
 
 We'll keep you informed as we work on a fix and agree on a disclosure date with you. Once a fix is released, we'll publish a GitHub Security Advisory (and request a CVE where appropriate), crediting you unless you prefer to stay anonymous.
 
+If a report doesn't meet the bar in [What counts as a vulnerability](#what-counts-as-a-vulnerability), we'll say so in our initial assessment. Where the change is still useful, we'll make it as normal hardening, without an advisory, a CVE, or credit.
+
 ## Supported versions
 
 Security fixes are released for the latest major version of Serverpod. Critical fixes may be backported to the previous major version at our discretion.
@@ -56,8 +58,19 @@ Out of scope:
 - Vulnerabilities in third-party dependencies that are already publicly known (please report those upstream)
 - Denial-of-service attacks, spam, or social engineering
 - Findings from automated scanners without a demonstrated impact
+- Issues that require an operator credential, such as the server's service secret or database password
+- Hardening suggestions without a demonstrated attack, such as missing headers, constant-time comparisons, or extra validation. Please open a public issue for these.
 
-Unsure whether something is in scope? Report it anyway, and we'll take a look.
+## What counts as a vulnerability
+
+We treat a report as a vulnerability, and publish an advisory for it, when it shows all of the following:
+
+- **No operator access needed.** The attacker doesn't hold an operator credential, such as the server's service secret or database password. Whoever holds one already controls the server.
+- **A default or common setup.** The issue affects Serverpod as it's usually configured, not only an unusual, non-default configuration.
+- **Harm to others.** The attacker can reach other users' data or accounts, or compromise the server. Affecting only their own account doesn't count.
+- **Demonstrated end to end.** The report shows how an attacker gets from their starting position to the impact, not only that a check is missing.
+
+Unsure whether something qualifies? If it passes these four points, report it privately. Otherwise, please open a public issue.
 
 ## Safe harbor
 
@@ -70,4 +83,4 @@ We won't pursue legal action against anyone who, in good faith:
 
 ## Bug bounty
 
-We don't currently run a paid bug bounty program, but we're grateful for every report and are happy to credit researchers publicly.
+We don't currently run a paid bug bounty program. We credit researchers in the advisory for each vulnerability we confirm.
