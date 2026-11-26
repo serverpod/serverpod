@@ -26,5 +26,25 @@ void main() {
     test('when type is called then String is returned.', () {
       expect(column.type, String);
     });
+
+    group('with _NullableColumnDefaultOperations mixin', () {
+      test(
+        'when equals compared to NULL value then output is IS NULL expression.',
+        () {
+          var comparisonExpression = column.equals(null);
+
+          expect(comparisonExpression.toString(), '$column IS NULL');
+        },
+      );
+
+      test(
+        'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
+        () {
+          var comparisonExpression = column.notEquals(null);
+
+          expect(comparisonExpression.toString(), '$column IS NOT NULL');
+        },
+      );
+    });
   });
 }
