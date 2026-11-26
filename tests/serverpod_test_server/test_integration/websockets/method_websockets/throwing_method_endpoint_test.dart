@@ -7,7 +7,7 @@ import 'package:web_socket/web_socket.dart';
 import '../websocket_extensions.dart';
 
 void main() {
-  group('Given method websocket connection', () {
+  group('Given method websocket connection,', () {
     late Serverpod server;
     late WebSocket webSocket;
 
@@ -120,9 +120,10 @@ void main() {
     );
 
     group(
-      'when a stream is opened to an endpoint with a Stream return that throws an exception then',
+      'when a stream is opened to an endpoint with a Stream return that throws an exception, '
+      'then,',
       () {
-        var streamOpened = Completer<void>();
+        late Completer<void> streamOpened;
         late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
 
         var endpoint = 'methodStreaming';
@@ -130,6 +131,7 @@ void main() {
         var connectionId = const Uuid().v4obj();
 
         setUp(() async {
+          streamOpened = Completer<void>();
           closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
           webSocket.textEvents.listen((event) {
             var message = WebSocketMessage.fromJsonString(

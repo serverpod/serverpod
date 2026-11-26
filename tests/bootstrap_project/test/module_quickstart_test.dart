@@ -3,15 +3,20 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 import '../lib/src/util.dart';
 
 void main() {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
+  final tempPath = path.join(
+    Directory.systemTemp.path,
+    'spb_${const Uuid().v4().substring(0, 8)}',
+  );
 
   setUpAll(() async {
+    Directory(tempPath).createSync(recursive: true);
     final pubGetProcess = await startProcess('dart', [
       'pub',
       'get',

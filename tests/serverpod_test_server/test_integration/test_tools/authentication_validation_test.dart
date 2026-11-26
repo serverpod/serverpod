@@ -8,7 +8,7 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given AuthenticatedTestToolsEndpoint',
+    'Given AuthenticatedTestToolsEndpoint,',
     (sessionBuilder, endpoints) {
       test(
         'when not authenticated and calling returnsString then throws ServerpodUnauthenticatedException',
@@ -127,16 +127,17 @@ void main() {
         late StreamController<int> inStream;
 
         var authenticatedUserId = '1';
-        var authenticatedSessionBuilder = sessionBuilder.copyWith(
-          authentication: AuthenticationOverride.authenticationInfo(
-            authenticatedUserId,
-            {Scope('user')},
-          ),
-        );
+        late TestSessionBuilder authenticatedSessionBuilder;
 
         late Session session;
 
         setUp(() async {
+          authenticatedSessionBuilder = sessionBuilder.copyWith(
+            authentication: AuthenticationOverride.authenticationInfo(
+              authenticatedUserId,
+              {Scope('user')},
+            ),
+          );
           session = authenticatedSessionBuilder.build();
           streamClosedCompleter = Completer<dynamic>();
           inStream = StreamController<int>();
@@ -225,16 +226,17 @@ void main() {
         late StreamController<int> inStream2;
 
         var authenticatedUserId = '1';
-        var authenticatedSessionBuilder = sessionBuilder.copyWith(
-          authentication: AuthenticationOverride.authenticationInfo(
-            authenticatedUserId,
-            {Scope('user')},
-          ),
-        );
+        late TestSessionBuilder authenticatedSessionBuilder;
 
         late Session session;
 
         setUp(() async {
+          authenticatedSessionBuilder = sessionBuilder.copyWith(
+            authentication: AuthenticationOverride.authenticationInfo(
+              authenticatedUserId,
+              {Scope('user')},
+            ),
+          );
           session = authenticatedSessionBuilder.build();
           streamClosedCompleter1 = Completer<dynamic>();
           inStream1 = StreamController<int>();

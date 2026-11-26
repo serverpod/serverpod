@@ -139,6 +139,8 @@ class TestServerpod<T extends InternalTestEndpoints> {
   final TestServerOutputMode testServerOutputMode;
 
   /// Creates a new test serverpod instance.
+  ///
+  /// Endpoint wrappers are not initialized until the first [createSession] or [start] call.
   TestServerpod({
     required bool? applyMigrations,
     required EndpointDispatch endpoints,
@@ -166,9 +168,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
        _configOverride = configOverride,
        ephemeralDatabase = ephemeralDatabase ?? true,
        testServerOutputMode =
-           testServerOutputMode ?? TestServerOutputMode.normal {
-    testEndpoints.initialize(serializationManager, endpoints);
-  }
+           testServerOutputMode ?? TestServerOutputMode.normal;
 
   /// Constructs a [Serverpod]. When [ephemeralDatabase] is true, its configured
   /// database is this group's own: a PostgreSQL database named
@@ -214,6 +214,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
           databaseInterceptor: _databaseInterceptor,
         );
         _endpoints.initializeEndpoints(serverpod.server);
+        testEndpoints.initialize(_serializationManager, _endpoints);
         return serverpod;
       },
       stdout: () => NullStdOut(),
@@ -267,19 +268,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
           }
         }
 
-        try {
-          await _serverpod.start(runInGuardedZone: false);
-        } catch (_) {
-          // A failed start skips shutdown(), so drop this group's database
-          // here. Best-effort, preserving the original start failure.
-          try {
-            await _serverpod.shutdown(exitProcess: false);
-          } catch (_) {}
-          try {
-            await _ephemeralDatabase?.drop();
-          } catch (_) {}
-          rethrow;
-        }
+        await _serverpod.start(runInGuardedZone: false);
       });
     } on InitializationException {
       // Already a descriptive failure (e.g. database setup); surface it as-is.
@@ -299,11 +288,19 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// database (a PostgreSQL `DROP DATABASE`, or deleting the SQLite file). The
   /// shared embedded postmaster is intentionally left running; it is reclaimed
   /// when the test process exits.
+  ///
+  /// `withServerpod` calls this from `tearDownAll` even when [start] failed, so
+  /// this is the only place that needs to clean up after a failed start.
   Future<void> shutdown() async {
     try {
       await _withOutputMode(() async {
-        await _serverpod.shutdown(exitProcess: false);
-        await _ephemeralDatabase?.drop();
+        try {
+          await _serverpod.shutdown(exitProcess: false);
+        } finally {
+          // Drop even if the shutdown failed, or a group that never finished
+          // starting leaves its database behind in the shared postmaster.
+          await _ephemeralDatabase?.drop();
+        }
       });
     } catch (e, stackTrace) {
       throw InitializationException(
