@@ -77,3 +77,14 @@ class MethodStreamIdleTimeoutException extends MethodStreamException {
   const MethodStreamIdleTimeoutException()
     : super('Method stream connection idle timeout');
 }
+
+/// Thrown when a method stream message could not be decoded and the stream
+/// it belongs to is therefore closed with an error.
+class MethodStreamMessageDecodingException extends MethodStreamException {
+  /// The error that occurred when decoding the message.
+  final Object? error;
+
+  /// Creates a new [MethodStreamMessageDecodingException].
+  const MethodStreamMessageDecodingException(this.error)
+    : super('Method stream message failed to decode: $error');
+}

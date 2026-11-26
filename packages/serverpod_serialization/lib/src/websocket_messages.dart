@@ -95,6 +95,9 @@ enum OpenMethodStreamResponseType {
 
   /// The arguments were invalid.
   invalidArguments,
+
+  /// An unexpected error occurred on the server while opening the stream.
+  internalError,
   ;
 
   /// Try to parse a [OpenMethodStreamResponseType] from a string.
@@ -461,7 +464,16 @@ class MethodStreamMessage extends WebSocketMessage
   final String? parameter;
 
   /// The object that was sent.
-  final dynamic object;
+  ///
+  /// This is `null` if the object could not be deserialized, in which case
+  /// [deserializationError] holds the error. The envelope fields
+  /// ([endpoint], [method], [connectionId] and [parameter]) are still valid,
+  /// so a receiver can fail only the stream this message belongs to instead
+  /// of tearing down the whole connection.
+  dynamic object;
+
+  /// The error that occurred when deserializing [object], if any.
+  Object? deserializationError;
 
   final SerializationManager _serializationManager;
 
@@ -475,9 +487,16 @@ class MethodStreamMessage extends WebSocketMessage
         data[WebSocketMessageDataKey.connectionId],
       ),
       parameter = data[WebSocketMessageDataKey.parameter],
+      object = null,
+      deserializationError = null {
+    try {
       object = _serializationManager.deserializeByClassName(
         data[WebSocketMessageDataKey.object],
       );
+    } catch (e) {
+      deserializationError = e;
+    }
+  }
 
   /// Builds a [MethodStreamMessage] message.
   static String buildMessage({
