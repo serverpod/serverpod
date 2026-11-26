@@ -77,5 +77,5 @@ SignInWidget(
 
 ## More
 
-- [`references/setup.md`](references/setup.md) — adding the auth packages to a project created without auth, initializing the services in `server.dart`, wiring the Flutter client, configuring social sign-ins, migrating off the legacy `serverpod_auth` module.
-- [`references/user-management.md`](references/user-management.md) — attaching your own data to a user, editing scopes, letting the client edit its profile.
+- [`references/setup.md`](references/setup.md) — adding the auth packages to a project created without auth, initializing the services in `server.dart`, wiring the Flutter client, anonymous authentication, passwordless email, configuring social sign-ins, migrating off the legacy `serverpod_auth` module.
+- [`references/user-management.md`](references/user-management.md) — attaching your own data to a user, managing scopes, editing profiles, linking sign-in methods and merging accounts.

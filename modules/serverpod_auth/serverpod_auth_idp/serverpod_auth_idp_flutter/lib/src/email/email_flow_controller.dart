@@ -5,6 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import '../common/account_linking_controller.dart';
+import '../common/sign_in_completion.dart';
 import '../common/widgets/password_requirements/requirements.dart';
 import 'email_auth_exceptions.dart';
 
@@ -29,6 +31,16 @@ abstract class EmailFlowController<S extends Enum> extends ChangeNotifier {
   /// Exceptions that should not be shown to the user are shown in the debug
   /// log, but not passed to the callback.
   final Function(Object error)? onError;
+
+  /// When set, sign-in links to the account the user is currently signed in to.
+  final AccountLinkingController? accountLinking;
+
+  /// Called with the result of a successful sign-in instead of signing the
+  /// user in, when set.
+  ///
+  /// Used by account linking, where the signed-in user stays signed in and the
+  /// new sign-in only proves ownership of the account being linked.
+  final OnAuthSuccessCallback? onAuthSuccess;
 
   /// The validation function to use for email validation.
   ///
@@ -61,6 +73,8 @@ abstract class EmailFlowController<S extends Enum> extends ChangeNotifier {
     required this.startScreen,
     this.onAuthenticated,
     this.onError,
+    this.accountLinking,
+    this.onAuthSuccess,
     void Function(String email)? emailValidation,
     List<PasswordRequirement>? passwordRequirements,
   }) : emailValidation = emailValidation ?? validateEmail,
@@ -228,15 +242,12 @@ abstract class EmailFlowController<S extends Enum> extends ChangeNotifier {
   /// On success, updates the session manager and calls [onAuthenticated].
   /// On failure, transitions to error state with the error message.
   Future<void> login() async {
-    await runGuarded(() async {
-      final authSuccess = await emailEndpoint.login(
+    await runGuardedSignIn(
+      () => emailEndpoint.login(
         email: emailController.text.trim(),
         password: passwordController.text,
-      );
-
-      await client.auth.updateSignedInUser(authSuccess);
-      return null;
-    });
+      ),
+    );
   }
 
   /// Starts the password reset process.
@@ -278,24 +289,21 @@ abstract class EmailFlowController<S extends Enum> extends ChangeNotifier {
   /// updates the session manager and calls [onAuthenticated]. On failure,
   /// transitions to error state with the error message.
   Future<void> finishPasswordReset() async {
-    await runGuarded(() async {
-      final finishRequestToken = this.finishRequestToken;
-      if (finishRequestToken == null) {
-        throw StateError('No password reset request was found to finish.');
-      }
+    final finishRequestToken = this.finishRequestToken;
+    if (finishRequestToken == null) {
+      throw StateError('No password reset request was found to finish.');
+    }
 
+    await runGuardedSignIn(() async {
       await emailEndpoint.finishPasswordReset(
         finishPasswordResetToken: finishRequestToken,
         newPassword: passwordController.text,
       );
 
-      final authSuccess = await emailEndpoint.login(
+      return emailEndpoint.login(
         email: emailController.text.trim(),
         password: passwordController.text,
       );
-
-      await client.auth.updateSignedInUser(authSuccess);
-      return null;
     });
   }
 
@@ -330,22 +338,66 @@ abstract class EmailFlowController<S extends Enum> extends ChangeNotifier {
         onAuthenticated?.call();
       }
     } catch (e) {
-      _error = e;
-      setState(EmailAuthState.error);
-      debugPrint('[$runtimeType] ${_currentScreen.name}: $e');
+      handleGuardedError(e);
+    }
+  }
 
-      // If we have a network error, start a timer to enable the action button
-      // again after a short delay.
-      if (e is ServerpodClientNetworkException) {
-        Timer(const Duration(seconds: 1), () {
-          setState(EmailAuthState.idle);
-        });
-      }
+  /// Handles an error caught during a guarded flow operation.
+  @protected
+  void handleGuardedError(Object e) {
+    _error = e;
+    setState(EmailAuthState.error);
+    debugPrint('[$runtimeType] ${_currentScreen.name}: $e');
 
-      final userFriendlyError = convertToUserFacingException(e);
-      if (userFriendlyError != null) {
-        onError?.call(userFriendlyError);
+    // If we have a network error, start a timer to enable the action button
+    // again after a short delay.
+    if (e is ServerpodClientNetworkException) {
+      Timer(const Duration(seconds: 1), () {
+        setState(EmailAuthState.idle);
+      });
+    }
+
+    final userFriendlyError = convertToUserFacingException(e);
+    if (userFriendlyError != null) {
+      onError?.call(userFriendlyError);
+    }
+  }
+
+  /// Executes [signIn] and finishes sign-in completion.
+  ///
+  /// On successful authentication without account-linking interception,
+  /// transitions to [EmailAuthState.authenticated] and calls [onAuthenticated].
+  /// If an account-linking interceptor takes over, returns to
+  /// [EmailAuthState.idle].
+  /// In case of an error, transitions to error state and calls [onError] only
+  /// for exceptions that should be shown to the user.
+  @protected
+  Future<void> runGuardedSignIn(Future<AuthSuccess> Function() signIn) async {
+    if (_state == EmailAuthState.loading) return;
+
+    if (accountLinking != null) {
+      await accountLinking!.start();
+      if (accountLinking!.state != AccountLinkingState.awaitingSignIn) return;
+    }
+
+    setState(EmailAuthState.loading);
+    try {
+      final authSuccess = await signIn();
+      final didSignIn = await completeSignIn(
+        client,
+        authSuccess,
+        accountLinking: accountLinking,
+        onAuthSuccess: onAuthSuccess,
+      );
+
+      if (didSignIn) {
+        setState(EmailAuthState.authenticated);
+        onAuthenticated?.call();
+      } else {
+        setState(EmailAuthState.idle);
       }
+    } catch (e) {
+      handleGuardedError(e);
     }
   }
 }

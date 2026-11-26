@@ -12,11 +12,81 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'dart:typed_data' as _idt;
+import 'package:serverpod_auth_core_client/src/protocol/auth_user/models/account_link_result.dart'
+    as _i3nw0yci;
 import 'package:serverpod_auth_core_client/src/protocol/common/models/auth_success.dart'
     as _i0hc49pk;
 import 'package:serverpod_auth_core_client/src/protocol/profile/models/user_profile_model.dart'
     as _i4q88qrd;
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+
+/// Endpoint for linking an additional sign-in method to the current account.
+///
+/// The flow has three steps:
+///
+/// 1. Call [createLinkRequest] while signed in.
+/// 2. Sign in with the additional provider as usual. The response carries a
+///    token for that account, which the client keeps rather than signing in
+///    with, since the user stays signed in to their original account.
+/// 3. Call [executeLinkRequest] with that token.
+///
+/// See also:
+///   - [AccountLinkRequests], which implements the flow.
+/// {@category Endpoint}
+class EndpointAccountLinking extends _isc.EndpointRef {
+  EndpointAccountLinking(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth_core.accountLinking';
+
+  /// Starts an account link flow for the calling user and session.
+  ///
+  /// Any previous request for this user is replaced, so the flow can be
+  /// restarted at any point.
+  ///
+  /// See [AccountLinkRequests.createLinkRequest].
+  _ida.Future<void> createLinkRequest() => caller.callServerEndpoint<void>(
+    'serverpod_auth_core.accountLinking',
+    'createLinkRequest',
+    {},
+  );
+
+  /// Cancels the calling user's account link flow, if one is in progress.
+  ///
+  /// Call this as soon as the user declines a merge or dismisses the linking
+  /// UI, so that signing in as another user from this session is rejected
+  /// again without waiting for the request to expire.
+  ///
+  /// See [AccountLinkRequests.cancelLinkRequest].
+  _ida.Future<void> cancelLinkRequest() => caller.callServerEndpoint<void>(
+    'serverpod_auth_core.accountLinking',
+    'cancelLinkRequest',
+    {},
+  );
+
+  /// Completes the calling user's account link flow.
+  ///
+  /// [proofToken] is the token returned by the sign-in with the additional
+  /// provider, and proves that the caller controls the account being linked.
+  ///
+  /// Returns [AccountLinkStatus.mergeRequired] without changing anything when
+  /// the sign-in method already belongs to another account and [approveMerge]
+  /// is not set. Present the returned conflict to the user, then call this
+  /// again with [approveMerge] set to merge that account in and remove it.
+  ///
+  /// See [AccountLinkRequests.executeLinkRequest].
+  _ida.Future<_i3nw0yci.AccountLinkResult> executeLinkRequest({
+    required String proofToken,
+    required bool approveMerge,
+  }) => caller.callServerEndpoint<_i3nw0yci.AccountLinkResult>(
+    'serverpod_auth_core.accountLinking',
+    'executeLinkRequest',
+    {
+      'proofToken': proofToken,
+      'approveMerge': approveMerge,
+    },
+  );
+}
 
 /// Endpoint for getting status and managing a signed in user.
 /// {@category Endpoint}
@@ -125,9 +195,12 @@ abstract class EndpointUserProfileEditBase extends EndpointUserProfileInfo {
 
 class Caller extends _isc.ModuleEndpointCaller {
   Caller(_isc.ServerpodClientShared client) : super(client) {
+    accountLinking = EndpointAccountLinking(this);
     status = EndpointStatus(this);
     userProfileInfo = EndpointUserProfileInfo(this);
   }
+
+  late final EndpointAccountLinking accountLinking;
 
   late final EndpointStatus status;
 
@@ -135,6 +208,7 @@ class Caller extends _isc.ModuleEndpointCaller {
 
   @override
   Map<String, _isc.EndpointRef> get endpointRefLookup => {
+    'serverpod_auth_core.accountLinking': accountLinking,
     'serverpod_auth_core.status': status,
     'serverpod_auth_core.userProfileInfo': userProfileInfo,
   };

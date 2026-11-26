@@ -7,6 +7,7 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
 import 'anonymous/anonymous_sign_in_widget.dart';
 import 'apple/apple_sign_in_widget.dart';
+import 'common/account_linking_controller.dart';
 import 'common/external_idp_registry.dart';
 import 'common/sign_in_button_style.dart';
 import 'common/widgets/column.dart';
@@ -117,6 +118,15 @@ class SignInWidget extends StatefulWidget {
   /// all of them — including external ones. See [SignInButtonStyle].
   final SignInButtonStyle? buttonStyle;
 
+  /// Puts the widget in linking mode, for adding a sign-in method to the
+  /// account the user is already signed in to.
+  ///
+  /// The link flow is started when the widget is first shown, and every
+  /// provider reports its sign-in to the controller instead of signing the
+  /// user in, so the current account stays signed in throughout. Anonymous
+  /// sign-in is hidden, since it carries no credential to link.
+  final AccountLinkingController? accountLinking;
+
   /// Creates an authentication onboarding widget.
   const SignInWidget({
     required this.client,
@@ -137,6 +147,7 @@ class SignInWidget extends StatefulWidget {
     this.githubSignInWidget,
     this.microsoftSignInWidget,
     this.buttonStyle,
+    this.accountLinking,
     super.key,
   }) : assert(
          emailSignInWidget == null || emailOtpSignInWidget == null,
@@ -150,8 +161,14 @@ class SignInWidget extends StatefulWidget {
 class _SignInWidgetState extends State<SignInWidget> {
   FlutterAuthSessionManager get auth => widget.client.auth;
 
+  /// Whether the widget is adding a sign-in method to the current account
+  /// rather than signing a user in.
+  AccountLinkingController? get accountLinking => widget.accountLinking;
+
   bool get hasAnonymous =>
-      auth.idp.hasAnonymous && !widget.disableAnonymousSignInWidget;
+      auth.idp.hasAnonymous &&
+      !widget.disableAnonymousSignInWidget &&
+      accountLinking == null;
 
   bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
 
@@ -195,6 +212,7 @@ class _SignInWidgetState extends State<SignInWidget> {
               client: widget.client,
               onAuthenticated: widget.onAuthenticated,
               onError: widget.onError,
+              accountLinking: accountLinking,
             ),
     ];
 
@@ -205,6 +223,7 @@ class _SignInWidgetState extends State<SignInWidget> {
             client: widget.client,
             onAuthenticated: widget.onAuthenticated,
             onError: widget.onError,
+            accountLinking: accountLinking,
           );
 
       // On Apple platforms, display the Apple sign-in widget first.
@@ -225,6 +244,7 @@ class _SignInWidgetState extends State<SignInWidget> {
             widget.client,
             widget.onAuthenticated,
             widget.onError,
+            accountLinking,
           ),
         );
       }
@@ -237,6 +257,7 @@ class _SignInWidgetState extends State<SignInWidget> {
               client: widget.client,
               onAuthenticated: widget.onAuthenticated,
               onError: widget.onError,
+              accountLinking: accountLinking,
             ),
       );
     }
@@ -248,6 +269,7 @@ class _SignInWidgetState extends State<SignInWidget> {
               client: widget.client,
               onAuthenticated: widget.onAuthenticated,
               onError: widget.onError,
+              accountLinking: accountLinking,
             ),
       );
     }
@@ -268,11 +290,13 @@ class _SignInWidgetState extends State<SignInWidget> {
                           client: widget.client,
                           onAuthenticated: widget.onAuthenticated,
                           onError: widget.onError,
+                          accountLinking: accountLinking,
                         )
                       : EmailSignInWidget(
                           client: widget.client,
                           onAuthenticated: widget.onAuthenticated,
                           onError: widget.onError,
+                          accountLinking: accountLinking,
                         )),
             if (socialProviders.isNotEmpty && hasEmail)
               const _SignInSeparator(),

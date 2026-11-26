@@ -1,0 +1,13 @@
+### The result of executing an account link request.
+class: AccountLinkResult
+fields:
+  ### What happened to the link request.
+  status: AccountLinkStatus
+
+  ### The pre-existing account that owns the sign-in method.
+  ###
+  ### Set when [status] is `mergeRequired`, describing the account awaiting the
+  ### user's approval, and when [status] is `merged`, as a snapshot taken before
+  ### that account was removed. `null` when [status] is `linked`, since no
+  ### pre-existing account was involved.
+  conflict: AccountLinkConflict?

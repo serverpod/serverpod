@@ -18,7 +18,9 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
+import 'click.dart' as _ivejn2uu;
 import 'greeting.dart' as _ig8bxnp5;
+export 'click.dart';
 export 'greeting.dart';
 
 class Protocol extends _is.DatabaseSerializationManager
@@ -34,7 +36,9 @@ class Protocol extends _is.DatabaseSerializationManager
       _is.ProtocolDeserialization.cached(
         this,
         types: const [
+          _is.getType<_ivejn2uu.Click>,
           _is.getType<_ig8bxnp5.Greeting>,
+          _is.getType<_ivejn2uu.Click?>,
           _is.getType<_ig8bxnp5.Greeting?>,
           _is.getType<({_idt.ByteData challenge, _is.UuidValue id})>,
         ],
@@ -43,7 +47,10 @@ class Protocol extends _is.DatabaseSerializationManager
           _iacs.Protocol.new,
           _isp.Protocol.new,
         ],
-        classNames: const ['Greeting'],
+        classNames: const [
+          'Click',
+          'Greeting',
+        ],
       );
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
@@ -53,7 +60,50 @@ class Protocol extends _is.DatabaseSerializationManager
     ..._isp.Protocol.targetTableDefinitions,
   ];
 
-  static List<_isp.TableDefinition> get _ownTableDefinitions => [];
+  static List<_isp.TableDefinition> get _ownTableDefinitions => [
+    _isp.TableDefinition(
+      name: 'click',
+      dartName: 'Click',
+      schema: 'public',
+      module: 'auth',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _isp.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _isp.ColumnDefinition(
+          name: 'timestamp',
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'now',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName: 'click_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [],
+      managed: true,
+    ),
+  ];
 
   static String? getClassNameFromObjectJson(dynamic data) =>
       _is.ProtocolDeserialization.readClassName(data);
@@ -79,8 +129,14 @@ class Protocol extends _is.DatabaseSerializationManager
       }
     }
 
+    if (t == _ivejn2uu.Click) {
+      return _ivejn2uu.Click.fromJson(data) as T;
+    }
     if (t == _ig8bxnp5.Greeting) {
       return _ig8bxnp5.Greeting.fromJson(data) as T;
+    }
+    if (t == _is.getType<_ivejn2uu.Click?>()) {
+      return (data != null ? _ivejn2uu.Click.fromJson(data) : null) as T;
     }
     if (t == _is.getType<_ig8bxnp5.Greeting?>()) {
       return (data != null ? _ig8bxnp5.Greeting.fromJson(data) : null) as T;
@@ -109,6 +165,7 @@ class Protocol extends _is.DatabaseSerializationManager
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
+      _ivejn2uu.Click => 'Click',
       _ig8bxnp5.Greeting => 'Greeting',
       _ => null,
     };
@@ -124,6 +181,8 @@ class Protocol extends _is.DatabaseSerializationManager
     }
 
     switch (data) {
+      case _ivejn2uu.Click():
+        return 'Click';
       case _ig8bxnp5.Greeting():
         return 'Greeting';
     }
@@ -151,6 +210,9 @@ class Protocol extends _is.DatabaseSerializationManager
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'Click') {
+      return deserialize<_ivejn2uu.Click>(data['data']);
     }
     if (dataClassName == 'Greeting') {
       return deserialize<_ig8bxnp5.Greeting>(data['data']);
@@ -200,6 +262,10 @@ class Protocol extends _is.DatabaseSerializationManager
       if (table != null) {
         return table;
       }
+    }
+    switch (t) {
+      case _ivejn2uu.Click:
+        return _ivejn2uu.Click.t;
     }
     return null;
   }

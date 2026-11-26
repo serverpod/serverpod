@@ -1,0 +1,18 @@
+### Describes the pre-existing account that owns the sign-in method a user is
+### trying to link.
+###
+### Use this to show the user which account they would be merging away before
+### asking them to approve the merge.
+class: AccountLinkConflict
+fields:
+  ### The pre-existing account that owns the sign-in method.
+  authUserId: UuidValue
+
+  ### The profile of the pre-existing account, if it has one.
+  profile: UserProfileModel?
+
+  ### The time when the pre-existing account was created.
+  createdAt: DateTime
+
+  ### The identity provider method used to sign in to it, for example "google".
+  method: String

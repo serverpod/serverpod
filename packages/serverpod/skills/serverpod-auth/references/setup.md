@@ -57,6 +57,23 @@ Customize the texts with `SignInLocalizationProvider(emailWithOtp: EmailWithOtpS
 
 Customize the resend-code text shared by both email flows with `SignInLocalizationProvider(verificationCodeTexts: VerificationCodeTexts.defaults.copyWith(resendCode: ...))`.
 
+## Anonymous authentication
+
+To let users start with a guest session (and optionally upgrade it later by linking another sign-in method):
+
+1. Add `AnonymousIdpConfig()` to `identityProviderBuilders` in `server.dart` (import `package:serverpod_auth_idp_server/providers/anonymous.dart`).
+2. Expose the endpoint in `lib/src/endpoints/anonymous_idp_endpoint.dart`:
+
+```dart
+import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
+
+class AnonymousIdpEndpoint extends AnonymousIdpBaseEndpoint {}
+```
+
+3. Run `serverpod generate`. `SignInWidget` automatically renders `AnonymousSignInWidget` (or pass `disableAnonymousSignInWidget: true` / `anonymousSignInWidget:` to customize).
+
+See [user-management.md](user-management.md#linking-accounts-and-merging-user-data) for upgrading a guest account by linking email or social sign-in.
+
 ## Social sign-ins
 
 Each provider needs the user to configure it outside the project (e.g. the GCP console or the Apple developer portal). Follow the official setup guide:

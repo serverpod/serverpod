@@ -1,6 +1,7 @@
-import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import '../common/account_linking_controller.dart';
+import '../common/sign_in_completion.dart';
 import 'email_flow_controller.dart';
 
 /// Represents the screens of the passwordless email authentication flow.
@@ -76,6 +77,8 @@ class EmailOtpAuthController extends EmailFlowController<EmailOtpFlowScreen> {
     this.allowPasswordSignIn = false,
     super.onAuthenticated,
     super.onError,
+    super.accountLinking,
+    super.onAuthSuccess,
     super.emailValidation,
     super.passwordRequirements,
   }) : super(startScreen: EmailOtpFlowScreen.start);
@@ -249,11 +252,13 @@ class EmailOtpAuthController extends EmailFlowController<EmailOtpFlowScreen> {
   /// e.g. because its response was lost after it succeeded, the user has to
   /// request a new code.
   Future<void> verifyOtpCode() async {
-    await runGuarded(() async {
+    setState(EmailAuthState.loading);
+    try {
       final pendingOtpLoginToken = _otpLoginToken;
       if (pendingOtpLoginToken != null) {
-        await _finishOtpLogin(pendingOtpLoginToken);
-        return null;
+        final didSignIn = await _finishOtpLogin(pendingOtpLoginToken);
+        _completeOtpVerification(didSignIn);
+        return;
       }
 
       final otpLoginRequestId = requestId;
@@ -268,17 +273,36 @@ class EmailOtpAuthController extends EmailFlowController<EmailOtpFlowScreen> {
 
       if (result.accountExists) {
         _otpLoginToken = result.token;
-        await _finishOtpLogin(result.token);
-        return null;
+        final didSignIn = await _finishOtpLogin(result.token);
+        _completeOtpVerification(didSignIn);
+        return;
       }
 
       finishRequestToken = result.token;
       _otpAllowPassword = result.allowPassword;
-      return EmailOtpFlowScreen.completeRegistration;
-    });
+      navigateTo(EmailOtpFlowScreen.completeRegistration);
+    } catch (e) {
+      handleGuardedError(e);
+    }
   }
 
-  Future<void> _finishOtpLogin(String otpLoginToken) async {
+  void _completeOtpVerification(bool didSignIn) {
+    if (didSignIn) {
+      setState(EmailAuthState.authenticated);
+      onAuthenticated?.call();
+    } else {
+      setState(EmailAuthState.idle);
+    }
+  }
+
+  Future<bool> _finishOtpLogin(String otpLoginToken) async {
+    if (accountLinking != null) {
+      await accountLinking!.start();
+      if (accountLinking!.state != AccountLinkingState.awaitingSignIn) {
+        return false;
+      }
+    }
+
     final AuthSuccess authSuccess;
     try {
       authSuccess = await _otpEndpoint.finishOtpLogin(
@@ -292,7 +316,12 @@ class EmailOtpAuthController extends EmailFlowController<EmailOtpFlowScreen> {
     }
 
     _otpLoginToken = null;
-    await client.auth.updateSignedInUser(authSuccess);
+    return completeSignIn(
+      client,
+      authSuccess,
+      accountLinking: accountLinking,
+      onAuthSuccess: onAuthSuccess,
+    );
   }
 
   /// Creates the account for an email verified through the passwordless flow.
@@ -304,20 +333,17 @@ class EmailOtpAuthController extends EmailFlowController<EmailOtpFlowScreen> {
   /// On success, updates the session manager and calls [onAuthenticated].
   /// On failure, transitions to error state with the error message.
   Future<void> finishOtpRegistration() async {
-    await runGuarded(() async {
-      final finishRequestToken = this.finishRequestToken;
-      if (finishRequestToken == null) {
-        throw StateError('No login request was found to finish.');
-      }
+    final finishRequestToken = this.finishRequestToken;
+    if (finishRequestToken == null) {
+      throw StateError('No login request was found to finish.');
+    }
 
+    await runGuardedSignIn(() {
       final password = passwordController.text;
-      final authSuccess = await _otpEndpoint.finishOtpRegistration(
+      return _otpEndpoint.finishOtpRegistration(
         otpLoginToken: finishRequestToken,
         password: _otpAllowPassword && password.isNotEmpty ? password : null,
       );
-
-      await client.auth.updateSignedInUser(authSuccess);
-      return null;
     });
   }
 }

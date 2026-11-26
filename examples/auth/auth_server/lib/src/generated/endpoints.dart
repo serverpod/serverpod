@@ -18,6 +18,7 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
 import '../endpoints/anonymous_idp_endpoint.dart' as _i6e224xf;
 import '../endpoints/apple_idp_endpoint.dart' as _i3mgbwnw;
+import '../endpoints/click_endpoint.dart' as _ib78cipz;
 import '../endpoints/email_idp_endpoint.dart' as _ilutrrxn;
 import '../endpoints/facebook_idp_endpoint.dart' as _ieof6ve0;
 import '../endpoints/firebase_idp_endpoint.dart' as _illsbti4;
@@ -51,6 +52,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'appleIdp',
+          null,
+        ),
+      'click': _ib78cipz.ClickEndpoint()
+        ..initialize(
+          server,
+          'click',
           null,
         ),
       'emailIdp': _ilutrrxn.EmailIdpEndpoint()
@@ -191,6 +198,33 @@ class Endpoints extends _is.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['appleIdp'] as _i3mgbwnw.AppleIdpEndpoint)
                   .hasAccount(session),
+        ),
+      },
+    );
+    connectors['click'] = _is.EndpointConnector(
+      name: 'click',
+      endpoint: endpoints['click']!,
+      methodConnectors: {
+        'create': _is.MethodConnector(
+          name: 'create',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['click'] as _ib78cipz.ClickEndpoint).create(
+                session,
+              ),
+        ),
+        'getCount': _is.MethodConnector(
+          name: 'getCount',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['click'] as _ib78cipz.ClickEndpoint)
+                  .getCount(session),
         ),
       },
     );

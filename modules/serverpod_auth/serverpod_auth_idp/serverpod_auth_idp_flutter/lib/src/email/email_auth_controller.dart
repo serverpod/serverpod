@@ -74,6 +74,8 @@ class EmailAuthController extends EmailFlowController<EmailFlowScreen> {
     super.startScreen = EmailFlowScreen.login,
     super.onAuthenticated,
     super.onError,
+    super.accountLinking,
+    super.onAuthSuccess,
     super.emailValidation,
     super.passwordRequirements,
   });
@@ -212,20 +214,17 @@ class EmailAuthController extends EmailFlowController<EmailFlowScreen> {
   /// On success, updates the session manager and calls [onAuthenticated].
   /// On failure, transitions to error state with the error message.
   Future<void> finishRegistration() async {
-    await runGuarded(() async {
-      final finishRequestToken = this.finishRequestToken;
-      if (finishRequestToken == null) {
-        throw StateError('No registration request was found to finish.');
-      }
+    final finishRequestToken = this.finishRequestToken;
+    if (finishRequestToken == null) {
+      throw StateError('No registration request was found to finish.');
+    }
 
-      final authSuccess = await emailEndpoint.finishRegistration(
+    await runGuardedSignIn(
+      () => emailEndpoint.finishRegistration(
         registrationToken: finishRequestToken,
         password: passwordController.text,
-      );
-
-      await client.auth.updateSignedInUser(authSuccess);
-      return null;
-    });
+      ),
+    );
   }
 
   /// Resends the verification code based on the current screen.

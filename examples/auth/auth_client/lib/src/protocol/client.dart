@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
 import 'dart:typed_data' as _idt;
+import 'package:auth_client/src/protocol/click.dart' as _il35hd64;
 import 'package:auth_client/src/protocol/greeting.dart' as _ihepasy4;
 import 'package:http/http.dart' as _i85jenna;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
@@ -79,6 +80,30 @@ class EndpointAppleIdp extends _iaic.EndpointAppleIdpBase {
   _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'appleIdp',
     'hasAccount',
+    {},
+  );
+}
+
+/// Endpoint for recording and counting [Click]s for the authenticated user.
+/// {@category Endpoint}
+class EndpointClick extends _isc.EndpointRef {
+  EndpointClick(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'click';
+
+  /// Records a new [Click] for the signed-in user and returns it.
+  _ida.Future<_il35hd64.Click> create() =>
+      caller.callServerEndpoint<_il35hd64.Click>(
+        'click',
+        'create',
+        {},
+      );
+
+  /// Returns the total number of [Click]s recorded for the signed-in user.
+  _ida.Future<int> getCount() => caller.callServerEndpoint<int>(
+    'click',
+    'getCount',
     {},
   );
 }
@@ -700,6 +725,7 @@ class Client extends _isc.ServerpodClientShared {
        ) {
     anonymousIdp = EndpointAnonymousIdp(this);
     appleIdp = EndpointAppleIdp(this);
+    click = EndpointClick(this);
     emailIdp = EndpointEmailIdp(this);
     facebookIdp = EndpointFacebookIdp(this);
     firebaseIdp = EndpointFirebaseIdp(this);
@@ -715,6 +741,8 @@ class Client extends _isc.ServerpodClientShared {
   late final EndpointAnonymousIdp anonymousIdp;
 
   late final EndpointAppleIdp appleIdp;
+
+  late final EndpointClick click;
 
   late final EndpointEmailIdp emailIdp;
 
@@ -740,6 +768,7 @@ class Client extends _isc.ServerpodClientShared {
   Map<String, _isc.EndpointRef> get endpointRefLookup => {
     'anonymousIdp': anonymousIdp,
     'appleIdp': appleIdp,
+    'click': click,
     'emailIdp': emailIdp,
     'facebookIdp': facebookIdp,
     'firebaseIdp': firebaseIdp,

@@ -3,6 +3,9 @@ anonymousIdp:
 appleIdp:
   - login:
   - hasAccount:
+click:
+  - create:
+  - getCount:
 emailIdp:
   - startOtpLogin:
   - verifyOtpLoginCode:

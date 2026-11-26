@@ -114,9 +114,12 @@ void run(List<String> args) async {
             required UuidValue userToRemoveId,
             required Transaction transaction,
           }) async {
-            // Example auth app does not have specific application data, but if
-            // it did, this is where records would be migrated or merged away
-            // from [userToRemove] and over to [userToKeep].
+            await Click.db.updateWhere(
+              session,
+              where: (t) => t.authUserId.equals(userToRemoveId),
+              columnValues: (t) => [t.authUserId(userToKeepId)],
+              transaction: transaction,
+            );
           },
     ),
   );

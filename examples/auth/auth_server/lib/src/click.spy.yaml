@@ -1,0 +1,8 @@
+### A user click event recorded by the example counter.
+class: Click
+table: click
+fields:
+  ### The [AuthUser] that recorded this click.
+  authUser: module:serverpod_auth_core:AuthUser?, relation(onDelete=Cascade)
+  ### The timestamp when the click occurred.
+  timestamp: DateTime, default=now
