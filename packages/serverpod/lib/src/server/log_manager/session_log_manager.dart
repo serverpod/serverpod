@@ -208,7 +208,12 @@ class SessionLogManager {
         slow: slow,
         numRowsAffected: numRowsAffected,
         error: error,
-        stackTrace: stackTrace,
+        // Successful queries arrive with an empty trace (see
+        // [LogQueryFunction]); capture it now that the query is logged. This
+        // runs synchronously from the query, so the caller's frames are kept.
+        stackTrace: identical(stackTrace, StackTrace.empty)
+            ? StackTrace.current
+            : stackTrace,
       ),
     );
   }
