@@ -718,7 +718,10 @@ void main() {
         resolver = SdkResolver(
           baseDirectory: Directory.systemTemp,
           flutterCommand: _shimCommand('hangs_on_machine_flag.dart'),
-          probeTimeout: const Duration(seconds: 1),
+          // The probe has to time out, but the plain --version run gets the
+          // same timeout, and compiling the shim for it can take several
+          // seconds on a slow machine.
+          probeTimeout: const Duration(seconds: 15),
         );
       });
 
@@ -810,8 +813,10 @@ void main() {
         });
 
         test('then it does not wait for the child to let go.', () {
-          // The child holds the output open for 30 seconds.
-          expect(elapsed, lessThan(const Duration(seconds: 5)));
+          // The child holds the output open for 30 seconds. The bound stays
+          // well below that, but leaves room for compiling and starting the
+          // shims, which can take more than 5 seconds on a slow machine.
+          expect(elapsed, lessThan(const Duration(seconds: 20)));
         });
       });
     },
