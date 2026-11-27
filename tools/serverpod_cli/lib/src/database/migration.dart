@@ -4,9 +4,15 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'extensions.dart';
 
+/// Generates the migration from [databaseSource] to [databaseTarget].
+///
+/// Set [sourceIsLiveDatabase] when [databaseSource] was read from a live
+/// database. Its columns never have field names, so a column whose name
+/// still exists in the target is treated as the same column, not a rename.
 DatabaseMigration generateDatabaseMigration({
   required DatabaseDefinition databaseSource,
   required DatabaseDefinition databaseTarget,
+  bool sourceIsLiveDatabase = false,
 }) {
   var warnings = <DatabaseMigrationWarning>[];
   var actions = <DatabaseMigrationAction>[];
@@ -77,6 +83,7 @@ DatabaseMigration generateDatabaseMigration({
         srcTable,
         dstTable,
         warnings,
+        sourceIsLiveDatabase: sourceIsLiveDatabase,
       );
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.
@@ -183,18 +190,19 @@ bool _sameColumns(List<String> columns1, List<String> columns2) {
 TableMigration? generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
-  List<DatabaseMigrationWarning> warnings,
-) {
+  List<DatabaseMigrationWarning> warnings, {
+  bool sourceIsLiveDatabase = false,
+}) {
   var dstByFieldId = <String, ColumnDefinition>{
     for (var c in dstTable.columns) c.effectiveFieldName: c,
   };
 
   var renameColumns = <String, String>{};
   for (var srcColumn in srcTable.columns) {
-    // Without a stored field name (a live database schema, or a definition
-    // from before column renames), a column whose name still exists in the
-    // target is the same column, not a rename.
-    if (srcColumn.fieldName == null &&
+    // A live database schema has no field names, so a column whose name
+    // still exists in the target is the same column, not a rename.
+    if (sourceIsLiveDatabase &&
+        srcColumn.fieldName == null &&
         dstTable.containsColumnNamed(srcColumn.name)) {
       continue;
     }
@@ -427,6 +435,11 @@ extension on ColumnDefinition {
   /// The field name will not be set for [ColumnDefinition] generated before
   /// the column rename feature was implemented. For those, the physical column
   /// name match the model field name.
+  ///
+  /// It is also never set for a schema read from a live database, where the
+  /// column name can differ from the field name. For those,
+  /// [generateTableMigration] keeps a column whose name still exists in the
+  /// target as the same column (see `sourceIsLiveDatabase`).
   ///
   /// The only exception are projects that opted-in to use the experimental
   /// `column` override field in the `.spy.yaml` file to explicitly set

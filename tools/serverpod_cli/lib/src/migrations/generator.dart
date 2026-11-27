@@ -253,6 +253,7 @@ class MigrationGenerator {
     var migration = generateDatabaseMigration(
       databaseSource: liveDatabase,
       databaseTarget: dstDatabaseForDialect,
+      sourceIsLiveDatabase: true,
     );
 
     var warnings = migration.warnings;

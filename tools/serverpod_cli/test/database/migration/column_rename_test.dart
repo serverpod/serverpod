@@ -582,8 +582,8 @@ void main() {
   });
 
   group(
-    'Given a live database table without field names and a target that maps '
-    'fields to each other\'s column names when detecting migration',
+    'Given a table without field names and a target that maps fields to '
+    'each other\'s column names',
     () {
       const tableName = 'table_with_swapped_column_names';
 
@@ -632,14 +632,39 @@ void main() {
           )
           .build();
 
-      var migration = generateDatabaseMigration(
-        databaseSource: sourceDefinition,
-        databaseTarget: targetDefinition,
+      test(
+        'when the source is a live database, '
+        'then the table is in sync and no rename is detected.',
+        () {
+          var migration = generateDatabaseMigration(
+            databaseSource: sourceDefinition,
+            databaseTarget: targetDefinition,
+            sourceIsLiveDatabase: true,
+          );
+
+          expect(migration.actions, isEmpty);
+        },
       );
 
-      test('then the table is in sync and no rename is detected.', () {
-        expect(migration.actions, isEmpty);
-      });
+      test(
+        'when the source is a stored definition from before column renames, '
+        'then the swapped columns are still detected as renames.',
+        () {
+          // Here the column name is the field name, so swapping the `column`
+          // values moves each field to the other column.
+          var migration = generateDatabaseMigration(
+            databaseSource: sourceDefinition,
+            databaseTarget: targetDefinition,
+          );
+
+          var tableMigration = migration.actions.single.alterTable!;
+          var renames = {
+            for (var c in tableMigration.modifyColumns)
+              c.columnName: c.newColumnName,
+          };
+          expect(renames, {'first': 'second', 'second': 'first'});
+        },
+      );
     },
   );
 
