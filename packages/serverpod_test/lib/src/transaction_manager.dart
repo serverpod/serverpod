@@ -98,7 +98,15 @@ class TransactionManager {
   /// Rolls back the database to the previous savepoint in the current transaction.
   Future<void> rollbackToPreviousSavepoint({bool unlock = false}) async {
     var savepoint = await _popPreviousSavepoint(unlock: unlock);
+    await _rollbackAndRelease(savepoint);
+  }
+
+  /// Rolls back to [savepoint] and releases it. A rolled-back savepoint stays
+  /// established in the database, and it has already been removed from
+  /// [_savepoints], so it has to be released to keep both stacks aligned.
+  Future<void> _rollbackAndRelease(Savepoint savepoint) async {
     await savepoint.rollback();
+    await savepoint.release();
   }
 
   /// Removes the previous savepoint in the current transaction.
@@ -134,7 +142,7 @@ class TransactionManager {
       // This handles cases where an exception other than DatabaseException occurred
       if (_savepoints.isNotEmpty) {
         var lastSavepoint = _savepoints.removeLast();
-        await lastSavepoint.rollback();
+        await _rollbackAndRelease(lastSavepoint);
       }
     }
   }
