@@ -105,6 +105,11 @@ abstract class TokenIssuer {
   /// Creates a new authentication token for the specified user with the
   /// given authentication method and optional scopes.
   ///
+  /// Account-creation callbacks may change a user's scopes after creation.
+  /// When issuing a token for a freshly created user (e.g. on signup),
+  /// resolve the user's current scopes through the auth users API instead
+  /// of relying on scopes captured earlier.
+  ///
   /// Unlike [issueToken] this performs no sign-in policy check and no cookie
   /// delivery; the returned [AuthSuccess] always carries the secrets.
   Future<AuthSuccess> createToken(

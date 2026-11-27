@@ -79,7 +79,10 @@ class AnonymousIdpAccountCreationResult {
   /// The ID of the new authentication user.
   final UuidValue authUserId;
 
-  /// The scopes of the new authentication user.
+  /// The scopes of the new authentication user at creation time.
+  ///
+  /// Account-creation callbacks may update the user's scopes afterwards;
+  /// read the current scopes through the auth users API instead.
   final Set<Scope> scopes;
 
   const AnonymousIdpAccountCreationResult._({

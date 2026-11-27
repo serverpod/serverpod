@@ -504,7 +504,10 @@ class EmailIdpCompleteAccountCreationResult {
   /// The ID of the account request that was completed.
   final UuidValue accountRequestId;
 
-  /// The scopes of the new authentication user.
+  /// The scopes of the new authentication user at creation time.
+  ///
+  /// Account-creation callbacks may update the user's scopes afterwards;
+  /// read the current scopes through the auth users API instead.
   final Set<Scope> scopes;
 
   /// The email address used during registration.
