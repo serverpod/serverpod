@@ -121,6 +121,10 @@ class ServerpodConfig {
   /// trailing slash, e.g. `https://app.example.com` or
   /// `https://app.example.com:8443` (browsers send a canonical, lowercase
   /// origin without a path); casing in the configured value does not matter.
+  ///
+  /// In development, a non-empty list is extended with the origin of the
+  /// server's own web server once it has started, since the runner can move it
+  /// to a port that the configuration cannot name.
   final List<String>? allowedOrigins;
 
   /// Configuration for the web authentication cookie. Null (the default) when

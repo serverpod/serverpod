@@ -1315,6 +1315,7 @@ class Serverpod {
       apiServer: api,
       insightsServer: insights,
       webServer: web,
+      allowedOrigins: _allowedOriginsWithWebServer(web),
     );
 
     final poolManager = _databasePoolManager;
@@ -1326,6 +1327,33 @@ class Serverpod {
           ? null
           : embeddedPostgresTcpAddress(poolManager)?.toString(),
     );
+  }
+
+  /// The allowed origins, including in development the origin that [web] is
+  /// served on.
+  ///
+  /// The runner moves a stack to free ports when the configured ones are taken,
+  /// so the configured origins may not name the stack's own web server, and
+  /// its port is not known before it has been bound.
+  List<String>? _allowedOriginsWithWebServer(ServerConfig? web) {
+    final allowedOrigins = config.allowedOrigins;
+    if (web == null ||
+        runMode != ServerpodRunMode.development ||
+        allowedOrigins == null ||
+        allowedOrigins.isEmpty) {
+      return allowedOrigins;
+    }
+
+    // Unlike [_publicUrl], this leaves out a default port, as browsers do.
+    final webOrigin = Uri(
+      scheme: web.publicScheme,
+      host: web.publicHost,
+      port: web.publicPort,
+    ).toString();
+
+    return allowedOrigins.contains(webOrigin)
+        ? allowedOrigins
+        : [...allowedOrigins, webOrigin];
   }
 
   static String _publicUrl(ServerConfig server) =>
