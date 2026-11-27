@@ -12,6 +12,7 @@ class TestServerpodClient extends ServerpodClientShared {
     required Uri host,
     ClientAuthKeyProvider? authKeyProvider,
     super.httpClientOverride,
+    super.securityContext,
   }) : super(
          host.toString(),
          TestSerializationManager(),
