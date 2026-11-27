@@ -25,6 +25,22 @@ void main() {
   );
 
   test(
+    'Given no flutter on PATH but a Serverpod-managed SDK on disk, '
+    'when evaluating, then the status is misconfigured with a --fix remedy',
+    () {
+      final result = FlutterCheck.evaluate(
+        executable: null,
+        output: null,
+        installedOffPath: '/home/dev/.serverpod/flutter',
+      );
+
+      expect(result.status, DoctorStatus.misconfigured);
+      expect(result.path, '/home/dev/.serverpod/flutter');
+      expect(result.remedy, contains('serverpod doctor --fix'));
+    },
+  );
+
+  test(
     'Given flutter on PATH that reported no version, '
     'when evaluating, then the status is unknown',
     () {

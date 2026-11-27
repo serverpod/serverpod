@@ -6,6 +6,8 @@ import 'package:serverpod_cli/src/doctor/dart_sdk_check.dart';
 import 'package:serverpod_cli/src/doctor/doctor_check.dart';
 import 'package:serverpod_cli/src/doctor/flutter_check.dart';
 import 'package:serverpod_cli/src/doctor/git_check.dart';
+import 'package:serverpod_cli/src/util/sdk_resolver.dart'
+    show flutterExecutableIn;
 import 'package:test/test.dart';
 
 /// The Dart VM running these tests, standing in for an SDK's `dart`.
@@ -114,10 +116,30 @@ void main() {
     'Given no flutter on PATH, when probing, then the status is missing',
     () async {
       final result = await FlutterCheck.probe(
+        managedRoot: p.join(_createTempDirectory().path, 'flutter'),
         environment: _pathWith(_createTempDirectory()),
       );
 
       expect(result.status, DoctorStatus.missing);
+    },
+  );
+
+  test(
+    'Given no flutter on PATH but one installed at the managed root, '
+    'when probing, then the status is misconfigured, not missing',
+    () async {
+      final managedRoot = p.join(_createTempDirectory().path, 'flutter');
+      File(flutterExecutableIn(managedRoot))
+        ..createSync(recursive: true)
+        ..writeAsStringSync('');
+
+      final result = await FlutterCheck.probe(
+        managedRoot: managedRoot,
+        environment: _pathWith(_createTempDirectory()),
+      );
+
+      expect(result.status, DoctorStatus.misconfigured);
+      expect(result.path, managedRoot);
     },
   );
 
