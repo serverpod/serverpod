@@ -142,7 +142,13 @@ abstract class ServerpodCodeGenerator {
       // Skip the write if the file already has the same content.
       if (out.existsSync()) {
         final existing = await out.readAsString();
+
         if (existing == file.value) return null;
+
+        final normalizedExisting = existing.replaceAll('\r\n', '\n');
+        final normalizedGenerated = file.value.replaceAll('\r\n', '\n');
+
+        if (normalizedExisting == normalizedGenerated) return null;
       }
 
       await out.create(recursive: true);
