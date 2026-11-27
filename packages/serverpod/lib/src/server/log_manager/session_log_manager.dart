@@ -226,7 +226,7 @@ class SessionLogManager {
     StackTrace? stackTrace,
   }) async {
     _stopwatch.stop();
-    final duration = session.duration;
+    final duration = _stopwatch.elapsed;
     final logSettings = _settingsForSession(session);
 
     final slowMicros = (logSettings.slowSessionDuration * _microNormalizer)
@@ -258,7 +258,7 @@ class SessionLogManager {
     _log.close(
       SessionClose(
         sessionId: _open.sessionId,
-        duration: _stopwatch.elapsed,
+        duration: duration,
         success: exception == null,
         slow: isSlow,
         numQueries: _queryCount,
