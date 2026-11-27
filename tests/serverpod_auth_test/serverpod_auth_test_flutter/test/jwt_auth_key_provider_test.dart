@@ -347,6 +347,187 @@ void main() {
     },
   );
 
+  group('Given a JwtAuthKeyProvider with a cross-tab lock and auth info that '
+      'is about to expire '
+      'when refreshing auth key', () {
+    late _TestCrossTabLock lock;
+
+    setUp(() async {
+      lock = _TestCrossTabLock();
+      provider = JwtAuthKeyProvider(
+        getAuthInfo: () async => storedAuthInfo,
+        onRefreshAuthInfo: (authSuccess) async {
+          storedAuthInfo = authSuccess;
+        },
+        refreshEndpoint: refreshEndpoint,
+        refreshJwtTokenBefore: const Duration(seconds: 30),
+        getCrossTabRefreshLock: () => lock,
+      );
+      storedAuthInfo = jwtAuthSuccess.expiringIn(const Duration(seconds: 15));
+
+      result = await provider.refreshAuthKey();
+    });
+
+    test('then the refresh runs inside the cross-tab lock.', () async {
+      expect(lock.callCount, 1);
+    });
+
+    test('then refreshAuthKey returns success.', () async {
+      expect(result, RefreshAuthKeyResult.success);
+    });
+
+    test('then it rotates the refresh token.', () async {
+      expect(storedAuthInfo?.refreshToken, isNotNull);
+      expect(storedAuthInfo?.refreshToken, isNot(jwtAuthSuccess.refreshToken));
+    });
+  });
+
+  group(
+    'Given a JwtAuthKeyProvider with a cross-tab lock '
+    'and another tab rotates the token while waiting for the lock, '
+    'when refreshing auth key',
+    () {
+      setUp(() async {
+        final rotatedByOtherTab = jwtAuthSuccess.copyWith(
+          token: 'token-from-other-tab',
+          refreshToken: 'refresh-token-from-other-tab',
+          tokenExpiresAt: DateTime.now().toUtc().add(
+            const Duration(minutes: 5),
+          ),
+        );
+        final lock = _TokenSwappingCrossTabLock(
+          onAcquired: () async {
+            storedAuthInfo = rotatedByOtherTab;
+          },
+        );
+        provider = JwtAuthKeyProvider(
+          getAuthInfo: () async => storedAuthInfo,
+          onRefreshAuthInfo: (authSuccess) async {
+            storedAuthInfo = authSuccess;
+          },
+          refreshEndpoint: refreshEndpoint,
+          refreshJwtTokenBefore: const Duration(seconds: 30),
+          getCrossTabRefreshLock: () => lock,
+        );
+        storedAuthInfo = jwtAuthSuccess.expiringIn(const Duration(seconds: 15));
+
+        result = await provider.refreshAuthKey();
+      });
+
+      test('then it does not call the refresh function.', () async {
+        expect(refreshEndpoint.callCount, 0);
+      });
+
+      test('then refreshAuthKey returns success.', () async {
+        expect(result, RefreshAuthKeyResult.success);
+      });
+    },
+  );
+
+  group(
+    'Given a JwtAuthKeyProvider with a cross-tab lock '
+    'and another tab rotates the token while waiting for the lock, '
+    'when force refreshing auth key',
+    () {
+      setUp(() async {
+        final rotatedByOtherTab = jwtAuthSuccess.copyWith(
+          token: 'token-from-other-tab',
+          refreshToken: 'refresh-token-from-other-tab',
+          tokenExpiresAt: DateTime.now().toUtc().add(
+            const Duration(minutes: 5),
+          ),
+        );
+        final lock = _TokenSwappingCrossTabLock(
+          onAcquired: () async {
+            storedAuthInfo = rotatedByOtherTab;
+          },
+        );
+        provider = JwtAuthKeyProvider(
+          getAuthInfo: () async => storedAuthInfo,
+          onRefreshAuthInfo: (authSuccess) async {
+            storedAuthInfo = authSuccess;
+          },
+          refreshEndpoint: refreshEndpoint,
+          refreshJwtTokenBefore: const Duration(seconds: 30),
+          getCrossTabRefreshLock: () => lock,
+        );
+        storedAuthInfo = jwtAuthSuccess.expiringIn(const Duration(seconds: 15));
+
+        result = await provider.refreshAuthKey(force: true);
+      });
+
+      test('then it does not call the refresh function.', () async {
+        expect(refreshEndpoint.callCount, 0);
+      });
+
+      test('then refreshAuthKey returns success.', () async {
+        expect(result, RefreshAuthKeyResult.success);
+      });
+    },
+  );
+
+  group(
+    'Given a JwtAuthKeyProvider with a cross-tab lock '
+    'and another tab signed out while waiting for the lock, '
+    'when refreshing auth key',
+    () {
+      setUp(() async {
+        final lock = _TokenSwappingCrossTabLock(
+          onAcquired: () async {
+            storedAuthInfo = null;
+          },
+        );
+        provider = JwtAuthKeyProvider(
+          getAuthInfo: () async => storedAuthInfo,
+          onRefreshAuthInfo: (authSuccess) async {
+            storedAuthInfo = authSuccess;
+          },
+          refreshEndpoint: refreshEndpoint,
+          refreshJwtTokenBefore: const Duration(seconds: 30),
+          getCrossTabRefreshLock: () => lock,
+        );
+        storedAuthInfo = jwtAuthSuccess.expiringIn(const Duration(seconds: 15));
+
+        result = await provider.refreshAuthKey();
+      });
+
+      test('then it does not call the refresh function.', () async {
+        expect(refreshEndpoint.callCount, 0);
+      });
+
+      test('then refreshAuthKey returns skipped.', () async {
+        expect(result, RefreshAuthKeyResult.skipped);
+      });
+    },
+  );
+
+  group('Given a JwtAuthKeyProvider without a cross-tab lock and auth info '
+      'that is about to expire '
+      'when refreshing auth key', () {
+    setUp(() async {
+      provider = JwtAuthKeyProvider(
+        getAuthInfo: () async => storedAuthInfo,
+        onRefreshAuthInfo: (authSuccess) async {
+          storedAuthInfo = authSuccess;
+        },
+        refreshEndpoint: refreshEndpoint,
+        refreshJwtTokenBefore: const Duration(seconds: 30),
+        getCrossTabRefreshLock: () => null,
+      );
+      storedAuthInfo = jwtAuthSuccess.expiringIn(const Duration(seconds: 15));
+
+      result = await provider.refreshAuthKey();
+    });
+
+    test('then it calls the refresh function.', () async {
+      expect(refreshEndpoint.callCount, 1);
+    });
+
+    test('then refreshAuthKey returns success.', () async {
+      expect(result, RefreshAuthKeyResult.success);
+    });
+  });
+
   group(
     'Given a JwtAuthKeyProvider in cookie mode on a platform without cross-tab locks',
     () {
@@ -376,6 +557,29 @@ void main() {
       );
     },
   );
+}
+
+class _TestCrossTabLock implements CrossTabLock {
+  int callCount = 0;
+
+  @override
+  Future<T> synchronize<T>(Future<T> Function() action) async {
+    callCount++;
+    return action();
+  }
+}
+
+/// Simulates another tab rotating the token while this one waits for the lock.
+class _TokenSwappingCrossTabLock implements CrossTabLock {
+  final Future<void> Function() onAcquired;
+
+  _TokenSwappingCrossTabLock({required this.onAcquired});
+
+  @override
+  Future<T> synchronize<T>(Future<T> Function() action) async {
+    await onAcquired();
+    return action();
+  }
 }
 
 class TestEndpointRefreshJwtToken extends EndpointJwtRefresh {

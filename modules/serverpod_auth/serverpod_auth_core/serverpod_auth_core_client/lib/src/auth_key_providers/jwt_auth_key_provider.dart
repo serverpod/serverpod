@@ -22,10 +22,10 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
     bool Function()? usesCookieAuth,
 
     /// Returns the lock serializing refreshes across browser tabs, used in
-    /// cookie mode where concurrent tab refreshes of the shared refresh
-    /// cookie could trip the server's reuse revocation. When null (no Web
-    /// Locks support, e.g. an insecure context), refreshes run
-    /// uncoordinated and the race is logged instead.
+    /// both header and cookie mode to prevent redundant or racing rotations
+    /// when multiple tabs trigger a refresh at the same time. When null (no
+    /// Web Locks support, e.g. an insecure context), refreshes run
+    /// uncoordinated.
     CrossTabLock? Function()? getCrossTabRefreshLock,
 
     /// Optional function to invalidate the cached authentication info before
@@ -43,6 +43,7 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
              refreshEndpoint: refreshEndpoint,
              refreshJwtTokenBefore: refreshJwtTokenBefore,
              invalidateCachedAuthInfo: invalidateCachedAuthInfo,
+             getCrossTabRefreshLock: getCrossTabRefreshLock ?? () => null,
            ),
            cookieDelegate: _CookieJwtRefreshDelegate(
              getAuthInfo: getAuthInfo,
@@ -123,6 +124,7 @@ abstract class _JwtRefreshDelegate implements RefresherClientAuthKeyProvider {
 
 class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
   final Future<void> Function()? invalidateCachedAuthInfo;
+  final CrossTabLock? Function() getCrossTabRefreshLock;
 
   _HeaderJwtRefreshDelegate({
     required super.getAuthInfo,
@@ -130,6 +132,7 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
     required super.refreshEndpoint,
     required super.refreshJwtTokenBefore,
     required this.invalidateCachedAuthInfo,
+    required this.getCrossTabRefreshLock,
   });
 
   /// Only performs a refresh if the token has a valid expiration time and is
@@ -146,7 +149,28 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
         refreshToken == null) {
       return RefreshAuthKeyResult.skipped;
     }
-    return _refresh(refreshToken: refreshToken);
+
+    final crossTabLock = getCrossTabRefreshLock();
+    if (crossTabLock == null) {
+      return _refresh(refreshToken: refreshToken);
+    }
+
+    return crossTabLock.synchronize(() async {
+      await invalidateCachedAuthInfo?.call();
+      final freshAuthInfo = await getAuthInfo();
+      final freshRefreshToken = freshAuthInfo?.refreshToken;
+
+      if (freshRefreshToken == null) {
+        return RefreshAuthKeyResult.skipped;
+      }
+
+      // Another tab rotated while we waited for the lock; token is fresh.
+      if (freshRefreshToken != refreshToken) {
+        return RefreshAuthKeyResult.success;
+      }
+
+      return _refresh(refreshToken: freshRefreshToken);
+    });
   }
 }
 
