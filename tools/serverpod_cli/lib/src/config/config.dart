@@ -17,6 +17,9 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
 import '../generator/types.dart';
+import 'openapi_config.dart';
+
+export 'openapi_config.dart';
 
 /// The type of the package.
 enum PackageType {
@@ -88,6 +91,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.isDatabaseEnabled,
     required this.databaseDialect,
     this.experimentalFeatures = const [],
+    this.openApi = const OpenApiConfig(),
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
        _modules = modules;
@@ -209,6 +213,12 @@ class GeneratorConfig implements ModelLoadConfig {
     'protocol.yaml',
   ];
 
+  /// The path of the generated OpenAPI specification.
+  List<String> get generatedOpenApiFilePathParts => [
+    ...generatedServeModelPathParts,
+    'openapi.json',
+  ];
+
   /// The path of the generated Serverpod package manifest.
   List<String> get generatedServerpodManifestFilePathParts => [
     ...generatedServeModelPathParts,
@@ -324,6 +334,9 @@ class GeneratorConfig implements ModelLoadConfig {
   final DatabaseDialect databaseDialect;
 
   final List<ExperimentalFeature> experimentalFeatures;
+
+  /// Settings for OpenAPI specification generation.
+  final OpenApiConfig openApi;
 
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
       experimentalFeatures.contains(feature) ||
@@ -558,6 +571,7 @@ class GeneratorConfig implements ModelLoadConfig {
       isDatabaseEnabled: isDatabaseEnabled,
       databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
+      openApi: OpenApiConfig.fromYaml(generatorConfig['openapi']),
     );
   }
 

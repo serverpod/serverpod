@@ -701,6 +701,9 @@ class Analyzers {
         collector: endpointAnalyzerCollector,
         models: _models.models,
         changedFiles: changedFiles,
+        openApiSecuritySchemes: config.openApi.enabled
+            ? config.openApi.securitySchemes.keys.toSet()
+            : null,
       );
 
       success &= !endpointAnalyzerCollector.hasSevereErrors;
