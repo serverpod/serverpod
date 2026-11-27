@@ -580,4 +580,144 @@ void main() {
       );
     });
   });
+
+  group(
+    'Given a table without field names and a target that maps fields to '
+    'each other\'s column names',
+    () {
+      const tableName = 'table_with_swapped_column_names';
+
+      // A schema read from a live database never has field names.
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('second')
+                      .withColumnType(ColumnType.text)
+                      .build(),
+                )
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('first')
+                      .withColumnType(ColumnType.text)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('second')
+                      .withFieldName('first')
+                      .withColumnType(ColumnType.text)
+                      .build(),
+                )
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('first')
+                      .withFieldName('second')
+                      .withColumnType(ColumnType.text)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      test(
+        'when the source is a live database, '
+        'then the table is in sync and no rename is detected.',
+        () {
+          var migration = generateDatabaseMigration(
+            databaseSource: sourceDefinition,
+            databaseTarget: targetDefinition,
+            sourceIsLiveDatabase: true,
+          );
+
+          expect(migration.actions, isEmpty);
+        },
+      );
+
+      test(
+        'when the source is a stored definition from before column renames, '
+        'then the swapped columns are still detected as renames.',
+        () {
+          // Here the column name is the field name, so swapping the `column`
+          // values moves each field to the other column.
+          var migration = generateDatabaseMigration(
+            databaseSource: sourceDefinition,
+            databaseTarget: targetDefinition,
+          );
+
+          var tableMigration = migration.actions.single.alterTable!;
+          var renames = {
+            for (var c in tableMigration.modifyColumns)
+              c.columnName: c.newColumnName,
+          };
+          expect(renames, {'first': 'second', 'second': 'first'});
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a table without field names whose column was renamed in the '
+    'target when detecting migration',
+    () {
+      const tableName = 'example_table';
+
+      // Definitions from before the column rename feature have no field
+      // names; the column name is the field name.
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('myField')
+                      .withColumnType(ColumnType.text)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('my_column')
+                      .withFieldName('myField')
+                      .withColumnType(ColumnType.text)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      test('then the rename is still detected.', () {
+        var tableMigration = migration.actions.first.alterTable!;
+        var rename = tableMigration.modifyColumns.single;
+        expect(rename.columnName, 'myField');
+        expect(rename.newColumnName, 'my_column');
+      });
+    },
+  );
 }
