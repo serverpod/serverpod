@@ -22,10 +22,10 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
     bool Function()? usesCookieAuth,
 
     /// Returns the lock serializing refreshes across browser tabs, used in
-    /// cookie mode where concurrent tab refreshes of the shared refresh
-    /// cookie could trip the server's reuse revocation. When null (no Web
-    /// Locks support, e.g. an insecure context), refreshes run
-    /// uncoordinated and the race is logged instead.
+    /// both header and cookie mode to prevent redundant or racing rotations
+    /// when multiple tabs trigger a refresh at the same time. When null (no
+    /// Web Locks support, e.g. an insecure context), refreshes run
+    /// uncoordinated.
     CrossTabLock? Function()? getCrossTabRefreshLock,
 
     /// Optional function to invalidate the cached authentication info before
@@ -158,7 +158,6 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
     return crossTabLock.synchronize(() async {
       await invalidateCachedAuthInfo?.call();
       final freshAuthInfo = await getAuthInfo();
-      final freshExpiresAt = freshAuthInfo?.tokenExpiresAt;
       final freshRefreshToken = freshAuthInfo?.refreshToken;
 
       if (freshRefreshToken == null) {
@@ -170,9 +169,6 @@ class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
         return RefreshAuthKeyResult.success;
       }
 
-      if (!force && freshExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) {
-        return RefreshAuthKeyResult.skipped;
-      }
       return _refresh(refreshToken: freshRefreshToken);
     });
   }
