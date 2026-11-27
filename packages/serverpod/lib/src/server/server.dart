@@ -9,6 +9,7 @@ import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/server/cookie_auth_cors.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
+import 'package:serverpod/src/server/http_adapter.dart';
 import 'package:serverpod/src/server/response_output.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
@@ -79,6 +80,9 @@ class Server implements RouterInjectable {
   /// Security context if the server is running over https.
   final io.SecurityContext? _securityContext;
 
+  /// The PEM behind [_securityContext], when it was built from one.
+  final PemCertificate? _certificate;
+
   /// Responsible for dispatching calls to the correct [Endpoint] methods.
   final EndpointDispatch endpoints;
 
@@ -118,6 +122,7 @@ class Server implements RouterInjectable {
     String? name,
     required this.caches,
     io.SecurityContext? securityContext,
+    PemCertificate? certificate,
     this.whitelistedExternalCalls,
     required this.endpoints,
     required this.httpResponseHeaders,
@@ -125,6 +130,7 @@ class Server implements RouterInjectable {
   }) : name = name ?? 'Server $serverId',
        _databasePoolManager = databasePoolManager,
        _securityContext = securityContext,
+       _certificate = certificate,
        _port = port;
 
   late final _app = RelicApp()..inject(this);
@@ -179,11 +185,15 @@ class Server implements RouterInjectable {
     _authenticationHandler = authenticationHandler;
 
     try {
-      final server = await _app.serve(
+      final adapter = await bindHttpAdapter(
+        kind: serverpod.config.httpAdapter,
+        serverName: name,
         address: io.InternetAddress.anyIPv6,
         port: port,
         securityContext: _securityContext,
+        certificate: _certificate,
       );
+      final server = await _app.run(() => adapter);
       _actualPort = server.port;
       _relicServer = server;
     } catch (e, stackTrace) {
